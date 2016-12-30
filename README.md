@@ -4,7 +4,7 @@ PHP MVC framework to develop and pack projects (partialy or completely) into sup
 ## Main features
 - MVC core framework for classic web apps with any request types and HTML/AJAX responses
 - about 35% faster results from packed app then development version with separate PHP scripts and fastcgi/op_cache
-- partial or complete application packaging into a single file
+- partial or complete application packaging into a single file by [**Packager (mvccore/packager)**](https://github.com/mvccore/packager)
 	- including only file extensions you want
 	- or including all files (binary or text, doesn't metter)
 - packing to PHAR package (slower) or to PHP single file (faster)
