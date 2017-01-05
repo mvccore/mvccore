@@ -8,7 +8,7 @@
  * the LICENSE.md file that are distributed with this source code.
  *
  * @copyright	Copyright (c) 2016 Tom Flídr (https://github.com/mvccore/mvccore)
- * @license		https://mvccore.github.io/docs/mvccore/1.0.0/LICENCE.md
+ * @license		https://mvccore.github.io/docs/mvccore/2.0.0/LICENCE.md
  */
 
 if (version_compare(PHP_VERSION, '5.3.0', "<")) {
@@ -37,14 +37,30 @@ call_user_func(function(){
 	set_include_path(
 		get_include_path() . PATH_SEPARATOR . implode(PATH_SEPARATOR, $includePaths)
 	);
+
+	$throwExceptionIfClassIsGoingToUse = function ($className) {
+		$status = 0;
+		$backTraceLog = debug_backtrace();
+		foreach ($backTraceLog as $backTraceInfo) {
+			if ($status === 0 && $backTraceInfo['function'] == 'spl_autoload_call') {
+				$status = 1;
+			} else if ($status == 1 && $backTraceInfo['function'] == 'class_exists') {
+				$status = 2;
+				break;
+			} else if ($status > 0) {
+				break;
+			}
+		}
+		if ($status < 2) throw new Exception('[startup.php] Class "' . $className . '" not found.');
+	};
 	
-	$autoload = function ($className) use ($includePaths) {
+	$autoload = function ($className) use ($includePaths, $throwExceptionIfClassIsGoingToUse) {
 		
-		$fileName = str_replace('_', '/', $className) . '.php';
+		$fileName = str_replace(array('_', '\\'), '/', $className) . '.php';
 		
 		$includePath = '';
-		foreach ($includePaths as $includePath) {
-			$fullPath = $includePath . '/' . $fileName;
+		foreach ($includePaths as $path) {
+			$fullPath = $path . '/' . $fileName;
 			if (file_exists($fullPath)) {
 				$includePath = $fullPath;
 				break;
@@ -56,9 +72,9 @@ call_user_func(function(){
 		echo '</pre>';
 		*/
 		if ($includePath) {
-			@include_once($includePath);
+			include_once($includePath);
 		} else {
-			throw new Exception('[startup.php] Class "' . $className . '" not found.');
+			$throwExceptionIfClassIsGoingToUse($className);
 		}
 	};
 
