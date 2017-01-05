@@ -26,7 +26,7 @@ PHP MVC framework to develop and pack projects (partialy or completely) into sup
 		- MvcCore frameworks has only 3 files (647 lines, including comments, cca 215 lines per file)
 		- Hello world example has only 2 important controllers (Default.php and Base.php)
 - check out more complex applications:
-	- [**Questionnaires**](https://github.com/mvccore/app-questionnaire)
+	- [**Questionnaires**](https://github.com/mvccore/app-questionnaires)
 - to develop application - work in development directory
 - to build single file application - use make.cmd and configure build proces in php.php or phar.php
 - test your builded application in release directory
