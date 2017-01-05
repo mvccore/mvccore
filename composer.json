@@ -1,0 +1,21 @@
+{
+	"name": "mvccore/mvccore",
+	"type": "library",
+	"description": "MvcCore is PHP MVC framework to develop and pack projects (partialy or completely) into super fast single file apps and tools.",
+	"keywords": ["mvccore", "framework", "mvc", "core", "model", "html5", "simple mvc", "super fast mvc", "easy mvc"],
+	"license": ["BSD-3-Clause"],
+	"authors": [
+		{
+			"name": "Tom Flidr",
+			"homepage": "https://github.com/tomFlidr"
+		}
+	],
+	"require": {
+		"php": ">=5.3.0"
+	},
+	"autoload": {
+		"classmap": ["src/"],
+		"files": ["src/startup.php"]
+	},
+	"minimum-stability": "dev"
+}
