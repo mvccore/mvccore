@@ -1,0 +1,387 @@
+<?php
+
+/**
+ * MvcCore
+ *
+ * This source file is subject to the BSD 3 License
+ * For the full copyright and license information, please view 
+ * the LICENSE.md file that are distributed with this source code.
+ *
+ * @copyright	Copyright (c) 2016 Tom Flídr (https://github.com/mvccore/mvccore)
+ * @license		https://mvccore.github.io/docs/mvccore/3.0.0/LICENCE.md
+ */
+
+require_once('Tool.php');
+require_once(__DIR__.'/../MvcCore.php');
+
+class MvcCore_Request
+{
+	const PROTOCOL_HTTP = 'http:';
+	const PROTOCOL_HTTPS = 'https:';
+
+	const METHOD_GET = 'GET';
+	const METHOD_POST = 'POST';
+
+	/**
+	 * Http protocol: 'http:' | 'https:'
+	 * @var string
+	 */
+	public $Protocol		= '';
+
+	/**
+	 * Application server name - domain without port.
+	 * @var string
+	 */
+	public $ServerName		= '';
+
+	/**
+	 * Application host with port if there is any.
+	 * @var string
+	 */
+	public $Host		= '';
+
+	/**
+	 * Http port parsed by parse_url().
+	 * @var string
+	 */
+	public $Port		= '';
+
+	/**
+	 * Requested path in application context - in mod_rewrite enabled: /products/page/2
+	 * @var mixed
+	 */
+	public $Path		= '';
+
+	/**
+	 * Uri query string without question mark: a=5&b=10
+	 * @var string
+	 */
+	public $Query		= '';
+
+	/**
+	 * Uri fragment parsed by parse_url(): #any-sublink
+	 * @var mixed
+	 */
+	public $Fragment	= '';
+
+	/**
+	 * Php requested script name: /index.php
+	 * @var string
+	 */
+	public $ScriptName	= '';
+
+	/**
+	 * Application root path in hard drive: C:/www/my/development/direcotry/www
+	 * @var string
+	 */
+	public $AppRoot		= '';
+
+	/**
+	 * Base app directory in localhost if any: /localhost/my/development/direcotry/www
+	 * @var string
+	 */
+	public $BasePath	= '';
+
+	/**
+	 * Request path after domain with possible query string
+	 * @var string
+	 */
+	public $RequestPath	= '';
+
+	/**
+	 * Base url to application root
+	 * @var string
+	 */
+	public $BaseUrl	= '';
+
+	/**
+	 * Request url including scheme, domain, port, path, without query string
+	 * @var string
+	 */
+	public $RequestUrl	= '';
+
+	/**
+	 * Request url including scheme, domain, port, path and with query string
+	 * @var string
+	 */
+	public $FullUrl	= '';
+
+	/**
+	 * Http method (uppercase) - GET, POST, PUT, HEAD...
+	 * @var string
+	 */
+	public $Method		= '';
+
+	/**
+	 * Request params array, with keys defined in route or by query string, 
+	 * always with controller and action keys completed by router.
+	 * @var array
+	 */
+	public $Params		= array();
+
+	/**
+	 * Media site key - 'full' | 'tablet' | 'mobile'
+	 * To use this variable - install MvcCore_Router extension MvcCoreExt_MediaAddress
+	 * @var string
+	 */
+	public $MediaSiteKey = '';
+
+	/**
+	 * Content of $_SERVER global variable
+	 * @var array
+	 */
+	protected $serverGlobals = array();
+
+	/**
+	 * Content of $_GET global variable
+	 * @var array
+	 */
+	protected $getGlobals = array();
+
+	/**
+	 * Content of $_POST global variable
+	 * @var array
+	 */
+	protected $postGlobals = array();
+	
+	/**
+	 * Requested script name
+	 * @var array
+	 */
+	protected $indexScriptName = '';
+
+	/**
+	 * Universal store for anything else
+	 * @var array
+	 */
+	protected $store = array();
+
+	/**
+	 * Get everytime new instance of http request, 
+	 * global variables should be changed and injected here 
+	 * to get different request object from currently called real request.
+	 * @param array $server 
+	 * @param array $get 
+	 * @param array $post 
+	 * @return MvcCore_Request
+	 */
+	public static function GetInstance (array & $server, array & $get, array & $post) {
+		$requestClass = MvcCore::GetInstance()->GetRequestClass();
+		return new $requestClass($server, $get, $post);
+	}
+
+    /**
+	 * Get everytime new instance of http request, 
+	 * global variables should be changed and injected here 
+	 * to get different request object from currently called real request.
+	 * 
+     * @param array $server 
+     * @param array $get 
+     * @param array $post 
+     */
+    public function __construct (array & $server, array & $get, array & $post) { 
+		$this->serverGlobals = $server;
+		$this->getGlobals = $get;
+		$this->postGlobals = $post;
+		
+		$this->initMethod();
+		$this->initScriptName();
+		$this->initBasePath();
+		$this->initProtocol();
+		$this->initParsedUrlSegments();
+		$this->initParams();
+		$this->initAppRoot();
+		$this->initPath();
+		$this->initUrlCompositions();
+		
+		unset($this->serverGlobals, $this->getGlobals, $this->postGlobals);
+	}
+
+	/**
+	 * Universal getter from store
+	 * @param string $name 
+	 * @return mixed
+	 */
+	public function __get ($name) {
+		return isset($this->store[$name]) ? $this->store[$name] : NULL ;
+	}
+
+	/**
+	 * Universal setter
+	 * @param string	$name 
+	 * @param mixed		$value 
+	 * @return void
+	 */
+	public function __set ($name, $value) {
+		$this->store[$name] = $value;
+	}
+
+	/**
+	 * Set directly raw param value without any change
+	 * @param string $name 
+	 * @param string $value 
+	 * @return MvcCore_Request
+	 */
+	public function SetParam ($name = "", $value = "") {
+		$this->Params[$name] = $value;
+		return $this;
+	}
+
+	/**
+	 * Get param value, filtered for characters defined as second argument to use them in preg_replace().
+	 * @param string $name 
+	 * @param string $pregReplaceAllowedChars 
+	 * @return string
+	 */
+	public function GetParam ($name = "", $pregReplaceAllowedChars = "a-zA-Z0-9_/\-\.\@") {
+		$result = '';
+		$params = $this->Params;
+		if (isset($params[$name])) {
+			$rawValue = trim($params[$name]);
+			if (mb_strlen($rawValue) > 0) {
+				if (!$pregReplaceAllowedChars || $pregReplaceAllowedChars == ".*") {
+					$result = $rawValue;
+				} else {
+					$pattern = "#[^" . $pregReplaceAllowedChars . "]#";
+					$result = preg_replace($pattern, "", $rawValue);
+				}
+			}
+		}
+		return $result;
+	}
+
+	/**
+	 * Initialize http method.
+	 * @return void
+	 */
+	protected function initMethod () {
+		$this->Method = strtoupper($this->serverGlobals['REQUEST_METHOD']);
+	}
+
+	/**
+	 * Initialize index.php script name.
+	 * @return void
+	 */
+	protected function initScriptName () {
+		$this->indexScriptName = str_replace('\\', '/', $this->serverGlobals['SCRIPT_NAME']);
+		$this->ScriptName = '/' . substr($this->indexScriptName, strrpos($this->indexScriptName, '/') + 1);
+	}
+
+	/**
+	 * Complete base application path like: /localhost/my/development/direcotry/www
+	 * @return void
+	 */
+	protected function initBasePath () {
+		$lastSlashPos = mb_strrpos($this->indexScriptName, '/');
+		if ($lastSlashPos !== FALSE) {
+			$this->BasePath = mb_substr($this->indexScriptName, 0, $lastSlashPos);
+		} else {
+			$this->BasePath = '';
+		}
+	}
+	
+	/**
+	 * Initialize http protocol.
+	 * @return void
+	 */
+	protected function initProtocol () {
+		$this->Protocol = static::PROTOCOL_HTTP;
+		if (isset($this->serverGlobals['HTTPS']) && strtolower($this->serverGlobals['HTTPS']) == 'on') {
+			$this->Protocol = static::PROTOCOL_HTTPS;
+		}
+	}
+	
+	/**
+	 * Initialize url segments parsed by parse_url() php method.
+	 * @return void
+	 */
+	protected function initParsedUrlSegments () {
+		$absoluteUrl = $this->Protocol . '//' . $this->serverGlobals['HTTP_HOST'] . $this->serverGlobals['REQUEST_URI'];
+		$parsedUrl = parse_url($absoluteUrl);
+		$keyUc = '';
+		foreach ($parsedUrl as $key => $value) {
+			$keyUc = ucfirst($key);
+			if (isset($this->$keyUc)) {
+				$this->$keyUc = $value;
+			}
+		}
+		$this->ServerName = $this->serverGlobals['SERVER_NAME'];
+		$this->Host = $this->serverGlobals['HTTP_HOST'];
+	}
+
+	/**
+	 * Initialize params from global $_GET and (global $_POST or direct 'php://input').
+	 * @return void
+	 */
+	protected function initParams () {
+		$params = array_merge($this->getGlobals);
+		if (strtoupper($this->serverGlobals['REQUEST_METHOD']) == 'POST') {
+			$postValues = array();
+			if (count($this->postGlobals) > 0) {
+				$postValues = $this->postGlobals;
+			} else {
+				$postValues = $this->initParamsCompletePostData();
+			}
+			$params = array_merge($params, $postValues);
+		}
+		$this->Params = $params;
+	}
+
+	/**
+	 * Read and return direct php post input from 'php://input'.
+	 * @return array
+	 */
+	private function initParamsCompletePostData () {
+		$result = array();
+		$rawPhpInput = file_get_contents('php://input');
+		$decodedJsonResult = MvcCore_Tool::DecodeJson($rawPhpInput);
+		if ($decodedJsonResult->success) {
+			$result = (array) $decodedJsonResult->data;
+		} else {
+			$rows = explode('&', $rawPhpInput);
+			foreach ($rows as $row) {
+				list($key, $value) = explode('=', $row);
+				$result[$key] = $value;
+			}
+		}
+		return $result;
+	}
+
+	/**
+	 * Initialize application root directory.
+	 * @return void
+	 */
+	protected function initAppRoot () {
+		// $appRootRelativePath = mb_substr($this->indexScriptName, 0, strrpos($this->indexScriptName, '/') + 1);
+		// ucfirst - cause IIS has lower case drive name here - different from __DIR__ value
+		$indexFilePath = ucfirst(str_replace('\\', '/', $this->serverGlobals['SCRIPT_FILENAME']));
+		if (strpos(__FILE__, 'phar://') === 0) {
+			$appRootFullPath = 'phar://' . $indexFilePath;
+		} else {
+			$appRootFullPath = substr($indexFilePath, 0, mb_strrpos($indexFilePath, '/'));
+		}
+		$this->AppRoot = str_replace('\\', '/', $appRootFullPath);
+	}
+
+	/**
+	 * Initialize request path.
+	 * @return void
+	 */
+	protected function initPath () {
+		$requestUrl = $this->serverGlobals['REQUEST_URI'];
+		$path = '/' . ltrim(mb_substr($requestUrl, mb_strlen($this->BasePath)), '/');
+		if (mb_strpos($path, '?') !== FALSE) $path = mb_substr($path, 0, mb_strpos($path, '?'));
+		$this->Path = $path;
+	}
+
+	/**
+	 * Initialize url compositions.
+	 * @return void
+	 */
+	protected function initUrlCompositions () {
+		$this->RequestPath = $this->Path . (($this->Query) ? '?' . $this->Query : '') . $this->Fragment;
+		$this->BaseUrl = $this->Protocol . '//' . $this->Host . $this->BasePath;
+		$this->RequestUrl = $this->BaseUrl . $this->Path;
+		$this->FullUrl = $this->RequestUrl . (($this->Query) ? '?' . $this->Query : '');
+	}
+}

@@ -8,85 +8,78 @@
  * the LICENSE.md file that are distributed with this source code.
  *
  * @copyright	Copyright (c) 2016 Tom Flídr (https://github.com/mvccore/mvccore)
- * @license		https://mvccore.github.io/docs/mvccore/2.0.0/LICENCE.md
+ * @license		https://mvccore.github.io/docs/mvccore/3.0.0/LICENCE.md
  */
-	
+
+require_once(__DIR__.'/../MvcCore.php');
+require_once('Request.php');
+require_once('Response.php');
+require_once('View.php');
+
 class MvcCore_Controller
 {
 	/**
-	 * Request properties - parsed uri and query params
-	 *
-	 * @var stdClass
+	 * Request object - parsed uri, query params, app paths...
+	 * @var MvcCore_Request
 	 */
 	protected $request;
+
+	/**
+	 * Response object - headers and rendered body
+	 * @var MvcCore_Response
+	 */
+	protected $response;
 	
 	/**
 	 * Requested controller name - dashed
-	 *
 	 * @var string
 	 */
 	protected $controller = '';
 	
 	/**
 	 * Requested action name - dashed
-	 *
 	 * @var string
 	 */
 	protected $action = '';
 
 	/**
 	 * Boolean about ajax request
-	 *
 	 * @var boolean
 	 */
 	protected $ajax = FALSE;
 	
 	/**
 	 * Class store object for view properties
-	 *
-	 * @var stdClass
+	 * @var MvcCore_View
 	 */
-	protected $view;
+	protected $view = NULL;
 	
 	/**
 	 * Layout name to render html wrapper around rendered view
-	 *
 	 * @var string
 	 */
-	protected $layout = 'front';
+	protected $layout = 'layout';
 
 	/**
 	 * Boolean about disabled or enabled view to render at last
-	 *
 	 * @var boolean
 	 */
 	protected $viewEnabled = TRUE;
 
 	/**
-	 * Boolean about output HTML minification.
-	 * To minify, change this to TRUE and place library into /Libs/Minify/HTML.php
-	 *
-	 * @var boolean
-	 */
-	protected $minifyHtml = FALSE;
-
-	/**
 	 * Path to all static files - css, js, imgs and fonts
-	 *
 	 * @var string
 	 */
 	protected static $staticPath = '/static';
 
 	/**
 	 * Path to temporary directory with generated css and js files
-	 *
 	 * @var string
 	 */
 	protected static $tmpPath = '/Var/Tmp';
 	
 	/**
 	 * All asset mime types possibly called throught Asset action
-	 *
 	 * @var string
 	 */
 	private static $_assetsMimeTypes = array(
@@ -103,15 +96,26 @@ class MvcCore_Controller
 		'ttf'	=> 'font/truetype',
 		'otf'	=> 'font/opentype',
 		'woff'	=> 'application/x-font-woff',
-		'woff2'	=> 'application/x-font-woff',
 	);
 	
-	public function __construct (& $request = NULL) {
-		$this->request = $request;
-		$this->controller = $this->request->params['controller'];
-		$this->action = $this->request->params['action'];
+	/**
+	 * Create new controller instance - always called from MvcCore app instance before controller is dispatched.
+	 * Never used in application controllers.
+	 * @param MvcCore_Request $request 
+	 */
+	public function __construct (MvcCore_Request & $request = NULL, MvcCore_Response & $response = NULL) {
+		$this->request = & $request;
+		$this->response = & $response;
+		$this->controller = $this->request->Params['controller'];
+		$this->action = $this->request->Params['action'];
 		$this->Init();
 	}
+
+	/**
+	 * Application controllers initialization.
+	 * This is best time to initialize language, locale or session.
+	 * @return void
+	 */
 	public function Init () {
 		MvcCore::SessionStart();
 		if (
@@ -121,41 +125,102 @@ class MvcCore_Controller
 			$this->ajax = TRUE;
 			$this->DisableView();
 		}
-		if (get_class($this) == 'MvcCore_Controller') {
+		if (get_class($this) == 'MvcCore_Controller' && $this->action == 'asset') {
 			$this->DisableView();
 		}
 	}
+
+	/**
+	 * Application pre render common action - always used in application controllers.
+	 * This is best time to define any common properties or common view properties.
+	 * @return void
+	 */
 	public function PreDispatch () {
-		if (!$this->ajax) $this->view = new MvcCore_View($this);
-	}
-	public function GetParam ($name = "", $pregReplaceAllowedChars = "a-zA-Z0-9_/\-\.\@") {
-		$result = '';
-		$params = $this->request->params;
-		if (isset($params[$name])) {
-			$rawValue = trim($params[$name]);
-			if (mb_strlen($rawValue) > 0) {
-				if (!$pregReplaceAllowedChars || $pregReplaceAllowedChars == ".*") {
-					$result = $rawValue;
-				} else {
-					$pattern = "#[^" . $pregReplaceAllowedChars . "]#";
-					$result = preg_replace($pattern, "", $rawValue);
-				}
-			}
+		if (!$this->ajax) {
+			$viewClass = MvcCore::GetInstance()->GetViewClass();
+			$this->view = new $viewClass($this);
 		}
-		return $result;
 	}
+
+	/**
+	 * Get param value, filtered for characters defined as second argument to use them in preg_replace().
+	 * Shortcut for $this->request->GetParam();
+	 * @param string $name 
+	 * @param string $pregReplaceAllowedChars 
+	 * @return string
+	 */
+	public function GetParam ($name = "", $pregReplaceAllowedChars = "a-zA-Z0-9_/\-\.\@") {
+		return $this->request->GetParam($name, $pregReplaceAllowedChars);
+	}
+
+	/**
+	 * Get current application request object as reference.
+	 * @return MvcCore_Request
+	 */
 	public function & GetRequest () {
 		return $this->request;
 	}
+
+	/**
+	 * Get current application request object, rarely used.
+	 * @param MvcCore_Request $request 
+	 * @return MvcCore_Controller
+	 */
+	public function SetRequest (MvcCore_Request & $request) {
+		$this->request = $request;
+		return $this;
+	}
+
+	/**
+	 * Return current controller view object if any.
+	 * Before PreDispatch() should be still NULL.
+	 * @return MvcCore_View|NULL
+	 */
 	public function & GetView () {
 		return $this->view;
 	}
+
+	/**
+	 * Set current controller view object, rarely used.
+	 * @param MvcCore_View $view 
+	 * @return MvcCore_Controller
+	 */
+	public function SetView (MvcCore_View & $view) {
+		$this->view = $view;
+		return $this;
+	}
+
+	/**
+	 * Get layout name: 'front' | 'admin' | 'account' ...
+	 * @return string
+	 */
+	public function GetLayout () {
+		return $this->layout;
+	}
+
+	/**
+	 * Set layout name
+	 * @param string $layout 
+	 * @return MvcCore_Controller
+	 */
 	public function SetLayout ($layout = '') {
 		$this->layout = $layout;
+		return $this;
 	}
+
+	/**
+	 * Disable view rendering - always called in text or ajax responses.
+	 * @return void
+	 */
 	public function DisableView () {
 		$this->viewEnabled = FALSE;
 	}
+
+	/**
+	 * Return small assets content with proper headers in single file application mode
+	 * @throws Exception 
+	 * @return void
+	 */
 	public function AssetAction () {
 		$ext = '';
 		$path = $this->GetParam('path');
@@ -164,11 +229,11 @@ class MvcCore_Controller
 			strpos($path, self::$staticPath) !== 0 &&
 			strpos($path, self::$tmpPath) !== 0
 		) {
-			throw new Exception("[MvcCore_Controller] File path: '$path' is not allowed.");
+			throw new Exception("[".__CLASS__."] File path: '$path' is not allowed.", 500);
 		}
-		$path = $this->request->appRoot . $path;
+		$path = $this->request->AppRoot . $path;
 		if (!file_exists($path)) {
-			throw new Exception("[MvcCore_Controller] File not found: '$path'.");
+			throw new Exception("[".__CLASS__."] File not found: '$path'.", 404);
 		}
 		$lastDotPos = strrpos($path, '.');
 		if ($lastDotPos !== FALSE) {
@@ -178,96 +243,139 @@ class MvcCore_Controller
 			header('Content-Type: ' . self::$_assetsMimeTypes[$ext]);
 		}
 		readfile($path);
+		$this->Terminate();
 	}
+
+	/**
+	 * Render and send prepared controller view, all sub views and controller layout view.
+	 * @param mixed $controllerName 
+	 * @param mixed $actionName 
+	 * @return void
+	 */
 	public function Render ($controllerName = '', $actionName = '') {
 		if ($this->viewEnabled) {
 			if (!$controllerName)	$controllerName	= $this->request->params['controller'];
 			if (!$actionName)		$actionName		= $this->request->params['action'];
 			// complete paths
-			$controllerPath = str_replace('_', DIRECTORY_SEPARATOR, $controllerName);
-			$viewScriptPath = implode(DIRECTORY_SEPARATOR, array(
+			$controllerPath = str_replace('_', '/', $controllerName);
+			$viewScriptPath = implode('/', array(
 				$controllerPath, $actionName
 			));
 			// render content string
 			$actionResult = $this->view->RenderScript($viewScriptPath);
 			// create parent layout view, set up and render to outputResult
-			$layout = new MvcCore_View($this);
+			$viewClass = MvcCore::GetInstance()->GetViewClass();
+			/** @var $layout MvcCore_View */
+			$layout = new $viewClass($this);
 			$layout->SetUp($this->view);
-			$outputResult = $layout->RenderLayout($this->layout, $actionResult);
+			$outputResult = $layout->RenderLayoutAndContent($this->layout, $actionResult);
 			unset($layout, $this->view);
-			// minify if class exists
-			if ($this->minifyHtml && class_exists('Minify_HTML')) $outputResult = Minify_HTML::minify($outputResult);
 			// send response and exit
 			$this->HtmlResponse($outputResult);
+			$this->DisableView(); // disable to not render it again
 		}
 	}
+
+	/**
+	 * Send rendered html output to user.
+	 * @param mixed $output 
+	 * @return void
+	 */
 	public function HtmlResponse ($output = "") {
-		header('Content-Type: text/html; charset=utf-8');
-		if (class_exists('Debug') && Debug::$productionMode) header('Content-Length: ' . strlen($output));
-		self::addTimeAndMemoryHeader();
-		echo $output;
-		$this->Terminate();
+		$contentTypeHeaderValue = strpos(MvcCore_View::$Doctype, MvcCore_View::DOCTYPE_XHTML) !== FALSE ? 'application/xhtml+xml' : 'text/html' ;
+		$this->response
+			->SetHeader('Content-Type', $contentTypeHeaderValue . '; charset=utf-8')
+			->SetBody($output);
 	}
+
+	/**
+	 * Send any php value serialized in json to user.
+	 * @param mixed $data 
+	 * @return void
+	 */
 	public function JsonResponse ($data = array()) {
 		if (!defined('JSON_UNESCAPED_SLASHES')) define('JSON_UNESCAPED_SLASHES', 64);
 		if (!defined('JSON_UNESCAPED_UNICODE')) define('JSON_UNESCAPED_UNICODE', 256);
 		$output = json_encode($data, JSON_HEX_TAG | JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE | JSON_HEX_APOS | JSON_HEX_QUOT | JSON_HEX_AMP);
-		header('Content-Type: text/javascript; charset=utf-8');
-		if (class_exists('Debug') && Debug::$productionMode) header('Content-Length: ' . strlen($output));
-		self::addTimeAndMemoryHeader();
-		echo $output;
-		$this->Terminate();
+		$this->response
+			->SetHeader('Content-Type', 'text/javascript; charset=utf-8')
+			->SetHeader('Content-Length', strlen($output))
+			->SetBody($output);
 	}
-	public function Url ($controllerAction = '', $params = array()) {
-		return MvcCore::GetInstance()->Url($controllerAction, $params);
+
+	/**
+	 * Generates url by:
+	 * - Controller::Action name and params array
+	 *   (for routes configuration when routes array has keys with Controller::Action strings
+	 *   and routes has not controller name and action name defined inside)
+	 * - route name and params array
+	 *	 (route name is key in routes configuration array, should be any string
+	 *	 but routes must have information about controller name and action name inside)
+	 * Result address should have two forms:
+	 * - nice rewrited url by routes configuration
+	 *   (for apps with .htaccess supporting url_rewrite and when first param is key in routes configuration array)
+	 * - for all other cases is url form: index.php?controller=ctrlName&action=actionName
+	 *	 (when first param is not founded in routes configuration array)
+	 * @param string $controllerActionOrRouteName	Should be Controller::Action combination or just any route name as custom specific string
+	 * @param array  $params						optional
+	 * @return string
+	 */
+	public function Url ($controllerActionOrRouteName = '', $params = array()) {
+		return MvcCore_Router::GetInstance()->Url($controllerActionOrRouteName, $params);
 	}
+
+	/**
+	 * Return asset path or single file mode url
+	 * @param string $path 
+	 * @return string
+	 */
 	public function AssetUrl ($path = '') {
 		return MvcCore::GetInstance()->Url('Controller::Asset', array('path' => $path));
 	}
-	protected static function addTimeAndMemoryHeader () {
-		$time = number_format((microtime(TRUE) - MvcCore::GetMicrotime()) * 1000, 1, '.', ' ');
-		$ram = function_exists('memory_get_peak_usage') ? number_format(memory_get_peak_usage() / 1000000, 2, '.', ' ') : 'n/a';
-		header("X-MvcCore-Cpu-Ram: $time ms, $ram MB");
-	}
-	public static function Redirect ($location = '', $code = 303) {
-		$codes = array(
-			301	=> 'Moved Permanently',
-			303	=> 'See Other',
-			404	=> 'Not Found',
+
+	/**
+	 * Render controller action for error or error plain text response.
+	 * @param string $exceptionMessage
+	 * @return void
+	 */
+	public function RenderError ($exceptionMessage = '') {
+		if (MvcCore::GetInstance()->IsErrorDispatched()) return;
+		throw new ErrorException(
+			$exceptionMessage ? $exceptionMessage : 
+			"Server error: \n'" . $this->request->FullUrl . "'",
+			500
 		);
-		$status = isset($codes[$code]) ? ' ' . $codes[$code] : '';
-		header("HTTP/1.0 $code $status");
-		header("Location: $location");
-		MvcCore::Terminate();
 	}
+
+	/**
+	 * Render not found controller action or not found plain text response.
+	 * @return void
+	 */
+	public function RenderNotFound () {
+		if (MvcCore::GetInstance()->IsNotFoundDispatched()) return;
+		throw new ErrorException(
+			"Page not found: \n'" . $this->request->FullUrl . "'", 404
+		);
+	}
+
+	/**
+	 * Terminate request. Write session, send headers if possible and echo response body.
+	 * @return void
+	 */
 	public function Terminate () {
-		MvcCore::Terminate();
+		MvcCore::GetInstance()->Terminate();
 	}
-	protected function redirectToNotFound () {
-		if ($this->checkIfDefaultNotFoundControllerActionExists()) {
-			self::Redirect(
-				$this->url('Default::NotFound'), 404
-			);
-		} else {
-			$this->renderNotFoundPlainText();
-		}
-	}
-	protected function renderNotFound () {
-		if ($this->checkIfDefaultNotFoundControllerActionExists()) {
-			if (!($this->view instanceof MvcCore_View)) $this->view = new MvcCore_View($this);
-			$this->Render('default', 'not-found');
-		} else {
-			$this->renderNotFoundPlainText();
-		}
-	}
-	protected function checkIfDefaultNotFoundControllerActionExists () {
-		$controllerName = 'App_Controllers_Default';
-		return (bool) class_exists($controllerName) && method_exists($controllerName, 'NotFoundAction');
-	}
-	protected function renderNotFoundPlainText () {
-		header('HTTP/1.0 404 Not Found');
-		header('Content-Type: text/plain');
-		echo 'Error 404 – Page Not Found.';
-		$this->Terminate();
+
+	/**
+	 * Redirect user browser to another location.
+	 * @param string $location 
+	 * @param int    $code 
+	 * @return void
+	 */
+	public static function Redirect ($location = '', $code = MvcCore_Response::SEE_OTHER) {
+		MvcCore::GetInstance()->GetResponse()
+			->SetCode($code)
+			->SetHeader('Location', $location);
+		MvcCore::GetInstance()->Terminate();
 	}
 }

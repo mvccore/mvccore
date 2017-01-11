@@ -13,9 +13,17 @@ PHP MVC framework to develop and pack projects (partialy or completely) into sup
 	- result code regexp and string replacements
 	- PHTML templates minification
 	- PHP scripts minification
+	- automatic detection for PHP scripts order (PHP packing)
+	- posibility to define any original PHP filesystem function to wrap/replace (PHP packing)
+	- 4 modes for orginaly replaced PHP filesystem functions behaviour (PHP packing)
+		- strict package
+		- strict hdd
+		- preserve package
+		- preserve hdd
 - minimization for PHP/HTML/CSS/JS by third party tools supported
 - url rewrite with .htaccess or web.config
-- posibility to use any third party library or framework in Libs folder
+- desktop and mobile website versions (multilanguge apps also possible)
+- posibility to use any third party library or framework in Libs folder through autoloader or by composer
 
 ## Usage
 - check out examples:
