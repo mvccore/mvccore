@@ -118,12 +118,14 @@ class MvcCore_Session extends ArrayObject {
 	 * @return void
 	 */
 	public static function Close () {
-		foreach (static::$instances as & $instance) {
-			if (count($instance) === 0) $instance->Destroy();
-		}
-		$metaKey = static::SESSION_METADATA_KEY;
-		$_SESSION[$metaKey] = serialize(static::$meta);
-		@session_write_close();
+		register_shutdown_function(function () {
+			foreach (static::$instances as & $instance) {
+				if (count($instance) === 0) $instance->Destroy();
+			}
+			$metaKey = static::SESSION_METADATA_KEY;
+			$_SESSION[$metaKey] = serialize(static::$meta);
+			@session_write_close();
+		});
 	}
 
 	/**

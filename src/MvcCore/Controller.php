@@ -108,7 +108,6 @@ class MvcCore_Controller
 		$this->response = & $response;
 		$this->controller = $this->request->Params['controller'];
 		$this->action = $this->request->Params['action'];
-		$this->Init();
 	}
 
 	/**

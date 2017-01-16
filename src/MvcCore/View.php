@@ -120,6 +120,19 @@ class MvcCore_View
 	}
 
 	/**
+	 * Add view helpers class base name(s),
+	 * example: MvcCore_View::AddHelpersClassBases('MvcCoreExt_ViewHelpers_Assets', 'AnyOther_Place', '...');
+	 * @param string $helper,... View helper class base name(s)
+	 * @return void
+	 */
+	public static function AddHelpersClassBases (/*...$helper*/) {
+		$args = func_get_args();
+		foreach ($args as $arg) {
+			static::$HelpersClassBases[] = rtrim($arg, '_') . '_';
+		}
+	}
+
+	/**
 	 * Get view script full path
 	 * @param string $typePath 
 	 * @param string $corectedRelativePath 

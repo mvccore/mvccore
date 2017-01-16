@@ -16,6 +16,81 @@ require_once('Config.php');
 abstract class MvcCore_Model
 {
 	/**
+	 * PDO connection arguments.
+	 * 
+	 * If you need to reconfigure connection string for any other special
+	 * PDO database implementation or you specific needs, patch this array
+	 * in extended application base model class in base __construct method by:
+	 *	 static::$connectionArguments = array_merge(static::$connectionArguments, array(...));
+	 * or by:
+	 *	 static::$connectionArguments['driverName]['dsn'] = '...';
+	 * 
+	 * Every key in this field shoud be driver name, you can use:
+	 * - 4D, cubrid, firebird, ibm, informix, mysql, oci, pgsql, sqlite, sqlsrv (mssql), sysbase, dblib
+	 *	 (cubrid, oci, pgsql, sysbase and dblib shoud be used with defaults)
+	 * 
+	 * Every value in this field shoud be defined as:
+	 * - connection query - as first PDO contructor argument with
+	 *						database config replacements.
+	 * - required to use database credentials for connecting
+	 * - any additional arguments array
+	 * @var array
+	 */
+	protected static $connectionArguments = array(
+		'4D'			=> array(
+			'dsn'		=> '{driver}:host={host};charset=UTF-8',
+			'auth'		=> TRUE,
+			'fileDb'	=> FALSE,
+			'options'	=> array(),
+		),
+		'firebird'		=> array(
+			'dsn'		=> '{driver}:host={host};dbname={dbname};charset=UTF8',
+			'auth'		=> TRUE,
+			'fileDb'	=> TRUE,
+			'options'	=> array()
+		),
+		'ibm'			=> array(
+			'dsn'		=> 'ibm:DRIVER={IBM DB2 ODBC DRIVER};DATABASE={dbname};HOSTNAME={host};PORT={port};PROTOCOL=TCPIP;',
+			'auth'		=> TRUE,
+			'fileDb'	=> FALSE,
+			'options'	=> array(),
+		),
+		'informix'		=> array(
+			'dsn'		=> '{driver}:host={host};service={service};database={dbname};server={server};protocol={protocol};EnableScrollableCursors=1',
+			'auth'		=> TRUE,
+			'fileDb'	=> FALSE,
+			'options'	=> array(),
+		),
+		'mysql'			=> array(
+			'dsn'		=> '{driver}:host={host};dbname={dbname}',
+			'auth'		=> TRUE,
+			'fileDb'	=> FALSE,
+			'options'	=> array(
+				'PDO::MYSQL_ATTR_MULTI_STATEMENTS'	=> TRUE,
+				'PDO::MYSQL_ATTR_INIT_COMMAND'		=> "SET NAMES 'UTF8'",
+			),
+		),
+		'sqlite'		=> array(
+			'dsn'		=> '{driver}:{dbname}',
+			'auth'		=> FALSE,
+			'fileDb'	=> TRUE,
+			'options'	=> array(),
+		),
+		'sqlsrv'		=> array(
+			'dsn'		=> '{driver}:Server={host};Database={dbname}',
+			'auth'		=> TRUE,
+			'fileDb'	=> FALSE,
+			'options'	=> array(),
+		),
+		'default'		=> array(
+			'dsn'		=> '{driver}:host={host};dbname={dbname}',
+			'auth'		=> TRUE,
+			'fileDb'	=> FALSE,
+			'options'	=> array(),
+		),
+	);
+
+	/**
 	 * Default database connection index, in config ini defined in section db.defaultDbIndex = 0.
 	 * In extended classes - use this for connection index of current model if different.
 	 * @var int
@@ -166,22 +241,39 @@ abstract class MvcCore_Model
 
 	/**
 	 * Returns database connection by connection index (cached by local store)
-	 * @param mixed $connectionIndex 
+	 * or create new connection of no connection cached.
+	 * @param int $connectionIndex 
 	 * @return PDO
 	 */
 	protected static function getDb ($connectionIndex = -1) {
 		if ($connectionIndex == -1) $connectionIndex = static::$connectionIndex;
 		if (!isset(static::$connections[$connectionIndex])) {
+			// get system config 'db' data 
+			// and get predefined constructor arguments by driver value from config
 			$cfg = static::getCfg($connectionIndex);
+			$conArgs = (object) self::$connectionArguments[isset(self::$connectionArguments[$cfg->driver]) ? $cfg->driver:'default'];
 			$connection = NULL;
-			if ($cfg->driver == 'mssql') {
-				$connection = new PDO("sqlsrv:Server={$cfg->server};Database={$cfg->dbname}", $cfg->username, $cfg->password);
-			} else if ($cfg->driver == 'mysql') {
-				$options = array();
-				if (defined('PDO::MYSQL_ATTR_MULTI_STATEMENTS')) $options[PDO::MYSQL_ATTR_MULTI_STATEMENTS] = TRUE;
-				if (defined('PDO::MYSQL_ATTR_INIT_COMMAND')) $options[PDO::MYSQL_ATTR_INIT_COMMAND] = "SET NAMES 'UTF8'";
-				$connection = new PDO("mysql:host={$cfg->server};dbname={$cfg->dbname}", $cfg->username, $cfg->password, $options);
+			// If database is filesystem based, complete app root and extend
+			// relative path in $cfg->dbname to absolute path
+			if ($conArgs->fileDb) {
+				$appRoot = MvcCore::GetRequest()->appRoot;
+				if (strpos($appRoot, 'phar://') !== FALSE) {
+					$lastSlashPos = strrpos($appRoot, '/');
+					$appRoot = substr($appRoot, 7, $lastSlashPos - 7);
+				}
+				$cfg->dbname = realpath($appRoot . $cfg->dbname);
 			}
+			// Process connection string (dsn) with config replacements
+			$dsn = $conArgs->dsn;
+			foreach ($cfg as $key => $value) $dsn = str_replace('{'.$key.'}', $value, $dsn);
+			// If database required username and password credentials,
+			// connect with wull arguments count or only with one (sqllite only)
+			if ($conArgs->auth) {
+				$connection = new PDO($dsn, $cfg->username, $cfg->password, $conArgs->options);
+			} else {
+				$connection = new PDO($dsn);
+			}
+			// store new connection under config index for all other model classes
 			static::$connections[$connectionIndex] = $connection;
         }
 		return static::$connections[$connectionIndex];

@@ -112,8 +112,7 @@ class MvcCore
 	protected $router = null;
 	
 	/**
-	 * Predispatch request custom closure calls.
-	 * Closure functions has to be void.
+	 * Pre route custom closure calls.
 	 * Params in closure function has to be:
 	 *	- reference for request
 	 *	- reference for response
@@ -121,15 +120,35 @@ class MvcCore
 	 *	 MvcCore::AddPreRouteHandler(function (MvcCore_Request & $request, MvcCore_Response & $response) {
 	 *	 	$request->customVar = 'custom_value';
 	 *	 });
+	 * @var callable[]
+	 */
+	protected $preRouteHandlers = array();
+
+	/**
+	 * Pre dispatch custom closure calls.
+	 * Params in closure function has to be:
+	 *	- reference for request
+	 *	- reference for response
+	 * @example
 	 *	 MvcCore::AddPreDispatchHandler(function (MvcCore_Request & $request, MvcCore_Response & $response) {
 	 *	 	$request->customVar = 'custom_value';
 	 *	 });
+	 * @var callable[]
+	 */
+	protected $preDispatchHandlers = array();
+
+	/**
+	 * Post dispatch custom closure calls.
+	 * Params in closure function has to be:
+	 *	- reference for request
+	 *	- reference for response
+	 * @example
 	 *	 MvcCore::AddPostDispatchHandler(function (MvcCore_Request & $request, MvcCore_Response & $response) {
 	 *	 	$response->Output = 'custom_value';
 	 *	 });
-	 * @var array[]
+	 * @var callable[]
 	 */
-	protected $preRequestHandlers = array(array(), array(), array());
+	protected $postDispatchHandlers = array();
 
 	/**
 	 * Class to load and parse system config.
@@ -261,7 +280,7 @@ class MvcCore
 	 * @return void
 	 */
 	public static function AddPreRouteHandler (callable $handler) {
-		static::GetInstance()->preRequestHandlers[0][] = $handler;
+		static::GetInstance()->preRouteHandlers[] = $handler;
 	}
 
 	/**
@@ -274,7 +293,7 @@ class MvcCore
 	 * @return void
 	 */
 	public static function AddPreDispatchHandler (callable $handler) {
-		static::GetInstance()->preRequestHandlers[1][] = $handler;
+		static::GetInstance()->preDispatchHandlers[] = $handler;
 	}
 
 	/**
@@ -287,7 +306,7 @@ class MvcCore
 	 * @return void
 	 */
 	public static function AddPostDispatchHandler (callable $handler) {
-		static::GetInstance()->preRequestHandlers[2][] = $handler;
+		static::GetInstance()->postDispatchHandlers[] = $handler;
 	}
 
 	/**
@@ -661,11 +680,11 @@ class MvcCore
 		$this->response = MvcCore_Response::GetInstance();
 		$debugClass = $this->debugClass;
 		$debugClass::Init();
-		if (!$this->processCustomHandlers(0))								return $this->Terminate();
+		if (!$this->processCustomHandlers($this->preRouteHandlers))			return $this->Terminate();
 		if (!$this->routeRequest())											return $this->Terminate();
-		if (!$this->processCustomHandlers(1))								return $this->Terminate();
+		if (!$this->processCustomHandlers($this->preDispatchHandlers))		return $this->Terminate();
 		if (!$this->DispatchMvcRequest($this->router->GetCurrentRoute()))	return $this->Terminate();
-		if (!$this->processCustomHandlers(2))								return $this->Terminate();
+		if (!$this->processCustomHandlers($this->postDispatchHandlers))		return $this->Terminate();
 		return $this->Terminate();
 	}
 
@@ -688,14 +707,13 @@ class MvcCore
 
 	/**
 	 * Process preroute, prerequest and postdispatch handlers queue by queues index
-	 * @param int $index
+	 * @param callable[] $handlers
 	 * @return bool
 	 */
-	protected function processCustomHandlers ($index = 0) {
+	protected function processCustomHandlers (& $handlers = array()) {
 		if (!$this->IsAppRequest()) return TRUE;
 		$result = TRUE;
-		$handlerQueue = $this->preRequestHandlers[$index];
-		foreach ($handlerQueue as $handler) {
+		foreach ($handlers as $handler) {
 			if (is_callable($handler)) {
 				try {
 					$handler($this->request, $this->response);
@@ -766,6 +784,7 @@ class MvcCore
 			$this->request->Params['controller'], $this->request->Params['action']
 		);
 		try {
+			$this->controller->Init();
 			$this->controller->PreDispatch();
 			if (method_exists($this->controller, $actionName)) $this->controller->$actionName();
 			$this->controller->Render($controllerNameDashed, $actionNameDashed);

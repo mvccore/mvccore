@@ -8,13 +8,18 @@
  * the LICENSE.md file that are distributed with this source code.
  *
  * @copyright	Copyright (c) 2016 Tom Flídr (https://github.com/mvccore/mvccore)
- * @license		https://mvccore.github.io/docs/mvccore/2.0.0/LICENCE.md
+ * @license		https://mvccore.github.io/docs/mvccore/3.0.0/LICENCE.md
  */
 
 if (version_compare(PHP_VERSION, '5.3.0', "<")) {
 	$m = "Startup script requires at least PHP version 5.3.0 your PHP version is: " . PHP_VERSION;
 	die($m);
 }
+
+/*register_shutdown_function(function () {
+	$e = error_get_last();
+	if (!is_null($e)) var_dump($e);
+});*/
 
 call_user_func(function(){ 
 	
@@ -51,7 +56,10 @@ call_user_func(function(){
 				break;
 			}
 		}
-		if ($status < 2) throw new Exception('[startup.php] Class "' . $className . '" not found.');
+		if ($status < 2) {
+			//var_dump(debug_backtrace());
+			throw new Exception('[startup.php] Class "' . $className . '" not found.');
+		}
 	};
 	
 	$autoload = function ($className) use ($includePaths, $throwExceptionIfClassIsGoingToUse) {
@@ -68,7 +76,7 @@ call_user_func(function(){
 		}
 		/*
 		echo '<pre>';
-		print_r(array($fileName, $className, $includePath, $includePaths, '/'));
+		print_r(array($fileName, $className, $includePath, $includePaths));
 		echo '</pre>';
 		*/
 		if ($includePath) {

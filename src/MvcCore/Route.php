@@ -11,44 +11,42 @@
  * @license		https://mvccore.github.io/docs/mvccore/3.0.0/LICENCE.md
  */
 
-class MvcCore_Route
-{
+class MvcCore_Route {
     /**
-     * Route name, your favourite word or pascal case combination of Controller::Action
-	 * 
+     * Route name, your custom keyword/term 
+	 * or pascal case combination of Controller::Action.
      * @var string
      */
     public $Name		= '';
-
 	/**
-	 * Controller name in pascal case
+	 * Controller name in pascal case.
 	 * @var string
 	 */
 	public $Controller	= '';
-
 	/**
-	 * Action name in pascal case
+	 * Action name in pascal case.
 	 * @var string
 	 */
 	public $Action		= '';
-
 	/**
-	 * Route preg_replace pattern in classic form: "#^/url\-begin/([^/]*)/([^/]*)/(.*)#"
+	 * Route preg_match pattern in classic PHP form:
+	 * "#^/url\-begin/([^/]*)/([^/]*)/(.*)#".
 	 * @var string
 	 */
     public $Pattern		= '';
-
 	/**
-	 * Route reverse address form from preg_replace pattern in form: "/url-begin/{%first}/{%second}/{%third}"
+	 * Route reverse address form from preg_replace pattern 
+	 * in form: "/url-begin/{%first}/{%second}/{%third}".
 	 * @var string
 	 */
 	public $Reverse		= '';
-
 	/**
-	 * Route params with default values in form: array('first' => 1, 'second' => 2, 'third' => 3)
+	 * Route params with default values in form:
+	 * array('first' => 1, 'second' => 2, 'third' => 3).
 	 * @var array
 	 */
 	public $Params		= array();
+
 
 	/**
 	 * Get new instance by array or stdClass, if created, return it
@@ -62,6 +60,7 @@ class MvcCore_Route
 			return new static((array) $object);
 		}
 	}
+
 
 	/**
 	 * Create new route
@@ -94,5 +93,64 @@ class MvcCore_Route
 		$this->Pattern = $pattern;
 		$this->Reverse = $reverse ? $reverse : trim($pattern, '#^$');
 		$this->Params = $params;
+	}
+
+	/**
+	 * Set route name, your custom keyword/term
+	 * or pascal case combination of Controller::Action
+	 * @param string $name 
+	 * @return MvcCore_Route
+	 */
+	public function SetName ($name) {
+		$this->Name = $name;
+		return $this;
+	}
+	/**
+	 * Set controller name in pascal case.
+	 * @param string $controller 
+	 * @return MvcCore_Route
+	 */
+	public function SetController ($controller) {
+		$this->Controller = $controller;
+		return $this;
+	}
+	/**
+	 * Set action name in pascal case.
+	 * @param string $action 
+	 * @return MvcCore_Route
+	 */
+	public function SetAction ($action) {
+		$this->Action = $action;
+		return $this;
+	}
+	/**
+	 * Set route preg_match pattern in classic PHP form:
+	 * "#^/url\-begin/([^/]*)/([^/]*)/(.*)#".
+	 * @param string $pattern 
+	 * @return MvcCore_Route
+	 */
+	public function SetPattern ($pattern) {
+		$this->Pattern = $pattern;
+		return $this;
+	}
+	/**
+	 * Set route reverse address form from preg_replace pattern
+	 * in form: "/url-begin/{%first}/{%second}/{%third}".
+	 * @param string $reverse 
+	 * @return MvcCore_Route
+	 */
+	public function SetReverse ($reverse) {
+		$this->Reverse = $reverse;
+		return $this;
+	}
+	/**
+	 * Set route params with default values in form:
+	 * array('first' => 1, 'second' => 2, 'third' => 3).
+	 * @param array $params 
+	 * @return MvcCore_Route
+	 */
+	public function SetParams ($params = array()) {
+		$this->Params = $params;
+		return $this;
 	}
 }
