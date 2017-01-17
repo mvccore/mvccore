@@ -46,6 +46,7 @@ call_user_func(function(){
 	$throwExceptionIfClassIsGoingToUse = function ($className) {
 		$status = 0;
 		$backTraceLog = debug_backtrace();
+		$autoloadsCount = count(spl_autoload_functions());
 		foreach ($backTraceLog as $backTraceInfo) {
 			if ($status === 0 && $backTraceInfo['function'] == 'spl_autoload_call') {
 				$status = 1;
@@ -56,7 +57,7 @@ call_user_func(function(){
 				break;
 			}
 		}
-		if ($status < 2) {
+		if ($status < 2 && $autoloadsCount == 1) {
 			//var_dump(debug_backtrace());
 			throw new Exception('[startup.php] Class "' . $className . '" not found.');
 		}
