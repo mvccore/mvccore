@@ -21,6 +21,25 @@ require_once('MvcCore/Debug.php');
 class MvcCore
 {
 	/**
+	 * MvcCore core elements version:
+	 *   startup.php
+	 *   MvcCore
+	 *   MvcCore_Config
+	 *   MvcCore_Controller
+	 *   MvcCore_Debug
+	 *   MvcCore_Model
+	 *   MvcCore_Request
+	 *   MvcCore_Response
+	 *   MvcCore_Route
+	 *   MvcCore_Router
+	 *   MvcCore_Session
+	 *   MvcCore_Tool
+	 *   MvcCore_View
+	 * Comparation by PHP function version_compare();
+	 * @see http://php.net/manual/en/function.version-compare.php
+	 */
+	const VERSION = '3.0.2';
+	/**
 	 * MvcCore application mode describing that the application is compiled in one big php file.
 	 * In PHP app mode should be packed php files or any asset files - phtml templates, ini files 
 	 * or any static files. Unknown asset files or binary files are included as binary or base64 string.
