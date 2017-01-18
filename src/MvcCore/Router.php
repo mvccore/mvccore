@@ -53,7 +53,7 @@ class MvcCore_Router
 	 * @param array $routes 
 	 * @return MvcCore_Router
 	 */
-	public static function & GetInstance (array & $routes = array()) {
+	public static function & GetInstance (array $routes = array()) {
 		if (!self::$instance) {
 			$routerClass = MvcCore::GetInstance()->GetRouterClass();
 			self::$instance = new $routerClass($routes);
@@ -207,6 +207,7 @@ class MvcCore_Router
 	 * @return MvcCore_Route
 	 */
 	public function & Route (MvcCore_Request & $request) {
+		//var_dump($this->routes);
 		$this->request = $request;
 		$chars = "a-zA-Z0-9\-_/";
 		$controllerName = $request->GetParam('controller', $chars);
@@ -276,7 +277,7 @@ class MvcCore_Router
 			list($contollerPascalCase, $actionPascalCase) = explode('::', $controllerActionOrRouteName);
 			$controllerDashed = MvcCore_Tool::GetDashedFromPascalCase($contollerPascalCase);
 			$actionDashed = MvcCore_Tool::GetDashedFromPascalCase($actionPascalCase);
-			$result = $this->request->ScriptName . "?controller=$controllerDashed&action=$actionDashed";
+			$result = $this->request->BasePath . $this->request->ScriptName . "?controller=$controllerDashed&action=$actionDashed";
 			if ($params) {
 				foreach ($params as $key => $value) {
 					$subResult = '';
