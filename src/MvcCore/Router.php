@@ -66,11 +66,8 @@ class MvcCore_Router
      * @param array $routes 
      */
     public function __construct (array & $routes = array()) {
-		if ($routes) {
-			$this->SetRoutes($routes);
-		}
-		$appCompiled = MvcCore::GetInstance()->GetCompiled();
-		if (substr($appCompiled, 0, 3) == 'PHP' || $appCompiled == 'SFU') {
+		if ($routes) $this->SetRoutes($routes);
+		if (MvcCore::GetInstance()->GetCompiled()) {
 			$this->AddRoute(array(
 				'name'			=> 'Controller::Asset',
 				'pattern'		=> "#^/((static|Var/Tmp)+(.*))#",
@@ -210,7 +207,6 @@ class MvcCore_Router
 	 * @return MvcCore_Route
 	 */
 	public function & Route (MvcCore_Request & $request) {
-		//var_dump($this->routes);
 		$this->request = $request;
 		$chars = "a-zA-Z0-9\-_/";
 		$controllerName = $request->GetParam('controller', $chars);
