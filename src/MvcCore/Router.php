@@ -67,14 +67,6 @@ class MvcCore_Router
      */
     public function __construct (array & $routes = array()) {
 		if ($routes) $this->SetRoutes($routes);
-		if (MvcCore::GetInstance()->GetCompiled()) {
-			$this->AddRoute(array(
-				'name'			=> 'Controller::Asset',
-				'pattern'		=> "#^/((static|Var/Tmp)+(.*))#",
-				'reverse'		=> '{%path}',
-				'params'		=> array('path' => ''),
-			));
-		}
 	}
 
     /**
@@ -224,7 +216,7 @@ class MvcCore_Router
 				$requestParams[$mvcProperty] = MvcCore_Tool::GetDashedFromPascalCase($mvcValue);
 			}
 		}
-		if (!$this->currentRoute && $this->routeToDefaultIfNotMatch) {
+		if (!$this->currentRoute && ($this->request->Path == '/' || $this->routeToDefaultIfNotMatch)) {
 			$this->currentRoute = MvcCore_Route::GetInstance(array(
 				'name'			=> "$defaultCtrl::$defaultAction",
 				'controller'	=> $defaultCtrl,
@@ -289,7 +281,9 @@ class MvcCore_Router
 		} else {
 			$route = $this->routes[$controllerActionOrRouteName];
 			$result = $this->request->BasePath . rtrim($route->Reverse, '?&');
-			$allParams = array_merge($route->Params, $params);
+			$allParams = array_merge(
+				is_array($route->Params) ? $route->Params : array(), $params
+			);
 			foreach ($allParams as $key => $value) {
 				$paramKeyReplacement = "{%$key}";
 				if (mb_strpos($result, $paramKeyReplacement) === FALSE) {
