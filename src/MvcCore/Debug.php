@@ -186,7 +186,10 @@ class MvcCore_Debug
 	 * @return float		 elapsed seconds
 	 */
     public static function Timer ($name = NULL) {
-		return call_user_func(static::$handlers->timer, $name);
+		return static::BarDump(
+			call_user_func(static::$handlers->timer, $name),
+			$name
+		);
 	}
 
 	/**
@@ -297,12 +300,10 @@ class MvcCore_Debug
 	 */
 	protected static function timerHandler ($name = NULL) {
 		$now = microtime(TRUE);
-		if (is_null($name)) {
-			return $now - MvcCore::GetInstance()->GetMicrotime();
-		} else if (!isset(static::$timers[$name])) {
-			static::$timers[$name] = $now;
-		}
-		return $now - static::$timers[$name];
+		if (is_null($name)) return $now - MvcCore::GetInstance()->GetMicrotime();
+		$difference = isset(static::$timers[$name]) ? $now - static::$timers[$name] : 0;
+		static::$timers[$name] = $now;
+		return $difference;
 	}
 
 	/**
