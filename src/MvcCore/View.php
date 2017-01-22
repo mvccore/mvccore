@@ -227,7 +227,7 @@ class MvcCore_View
 		$relativePath = $this->_correctRelativePath($this->Controller->GetRequest()->AppRoot, $typePath, $relativePath);
 		$viewScriptFullPath = static::GetViewScriptFullPath($typePath, $relativePath);
 		if (!file_exists($viewScriptFullPath)) {
-			throw new Exception("[MvcCore_View] Template not found in path: '$viewScriptFullPath'.");
+			throw new Exception('['.__CLASS__."] Template not found in path: '$viewScriptFullPath'.");
 		}
 		$this->_renderedFullPaths[] = $viewScriptFullPath;
 		ob_start();
@@ -255,8 +255,8 @@ class MvcCore_View
 
 	/**
 	 * Generates url by:
-	 * - Controller::Action name and params array
-	 *   (for routes configuration when routes array has keys with Controller::Action strings
+	 * - 'Controller:Action' name and params array
+	 *   (for routes configuration when routes array has keys with 'Controller:Action' strings
 	 *   and routes has not controller name and action name defined inside)
 	 * - route name and params array
 	 *	 (route name is key in routes configuration array, should be any string
@@ -266,11 +266,11 @@ class MvcCore_View
 	 *   (for apps with .htaccess supporting url_rewrite and when first param is key in routes configuration array)
 	 * - for all other cases is url form: index.php?controller=ctrlName&action=actionName
 	 *	 (when first param is not founded in routes configuration array)
-	 * @param string $controllerActionOrRouteName	Should be Controller::Action combination or just any route name as custom specific string
+	 * @param string $controllerActionOrRouteName	Should be 'Controller:Action' combination or just any route name as custom specific string
 	 * @param array  $params						optional
 	 * @return string
 	 */
-	public function Url ($controllerActionOrRouteName = '', $params = array()) {
+	public function Url ($controllerActionOrRouteName = 'Default:Default', $params = array()) {
 		return MvcCore_Router::GetInstance()->Url($controllerActionOrRouteName, $params);
 	}
 
@@ -291,7 +291,7 @@ class MvcCore_View
 	 */
 	public function __set ($name, $value) {
 		if (isset(static::$originalyDeclaredProperties[$name])) {
-			throw new Exception("[MvcCore_View] It's not possible to change property: '$name' originaly declared in class MvcCore_View.");
+			throw new Exception('['.__CLASS__."] It's not possible to change property: '$name' originaly declared in class ".__CLASS__.'.');
 		}
 		$this->$name = $value;
 	}
