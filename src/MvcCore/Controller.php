@@ -304,8 +304,8 @@ class MvcCore_Controller
 
 	/**
 	 * Generates url by:
-	 * - Controller::Action name and params array
-	 *   (for routes configuration when routes array has keys with Controller::Action strings
+	 * - 'Controller:Action' name and params array
+	 *   (for routes configuration when routes array has keys with 'Controller:Action' strings
 	 *   and routes has not controller name and action name defined inside)
 	 * - route name and params array
 	 *	 (route name is key in routes configuration array, should be any string
@@ -315,11 +315,11 @@ class MvcCore_Controller
 	 *   (for apps with .htaccess supporting url_rewrite and when first param is key in routes configuration array)
 	 * - for all other cases is url form: index.php?controller=ctrlName&action=actionName
 	 *	 (when first param is not founded in routes configuration array)
-	 * @param string $controllerActionOrRouteName	Should be Controller::Action combination or just any route name as custom specific string
+	 * @param string $controllerActionOrRouteName	Should be 'Controller:Action' combination or just any route name as custom specific string
 	 * @param array  $params						optional
 	 * @return string
 	 */
-	public function Url ($controllerActionOrRouteName = '', $params = array()) {
+	public function Url ($controllerActionOrRouteName = 'Default:Default', $params = array()) {
 		return MvcCore_Router::GetInstance()->Url($controllerActionOrRouteName, $params);
 	}
 
@@ -329,7 +329,7 @@ class MvcCore_Controller
 	 * @return string
 	 */
 	public function AssetUrl ($path = '') {
-		return MvcCore::GetInstance()->Url('Controller::Asset', array('path' => $path));
+		return MvcCore::GetInstance()->Url('Controller:Asset', array('path' => $path));
 	}
 
 	/**

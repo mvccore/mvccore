@@ -14,7 +14,7 @@
 class MvcCore_Route {
     /**
      * Route name, your custom keyword/term 
-	 * or pascal case combination of Controller::Action.
+	 * or pascal case combination of 'Controller:Action'.
      * @var string
      */
     public $Name		= '';
@@ -84,8 +84,8 @@ class MvcCore_Route {
 		} else {
 			list($name, $controller, $action, $pattern, $reverse, $params) = $args;
 		}
-		if (!$controller && !$action && strpos($name, '::') !== FALSE) {
-			list($controller, $action) = explode('::', $name);
+		if (!$controller && !$action && strpos($name, ':') !== FALSE) {
+			list($controller, $action) = explode(':', $name);
 		}
 		$this->Name = $name;
 		$this->Controller = $controller;
@@ -97,7 +97,7 @@ class MvcCore_Route {
 
 	/**
 	 * Set route name, your custom keyword/term
-	 * or pascal case combination of Controller::Action
+	 * or pascal case combination of 'Controller:Action'
 	 * @param string $name 
 	 * @return MvcCore_Route
 	 */
