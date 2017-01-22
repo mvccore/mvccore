@@ -24,48 +24,56 @@ class MvcCore_Request
 
 	/**
 	 * Http protocol: 'http:' | 'https:'
+	 * Example: 'http:'
 	 * @var string
 	 */
 	public $Protocol		= '';
 
 	/**
-	 * Application server name - domain without port.
+	 * Application server name - domain without any port.
+	 * Example: 'localhost'
 	 * @var string
 	 */
 	public $ServerName		= '';
 
 	/**
 	 * Application host with port if there is any.
+	 * Example: 'localhost:88'
 	 * @var string
 	 */
 	public $Host		= '';
 
 	/**
 	 * Http port parsed by parse_url().
+	 * Example: '88'
 	 * @var string
 	 */
 	public $Port		= '';
 
 	/**
-	 * Requested path in application context - in mod_rewrite enabled: /products/page/2
-	 * @var mixed
+	 * Requested path in from application root (if mod_rewrite enabled), never with query string.
+	 * Example: '/products/page/2'
+	 * @var string
 	 */
 	public $Path		= '';
 
 	/**
-	 * Uri query string without question mark: a=5&b=10
+	 * Uri query string without question mark.
+	 * Example: 'param-1=value-1&param-2=value-2&param-3[]=value-3-a&param-3[]=value-3-b'
 	 * @var string
 	 */
 	public $Query		= '';
 
 	/**
-	 * Uri fragment parsed by parse_url(): #any-sublink
+	 * Uri fragment parsed by parse_url()
+	 * Example: '#any-sublink-path'
 	 * @var mixed
 	 */
 	public $Fragment	= '';
 
 	/**
-	 * Php requested script name: /index.php
+	 * Php requested script name path from application root.
+	 * Example: '/index.php'
 	 * @var string
 	 */
 	public $ScriptName	= '';
@@ -77,44 +85,62 @@ class MvcCore_Request
 	public $AppRoot		= '';
 
 	/**
-	 * Base app directory in localhost if any: /localhost/my/development/direcotry/www
+	 * Base app directory path after domain, if application is placed in domain subdirectory
+	 * Example:
+	 *  full url: 'http://localhost:88/my/development/direcotry/www/requested/path/after/domain?with=possible&query=string'
+	 *  base path: '/my/development/direcotry/www'
 	 * @var string
 	 */
 	public $BasePath	= '';
 
 	/**
 	 * Request path after domain with possible query string
+	 * Example: '/requested/path/after/app/root?with=possible&query=string'
 	 * @var string
 	 */
 	public $RequestPath	= '';
 
 	/**
-	 * Base url to application root
+	 * Base url to application root.
+	 * Example: 'http://domain:88'
 	 * @var string
 	 */
-	public $BaseUrl	= '';
+	public $BaseUrl		= '';
 
 	/**
-	 * Request url including scheme, domain, port, path, without query string
+	 * Request url including scheme, domain, port, path, without any query string
+	 * Example: ''http://localhost:88/my/development/direcotry/www/requested/path/after/domain'
 	 * @var string
 	 */
 	public $RequestUrl	= '';
 
 	/**
 	 * Request url including scheme, domain, port, path and with query string
+	 * Example: 'http://localhost:88/my/development/direcotry/www/requested/path/after/domain?with=possible&query=string'
 	 * @var string
 	 */
-	public $FullUrl	= '';
+	public $FullUrl		= '';
 
 	/**
 	 * Http method (uppercase) - GET, POST, PUT, HEAD...
+	 * Example: 'GET'
 	 * @var string
 	 */
 	public $Method		= '';
+	
+	/**
+	 * Referer url if any, safely readed by: 
+	 * filter_var($_SERVER['HTTP_REFERER'], FILTER_SANITIZE_URL);
+	 * Example: 'GET'
+	 * @var string
+	 */
+	public $Referer		= '';
 
 	/**
 	 * Request params array, with keys defined in route or by query string, 
 	 * always with controller and action keys completed by router.
+	 * Example: array('controller' => 'default', 'action' => 'default', 'user' => "' OR 1=1;-- with raw danger value!");
+	 * To get safe param value - use: $request->GetParam('user', 'a-zA-Z0-9');
 	 * @var array
 	 */
 	public $Params		= array();
@@ -122,6 +148,7 @@ class MvcCore_Request
 	/**
 	 * Media site key - 'full' | 'tablet' | 'mobile'
 	 * To use this variable - install MvcCore_Router extension MvcCoreExt_MediaAddress
+	 * Example: 'full'
 	 * @var string
 	 */
 	public $MediaSiteKey = '';
@@ -192,6 +219,7 @@ class MvcCore_Request
 		$this->initParams();
 		$this->initAppRoot();
 		$this->initPath();
+		$this->initReferer();
 		$this->initUrlCompositions();
 		
 		unset($this->serverGlobals, $this->getGlobals, $this->postGlobals);
@@ -302,7 +330,7 @@ class MvcCore_Request
 		foreach ($parsedUrl as $key => $value) {
 			$keyUc = ucfirst($key);
 			if (isset($this->$keyUc)) {
-				$this->$keyUc = $value;
+				$this->$keyUc = (string) $value;
 			}
 		}
 		$this->ServerName = $this->serverGlobals['SERVER_NAME'];
@@ -372,6 +400,18 @@ class MvcCore_Request
 		$path = '/' . ltrim(mb_substr($requestUrl, mb_strlen($this->BasePath)), '/');
 		if (mb_strpos($path, '?') !== FALSE) $path = mb_substr($path, 0, mb_strpos($path, '?'));
 		$this->Path = $path;
+	}
+
+	/**
+	 * Initialize referer safely if any.
+	 * @return void
+	 */
+	protected function initReferer () {
+		$referer = isset($_SERVER['HTTP_REFERER']) ? $_SERVER['HTTP_REFERER'] : '';
+		if ($referer) {
+			$referer = filter_var($referer, FILTER_SANITIZE_URL);
+			$this->Referer = $referer ? $referer : '';
+		}
 	}
 
 	/**
