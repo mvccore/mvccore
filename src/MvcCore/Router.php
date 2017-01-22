@@ -287,7 +287,7 @@ class MvcCore_Router
 		} else {
 			$result = $this->urlByQueryString($controllerActionOrRouteName, $params);
 		}
-		if ($absolute) $result = $this->request->BaseUrl . $result;
+		if ($absolute) $result = $this->request->DomainUrl . $result;
 		return $result;
 	}
 

@@ -101,8 +101,15 @@ class MvcCore_Request
 	public $RequestPath	= '';
 
 	/**
-	 * Base url to application root.
+	 * Url to requested domain and possible port.
 	 * Example: 'http://domain:88'
+	 * @var string
+	 */
+	public $DomainUrl	= '';
+
+	/**
+	 * Base url to application root.
+	 * Example: 'http://domain:88/my/development/direcotry/www'
 	 * @var string
 	 */
 	public $BaseUrl		= '';
@@ -420,7 +427,8 @@ class MvcCore_Request
 	 */
 	protected function initUrlCompositions () {
 		$this->RequestPath = $this->Path . (($this->Query) ? '?' . $this->Query : '') . $this->Fragment;
-		$this->BaseUrl = $this->Protocol . '//' . $this->Host . $this->BasePath;
+		$this->DomainUrl = $this->Protocol . '//' . $this->Host;
+		$this->BaseUrl = $this->DomainUrl . $this->BasePath;
 		$this->RequestUrl = $this->BaseUrl . $this->Path;
 		$this->FullUrl = $this->RequestUrl . (($this->Query) ? '?' . $this->Query : '');
 	}
