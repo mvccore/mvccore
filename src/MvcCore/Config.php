@@ -52,13 +52,6 @@ class MvcCore_Config
 	protected $result = array();
 
 	/**
-	 * Temporary variable used when ini file is parsed and loaded
-	 * to store currently completed values
-	 * @var array|stdClass
-	 */
-	protected $current = array();
-
-	/**
 	 * Temporary variable used when ini file is parsed and loaded,
 	 * to store information about final retyping. Keys are addresses 
 	 * into result level to by retyped or not, values are arrays.
@@ -176,31 +169,41 @@ class MvcCore_Config
 	public function & Load ($configPath = '') {
 		$cfgFullPath = MvcCore::GetInstance()->GetRequest()->AppRoot . $configPath;
 		if (!file_exists($cfgFullPath)) return FALSE;
-		$rawIni = parse_ini_file($cfgFullPath, TRUE);
-		$environment = $this->detectEnvironmentBySystemConfig($rawIni);
-		if ($rawIni === FALSE) return FALSE;
-		$noSectionData = array();
-		foreach ($rawIni as $sectionName => $sectionContent) {
-			if (gettype($sectionContent) == 'array') {
-				if (strpos($sectionName, '>') !== FALSE) {
-					list($envNameLocal, $sectionName) = explode('>', str_replace(' ', '', $sectionName));
-					if ($envNameLocal !== $environment) continue;
-				}
-				$this->processSection($sectionName, $sectionContent);
-			} else {
-				$noSectionData[$sectionName] = $sectionContent;
-			}
-		}
-		if ($noSectionData) {
-			$this->processSection('', $noSectionData);
-		} else {
-			$this->objectTypes[''] = array(TRUE, & $this->result);
-		}
+		$rawIniData = parse_ini_file($cfgFullPath, TRUE);
+		$environment = $this->detectEnvironmentBySystemConfig($rawIniData);
+		if ($rawIniData === FALSE) return FALSE;
+		$iniData = $this->prepareIniDataToParse($rawIniData, $environment);
+		$this->processIniData($iniData);
 		foreach ($this->objectTypes as & $objectType) {
 			if ($objectType[0]) $objectType[1] = (object) $objectType[1];
 		}
-		unset($this->current, $this->objectTypes);
+		unset($this->objectTypes);
 		return $this->result;
+	}
+
+	/**
+	 * Aline all raw ini data to single level array, 
+	 * filtered for only current environment data items.
+	 * @param array $rawIniData
+	 * @param string $environment 
+	 * @return array
+	 */
+	protected function & prepareIniDataToParse (& $rawIniData, $environment) {
+		$iniData = array();
+		foreach ($rawIniData as $keyOrSectionName => $valueOrSectionValues) {
+			if (gettype($valueOrSectionValues) == 'array') {
+				if (strpos($keyOrSectionName, '>') !== FALSE) {
+					list($envNameLocal, $keyOrSectionName) = explode('>', str_replace(' ', '', $keyOrSectionName));
+					if ($envNameLocal !== $environment) continue;
+				}
+				$sectionValues = array();
+				foreach ($valueOrSectionValues as $key => $value) $sectionValues[$keyOrSectionName.'.'.$key] = $value;
+				$iniData = array_merge($iniData, $sectionValues);
+			} else {
+				$iniData[$keyOrSectionName] = $valueOrSectionValues;
+			}
+		}
+		return $iniData;
 	}
 
 	/**
@@ -230,57 +233,51 @@ class MvcCore_Config
 	}
 
 	/**
-	 * Process ini section
-	 * - retype all raw string values into array, float, int or boolean
-	 * - store boolean value about possibility to retype whole values level into stdClass later
-	 * @param string $sectionName
-	 * @param array  $sectionContent
+	 * Process single level array with dotted keys into tree structure 
+	 * and complete object type switches about tree records to set final stdClasses or arrays
+	 * @param array $iniData 
 	 * @return void
 	 */
-	protected function processSection ($sectionName = '', array $sectionContent) {
-		$sectionNameKeys = $sectionName ? explode('.', $sectionName) : array();
-		$currentKeysAddress = NULL;
-		$lastKeysAddress = NULL;
-		foreach ($sectionContent as $rawKey => $rawValue) {
-			$rawKeys = explode('.', $rawKey);
-			$lastRawKey = array_pop($rawKeys);
-			$keys = array_values($sectionNameKeys);
-			array_walk($rawKeys, function ($rawKey) use (& $keys) {
-				$keys[] = $rawKey;
-			});
-			$currentKeysAddress = implode('.', $keys);
-			if ($currentKeysAddress !== $lastKeysAddress) {
-				$this->moveCurrentLevel($keys);
-				$this->objectTypes[$currentKeysAddress] = array(TRUE, & $this->current);
-				$lastKeysAddress = $currentKeysAddress;
+	protected function processIniData (& $iniData) {
+		$this->objectTypes[''] = array(1, & $this->result);
+		foreach ($iniData as $rawKey => $rawValue) {
+			$current = & $this->result;
+			// prepare keys to build levels and configure stdClass/array types
+			$rawKeys = array();
+			$lastRawKey = $rawKey;
+			$lastDotPos = strrpos($rawKey, '.');
+			if ($lastDotPos !== FALSE) {
+				$rawKeys = explode('.', substr($rawKey, 0, $lastDotPos));
+				$lastRawKey = substr($rawKey, $lastDotPos + 1);
 			}
-			if ($this->isKeyNumeric($lastRawKey)) {
-				$this->objectTypes[$currentKeysAddress][0] = FALSE;
+			// prepare levels structure and configure stdClass or array type change where necessary
+			$levelKey = '';
+			$prevLevelKey = '';
+			foreach ($rawKeys as $key) {
+				$prevLevelKey = $levelKey;
+				$levelKey .= ($levelKey ? '.' : '') . $key;
+				if (!isset($current[$key])) {
+					$current[$key] = array();
+					$this->objectTypes[$levelKey] = array(1, & $current[$key]); // object type switch -> object by default
+					if ($this->isKeyNumeric($key) && isset($this->objectTypes[$prevLevelKey])) {
+						$this->objectTypes[$prevLevelKey][0] = 0; // object type switch -> set array of it was object
+					}
+				}
+				$current = & $current[$key];
 			}
-			$this->current[$lastRawKey] = $this->getTypedValue($rawValue);
-		}
-	}
-
-	/**
-	 * Move $this->current object into currently completed memory space
-	 * @param array $keys 
-	 * @return void
-	 */
-	protected function moveCurrentLevel (array & $keys) {
-		$this->current = & $this->result;
-		$parentAddress = '';
-		$currentAddress = '';
-		for ($i = 0, $l = count($keys); $i < $l; $i += 1) {
-			$key = $keys[$i];
-			$currentAddress .= (($i > 0) ? '.' : '') . $key;
-			$keyIsNumeric = $this->isKeyNumeric($key);
-			if (!isset($this->current[$key])) {
-				$this->current[$key] = array();
-				$this->objectTypes[$currentAddress] = array(!$keyIsNumeric, & $this->current[$key]);
+			// set up value into levels structure and confgure type into array if necessary
+			$typedValue = $this->getTypedValue($rawValue);
+			if (isset($current[$lastRawKey])) {
+				$current[$lastRawKey][] = $typedValue;
+				$this->objectTypes[$levelKey ? $levelKey : $lastRawKey][0] = 0; // object type switch -> set array
+			} else {
+				if (gettype($current) != 'array') {
+					$current = array($current);
+					$this->objectTypes[$levelKey] = array(0, & $current); // object type switch -> set array
+				}
+				$current[$lastRawKey] = $typedValue;
+				if ($this->isKeyNumeric($lastRawKey)) $this->objectTypes[$levelKey][0] = 0; // object type switch -> set array
 			}
-			if ($keyIsNumeric) $this->objectTypes[$parentAddress][0] = FALSE;
-			$this->current = & $this->current[$key];
-			$parentAddress = $currentAddress;
 		}
 	}
 
