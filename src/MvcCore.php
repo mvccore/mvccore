@@ -38,7 +38,7 @@ class MvcCore
 	 * Comparation by PHP function version_compare();
 	 * @see http://php.net/manual/en/function.version-compare.php
 	 */
-	const VERSION = '3.0.6';
+	const VERSION = '3.1.0';
 	/**
 	 * MvcCore application mode describing that the application is compiled in one big php file.
 	 * In PHP app mode should be packed php files or any asset files - phtml templates, ini files 
@@ -803,10 +803,15 @@ class MvcCore
 			$this->request->Params['controller'], $this->request->Params['action']
 		);
 		try {
+			// MvcCore_Debug::Timer('dispatch');
 			$this->controller->Init();
+			// MvcCore_Debug::Timer('dispatch');
 			$this->controller->PreDispatch();
+			// MvcCore_Debug::Timer('dispatch');
 			if (method_exists($this->controller, $actionName)) $this->controller->$actionName();
+			// MvcCore_Debug::Timer('dispatch');
 			$this->controller->Render($controllerNameDashed, $actionNameDashed);
+			// MvcCore_Debug::Timer('dispatch');
 		} catch (Exception $e) {
 			return $exceptionCallback($e);
 		}
@@ -815,8 +820,8 @@ class MvcCore
 
 	/**
 	 * Generates url by:
-	 * - Controller::Action name and params array
-	 *   (for routes configuration when routes array has keys with Controller::Action strings
+	 * - 'Controller:Action' name and params array
+	 *   (for routes configuration when routes array has keys with 'Controller:Action' strings
 	 *   and routes has not controller name and action name defined inside)
 	 * - route name and params array
 	 *	 (route name is key in routes configuration array, should be any string
@@ -826,11 +831,11 @@ class MvcCore
 	 *   (for apps with .htaccess supporting url_rewrite and when first param is key in routes configuration array)
 	 * - for all other cases is url form: index.php?controller=ctrlName&action=actionName
 	 *	 (when first param is not founded in routes configuration array)
-	 * @param string $controllerActionOrRouteName	Should be Controller::Action combination or just any route name as custom specific string
+	 * @param string $controllerActionOrRouteName	Should be 'Controller:Action' combination or just any route name as custom specific string
 	 * @param array  $params						optional
 	 * @return string
 	 */
-	public function Url ($controllerActionOrRouteName = '', $params = array()) {
+	public function Url ($controllerActionOrRouteName = 'Default:Default', $params = array()) {
 		return MvcCore_Router::GetInstance()->Url($controllerActionOrRouteName, $params);
 	}
 
@@ -867,11 +872,11 @@ class MvcCore
 		if ($e->getCode() == 404) {
 			MvcCore_Debug::Log($e, MvcCore_Debug::ERROR);
 			$this->RenderNotFound($e->getMessage());
-		} else if (!MvcCore_Config::IsProduction()) {
-			MvcCore_Debug::Log($e, MvcCore_Debug::EXCEPTION);
-			$this->RenderError($e->getMessage());
-		} else {
+		} else if (MvcCore_Config::IsDevelopment()) {
 			MvcCore_Debug::Exception($e);
+		} else {
+			MvcCore_Debug::Log($e, MvcCore_Debug::EXCEPTION);
+			$this->RenderError($e);
 		}
 		return FALSE;
 	}
@@ -880,13 +885,14 @@ class MvcCore
 	 * Render error by Default controller Error action,
 	 * if there is no controller/action like that or any other exception happends,
 	 * it is processed very simple response with 500 http code.
-	 * @param string $exceptionMessage
+	 * @param Exception $e
 	 * @return void
 	 */
-	public function RenderError ($exceptionMessage = '') {
+	public function RenderError (Exception $e) {
 		$defaultCtrlFullName = $this->GetDefaultControllerIfHasAction(
 			$this->defaultControllerErrorActionName
 		);
+		$exceptionMessage = $e->getMessage();
 		if ($defaultCtrlFullName) {
 			$this->request->Params = array_merge($this->request->Params, array(
 				'code'		=> 500,
