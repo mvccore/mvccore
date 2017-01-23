@@ -117,6 +117,7 @@ class MvcCore_Router
 	 * @return MvcCore_Router
 	 */
     public function AddRoutes (array $routes = array(), $prepend = FALSE) {
+		if ($prepend) $routes = array_reverse($routes);
 		foreach ($routes as $routeName => & $route) {
 			$routeType = gettype($route);
 			$numericKey = is_numeric($routeName);
@@ -374,7 +375,7 @@ class MvcCore_Router
 	 */
 	protected function routeByRewriteRoutes () {
 		$requestPath = $this->request->Path;
-		foreach ($this->routes as $route) {
+		foreach ($this->routes as & $route) {
 			preg_match_all($route->Pattern, $requestPath, $patternMatches);
 			if (count($patternMatches) > 0 && count($patternMatches[0]) > 0) {
 				$this->currentRoute = $route;
