@@ -60,8 +60,7 @@ class MvcCore_Session extends ArrayObject {
 	 */
 	public static function Start () {
 		if (static::$started) return;
-		$requestParams = MvcCore::GetInstance()->GetRequest()->Params;
-		if ($requestParams['controller'] == 'controller' && $requestParams['action'] == 'asset') return;
+		if (!MvcCore::GetInstance()->GetRequest()->IsAppRequest()) return;
 		$sessionNotStarted = function_exists('session_status') ? session_status() == PHP_SESSION_NONE : session_id() == '' ;
 		if ($sessionNotStarted) {
 			session_start();

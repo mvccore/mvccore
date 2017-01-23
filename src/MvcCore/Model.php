@@ -180,7 +180,7 @@ abstract class MvcCore_Model {
 		if ($connectionIndex == -1) $connectionIndex = static::$connectionIndex;
 		$this->cfg = static::GetCfg($connectionIndex);
 		$this->db = static::GetDb($connectionIndex);
-		$this->resource = static::getResource(array(), get_class($this));
+		$this->resource = static::GetResource(array(), get_class($this));
 	}
 
 	/**

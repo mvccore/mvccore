@@ -191,6 +191,14 @@ class MvcCore_Request
 	protected $indexScriptName = '';
 
 	/**
+	 * Request flag if request targets internal package asset or not,
+	 * - 0 - request is Controller:Asset call for internal package asset
+	 * - 1 - request is classic application request
+	 * @var mixed
+	 */
+	protected $appRequest = -1;
+
+	/**
 	 * Universal store for anything else
 	 * @var array
 	 */
@@ -289,6 +297,25 @@ class MvcCore_Request
 			}
 		}
 		return $result;
+	}
+
+	/**
+	 * Return boolean flag if request target 
+	 * is anything different than 'Controller:Asset'
+	 * @return bool
+	 */
+	public function IsAppRequest () {
+		if ($this->appRequest == -1) {
+			$this->appRequest = 1;
+			$ctrl = 'controller';
+			$action = 'action';
+			if (isset($this->Params[$ctrl]) && isset($this->Params[$action])) {
+				if ($this->Params[$ctrl] == $ctrl && $this->Params[$action] == 'asset') {
+					$this->appRequest = 0;
+				}
+			}
+		}
+		return (bool) $this->appRequest;
 	}
 
 	/**
