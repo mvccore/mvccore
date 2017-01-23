@@ -6,6 +6,11 @@
 
 PHP MVC framework to develop and pack projects (partialy or completely) into super fast single file apps and tools.
 
+## Installation
+```shell
+composer require mvccore/simpleform
+```
+
 ## Main features
 - MVC core framework for classic web apps with any request types and HTML/AJAX responses
 - about 35% faster results from packed app then development version with separate PHP scripts and fastcgi/op_cache
