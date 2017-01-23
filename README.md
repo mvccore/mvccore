@@ -1,4 +1,9 @@
 # MvcCore
+
+[![Latest Stable Version](https://img.shields.io/badge/Stable-v3.1.2-brightgreen.svg?style=plastic)](https://github.com/mvccore/example-helloworld/releases)
+[![License](https://img.shields.io/badge/Licence-BSD-brightgreen.svg?style=plastic)](https://github.com/mvccore/example-helloworld/blob/master/LICENCE.md)
+![PHP Version](https://img.shields.io/badge/PHP->=5.3-brightgreen.svg?style=plastic)
+
 PHP MVC framework to develop and pack projects (partialy or completely) into super fast single file apps and tools.
 
 ## Main features
