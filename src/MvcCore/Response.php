@@ -11,6 +11,12 @@
  * @license		https://mvccore.github.io/docs/mvccore/3.0.0/LICENCE.md
  */
 
+/**
+ * Core response:
+ * - http response wrapper carrying response headers and response body
+ * - sending response at application terminate process by Send(); method
+ * - completing MvcCore performance custom header at response sending
+ */
 class MvcCore_Response
 {
 	const OK = 200;

@@ -18,6 +18,18 @@ require_once('MvcCore/Route.php');
 require_once('MvcCore/Config.php');
 require_once('MvcCore/Debug.php');
 
+/**
+ * Application MVC core:
+ * - main application objects container
+ * - MvcCore compile mode managing
+ * - store for main core class names to use them later 
+ *   for run, creating instances or static usage
+ * - application run processing:
+ *   - completing request and response
+ *   - calling pre/post handlers
+ *   - controller/action dispatching
+ *   - error handling and error responses
+ */
 class MvcCore
 {
 	/**
@@ -38,7 +50,7 @@ class MvcCore
 	 * Comparation by PHP function version_compare();
 	 * @see http://php.net/manual/en/function.version-compare.php
 	 */
-	const VERSION = '3.1.0';
+	const VERSION = '3.1.2';
 	/**
 	 * MvcCore application mode describing that the application is compiled in one big php file.
 	 * In PHP app mode should be packed php files or any asset files - phtml templates, ini files 

@@ -13,6 +13,14 @@
 
 require_once('Config.php');
 
+/**
+ * Core model
+ * - reading 'db' section from system config.ini
+ * - database PDO connecting by config settings and index
+ * - instance loaded variables initializing
+ * - instance initialized values reading
+ * - virtual calls/sets and gets handling
+ */
 abstract class MvcCore_Model {
 	/**
 	 * PDO connection arguments.

@@ -15,6 +15,16 @@ require_once('Request.php');
 require_once('Route.php');
 require_once('Tool.php');
 
+/**
+ * Core router:
+ * - main store for all routes
+ * - application request routing process before request dispatching in core
+ * - currently matched route store
+ * - application url completing
+ *   - by configured routes into mod_rewrite form
+ *   - or into query string form, containing controller and action params
+ * - params query string building - primitive param value or array value representation possible
+ */
 class MvcCore_Router
 {
 	/**

@@ -13,6 +13,24 @@
 
 require_once('Controller.php');
 
+/**
+ * Core view:
+ * - static doctype storage
+ * - static storage for dir names with view scripts
+ * - possible to use for any controller/subcontroller/control/SimpleForm
+ * - view prerender preparing and rendering
+ * - direct code evaluation
+ * - view helpers management
+ *   - creating by predefined class names bases
+ *   - instance storing and calling
+ * - views sub scripts relative path solving
+ * - Url() proxy method, AssetUrl() proxy method
+ * - magic calls:
+ *   - __call() - helpers handling
+ *   - __set() - to set anything in controller to get it back in view
+ *   - __get() - to get anything in view previously completed in controller
+ * - no special view language implemented... why to use such stupid things...
+ */
 class MvcCore_View
 {
 	/**

@@ -16,6 +16,27 @@ require_once('Request.php');
 require_once('Response.php');
 require_once('View.php');
 
+/**
+ * Application controller:
+ * - template methods:
+ *	 (necessary to call parent at method begin)
+ *   - Init()
+ *		- called after controller is created
+ *		- session start
+ *		- all internal variables initialized except view
+ *   - PreDispatch()
+ *		- called after Init, before every controller action
+ *		- view initialization
+ * - internal actions:
+ *	 - AssetAction()
+ *	   - handling internal MvcCore http request 
+ *	     to get assets from packed package
+ * - url proxy method, reading request param proxy method
+ * - view rendering or no-rendering management
+ * - http responses and redirects management
+ * - basic error responses rendering
+ * - request termination (to write and close session)
+ */
 class MvcCore_Controller
 {
 	/**
@@ -108,15 +129,6 @@ class MvcCore_Controller
 		$this->response = & $response;
 		$this->controller = $this->request->Params['controller'];
 		$this->action = $this->request->Params['action'];
-	}
-
-	/**
-	 * Application controllers initialization.
-	 * This is best time to initialize language, locale or session.
-	 * @return void
-	 */
-	public function Init () {
-		MvcCore::SessionStart();
 		if (
 			isset($_SERVER['HTTP_X_REQUESTED_WITH']) && 
 			strtolower($_SERVER['HTTP_X_REQUESTED_WITH']) == 'xmlhttprequest'
@@ -127,6 +139,15 @@ class MvcCore_Controller
 		if (get_class($this) == 'MvcCore_Controller' && $this->action == 'asset') {
 			$this->DisableView();
 		}
+	}
+
+	/**
+	 * Application controllers initialization.
+	 * This is best time to initialize language, locale or session.
+	 * @return void
+	 */
+	public function Init () {
+		MvcCore::SessionStart();
 	}
 
 	/**
@@ -293,9 +314,7 @@ class MvcCore_Controller
 	 * @return void
 	 */
 	public function JsonResponse ($data = array()) {
-		if (!defined('JSON_UNESCAPED_SLASHES')) define('JSON_UNESCAPED_SLASHES', 64);
-		if (!defined('JSON_UNESCAPED_UNICODE')) define('JSON_UNESCAPED_UNICODE', 256);
-		$output = json_encode($data, JSON_HEX_TAG | JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE | JSON_HEX_APOS | JSON_HEX_QUOT | JSON_HEX_AMP);
+		$output = MvcCore_Tool::EncodeJson($data);
 		$this->response
 			->SetHeader('Content-Type', 'text/javascript; charset=utf-8')
 			->SetHeader('Content-Length', strlen($output))

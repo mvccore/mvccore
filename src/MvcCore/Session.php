@@ -11,6 +11,17 @@
  * @license		https://mvccore.github.io/docs/mvccore/3.0.0/LICENCE.md
  */
 
+/**
+ * Core session:
+ * - session safe starting
+ * - session writing and closing
+ *   - by registered shutdown function
+ *   - MvcCore_Session::Close() - how to register the handler
+ *   - close handler called registered by MvcCore::Terminate();
+ * - session namespaces management
+ *   - variables expiration by seconds
+ *   - variables expiration by request hoops
+ */
 class MvcCore_Session extends ArrayObject {
 	/**
 	 * Metadata key in $_SESSION
@@ -49,6 +60,8 @@ class MvcCore_Session extends ArrayObject {
 	 */
 	public static function Start () {
 		if (static::$started) return;
+		$requestParams = MvcCore::GetInstance()->GetRequest()->Params;
+		if ($requestParams['controller'] == 'controller' && $requestParams['action'] == 'asset') return;
 		$sessionNotStarted = function_exists('session_status') ? session_status() == PHP_SESSION_NONE : session_id() == '' ;
 		if ($sessionNotStarted) {
 			session_start();

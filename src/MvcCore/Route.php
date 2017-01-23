@@ -11,6 +11,17 @@
  * @license		https://mvccore.github.io/docs/mvccore/3.0.0/LICENCE.md
  */
 
+/**
+ * Core route:
+ * - describing request input, url output, controller/action target and default params
+ * - required properties to set:
+ *   - Pattern - classic preg_match() pattern including border '#' characters, containing char groups
+ *   - Reverse - url form with {%param} replacements where to insert param values from url method
+ *   - Controller - controller to create and dispatch or view directory name, pascal case
+ *   - Action - controller action to execute or view name to render, pascal case
+ *   - Name - 'Controller:Action' or any custom route name how to create url in application by Url() method
+ *   - Params - default params to set before controller/action dispatching if no params in request
+ */
 class MvcCore_Route {
     /**
      * Route name, your custom keyword/term 

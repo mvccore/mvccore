@@ -13,6 +13,16 @@
 
 require_once(__DIR__.'/../MvcCore.php');
 
+/**
+ * Core configuration:
+ * - config files reading:
+ *   - reading config.ini file by relative path
+ *   - parsing and typing ini data into stdClass/array by key types
+ *   - typing ini values into integers, floats, booleans or strings
+ * - environment management:
+ *   - simple environment name detection by comparing server and client ip
+ *   - environment name detection by config records about computer name or ip
+ */
 class MvcCore_Config
 {
 	const ENVIRONMENT_DEVELOPMENT = 'development';

@@ -14,6 +14,12 @@
 require_once('Tool.php');
 require_once(__DIR__.'/../MvcCore.php');
 
+/**
+ * Core request:
+ * - linear request url parsing from $_SERVER into local properties describing url sections
+ * - params reading from $_GET/$_POST or direct input (in JSON or in query string)
+ * - params cleaning by developer rules
+ */
 class MvcCore_Request
 {
 	const PROTOCOL_HTTP = 'http:';

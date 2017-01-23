@@ -13,6 +13,14 @@
 
 require_once('Config.php');
 
+/**
+ * Core debug tools
+ * - printing any value by var_dump(); in fixed 
+ *   bar at browser window right bottom border
+ * - timing printing
+ * - debuging shortcut functions initialization
+ * - exceptions hdd logging or printing in development mode
+ */
 class MvcCore_Debug
 {
 	const

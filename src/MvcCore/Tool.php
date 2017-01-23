@@ -11,6 +11,15 @@
  * @license		https://mvccore.github.io/docs/mvccore/3.0.0/LICENCE.md
  */
 
+/**
+ * Core tools:
+ * - translating cases:
+ *   - dashed-case to PascalCase
+ *   - PascalCase to dashed-case
+ *   - unserscore_case to PascalCase
+ *   - PascalCase to unserscore_case
+ * - JSON safe encode/decode
+ */
 class MvcCore_Tool
 {
     /**
@@ -47,8 +56,34 @@ class MvcCore_Tool
 		return ucfirst(str_replace('_', '', ucwords($underscored, '_')));
 	}
 	/**
-	 * Safely decode json string
-	 * Result has always key 'success' with boolean and key 'data' with decoded json data.
+	 * Safely encode json string from php value.
+	 * @param mixed $data 
+	 * @throws Exception 
+	 * @return string
+	 */
+	public static function EncodeJson ($data) {
+		$flags = JSON_HEX_TAG | JSON_HEX_APOS | JSON_HEX_QUOT | JSON_HEX_AMP |
+			(defined('JSON_UNESCAPED_SLASHES') ? JSON_UNESCAPED_SLASHES : 0) |
+			(defined('JSON_UNESCAPED_UNICODE') ? JSON_UNESCAPED_UNICODE : 0) |
+			(defined('JSON_PRESERVE_ZERO_FRACTION') ? JSON_PRESERVE_ZERO_FRACTION : 0);
+		$json = json_encode($data, $flags);
+		if ($errorCode = json_last_error()) {
+			throw new Exception(json_last_error_msg(), $errorCode);
+		}
+		if (PHP_VERSION_ID < 70100) {
+			$json = strtr($json, array(
+				"\xe2\x80\xa8" => '\u2028',
+				"\xe2\x80\xa9" => '\u2029',
+			));
+		}
+		return $json;
+	}
+	/**
+	 * Safely decode json string into php stdClass/array.
+	 * Result has always keys:
+	 * - 'success'	- decoding boolean success
+	 * - 'data'		- decoded json data as stdClass/array
+	 * - 'errorData'- array with possible decoding error message and error code
 	 * @param string $jsonStr 
 	 * @return object
 	 */
@@ -56,12 +91,15 @@ class MvcCore_Tool
 		$result = (object) array(
 			'success'	=> TRUE,
 			'data'		=> null,
+			'errorData'	=> array(),
 		);
 		$jsonData = @json_decode($jsonStr);
-		if (json_last_error() == JSON_ERROR_NONE) {
+		$errorCode = json_last_error();
+		if ($errorCode == JSON_ERROR_NONE) {
 			$result->data = $jsonData;
 		} else {
 			$result->success = FALSE;
+			$result->errorData = array(json_last_error_msg(), $errorCode);
 		}
 		return $result;
 	}
