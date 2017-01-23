@@ -50,7 +50,7 @@ class MvcCore
 	 * Comparation by PHP function version_compare();
 	 * @see http://php.net/manual/en/function.version-compare.php
 	 */
-	const VERSION = '3.1.2';
+	const VERSION = '3.1.4';
 	/**
 	 * MvcCore application mode describing that the application is compiled in one big php file.
 	 * In PHP app mode should be packed php files or any asset files - phtml templates, ini files 
