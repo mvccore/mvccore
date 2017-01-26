@@ -277,7 +277,7 @@ class MvcCore_Controller
 			if (!$controllerName)	$controllerName	= $this->request->params['controller'];
 			if (!$actionName)		$actionName		= $this->request->params['action'];
 			// complete paths
-			$controllerPath = str_replace('_', '/', $controllerName);
+			$controllerPath = str_replace(array('_', '\\'), '/', $controllerName);
 			$viewScriptPath = implode('/', array(
 				$controllerPath, $actionName
 			));

@@ -127,13 +127,16 @@ class MvcCore_View
 	 */
 	public static function StaticInit () {
 		$app = MvcCore::GetInstance();
+		$baseViewHelperSpaceItems = array(
+			$app->GetAppDir(),
+			$app->GetViewsDir(),
+			static::$HelpersDir
+		);
 		static::$HelpersClassBases = array(
+			// 'App\Views\Helpers\'
+			implode('\\', $baseViewHelperSpaceItems) . '\\',
 			// 'App_Views_Helpers_'
-			implode('_', array(
-				$app->GetAppDir(),
-				$app->GetViewsDir(),
-				static::$HelpersDir
-			)) . '_'
+			implode('_', $baseViewHelperSpaceItems) . '_',
 		);
 	}
 
@@ -146,7 +149,12 @@ class MvcCore_View
 	public static function AddHelpersClassBases (/*...$helper*/) {
 		$args = func_get_args();
 		foreach ($args as $arg) {
-			static::$HelpersClassBases[] = rtrim($arg, '_') . '_';
+			if (strpos($arg, '\\') !== FALSE) {
+				$arg = rtrim($arg, '\\') . '\\';
+			} else {
+				$arg = rtrim($arg, '_') . '_';
+			}
+			static::$HelpersClassBases[] = $arg;
 		}
 	}
 
