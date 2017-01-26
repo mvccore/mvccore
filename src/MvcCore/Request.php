@@ -29,6 +29,20 @@ class MvcCore_Request
 	const METHOD_POST = 'POST';
 
 	/**
+	 * Language international code, lowercase, not used by default.
+	 * Example: 'en'
+	 * @var string
+	 */
+	public $Lang		= '';
+
+	/**
+	 * Country/locale code, uppercase, not used by default.
+	 * Example: 'US'
+	 * @var string
+	 */
+	public $Locale		= '';
+	
+	/**
 	 * Http protocol: 'http:' | 'https:'
 	 * Example: 'http:'
 	 * @var string
@@ -160,7 +174,7 @@ class MvcCore_Request
 
 	/**
 	 * Media site key - 'full' | 'tablet' | 'mobile'
-	 * To use this variable - install MvcCore_Router extension MvcCoreExt_MediaAddress
+	 * To use this variable - install MvcCore_Router extension MvcCoreExt_MediaRouter
 	 * Example: 'full'
 	 * @var string
 	 */
@@ -197,12 +211,6 @@ class MvcCore_Request
 	 * @var mixed
 	 */
 	protected $appRequest = -1;
-
-	/**
-	 * Universal store for anything else
-	 * @var array
-	 */
-	protected $store = array();
 
 	/**
 	 * Get everytime new instance of http request, 
@@ -247,22 +255,47 @@ class MvcCore_Request
 	}
 
 	/**
-	 * Universal getter from store
+	 * Sets any custom property ('PropertyName') by $request->SetPropertyName('value'),
+	 * which is not necessary to define previously or gets previously defined
+	 * property ('PropertyName') by $request->GetPropertyName(); Throws exception
+	 * if no property defined by get call or if virtual call begins with anything
+	 * different from 'set' or 'get'.
+	 * This method returns custom value for get and $request instance for set.
+	 * @param string $rawName
+	 * @param array  $arguments
+	 * @throws Exception
+	 * @return mixed|MvcCore_Request
+	 */
+	public function __call ($rawName, $arguments = array()) {
+		$nameBegin = strtolower(substr($rawName, 0, 3));
+		$name = substr($rawName, 3);
+		if ($nameBegin == 'get' && isset($this->$name)) {
+			return $this->$name;
+		} else if ($nameBegin == 'set') {
+			$this->$name = isset($arguments[0]) ? $arguments[0] : NULL;
+			return $this;
+		} else {
+			throw new Exception('['.__CLASS__."] No property with name '$name' defined.");
+		}
+	}
+
+	/**
+	 * Universal getter, if property not defined, NULL is returned.
 	 * @param string $name 
 	 * @return mixed
 	 */
 	public function __get ($name) {
-		return isset($this->store[$name]) ? $this->store[$name] : NULL ;
+		return isset($this->$name) ? $this->$name : NULL ;
 	}
 
 	/**
-	 * Universal setter
+	 * Universal setter, if property not defined, it's automaticly declarated.
 	 * @param string	$name 
-	 * @param mixed		$value 
+	 * @param mixed		$value
 	 * @return void
 	 */
 	public function __set ($name, $value) {
-		$this->store[$name] = $value;
+		$this->$name = $value;
 	}
 
 	/**

@@ -103,7 +103,7 @@ abstract class MvcCore_Model {
 	 * In extended classes - use this for connection index of current model if different.
 	 * @var int
 	 */
-	protected static $connectionIndex = 0;
+	protected static $connectionIndex = -1;
 
 	/**
 	 * PDO connections array, keyed by connection indexes from system config
@@ -146,42 +146,6 @@ abstract class MvcCore_Model {
 	 * @var MvcCore_Model
 	 */
 	protected $resource;
-
-	/**
-	 * Static initialization
-	 * @return void
-	 */
-	public static function StaticContructor () {
-		if (empty(static::$configs)) {
-			$cfg = MvcCore_Config::GetSystem();
-			if ($cfg === FALSE) return;
-			$cfgType = gettype($cfg->db);
-			if ($cfgType == 'array' && isset($cfg->db['defaultDbIndex'])) {
-				static::$connectionIndex = $cfg->db['defaultDbIndex'];
-			} else if ($cfgType == 'object' && isset($cfg->db->defaultDbIndex)) {
-				static::$connectionIndex = $cfg->db->defaultDbIndex;
-			}
-		}
-	}
-
-	/**
-	 * Creates an instance and inits cfg, db and resource properties
-	 * @param int $connectionIndex 
-	 */
-	public function __construct ($connectionIndex = -1) {
-		if ($this->autoInit) $this->Init($connectionIndex);
-    }
-
-	/**
-	 * Creates an instance and inits cfg, db and resource properties
-	 * @param int $connectionIndex
-	 */
-	public function Init ($connectionIndex = -1) {
-		if ($connectionIndex == -1) $connectionIndex = static::$connectionIndex;
-		$this->cfg = static::GetCfg($connectionIndex);
-		$this->db = static::GetDb($connectionIndex);
-		$this->resource = static::GetResource(array(), get_class($this));
-	}
 
 	/**
 	 * Collect all model class public and inherit field values into array
@@ -264,14 +228,55 @@ abstract class MvcCore_Model {
 	}
 
 	/**
+	 * Returns (or creates if necessary) model resource instance
+	 * @param array $args values array with variables to pass into __construct() method
+	 * @param string $modelClassPath
+	 * @param string $resourceClassPath
+	 * @return App_Models_Base(_Resource)
+	 */
+	public static function GetResource ($args = array(), $modelClassName = '', $resourceClassPath = '_Resource') {
+		$result = NULL;
+		if (!$modelClassName) $modelClassName = get_called_class();
+		// do not create resource instance in resource class (if current class name doesn't end with '_Resource' substring):
+		if (strpos($modelClassName, '_Resource') === FALSE) {
+			$resourceClassName = $modelClassName . $resourceClassPath;
+			// do not create resource instance if resource class doesn't exist:
+			if (class_exists($resourceClassName)) {
+				$result = call_user_func_array(array($resourceClassName, 'GetInstance'), $args);
+			}
+		}
+		return $result;
+	}
+
+	/**
+	 * Creates an instance and inits cfg, db and resource properties
+	 * @param int $connectionIndex
+	 */
+	public function __construct ($connectionIndex = -1) {
+		if ($this->autoInit) $this->Init($connectionIndex);
+    }
+
+	/**
+	 * Creates an instance and inits cfg, db and resource properties
+	 * @param int $connectionIndex
+	 */
+	public function Init ($connectionIndex = -1) {
+		$this->db = static::GetDb($connectionIndex);
+		$this->cfg = static::GetCfg($connectionIndex);
+		$this->resource = static::GetResource(array(), get_class($this));
+	}
+
+	/**
 	 * Returns database connection by connection index (cached by local store)
 	 * or create new connection of no connection cached.
 	 * @param int $connectionIndex 
 	 * @return PDO
 	 */
 	public static function GetDb ($connectionIndex = -1) {
-		if ($connectionIndex == -1) $connectionIndex = static::$connectionIndex;
 		if (!isset(static::$connections[$connectionIndex])) {
+			static::loadConfigs();
+			if ($connectionIndex == -1) $connectionIndex = static::$connectionIndex;
+			if ($connectionIndex == -1) $connectionIndex = self::$connectionIndex;
 			// get system config 'db' data 
 			// and get predefined constructor arguments by driver value from config
 			$cfg = static::GetCfg($connectionIndex);
@@ -309,37 +314,43 @@ abstract class MvcCore_Model {
 	 * @return object
 	 */
 	public static function GetCfg ($connectionIndex = -1) {
+		static::loadConfigs();
 		if ($connectionIndex == -1) $connectionIndex = static::$connectionIndex;
-		if (!isset(static::$configs[$connectionIndex])) {
-			$cfg = MvcCore_Config::GetSystem();
-			if (gettype($cfg->db) == 'array') {
-				static::$configs[$connectionIndex] = $cfg->db[$connectionIndex];
-			} else {
-				static::$configs[$connectionIndex] = $cfg->db;
-			}
-        }
-		return static::$configs[$connectionIndex];
+		if ($connectionIndex == -1) $connectionIndex = self::$connectionIndex;
+		$baseType = gettype(static::$configs);
+		if ($baseType == 'array' && isset(static::$configs[$connectionIndex])) {
+			return static::$configs[$connectionIndex];
+		} else if ($baseType == 'object' && isset(static::$configs->$connectionIndex)) {
+			return static::$configs->$connectionIndex;
+		} else {
+			return static::$configs;
+		}
 	}
 
 	/**
-	 * Returns (or creates if necessary) model resource instance
-	 * @param array $args values array with variables to pass into __construct() method
-	 * @param string $modelClassPath
-	 * @param string $resourceClassPath
-	 * @return App_Models_Base(_Resource)
+	 * Initialize configuration data
+	 * @throws Exception
+	 * @return void
 	 */
-	public static function GetResource ($args = array(), $modelClassName = '', $resourceClassPath = '_Resource') {
-		$result = NULL;
-		if (!$modelClassName) $modelClassName = get_called_class();
-		// do not create resource instance in resource class (if current class name doesn't end with '_Resource' substring):
-		if (strpos($modelClassName, '_Resource') === FALSE) {
-			$resourceClassName = $modelClassName . $resourceClassPath;
-			// do not create resource instance if resource class doesn't exist:
-			if (class_exists($resourceClassName)) {
-				$result = call_user_func_array(array($resourceClassName, 'GetInstance'), $args);
+	protected static function loadConfigs () {
+		if (empty(static::$configs)) {
+			$cfg = MvcCore_Config::GetSystem();
+			if ($cfg === FALSE) {
+				$cfgPath = MvcCore_Config::$SystemConfigPath;
+				throw new Exception('['.__CLASS__."] System config.ini not found in '$cfgPath'.");
 			}
+			if (!isset($cfg->db)) {
+				throw new Exception('['.__CLASS__."] No [db] section and no records matched 'db.*' found in system config.ini.");
+			}
+			$cfgType = gettype($cfg->db);
+			// db.defaultDbIndex - default connection index for modelses, where is no connection index strictly defined
+			if ($cfgType == 'array' && isset($cfg->db['defaultDbIndex'])) {
+				self::$connectionIndex = $cfg->db['defaultDbIndex'];
+			} else if ($cfgType == 'object' && isset($cfg->db->defaultDbIndex)) {
+				self::$connectionIndex = $cfg->db->defaultDbIndex;
+			}
+			static::$configs = $cfg->db;
 		}
-		return $result;
 	}
 
 	/**
@@ -386,4 +397,3 @@ abstract class MvcCore_Model {
 		return (isset($this->$name)) ? $this->$name : null;
 	}
 }
-MvcCore_Model::StaticContructor();

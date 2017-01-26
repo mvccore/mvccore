@@ -1,18 +1,31 @@
 # MvcCore
 
-[![Latest Stable Version](https://img.shields.io/badge/Stable-v3.1.4-brightgreen.svg?style=plastic)](https://github.com/mvccore/example-helloworld/releases)
-[![License](https://img.shields.io/badge/Licence-BSD-brightgreen.svg?style=plastic)](https://github.com/mvccore/example-helloworld/blob/master/LICENCE.md)
+[![Latest Stable Version](https://img.shields.io/badge/Stable-v3.2.0-brightgreen.svg?style=plastic)](https://github.com/mvccore/mvccore/releases)
+[![License](https://img.shields.io/badge/Licence-BSD-brightgreen.svg?style=plastic)](https://mvccore.github.io/docs/mvccore/3.0.0/LICENCE.md)
 ![PHP Version](https://img.shields.io/badge/PHP->=5.3-brightgreen.svg?style=plastic)
 
 PHP MVC framework to develop and pack projects (partialy or completely) into super fast single file apps and tools.
 
 ## Installation
 ```shell
-composer require mvccore/simpleform
+composer require mvccore/mvccore
 ```
 
 ## Main features
-- MVC core framework for classic web apps with any request types and HTML/AJAX responses
+- MVC core framework for classic web apps with:
+	- Long_Classes_Names structure or \Namespaces\Classes\Names
+	- any request types and HTML/AJAX responses
+	- automatic Controller/Action routing by query params or routes
+	- automatic url generating
+	- unlimited controllers and views structure
+	- views, sub views and layout views rendering and view helpers
+	- automatic model classes connecting into databases with PDO
+	- system and custom configuration files
+	- session namespaces management
+	- custom debug tools and logging
+	- possibility to extend MvcCore core classes
+	- request and response object customization
+	- with no unused code, everything spacial is MvcCore extension
 - partial or complete application packaging into single PHP file by [**Packager (mvccore/packager)**](https://github.com/mvccore/packager)
 	- including only file extensions you want
 	- or including all files (binary or text, doesn't metter, everything is possible to pack)

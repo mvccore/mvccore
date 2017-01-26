@@ -13,7 +13,7 @@
 
 /**
  * Core tools:
- * - translating cases:
+ * - translating cases (with folders support):
  *   - dashed-case to PascalCase
  *   - PascalCase to dashed-case
  *   - unserscore_case to PascalCase
@@ -23,37 +23,49 @@
 class MvcCore_Tool
 {
     /**
-     * Convert all string from 'MyCutomValue' to 'my-custom-value'
+     * Convert all string 'from' => 'to':
+	 * - 'MyCutomValue'					=> 'my-custom-value'
+	 * - 'MyCutom/Value/InsideFolder'	=> 'my-custom/value/inside-folder'
      * @param string $pascalCase 
      * @return string
      */
     public static function GetDashedFromPascalCase ($pascalCase = '') {
-		return strtolower(preg_replace("#([A-Z])#", "-$1", lcfirst($pascalCase)));
+		return strtolower(preg_replace("#([a-z])([A-Z])#", "$1-$2", lcfirst($pascalCase)));
 	}
     /**
-	 * Convert all string from 'my-custom-value' to 'MyCutomValue'
+	 * Convert all string 'from' => 'to':
+	 * - 'my-custom-value'				=> 'MyCutomValue'
+	 * - 'my-custom/value/inside-folder'=> 'MyCutom/Value/InsideFolder'
 	 * @param string $dashed 
 	 * @return string
 	 */
 	public static function GetPascalCaseFromDashed ($dashed = '') {
-		return ucfirst(str_replace('-', '', ucwords($dashed, '-')));
+		$a = explode('/', $dashed);
+		foreach ($a as & $b) $b = ucfirst(str_replace('-', '', ucwords($b, '-')));
+		return implode('/', $a);
 	}
     /**
-	 * Convert all string from 'MyCutomValue' to 'my_custom_value'
+	 * Convert all string 'from' => 'to':
+	 * - 'MyCutomValue'					=> 'my_custom_value'
+	 * - 'MyCutom/Value/InsideFolder'	=> 'my_custom/value/inside_folder'
 	 * @param string $pascalCase
 	 * @return string
 	 */
     public static function GetUnderscoredFromPascalCase ($pascalCase = '') {
-		return strtolower(preg_replace("#([A-Z])#", "_$1", lcfirst($pascalCase)));
+		return strtolower(preg_replace("#([a-z])([A-Z])#", "$1_$2", lcfirst($pascalCase)));
 	}
 
     /**
-	 * Convert all string from 'my_custom_value' to 'MyCutomValue'
+	 * Convert all string 'from' => 'to':
+	 * - 'my_custom_value'				=> 'MyCutomValue'
+	 * - 'my_custom/value/inside_folder'=> 'MyCutom/Value/InsideFolder'
 	 * @param string $underscored
 	 * @return string
 	 */
 	public static function GetPascalCaseFromUnderscored ($underscored = '') {
-		return ucfirst(str_replace('_', '', ucwords($underscored, '_')));
+		$a = explode('/', $underscored);
+		foreach ($a as & $b) $b = ucfirst(str_replace('_', '', ucwords($b, '_')));
+		return implode('/', $a);
 	}
 	/**
 	 * Safely encode json string from php value.

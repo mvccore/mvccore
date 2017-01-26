@@ -50,7 +50,7 @@ class MvcCore
 	 * Comparation by PHP function version_compare();
 	 * @see http://php.net/manual/en/function.version-compare.php
 	 */
-	const VERSION = '3.1.4';
+	const VERSION = '3.2.0';
 	/**
 	 * MvcCore application mode describing that the application is compiled in one big php file.
 	 * In PHP app mode should be packed php files or any asset files - phtml templates, ini files 
@@ -248,13 +248,13 @@ class MvcCore
 	 * Default controller name.
 	 * @var string
 	 */
-	protected $defaultControllerName = 'Default';
+	protected $defaultControllerName = 'Index';
 
 	/**
 	 * Default controller action name.
 	 * @var string
 	 */
-	protected $defaultControllerDefaultActionName = 'Default';
+	protected $defaultControllerDefaultActionName = 'Index';
 
 	/**
 	 * Default controller error action name.
@@ -808,7 +808,10 @@ class MvcCore
 		}
 		if (!method_exists($this->controller, $actionName) && $controllerClassFullName !== 'MvcCore_Controller') {
 			if (!file_exists($viewScriptFullPath)) {
-				$this->DispatchException(new ErrorException("Controller '$controllerClassFullName' has not method '$actionName' or view doesn't exists in path: '$viewScriptFullPath'.", 404));
+				$this->DispatchException(new ErrorException(
+					"Controller '$controllerClassFullName' has not method '$actionName' "
+					."or view doesn't exists in path: '$viewScriptFullPath'.", 404
+				));
 			}
 		}
 		list($controllerNameDashed, $actionNameDashed) = array(
@@ -1008,9 +1011,10 @@ class MvcCore
 	 * @return string 
 	 */
 	public function CompleteControllerName ($controllerNamePascalCase) {
+		$glue = strpos($controllerNamePascalCase, '\\') !== FALSE ? '\\' : '_';
 		$firstChar = substr($controllerNamePascalCase, 0, 1);
 		if ($firstChar == '/') return substr($controllerNamePascalCase, 1);
-		return implode('_', array(
+		return implode($glue, array(
 			$this->appDir,
 			$this->controllersDir,
 			$controllerNamePascalCase

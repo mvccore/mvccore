@@ -238,7 +238,7 @@ class MvcCore_Config
 				}
 			}
 		}
-		static::SetEnvironment($environment);
+		if ($environment && !static::$environment) static::SetEnvironment($environment);
 		return $environment;
 	}
 

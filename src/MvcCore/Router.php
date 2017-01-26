@@ -341,9 +341,7 @@ class MvcCore_Router
 			$paramKeyReplacement = "{%$key}";
 			if (mb_strpos($result, $paramKeyReplacement) === FALSE) {
 				$glue = (mb_strpos($result, '?') === FALSE) ? '?' : '&';
-				$subResult = '';
-				$this->encodeParamRecursive($subResult, $key, $value);
-				$result .= $glue . rtrim($subResult, '&');
+				$result .= $glue . http_build_query(array($key => $value));
 			} else {
 				$result = str_replace($paramKeyReplacement, $value, $result);
 			}
@@ -379,8 +377,9 @@ class MvcCore_Router
 			preg_match_all($route->Pattern, $requestPath, $patternMatches);
 			if (count($patternMatches) > 0 && count($patternMatches[0]) > 0) {
 				$this->currentRoute = $route;
+				$controllerName = isset($route->Controller)? $route->Controller: '';
 				$routeParams = array(
-					'controller'	=>	MvcCore_Tool::GetDashedFromPascalCase(isset($route->Controller)? $route->Controller: ''),
+					'controller'	=>	MvcCore_Tool::GetDashedFromPascalCase(str_replace(array('_', '\\'), '/', $controllerName)),
 					'action'		=>	MvcCore_Tool::GetDashedFromPascalCase(isset($route->Action)	? $route->Action	: ''),
 				);
 				preg_match_all("#{%([a-zA-Z0-9]*)}#", $route->Reverse, $reverseMatches);
@@ -417,22 +416,5 @@ class MvcCore_Router
 		$pascalCase = preg_replace_callback("#(_[a-z])#", function ($m) {return strtoupper($m[0]);}, $pascalCase);
 		$pascalCase = ucfirst($pascalCase);
 		return array($dashed, $pascalCase);
-	}
-
-	/**
-	 * Encode param recursive to query string as: 'key=value',
-	 * if param is array, encode it in form: 'key[]=value1&key[]=value2'
-	 * @param string $key
-	 * @param string|string[] $value
-	 * @return string
-	 */
-	protected function encodeParamRecursive (& $result, & $key, & $value, $level = 0) {
-		if (is_array($value)) {
-			foreach ($value as $item) {
-				$this->encodeParamRecursive($result, $key, $item, $level + 1);
-			}
-		} else {
-			$result .= str_pad($key, mb_strlen($key) + $level * 2, '[]', STR_PAD_RIGHT) . '=' . (string) $value . '&';
-		}
 	}
 }
