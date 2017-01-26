@@ -77,6 +77,7 @@ composer require mvccore/mvccore
 		- Hello world example has only 2 important controllers (Default.php and Base.php)
 		- MvcCore framework has only 12 core classes (well documented comments, not everything used every time)
 - check out more complex applications:
+	- [**XML Documents**](https://github.com/mvccore/app-xmldocs)
 	- [**Questionnaires**](https://github.com/mvccore/app-questionnaires)
 - to develop new application - work in development directory
 - to build single file application - use make.cmd and configure build proces in make-php.php or make-phar.php (see examples)
