@@ -45,7 +45,7 @@ class MvcCore
 	 * This mode has always best speed, because it shoud not work with hard drive if you dont want.
 	 * Only with many or with large asset files, there may be greater demands on memory and processor, 
 	 * which shouldn't be good for your application. Be aware to do that. 
-	 * Result application packed in PHP mode has special 'Packager_Php_Wrapper' class included 
+	 * Result application packed in PHP mode has special '\Packager_Php_Wrapper' class included 
 	 * before any application content. This special class handles allowed file operations and assets 
 	 * as binary or base64 encoded. Everything shoud be configured before PHP packing.
 	 * This mode has always four submodes started with PHP substring. All PHP package modes are:
@@ -272,8 +272,8 @@ class MvcCore
 			$compiled = static::NOT_COMPILED;
 			if (strpos(__FILE__, 'phar://') === 0) {
 				$compiled = static::COMPILED_PHAR;
-			} else if (class_exists('Packager_Php_Wrapper')) {
-				$compiled = constant('Packager_Php_Wrapper::FS_MODE');
+			} else if (class_exists('\Packager_Php_Wrapper')) {
+				$compiled = constant('\Packager_Php_Wrapper::FS_MODE');
 			}
 			$instance->compiled = $compiled;
 		}
@@ -870,7 +870,7 @@ class MvcCore
 	 * @return bool
 	 */
 	public function DispatchException (\Exception $e) {
-		if (class_exists('Packager_Php')) return FALSE; // packing process
+		if (class_exists('\Packager_Php')) return FALSE; // packing process
 		if ($e->getCode() == 404) {
 			\MvcCore\Debug::Log($e, \MvcCore\Debug::ERROR);
 			$this->RenderNotFound($e->getMessage());
