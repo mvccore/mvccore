@@ -46,5 +46,5 @@
 		"classmap": ["src/"],
 		"files": ["src/startup.php"]
 	},
-	"minimum-stability": "dev"
+	"minimum-stability": "master-dev"
 }
