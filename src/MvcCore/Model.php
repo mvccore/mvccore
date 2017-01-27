@@ -8,10 +8,12 @@
  * the LICENSE.md file that are distributed with this source code.
  *
  * @copyright	Copyright (c) 2016 Tom Flídr (https://github.com/mvccore/mvccore)
- * @license		https://mvccore.github.io/docs/mvccore/3.0.0/LICENCE.md
+ * @license		https://mvccore.github.io/docs/mvccore/4.0.0/LICENCE.md
  */
 
 require_once('Config.php');
+
+namespace MvcCore;
 
 /**
  * Core model
@@ -21,7 +23,7 @@ require_once('Config.php');
  * - instance initialized values reading
  * - virtual calls/sets and gets handling
  */
-abstract class MvcCore_Model {
+abstract class Model {
 	/**
 	 * PDO connection arguments.
 	 * 
@@ -73,9 +75,9 @@ abstract class MvcCore_Model {
 			'auth'		=> TRUE,
 			'fileDb'	=> FALSE,
 			'options'	=> array(
-				'PDO::ATTR_EMULATE_PREPARES'		=> FALSE, // let params inserting on database
-				'PDO::MYSQL_ATTR_MULTI_STATEMENTS'	=> TRUE,
-				'PDO::MYSQL_ATTR_INIT_COMMAND'		=> "SET NAMES 'UTF8'",
+				'\PDO::ATTR_EMULATE_PREPARES'		=> FALSE, // let params inserting on database
+				'\PDO::MYSQL_ATTR_MULTI_STATEMENTS'	=> TRUE,
+				'\PDO::MYSQL_ATTR_INIT_COMMAND'		=> "SET NAMES 'UTF8'",
 			),
 		),
 		'sqlite'		=> array(
@@ -131,19 +133,19 @@ abstract class MvcCore_Model {
 
     /**
      * PDO instance
-     * @var PDO
+     * @var \PDO
      */
     protected $db;
 
 	/**
 	 * System config section for database under called connection index in constructor
-	 * @var stdClass
+	 * @var \stdClass
 	 */
 	protected $cfg;
 
 	/**
 	 * Resource model class with SQL statements
-	 * @var MvcCore_Model
+	 * @var \MvcCore\Model
 	 */
 	protected $resource;
 
@@ -158,8 +160,8 @@ abstract class MvcCore_Model {
 		$data = array();
 		$systemProperties = array('autoInit' => 1, 'db' => 1, 'cfg' => 1, 'resource' => 1);
 		$modelClassName = get_class($this);
-		$classReflector = new ReflectionClass($modelClassName);
-		$properties = $publicOnly ? $classReflector->getProperties(ReflectionProperty::IS_PUBLIC) : $classReflector->getProperties();
+		$classReflector = new \ReflectionClass($modelClassName);
+		$properties = $publicOnly ? $classReflector->getProperties(\ReflectionProperty::IS_PUBLIC) : $classReflector->getProperties();
 		foreach ($properties as $property) {
 			if (!$includeInheritProperties && $property->class != $modelClassName) continue;
 			$propertyName = $property->name;
@@ -179,12 +181,12 @@ abstract class MvcCore_Model {
 	 * @param boolean $keysInsensitive			if true, set up properties from $data with case insensivity
 	 * @param boolean $includeInheritProperties if true, include only fields from current model class and from parent classes
 	 * @param boolean $publicOnly               if true, include only public model fields
-	 * @return MvcCore_Model
+	 * @return \MvcCore\Model
 	 */
 	public function SetUp ($data = array(), $keysInsensitive = FALSE, $includeInheritProperties = TRUE, $publicOnly = TRUE) {
 		$modelClassName = get_class($this);
-		$classReflector = new ReflectionClass($modelClassName);
-		$properties = $publicOnly ? $classReflector->getProperties(ReflectionProperty::IS_PUBLIC) : $classReflector->getProperties();
+		$classReflector = new \ReflectionClass($modelClassName);
+		$properties = $publicOnly ? $classReflector->getProperties(\ReflectionProperty::IS_PUBLIC) : $classReflector->getProperties();
 		$dataKeys = $keysInsensitive ? ','.implode(',', array_keys($data)).',' : '' ;
 		foreach ($properties as $property) {
 			if (!$includeInheritProperties && $property->class != $modelClassName) continue;
@@ -212,7 +214,7 @@ abstract class MvcCore_Model {
 	/**
 	 * Returns (or creates and holds) instance from local store
 	 * @param mixed $arg,... unlimited OPTIONAL variables to pass into __construct() method
-	 * @return MvcCore_Model|mixed
+	 * @return \MvcCore\Model|mixed
 	 */
 	public static function GetInstance (/* $arg1, $arg2, $arg, ... */) {
 		// get 'ClassName' string from this call: ClassName::GetInstance();
@@ -220,7 +222,7 @@ abstract class MvcCore_Model {
 		$args = func_get_args();
 		$instanceIndex = md5($className . '_' . serialize($args));
 		if (!isset(self::$instances[$instanceIndex])) {
-			$reflectionClass = new ReflectionClass($className);
+			$reflectionClass = new \ReflectionClass($className);
 			$instance = $reflectionClass->newInstanceArgs($args);
 			self::$instances[$instanceIndex] = $instance;
 		}
@@ -232,13 +234,13 @@ abstract class MvcCore_Model {
 	 * @param array $args values array with variables to pass into __construct() method
 	 * @param string $modelClassPath
 	 * @param string $resourceClassPath
-	 * @return App_Models_Base(_Resource)
+	 * @return \MvcCore\Model (|\MvcCore\Model\Resource)
 	 */
-	public static function GetResource ($args = array(), $modelClassName = '', $resourceClassPath = '_Resource') {
+	public static function GetResource ($args = array(), $modelClassName = '', $resourceClassPath = '\Resource') {
 		$result = NULL;
 		if (!$modelClassName) $modelClassName = get_called_class();
 		// do not create resource instance in resource class (if current class name doesn't end with '_Resource' substring):
-		if (strpos($modelClassName, '_Resource') === FALSE) {
+		if (strpos($modelClassName, '\Resource') === FALSE) {
 			$resourceClassName = $modelClassName . $resourceClassPath;
 			// do not create resource instance if resource class doesn't exist:
 			if (class_exists($resourceClassName)) {
@@ -270,7 +272,7 @@ abstract class MvcCore_Model {
 	 * Returns database connection by connection index (cached by local store)
 	 * or create new connection of no connection cached.
 	 * @param int $connectionIndex 
-	 * @return PDO
+	 * @return \PDO
 	 */
 	public static function GetDb ($connectionIndex = -1) {
 		if (!isset(static::$connections[$connectionIndex])) {
@@ -285,7 +287,7 @@ abstract class MvcCore_Model {
 			// If database is filesystem based, complete app root and extend
 			// relative path in $cfg->dbname to absolute path
 			if ($conArgs->fileDb) {
-				$appRoot = MvcCore::GetInstance()->GetRequest()->AppRoot;
+				$appRoot = \MvcCore::GetInstance()->GetRequest()->AppRoot;
 				if (strpos($appRoot, 'phar://') !== FALSE) {
 					$lastSlashPos = strrpos($appRoot, '/');
 					$appRoot = substr($appRoot, 7, $lastSlashPos - 7);
@@ -298,9 +300,9 @@ abstract class MvcCore_Model {
 			// If database required username and password credentials,
 			// connect with wull arguments count or only with one (sqllite only)
 			if ($conArgs->auth) {
-				$connection = new PDO($dsn, $cfg->username, $cfg->password, $conArgs->options);
+				$connection = new \PDO($dsn, $cfg->username, $cfg->password, $conArgs->options);
 			} else {
-				$connection = new PDO($dsn);
+				$connection = new \PDO($dsn);
 			}
 			// store new connection under config index for all other model classes
 			static::$connections[$connectionIndex] = $connection;
@@ -329,18 +331,18 @@ abstract class MvcCore_Model {
 
 	/**
 	 * Initialize configuration data
-	 * @throws Exception
+	 * @throws \Exception
 	 * @return void
 	 */
 	protected static function loadConfigs () {
 		if (empty(static::$configs)) {
-			$cfg = MvcCore_Config::GetSystem();
+			$cfg = \MvcCore\Config::GetSystem();
 			if ($cfg === FALSE) {
-				$cfgPath = MvcCore_Config::$SystemConfigPath;
-				throw new Exception('['.__CLASS__."] System config.ini not found in '$cfgPath'.");
+				$cfgPath = \MvcCore\Config::$SystemConfigPath;
+				throw new \Exception('['.__CLASS__."] System config.ini not found in '$cfgPath'.");
 			}
 			if (!isset($cfg->db)) {
-				throw new Exception('['.__CLASS__."] No [db] section and no records matched 'db.*' found in system config.ini.");
+				throw new \Exception('['.__CLASS__."] No [db] section and no records matched 'db.*' found in system config.ini.");
 			}
 			$cfgType = gettype($cfg->db);
 			// db.defaultDbIndex - default connection index for modelses, where is no connection index strictly defined
@@ -362,8 +364,8 @@ abstract class MvcCore_Model {
 	 * This method returns custom value for get and $model instance for set.
 	 * @param string $rawName 
 	 * @param array  $arguments 
-	 * @throws Exception 
-	 * @return mixed|MvcCore_Model
+	 * @throws \Exception 
+	 * @return mixed|\MvcCore\Model
 	 */
 	public function __call ($rawName, $arguments = array()) {
 		$nameBegin = strtolower(substr($rawName, 0, 3));
@@ -374,7 +376,7 @@ abstract class MvcCore_Model {
 			$this->$name = isset($arguments[0]) ? $arguments[0] : NULL;
 			return $this;
 		} else {
-			throw new Exception('['.__CLASS__."] No property with name '$name' defined.");
+			throw new \Exception('['.__CLASS__."] No property with name '$name' defined.");
 		}
 	}
 

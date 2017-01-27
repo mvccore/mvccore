@@ -8,12 +8,14 @@
  * the LICENSE.md file that are distributed with this source code.
  *
  * @copyright	Copyright (c) 2016 Tom Flídr (https://github.com/mvccore/mvccore)
- * @license		https://mvccore.github.io/docs/mvccore/3.0.0/LICENCE.md
+ * @license		https://mvccore.github.io/docs/mvccore/4.0.0/LICENCE.md
  */
 
 require_once('Request.php');
 require_once('Route.php');
 require_once('Tool.php');
+
+namespace MvcCore;
 
 /**
  * Core router:
@@ -25,17 +27,17 @@ require_once('Tool.php');
  *   - or into query string form, containing controller and action params
  * - params query string building - primitive param value or array value representation possible
  */
-class MvcCore_Router
+class Router
 {
 	/**
 	 * Current singleton instance
-	 * @var MvcCore_Router
+	 * @var \MvcCore\Router
 	 */
 	protected static $instance;
 
 	/**
 	 * Current application request
-	 * @var MvcCore_Request
+	 * @var \MvcCore\Request
 	 */
 	protected $request;
 	
@@ -53,7 +55,7 @@ class MvcCore_Router
 
 	/**
 	 * Current application http routes
-	 * @var MvcCore_Route
+	 * @var \MvcCore\Route
 	 */
 	protected $currentRoute = NULL;
 
@@ -67,11 +69,11 @@ class MvcCore_Router
 	 * Get singleton instance by configured class In MvcCore app instance,
 	 * optionaly set routes as first argument.
 	 * @param array $routes 
-	 * @return MvcCore_Router
+	 * @return \MvcCore\Router
 	 */
 	public static function & GetInstance (array $routes = array()) {
 		if (!self::$instance) {
-			$routerClass = MvcCore::GetInstance()->GetRouterClass();
+			$routerClass = \MvcCore::GetInstance()->GetRouterClass();
 			self::$instance = new $routerClass($routes);
 		}
 		return self::$instance;
@@ -88,7 +90,7 @@ class MvcCore_Router
     /**
      * Clear and set http routes again
 	 * @param array $routes 
-	 * @return MvcCore_Router
+	 * @return \MvcCore\Router
      */
     public function SetRoutes (array $routes = array()) {
 		$this->routes = array();
@@ -108,20 +110,20 @@ class MvcCore_Router
 	 * Append or prepend new request routes.
 	 * Routes definition array shoud have items as array
 	 * with route configuration definitions, stdClass with route
-	 * configuration definitions or MvcCore_Route instance.
+	 * configuration definitions or \MvcCore\Route instance.
 	 * Keys in given array has to be route names as 'Controller:Action'
 	 * strings or any custom route names with defined controller name and
 	 * action name inside route array/stdClass configuration or route instance.
-	 * @param array[]|stdClass[]|MvcCore_Route[]	$routes		keyed array with routes, keys are route names or route Controller::Action definitions
+	 * @param array[]|\stdClass[]|\MvcCore\Route[]	$routes		keyed array with routes, keys are route names or route Controller::Action definitions
 	 * @param bool									$prepend	optional
-	 * @return MvcCore_Router
+	 * @return \MvcCore\Router
 	 */
     public function AddRoutes (array $routes = array(), $prepend = FALSE) {
 		if ($prepend) $routes = array_reverse($routes);
 		foreach ($routes as $routeName => & $route) {
 			$routeType = gettype($route);
 			$numericKey = is_numeric($routeName);
-			if ($route instanceof MvcCore_Route) {
+			if ($route instanceof \MvcCore\Route) {
 				if (!$numericKey) {
 					$route->Name = $routeName;
 				}
@@ -145,21 +147,21 @@ class MvcCore_Router
 	 * Append or prepend new request route.
 	 * Route definition array shoud be array with route 
 	 * configuration definition, stdClass with route configuration 
-	 * definition or MvcCore_Route instance. In configuration definition is 
+	 * definition or \MvcCore\Route instance. In configuration definition is 
 	 * required route name, controller, action, pattern and if pattern contains
 	 * regexp groups, its necessary also to define route reverse.
 	 * Route name should be defined as 'Controller:Action' string or any custom
 	 * route name, but then there is necessary to specify controller name and
 	 * action name inside route array/stdClass configuration or route instance.
-	 * @param array|stdClass|MvcCore_Route	$routeCfgOrRoute
-	 * @param bool							$prepend
-	 * @return MvcCore_Router
+	 * @param array|\stdClass|\MvcCore\Route	$routeCfgOrRoute
+	 * @param bool								$prepend
+	 * @return \MvcCore\Router
 	 */
 	public function AddRoute ($routeCfgOrRoute, $prepend = FALSE) {
-		if ($routeCfgOrRoute instanceof MvcCore_Route) {
+		if ($routeCfgOrRoute instanceof \MvcCore\Route) {
 			$instance = & $routeCfgOrRoute;
 		} else {
-			$instance = MvcCore_Route::GetInstance($routeCfgOrRoute);
+			$instance = \MvcCore\Route::GetInstance($routeCfgOrRoute);
 		}
 		if ($prepend) {
 			$this->routes = array_merge(array($instance->Name => $instance), $this->routes);
@@ -173,8 +175,8 @@ class MvcCore_Router
 
 	/**
 	 * Set current route
-	 * @param MvcCore_Route $currentRoute 
-	 * @return MvcCore_Router
+	 * @param \MvcCore\Route $currentRoute 
+	 * @return \MvcCore\Router
 	 */
 	public function SetCurrentRoute ($currentRoute) {
 		$this->currentRoute = $currentRoute;
@@ -183,7 +185,7 @@ class MvcCore_Router
 
 	/**
 	 * Return routed route by http request.
-	 * @return MvcCore_Route
+	 * @return \MvcCore\Route
 	 */
 	public function & GetCurrentRoute () {
 		return $this->currentRoute;
@@ -212,12 +214,12 @@ class MvcCore_Router
 	 * and Params property in referenced application request by 
 	 * current request url. Return routed route as current route 
 	 * as reference.
-	 * This method is always called from MvcCore app instance 
+	 * This method is always called from \MvcCore app instance 
 	 * to dispatch controller by result route.
-	 * @param MvcCore_Request $request 
-	 * @return MvcCore_Route
+	 * @param \MvcCore\Request $request 
+	 * @return \MvcCore\Route
 	 */
-	public function & Route (MvcCore_Request & $request) {
+	public function & Route (\MvcCore\Request & $request) {
 		$this->request = $request;
 		$chars = "a-zA-Z0-9\-_/";
 		$controllerName = $request->GetParam('controller', $chars);
@@ -228,14 +230,14 @@ class MvcCore_Router
 			$this->routeByRewriteRoutes();
 		}
 		$requestParams = & $this->request->Params;
-		list($defaultCtrl, $defaultAction) = MvcCore::GetInstance()->GetDefaultControllerAndActionNames();
+		list($defaultCtrl, $defaultAction) = \MvcCore::GetInstance()->GetDefaultControllerAndActionNames();
 		foreach (array('controller' => $defaultCtrl, 'action' => $defaultAction) as $mvcProperty => $mvcValue) {
 			if (!isset($requestParams[$mvcProperty]) || (isset($requestParams[$mvcProperty])  && strlen($requestParams[$mvcProperty]) === 0)) {
-				$requestParams[$mvcProperty] = MvcCore_Tool::GetDashedFromPascalCase($mvcValue);
+				$requestParams[$mvcProperty] = \MvcCore\Tool::GetDashedFromPascalCase($mvcValue);
 			}
 		}
 		if (!$this->currentRoute && ($this->request->Path == '/' || $this->routeToDefaultIfNotMatch)) {
-			$this->currentRoute = MvcCore_Route::GetInstance(array(
+			$this->currentRoute = \MvcCore\Route::GetInstance(array(
 				'name'			=> "$defaultCtrl:$defaultAction",
 				'controller'	=> $defaultCtrl,
 				'action'		=> $defaultAction,
@@ -243,12 +245,12 @@ class MvcCore_Router
 		}
 		if ($this->currentRoute) {
 			if (!$this->currentRoute->Controller) {
-				$this->currentRoute->Controller = MvcCore_Tool::GetPascalCaseFromDashed(
+				$this->currentRoute->Controller = \MvcCore\Tool::GetPascalCaseFromDashed(
 					$requestParams['controller']
 				);
 			}
 			if (!$this->currentRoute->Action) {
-				$this->currentRoute->Action = MvcCore_Tool::GetPascalCaseFromDashed(
+				$this->currentRoute->Action = \MvcCore\Tool::GetPascalCaseFromDashed(
 					$requestParams['action']
 				);
 			}
@@ -273,20 +275,18 @@ class MvcCore_Router
 	 * @param array  $params						optional
 	 * @return string
 	 */
-	public function Url ($controllerActionOrRouteName = 'Default:Default', $params = array()) {
+	public function Url ($controllerActionOrRouteName = 'Index:Index', $params = array()) {
 		$result = '';
 		if (strpos($controllerActionOrRouteName, ':') !== FALSE) {
 			list($ctrlPc, $actionPc) = explode(':', $controllerActionOrRouteName);
 			$requestParams = $this->request->Params;
-			if (!$ctrlPc) $ctrlPc = MvcCore_Tool::GetPascalCaseFromDashed($requestParams['controller']);
-			if (!$actionPc) $actionPc = MvcCore_Tool::GetPascalCaseFromDashed($requestParams['action']);
+			if (!$ctrlPc) $ctrlPc = \MvcCore\Tool::GetPascalCaseFromDashed($requestParams['controller']);
+			if (!$actionPc) $actionPc = \MvcCore\Tool::GetPascalCaseFromDashed($requestParams['action']);
 			$controllerActionOrRouteName = "$ctrlPc:$actionPc";
 		} else if ($controllerActionOrRouteName == 'self') {
 			$controllerActionOrRouteName = $this->currentRoute ? $this->currentRoute->Name : ':';
-			if (!$params) {
-				$params = array_merge(array(), $this->request->Params);
-				unset($params['controller'], $params['action']);
-			}
+			$params = array_merge($this->request->Params, $params);
+			unset($params['controller'], $params['action']);
 		}
 		$absolute = FALSE;
 		if ($params && isset($params['absolute'])) {
@@ -310,17 +310,12 @@ class MvcCore_Router
 	 */
 	protected function urlByQueryString ($controllerActionOrRouteName, $params) {
 		list($contollerPascalCase, $actionPascalCase) = explode(':', $controllerActionOrRouteName);
-		$controllerDashed = MvcCore_Tool::GetDashedFromPascalCase($contollerPascalCase);
-		$actionDashed = MvcCore_Tool::GetDashedFromPascalCase($actionPascalCase);
+		$controllerDashed = \MvcCore\Tool::GetDashedFromPascalCase($contollerPascalCase);
+		$actionDashed = \MvcCore\Tool::GetDashedFromPascalCase($actionPascalCase);
 		$result = $this->request->BasePath . $this->request->ScriptName 
 			. "?controller=$controllerDashed&action=$actionDashed";
 		if ($params) {
-			foreach ($params as $key => $value) {
-				$subResult = '';
-				$this->encodeParamRecursive($subResult, $key, $value);
-				$result .= '&' . rtrim($subResult, '&');
-			}
-			//$result .= "&" . http_build_query($params, "", "&");
+			$result .= "&" . http_build_query($params, "", "&");
 		}
 		return $result;
 	}
@@ -358,7 +353,7 @@ class MvcCore_Router
 	protected function routeByControllerAndActionQueryString ($controllerName, $actionName) {
 		list ($controllerDashed, $controllerPascalCase) = static::completeControllerActionParam($controllerName);
 		list ($actionDashed, $actionPascalCase) = static::completeControllerActionParam($actionName);
-		$this->currentRoute = MvcCore_Route::GetInstance(array(
+		$this->currentRoute = \MvcCore\Route::GetInstance(array(
 			'name'			=> "$controllerPascalCase:$actionPascalCase",
 			'controller'	=> $controllerPascalCase,
 			'action'		=> $actionPascalCase
@@ -379,8 +374,8 @@ class MvcCore_Router
 				$this->currentRoute = $route;
 				$controllerName = isset($route->Controller)? $route->Controller: '';
 				$routeParams = array(
-					'controller'	=>	MvcCore_Tool::GetDashedFromPascalCase(str_replace(array('_', '\\'), '/', $controllerName)),
-					'action'		=>	MvcCore_Tool::GetDashedFromPascalCase(isset($route->Action)	? $route->Action	: ''),
+					'controller'	=>	\MvcCore\Tool::GetDashedFromPascalCase(str_replace(array('_', '\\'), '/', $controllerName)),
+					'action'		=>	\MvcCore\Tool::GetDashedFromPascalCase(isset($route->Action)	? $route->Action	: ''),
 				);
 				preg_match_all("#{%([a-zA-Z0-9]*)}#", $route->Reverse, $reverseMatches);
 				if (isset($reverseMatches[1]) && $reverseMatches[1]) {

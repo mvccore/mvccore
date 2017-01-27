@@ -8,10 +8,12 @@
  * the LICENSE.md file that are distributed with this source code.
  *
  * @copyright	Copyright (c) 2016 Tom Flídr (https://github.com/mvccore/mvccore)
- * @license		https://mvccore.github.io/docs/mvccore/3.0.0/LICENCE.md
+ * @license		https://mvccore.github.io/docs/mvccore/4.0.0/LICENCE.md
  */
 
 require_once('Config.php');
+
+namespace MvcCore;
 
 /**
  * Core debug tools
@@ -21,7 +23,7 @@ require_once('Config.php');
  * - debuging shortcut functions initialization
  * - exceptions hdd logging or printing in development mode
  */
-class MvcCore_Debug
+class Debug
 {
 	const
 		DEBUG = 'debug',
@@ -80,7 +82,7 @@ class MvcCore_Debug
 	protected static $timers = array();
 
 	/**
-	 * True for cofigured debug class as MvcCore_Debug, FALSE for any other configured extension
+	 * True for cofigured debug class as \MvcCore\Debug, FALSE for any other configured extension
 	 * @var bool
 	 */
 	protected static $originalDebugClass = TRUE;
@@ -91,7 +93,7 @@ class MvcCore_Debug
 	 */
 	public static function Init () {
 		if (!is_null(static::$development)) return;
-		$app = MvcCore::GetInstance();
+		$app = \MvcCore::GetInstance();
 		$configClass = $app->GetConfigClass();
 		static::$development = $configClass::IsDevelopment();
 		$cfg = $configClass::GetSystem();
@@ -155,7 +157,7 @@ class MvcCore_Debug
 		 * @return mixed  variable itself
 		 */
 		function x ($value, $title = NULL, $options = array()) {
-			return MvcCore_Debug::BarDump($value, $title, $options);
+			return \MvcCore\Debug::BarDump($value, $title, $options);
 		};
 
 		/**
@@ -164,7 +166,7 @@ class MvcCore_Debug
 		 */
 		function xx () {
 			$args = func_get_args();
-			foreach ($args as $arg) MvcCore_Debug::BarDump($arg);
+			foreach ($args as $arg) \MvcCore\Debug::BarDump($arg);
 		};
 
 		/**
@@ -172,16 +174,16 @@ class MvcCore_Debug
 		 * @param  mixed  $var		variable to dump
 		 * @param  string $title	optional title
 		 * @param  array  $options	dumper options
-		 * @throws Exception
+		 * @throws \Exception
 		 * @return void
 		 */
 		function xxx ($var = NULL, $title = NULL, $options = array()) {
 			$args = func_get_args();
 			if (count($args) === 0) {
-				throw new Exception("Stopped.");
+				throw new \Exception("Stopped.");
 			} else {
 				@header("Content-Type: text/html; charset=utf-8");
-				foreach ($args as $arg) MvcCore_Debug::Dump($arg, FALSE, TRUE);
+				foreach ($args as $arg) \MvcCore\Debug::Dump($arg, FALSE, TRUE);
 			}
 			echo ob_get_clean();
 			die();
@@ -308,7 +310,7 @@ class MvcCore_Debug
 	 */
 	protected static function timerHandler ($name = NULL) {
 		$now = microtime(TRUE);
-		if (is_null($name)) return $now - MvcCore::GetInstance()->GetMicrotime();
+		if (is_null($name)) return $now - \MvcCore::GetInstance()->GetMicrotime();
 		$difference = isset(static::$timers[$name]) ? $now - static::$timers[$name] : 0;
 		static::$timers[$name] = $now;
 		return $difference;
@@ -338,10 +340,10 @@ class MvcCore_Debug
 
 	/**
 	 * Exception printing for development, logging for production.
-	 * @param Exception $e
+	 * @param \Exception $e
 	 * @return void
 	 */
-	protected static function exceptionHandler (Exception $e, $exit = TRUE) {
+	protected static function exceptionHandler (\Exception $e, $exit = TRUE) {
 		throw $e;
 		//if ($exit) exit;
 	}

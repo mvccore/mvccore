@@ -8,11 +8,13 @@
  * the LICENSE.md file that are distributed with this source code.
  *
  * @copyright	Copyright (c) 2016 Tom Flídr (https://github.com/mvccore/mvccore)
- * @license		https://mvccore.github.io/docs/mvccore/3.0.0/LICENCE.md
+ * @license		https://mvccore.github.io/docs/mvccore/4.0.0/LICENCE.md
  */
 
 require_once('Tool.php');
 require_once(__DIR__.'/../MvcCore.php');
+
+namespace MvcCore;
 
 /**
  * Core request:
@@ -20,7 +22,7 @@ require_once(__DIR__.'/../MvcCore.php');
  * - params reading from $_GET/$_POST or direct input (in JSON or in query string)
  * - params cleaning by developer rules
  */
-class MvcCore_Request
+class Request
 {
 	const PROTOCOL_HTTP = 'http:';
 	const PROTOCOL_HTTPS = 'https:';
@@ -30,6 +32,7 @@ class MvcCore_Request
 
 	/**
 	 * Language international code, lowercase, not used by default.
+	 * To use this variable - install \MvcCore\Router extension \MvcCoreExt\Router\Lang
 	 * Example: 'en'
 	 * @var string
 	 */
@@ -37,6 +40,7 @@ class MvcCore_Request
 
 	/**
 	 * Country/locale code, uppercase, not used by default.
+	 * To use this variable - install \MvcCore\Router extension \MvcCoreExt\Router\Locale
 	 * Example: 'US'
 	 * @var string
 	 */
@@ -174,7 +178,7 @@ class MvcCore_Request
 
 	/**
 	 * Media site key - 'full' | 'tablet' | 'mobile'
-	 * To use this variable - install MvcCore_Router extension MvcCoreExt_MediaRouter
+	 * To use this variable - install \MvcCore\Router extension \MvcCoreExt\Router\Media
 	 * Example: 'full'
 	 * @var string
 	 */
@@ -219,10 +223,10 @@ class MvcCore_Request
 	 * @param array $server 
 	 * @param array $get 
 	 * @param array $post 
-	 * @return MvcCore_Request
+	 * @return \MvcCore\Request
 	 */
 	public static function GetInstance (array & $server, array & $get, array & $post) {
-		$requestClass = MvcCore::GetInstance()->GetRequestClass();
+		$requestClass = \MvcCore::GetInstance()->GetRequestClass();
 		return new $requestClass($server, $get, $post);
 	}
 
@@ -263,8 +267,8 @@ class MvcCore_Request
 	 * This method returns custom value for get and $request instance for set.
 	 * @param string $rawName
 	 * @param array  $arguments
-	 * @throws Exception
-	 * @return mixed|MvcCore_Request
+	 * @throws \Exception
+	 * @return mixed|\MvcCore\Request
 	 */
 	public function __call ($rawName, $arguments = array()) {
 		$nameBegin = strtolower(substr($rawName, 0, 3));
@@ -275,7 +279,7 @@ class MvcCore_Request
 			$this->$name = isset($arguments[0]) ? $arguments[0] : NULL;
 			return $this;
 		} else {
-			throw new Exception('['.__CLASS__."] No property with name '$name' defined.");
+			throw new \Exception('['.__CLASS__."] No property with name '$name' defined.");
 		}
 	}
 
@@ -302,7 +306,7 @@ class MvcCore_Request
 	 * Set directly raw param value without any change
 	 * @param string $name 
 	 * @param string $value 
-	 * @return MvcCore_Request
+	 * @return \MvcCore\Request
 	 */
 	public function SetParam ($name = "", $value = "") {
 		$this->Params[$name] = $value;
@@ -435,7 +439,7 @@ class MvcCore_Request
 	private function initParamsCompletePostData () {
 		$result = array();
 		$rawPhpInput = file_get_contents('php://input');
-		$decodedJsonResult = MvcCore_Tool::DecodeJson($rawPhpInput);
+		$decodedJsonResult = \MvcCore\Tool::DecodeJson($rawPhpInput);
 		if ($decodedJsonResult->success) {
 			$result = (array) $decodedJsonResult->data;
 		} else {

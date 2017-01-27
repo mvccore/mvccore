@@ -8,16 +8,18 @@
  * the LICENSE.md file that are distributed with this source code.
  *
  * @copyright	Copyright (c) 2016 Tom Flídr (https://github.com/mvccore/mvccore)
- * @license		https://mvccore.github.io/docs/mvccore/3.0.0/LICENCE.md
+ * @license		https://mvccore.github.io/docs/mvccore/4.0.0/LICENCE.md
  */
 
 require_once('Controller.php');
+
+namespace MvcCore;
 
 /**
  * Core view:
  * - static doctype storage
  * - static storage for dir names with view scripts
- * - possible to use for any controller/subcontroller/control/SimpleForm
+ * - possible to use for any controller/subcontroller/control/\MvcCore\Ext\Form
  * - view prerender preparing and rendering
  * - direct code evaluation
  * - view helpers management
@@ -31,7 +33,7 @@ require_once('Controller.php');
  *   - __get() - to get anything in view previously completed in controller
  * - no special view language implemented... why to use such stupid things...
  */
-class MvcCore_View
+class View
 {
 	/**
 	 * View output document type HTML4
@@ -85,11 +87,11 @@ class MvcCore_View
 	 * Helpers classes - base class names. For read & write.
 	 * @var array
 	 */
-	public static $HelpersClassBases = array(/*'App_Views_Helpers_'*/);
+	public static $HelpersClassBases = array(/*'\MvcCore\Ext\View\Helpers\'*/);
 	
 	/**
 	 * Rendered content
-	 * @var MvcCore_Controller|mixed
+	 * @var \MvcCore\Controller|mixed
 	 */
 	public $Controller;
 	
@@ -126,35 +128,28 @@ class MvcCore_View
 	 * @return void
 	 */
 	public static function StaticInit () {
-		$app = MvcCore::GetInstance();
-		$baseViewHelperSpaceItems = array(
-			$app->GetAppDir(),
-			$app->GetViewsDir(),
-			static::$HelpersDir
-		);
+		$app = \MvcCore::GetInstance();
 		static::$HelpersClassBases = array(
-			// 'App\Views\Helpers\'
-			implode('\\', $baseViewHelperSpaceItems) . '\\',
-			// 'App_Views_Helpers_'
-			implode('_', $baseViewHelperSpaceItems) . '_',
+			'\MvcCore\Ext\View\Helpers',
+			// '\App\Views\Helpers\'
+			'\\' . implode('\\', array(
+				$app->GetAppDir(),
+				$app->GetViewsDir(),
+				static::$HelpersDir
+			)) . '\\',
 		);
 	}
 
 	/**
 	 * Add view helpers class base name(s),
-	 * example: MvcCore_View::AddHelpersClassBases('MvcCoreExt_ViewHelpers_Assets', 'AnyOther_Place', '...');
+	 * example: \MvcCore\View::AddHelpersClassBases('\Any\Other\ViewHelpers\Place\', '...');
 	 * @param string $helper,... View helper class base name(s)
 	 * @return void
 	 */
 	public static function AddHelpersClassBases (/*...$helper*/) {
 		$args = func_get_args();
 		foreach ($args as $arg) {
-			if (strpos($arg, '\\') !== FALSE) {
-				$arg = rtrim($arg, '\\') . '\\';
-			} else {
-				$arg = rtrim($arg, '_') . '_';
-			}
-			static::$HelpersClassBases[] = $arg;
+			static::$HelpersClassBases[] = '\\' . trim($arg, '\\') . '\\';
 		}
 	}
 
@@ -165,21 +160,21 @@ class MvcCore_View
 	 * @return string
 	 */
 	public static function GetViewScriptFullPath ($typePath = '', $corectedRelativePath = '') {
-		$app = MvcCore::GetInstance();
+		$app = \MvcCore::GetInstance();
 		return implode('/', array(
 			$app->GetRequest()->AppRoot, 
 			$app->GetAppDir(), 
 			$app->GetViewsDir(), 
 			$typePath, 
-			$corectedRelativePath . MvcCore_View::EXTENSION
+			$corectedRelativePath . \MvcCore\View::EXTENSION
 		));
 	}
 
 	/**
 	 * Create new view instance.
-	 * @param MvcCore_Controller $controller 
+	 * @param \MvcCore\Controller $controller 
 	 */
-	public function __construct (MvcCore_Controller & $controller) {
+	public function __construct (\MvcCore\Controller & $controller) {
 		$this->Controller = $controller;
 	}
 
@@ -205,7 +200,7 @@ class MvcCore_View
 
 	/**
 	 * Return controller instance.
-	 * @return MvcCore_Controller
+	 * @return \MvcCore\Controller
 	 */
 	public function GetController () {
 		return $this->Controller;
@@ -244,7 +239,7 @@ class MvcCore_View
 	 * Render controller template and all necessary layout templates and return rendered result.
 	 * @param string $typePath
 	 * @param string $relativePath 
-	 * @throws Exception 
+	 * @throws \Exception 
 	 * @return string
 	 */
 	public function Render ($typePath = '', $relativePath = '') {
@@ -253,7 +248,7 @@ class MvcCore_View
 		$relativePath = $this->_correctRelativePath($this->Controller->GetRequest()->AppRoot, $typePath, $relativePath);
 		$viewScriptFullPath = static::GetViewScriptFullPath($typePath, $relativePath);
 		if (!file_exists($viewScriptFullPath)) {
-			throw new Exception('['.__CLASS__."] Template not found in path: '$viewScriptFullPath'.");
+			throw new \Exception('['.__CLASS__."] Template not found in path: '$viewScriptFullPath'.");
 		}
 		$this->_renderedFullPaths[] = $viewScriptFullPath;
 		ob_start();
@@ -296,12 +291,12 @@ class MvcCore_View
 	 * @param array  $params						optional
 	 * @return string
 	 */
-	public function Url ($controllerActionOrRouteName = 'Default:Default', $params = array()) {
-		return MvcCore_Router::GetInstance()->Url($controllerActionOrRouteName, $params);
+	public function Url ($controllerActionOrRouteName = 'Index:Index', $params = array()) {
+		return \MvcCore\Router::GetInstance()->Url($controllerActionOrRouteName, $params);
 	}
 
 	/**
-	 * Get asset url - proxy method into MvcCore_Controller::AssetUrl();
+	 * Get asset url - proxy method into \MvcCore\Controller::AssetUrl();
 	 * @param string $path 
 	 * @return string
 	 */
@@ -313,11 +308,13 @@ class MvcCore_View
 	 * Set any value into view context except system keys declared in static::$originalyDeclaredProperties.
 	 * @param string $name 
 	 * @param mixed $value 
-	 * @throws Exception 
+	 * @throws \Exception 
 	 */
 	public function __set ($name, $value) {
 		if (isset(static::$originalyDeclaredProperties[$name])) {
-			throw new Exception('['.__CLASS__."] It's not possible to change property: '$name' originaly declared in class ".__CLASS__.'.');
+			throw new \Exception(
+				'['.__CLASS__."] It's not possible to change property: '$name' originaly declared in class ".__CLASS__.'.'
+			);
 		}
 		$this->$name = $value;
 	}
@@ -361,7 +358,7 @@ class MvcCore_View
 	private function _correctRelativePath ($appRoot, $typePath, $relativePath) {
 		$result = str_replace('\\', '/', $relativePath);
 		if (substr($relativePath, 0, 2) == './') {
-			$app = MvcCore::GetInstance();
+			$app = \MvcCore::GetInstance();
 			$typedViewDirFullPath = implode('/', array(
 				$appRoot, $app->GetAppDir(), $app->GetViewsDir(), $typePath
 			));
@@ -376,4 +373,4 @@ class MvcCore_View
 		return $result;
 	}
 }
-MvcCore_View::StaticInit();
+View::StaticInit();

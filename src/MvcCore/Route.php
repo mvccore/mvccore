@@ -8,8 +8,10 @@
  * the LICENSE.md file that are distributed with this source code.
  *
  * @copyright	Copyright (c) 2016 Tom Flídr (https://github.com/mvccore/mvccore)
- * @license		https://mvccore.github.io/docs/mvccore/3.0.0/LICENCE.md
+ * @license		https://mvccore.github.io/docs/mvccore/4.0.0/LICENCE.md
  */
+
+namespace MvcCore;
 
 /**
  * Core route:
@@ -22,7 +24,7 @@
  *   - Name - 'Controller:Action' or any custom route name how to create url in application by Url() method
  *   - Params - default params to set before controller/action dispatching if no params in request
  */
-class MvcCore_Route {
+class Route {
     /**
      * Route name, your custom keyword/term 
 	 * or pascal case combination of 'Controller:Action'.
@@ -61,8 +63,8 @@ class MvcCore_Route {
 
 	/**
 	 * Get new instance by array or stdClass, if created, return it
-	 * @param array|stdClass $object route configuration data
-	 * @return MvcCore_Route
+	 * @param array|\stdClass $object route configuration data
+	 * @return \MvcCore\Route
 	 */
 	public static function GetInstance ($object) {
 		if (gettype($object) == 'array') {
@@ -110,7 +112,7 @@ class MvcCore_Route {
 	 * Set route name, your custom keyword/term
 	 * or pascal case combination of 'Controller:Action'
 	 * @param string $name 
-	 * @return MvcCore_Route
+	 * @return \MvcCore\Route
 	 */
 	public function SetName ($name) {
 		$this->Name = $name;
@@ -119,7 +121,7 @@ class MvcCore_Route {
 	/**
 	 * Set controller name in pascal case.
 	 * @param string $controller 
-	 * @return MvcCore_Route
+	 * @return \MvcCore\Route
 	 */
 	public function SetController ($controller) {
 		$this->Controller = $controller;
@@ -128,7 +130,7 @@ class MvcCore_Route {
 	/**
 	 * Set action name in pascal case.
 	 * @param string $action 
-	 * @return MvcCore_Route
+	 * @return \MvcCore\Route
 	 */
 	public function SetAction ($action) {
 		$this->Action = $action;
@@ -138,7 +140,7 @@ class MvcCore_Route {
 	 * Set route preg_match pattern in classic PHP form:
 	 * "#^/url\-begin/([^/]*)/([^/]*)/(.*)#".
 	 * @param string $pattern 
-	 * @return MvcCore_Route
+	 * @return \MvcCore\Route
 	 */
 	public function SetPattern ($pattern) {
 		$this->Pattern = $pattern;
@@ -148,7 +150,7 @@ class MvcCore_Route {
 	 * Set route reverse address form from preg_replace pattern
 	 * in form: "/url-begin/{%first}/{%second}/{%third}".
 	 * @param string $reverse 
-	 * @return MvcCore_Route
+	 * @return \MvcCore\Route
 	 */
 	public function SetReverse ($reverse) {
 		$this->Reverse = $reverse;
@@ -158,7 +160,7 @@ class MvcCore_Route {
 	 * Set route params with default values in form:
 	 * array('first' => 1, 'second' => 2, 'third' => 3).
 	 * @param array $params 
-	 * @return MvcCore_Route
+	 * @return \MvcCore\Route
 	 */
 	public function SetParams ($params = array()) {
 		$this->Params = $params;

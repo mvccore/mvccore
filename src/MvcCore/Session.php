@@ -8,21 +8,23 @@
  * the LICENSE.md file that are distributed with this source code.
  *
  * @copyright	Copyright (c) 2016 Tom Flídr (https://github.com/mvccore/mvccore)
- * @license		https://mvccore.github.io/docs/mvccore/3.0.0/LICENCE.md
+ * @license		https://mvccore.github.io/docs/mvccore/4.0.0/LICENCE.md
  */
+
+namespace MvcCore;
 
 /**
  * Core session:
  * - session safe starting
  * - session writing and closing
  *   - by registered shutdown function
- *   - MvcCore_Session::Close() - how to register the handler
- *   - close handler called registered by MvcCore::Terminate();
+ *   - \MvcCore\Session::Close() - how to register the handler
+ *   - close handler called registered by \MvcCore::Terminate();
  * - session namespaces management
  *   - variables expiration by seconds
  *   - variables expiration by request hoops
  */
-class MvcCore_Session extends ArrayObject {
+class Session extends \ArrayObject {
 	/**
 	 * Metadata key in $_SESSION
 	 * @var string
@@ -43,24 +45,24 @@ class MvcCore_Session extends ArrayObject {
 
 	/**
 	 * Metadata array or stdClass with elements: names, hoops and expirations - all items are arrays
-	 * @var array|stdClass
+	 * @var array|\stdClass
 	 */
 	protected static $meta = array();
 
 	/**
-	 * Array of created MvcCore_Session instances, keys in array are session namespaces names
+	 * Array of created \MvcCore\Session instances, keys in array are session namespaces names
 	 * @var array
 	 */
 	protected static $instances = array();
 
 	/**
 	 * Start session, called in Controller::Init();
-	 * It's also possible to call this anywhere sooner, for example in bootstrap by: MvcCore::SessionStart();
+	 * It's also possible to call this anywhere sooner, for example in bootstrap by: \MvcCore::SessionStart();
 	 * @return void
 	 */
 	public static function Start () {
 		if (static::$started) return;
-		if (!MvcCore::GetInstance()->GetRequest()->IsAppRequest()) return;
+		if (!\MvcCore::GetInstance()->GetRequest()->IsAppRequest()) return;
 		$sessionNotStarted = function_exists('session_status') ? session_status() == PHP_SESSION_NONE : session_id() == '' ;
 		if ($sessionNotStarted) {
 			session_start();
@@ -125,7 +127,7 @@ class MvcCore_Session extends ArrayObject {
 	}
 
 	/**
-	 * Write and close session in MvcCore::Terminate();
+	 * Write and close session in \MvcCore::Terminate();
 	 * Serialize all metadata and call php function to write session.
 	 * @return void
 	 */
@@ -143,7 +145,7 @@ class MvcCore_Session extends ArrayObject {
 	/**
 	 * Get new or existed session namespace
 	 * @param string $name 
-	 * @return MvcCore_Session
+	 * @return \MvcCore\Session
 	 */
 	public static function & GetNamespace ($name = 'default') {
 		if (!isset(static::$instances[$name])) {
@@ -155,7 +157,7 @@ class MvcCore_Session extends ArrayObject {
 	/**
 	 * Get new or existed session namespace
 	 * @param string $name 
-	 * @return MvcCore_Session
+	 * @return \MvcCore\Session
 	 */
 	public function __construct ($name = 'default') {
 		if (!static::$started) static::Start();
@@ -168,7 +170,7 @@ class MvcCore_Session extends ArrayObject {
 	/**
 	 * Set expiration page requests count
 	 * @param int $hoops
-	 * @return MvcCore_Session
+	 * @return \MvcCore\Session
 	 */
 	public function SetExpirationHoops ($hoops) {
 		static::$meta->hoops[$this->__name] = $hoops;
@@ -178,7 +180,7 @@ class MvcCore_Session extends ArrayObject {
 	/**
 	 * Set expiration seconds
 	 * @param int $hoops
-	 * @return MvcCore_Session
+	 * @return \MvcCore\Session
 	 */
 	public function SetExpirationSeconds ($seconds) {
 		static::$meta->expirations[$this->__name] = time() + $seconds;

@@ -1,7 +1,7 @@
 # MvcCore
 
-[![Latest Stable Version](https://img.shields.io/badge/Stable-v3.2.0-brightgreen.svg?style=plastic)](https://github.com/mvccore/mvccore/releases)
-[![License](https://img.shields.io/badge/Licence-BSD-brightgreen.svg?style=plastic)](https://mvccore.github.io/docs/mvccore/3.0.0/LICENCE.md)
+[![Latest Stable Version](https://img.shields.io/badge/Stable-v4.0.0-brightgreen.svg?style=plastic)](https://github.com/mvccore/mvccore/releases)
+[![License](https://img.shields.io/badge/Licence-BSD-brightgreen.svg?style=plastic)](https://mvccore.github.io/docs/mvccore/4.0.0/LICENCE.md)
 ![PHP Version](https://img.shields.io/badge/PHP->=5.3-brightgreen.svg?style=plastic)
 
 PHP MVC framework to develop and pack projects (partialy or completely) into super fast single file apps and tools.
@@ -13,13 +13,12 @@ composer require mvccore/mvccore
 
 ## Main features
 - MVC core framework for classic web apps with:
-	- Long_Classes_Names structure or \Namespaces\Classes\Names
 	- any request types and HTML/AJAX responses
 	- automatic Controller/Action routing by query params or routes
 	- automatic url generating
 	- unlimited controllers and views structure
 	- views, sub views and layout views rendering and view helpers
-	- automatic model classes connecting into databases with PDO
+	- automatic model classes connecting into databases with \PDO
 	- system and custom configuration files
 	- session namespaces management
 	- custom debug tools and logging

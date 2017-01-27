@@ -8,10 +8,12 @@
  * the LICENSE.md file that are distributed with this source code.
  *
  * @copyright	Copyright (c) 2016 Tom Flídr (https://github.com/mvccore/mvccore)
- * @license		https://mvccore.github.io/docs/mvccore/3.0.0/LICENCE.md
+ * @license		https://mvccore.github.io/docs/mvccore/4.0.0/LICENCE.md
  */
 
 require_once(__DIR__.'/../MvcCore.php');
+
+namespace MvcCore;
 
 /**
  * Core configuration:
@@ -23,7 +25,7 @@ require_once(__DIR__.'/../MvcCore.php');
  *   - simple environment name detection by comparing server and client ip
  *   - environment name detection by config records about computer name or ip
  */
-class MvcCore_Config
+class Config
 {
 	const ENVIRONMENT_DEVELOPMENT = 'development';
 	const ENVIRONMENT_BETA = 'beta';
@@ -44,7 +46,7 @@ class MvcCore_Config
 
 	/**
 	 * System config object placed in /App/config.ini
-	 * @var stdClass|array|boolean
+	 * @var \stdClass|array|boolean
 	 */
 	protected static $systemConfig = NULL;
 
@@ -57,7 +59,7 @@ class MvcCore_Config
 	/**
 	 * Temporary variable used when ini file is parsed and loaded
 	 * to store complete result to return
-	 * @var array|stdClass
+	 * @var array|\stdClass
 	 */
 	protected $result = array();
 
@@ -121,7 +123,7 @@ class MvcCore_Config
 	}
 
 	/**
-	 * Get environment name as string, defined by constants: MvcCore_Config::ENVIRONMENT_<environment>
+	 * Get environment name as string, defined by constants: \MvcCore\Config::ENVIRONMENT_<environment>
 	 * @return string
 	 */
 	public static function GetEnvironment () {
@@ -129,7 +131,7 @@ class MvcCore_Config
 	}
 	
 	/**
-	 * Set environment name as string, defined by constants: MvcCore_Config::ENVIRONMENT_<environment>
+	 * Set environment name as string, defined by constants: \MvcCore\Config::ENVIRONMENT_<environment>
 	 * @return void
 	 */
 	public static function SetEnvironment ($environment = self::ENVIRONMENT_PRODUCTION) {
@@ -138,14 +140,14 @@ class MvcCore_Config
 
 	/**
 	 * Get system config ini file as stdClasses and arrays, palced in /App/config.ini
-	 * @return stdClass|array|boolean
+	 * @return \stdClass|array|boolean
 	 */
 	public static function & GetSystem () {
 		if (!static::$systemConfig) {
-			$systemConfigClass = MvcCore::GetInstance()->GetConfigClass();
+			$systemConfigClass = \MvcCore::GetInstance()->GetConfigClass();
 			$instance = new $systemConfigClass;
 			static::$systemConfig = $instance->Load(
-				str_replace('%appPath%', MvcCore::GetInstance()->GetAppDir(), $systemConfigClass::$SystemConfigPath)
+				str_replace('%appPath%', \MvcCore::GetInstance()->GetAppDir(), $systemConfigClass::$SystemConfigPath)
 			);
 		}
 		return static::$systemConfig;
@@ -177,7 +179,7 @@ class MvcCore_Config
 	 * @return array|boolean
 	 */
 	public function & Load ($configPath = '') {
-		$cfgFullPath = MvcCore::GetInstance()->GetRequest()->AppRoot . $configPath;
+		$cfgFullPath = \MvcCore::GetInstance()->GetRequest()->AppRoot . $configPath;
 		if (!file_exists($cfgFullPath)) return FALSE;
 		$rawIniData = parse_ini_file($cfgFullPath, TRUE);
 		$environment = $this->detectEnvironmentBySystemConfig($rawIniData);
@@ -354,4 +356,4 @@ class MvcCore_Config
 		}
 	}
 }
-MvcCore_Config::StaticInit();
+\MvcCore\Config::StaticInit();

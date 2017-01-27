@@ -8,13 +8,15 @@
  * the LICENSE.md file that are distributed with this source code.
  *
  * @copyright	Copyright (c) 2016 Tom Flídr (https://github.com/mvccore/mvccore)
- * @license		https://mvccore.github.io/docs/mvccore/3.0.0/LICENCE.md
+ * @license		https://mvccore.github.io/docs/mvccore/4.0.0/LICENCE.md
  */
 
 require_once(__DIR__.'/../MvcCore.php');
 require_once('Request.php');
 require_once('Response.php');
 require_once('View.php');
+
+namespace MvcCore;
 
 /**
  * Application controller:
@@ -37,17 +39,17 @@ require_once('View.php');
  * - basic error responses rendering
  * - request termination (to write and close session)
  */
-class MvcCore_Controller
+class Controller
 {
 	/**
 	 * Request object - parsed uri, query params, app paths...
-	 * @var MvcCore_Request
+	 * @var \MvcCore\Request
 	 */
 	protected $request;
 
 	/**
 	 * Response object - headers and rendered body
-	 * @var MvcCore_Response
+	 * @var \MvcCore\Response
 	 */
 	protected $response;
 	
@@ -71,7 +73,7 @@ class MvcCore_Controller
 	
 	/**
 	 * Class store object for view properties
-	 * @var MvcCore_View
+	 * @var \MvcCore\View
 	 */
 	protected $view = NULL;
 	
@@ -120,11 +122,11 @@ class MvcCore_Controller
 	);
 	
 	/**
-	 * Create new controller instance - always called from MvcCore app instance before controller is dispatched.
+	 * Create new controller instance - always called from \MvcCore app instance before controller is dispatched.
 	 * Never used in application controllers.
-	 * @param MvcCore_Request $request 
+	 * @param \MvcCore\Request $request 
 	 */
-	public function __construct (MvcCore_Request & $request = NULL, MvcCore_Response & $response = NULL) {
+	public function __construct (\MvcCore\Request & $request = NULL, \MvcCore\Response & $response = NULL) {
 		$this->request = & $request;
 		$this->response = & $response;
 		$this->controller = $this->request->Params['controller'];
@@ -136,7 +138,7 @@ class MvcCore_Controller
 			$this->ajax = TRUE;
 			$this->DisableView();
 		}
-		if (get_class($this) == 'MvcCore_Controller' && $this->action == 'asset') {
+		if (get_class($this) == '\MvcCore\Controller' && $this->action == 'asset') {
 			$this->DisableView();
 		}
 	}
@@ -147,7 +149,7 @@ class MvcCore_Controller
 	 * @return void
 	 */
 	public function Init () {
-		MvcCore::SessionStart();
+		\MvcCore::SessionStart();
 	}
 
 	/**
@@ -157,7 +159,7 @@ class MvcCore_Controller
 	 */
 	public function PreDispatch () {
 		if (!$this->ajax) {
-			$viewClass = MvcCore::GetInstance()->GetViewClass();
+			$viewClass = \MvcCore::GetInstance()->GetViewClass();
 			$this->view = new $viewClass($this);
 		}
 	}
@@ -175,7 +177,7 @@ class MvcCore_Controller
 
 	/**
 	 * Get current application request object as reference.
-	 * @return MvcCore_Request
+	 * @return \MvcCore\Request
 	 */
 	public function & GetRequest () {
 		return $this->request;
@@ -183,10 +185,10 @@ class MvcCore_Controller
 
 	/**
 	 * Get current application request object, rarely used.
-	 * @param MvcCore_Request $request 
-	 * @return MvcCore_Controller
+	 * @param \MvcCore\Request $request 
+	 * @return \MvcCore\Controller
 	 */
-	public function SetRequest (MvcCore_Request & $request) {
+	public function SetRequest (\MvcCore\Request & $request) {
 		$this->request = $request;
 		return $this;
 	}
@@ -194,7 +196,7 @@ class MvcCore_Controller
 	/**
 	 * Return current controller view object if any.
 	 * Before PreDispatch() should be still NULL.
-	 * @return MvcCore_View|NULL
+	 * @return \MvcCore\View|NULL
 	 */
 	public function & GetView () {
 		return $this->view;
@@ -202,10 +204,10 @@ class MvcCore_Controller
 
 	/**
 	 * Set current controller view object, rarely used.
-	 * @param MvcCore_View $view 
-	 * @return MvcCore_Controller
+	 * @param \MvcCore\View $view 
+	 * @return \MvcCore\Controller
 	 */
-	public function SetView (MvcCore_View & $view) {
+	public function SetView (\MvcCore\View & $view) {
 		$this->view = $view;
 		return $this;
 	}
@@ -221,7 +223,7 @@ class MvcCore_Controller
 	/**
 	 * Set layout name
 	 * @param string $layout 
-	 * @return MvcCore_Controller
+	 * @return \MvcCore\Controller
 	 */
 	public function SetLayout ($layout = '') {
 		$this->layout = $layout;
@@ -238,7 +240,7 @@ class MvcCore_Controller
 
 	/**
 	 * Return small assets content with proper headers in single file application mode
-	 * @throws Exception 
+	 * @throws \Exception 
 	 * @return void
 	 */
 	public function AssetAction () {
@@ -249,11 +251,11 @@ class MvcCore_Controller
 			strpos($path, self::$staticPath) !== 0 &&
 			strpos($path, self::$tmpPath) !== 0
 		) {
-			throw new Exception("[".__CLASS__."] File path: '$path' is not allowed.", 500);
+			throw new \Exception("[".__CLASS__."] File path: '$path' is not allowed.", 500);
 		}
 		$path = $this->request->AppRoot . $path;
 		if (!file_exists($path)) {
-			throw new Exception("[".__CLASS__."] File not found: '$path'.", 404);
+			throw new \Exception("[".__CLASS__."] File not found: '$path'.", 404);
 		}
 		$lastDotPos = strrpos($path, '.');
 		if ($lastDotPos !== FALSE) {
@@ -284,8 +286,8 @@ class MvcCore_Controller
 			// render content string
 			$actionResult = $this->view->RenderScript($viewScriptPath);
 			// create parent layout view, set up and render to outputResult
-			$viewClass = MvcCore::GetInstance()->GetViewClass();
-			/** @var $layout MvcCore_View */
+			$viewClass = \MvcCore::GetInstance()->GetViewClass();
+			/** @var $layout \MvcCore\View */
 			$layout = new $viewClass($this);
 			$layout->SetUp($this->view);
 			$outputResult = $layout->RenderLayoutAndContent($this->layout, $actionResult);
@@ -302,7 +304,7 @@ class MvcCore_Controller
 	 * @return void
 	 */
 	public function HtmlResponse ($output = "") {
-		$contentTypeHeaderValue = strpos(MvcCore_View::$Doctype, MvcCore_View::DOCTYPE_XHTML) !== FALSE ? 'application/xhtml+xml' : 'text/html' ;
+		$contentTypeHeaderValue = strpos(\MvcCore\View::$Doctype, \MvcCore\View::DOCTYPE_XHTML) !== FALSE ? 'application/xhtml+xml' : 'text/html' ;
 		$this->response
 			->SetHeader('Content-Type', $contentTypeHeaderValue . '; charset=utf-8')
 			->SetBody($output);
@@ -314,7 +316,7 @@ class MvcCore_Controller
 	 * @return void
 	 */
 	public function JsonResponse ($data = array()) {
-		$output = MvcCore_Tool::EncodeJson($data);
+		$output = \MvcCore\Tool::EncodeJson($data);
 		$this->response
 			->SetHeader('Content-Type', 'text/javascript; charset=utf-8')
 			->SetHeader('Content-Length', strlen($output))
@@ -338,8 +340,8 @@ class MvcCore_Controller
 	 * @param array  $params						optional
 	 * @return string
 	 */
-	public function Url ($controllerActionOrRouteName = 'Default:Default', $params = array()) {
-		return MvcCore_Router::GetInstance()->Url($controllerActionOrRouteName, $params);
+	public function Url ($controllerActionOrRouteName = 'Index:Index', $params = array()) {
+		return \MvcCore\Router::GetInstance()->Url($controllerActionOrRouteName, $params);
 	}
 
 	/**
@@ -348,7 +350,7 @@ class MvcCore_Controller
 	 * @return string
 	 */
 	public function AssetUrl ($path = '') {
-		return MvcCore::GetInstance()->Url('Controller:Asset', array('path' => $path));
+		return \MvcCore::GetInstance()->Url('Controller:Asset', array('path' => $path));
 	}
 
 	/**
@@ -357,8 +359,8 @@ class MvcCore_Controller
 	 * @return void
 	 */
 	public function RenderError ($exceptionMessage = '') {
-		if (MvcCore::GetInstance()->IsErrorDispatched()) return;
-		throw new ErrorException(
+		if (\MvcCore::GetInstance()->IsErrorDispatched()) return;
+		throw new \ErrorException(
 			$exceptionMessage ? $exceptionMessage : 
 			"Server error: \n'" . $this->request->FullUrl . "'",
 			500
@@ -370,8 +372,8 @@ class MvcCore_Controller
 	 * @return void
 	 */
 	public function RenderNotFound () {
-		if (MvcCore::GetInstance()->IsNotFoundDispatched()) return;
-		throw new ErrorException(
+		if (\MvcCore::GetInstance()->IsNotFoundDispatched()) return;
+		throw new \ErrorException(
 			"Page not found: \n'" . $this->request->FullUrl . "'", 404
 		);
 	}
@@ -381,7 +383,7 @@ class MvcCore_Controller
 	 * @return void
 	 */
 	public function Terminate () {
-		MvcCore::GetInstance()->Terminate();
+		\MvcCore::GetInstance()->Terminate();
 	}
 
 	/**
@@ -390,10 +392,10 @@ class MvcCore_Controller
 	 * @param int    $code 
 	 * @return void
 	 */
-	public static function Redirect ($location = '', $code = MvcCore_Response::SEE_OTHER) {
-		MvcCore::GetInstance()->GetResponse()
+	public static function Redirect ($location = '', $code = \MvcCore\Response::SEE_OTHER) {
+		\MvcCore::GetInstance()->GetResponse()
 			->SetCode($code)
 			->SetHeader('Location', $location);
-		MvcCore::GetInstance()->Terminate();
+		\MvcCore::GetInstance()->Terminate();
 	}
 }

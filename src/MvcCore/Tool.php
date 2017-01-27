@@ -8,8 +8,10 @@
  * the LICENSE.md file that are distributed with this source code.
  *
  * @copyright	Copyright (c) 2016 Tom Flídr (https://github.com/mvccore/mvccore)
- * @license		https://mvccore.github.io/docs/mvccore/3.0.0/LICENCE.md
+ * @license		https://mvccore.github.io/docs/mvccore/4.0.0/LICENCE.md
  */
+
+namespace MvcCore;
 
 /**
  * Core tools:
@@ -20,7 +22,7 @@
  *   - PascalCase to unserscore_case
  * - JSON safe encode/decode
  */
-class MvcCore_Tool
+class Tool
 {
     /**
      * Convert all string 'from' => 'to':
@@ -70,7 +72,7 @@ class MvcCore_Tool
 	/**
 	 * Safely encode json string from php value.
 	 * @param mixed $data 
-	 * @throws Exception 
+	 * @throws \Exception 
 	 * @return string
 	 */
 	public static function EncodeJson ($data) {
@@ -80,7 +82,7 @@ class MvcCore_Tool
 			(defined('JSON_PRESERVE_ZERO_FRACTION') ? JSON_PRESERVE_ZERO_FRACTION : 0);
 		$json = json_encode($data, $flags);
 		if ($errorCode = json_last_error()) {
-			throw new Exception(json_last_error_msg(), $errorCode);
+			throw new \Exception(json_last_error_msg(), $errorCode);
 		}
 		if (PHP_VERSION_ID < 70100) {
 			$json = strtr($json, array(

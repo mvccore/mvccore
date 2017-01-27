@@ -8,8 +8,10 @@
  * the LICENSE.md file that are distributed with this source code.
  *
  * @copyright	Copyright (c) 2016 Tom Flídr (https://github.com/mvccore/mvccore)
- * @license		https://mvccore.github.io/docs/mvccore/3.0.0/LICENCE.md
+ * @license		https://mvccore.github.io/docs/mvccore/4.0.0/LICENCE.md
  */
+
+namespace MvcCore;
 
 /**
  * Core response:
@@ -17,7 +19,7 @@
  * - sending response at application terminate process by Send(); method
  * - completing MvcCore performance custom header at response sending
  */
-class MvcCore_Response
+class Response
 {
 	const OK = 200;
 	const MOVED_PERMANENTLY = 301;
@@ -56,10 +58,10 @@ class MvcCore_Response
 	 * @param int		$code 
 	 * @param array		$headers
 	 * @param string	$body
-	 * @return MvcCore_Response
+	 * @return \MvcCore\Response
 	 */
 	public static function GetInstance ($code = self::OK, $headers = array(), $body = '') {
-		$responseClass = MvcCore::GetInstance()->GetResponseClass();
+		$responseClass = \MvcCore::GetInstance()->GetResponseClass();
 		return new $responseClass($code, $headers, $body);
 	}
 
@@ -78,7 +80,7 @@ class MvcCore_Response
 	/**
 	 * Set http response code.
 	 * @param int $code 
-	 * @return MvcCore_Response
+	 * @return \MvcCore\Response
 	 */
 	public function SetCode ($code) {
 		$this->Code = $code;
@@ -89,7 +91,7 @@ class MvcCore_Response
 	 * Set http response header.
 	 * @param string $name
 	 * @param string $value 
-	 * @return MvcCore_Response
+	 * @return \MvcCore\Response
 	 */
 	public function SetHeader ($name, $value) {
 		header($name . ": " . $value);
@@ -100,7 +102,7 @@ class MvcCore_Response
 	/**
 	 * Set http response body.
 	 * @param string $body 
-	 * @return MvcCore_Response
+	 * @return \MvcCore\Response
 	 */
 	public function SetBody (& $body) {
 		$this->Body = & $body;
@@ -110,7 +112,7 @@ class MvcCore_Response
 	/**
 	 * Append http response body.
 	 * @param string $body
-	 * @return MvcCore_Response
+	 * @return \MvcCore\Response
 	 */
 	public function PrependBody (& $body) {
 		$this->Body = $body . $this->Body;
@@ -120,7 +122,7 @@ class MvcCore_Response
 	/**
 	 * Append http response body.
 	 * @param string $body
-	 * @return MvcCore_Response
+	 * @return \MvcCore\Response
 	 */
 	public function AppendBody (& $body) {
 		$this->Body .= $body;
@@ -189,7 +191,7 @@ class MvcCore_Response
 	 * Add CPU and RAM usage header at HTML/JSON response end
 	 */
 	protected function addTimeAndMemoryHeader () {
-		$mtBegin = MvcCore::GetInstance()->GetMicrotime();
+		$mtBegin = \MvcCore::GetInstance()->GetMicrotime();
 		$time = number_format((microtime(TRUE) - $mtBegin) * 1000, 1, '.', ' ');
 		$ram = function_exists('memory_get_peak_usage') ? number_format(memory_get_peak_usage() / 1000000, 2, '.', ' ') : 'n/a';
 		header("X-MvcCore-Cpu-Ram: $time ms, $ram MB");

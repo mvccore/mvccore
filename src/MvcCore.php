@@ -8,7 +8,7 @@
  * the LICENSE.md file that are distributed with this source code.
  *
  * @copyright	Copyright (c) 2016 Tom Flídr (https://github.com/mvccore/mvccore)
- * @license		https://mvccore.github.io/docs/mvccore/3.0.0/LICENCE.md
+ * @license		https://mvccore.github.io/docs/mvccore/4.0.0/LICENCE.md
  */
 
 require_once('MvcCore/Request.php');
@@ -33,24 +33,11 @@ require_once('MvcCore/Debug.php');
 class MvcCore
 {
 	/**
-	 * MvcCore core elements version:
-	 *   startup.php
-	 *   MvcCore
-	 *   MvcCore_Config
-	 *   MvcCore_Controller
-	 *   MvcCore_Debug
-	 *   MvcCore_Model
-	 *   MvcCore_Request
-	 *   MvcCore_Response
-	 *   MvcCore_Route
-	 *   MvcCore_Router
-	 *   MvcCore_Session
-	 *   MvcCore_Tool
-	 *   MvcCore_View
+	 * MvcCore - version:
 	 * Comparation by PHP function version_compare();
 	 * @see http://php.net/manual/en/function.version-compare.php
 	 */
-	const VERSION = '3.2.0';
+	const VERSION = '4.0.0';
 	/**
 	 * MvcCore application mode describing that the application is compiled in one big php file.
 	 * In PHP app mode should be packed php files or any asset files - phtml templates, ini files 
@@ -113,32 +100,32 @@ class MvcCore
 	protected $compiled = null;
 	
 	/**
-	 * Time when MvcCore::Run has been called.
+	 * Time when \MvcCore::Run has been called.
 	 * @var int
 	 */
 	protected $microtime = 0;
 	
 	/**
 	 * Application currently dispatched controller instance
-	 * @var MvcCore_Controller
+	 * @var \MvcCore\Controller
 	 */
 	protected $controller = NULL;
 
 	/**
 	 * Request object - parsed uri, query params, app paths...
-	 * @var MvcCore_Request
+	 * @var \MvcCore\Request
 	 */
 	protected $request;
 
 	/**
 	 * Response object - headers and rendered body
-	 * @var MvcCore_Response
+	 * @var \MvcCore\Response
 	 */
 	protected $response;
 	
 	/**
 	 * Application http route.
-	 * @var MvcCore_Router
+	 * @var \MvcCore\Router
 	 */
 	protected $router = null;
 	
@@ -148,7 +135,7 @@ class MvcCore
 	 *	- reference for request
 	 *	- reference for response
 	 * @example
-	 *	 MvcCore::AddPreRouteHandler(function (MvcCore_Request & $request, MvcCore_Response & $response) {
+	 *	 \MvcCore::AddPreRouteHandler(function (\MvcCore\Request & $request, \MvcCore\Response & $response) {
 	 *	 	$request->customVar = 'custom_value';
 	 *	 });
 	 * @var callable[]
@@ -161,7 +148,7 @@ class MvcCore
 	 *	- reference for request
 	 *	- reference for response
 	 * @example
-	 *	 MvcCore::AddPreDispatchHandler(function (MvcCore_Request & $request, MvcCore_Response & $response) {
+	 *	 \MvcCore::AddPreDispatchHandler(function (\MvcCore\Request & $request, \MvcCore\Response & $response) {
 	 *	 	$request->customVar = 'custom_value';
 	 *	 });
 	 * @var callable[]
@@ -174,7 +161,7 @@ class MvcCore
 	 *	- reference for request
 	 *	- reference for response
 	 * @example
-	 *	 MvcCore::AddPostDispatchHandler(function (MvcCore_Request & $request, MvcCore_Response & $response) {
+	 *	 \MvcCore::AddPostDispatchHandler(function (\MvcCore\Request & $request, \MvcCore\Response & $response) {
 	 *	 	$response->Output = 'custom_value';
 	 *	 });
 	 * @var callable[]
@@ -185,43 +172,43 @@ class MvcCore
 	 * Class to load and parse system config.
 	 * @var string
 	 */
-	protected $configClass = 'MvcCore_Config';
+	protected $configClass = '\MvcCore\Config';
 
 	/**
 	 * Class to configure session proxy class.
 	 * @var string
 	 */
-	protected $sessionClass = 'MvcCore_Session';
+	protected $sessionClass = '\MvcCore\Session';
 
 	/**
 	 * Class to create http request object.
 	 * @var string
 	 */
-	protected $requestClass = 'MvcCore_Request';
+	protected $requestClass = '\MvcCore\Request';
 
 	/**
 	 * Class to create http response object.
 	 * @var string
 	 */
-	protected $responseClass = 'MvcCore_Response';
+	protected $responseClass = '\MvcCore\Response';
 
 	/**
 	 * Class to create and dispatch request by its routes.
 	 * @var string
 	 */
-	protected $routerClass = 'MvcCore_Router';
+	protected $routerClass = '\MvcCore\Router';
 
 	/**
 	 * Class to create and render controller view.
 	 * @var string
 	 */
-	protected $viewClass = 'MvcCore_View';
+	protected $viewClass = '\MvcCore\View';
 
 	/**
 	 * Class to handle any application error to render or log.
 	 * @var string
 	 */
-	protected $debugClass = 'MvcCore_Debug';
+	protected $debugClass = '\MvcCore\Debug';
 
 	/**
 	 * Application directory with subdirectories by default: 
@@ -275,7 +262,7 @@ class MvcCore
 
 	/**
 	 * Static constructor (called internaly - do not call this in application).
-	 * It initializes application compilation mode before MvcCore::GetInstance()->Run();
+	 * It initializes application compilation mode before \MvcCore::GetInstance()->Run();
 	 * @return void
 	 */
 	public static function StaticInit () {
@@ -293,8 +280,8 @@ class MvcCore
 	}
 
 	/**
-	 * Returns singleton MvcCore application instance.
-	 * @return MvcCore
+	 * Returns singleton \MvcCore application instance.
+	 * @return \MvcCore
 	 */
 	public static function & GetInstance () {
 		if (!static::$instance) static::$instance = new static();
@@ -341,13 +328,13 @@ class MvcCore
 	}
 
 	/**
-	 * Starts a session, standardly called in MvcCore_Controller::Init();
+	 * Starts a session, standardly called in \MvcCore\Controller::Init();
 	 * But is shoud be called anywhere before, for example in any prerequest handler
 	 * to redesign request before MVC dispatching.
 	 * @return void
 	 */
 	public static function SessionStart () {
-		$sessionClass = MvcCore::GetInstance()->sessionClass;
+		$sessionClass = \MvcCore::GetInstance()->sessionClass;
 		$sessionClass::Start();
 	}
 
@@ -365,7 +352,7 @@ class MvcCore
 	}
 
 	/**
-	 * Get application request class, extended from MvcCore_Request.
+	 * Get application request class, extended from \MvcCore\Request.
 	 * @return string
 	 */
 	public function GetRequestClass () {
@@ -373,7 +360,7 @@ class MvcCore
 	}
 
 	/**
-	 * Get application response class, extended from MvcCore_Response.
+	 * Get application response class, extended from \MvcCore\Response.
 	 * @return string
 	 */
 	public function GetResponseClass () {
@@ -381,7 +368,7 @@ class MvcCore
 	}
 
 	/**
-	 * Get application router class, extended from MvcCore_Router.
+	 * Get application router class, extended from \MvcCore\Router.
 	 * @return string
 	 */
 	public function GetRouterClass () {
@@ -389,7 +376,7 @@ class MvcCore
 	}
 
 	/**
-	 * Get application config class, extended from MvcCore_Config.
+	 * Get application config class, extended from \MvcCore\Config.
 	 * @return string
 	 */
 	public function GetConfigClass () {
@@ -397,7 +384,7 @@ class MvcCore
 	}
 
 	/**
-	 * Get application session class, extended from MvcCore_Session.
+	 * Get application session class, extended from \MvcCore\Session.
 	 * @return string
 	 */
 	public function GetSessionClass () {
@@ -405,7 +392,7 @@ class MvcCore
 	}
 
 	/**
-	 * Get application view class, extended from MvcCore_View.
+	 * Get application view class, extended from \MvcCore\View.
 	 * @return string
 	 */
 	public function GetViewClass () {
@@ -413,7 +400,7 @@ class MvcCore
 	}
 
 	/**
-	 * Get application debug class, extended from MvcCore_Debug.
+	 * Get application debug class, extended from \MvcCore\Debug.
 	 * @return string
 	 */
 	public function GetDebugClass () {
@@ -429,32 +416,32 @@ class MvcCore
 	}
 
 	/**
-	 * Returns currently used instance of MvcCore_Router
-	 * @return MvcCore_Router
+	 * Returns currently used instance of \MvcCore\Router
+	 * @return \MvcCore\Router
 	 */
 	public function GetRouter () {
 		return $this->router;
 	}
 
 	/**
-	 * Returns instance of MvcCore_Controller, currently dispatched by request.
-	 * @return MvcCore_Controller
+	 * Returns instance of \MvcCore\Controller, currently dispatched by request.
+	 * @return \MvcCore\Controller
 	 */
 	public function & GetController () {
 		return $this->controller;
 	}
 
 	/**
-	 * Get application request instance, extended from MvcCore_Request
-	 * @return MvcCore_Request
+	 * Get application request instance, extended from \MvcCore\Request
+	 * @return \MvcCore\Request
 	 */
 	public function & GetRequest () {
 		return $this->request;
 	}
 
 	/**
-	 * Get application response instance, extended from MvcCore_Response
-	 * @return MvcCore_Response
+	 * Get application response instance, extended from \MvcCore\Response
+	 * @return \MvcCore\Response
 	 */
 	public function & GetResponse () {
 		return $this->response;
@@ -500,7 +487,7 @@ class MvcCore
 	/**
 	 * Set application compilation state value.
 	 * @param string $compiled
-	 * @return MvcCore
+	 * @return \MvcCore
 	 */
 	public function SetCompiled ($compiled = '') {
 		$this->compiled = $compiled;
@@ -508,10 +495,10 @@ class MvcCore
 	}
 
 	/**
-	 * Set config class, extended from MvcCore_Config.
+	 * Set config class, extended from \MvcCore\Config.
 	 * Core configuration method.
 	 * @param string $configClass 
-	 * @return MvcCore
+	 * @return \MvcCore
 	 */
 	public function SetConfigClass ($configClass) {
 		@class_exists($configClass); // load the class
@@ -520,10 +507,10 @@ class MvcCore
 	}
 
 	/**
-	 * Set session class, extended from MvcCore_Session.
+	 * Set session class, extended from \MvcCore\Session.
 	 * Core configuration method.
 	 * @param string $sessionClass
-	 * @return MvcCore
+	 * @return \MvcCore
 	 */
 	public function SetSessionClass ($sessionClass) {
 		@class_exists($sessionClass); // load the class
@@ -532,10 +519,10 @@ class MvcCore
 	}
 
 	/**
-	 * Set request class, extended from MvcCore_Request.
+	 * Set request class, extended from \MvcCore\Request.
 	 * Core configuration method.
 	 * @param string $requestClass
-	 * @return MvcCore
+	 * @return \MvcCore
 	 */
 	public function SetRequestClass ($requestClass) {
 		@class_exists($requestClass); // load the class
@@ -544,10 +531,10 @@ class MvcCore
 	}
 
 	/**
-	 * Set request class, extended from MvcCore_Response.
+	 * Set request class, extended from \MvcCore\Response.
 	 * Core configuration method.
 	 * @param string $responseClass
-	 * @return MvcCore
+	 * @return \MvcCore
 	 */
 	public function SetResponseClass ($responseClass) {
 		@class_exists($responseClass); // load the class
@@ -556,10 +543,10 @@ class MvcCore
 	}
 
 	/**
-	 * Set router class, extended from MvcCore_Router.
+	 * Set router class, extended from \MvcCore\Router.
 	 * Core configuration method.
 	 * @param string $routerClass
-	 * @return MvcCore
+	 * @return \MvcCore
 	 */
 	public function SetRouterClass ($routerClass) {
 		@class_exists($routerClass); // load the class
@@ -568,10 +555,10 @@ class MvcCore
 	}
 
 	/**
-	 * Set view class, extended from MvcCore_View.
+	 * Set view class, extended from \MvcCore\View.
 	 * Core configuration method.
 	 * @param string $viewClass
-	 * @return MvcCore
+	 * @return \MvcCore
 	 */
 	public function SetViewClass ($viewClass) {
 		@class_exists($viewClass); // load the class
@@ -580,10 +567,10 @@ class MvcCore
 	}
 
 	/**
-	 * Set debug class, extended from MvcCore_Debug.
+	 * Set debug class, extended from \MvcCore\Debug.
 	 * Core configuration method.
 	 * @param string $debugClass
-	 * @return MvcCore
+	 * @return \MvcCore
 	 */
 	public function SetDebugClass ($debugClass) {
 		@class_exists($debugClass); // load the class
@@ -596,7 +583,7 @@ class MvcCore
 	 * 'Models' and 'Views' directories located. 'App' value by default.
 	 * Core configuration method.
 	 * @param string $appDir
-	 * @return MvcCore
+	 * @return \MvcCore
 	 */
 	public function SetAppDir ($appDir) {
 		$this->appDir = $appDir;
@@ -609,7 +596,7 @@ class MvcCore
 	 * 'Controllers' value by default.
 	 * Core configuration method.
 	 * @param string $controllersDir
-	 * @return MvcCore
+	 * @return \MvcCore
 	 */
 	public function SetControllersDir ($controllersDir) {
 		$this->controllersDir = $controllersDir;
@@ -622,7 +609,7 @@ class MvcCore
 	 * 'Views' value by default.
 	 * Core configuration method.
 	 * @param string $viewsDir
-	 * @return MvcCore
+	 * @return \MvcCore
 	 */
 	public function SetViewsDir ($viewsDir) {
 		$this->viewsDir = $viewsDir;
@@ -634,7 +621,7 @@ class MvcCore
 	 * 'Default' value by default.
 	 * Core configuration method.
 	 * @param string $defaultControllerName
-	 * @return MvcCore
+	 * @return \MvcCore
 	 */
 	public function SetDefaultControllerName ($defaultControllerName) {
 		$this->defaultControllerName = $defaultControllerName;
@@ -646,7 +633,7 @@ class MvcCore
 	 * 'Default' value by default.
 	 * Core configuration method.
 	 * @param string $defaultActionName
-	 * @return MvcCore
+	 * @return \MvcCore
 	 */
 	public function SetDefaultControllerDefaultActionName ($defaultActionName) {
 		$this->defaultControllerDefaultActionName = $defaultActionName;
@@ -658,7 +645,7 @@ class MvcCore
 	 * 'Error' value by default.
 	 * Core configuration method.
 	 * @param string $defaultControllerErrorActionName
-	 * @return MvcCore
+	 * @return \MvcCore
 	 */
 	public function SetDefaultControllerErrorActionName ($defaultControllerErrorActionName) {
 		$this->defaultControllerErrorActionName = $defaultControllerErrorActionName;
@@ -670,7 +657,7 @@ class MvcCore
 	 * 'NotFound' value by default.
 	 * Core configuration method.
 	 * @param string $defaultControllerNotFoundActionName
-	 * @return MvcCore
+	 * @return \MvcCore
 	 */
 	public function SetDefaultControllerNotFoundActionName ($defaultControllerNotFoundActionName) {
 		$this->defaultControllerNotFoundActionName = $defaultControllerNotFoundActionName;
@@ -685,7 +672,7 @@ class MvcCore
 	/**
 	 * Run application.
 	 * @param bool $singleFileUrl Set 'Single File Url' mode to compile assets and test everything before compilation
-	 * @return MvcCore
+	 * @return \MvcCore
 	 */
 	public function Run ($singleFileUrl = FALSE) {
 		if ($singleFileUrl) $this->compiled = static::COMPILED_SFU;
@@ -704,11 +691,11 @@ class MvcCore
 	 *		- render and send view result
 	 *	7. Call post dispatch handlers queue.
 	 *	8. Write session and exit
-	 * @return MvcCore
+	 * @return \MvcCore
 	 */
 	protected function process () {
-		$this->request = MvcCore_Request::GetInstance($_SERVER, $_GET, $_POST);
-		$this->response = MvcCore_Response::GetInstance();
+		$this->request = \MvcCore\Request::GetInstance($_SERVER, $_GET, $_POST);
+		$this->response = \MvcCore\Response::GetInstance();
 		$debugClass = $this->debugClass;
 		$debugClass::Init();
 		if (!$this->processCustomHandlers($this->preRouteHandlers))			return $this->Terminate();
@@ -720,9 +707,9 @@ class MvcCore
 	}
 
 	/**
-	 * Route request by router obtained by MvcCore_Router::GetInstance();
+	 * Route request by router obtained by \MvcCore\Router::GetInstance();
 	 * Store requested route inside router class to get it later by: 
-	 * MvcCore_Router::GetCurrentRoute();
+	 * MvcCore\Router::GetCurrentRoute();
 	 * @return bool
 	 */
 	protected function routeRequest () {
@@ -731,7 +718,7 @@ class MvcCore
 		try {
 			$this->router->Route($this->request);
 			return TRUE;
-		} catch (Exception $e) {
+		} catch (\Exception $e) {
 			return $this->DispatchException($e);
 		}
 	}
@@ -748,7 +735,7 @@ class MvcCore
 			if (is_callable($handler)) {
 				try {
 					$handler($this->request, $this->response);
-				} catch (exception $e) {
+				} catch (\Exception $e) {
 					$this->DispatchException($e);
 					$result = FALSE;
 					break;
@@ -760,18 +747,18 @@ class MvcCore
 
 	/**
 	 * If controller class exists - try to dispatch controller, if only view file exists - try to render this view file.
-	 * @param MvcCore_Request $request 
-	 * @param MvcCore_Route $route 
+	 * @param \MvcCore\Request $request 
+	 * @param \MvcCore\Route $route 
 	 * @return bool
 	 */
-	public function DispatchMvcRequest (MvcCore_Route & $route = NULL) {
-		if (is_null($route)) return $this->DispatchException(new Exception('No route for request', 404));
+	public function DispatchMvcRequest (\MvcCore\Route & $route = NULL) {
+		if (is_null($route)) return $this->DispatchException(new \Exception('No route for request', 404));
 		list ($controllerNamePascalCase, $actionNamePascalCase) = array($route->Controller, $route->Action);
 		$actionName = $actionNamePascalCase . 'Action';
-		$coreControllerName = 'MvcCore_Controller';
+		$coreControllerName = '\MvcCore\Controller';
 		$requestParams = $this->request->Params;
-		$viewScriptFullPath = MvcCore_View::GetViewScriptFullPath(
-			MvcCore_View::$ScriptsDir,
+		$viewScriptFullPath = \MvcCore\View::GetViewScriptFullPath(
+			\MvcCore\View::$ScriptsDir,
 			$requestParams['controller'] . '/' . $requestParams['action']
 		);
 		if ($controllerNamePascalCase == 'Controller') {
@@ -787,7 +774,7 @@ class MvcCore
 				}
 			}
 		}
-		return $this->DispatchControllerAction($controllerName, $actionName, $viewScriptFullPath, function (Exception & $e) {
+		return $this->DispatchControllerAction($controllerName, $actionName, $viewScriptFullPath, function (\Exception & $e) {
 			return $this->DispatchException($e);
 		});
 	}
@@ -803,12 +790,12 @@ class MvcCore
 		$this->controller = NULL;
 		try {
 			$this->controller = new $controllerClassFullName($this->request, $this->response);
-		} catch (Exception $e) {
-			return $this->DispatchException(new ErrorException($e->getMessage(), 404));
+		} catch (\Exception $e) {
+			return $this->DispatchException(new \ErrorException($e->getMessage(), 404));
 		}
-		if (!method_exists($this->controller, $actionName) && $controllerClassFullName !== 'MvcCore_Controller') {
+		if (!method_exists($this->controller, $actionName) && $controllerClassFullName !== '\MvcCore\Controller') {
 			if (!file_exists($viewScriptFullPath)) {
-				$this->DispatchException(new ErrorException(
+				$this->DispatchException(new \ErrorException(
 					"Controller '$controllerClassFullName' has not method '$actionName' "
 					."or view doesn't exists in path: '$viewScriptFullPath'.", 404
 				));
@@ -818,16 +805,16 @@ class MvcCore
 			$this->request->Params['controller'], $this->request->Params['action']
 		);
 		try {
-			// MvcCore_Debug::Timer('dispatch');
+			// \MvcCore\Debug::Timer('dispatch');
 			$this->controller->Init();
-			// MvcCore_Debug::Timer('dispatch');
+			// \MvcCore\Debug::Timer('dispatch');
 			$this->controller->PreDispatch();
-			// MvcCore_Debug::Timer('dispatch');
+			// \MvcCore\Debug::Timer('dispatch');
 			if (method_exists($this->controller, $actionName)) $this->controller->$actionName();
-			// MvcCore_Debug::Timer('dispatch');
+			// \MvcCore\Debug::Timer('dispatch');
 			$this->controller->Render($controllerNameDashed, $actionNameDashed);
-			// MvcCore_Debug::Timer('dispatch');
-		} catch (Exception $e) {
+			// \MvcCore\Debug::Timer('dispatch');
+		} catch (\Exception $e) {
 			return $exceptionCallback($e);
 		}
 		return TRUE;
@@ -850,8 +837,8 @@ class MvcCore
 	 * @param array  $params						optional
 	 * @return string
 	 */
-	public function Url ($controllerActionOrRouteName = 'Default:Default', $params = array()) {
-		return MvcCore_Router::GetInstance()->Url($controllerActionOrRouteName, $params);
+	public function Url ($controllerActionOrRouteName = 'Index:Index', $params = array()) {
+		return \MvcCore\Router::GetInstance()->Url($controllerActionOrRouteName, $params);
 	}
 
 	/**
@@ -879,18 +866,18 @@ class MvcCore
 	 *		- log error and try to render error page by App_Controller_Default::Error();
 	 *	- if development
 	 *		- print exception into browser
-	 * @param Exception $e 
+	 * @param \Exception $e 
 	 * @return bool
 	 */
-	public function DispatchException (Exception $e) {
+	public function DispatchException (\Exception $e) {
 		if (class_exists('Packager_Php')) return FALSE; // packing process
 		if ($e->getCode() == 404) {
-			MvcCore_Debug::Log($e, MvcCore_Debug::ERROR);
+			\MvcCore\Debug::Log($e, \MvcCore\Debug::ERROR);
 			$this->RenderNotFound($e->getMessage());
-		} else if (MvcCore_Config::IsDevelopment()) {
-			MvcCore_Debug::Exception($e);
+		} else if (\MvcCore\Config::IsDevelopment()) {
+			\MvcCore\Debug::Exception($e);
 		} else {
-			MvcCore_Debug::Log($e, MvcCore_Debug::EXCEPTION);
+			\MvcCore\Debug::Log($e, \MvcCore\Debug::EXCEPTION);
 			$this->RenderError($e);
 		}
 		return FALSE;
@@ -900,10 +887,10 @@ class MvcCore
 	 * Render error by Default controller Error action,
 	 * if there is no controller/action like that or any other exception happends,
 	 * it is processed very simple response with 500 http code.
-	 * @param Exception $e
+	 * @param \Exception $e
 	 * @return void
 	 */
-	public function RenderError (Exception $e) {
+	public function RenderError (\Exception $e) {
 		$defaultCtrlFullName = $this->GetDefaultControllerIfHasAction(
 			$this->defaultControllerErrorActionName
 		);
@@ -912,15 +899,15 @@ class MvcCore
 			$this->request->Params = array_merge($this->request->Params, array(
 				'code'		=> 500,
 				'message'	=> $exceptionMessage,
-				'controller'=> MvcCore_Tool::GetDashedFromPascalCase($this->defaultControllerName),
-				'action'	=> MvcCore_Tool::GetDashedFromPascalCase($this->defaultControllerErrorActionName),
+				'controller'=> \MvcCore\Tool::GetDashedFromPascalCase($this->defaultControllerName),
+				'action'	=> \MvcCore\Tool::GetDashedFromPascalCase($this->defaultControllerErrorActionName),
 			));
 			$this->DispatchControllerAction(
 				$defaultCtrlFullName,
 				$this->defaultControllerErrorActionName . "Action",
 				'',
-				function (Exception & $e) use ($exceptionMessage) {
-					MvcCore_Debug::Log($e, MvcCore_Debug::EXCEPTION);
+				function (\Exception & $e) use ($exceptionMessage) {
+					\MvcCore\Debug::Log($e, \MvcCore\Debug::EXCEPTION);
 					$this->RenderError500PlainText($exceptionMessage . PHP_EOL . PHP_EOL . $e->getMessage());
 				}
 			);
@@ -942,15 +929,15 @@ class MvcCore
 			$this->request->Params = array_merge($this->request->Params, array(
 				'code'		=> 404,
 				'message'	=> $exceptionMessage,
-				'controller'=> MvcCore_Tool::GetDashedFromPascalCase($this->defaultControllerName),
-				'action'	=> MvcCore_Tool::GetDashedFromPascalCase($this->defaultControllerNotFoundActionName),
+				'controller'=> \MvcCore\Tool::GetDashedFromPascalCase($this->defaultControllerName),
+				'action'	=> \MvcCore\Tool::GetDashedFromPascalCase($this->defaultControllerNotFoundActionName),
 			));
 			$this->DispatchControllerAction(
 				$defaultCtrlFullName,
 				$this->defaultControllerNotFoundActionName . "Action",
 				'',
-				function (Exception & $e) {
-					MvcCore_Debug::Log($e, MvcCore_Debug::EXCEPTION);
+				function (\Exception & $e) {
+					\MvcCore\Debug::Log($e, \MvcCore\Debug::EXCEPTION);
 					$this->RenderError404PlainText();
 				}
 			);
@@ -966,8 +953,8 @@ class MvcCore
 	 */
 	public function RenderError500PlainText ($text = '') {
 		if (!$text) $text = 'Internal Server Error.';
-		$this->response = (new MvcCore_Response(
-			MvcCore_Response::INTERNAL_SERVER_ERROR,
+		$this->response = (new \MvcCore\Response(
+			\MvcCore\Response::INTERNAL_SERVER_ERROR,
 			array('Content-Type' => 'text/plain'),
 			"Error 500:".PHP_EOL.PHP_EOL.$text
 		));
@@ -978,8 +965,8 @@ class MvcCore
 	 * @return void
 	 */
 	public function RenderError404PlainText () {
-		$this->response = (new MvcCore_Response(
-			MvcCore_Response::NOT_FOUND,
+		$this->response = (new \MvcCore\Response(
+			\MvcCore\Response::NOT_FOUND,
 			array('Content-Type' => 'text/plain'),
 			'Error 404 – Page Not Found.'
 		));
@@ -1011,10 +998,9 @@ class MvcCore
 	 * @return string 
 	 */
 	public function CompleteControllerName ($controllerNamePascalCase) {
-		$glue = strpos($controllerNamePascalCase, '\\') !== FALSE ? '\\' : '_';
 		$firstChar = substr($controllerNamePascalCase, 0, 1);
-		if ($firstChar == '/') return substr($controllerNamePascalCase, 1);
-		return implode($glue, array(
+		if ($firstChar == '\\') return $controllerNamePascalCase;
+		return implode('\\', array(
 			$this->appDir,
 			$this->controllersDir,
 			$controllerNamePascalCase
@@ -1026,8 +1012,8 @@ class MvcCore
 	 * @return bool
 	 */
 	public function IsErrorDispatched () {
-		$defaultCtrlName = MvcCore_Tool::GetDashedFromPascalCase($this->defaultControllerName);
-		$errorActionName = MvcCore_Tool::GetDashedFromPascalCase($this->defaultControllerErrorActionName);
+		$defaultCtrlName = \MvcCore\Tool::GetDashedFromPascalCase($this->defaultControllerName);
+		$errorActionName = \MvcCore\Tool::GetDashedFromPascalCase($this->defaultControllerErrorActionName);
 		$params = $this->request->Params;
 		return $params['controller'] == $defaultCtrlName && $params['action'] == $errorActionName;
 	}
@@ -1037,8 +1023,8 @@ class MvcCore
 	 * @return bool
 	 */
 	public function IsNotFoundDispatched () {
-		$defaultCtrlName = MvcCore_Tool::GetDashedFromPascalCase($this->defaultControllerName);
-		$errorActionName = MvcCore_Tool::GetDashedFromPascalCase($this->defaultControllerNotFoundActionName);
+		$defaultCtrlName = \MvcCore\Tool::GetDashedFromPascalCase($this->defaultControllerName);
+		$errorActionName = \MvcCore\Tool::GetDashedFromPascalCase($this->defaultControllerNotFoundActionName);
 		$params = $this->request->Params;
 		return $params['controller'] == $defaultCtrlName && $params['action'] == $errorActionName;
 	}
@@ -1056,4 +1042,4 @@ class MvcCore
 		return $actionName != 'asset';
 	}
 }
-MvcCore::StaticInit();
+\MvcCore::StaticInit();
