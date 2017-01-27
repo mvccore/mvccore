@@ -11,11 +11,11 @@
  * @license		https://mvccore.github.io/docs/mvccore/4.0.0/LICENCE.md
  */
 
+namespace MvcCore;
+
 require_once('Request.php');
 require_once('Route.php');
 require_once('Tool.php');
-
-namespace MvcCore;
 
 /**
  * Core router:

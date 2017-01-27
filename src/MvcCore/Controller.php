@@ -11,12 +11,12 @@
  * @license		https://mvccore.github.io/docs/mvccore/4.0.0/LICENCE.md
  */
 
+namespace MvcCore;
+
 require_once(__DIR__.'/../MvcCore.php');
 require_once('Request.php');
 require_once('Response.php');
 require_once('View.php');
-
-namespace MvcCore;
 
 /**
  * Application controller:

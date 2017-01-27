@@ -11,10 +11,10 @@
  * @license		https://mvccore.github.io/docs/mvccore/4.0.0/LICENCE.md
  */
 
+namespace MvcCore;
+
 require_once('Tool.php');
 require_once(__DIR__.'/../MvcCore.php');
-
-namespace MvcCore;
 
 /**
  * Core request:

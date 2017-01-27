@@ -11,9 +11,9 @@
  * @license		https://mvccore.github.io/docs/mvccore/4.0.0/LICENCE.md
  */
 
-require_once('Controller.php');
-
 namespace MvcCore;
+
+require_once('Controller.php');
 
 /**
  * Core view:
@@ -130,7 +130,7 @@ class View
 	public static function StaticInit () {
 		$app = \MvcCore::GetInstance();
 		static::$HelpersClassBases = array(
-			'\MvcCore\Ext\View\Helpers',
+			'\MvcCore\Ext\View\Helpers\\',
 			// '\App\Views\Helpers\'
 			'\\' . implode('\\', array(
 				$app->GetAppDir(),
