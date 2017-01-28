@@ -128,17 +128,18 @@ class Controller
 	 */
 	public function __construct (\MvcCore\Request & $request = NULL, \MvcCore\Response & $response = NULL) {
 		$this->request = & $request;
+		$this->controller = $request->Params['controller'];
+		$this->action = $request->Params['action'];
+		if ($this->controller == 'controller' && $this->action == 'asset') {
+			$this->DisableView();
+			return;
+		}
 		$this->response = & $response;
-		$this->controller = $this->request->Params['controller'];
-		$this->action = $this->request->Params['action'];
 		if (
 			isset($_SERVER['HTTP_X_REQUESTED_WITH']) && 
 			strtolower($_SERVER['HTTP_X_REQUESTED_WITH']) == 'xmlhttprequest'
 		) {
 			$this->ajax = TRUE;
-			$this->DisableView();
-		}
-		if (get_class($this) == '\MvcCore\Controller' && $this->action == 'asset') {
 			$this->DisableView();
 		}
 	}
@@ -158,7 +159,7 @@ class Controller
 	 * @return void
 	 */
 	public function PreDispatch () {
-		if (!$this->ajax) {
+		if ($this->viewEnabled) {
 			$viewClass = \MvcCore::GetInstance()->GetViewClass();
 			$this->view = new $viewClass($this);
 		}
@@ -264,8 +265,12 @@ class Controller
 		if (isset(self::$_assetsMimeTypes[$ext])) {
 			header('Content-Type: ' . self::$_assetsMimeTypes[$ext]);
 		}
+		header_remove('X-Powered-By');
+		header('Vary: Accept-Encoding');
+		$assetMTime = @filemtime($path);
+		if ($assetMTime) header('Last-Modified: ' . gmdate('D, d M Y H:i:s T', $assetMTime));
 		readfile($path);
-		$this->Terminate();
+		exit;
 	}
 
 	/**
