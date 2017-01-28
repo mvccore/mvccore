@@ -13,7 +13,7 @@ composer require mvccore/mvccore
 
 ## Features
 
-### Clasic MVC web framework eatures
+### Clasic MVC web framework features
 - any request types and HTML/AJAX responses
 - automatic Controller/Action routing by query params or routes
 - automatic url generating
