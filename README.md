@@ -13,7 +13,7 @@ composer require mvccore/mvccore
 
 ## Features
 
-### Clasic MVC web framework eatures
+### Clasic MVC web framework features
 - any request types and HTML/AJAX responses
 - automatic Controller/Action routing by query params or routes
 - automatic url generating
@@ -23,9 +23,9 @@ composer require mvccore/mvccore
 - system and custom configuration files
 - session namespaces management
 - custom debug tools and logging
-- possibility to extend MvcCore core classes
+- possibility to patch (replace) or extend MvcCore core classes
 - request and response object customization
-- with no unused code, everything spacial is MvcCore extension
+- no unnecessary code, everything spacial always as MvcCore extension
 
 ### Packing/Building features
 - partial or complete application packaging/building into single PHP file by [**Packager (mvccore/packager)**](https://github.com/mvccore/packager) library
