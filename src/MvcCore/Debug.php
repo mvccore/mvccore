@@ -253,7 +253,13 @@ namespace MvcCore {
 				if (!is_null($values[1])) {
 					$dumps .= '<pre class="title">'.$values[1].'</pre>';
 				}
-				$dumps .= '<div class="value">'.$values[0].'</div></div>';
+				$dumpContent = & $values[0];
+				if (mb_strpos($dumpContent, 'class="xdebug-var-dump"') === FALSE) {
+					$dumpContent = preg_replace("#\"\]=\>\s*#", "\"]=>\t", $dumpContent);
+					$dumps .= '<div class="value"><pre><code>'.$dumpContent.'</code></pre></div></div>';
+				} else {
+					$dumps .= '<div class="value">'.$dumpContent.'</div></div>';
+				}
 				if (isset($values[2]['dieDumpCall']) && $values[2]['dieDumpCall']) $dieDump = TRUE;
 			}
 			$template = file_get_contents(dirname(__FILE__).'/debug.html');
