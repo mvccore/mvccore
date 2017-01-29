@@ -465,7 +465,7 @@ class Request
 		} else {
 			$appRootFullPath = substr($indexFilePath, 0, mb_strrpos($indexFilePath, '/'));
 		}
-		$this->AppRoot = str_replace('\\', '/', $appRootFullPath);
+		$this->AppRoot = str_replace(array('\\', '//'), '/', $appRootFullPath);
 	}
 
 	/**
