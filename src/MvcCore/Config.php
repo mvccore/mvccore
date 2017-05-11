@@ -183,7 +183,6 @@ class Config
 		if (!file_exists($cfgFullPath)) return FALSE;
 		$rawIniData = parse_ini_file($cfgFullPath, TRUE);
 		$environment = $this->detectEnvironmentBySystemConfig($rawIniData);
-		if (!$environment && static::$environment) $environment = static::$environment;
 		if ($rawIniData === FALSE) return FALSE;
 		$iniData = $this->prepareIniDataToParse($rawIniData, $environment);
 		$this->processIniData($iniData);
@@ -242,7 +241,7 @@ class Config
 			}
 		}
 		if ($environment && !static::$environment) static::SetEnvironment($environment);
-		return $environment;
+		return static::$environment;
 	}
 
 	/**
