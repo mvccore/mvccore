@@ -145,7 +145,7 @@ namespace MvcCore {
 			if (!is_writable($logDirectory)) {
 				try {
 					chmod($logDirectory, 0777);
-				} catch (Exception $e) {
+				} catch (\Exception $e) {
 					die('['.static::class.'] ' . $e->getMessage());
 				}
 			}

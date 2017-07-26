@@ -268,7 +268,7 @@ class View
 		ob_start();
 		try {
 			eval(' ?'.'>'.$content.'<'.'?php ');
-		} catch (Exception $e) {
+		} catch (\Exception $e) {
 			throw $e;
 		}
 		return ob_get_clean();
