@@ -104,7 +104,7 @@ class Response
 	 * @param string $body 
 	 * @return \MvcCore\Response
 	 */
-	public function SetBody (& $body) {
+	public function SetBody ($body) {
 		$this->Body = & $body;
 		return $this;
 	}
@@ -114,7 +114,7 @@ class Response
 	 * @param string $body
 	 * @return \MvcCore\Response
 	 */
-	public function PrependBody (& $body) {
+	public function PrependBody ($body) {
 		$this->Body = $body . $this->Body;
 		return $this;
 	}
@@ -124,7 +124,7 @@ class Response
 	 * @param string $body
 	 * @return \MvcCore\Response
 	 */
-	public function AppendBody (& $body) {
+	public function AppendBody ($body) {
 		$this->Body .= $body;
 		return $this;
 	}
