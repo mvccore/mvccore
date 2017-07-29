@@ -87,5 +87,6 @@ composer require mvccore/mvccore
 	- [**Project - Portable**](https://github.com/mvccore/app-xmldocs)
 		- Website project designed for full portable build/pack.
 		- To develop new application - work in `/development` directory
-		- To build single file application - use `make.cmd` and configure build proces in `make-php.php` or `make-phar.php` (see examples)
-- test your builded application in `/release` directory
+		- To build single file application - use `make.cmd` and configure build proces in `make-php.php` 
+		  or `make-phar.php` (see examples)
+		- Test your builded application in `/release` directory
