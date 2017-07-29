@@ -71,16 +71,21 @@ composer require mvccore/mvccore
 - posibility to use any third party library or framework in Libs folder through MvcCore autoloader or by composer vendor package
 
 ## Usage
-- check out examples:
+- explore MvcCore examples:
 	- [**Hello World (mvccore/example-helloworld)**](https://github.com/mvccore/example-helloworld)
 	- [**Pig Latin Translator (mvccore/example-translator)**](https://github.com/mvccore/example-translator)
 	- [**CD Collection (mvccore/example-cdcol)**](https://github.com/mvccore/example-cdcol)
 	- begin with Hello World example and read the source code:
 		- Hello world example has only 2 important controllers (Default.php and Base.php)
 		- MvcCore framework has only 12 core classes (well documented comments, not everything used every time)
-- check out more complex applications:
+- than explore more complex MvcCore applications:
 	- [**XML Documents (mvccore/app-xmldocs)**](https://github.com/mvccore/app-xmldocs)
 	- [**Questionnaires (mvccore/app-questionnaires)**](https://github.com/mvccore/app-questionnaires)
-- to develop new application - work in `/development` directory
-- to build single file application - use `make.cmd` and configure build proces in `make-php.php` or `make-phar.php` (see examples)
+- check out some of empty MvcCore project templates
+	- [**Project - Basic**](https://github.com/mvccore/project-basic)
+		- Website project not designed for full portable build/pack.
+	- [**Project - Portable**](https://github.com/mvccore/app-xmldocs)
+		- Website project designed for full portable build/pack.
+		- To develop new application - work in `/development` directory
+		- To build single file application - use `make.cmd` and configure build proces in `make-php.php` or `make-phar.php` (see examples)
 - test your builded application in `/release` directory
