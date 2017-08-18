@@ -104,18 +104,22 @@ namespace MvcCore {
 			$configClass = $app->GetConfigClass();
 			static::$development = $configClass::IsDevelopment();
 			$cfg = $configClass::GetSystem();
+			
 			if (isset($cfg->debug)) {
 				$cfgDebug = & $cfg->debug;
 				if (isset($cfgDebug->emailRecepient)) {
 					static::$EmailRecepient = $cfgDebug->emailRecepient;
 				}
 				if (isset($cfgDebug->logDirectory)) {
-					$scriptPath = str_replace('\\', '/', $_SERVER['SCRIPT_FILENAME']);
-					$lastSlas = strrpos($scriptPath, '/');
-					$appRoot = substr($scriptPath, 0, $lastSlas !== FALSE ? $lastSlas : strlen($scriptPath));
-					static::$LogDirectory = $appRoot . $cfgDebug->logDirectory;
+					static::$LogDirectory = $cfgDebug->logDirectory;
 				}
 			}
+			
+			$scriptPath = str_replace('\\', '/', $_SERVER['SCRIPT_FILENAME']);
+			$lastSlas = strrpos($scriptPath, '/');
+			$appRoot = substr($scriptPath, 0, $lastSlas !== FALSE ? $lastSlas : strlen($scriptPath));
+			static::$LogDirectory = $appRoot . static::$LogDirectory;
+
 			static::$originalDebugClass = $app->GetDebugClass() == __CLASS__;
 			static::initLogDirectory(static::$LogDirectory);
 			static::initHandlers();
