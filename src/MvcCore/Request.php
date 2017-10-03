@@ -243,14 +243,14 @@ class Request
 		$this->serverGlobals = $server;
 		$this->getGlobals = $get;
 		$this->postGlobals = $post;
-		
-		$this->initMethod();
+
 		$this->initScriptName();
+		$this->initAppRoot();
+		$this->initMethod();
 		$this->initBasePath();
 		$this->initProtocol();
 		$this->initParsedUrlSegments();
-		$this->initParams();
-		$this->initAppRoot();
+		$this->initHttpParams();
 		$this->initPath();
 		$this->initReferer();
 		$this->initUrlCompositions();
@@ -356,20 +356,36 @@ class Request
 	}
 
 	/**
-	 * Initialize http method.
-	 * @return void
-	 */
-	protected function initMethod () {
-		$this->Method = strtoupper($this->serverGlobals['REQUEST_METHOD']);
-	}
-
-	/**
 	 * Initialize index.php script name.
 	 * @return void
 	 */
 	protected function initScriptName () {
 		$this->indexScriptName = str_replace('\\', '/', $this->serverGlobals['SCRIPT_NAME']);
 		$this->ScriptName = '/' . substr($this->indexScriptName, strrpos($this->indexScriptName, '/') + 1);
+	}
+
+	/**
+	 * Initialize application root directory.
+	 * @return void
+	 */
+	protected function initAppRoot () {
+		// $appRootRelativePath = mb_substr($this->indexScriptName, 0, strrpos($this->indexScriptName, '/') + 1);
+		// ucfirst - cause IIS has lower case drive name here - different from __DIR__ value
+		$indexFilePath = ucfirst(str_replace('\\', '/', $this->serverGlobals['SCRIPT_FILENAME']));
+		if (strpos(__FILE__, 'phar://') === 0) {
+			$appRootFullPath = 'phar://' . $indexFilePath;
+		} else {
+			$appRootFullPath = substr($indexFilePath, 0, mb_strrpos($indexFilePath, '/'));
+		}
+		$this->AppRoot = str_replace(array('\\', '//'), '/', $appRootFullPath);
+	}
+
+	/**
+	 * Initialize http method.
+	 * @return void
+	 */
+	protected function initMethod () {
+		$this->Method = strtoupper($this->serverGlobals['REQUEST_METHOD']);
 	}
 
 	/**
@@ -418,9 +434,9 @@ class Request
 	 * Initialize params from global $_GET and (global $_POST or direct 'php://input').
 	 * @return void
 	 */
-	protected function initParams () {
+	protected function initHttpParams () {
 		$params = array_merge($this->getGlobals);
-		if (strtoupper($this->serverGlobals['REQUEST_METHOD']) == 'POST') {
+		if ($this->Method == self::METHOD_POST) {
 			$postValues = array();
 			if (count($this->postGlobals) > 0) {
 				$postValues = $this->postGlobals;
@@ -450,22 +466,6 @@ class Request
 			}
 		}
 		return $result;
-	}
-
-	/**
-	 * Initialize application root directory.
-	 * @return void
-	 */
-	protected function initAppRoot () {
-		// $appRootRelativePath = mb_substr($this->indexScriptName, 0, strrpos($this->indexScriptName, '/') + 1);
-		// ucfirst - cause IIS has lower case drive name here - different from __DIR__ value
-		$indexFilePath = ucfirst(str_replace('\\', '/', $this->serverGlobals['SCRIPT_FILENAME']));
-		if (strpos(__FILE__, 'phar://') === 0) {
-			$appRootFullPath = 'phar://' . $indexFilePath;
-		} else {
-			$appRootFullPath = substr($indexFilePath, 0, mb_strrpos($indexFilePath, '/'));
-		}
-		$this->AppRoot = str_replace(array('\\', '//'), '/', $appRootFullPath);
 	}
 
 	/**

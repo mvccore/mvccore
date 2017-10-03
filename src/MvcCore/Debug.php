@@ -115,7 +115,9 @@ namespace MvcCore {
 				}
 			}
 			
-			$scriptPath = str_replace('\\', '/', $_SERVER['SCRIPT_FILENAME']);
+			$scriptPath = php_sapi_name() == 'cli'
+				? str_replace('\\', '/', getcwd()) . '/' . $_SERVER['SCRIPT_FILENAME']
+				: str_replace('\\', '/', $_SERVER['SCRIPT_FILENAME']);
 			$lastSlas = strrpos($scriptPath, '/');
 			$appRoot = substr($scriptPath, 0, $lastSlas !== FALSE ? $lastSlas : strlen($scriptPath));
 			static::$LogDirectory = $appRoot . static::$LogDirectory;
@@ -216,7 +218,7 @@ namespace MvcCore {
 				file_put_contents($fullPath, $content, FILE_APPEND);
 				return $fullPath;
 			} else {
-				return call_user_func_array(static::$handlers->log, $args);
+				return @call_user_func_array(static::$handlers->log, $args);
 			}
 		}
 

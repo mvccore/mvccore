@@ -21,11 +21,13 @@ if (version_compare(PHP_VERSION, '5.3.0', "<")) {
 	if (!is_null($e)) var_dump($e);
 });*/
 
-call_user_func(function(){ 
-	
+call_user_func(function () {
+
 	error_reporting(E_ALL ^ E_NOTICE);
 
-	$scriptFilename = str_replace('\\', '/', $_SERVER['SCRIPT_FILENAME']);
+	$scriptFilename = php_sapi_name() == 'cli'
+		? str_replace('\\', '/', getcwd()) . '/' . $_SERVER['SCRIPT_FILENAME']
+		: str_replace('\\', '/', $_SERVER['SCRIPT_FILENAME']);
 	
 	if (strpos(__FILE__, 'phar://') === 0) {
 		$appRootPath = 'phar://' . $scriptFilename;
@@ -43,7 +45,7 @@ call_user_func(function(){
 		get_include_path() . PATH_SEPARATOR . implode(PATH_SEPARATOR, $includePaths)
 	);
 
-	$throwExceptionIfClassIsGoingToUse = function ($className) {
+	/*$throwExceptionIfClassIsGoingToUse = function ($className) {
 		$status = 0;
 		$backTraceLog = debug_backtrace();
 		$autoloadsCount = count(spl_autoload_functions());
@@ -61,7 +63,7 @@ call_user_func(function(){
 			//var_dump(debug_backtrace());
 			throw new Exception('[startup.php] Class "' . $className . '" not found.');
 		}
-	};
+	};*/
 	
 	$autoload = function ($className) use ($includePaths, $throwExceptionIfClassIsGoingToUse) {
 		
@@ -75,15 +77,15 @@ call_user_func(function(){
 				break;
 			}
 		}
-		/*
-		echo '<pre>';
+
+		/*echo '<pre>';
 		print_r(array($fileName, $className, $includePath, $includePaths));
-		echo '</pre>';
-		*/
+		echo '</pre>';*/
+		
 		if ($includePath) {
 			include_once($includePath);
 		} else {
-			$throwExceptionIfClassIsGoingToUse($className);
+			//$throwExceptionIfClassIsGoingToUse($className);
 		}
 	};
 
