@@ -26,8 +26,8 @@ class Tool
 {
     /**
      * Convert all string 'from' => 'to':
-	 * - 'MyCutomValue'					=> 'my-custom-value'
-	 * - 'MyCutom/Value/InsideFolder'	=> 'my-custom/value/inside-folder'
+	 * - 'MyCustomValue'					=> 'my-custom-value'
+	 * - 'MyCustom/Value/InsideFolder'	=> 'my-custom/value/inside-folder'
      * @param string $pascalCase 
      * @return string
      */
@@ -36,8 +36,8 @@ class Tool
 	}
     /**
 	 * Convert all string 'from' => 'to':
-	 * - 'my-custom-value'				=> 'MyCutomValue'
-	 * - 'my-custom/value/inside-folder'=> 'MyCutom/Value/InsideFolder'
+	 * - 'my-custom-value'				=> 'MyCustomValue'
+	 * - 'my-custom/value/inside-folder'=> 'MyCustom/Value/InsideFolder'
 	 * @param string $dashed 
 	 * @return string
 	 */

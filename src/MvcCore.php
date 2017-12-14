@@ -4,7 +4,7 @@
  * MvcCore
  *
  * This source file is subject to the BSD 3 License
- * For the full copyright and license information, please view 
+ * For the full copyright and license information, please view
  * the LICENSE.md file that are distributed with this source code.
  *
  * @copyright	Copyright (c) 2016 Tom Flídr (https://github.com/mvccore/mvccore)
@@ -22,7 +22,7 @@ require_once('MvcCore/Debug.php');
  * Application MVC core:
  * - main application objects container
  * - MvcCore compile mode managing
- * - store for main core class names to use them later 
+ * - store for main core class names to use them later
  *   for run, creating instances or static usage
  * - application run processing:
  *   - completing request and response
@@ -37,16 +37,16 @@ class MvcCore
 	 * Comparation by PHP function version_compare();
 	 * @see http://php.net/manual/en/function.version-compare.php
 	 */
-	const VERSION = '4.2.0';
+	const VERSION = '4.3.0';
 	/**
 	 * MvcCore application mode describing that the application is compiled in one big php file.
-	 * In PHP app mode should be packed php files or any asset files - phtml templates, ini files 
+	 * In PHP app mode should be packed php files or any asset files - phtml templates, ini files
 	 * or any static files. Unknown asset files or binary files are included as binary or base64 string.
 	 * This mode has always best speed, because it shoud not work with hard drive if you dont want.
-	 * Only with many or with large asset files, there may be greater demands on memory and processor, 
-	 * which shouldn't be good for your application. Be aware to do that. 
-	 * Result application packed in PHP mode has special '\Packager_Php_Wrapper' class included 
-	 * before any application content. This special class handles allowed file operations and assets 
+	 * Only with many or with large asset files, there may be greater demands on memory and processor,
+	 * which shouldn't be good for your application. Be aware to do that.
+	 * Result application packed in PHP mode has special '\Packager_Php_Wrapper' class included
+	 * before any application content. This special class handles allowed file operations and assets
 	 * as binary or base64 encoded. Everything shoud be configured before PHP packing.
 	 * This mode has always four submodes started with PHP substring. All PHP package modes are:
 	 * 'PHP_PRESERVE_HDD', 'PHP_PRESERVE_PACKAGE', 'PHP_STRICT_HDD' and 'PHP_STRICT_PACKAGE'.
@@ -59,7 +59,7 @@ class MvcCore
 	 * MvcCore application mode describing that the application is compiled in one big phar file.
 	 * There could be any content included but there is no speed advantages, but it is
 	 * still good way to pack your app into single file tool for any web-hosting needs:-)
-	 * This mode has always lower speed then PHP mode, because it fully emulates hard drive 
+	 * This mode has always lower speed then PHP mode, because it fully emulates hard drive
 	 * for content of this file and it costs a time. But it has lower memory usage then PHP mode.
 	 * @see http://php.net/manual/en/phar.creating.php
 	 * @var string
@@ -67,12 +67,12 @@ class MvcCore
 	const COMPILED_PHAR = 'PHAR';
 
 	/**
-	 * MvcCore application mode describing that the application is in the state before 
-	 * their own compilation into PHP or PHAR archive. This mode is always used to generate final 
+	 * MvcCore application mode describing that the application is in the state before
+	 * their own compilation into PHP or PHAR archive. This mode is always used to generate final
 	 * javascript and css files into teporary directory to pack them into result php/phar file.
 	 * Shortcut SFU means "Single File Url". Application running in this mode has to generate
-	 * single file urls in form: "index.php?..." and everithing has to work properly before 
-	 * application will be compiled into PHP/PHAR package. Use this mode in index.php before 
+	 * single file urls in form: "index.php?..." and everithing has to work properly before
+	 * application will be compiled into PHP/PHAR package. Use this mode in index.php before
 	 * application compilation to generate and test everything necessary before app compilation by:
 	 * MvcCore::GetInstance()->Run(TRUE); --> true means switch temporary into SFU mode.
 	 * @var string
@@ -98,13 +98,13 @@ class MvcCore
 	 * @var string
 	 */
 	protected $compiled = null;
-	
+
 	/**
 	 * Time when \MvcCore::Run has been called.
 	 * @var int
 	 */
 	protected $microtime = 0;
-	
+
 	/**
 	 * Application currently dispatched controller instance
 	 * @var \MvcCore\Controller
@@ -122,13 +122,13 @@ class MvcCore
 	 * @var \MvcCore\Response
 	 */
 	protected $response;
-	
+
 	/**
 	 * Application http route.
 	 * @var \MvcCore\Router
 	 */
 	protected $router = null;
-	
+
 	/**
 	 * Pre route custom closure calls.
 	 * Params in closure function has to be:
@@ -211,21 +211,21 @@ class MvcCore
 	protected $debugClass = '\MvcCore\Debug';
 
 	/**
-	 * Application directory with subdirectories by default: 
+	 * Application directory with subdirectories by default:
 	 * 'Controllers', 'Models' and 'Views'.
 	 * @var string
 	 */
 	protected $appDir = 'App';
 
 	/**
-	 * Controllers directory name for all controller classes, 
+	 * Controllers directory name for all controller classes,
 	 * it has to be placed directly in application directory.
 	 * @var string
 	 */
 	protected $controllersDir = 'Controllers';
 
 	/**
-	 * Views directory name for all view elements, it has to be 
+	 * Views directory name for all view elements, it has to be
 	 * placed directly in application directory.
 	 * @var string
 	 */
@@ -497,7 +497,7 @@ class MvcCore
 	/**
 	 * Set config class, extended from \MvcCore\Config.
 	 * Core configuration method.
-	 * @param string $configClass 
+	 * @param string $configClass
 	 * @return \MvcCore
 	 */
 	public function SetConfigClass ($configClass) {
@@ -708,7 +708,7 @@ class MvcCore
 
 	/**
 	 * Route request by router obtained by \MvcCore\Router::GetInstance();
-	 * Store requested route inside router class to get it later by: 
+	 * Store requested route inside router class to get it later by:
 	 * MvcCore\Router::GetCurrentRoute();
 	 * @return bool
 	 */
@@ -747,8 +747,8 @@ class MvcCore
 
 	/**
 	 * If controller class exists - try to dispatch controller, if only view file exists - try to render this view file.
-	 * @param \MvcCore\Request $request 
-	 * @param \MvcCore\Route $route 
+	 * @param \MvcCore\Request $request
+	 * @param \MvcCore\Route $route
 	 * @return bool
 	 */
 	public function DispatchMvcRequest (\MvcCore\Route & $route = NULL) {
@@ -782,8 +782,8 @@ class MvcCore
 	/**
 	 * Dispatch controller by full class name and by action name.
 	 * @param string $controllerClassFullName
-	 * @param string $actionName 
-	 * @param callable $exceptionCallback 
+	 * @param string $actionName
+	 * @param callable $exceptionCallback
 	 * @return bool
 	 */
 	public function DispatchControllerAction ($controllerClassFullName, $actionName, $viewScriptFullPath, callable $exceptionCallback) {
@@ -795,25 +795,14 @@ class MvcCore
 		}
 		if (!method_exists($this->controller, $actionName) && $controllerClassFullName !== '\MvcCore\Controller') {
 			if (!file_exists($viewScriptFullPath)) {
-				$this->DispatchException(new \ErrorException(
+				return $this->DispatchException(new \ErrorException(
 					"Controller '$controllerClassFullName' has not method '$actionName' "
 					."or view doesn't exists in path: '$viewScriptFullPath'.", 404
 				));
 			}
 		}
-		list($controllerNameDashed, $actionNameDashed) = array(
-			$this->request->Params['controller'], $this->request->Params['action']
-		);
 		try {
-			// \MvcCore\Debug::Timer('dispatch');
-			$this->controller->Init();
-			// \MvcCore\Debug::Timer('dispatch');
-			$this->controller->PreDispatch();
-			// \MvcCore\Debug::Timer('dispatch');
-			if (method_exists($this->controller, $actionName)) $this->controller->$actionName();
-			// \MvcCore\Debug::Timer('dispatch');
-			$this->controller->Render($controllerNameDashed, $actionNameDashed);
-			// \MvcCore\Debug::Timer('dispatch');
+			$this->controller->Run($actionName);
 		} catch (\Exception $e) {
 			return $exceptionCallback($e);
 		}
@@ -857,7 +846,7 @@ class MvcCore
 	/***********************************************************************************
 	 *                          request error dispatching
 	 ***********************************************************************************/
-	
+
 	/**
 	 * Process exception:
 	 *	- if PHP package packing to determinate dependencies
@@ -866,21 +855,21 @@ class MvcCore
 	 *		- log error and try to render error page by App_Controller_Default::Error();
 	 *	- if development
 	 *		- print exception into browser
-	 * @param \Exception $e 
+	 * @param \Exception $e
 	 * @return bool
 	 */
 	public function DispatchException (\Exception $e) {
 		if (class_exists('\Packager_Php')) return FALSE; // packing process
 		if ($e->getCode() == 404) {
 			\MvcCore\Debug::Log($e, \MvcCore\Debug::ERROR);
-			$this->RenderNotFound($e->getMessage());
+			return $this->RenderNotFound($e->getMessage());
 		} else if (\MvcCore\Config::IsDevelopment()) {
 			\MvcCore\Debug::Exception($e);
+			return FALSE;
 		} else {
 			\MvcCore\Debug::Log($e, \MvcCore\Debug::EXCEPTION);
-			$this->RenderError($e);
+			return $this->RenderError($e);
 		}
-		return FALSE;
 	}
 
 	/**
@@ -888,7 +877,7 @@ class MvcCore
 	 * if there is no controller/action like that or any other exception happends,
 	 * it is processed very simple response with 500 http code.
 	 * @param \Exception $e
-	 * @return void
+	 * @return bool
 	 */
 	public function RenderError (\Exception $e) {
 		$defaultCtrlFullName = $this->GetDefaultControllerIfHasAction(
@@ -902,7 +891,7 @@ class MvcCore
 				'controller'=> \MvcCore\Tool::GetDashedFromPascalCase($this->defaultControllerName),
 				'action'	=> \MvcCore\Tool::GetDashedFromPascalCase($this->defaultControllerErrorActionName),
 			));
-			$this->DispatchControllerAction(
+			return $this->DispatchControllerAction(
 				$defaultCtrlFullName,
 				$this->defaultControllerErrorActionName . "Action",
 				'',
@@ -912,13 +901,13 @@ class MvcCore
 				}
 			);
 		} else {
-			$this->RenderError500PlainText($exceptionMessage);
+			return $this->RenderError500PlainText($exceptionMessage);
 		}
 	}
 
 	/**
 	 * Render not found controller action or not found plain text response.
-	 * @return void
+	 * @return bool
 	 */
 	public function RenderNotFound ($exceptionMessage = '') {
 		if (!$exceptionMessage) $exceptionMessage = 'Page not found.';
@@ -932,7 +921,7 @@ class MvcCore
 				'controller'=> \MvcCore\Tool::GetDashedFromPascalCase($this->defaultControllerName),
 				'action'	=> \MvcCore\Tool::GetDashedFromPascalCase($this->defaultControllerNotFoundActionName),
 			));
-			$this->DispatchControllerAction(
+			return $this->DispatchControllerAction(
 				$defaultCtrlFullName,
 				$this->defaultControllerNotFoundActionName . "Action",
 				'',
@@ -942,34 +931,36 @@ class MvcCore
 				}
 			);
 		} else {
-			$this->RenderError404PlainText();
+			return $this->RenderError404PlainText();
 		}
 	}
 
 	/**
 	 * Process very simple internal server error (500) as plain text response.
 	 * @param string $text
-	 * @return void
+	 * @return bool
 	 */
 	public function RenderError500PlainText ($text = '') {
 		if (!$text) $text = 'Internal Server Error.';
-		$this->response = (new \MvcCore\Response(
+		$this->response = \MvcCore\Response::GetInstance(
 			\MvcCore\Response::INTERNAL_SERVER_ERROR,
 			array('Content-Type' => 'text/plain'),
 			"Error 500:".PHP_EOL.PHP_EOL.$text
-		));
+		);
+		return TRUE;
 	}
 
 	/**
 	 * Process very simple not found error (404) as plain text response.
-	 * @return void
+	 * @return true
 	 */
 	public function RenderError404PlainText () {
-		$this->response = (new \MvcCore\Response(
+		$this->response = \MvcCore\Response::GetInstance(
 			\MvcCore\Response::NOT_FOUND,
 			array('Content-Type' => 'text/plain'),
 			'Error 404 – Page Not Found.'
-		));
+		);
+		return TRUE;
 	}
 
 
@@ -992,10 +983,10 @@ class MvcCore
 	}
 
 	/**
-	 * Complete MvcCore application controller full name always in form: 
+	 * Complete MvcCore application controller full name always in form:
 	 * 'App_Controller_$controllerNamePascalCase'
 	 * @param string $controllerNamePascalCase
-	 * @return string 
+	 * @return string
 	 */
 	public function CompleteControllerName ($controllerNamePascalCase) {
 		$firstChar = substr($controllerNamePascalCase, 0, 1);

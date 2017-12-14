@@ -4,7 +4,7 @@
  * MvcCore
  *
  * This source file is subject to the BSD 3 License
- * For the full copyright and license information, please view 
+ * For the full copyright and license information, please view
  * the LICENSE.md file that are distributed with this source code.
  *
  * @copyright	Copyright (c) 2016 Tom Flídr (https://github.com/mvccore/mvccore)
@@ -58,7 +58,7 @@ class View
 	 * @var string
 	 */
 	const EXTENSION = '.phtml';
-	
+
 	/**
 	 * Document type (HTML, XHTML or anything you desire)
 	 * @var string
@@ -82,38 +82,38 @@ class View
 	 * @var string
 	 */
 	public static $LayoutsDir = 'Layouts';
-	
+
 	/**
 	 * Helpers classes - base class names. For read & write.
 	 * @var array
 	 */
 	public static $HelpersClassBases = array(/*'\MvcCore\Ext\View\Helpers\'*/);
-	
+
 	/**
 	 * Rendered content
 	 * @var \MvcCore\Controller|mixed
 	 */
 	public $Controller;
-	
+
 	/**
 	 * Rendered content
 	 * @var string
 	 */
 	private $_content = '';
-	
+
 	/**
 	 * Currently rendered php/html file path
 	 * @var array
 	 */
 	private $_renderedFullPaths = array();
-	
+
 	/**
 	 * Originaly declared dynamic properties to protect from __set() magic method
 	 * @var string
 	 */
 	protected static $originalyDeclaredProperties = array(
-		'Controller'		=> 1, 
-		'_content'			=> 1, 
+		'Controller'		=> 1,
+		'_content'			=> 1,
 		'_renderedFullPaths'=> 1,
 	);
 
@@ -155,24 +155,24 @@ class View
 
 	/**
 	 * Get view script full path
-	 * @param string $typePath 
-	 * @param string $corectedRelativePath 
+	 * @param string $typePath
+	 * @param string $corectedRelativePath
 	 * @return string
 	 */
 	public static function GetViewScriptFullPath ($typePath = '', $corectedRelativePath = '') {
 		$app = \MvcCore::GetInstance();
 		return implode('/', array(
-			$app->GetRequest()->AppRoot, 
-			$app->GetAppDir(), 
-			$app->GetViewsDir(), 
-			$typePath, 
+			$app->GetRequest()->AppRoot,
+			$app->GetAppDir(),
+			$app->GetViewsDir(),
+			$typePath,
 			$corectedRelativePath . \MvcCore\View::EXTENSION
 		));
 	}
 
 	/**
 	 * Create new view instance.
-	 * @param \MvcCore\Controller $controller 
+	 * @param \MvcCore\Controller $controller
 	 */
 	public function __construct (\MvcCore\Controller & $controller) {
 		$this->Controller = $controller;
@@ -183,11 +183,21 @@ class View
 	 * @param mixed $paramsInstance
 	 */
 	public function SetUp (& $paramsInstance) {
-		$params = get_object_vars($paramsInstance);
+		$type = new \ReflectionClass($paramsInstance);
+		$props = $type->getProperties(
+			\ReflectionProperty::IS_PUBLIC | \ReflectionProperty::IS_PROTECTED
+		);
+		foreach ($props as $prop) {
+			/** @var $prop \ReflectionProperty */
+			if (!$prop->isPublic()) $prop->setAccessible(TRUE);
+			$propName = $prop->getName();
+			$this->$propName = $prop->getValue($paramsInstance);
+		}
+		/*$params = get_object_vars($paramsInstance);
 		foreach ($params as $key => $value) {
 			if (isset(static::$originalyDeclaredProperties[$key])) continue;
-			$this->$key = $value;	
-		}
+			$this->$key = $value;
+		}*/
 	}
 
 	/**
@@ -208,7 +218,7 @@ class View
 
 	/**
 	 * Render controller/action template script and return it's result.
-	 * @param string $relativePath 
+	 * @param string $relativePath
 	 * @return string
 	 */
 	public function RenderScript ($relativePath = '') {
@@ -238,8 +248,8 @@ class View
 	/**
 	 * Render controller template and all necessary layout templates and return rendered result.
 	 * @param string $typePath
-	 * @param string $relativePath 
-	 * @throws \Exception 
+	 * @param string $relativePath
+	 * @throws \Exception
 	 * @return string
 	 */
 	public function Render ($typePath = '', $relativePath = '') {
@@ -261,7 +271,7 @@ class View
 	/**
 	 * Evaluate given code as PHP in current view context,
 	 * any $this keyword will be used as view context.
-	 * @param string $content 
+	 * @param string $content
 	 * @return string
 	 */
 	public function Evaluate ($content = '') {
@@ -297,7 +307,7 @@ class View
 
 	/**
 	 * Get asset url - proxy method into \MvcCore\Controller::AssetUrl();
-	 * @param string $path 
+	 * @param string $path
 	 * @return string
 	 */
 	public function AssetUrl ($path = '') {
@@ -306,9 +316,9 @@ class View
 
 	/**
 	 * Set any value into view context except system keys declared in static::$originalyDeclaredProperties.
-	 * @param string $name 
-	 * @param mixed $value 
-	 * @throws \Exception 
+	 * @param string $name
+	 * @param mixed $value
+	 * @throws \Exception
 	 */
 	public function __set ($name, $value) {
 		if (isset(static::$originalyDeclaredProperties[$name])) {
@@ -320,13 +330,13 @@ class View
 	}
 
 	/**
-	 * Try to call view helper. 
+	 * Try to call view helper.
 	 * If view helper doesn't exist in global helpers store - create new helper instance.
 	 * If helper already exists in global helpers store - do not create it again - use instance from store.
-	 * Then call it's public method named in the same way as helper and return result 
+	 * Then call it's public method named in the same way as helper and return result
 	 * as it is without any conversion! So then there could be called any other helper method if helper instance was returned.
-	 * @param string $method 
-	 * @param mixed $arguments 
+	 * @param string $method
+	 * @param mixed $arguments
 	 * @return string|mixed
 	 */
 	public function __call ($method, $arguments) {

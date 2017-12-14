@@ -4,7 +4,7 @@
  * MvcCore
  *
  * This source file is subject to the BSD 3 License
- * For the full copyright and license information, please view 
+ * For the full copyright and license information, please view
  * the LICENSE.md file that are distributed with this source code.
  *
  * @copyright	Copyright (c) 2016 Tom Flídr (https://github.com/mvccore/mvccore)
@@ -24,11 +24,50 @@ require_once(__DIR__.'/../MvcCore.php');
  */
 class Request
 {
+	/**
+	 * Non-secured HTTP protocol (http:).
+	 */
 	const PROTOCOL_HTTP = 'http:';
+
+	/**
+	 * Secured HTTP(s) protocol (https:).
+	 */
 	const PROTOCOL_HTTPS = 'https:';
 
+	/**
+	 * Retrieves the information or entity that is identified by the URI of the request.
+	 */
 	const METHOD_GET = 'GET';
+
+	/**
+	 * Posts a new entity as an addition to a URI.
+	 */
 	const METHOD_POST = 'POST';
+
+	/**
+	 * Replaces an entity that is identified by a URI.
+	 */
+	const METHOD_PUT = 'PUT';
+
+	/**
+	 * Requests that a specified URI be deleted.
+	 */
+	const METHOD_DELETE = 'DELETE';
+
+	/**
+	 * Retrieves the message headers for the information or entity that is identified by the URI of the request.
+	 */
+	const METHOD_HEAD = 'HEAD';
+
+	/**
+	 * Represents a request for information about the communication options available on the request/response chain identified by the Request-URI.
+	 */
+	const METHOD_OPTIONS = 'OPTIONS';
+
+	/**
+	 * Requests that a set of changes described in the request entity be applied to the resource identified by the Request- URI.
+	 */
+	const METHOD_PATCH = 'PATCH';
 
 	/**
 	 * Language international code, lowercase, not used by default.
@@ -45,7 +84,7 @@ class Request
 	 * @var string
 	 */
 	public $Locale		= '';
-	
+
 	/**
 	 * Http protocol: 'http:' | 'https:'
 	 * Example: 'http:'
@@ -89,7 +128,7 @@ class Request
 	public $Query		= '';
 
 	/**
-	 * Uri fragment parsed by parse_url()
+	 * Uri fragment parsed by parse_url() including hash.
 	 * Example: '#any-sublink-path'
 	 * @var mixed
 	 */
@@ -126,7 +165,7 @@ class Request
 
 	/**
 	 * Url to requested domain and possible port.
-	 * Example: 'http://domain:88'
+	 * Example: 'https://domain.com' | 'http://domain:88' if any port..
 	 * @var string
 	 */
 	public $DomainUrl	= '';
@@ -158,17 +197,17 @@ class Request
 	 * @var string
 	 */
 	public $Method		= '';
-	
+
 	/**
-	 * Referer url if any, safely readed by: 
+	 * Referer url if any, safely readed by:
 	 * filter_var($_SERVER['HTTP_REFERER'], FILTER_SANITIZE_URL);
-	 * Example: 'GET'
+	 * Example: 'http://foreing.domain.com/path/where/is/link/to/?my=app'
 	 * @var string
 	 */
 	public $Referer		= '';
 
 	/**
-	 * Request params array, with keys defined in route or by query string, 
+	 * Raw request params array, with keys defined in route or by query string,
 	 * always with controller and action keys completed by router.
 	 * Example: array('controller' => 'default', 'action' => 'default', 'user' => "' OR 1=1;-- with raw danger value!");
 	 * To get safe param value - use: $request->GetParam('user', 'a-zA-Z0-9');
@@ -201,10 +240,10 @@ class Request
 	 * @var array
 	 */
 	protected $postGlobals = array();
-	
+
 	/**
 	 * Requested script name
-	 * @var array
+	 * @var string
 	 */
 	protected $indexScriptName = '';
 
@@ -217,12 +256,12 @@ class Request
 	protected $appRequest = -1;
 
 	/**
-	 * Get everytime new instance of http request, 
-	 * global variables should be changed and injected here 
+	 * Get everytime new instance of http request,
+	 * global variables should be changed and injected here
 	 * to get different request object from currently called real request.
-	 * @param array $server 
-	 * @param array $get 
-	 * @param array $post 
+	 * @param array $server
+	 * @param array $get
+	 * @param array $post
 	 * @return \MvcCore\Request
 	 */
 	public static function GetInstance (array & $server, array & $get, array & $post) {
@@ -231,15 +270,15 @@ class Request
 	}
 
     /**
-	 * Get everytime new instance of http request, 
-	 * global variables should be changed and injected here 
+	 * Get everytime new instance of http request,
+	 * global variables should be changed and injected here
 	 * to get different request object from currently called real request.
-	 * 
-     * @param array $server 
-     * @param array $get 
-     * @param array $post 
+	 *
+     * @param array $server
+     * @param array $get
+     * @param array $post
      */
-    public function __construct (array & $server, array & $get, array & $post) { 
+    public function __construct (array & $server, array & $get, array & $post) {
 		$this->serverGlobals = $server;
 		$this->getGlobals = $get;
 		$this->postGlobals = $post;
@@ -254,7 +293,7 @@ class Request
 		$this->initPath();
 		$this->initReferer();
 		$this->initUrlCompositions();
-		
+
 		unset($this->serverGlobals, $this->getGlobals, $this->postGlobals);
 	}
 
@@ -285,7 +324,7 @@ class Request
 
 	/**
 	 * Universal getter, if property not defined, NULL is returned.
-	 * @param string $name 
+	 * @param string $name
 	 * @return mixed
 	 */
 	public function __get ($name) {
@@ -294,7 +333,7 @@ class Request
 
 	/**
 	 * Universal setter, if property not defined, it's automaticly declarated.
-	 * @param string	$name 
+	 * @param string	$name
 	 * @param mixed		$value
 	 * @return void
 	 */
@@ -304,8 +343,8 @@ class Request
 
 	/**
 	 * Set directly raw param value without any change
-	 * @param string $name 
-	 * @param string $value 
+	 * @param string $name
+	 * @param string $value
 	 * @return \MvcCore\Request
 	 */
 	public function SetParam ($name = "", $value = "") {
@@ -314,30 +353,51 @@ class Request
 	}
 
 	/**
-	 * Get param value, filtered for characters defined as second argument to use them in preg_replace().
-	 * @param string $name 
-	 * @param string $pregReplaceAllowedChars 
-	 * @return string
+	 * Get param value or values, filtered for characters defined as second argument to use them in preg_replace().
+	 * @param string $name
+	 * @param string $pregReplaceAllowedChars
+	 * @return string|string[]
 	 */
 	public function GetParam ($name = "", $pregReplaceAllowedChars = "a-zA-Z0-9_/\-\.\@") {
-		$result = '';
 		$params = $this->Params;
-		if (isset($params[$name])) {
-			$rawValue = trim($params[$name]);
-			if (mb_strlen($rawValue) > 0) {
-				if (!$pregReplaceAllowedChars || $pregReplaceAllowedChars == ".*") {
-					$result = $rawValue;
-				} else {
-					$pattern = "#[^" . $pregReplaceAllowedChars . "]#";
-					$result = preg_replace($pattern, "", $rawValue);
-				}
+		if (!isset($params[$name])) return NULL;
+		if (gettype($params[$name]) == 'array') {
+			$result = array();
+			$params = $params[$name];
+			foreach ($params as $key => & $value) {
+				$result[$key] = $this->getParamItem($value, $pregReplaceAllowedChars);
 			}
+			return $result;
+		} else {
+			return $this->getParamItem($params[$name], $pregReplaceAllowedChars);
 		}
-		return $result;
 	}
 
 	/**
-	 * Return boolean flag if request target 
+	 * Get filtered param value for characters defined as second argument to use them in preg_replace().
+	 * @param string|string[] $rawValue
+	 * @param string $pregReplaceAllowedChars
+	 * @return string|string[]
+	 */
+	protected function getParamItem (& $rawValue = "", $pregReplaceAllowedChars = "a-zA-Z0-9_/\-\.\@") {
+		$rawValue = trim($rawValue);
+		if (mb_strlen($rawValue) === 0) return "";
+		if (mb_strlen($pregReplaceAllowedChars) > 0 || $pregReplaceAllowedChars == ".*") {
+			return $rawValue;
+		} else if (gettype($rawValue) == 'array') {
+			$result = array();
+			foreach ($rawValue as $key => & $value) {
+				$result[$key] = $this->getParamItem($value, $pregReplaceAllowedChars);
+			}
+			return $result;
+		} else {
+			$pattern = "#[^" . $pregReplaceAllowedChars . "]#";
+			return preg_replace($pattern, "", $rawValue);
+		}
+	}
+
+	/**
+	 * Return boolean flag if request target
 	 * is anything different than 'Controller:Asset'
 	 * @return bool
 	 */
@@ -389,7 +449,9 @@ class Request
 	}
 
 	/**
-	 * Complete base application path like: /localhost/my/development/direcotry/www
+	 * Complete base application path like:
+	 * request url:	http://localhost/my/development/direcotry/www
+	 * base path:	/my/development/direcotry/www
 	 * @return void
 	 */
 	protected function initBasePath () {
@@ -400,7 +462,7 @@ class Request
 			$this->BasePath = '';
 		}
 	}
-	
+
 	/**
 	 * Initialize http protocol.
 	 * @return void
@@ -411,7 +473,7 @@ class Request
 			$this->Protocol = static::PROTOCOL_HTTPS;
 		}
 	}
-	
+
 	/**
 	 * Initialize url segments parsed by parse_url() php method.
 	 * @return void

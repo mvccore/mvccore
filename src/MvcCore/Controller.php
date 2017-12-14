@@ -4,7 +4,7 @@
  * MvcCore
  *
  * This source file is subject to the BSD 3 License
- * For the full copyright and license information, please view 
+ * For the full copyright and license information, please view
  * the LICENSE.md file that are distributed with this source code.
  *
  * @copyright	Copyright (c) 2016 Tom Flídr (https://github.com/mvccore/mvccore)
@@ -31,7 +31,7 @@ require_once('View.php');
  *		- view initialization
  * - internal actions:
  *	 - AssetAction()
- *	   - handling internal MvcCore http request 
+ *	   - handling internal MvcCore http request
  *	     to get assets from packed package
  * - url proxy method, reading request param proxy method
  * - view rendering or no-rendering management
@@ -52,13 +52,13 @@ class Controller
 	 * @var \MvcCore\Response
 	 */
 	protected $response;
-	
+
 	/**
 	 * Requested controller name - dashed
 	 * @var string
 	 */
 	protected $controller = '';
-	
+
 	/**
 	 * Requested action name - dashed
 	 * @var string
@@ -70,13 +70,13 @@ class Controller
 	 * @var boolean
 	 */
 	protected $ajax = FALSE;
-	
+
 	/**
 	 * Class store object for view properties
 	 * @var \MvcCore\View
 	 */
 	protected $view = NULL;
-	
+
 	/**
 	 * Layout name to render html wrapper around rendered view
 	 * @var string
@@ -100,7 +100,7 @@ class Controller
 	 * @var string
 	 */
 	protected static $tmpPath = '/Var/Tmp';
-	
+
 	/**
 	 * All asset mime types possibly called throught Asset action
 	 * @var string
@@ -120,11 +120,11 @@ class Controller
 		'otf'	=> 'font/opentype',
 		'woff'	=> 'application/x-font-woff',
 	);
-	
+
 	/**
 	 * Create new controller instance - always called from \MvcCore app instance before controller is dispatched.
 	 * Never used in application controllers.
-	 * @param \MvcCore\Request $request 
+	 * @param \MvcCore\Request $request
 	 */
 	public function __construct (\MvcCore\Request & $request = NULL, \MvcCore\Response & $response = NULL) {
 		$this->request = & $request;
@@ -135,13 +135,34 @@ class Controller
 			return;
 		}
 		$this->response = & $response;
-		if (
-			isset($_SERVER['HTTP_X_REQUESTED_WITH']) && 
-			strtolower($_SERVER['HTTP_X_REQUESTED_WITH']) == 'xmlhttprequest'
-		) {
+		if (isset($_SERVER['HTTP_X_REQUESTED_WITH']) && strlen($_SERVER['HTTP_X_REQUESTED_WITH']) > 0) {
 			$this->ajax = TRUE;
 			$this->DisableView();
 		}
+	}
+
+	/**
+	 * Dispatching controller life cycle by given action,
+	 * call this imediatelly after calling controller __construct()
+	 * with request and response params. This function automaticly
+	 * complete response object with content, which you can send
+	 * to browser by $ctrl->Terminate() method.
+	 * @param string $actionName php code action name in PascalCase (this value is used to call your desired function in controller without any change)
+	 * @return void
+	 */
+	public function Run ($actionName = "Index") {
+		// \MvcCore\Debug::Timer('dispatch');
+		$this->Init();
+		// \MvcCore\Debug::Timer('dispatch');
+		$this->PreDispatch();
+		// \MvcCore\Debug::Timer('dispatch');
+		if (method_exists($this->controller, $actionName)) $this->controller->$actionName();
+		// \MvcCore\Debug::Timer('dispatch');
+		$this->Render(
+			$this->request->Params['controller'],	// dashed ctrl name
+			$this->request->Params['action']		// dashed action name
+		);
+		// \MvcCore\Debug::Timer('dispatch');
 	}
 
 	/**
@@ -168,8 +189,8 @@ class Controller
 	/**
 	 * Get param value, filtered for characters defined as second argument to use them in preg_replace().
 	 * Shortcut for $this->request->GetParam();
-	 * @param string $name 
-	 * @param string $pregReplaceAllowedChars 
+	 * @param string $name
+	 * @param string $pregReplaceAllowedChars
 	 * @return string
 	 */
 	public function GetParam ($name = "", $pregReplaceAllowedChars = "a-zA-Z0-9_/\-\.\@") {
@@ -186,11 +207,29 @@ class Controller
 
 	/**
 	 * Get current application request object, rarely used.
-	 * @param \MvcCore\Request $request 
+	 * @param \MvcCore\Request $request
 	 * @return \MvcCore\Controller
 	 */
 	public function SetRequest (\MvcCore\Request & $request) {
 		$this->request = $request;
+		return $this;
+	}
+
+	/**
+	 * Get current application response object as reference.
+	 * @return \MvcCore\Response
+	 */
+	public function & GetResponse () {
+		return $this->response;
+	}
+
+	/**
+	 * Get current application response object, rarely used.
+	 * @param \MvcCore\Request $response
+	 * @return \MvcCore\Controller
+	 */
+	public function SetResponse (\MvcCore\Response & $response) {
+		$this->response = $response;
 		return $this;
 	}
 
@@ -205,7 +244,7 @@ class Controller
 
 	/**
 	 * Set current controller view object, rarely used.
-	 * @param \MvcCore\View $view 
+	 * @param \MvcCore\View $view
 	 * @return \MvcCore\Controller
 	 */
 	public function SetView (\MvcCore\View & $view) {
@@ -223,7 +262,7 @@ class Controller
 
 	/**
 	 * Set layout name
-	 * @param string $layout 
+	 * @param string $layout
 	 * @return \MvcCore\Controller
 	 */
 	public function SetLayout ($layout = '') {
@@ -241,7 +280,7 @@ class Controller
 
 	/**
 	 * Return small assets content with proper headers in single file application mode
-	 * @throws \Exception 
+	 * @throws \Exception
 	 * @return void
 	 */
 	public function AssetAction () {
@@ -249,8 +288,8 @@ class Controller
 		$path = $this->GetParam('path');
 		$path = '/' . ltrim(str_replace('..', '', $path), '/');
 		if (
-			strpos($path, self::$staticPath) !== 0 &&
-			strpos($path, self::$tmpPath) !== 0
+			strpos($path, static::$staticPath) !== 0 &&
+			strpos($path, static::$tmpPath) !== 0
 		) {
 			throw new \Exception("[".__CLASS__."] File path: '$path' is not allowed.", 500);
 		}
@@ -275,8 +314,8 @@ class Controller
 
 	/**
 	 * Render and send prepared controller view, all sub views and controller layout view.
-	 * @param mixed $controllerName 
-	 * @param mixed $actionName 
+	 * @param mixed $controllerName
+	 * @param mixed $actionName
 	 * @return void
 	 */
 	public function Render ($controllerName = '', $actionName = '') {
@@ -305,7 +344,7 @@ class Controller
 
 	/**
 	 * Send rendered html output to user.
-	 * @param mixed $output 
+	 * @param mixed $output
 	 * @return void
 	 */
 	public function HtmlResponse ($output = "") {
@@ -317,7 +356,7 @@ class Controller
 
 	/**
 	 * Send any php value serialized in json to user.
-	 * @param mixed $data 
+	 * @param mixed $data
 	 * @return void
 	 */
 	public function JsonResponse ($data = array()) {
@@ -351,7 +390,7 @@ class Controller
 
 	/**
 	 * Return asset path or single file mode url
-	 * @param string $path 
+	 * @param string $path
 	 * @return string
 	 */
 	public function AssetUrl ($path = '') {
@@ -366,7 +405,7 @@ class Controller
 	public function RenderError ($exceptionMessage = '') {
 		if (\MvcCore::GetInstance()->IsErrorDispatched()) return;
 		throw new \ErrorException(
-			$exceptionMessage ? $exceptionMessage : 
+			$exceptionMessage ? $exceptionMessage :
 			"Server error: \n'" . $this->request->FullUrl . "'",
 			500
 		);
@@ -393,8 +432,8 @@ class Controller
 
 	/**
 	 * Redirect user browser to another location.
-	 * @param string $location 
-	 * @param int    $code 
+	 * @param string $location
+	 * @param int    $code
 	 * @return void
 	 */
 	public static function Redirect ($location = '', $code = \MvcCore\Response::SEE_OTHER) {

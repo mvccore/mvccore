@@ -4,7 +4,7 @@
  * MvcCore
  *
  * This source file is subject to the BSD 3 License
- * For the full copyright and license information, please view 
+ * For the full copyright and license information, please view
  * the LICENSE.md file that are distributed with this source code.
  *
  * @copyright	Copyright (c) 2016 Tom Flídr (https://github.com/mvccore/mvccore)
@@ -31,7 +31,7 @@ class Config
 	const ENVIRONMENT_BETA = 'beta';
 	const ENVIRONMENT_ALPHA = 'alpha';
 	const ENVIRONMENT_PRODUCTION = 'production';
-	
+
 	/**
 	 * System config relative path from app root
 	 * @var string
@@ -65,9 +65,9 @@ class Config
 
 	/**
 	 * Temporary variable used when ini file is parsed and loaded,
-	 * to store information about final retyping. Keys are addresses 
+	 * to store information about final retyping. Keys are addresses
 	 * into result level to by retyped or not, values are arrays.
-	 * First index in values is boolean to define if result level will 
+	 * First index in values is boolean to define if result level will
 	 * be retyped into stdClass or not, second index in values is reference
 	 * link to object retyped at the end or not.
 	 * @var array
@@ -129,7 +129,7 @@ class Config
 	public static function GetEnvironment () {
 		return static::$environment;
 	}
-	
+
 	/**
 	 * Set environment name as string, defined by constants: \MvcCore\Config::ENVIRONMENT_<environment>
 	 * @return void
@@ -158,7 +158,11 @@ class Config
 	 * @return string
 	 */
 	protected static function getServerIp () {
-		return isset($_SERVER['SERVER_ADDR']) ? $_SERVER['SERVER_ADDR'] : $_SERVER['LOCAL_ADDR'] ;
+		return isset($_SERVER['SERVER_ADDR'])
+			? $_SERVER['SERVER_ADDR']
+			: isset($_SERVER['LOCAL_ADDR'])
+				? $_SERVER['LOCAL_ADDR']
+				: '';
 	}
 
 	/**
@@ -166,7 +170,11 @@ class Config
 	 * @return string
 	 */
 	protected static function getClientIp () {
-		return isset($_SERVER['HTTP_X_CLIENT_IP']) ? $_SERVER['HTTP_X_CLIENT_IP'] : $_SERVER['REMOTE_ADDR'];
+		return isset($_SERVER['HTTP_X_CLIENT_IP'])
+			? $_SERVER['HTTP_X_CLIENT_IP']
+			: isset($_SERVER['REMOTE_ADDR'])
+				? $_SERVER['REMOTE_ADDR']
+				: '';
 	}
 
 	/**
@@ -194,10 +202,10 @@ class Config
 	}
 
 	/**
-	 * Aline all raw ini data to single level array, 
+	 * Aline all raw ini data to single level array,
 	 * filtered for only current environment data items.
 	 * @param array $rawIniData
-	 * @param string $environment 
+	 * @param string $environment
 	 * @return array
 	 */
 	protected function & prepareIniDataToParse (& $rawIniData, $environment) {
@@ -232,7 +240,7 @@ class Config
 			foreach ($environments as $environmentName => $environmentComputerNamesOrIps) {
 				$environmentComputerNamesOrIps = ','.$environmentComputerNamesOrIps.',';
 				if (
-					strpos($environmentComputerNamesOrIps, $serverAddress) !== FALSE || 
+					strpos($environmentComputerNamesOrIps, $serverAddress) !== FALSE ||
 					strpos($environmentComputerNamesOrIps, $serverComputerName) !== FALSE
 				) {
 					$environment = $environmentName;
@@ -245,9 +253,9 @@ class Config
 	}
 
 	/**
-	 * Process single level array with dotted keys into tree structure 
+	 * Process single level array with dotted keys into tree structure
 	 * and complete object type switches about tree records to set final stdClasses or arrays
-	 * @param array $iniData 
+	 * @param array $iniData
 	 * @return void
 	 */
 	protected function processIniData (& $iniData) {
@@ -295,17 +303,17 @@ class Config
 
 	/**
 	 * Return if $rawKey is numeric
-	 * @param string $rawKey 
+	 * @param string $rawKey
 	 * @return bool
 	 */
 	protected function isKeyNumeric ($rawKey) {
 		$numericRawKey = preg_replace("#[^0-9\-]#", '', $rawKey);
 		return $numericRawKey == $rawKey;
 	}
-	
+
 	/**
 	 * Retype raw ini value into array wth retyped it's own values or to float, int or string
-	 * @param string|array $rawValue 
+	 * @param string|array $rawValue
 	 * @return array|float|int|string
 	 */
 	protected function getTypedValue ($rawValue) {
@@ -326,7 +334,7 @@ class Config
 
 	/**
 	 * Retype raw ini value into float ip or int
-	 * @param string $rawValue 
+	 * @param string $rawValue
 	 * @return float|string|int
 	 */
 	protected function getTypedValueFloatIpOrInt ($rawValue) {
@@ -341,10 +349,10 @@ class Config
 			return (string) $intVal === $rawValue ? $intVal : $rawValue;
 		}
 	}
-	
+
 	/**
 	 * Retype raw ini value into bool or string
-	 * @param string $rawValue 
+	 * @param string $rawValue
 	 * @return bool|string
 	 */
 	protected function getTypedValueBoolOrString ($rawValue) {
