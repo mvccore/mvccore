@@ -162,7 +162,7 @@ class Controller
 		// \MvcCore\Debug::Timer('dispatch');
 		$this->PreDispatch();
 		// \MvcCore\Debug::Timer('dispatch');
-		if (method_exists($this->controller, $actionName)) $this->controller->$actionName();
+		if (method_exists($this, $actionName)) $this->$actionName();
 		// \MvcCore\Debug::Timer('dispatch');
 		$this->Render(
 			$this->request->Params['controller'],	// dashed ctrl name
