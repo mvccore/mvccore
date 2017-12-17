@@ -183,21 +183,21 @@ class View
 	 * @param mixed $paramsInstance
 	 */
 	public function SetUp (& $paramsInstance) {
-		$type = new \ReflectionClass($paramsInstance);
+		/*$type = new \ReflectionClass($paramsInstance);
 		$props = $type->getProperties(
 			\ReflectionProperty::IS_PUBLIC | \ReflectionProperty::IS_PROTECTED
 		);
 		foreach ($props as $prop) {
-			/** @var $prop \ReflectionProperty */
+			/* * @var $prop \ReflectionProperty * /
 			if (!$prop->isPublic()) $prop->setAccessible(TRUE);
 			$propName = $prop->getName();
 			$this->$propName = $prop->getValue($paramsInstance);
-		}
-		/*$params = get_object_vars($paramsInstance);
+		}*/
+		$params = get_object_vars($paramsInstance);
 		foreach ($params as $key => $value) {
 			if (isset(static::$originalyDeclaredProperties[$key])) continue;
 			$this->$key = $value;
-		}*/
+		}
 	}
 
 	/**
