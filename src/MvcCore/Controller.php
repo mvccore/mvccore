@@ -78,6 +78,12 @@ class Controller
 	protected $view = NULL;
 
 	/**
+	 * Registered controls instances.
+	 * @var \MvcCore\Ext\Control[]|array
+	 */
+	protected $controls = array();
+
+	/**
 	 * Layout name to render html wrapper around rendered view
 	 * @var string
 	 */
@@ -172,6 +178,7 @@ class Controller
 	 */
 	public function Init () {
 		\MvcCore::SessionStart();
+		foreach ($this->controls as $control) $control->Init();
 	}
 
 	/**
@@ -184,6 +191,7 @@ class Controller
 			$viewClass = \MvcCore::GetInstance()->GetViewClass();
 			$this->view = new $viewClass($this);
 		}
+		foreach ($this->controls as $control) $control->PreDispatch();
 	}
 
 	/**
@@ -225,12 +233,28 @@ class Controller
 
 	/**
 	 * Get current application response object, rarely used.
-	 * @param \MvcCore\Request $response
+	 * @param \MvcCore\Response $response
 	 * @return \MvcCore\Controller
 	 */
 	public function SetResponse (\MvcCore\Response & $response) {
 		$this->response = $response;
 		return $this;
+	}
+
+	/**
+	 * Boolean about ajax request
+	 * @return bool
+	 */
+	public function IsAjax () {
+		return $this->ajax;
+	}
+
+	/**
+	 * Boolean about disabled or enabled view to render at last
+	 * @return bool
+	 */
+	public function IsViewEnabled () {
+		return $this->viewEnabled;
 	}
 
 	/**
@@ -276,6 +300,15 @@ class Controller
 	 */
 	public function DisableView () {
 		$this->viewEnabled = FALSE;
+	}
+
+	/**
+	 * Register control to process dispatching on it
+	 * @return \MvcCore\Controller
+	 */
+	public function AddControl (/*\MvcCore\Ext\Control*/ & $control) {
+		$this->controls[] = & $control;
+		return $this;
 	}
 
 	/**

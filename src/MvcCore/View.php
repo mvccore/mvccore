@@ -174,7 +174,7 @@ class View
 	 * Create new view instance.
 	 * @param \MvcCore\Controller $controller
 	 */
-	public function __construct (\MvcCore\Controller & $controller) {
+	public function __construct (/*\MvcCore\Controller*/ & $controller) {
 		$this->Controller = $controller;
 	}
 
