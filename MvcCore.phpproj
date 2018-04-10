@@ -15,10 +15,26 @@
     <IncludeDebugInformation>false</IncludeDebugInformation>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="src\MvcCore\Application.php" />
+    <Compile Include="src\MvcCore\Application\Dispatching.php" />
+    <Compile Include="src\MvcCore\Application\GettersSetters.php" />
+    <Compile Include="src\MvcCore\Application\Helpers.php" />
     <Compile Include="src\MvcCore\Config.php" />
     <Compile Include="src\MvcCore\Controller.php" />
     <Compile Include="src\MvcCore\debug.html" />
     <Compile Include="src\MvcCore\Debug.php" />
+    <Compile Include="src\MvcCore\Interfaces\IApplication.php" />
+    <Compile Include="src\MvcCore\Interfaces\IConfig.php" />
+    <Compile Include="src\MvcCore\Interfaces\IController.php" />
+    <Compile Include="src\MvcCore\Interfaces\IDebug.php" />
+    <Compile Include="src\MvcCore\Interfaces\IModel.php" />
+    <Compile Include="src\MvcCore\Interfaces\IRequest.php" />
+    <Compile Include="src\MvcCore\Interfaces\IResponse.php" />
+    <Compile Include="src\MvcCore\Interfaces\IRoute.php" />
+    <Compile Include="src\MvcCore\Interfaces\IRouter.php" />
+    <Compile Include="src\MvcCore\Interfaces\ISession.php" />
+    <Compile Include="src\MvcCore\Interfaces\ITool.php" />
+    <Compile Include="src\MvcCore\Interfaces\IView.php" />
     <Compile Include="src\MvcCore\Model.php" />
     <Compile Include="src\MvcCore\Request.php" />
     <Compile Include="src\MvcCore\Response.php" />
@@ -27,7 +43,6 @@
     <Compile Include="src\MvcCore\Session.php" />
     <Compile Include="src\MvcCore\Tool.php" />
     <Compile Include="src\MvcCore\View.php" />
-    <Compile Include="src\MvcCore.php" />
     <Compile Include="src\startup.php" />
     <Compile Include=".gitignore" />
     <Compile Include=".hgignore" />
@@ -39,5 +54,7 @@
   <ItemGroup>
     <Folder Include="src\MvcCore" />
     <Folder Include="src" />
+    <Folder Include="src\MvcCore\Application\" />
+    <Folder Include="src\MvcCore\Interfaces\" />
   </ItemGroup>
 </Project>

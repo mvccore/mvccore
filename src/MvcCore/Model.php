@@ -4,7 +4,7 @@
  * MvcCore
  *
  * This source file is subject to the BSD 3 License
- * For the full copyright and license information, please view 
+ * For the full copyright and license information, please view
  * the LICENSE.md file that are distributed with this source code.
  *
  * @copyright	Copyright (c) 2016 Tom Flídr (https://github.com/mvccore/mvccore)
@@ -13,36 +13,38 @@
 
 namespace MvcCore;
 
+require_once(__DIR__ . '/Interfaces/IModel.php');
 require_once('Config.php');
 
 /**
- * Core model
- * - reading 'db' section from system config.ini
- * - database PDO connecting by config settings and index
- * - instance loaded variables initializing
- * - instance initialized values reading
- * - virtual calls/sets and gets handling
+ * - Reading `db` section from system `config.ini` file.
+ * - Database `\PDO` connecting by config settings and index.
+ * - Instance loaded variables initializing.
+ * - Instance initialized values reading.
+ * - Virtual calls/sets and gets handling.
  */
-abstract class Model {
+class Model implements Interfaces\IModel {
 	/**
-	 * PDO connection arguments.
-	 * 
+	 * `\PDO` connection arguments.
+	 *
 	 * If you need to reconfigure connection string for any other special
-	 * PDO database implementation or you specific needs, patch this array
-	 * in extended application base model class in base __construct method by:
-	 *	 static::$connectionArguments = array_merge(static::$connectionArguments, array(...));
+	 * `\PDO` database implementation or you specific needs, patch this array
+	 * in extended application base model class in base `__construct()` method by:
+	 *	 `static::$connectionArguments = array_merge(static::$connectionArguments, array(...));`
 	 * or by:
-	 *	 static::$connectionArguments['driverName]['dsn'] = '...';
-	 * 
-	 * Every key in this field shoud be driver name, you can use:
-	 * - 4D, cubrid, firebird, ibm, informix, mysql, oci, pgsql, sqlite, sqlsrv (mssql), sysbase, dblib
-	 *	 (cubrid, oci, pgsql, sysbase and dblib shoud be used with defaults)
-	 * 
-	 * Every value in this field shoud be defined as:
-	 * - connection query - as first PDO contructor argument with
-	 *						database config replacements.
-	 * - required to use database credentials for connecting
-	 * - any additional arguments array
+	 *	 `static::$connectionArguments['driverName']['dsn'] = '...';`
+	 *
+	 * Every key in this field is driver name, so you can use usual `\PDO` drivers:
+	 * - `mysql`, `sqlite`, `sqlsrv` (mssql), `firebird`, `ibm`, `informix`, `4D`
+	 * Following drivers shoud be used with defaults, no connection args from here are necessary:
+	 * - `oci`, `pgsql`, `cubrid`, `sysbase`, `dblib`
+	 *
+	 * Every value in this configuration field shoud be defined as:
+	 * - `dsn`		- connection query as first `\PDO` contructor argument
+	 *				  with database config replacements.
+	 * - `auth`		- if required to use database credentials for connecting or not.
+	 * - `fileDb`	- if database if file database or not.
+	 * - `options`	. any additional arguments array or empty array.
 	 * @var array
 	 */
 	protected static $connectionArguments = array(
@@ -101,59 +103,59 @@ abstract class Model {
 	);
 
 	/**
-	 * Default database connection index, in config ini defined in section db.defaultDbIndex = 0.
+	 * Default database connection index, in config ini defined in section `db.defaultDbIndex = 0`.
 	 * In extended classes - use this for connection index of current model if different.
 	 * @var int
 	 */
 	protected static $connectionIndex = -1;
 
 	/**
-	 * PDO connections array, keyed by connection indexes from system config
+	 * `\PDO` connections array, keyed by connection indexes from system config.
 	 * @var array
 	 */
 	protected static $connections = array();
 
 	/**
-	 * Instance of current class if there is necessary to use it as singleton
+	 * Instance of current class, if there is necessary to use it as singleton.
 	 * @var array
 	 */
 	protected static $instances = array();
 
 	/**
-	 * System config sections array with stdClass objects, keyed by connection indexes
+	 * System config sections array with \`stdClass` objects, keyed by connection indexes.
 	 * @var array
 	 */
 	protected static $configs = array();
 
 	/**
-	 * Automaticly initialize config, db connection and resource class
+	 * Automaticly initialize config, db connection and resource class.
 	 * @var bool
 	 */
 	protected $autoInit = TRUE;
 
     /**
-     * PDO instance
+     * `\PDO` instance.
      * @var \PDO
      */
     protected $db;
 
 	/**
-	 * System config section for database under called connection index in constructor
+	 * System config section for database under called connection index in constructor.
 	 * @var \stdClass
 	 */
 	protected $cfg;
 
 	/**
-	 * Resource model class with SQL statements
-	 * @var \MvcCore\Model
+	 * Resource model class with SQL statements.
+	 * @var \MvcCore\Interfaces\IModel
 	 */
 	protected $resource;
 
 	/**
-	 * Collect all model class public and inherit field values into array
-	 * @param boolean $getNullValues			if true, include also values with NULLs, by default - FALSE
-	 * @param boolean $includeInheritProperties if true, include only fields from current model class and from parent classes
-	 * @param boolean $publicOnly               if true, include only public model fields
+	 * Collect all model class public and inherit field values into array.
+	 * @param boolean $getNullValues			If `TRUE`, include also values with `NULL`s, by default - `FALSE`.
+	 * @param boolean $includeInheritProperties If `TRUE`, include only fields from current model class and from parent classes.
+	 * @param boolean $publicOnly               If `TRUE`, include only public model fields.
 	 * @return array
 	 */
 	public function GetValues ($getNullValues = FALSE, $includeInheritProperties = TRUE, $publicOnly = TRUE) {
@@ -173,17 +175,17 @@ abstract class Model {
 	}
 
 	/**
-	 * Set up given $data items into $this instance context 
+	 * Set up given `$data` items into `$this` instance context
 	 * as typed properties by PHP doc comments, as properties
-	 * with the same names as $data array keys - case sesitively by default.
-	 * Do not set any $data items which are not declared in $this context.
-	 * @param array   $data                     collection with data to set up
-	 * @param boolean $keysInsensitive			if true, set up properties from $data with case insensivity
-	 * @param boolean $includeInheritProperties if true, include only fields from current model class and from parent classes
-	 * @param boolean $publicOnly               if true, include only public model fields
-	 * @return \MvcCore\Model
+	 * with the same names as `$data` array keys. Case sesitively by default.
+	 * Do not set any `$data` items, which are not declared in `$this` context.
+	 * @param array   $data                     Collection with data to set up
+	 * @param boolean $keysInsensitive			If `TRUE`, set up properties from `$data` with case insensivity.
+	 * @param boolean $includeInheritProperties If `TRUE`, include only fields from current model class and from parent classes.
+	 * @param boolean $publicOnly               If `TRUE`, include only public model fields.
+	 * @return \MvcCore\Interfaces\IModel
 	 */
-	public function SetUp ($data = array(), $keysInsensitive = FALSE, $includeInheritProperties = TRUE, $publicOnly = TRUE) {
+	public function & SetUp ($data = array(), $keysInsensitive = FALSE, $includeInheritProperties = TRUE, $publicOnly = TRUE) {
 		$modelClassName = get_class($this);
 		$classReflector = new \ReflectionClass($modelClassName);
 		$properties = $publicOnly ? $classReflector->getProperties(\ReflectionProperty::IS_PUBLIC) : $classReflector->getProperties();
@@ -212,12 +214,12 @@ abstract class Model {
 	}
 
 	/**
-	 * Returns (or creates and holds) instance from local store
-	 * @param mixed $arg,... unlimited OPTIONAL variables to pass into __construct() method
-	 * @return \MvcCore\Model|mixed
+	 * Returns (or creates and holds) instance from local store.
+	 * @param mixed $arg,... unlimited OPTIONAL variables to pass into model `__construct()` method.
+	 * @return \MvcCore\Interfaces\IModel|mixed
 	 */
 	public static function GetInstance (/* $arg1, $arg2, $arg, ... */) {
-		// get 'ClassName' string from this call: ClassName::GetInstance();
+		// get `"ClassName"` string from this call: `ClassName::GetInstance();`
 		$className = get_called_class();
 		$args = func_get_args();
 		$instanceIndex = md5($className . '_' . serialize($args));
@@ -230,11 +232,11 @@ abstract class Model {
 	}
 
 	/**
-	 * Returns (or creates if necessary) model resource instance
-	 * @param array $args values array with variables to pass into __construct() method
+	 * Returns (or creates if necessary) model resource instance.
+	 * @param array  $args              Values array with variables to pass into resource `__construct()` method.
 	 * @param string $modelClassPath
 	 * @param string $resourceClassPath
-	 * @return \MvcCore\Model (|\MvcCore\Model\Resource)
+	 * @return \MvcCore\Interfaces\IModel (|\MvcCore\Model\IResource)
 	 */
 	public static function GetResource ($args = array(), $modelClassName = '', $resourceClassPath = '\Resource') {
 		$result = NULL;
@@ -251,7 +253,7 @@ abstract class Model {
 	}
 
 	/**
-	 * Creates an instance and inits cfg, db and resource properties
+	 * Creates an instance and inits cfg, db and resource properties.
 	 * @param int $connectionIndex
 	 */
 	public function __construct ($connectionIndex = -1) {
@@ -259,7 +261,7 @@ abstract class Model {
     }
 
 	/**
-	 * Creates an instance and inits cfg, db and resource properties
+	 * Creates an instance and inits cfg, db and resource properties.
 	 * @param int $connectionIndex
 	 */
 	public function Init ($connectionIndex = -1) {
@@ -271,7 +273,7 @@ abstract class Model {
 	/**
 	 * Returns database connection by connection index (cached by local store)
 	 * or create new connection of no connection cached.
-	 * @param int $connectionIndex 
+	 * @param int $connectionIndex
 	 * @return \PDO
 	 */
 	public static function GetDb ($connectionIndex = -1) {
@@ -279,7 +281,7 @@ abstract class Model {
 			static::loadConfigs();
 			if ($connectionIndex == -1) $connectionIndex = static::$connectionIndex;
 			if ($connectionIndex == -1) $connectionIndex = self::$connectionIndex;
-			// get system config 'db' data 
+			// get system config 'db' data
 			// and get predefined constructor arguments by driver value from config
 			$cfg = static::GetCfg($connectionIndex);
 			$conArgs = (object) self::$connectionArguments[isset(self::$connectionArguments[$cfg->driver]) ? $cfg->driver:'default'];
@@ -287,7 +289,7 @@ abstract class Model {
 			// If database is filesystem based, complete app root and extend
 			// relative path in $cfg->dbname to absolute path
 			if ($conArgs->fileDb) {
-				$appRoot = \MvcCore::GetInstance()->GetRequest()->AppRoot;
+				$appRoot = \MvcCore\Application::GetInstance()->GetRequest()->AppRoot;
 				if (strpos($appRoot, 'phar://') !== FALSE) {
 					$lastSlashPos = strrpos($appRoot, '/');
 					$appRoot = substr($appRoot, 7, $lastSlashPos - 7);
@@ -296,7 +298,7 @@ abstract class Model {
 			}
 			// Process connection string (dsn) with config replacements
 			$dsn = $conArgs->dsn;
-			foreach ($cfg as $key => $value) $dsn = str_replace('{'.$key.'}', $value, $dsn);
+			foreach ((array) $cfg as $key => $value) $dsn = str_replace('{'.$key.'}', $value, $dsn);
 			// If database required username and password credentials,
 			// connect with wull arguments count or only with one (sqllite only)
 			if ($conArgs->auth) {
@@ -311,8 +313,8 @@ abstract class Model {
 	}
 
 	/**
-	 * Returns database config by connection index as stdClass (cached by local store)
-	 * @param int $connectionIndex 
+	 * Returns database config by connection index as `\stdClass` (cached by local store).
+	 * @param int $connectionIndex
 	 * @return object
 	 */
 	public static function GetCfg ($connectionIndex = -1) {
@@ -330,7 +332,7 @@ abstract class Model {
 	}
 
 	/**
-	 * Initialize configuration data
+	 * Initializes configuration data.
 	 * @throws \Exception
 	 * @return void
 	 */
@@ -356,16 +358,16 @@ abstract class Model {
 	}
 
 	/**
-	 * Sets any custom property ('PropertyName') by $model->SetPropertyName('value'),
-	 * which is not necessary to define previously or gets previously defined 
-	 * property ('PropertyName') by $model->GetPropertyName(); Throws exception 
-	 * if no property defined by get call or if virtual call begins with anything 
-	 * different from 'set' or 'get'.
-	 * This method returns custom value for get and $model instance for set.
-	 * @param string $rawName 
-	 * @param array  $arguments 
-	 * @throws \Exception 
-	 * @return mixed|\MvcCore\Model
+	 * Sets any custom property `"PropertyName"` by `\MvcCore\Interfaces\IModel::SetPropertyName("value")`,
+	 * which is not necessary to define previously or gets previously defined
+	 * property `"PropertyName"` by `\MvcCore\Interfaces\IModel::GetPropertyName();`.
+	 * Throws exception if no property defined by get call
+	 * or if virtual call begins with anything different from `Set` or `Get`.
+	 * This method returns custom value for get and `\MvcCore\Interfaces\IModel` instance for set.
+	 * @param string $rawName
+	 * @param array  $arguments
+	 * @throws \Exception
+	 * @return mixed|\MvcCore\Interfaces\IModel
 	 */
 	public function __call ($rawName, $arguments = array()) {
 		$nameBegin = strtolower(substr($rawName, 0, 3));
@@ -376,23 +378,23 @@ abstract class Model {
 			$this->$name = isset($arguments[0]) ? $arguments[0] : NULL;
 			return $this;
 		} else {
-			throw new \Exception('['.__CLASS__."] No property with name '$name' defined.");
+			throw new \InvalidArgumentException('['.__CLASS__."] No property with name '$name' defined.");
 		}
 	}
 
 	/**
-	 * Set any custom property, not necessary to previously define.
-	 * @param string $name 
-	 * @param mixed  $value 
+	 * Set any custom property, not necessary to previously defined.
+	 * @param string $name
+	 * @param mixed  $value
 	 */
 	public function __set ($name, $value) {
 		$this->$name = $value;
 	}
 
 	/**
-	 * Get any custom property, not necessary to previously define,
+	 * Get any custom property, not necessary to previously defined,
 	 * if property is not defined, NULL is returned.
-	 * @param string $name 
+	 * @param string $name
 	 * @return mixed
 	 */
 	public function __get ($name) {

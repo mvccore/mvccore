@@ -4,7 +4,7 @@
  * MvcCore
  *
  * This source file is subject to the BSD 3 License
- * For the full copyright and license information, please view 
+ * For the full copyright and license information, please view
  * the LICENSE.md file that are distributed with this source code.
  *
  * @copyright	Copyright (c) 2016 Tom Flídr (https://github.com/mvccore/mvccore)
@@ -13,106 +13,112 @@
 
 namespace MvcCore;
 
-/**
- * Core response:
- * - http response wrapper carrying response headers and response body
- * - sending response at application terminate process by Send(); method
- * - completing MvcCore performance custom header at response sending
- */
-class Response
-{
-	const OK = 200;
-	const MOVED_PERMANENTLY = 301;
-	const SEE_OTHER = 303;
-	const NOT_FOUND = 404;
-	const INTERNAL_SERVER_ERROR = 500;
+require_once(__DIR__ . '/Interfaces/IResponse.php');
 
+use \MvcCore\Interfaces\IResponse;
+
+/**
+ * - HTTP response wrapper carrying response headers and response body.
+ * - Sending response at application terminate process by `\MvcCore\Interfaces\IResponse::Send();` method.
+ * - Completing MvcCore performance header at response end.
+ */
+class Response implements Interfaces\IResponse
+{
 	public static $CodeMessages = array(
-		self::OK					=> 'OK',
-		self::MOVED_PERMANENTLY		=> 'Moved Permanently',
-		self::SEE_OTHER				=> 'See Other',
-		self::NOT_FOUND				=> 'Not Found',
-		self::INTERNAL_SERVER_ERROR	=> 'Internal Server Error',
+		IResponse::OK						=> 'OK',
+		IResponse::MOVED_PERMANENTLY		=> 'Moved Permanently',
+		IResponse::SEE_OTHER				=> 'See Other',
+		IResponse::NOT_FOUND				=> 'Not Found',
+		IResponse::INTERNAL_SERVER_ERROR	=> 'Internal Server Error',
 	);
 
 	/**
-	 * Response http code
+	 * Response HTTP code.
 	 * @var int
 	 */
 	public $Code = self::OK;
 
 	/**
-	 * Response http headers
+	 * Response HTTP headers.
 	 * @var array
 	 */
 	public $Headers = array();
 
 	/**
-	 * Response http body
+	 * Response HTTP body.
 	 * @var string
 	 */
 	public $Body = '';
 
 	/**
-	 * Get everytime new instance of http response.
-	 * @param int		$code 
+	 * Get everytime calling this function new instance of HTTP response.
+	 * @param int		$code
 	 * @param array		$headers
 	 * @param string	$body
 	 * @return \MvcCore\Response
 	 */
-	public static function GetInstance ($code = self::OK, $headers = array(), $body = '') {
-		$responseClass = \MvcCore::GetInstance()->GetResponseClass();
+	public static function GetInstance (
+		$code = \MvcCore\Interfaces\IResponse::OK,
+		$headers = array(),
+		$body = ''
+	) {
+		$responseClass = \MvcCore\Application::GetInstance()->GetResponseClass();
 		return new $responseClass($code, $headers, $body);
 	}
 
 	/**
-	 * Create new http response instance.
+	 * Create new HTTP response instance.
 	 * @param int		$code
 	 * @param array		$headers
 	 * @param string	$body
+	 * @return \MvcCore\Interfaces\IResponse
 	 */
-	public function __construct ($code = self::OK, $headers = array(), $body = '') {
+	public function __construct (
+		$code = \MvcCore\Interfaces\IResponse::OK,
+		$headers = array(),
+		$body = ''
+	) {
 		$this->Code = $code;
 		$this->Headers = $headers;
 		$this->Body = $body;
 	}
 
 	/**
-	 * Set http response code.
-	 * @param int $code 
-	 * @return \MvcCore\Response
+	 * Set HTTP response code.
+	 * @param int $code
+	 * @return \MvcCore\Interfaces\IResponse
 	 */
-	public function SetCode ($code) {
+	public function & SetCode ($code) {
 		$this->Code = $code;
 		return $this;
 	}
 
 	/**
-	 * Set http response header.
+	 * Set HTTP response header.
 	 * @param string $name
-	 * @param string $value 
-	 * @return \MvcCore\Response
+	 * @param string $value
+	 * @return \MvcCore\Interfaces\IResponse
 	 */
-	public function SetHeader ($name, $value) {
+	public function & SetHeader ($name, $value) {
 		header($name . ": " . $value);
 		$this->Headers[$name] = $value;
 		return $this;
 	}
 
 	/**
-	 * Set http response body.
-	 * @param string $body 
-	 * @return \MvcCore\Response
+	 * Set HTTP response body.
+	 * @param string $body
+	 * @return \MvcCore\Interfaces\IResponse
 	 */
-	public function SetBody ($body) {
+	public function & SetBody ($body) {
 		$this->Body = & $body;
 		return $this;
 	}
 
 	/**
-	 * Append http response body.
+	 * Append HTTP response body.
 	 * @param string $body
-	 * @return \MvcCore\Response
+	 * @return \MvcCore\Interfaces\IResponse
 	 */
 	public function PrependBody ($body) {
 		$this->Body = $body . $this->Body;
@@ -120,9 +126,9 @@ class Response
 	}
 
 	/**
-	 * Append http response body.
+	 * Append HTTP response body.
 	 * @param string $body
-	 * @return \MvcCore\Response
+	 * @return \MvcCore\Interfaces\IResponse
 	 */
 	public function AppendBody ($body) {
 		$this->Body .= $body;
@@ -151,7 +157,7 @@ class Response
 	}
 
 	/**
-	 * Return if response has any Location header inside.
+	 * Return if response has any redirect `"Location: ..."` header inside.
 	 * @return bool
 	 */
 	public function IsRedirect () {
@@ -171,7 +177,7 @@ class Response
 	}
 
 	/**
-	 * Send all http headers and send response body.
+	 * Send all HTTP headers and send response body.
 	 * @return void
 	 */
 	public function Send () {
@@ -188,10 +194,11 @@ class Response
 	}
 
 	/**
-	 * Add CPU and RAM usage header at HTML/JSON response end
+	 * Add CPU and RAM usage header at HTML/JSON response end.
+	 * @return void
 	 */
 	protected function addTimeAndMemoryHeader () {
-		$mtBegin = \MvcCore::GetInstance()->GetMicrotime();
+		$mtBegin = \MvcCore\Application::GetInstance()->GetMicrotime();
 		$time = number_format((microtime(TRUE) - $mtBegin) * 1000, 1, '.', ' ');
 		$ram = function_exists('memory_get_peak_usage') ? number_format(memory_get_peak_usage() / 1000000, 2, '.', ' ') : 'n/a';
 		header("X-MvcCore-Cpu-Ram: $time ms, $ram MB");

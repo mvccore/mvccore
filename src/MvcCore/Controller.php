@@ -13,33 +13,64 @@
 
 namespace MvcCore;
 
-require_once(__DIR__.'/../MvcCore.php');
-require_once('Request.php');
-require_once('Response.php');
-require_once('View.php');
+include_once(__DIR__.'/Interfaces/IController.php');
+include_once(__DIR__.'/Interfaces/ISession.php');
+include_once(__DIR__.'/Interfaces/IResponse.php');
+include_once('Application.php');
+include_once('Tool.php');
+include_once('View.php');
+include_once('Request.php');
+include_once('Response.php');
+include_once('Router.php');
+include_once('Request.php');
 
 /**
- * Application controller:
- * - template methods:
- *	 (necessary to call parent at method begin)
- *   - Init()
- *		- called after controller is created
- *		- session start
- *		- all internal variables initialized except view
- *   - PreDispatch()
- *		- called after Init, before every controller action
- *		- view initialization
- * - internal actions:
- *	 - AssetAction()
- *	   - handling internal MvcCore http request
- *	     to get assets from packed package
- * - url proxy method, reading request param proxy method
- * - view rendering or no-rendering management
- * - http responses and redirects management
- * - basic error responses rendering
- * - request termination (to write and close session)
+ * Responsibilities:
+ * - Controller lifecycle dispatching.
+ *   - Handling setup methods from core dispatching.
+ *   - Calling lifecycle methods (`\MvcCore\Controller::Dispatch();`):
+ *     - `\MvcCore\Controller::Init();`
+ *     - `\MvcCore\Controller::PreDispatch();`
+ *     - Dispatching controller action.
+ *     - `\MvcCore\Controller::Render();`
+ * - Rendering or no-rendering customization.
+ * - HTTP responses and redirects managing and customization.
+ * - Basic error responses rendering.
+ * - Customization for request termination to write
+ *   and close session, sending response etc.
+ *
+ * Template methods (necessary to call parent at method begin):
+ * - `Init()`
+ *   - Called after controller is created.
+ *   - Session start.
+ *   - Auto initialization for sub controllers.
+ *   - All internal variables initialized, except `\MvcCore\Controller::$view`.
+ * - `PreDispatch()`
+ *   - Called after `Init()`, before every controller action.
+ *   - `\MvcCore\Controller::$view` property initialization.
+ * - `Render()`
+ *   - Called after dispatching action has been called.
+ *   - `Controller:Action` view rendering responsibility and response completition.
+ *
+ * Important methods:
+ * - `Url()` - proxy method to build url by configured routes.
+ * - `GetParam()` - proxy method to read and clean request param values.
+ * - `AddChildController()` - method to register child controller (navigations, etc.)
+ *
+ * Internal methods and actions:
+ * - `Render()`
+ *   - Called internally in lifecycle dispatching,
+ *     but it's possible to use it for custom purposes.
+ * - `Terminate()`
+ *   - Called internally after lifecycle dispatching,
+ *     but it's possible to use it for custom purposes.
+ * - `Dispatch()`
+ *   - Processing whole controller and subcontrollers lifecycle.
+ * - `AssetAction()`
+ *   - Handling internal MvcCore HTTP requests
+ *     to get assets from packed application package.
  */
-class Controller
+class Controller implements Interfaces\IController
 {
 	/**
 	 * Request object - parsed uri, query params, app paths...
@@ -48,67 +79,100 @@ class Controller
 	protected $request;
 
 	/**
-	 * Response object - headers and rendered body
+	 * Response object - storrage for response headers and rendered body.
 	 * @var \MvcCore\Response
 	 */
 	protected $response;
 
 	/**
-	 * Requested controller name - dashed
+	 * Application router object - reference storrage for application router to crate url addresses.
+	 * @var \MvcCore\Router
+	 */
+	protected $router;
+
+	/**
+	 * Requested controller name - `"dashed-controller-name"`.
 	 * @var string
 	 */
 	protected $controller = '';
 
 	/**
-	 * Requested action name - dashed
+	 * Requested action name - `"dashed-action-name"`.
 	 * @var string
 	 */
 	protected $action = '';
 
 	/**
-	 * Boolean about ajax request
+	 * Boolean about AJAX request.
+	 * `TRUE` if request is requested from browser by `XmlHttpRequest` object
+	 * with http header: `X-Requested-With: AnyJavascriptFrameworkName`, `FALSE` otherwise.
 	 * @var boolean
 	 */
 	protected $ajax = FALSE;
 
 	/**
-	 * Class store object for view properties
+	 * Class store object for view properties.
+	 * Before `\MvcCore\Controller::PreDispatch();` is called
+	 * in controller lifecycle, this property will be still `NULL`.
 	 * @var \MvcCore\View
 	 */
 	protected $view = NULL;
 
 	/**
-	 * Registered controls instances.
-	 * @var \MvcCore\Ext\Control[]|array
-	 */
-	protected $controls = array();
-
-	/**
-	 * Layout name to render html wrapper around rendered view
+	 * Layout name to render html wrapper around rendered action view.
 	 * @var string
 	 */
 	protected $layout = 'layout';
 
 	/**
-	 * Boolean about disabled or enabled view to render at last
+	 * Boolean about disabled or enabled rendering wrapper layout view around at last.
 	 * @var boolean
 	 */
 	protected $viewEnabled = TRUE;
 
 	/**
-	 * Path to all static files - css, js, imgs and fonts
+	 * User model instance. Template property.
+	 * @var \MvcCore\Model
+	 */
+	protected $user = NULL;
+
+	/**
+	 * Controller lifecycle state:
+	 * - 0 => Controller has been created.
+	 * - 1 => Controller has been initialized.
+	 * - 2 => Controller has been pre-dispatched.
+	 * - 3 => controller has been action dispatched.
+	 * - 4 => Controller has been rendered.
+	 * @var int
+	 */
+	protected $dispatchState = 0;
+
+	/**
+	 * Parent controller instance if any.
+	 * @var \MvcCore\Controller|NULL
+	 */
+	private $_parentController = NULL;
+
+	/**
+	 * Registered sub-controller(s) instances.
+	 * @var \MvcCore\Controller[]
+	 */
+	private $_childControllers = array();
+
+	/**
+	 * Path to all static files - css, js, imgs and fonts.
 	 * @var string
 	 */
 	protected static $staticPath = '/static';
 
 	/**
-	 * Path to temporary directory with generated css and js files
+	 * Path to temporary directory with generated css and js files.
 	 * @var string
 	 */
 	protected static $tmpPath = '/Var/Tmp';
 
 	/**
-	 * All asset mime types possibly called throught Asset action
+	 * All asset mime types possibly called throught `\MvcCore\Controller::AssetAction();`.
 	 * @var string
 	 */
 	private static $_assetsMimeTypes = array(
@@ -128,75 +192,131 @@ class Controller
 	);
 
 	/**
-	 * Create new controller instance - always called from \MvcCore app instance before controller is dispatched.
-	 * Never used in application controllers.
-	 * @param \MvcCore\Request $request
+	 * Return always new instance of staticly called class, no singleton.
+	 * Always called from `\MvcCore::DispatchControllerAction()` before controller is dispatched,
+	 * or always called in `\MvcCore\Controller::autoInitMembers();` in base controller initialization.
+	 * This is place where to customize any controller creation process,
+	 * before it's created by MvcCore framework to dispatch it.
+	 * @return \MvcCore\Controller
 	 */
-	public function __construct (\MvcCore\Request & $request = NULL, \MvcCore\Response & $response = NULL) {
-		$this->request = & $request;
-		$this->controller = $request->Params['controller'];
-		$this->action = $request->Params['action'];
-		if ($this->controller == 'controller' && $this->action == 'asset') {
-			$this->DisableView();
-			return;
-		}
-		$this->response = & $response;
-		if (isset($_SERVER['HTTP_X_REQUESTED_WITH']) && strlen($_SERVER['HTTP_X_REQUESTED_WITH']) > 0) {
-			$this->ajax = TRUE;
-			$this->DisableView();
-		}
+	public static function GetInstance () {
+		return new static();
 	}
 
 	/**
-	 * Dispatching controller life cycle by given action,
-	 * call this imediatelly after calling controller __construct()
-	 * with request and response params. This function automaticly
-	 * complete response object with content, which you can send
-	 * to browser by $ctrl->Terminate() method.
-	 * @param string $actionName php code action name in PascalCase (this value is used to call your desired function in controller without any change)
+	 * Dispatching controller life cycle by given action.
+	 * This is INTERNAL, not TEMPLATE method, internally
+	 * called in `\MvcCore::DispatchControllerAction();`.
+	 * Call this imediatelly after calling controller methods:
+	 * - `\MvcCore\Controller::__construct()`
+	 * - `\MvcCore\Controller::SetRequest($request)`
+	 * - `\MvcCore\Controller::SetResponse($response)`
+	 * - `\MvcCore\Controller::SetRouter($router)`
+	 * This function automaticly complete (throught controller lifecycle)
+	 * protected `\MvcCore\Response` object with response headers and content,
+	 * which you can send to client browser by method
+	 * `\MvcCore\Controller::Terminate()` or which you can store
+	 * anywhere in cache to use it later etc.
+	 * @param string $actionName PHP code action name in PascalCase.
+	 *							 This value is used to call your desired function
+	 *							 in controller without any change.
 	 * @return void
 	 */
-	public function Run ($actionName = "Index") {
+	public function Dispatch ($actionName = "Index") {
 		// \MvcCore\Debug::Timer('dispatch');
 		$this->Init();
+		$this->dispatchState = 1;
 		// \MvcCore\Debug::Timer('dispatch');
 		$this->PreDispatch();
+		$this->dispatchState = 2;
 		// \MvcCore\Debug::Timer('dispatch');
 		if (method_exists($this, $actionName)) $this->$actionName();
+		$this->dispatchState = 3;
 		// \MvcCore\Debug::Timer('dispatch');
 		$this->Render(
-			$this->request->Params['controller'],	// dashed ctrl name
-			$this->request->Params['action']		// dashed action name
+			$this->request->GetControllerName(),// dashed ctrl name
+			$this->request->GetActionName()		// dashed action name
 		);
+		$this->dispatchState = 4;
 		// \MvcCore\Debug::Timer('dispatch');
 	}
 
 	/**
 	 * Application controllers initialization.
-	 * This is best time to initialize language, locale or session.
+	 * This is best time to initialize language, locale, session etc.
+	 * There is also called auto initialization processing - instance creation
+	 * on each controller class member imlementing `\MvcCore\Interfaces\IController`
+	 * and marked in doc comments as `@autoinit`.
+	 * then there is of course called `\MvcCore\Controller::Init();` method on each
+	 * automaticly created subcontroller.
 	 * @return void
 	 */
 	public function Init () {
-		\MvcCore::SessionStart();
-		foreach ($this->controls as $control) $control->Init();
+		\MvcCore\Application::GetInstance()->SessionStart();
+		$this->autoInitProperties();
+		foreach ($this->controllers as $controller) {
+			$controller->Init();
+			$controller->dispatchState = 1;
+		}
+	}
+
+	/**
+	 * Initialize all members implementing `\MvcCore\Interfaces\IController` marked
+	 * in doc comments as `@autoinit` into `\MvcCore\Controller::$controllers` array
+	 * and into member property itself. This method is always called inside
+	 * `\MvcCore\Controller::Init();` method, after session has been started.
+	 * @return void
+	 */
+	protected function autoInitProperties () {
+		$type = new \ReflectionClass($this);
+		/** @var $props \ReflectionProperty[] */
+		$props = $type->getProperties(
+			\ReflectionProperty::IS_PUBLIC |
+			\ReflectionProperty::IS_PROTECTED |
+			\ReflectionProperty::IS_PRIVATE
+		);
+		$toolsClass = \MvcCore\Application::GetInstance()->GetToolClass();
+		foreach ($props as $prop) {
+			$docComment = $prop->getDocComment();
+			if (mb_strpos($docComment, '@autoinit') === FALSE) continue;
+			$pos = mb_strpos($docComment, '@var ');
+			if ($pos === FALSE) continue;
+			$docComment = str_replace(array("\r","\n","\t", "*/"), " ", mb_substr($docComment, $pos + 5));
+			$pos = mb_strpos($docComment, ' ');
+			if ($pos === FALSE) continue;
+			$className = trim(mb_substr($docComment, 0, $pos));
+			if (!@class_exists($className)) continue;
+			if (!$toolsClass::CheckClassInterface($className, '\MvcCore\Interfaces\IController')) continue;
+			$instance = $className::GetInstance();
+			$this->AddChildController($instance, $prop->getName());
+			$prop->setValue($this, $instance);
+		}
 	}
 
 	/**
 	 * Application pre render common action - always used in application controllers.
-	 * This is best time to define any common properties or common view properties.
+	 * This is best time to define any common properties or common view properties,
+	 * which are the same for multiple actions in controller etc.
+	 * There is also called `\MvcCore\Controller::PreDispatch();` method on each subcontroller.
 	 * @return void
 	 */
 	public function PreDispatch () {
+		if ($this->dispatchState == 0) $this->Init();
 		if ($this->viewEnabled) {
-			$viewClass = \MvcCore::GetInstance()->GetViewClass();
-			$this->view = new $viewClass($this);
+			$viewClass = \MvcCore\Application::GetInstance()->GetViewClass();
+			$this->view = (new $viewClass)->SetController($this);
 		}
-		foreach ($this->controls as $control) $control->PreDispatch();
+		foreach ($this->controllers as $controller) {
+			$controller->PreDispatch();
+			$controller->dispatchState = 2;
+		}
 	}
 
 	/**
-	 * Get param value, filtered for characters defined as second argument to use them in preg_replace().
-	 * Shortcut for $this->request->GetParam();
+	 * Get param value from `$_GET` or `$_POST` or `php://input`,
+	 * filtered by characters defined in second argument throught `preg_replace()`.
+	 * Place into second argument only char groups you want to keep.
+	 * Shortcut for: `\MvcCore\Request::GetParam();`
 	 * @param string $name
 	 * @param string $pregReplaceAllowedChars
 	 * @return string
@@ -214,12 +334,28 @@ class Controller
 	}
 
 	/**
-	 * Get current application request object, rarely used.
+	 * Sets up `\MvcCore\Request` object and other protected properties.
+	 * This is INTERNAL, not TEMPLATE method, internally called in
+	 * `\MvcCore::DispatchControllerAction();` before controller is dispatched.
+	 * Usually call this as soon as possible after controller creation
+	 * to set up following controller properties:
+	 * - `\MvcCore\Controller::$request`
+	 * - `\MvcCore\Controller::$response`
+	 * - `\MvcCore\Controller::$router`
+	 * - `\MvcCore\Controller::$controller`
+	 * - `\MvcCore\Controller::$action`
+	 * - `\MvcCore\Controller::$ajax`
 	 * @param \MvcCore\Request $request
 	 * @return \MvcCore\Controller
 	 */
-	public function SetRequest (\MvcCore\Request & $request) {
-		$this->request = $request;
+	public function & SetRequest (& $request) {
+		$this->request = & $request;
+		$this->controller = $request->GetControllerName();
+		$this->action = $request->GetActionName();
+		$this->ajax = $request->Ajax;
+		if ($this->ajax || (
+			$this->controller == 'controller' && $this->action == 'asset'
+		)) $this->DisableView();
 		return $this;
 	}
 
@@ -232,25 +368,51 @@ class Controller
 	}
 
 	/**
-	 * Get current application response object, rarely used.
+	 * Sets up `\MvcCore\Response` object.
+	 * This is INTERNAL, not TEMPLATE method, internally called in
+	 * `\MvcCore::DispatchControllerAction()` before controller is dispatched.
+	 * Usually call this as soon as possible after controller creation.
 	 * @param \MvcCore\Response $response
 	 * @return \MvcCore\Controller
 	 */
-	public function SetResponse (\MvcCore\Response & $response) {
-		$this->response = $response;
+	public function & SetResponse (& $response) {
+		$this->response = & $response;
 		return $this;
 	}
 
 	/**
-	 * Boolean about ajax request
-	 * @return bool
+	 * Get current application router object as reference.
+	 * @return \MvcCore\Router
+	 */
+	public function & GetRouter () {
+		return $this->router;
+	}
+
+	/**
+	 * Sets up `\MvcCore\Router` object.
+	 * This is INTERNAL, not TEMPLATE method, internally called in
+	 * `\MvcCore::DispatchControllerAction()` before controller is dispatched.
+	 * Usually call this as soon as possible after controller creation.
+	 * @param \MvcCore\Router $router
+	 * @return \MvcCore\Controller
+	 */
+	public function & SetRouter (& $router) {
+		$this->router = & $router;
+		return $this;
+	}
+
+	/**
+	 * Boolean about AJAX request.
+	 * `TRUE` if request is requested from browser by `XmlHttpRequest` object
+	 * with http header: `X-Requested-With: AnyJavascriptFrameworkName`, `FALSE` otherwise.
+	 * @return boolean
 	 */
 	public function IsAjax () {
 		return $this->ajax;
 	}
 
 	/**
-	 * Boolean about disabled or enabled view to render at last
+	 * Boolean about disabled or enabled rendering wrapper layout view around at last.
 	 * @return bool
 	 */
 	public function IsViewEnabled () {
@@ -258,8 +420,26 @@ class Controller
 	}
 
 	/**
+	 * Get user model instance. Template method.
+	 * @return \MvcCore\Model
+	 */
+	public function & GetUser () {
+		return $this->user;
+	}
+	/**
+	 * Set user model instance. Template method.
+	 * @param \MvcCore\Model $user
+	 * @return \MvcCore\Controller
+	 */
+	public function & SetUser (& $user) {
+		$this->user = $user;
+		return $this;
+	}
+
+	/**
 	 * Return current controller view object if any.
-	 * Before PreDispatch() should be still NULL.
+	 * Before `\MvcCore\Controller::PreDispatch();` is called
+	 * in controller lifecycle, this property will be still `NULL`.
 	 * @return \MvcCore\View|NULL
 	 */
 	public function & GetView () {
@@ -267,17 +447,18 @@ class Controller
 	}
 
 	/**
-	 * Set current controller view object, rarely used.
+	 * Set current controller view object.
 	 * @param \MvcCore\View $view
 	 * @return \MvcCore\Controller
 	 */
-	public function SetView (\MvcCore\View & $view) {
+	public function & SetView (& $view) {
 		$this->view = $view;
 		return $this;
 	}
 
 	/**
-	 * Get layout name: 'front' | 'admin' | 'account' ...
+	 * Get layout name to render html wrapper around rendered action view.
+	 * Example: `"front" | "admin" | "account"...`.
 	 * @return string
 	 */
 	public function GetLayout () {
@@ -285,17 +466,20 @@ class Controller
 	}
 
 	/**
-	 * Set layout name
+	 * Set layout name to render html wrapper around rendered action view.
+	 * Example: `"front" | "admin" | "account"...`.
 	 * @param string $layout
 	 * @return \MvcCore\Controller
 	 */
-	public function SetLayout ($layout = '') {
+	public function & SetLayout ($layout = '') {
 		$this->layout = $layout;
 		return $this;
 	}
 
 	/**
-	 * Disable view rendering - always called in text or ajax responses.
+	 * Disable layout view rendering (rendering html wrapper around rendered action view).
+	 * This method is always called internally before
+	 * `\MvcCore\Controller::Init();` for all AJAX requests.
 	 * @return void
 	 */
 	public function DisableView () {
@@ -303,17 +487,73 @@ class Controller
 	}
 
 	/**
-	 * Register control to process dispatching on it
+	 * - Register child controller to process dispatching on it later.
+	 * - This method is always called INTERNALLY, but you can use it for custom purposes.
+	 * - This method automaticly assigns into child controller(s) properties from parent:
+	 *   - `\Mvccore\Controller::$_parentController`
+	 *   - `\Mvccore\Controller::$request`
+	 *   - `\Mvccore\Controller::$response`
+	 *   - `\MvcCore\Controller::$router`
+	 *   - `\Mvccore\Controller::$layout`
+	 *   - `\Mvccore\Controller::$viewEnabled`
+	 *   - `\Mvccore\Controller::$user`
+	 * @param \MvcCore\Controller &$controller
+	 * @param string|int $index
 	 * @return \MvcCore\Controller
 	 */
-	public function AddControl (/*\MvcCore\Ext\Control*/ & $control) {
-		$this->controls[] = & $control;
+	public function AddChildController (& $controller, $index = NULL) {
+		if (!in_array($controller, $this->_childControllers)) {
+			if (is_null($index)) {
+				$this->_childControllers[] = & $controller;
+			} else {
+				$this->_childControllers[$index] = & $controller;
+			}
+			$controller->_parentController = & $this;
+			$controller->layout = $this->layout;
+			$controller->viewEnabled = $this->IsViewEnabled();
+			$controller->user = $this->user;
+			$controller
+				->SetRequest($this->request)
+				->SetResponse($this->response);
+		}
 		return $this;
 	}
 
 	/**
-	 * Return small assets content with proper headers in single file application mode
-	 * @throws \Exception
+	 * Get parent controller instance if any.
+	 * Method for child controllers. This method returns
+	 * `NULL` for top most parent controller instance.
+	 * @return \MvcCore\Controller|NULL
+	 */
+	public function GetParentController () {
+		return $this->_parentController;
+	}
+
+	/**
+	 * Get all child controllers array, indexed by
+	 * subcontroller property string name or by
+	 * custom string name or by custom numeric index.
+	 * @return \MvcCore\Controller[]
+	 */
+	public function GetChildControllers () {
+		return $this->_childControllers;
+	}
+
+	/**
+	 * Get child controller at specific index.
+	 * Subcontroller index should be string by parent controller
+	 * property name or custom string name or numeric index.
+	 * @param string|int $index
+	 * @return \MvcCore\Controller
+	 */
+	public function GetChildController ($index = NULL) {
+		return $this->_childControllers[$index];
+	}
+
+	/**
+	 * Return small assets content with proper headers
+	 * in single file application mode and immediately exit.
+	 * @throws \Exception If file path is not allowed (500) or file not found (404).
 	 * @return void
 	 */
 	public function AssetAction () {
@@ -324,11 +564,11 @@ class Controller
 			strpos($path, static::$staticPath) !== 0 &&
 			strpos($path, static::$tmpPath) !== 0
 		) {
-			throw new \Exception("[".__CLASS__."] File path: '$path' is not allowed.", 500);
+			throw new \ErrorException("[".__CLASS__."] File path: '$path' is not allowed.", 500);
 		}
 		$path = $this->request->AppRoot . $path;
 		if (!file_exists($path)) {
-			throw new \Exception("[".__CLASS__."] File not found: '$path'.", 404);
+			throw new \ErrorException("[".__CLASS__."] File not found: '$path'.", 404);
 		}
 		$lastDotPos = strrpos($path, '.');
 		if ($lastDotPos !== FALSE) {
@@ -346,97 +586,141 @@ class Controller
 	}
 
 	/**
-	 * Render and send prepared controller view, all sub views and controller layout view.
-	 * @param mixed $controllerName
-	 * @param mixed $actionName
-	 * @return void
+	 * - This method is called INTERNALLY in lifecycle dispatching process,
+	 *   but you can use it sooner or in any different time for custom render purposes.
+	 * - Render prepared controller/action view in path by default:
+	 * `"/App/Views/Scripts/<ctrl-dashed-name>/<action-dashed-name>.phtml"`.
+	 * - If controller has no other parent controller, render layout view aroud action view.
+	 * - For top most parent controller - store rendered action and layout view in response object and return empty string.
+	 * - For child controller - return rendered action view as string.
+	 * @param string $controllerDashedName
+	 * @param string $actionDashedName
+	 * @return string
 	 */
-	public function Render ($controllerName = '', $actionName = '') {
+	public function Render ($controllerDashedName = '', $actionDashedName = '') {
+		if ($this->dispatchState == 0) $this->Init();
+		if ($this->dispatchState == 1) $this->PreDispatch();
 		if ($this->viewEnabled) {
-			if (!$controllerName)	$controllerName	= $this->request->params['controller'];
-			if (!$actionName)		$actionName		= $this->request->params['action'];
+			$currentCtrlIsTopMostParent = is_null($this->_parentController);
+			// set up values
+			if (!$currentCtrlIsTopMostParent) {
+				$this->view->SetUp($this->_parentController->GetView());
+			}
+			foreach ($this->_childControllers as $ctrlKey => $childCtrl) {
+				if (is_numeric($ctrlKey) && !isset($this->view->$ctrlKey))
+					$this->view->$ctrlKey = $childCtrl;
+			}
+			if (!$controllerDashedName)	$controllerDashedName	= $this->request->GetControllerName();
+			if (!$actionDashedName)		$actionDashedName		= $this->request->GetActionName();
 			// complete paths
-			$controllerPath = str_replace(array('_', '\\'), '/', $controllerName);
-			$viewScriptPath = implode('/', array(
-				$controllerPath, $actionName
-			));
+			$controllerPath = str_replace(array('_', '\\'), '/', $controllerDashedName);
+			$viewScriptPath = implode('/', array($controllerPath, $actionDashedName));
 			// render content string
 			$actionResult = $this->view->RenderScript($viewScriptPath);
-			// create parent layout view, set up and render to outputResult
-			$viewClass = \MvcCore::GetInstance()->GetViewClass();
-			/** @var $layout \MvcCore\View */
-			$layout = new $viewClass($this);
-			$layout->SetUp($this->view);
-			$outputResult = $layout->RenderLayoutAndContent($this->layout, $actionResult);
-			unset($layout, $this->view);
-			// send response and exit
-			$this->HtmlResponse($outputResult);
-			$this->DisableView(); // disable to not render it again
+			if ($currentCtrlIsTopMostParent) {
+				// create top most parent layout view, set up and render to outputResult
+				$viewClass = \MvcCore\Application::GetInstance()->GetViewClass();
+				/** @var $layout \MvcCore\View */
+				$layout = (new $viewClass)->SetController($this)->SetValues($this->view);
+				$outputResult = $layout->RenderLayoutAndContent($this->layout, $actionResult);
+				unset($layout, $this->view);
+				// send response and exit
+				$this->HtmlResponse($outputResult);
+			} else {
+				return $actionResult;
+			}
 		}
+		return '';
 	}
 
 	/**
-	 * Send rendered html output to user.
-	 * @param mixed $output
+	 * Store rendered HTML output inside `\MvcCore\Controller::$response`
+	 * to send into client browser later in `MvcCore::Terminate();`.
+	 * @param string $output
+	 * @param bool $terminate
 	 * @return void
 	 */
-	public function HtmlResponse ($output = "") {
-		$contentTypeHeaderValue = strpos(\MvcCore\View::$Doctype, \MvcCore\View::DOCTYPE_XHTML) !== FALSE ? 'application/xhtml+xml' : 'text/html' ;
+	public function HtmlResponse ($output = '', $terminate = FALSE) {
+		$viewClass = \MvcCore\Application::GetInstance()->GetViewClass();
+		$contentTypeHeaderValue = strpos(
+			$viewClass::$Doctype, \MvcCore\Interfaces\IView::DOCTYPE_XHTML
+		) !== FALSE ? 'application/xhtml+xml' : 'text/html' ;
 		$this->response
 			->SetHeader('Content-Type', $contentTypeHeaderValue . '; charset=utf-8')
 			->SetBody($output);
+		if ($terminate) $this->Terminate();
 	}
 
 	/**
-	 * Send any php value serialized in json to user.
+	 * Serialize any PHP value into `JSON string` and store
+	 * it inside `\MvcCore\Controller::$response` to send it
+	 * into client browser later in `MvcCore::Terminate();`.
 	 * @param mixed $data
+	 * @param bool  $terminate
 	 * @return void
 	 */
-	public function JsonResponse ($data = array()) {
-		$output = \MvcCore\Tool::EncodeJson($data);
+	public function JsonResponse ($data = NULL, $terminate = FALSE) {
+		$toolClass = \MvcCore\Application::GetInstance()->GetToolClass();
+		$output = $toolClass::EncodeJson($data);
 		$this->response
 			->SetHeader('Content-Type', 'text/javascript; charset=utf-8')
 			->SetHeader('Content-Length', strlen($output))
 			->SetBody($output);
+		if ($terminate) $this->Terminate();
 	}
 
 	/**
-	 * Generates url by:
-	 * - 'Controller:Action' name and params array
-	 *   (for routes configuration when routes array has keys with 'Controller:Action' strings
-	 *   and routes has not controller name and action name defined inside)
-	 * - route name and params array
+	 * Generates url:
+	 * - By `"Controller:Action"` name and params array
+	 *   (for routes configuration when routes array has keys with `"Controller:Action"` strings
+	 *   and routes has not controller name and action name defined inside).
+	 * - By route name and params array
 	 *	 (route name is key in routes configuration array, should be any string
-	 *	 but routes must have information about controller name and action name inside)
-	 * Result address should have two forms:
-	 * - nice rewrited url by routes configuration
-	 *   (for apps with .htaccess supporting url_rewrite and when first param is key in routes configuration array)
-	 * - for all other cases is url form: index.php?controller=ctrlName&action=actionName
-	 *	 (when first param is not founded in routes configuration array)
-	 * @param string $controllerActionOrRouteName	Should be 'Controller:Action' combination or just any route name as custom specific string
-	 * @param array  $params						optional
+	 *	 but routes must have information about controller name and action name inside).
+	 * Result address (url string) should have two forms:
+	 * - Nice rewrited url by routes configuration
+	 *   (for apps with URL rewrite support (Apache `.htaccess` or IIS URL rewrite module)
+	 *   and when first param is key in routes configuration array).
+	 * - For all other cases is url form like: `"index.php?controller=ctrlName&amp;action=actionName"`
+	 *	 (when first param is not founded in routes configuration array).
+	 * @param string $controllerActionOrRouteName	Should be `"Controller:Action"` combination or just any route name as custom specific string.
+	 * @param array  $params						Optional, array with params, key is param name, value is param value.
 	 * @return string
 	 */
 	public function Url ($controllerActionOrRouteName = 'Index:Index', $params = array()) {
-		return \MvcCore\Router::GetInstance()->Url($controllerActionOrRouteName, $params);
+		return $this->router->Url($controllerActionOrRouteName, $params);
 	}
 
 	/**
-	 * Return asset path or single file mode url
+	 * Return asset path or single file mode url for small assets
+	 * handled by internal controller action `"Controller:Asset"`.
 	 * @param string $path
 	 * @return string
 	 */
 	public function AssetUrl ($path = '') {
-		return \MvcCore::GetInstance()->Url('Controller:Asset', array('path' => $path));
+		return $this->router->Url('Controller:Asset', array('path' => $path));
 	}
 
 	/**
-	 * Render controller action for error or error plain text response.
+	 * Return session namespace instance by configured session class name.
+	 * This method is only shortcut for `\MvcCore\Session::GetNamespace($name)`;
+	 * @param string $name
+	 * @return \MvcCore\Session
+	 */
+	public function & GetSessionNamespace ($name = \MvcCore\Interfaces\ISession::DEFAULT_NAMESPACE_NAME) {
+		$sessionClass = \MvcCore\Application::GetInstance()->GetSessionClass();
+		return $sessionClass::GetNamespace($name);
+	}
+
+	/**
+	 * Render error controller and error action
+	 * for any dispatch exception or error as
+	 * rendered html response or as plain text response.
 	 * @param string $exceptionMessage
 	 * @return void
 	 */
 	public function RenderError ($exceptionMessage = '') {
-		if (\MvcCore::GetInstance()->IsErrorDispatched()) return;
+		if (\MvcCore\Application::GetInstance()->IsErrorDispatched()) return;
 		throw new \ErrorException(
 			$exceptionMessage ? $exceptionMessage :
 			"Server error: \n'" . $this->request->FullUrl . "'",
@@ -445,34 +729,45 @@ class Controller
 	}
 
 	/**
-	 * Render not found controller action or not found plain text response.
+	 * Render not found controller and not found action
+	 * for any dispatch exception with code 404 as
+	 * rendered html response or as plain text response.
 	 * @return void
 	 */
 	public function RenderNotFound () {
-		if (\MvcCore::GetInstance()->IsNotFoundDispatched()) return;
+		if (\MvcCore\Application::GetInstance()->IsNotFoundDispatched()) return;
 		throw new \ErrorException(
 			"Page not found: \n'" . $this->request->FullUrl . "'", 404
 		);
 	}
 
 	/**
-	 * Terminate request. Write session, send headers if possible and echo response body.
+	 * Terminate request.
+	 * - Send headers if possible.
+	 * - Echo response body.
+	 * - Write session.
+	 * This method is always called INTERNALLY after controller
+	 * lifecycle has been dispatched. But you can use it any
+	 * time sooner for custom purposses.
+	 * This method is only shortcut for: `\MvcCore\Application::GetInstance()->Terminate();`.
 	 * @return void
 	 */
 	public function Terminate () {
-		\MvcCore::GetInstance()->Terminate();
+		\MvcCore\Application::GetInstance()->Terminate();
 	}
 
 	/**
-	 * Redirect user browser to another location.
+	 * Redirect client browser to another place by `"Location: ..."`
+	 * header and call `\MvcCore\Application::GetInstance()->Terminate();`.
 	 * @param string $location
 	 * @param int    $code
 	 * @return void
 	 */
-	public static function Redirect ($location = '', $code = \MvcCore\Response::SEE_OTHER) {
-		\MvcCore::GetInstance()->GetResponse()
+	public static function Redirect ($location = '', $code = \MvcCore\Interfaces\IResponse::SEE_OTHER) {
+		$app = \MvcCore\Application::GetInstance();
+		$app->GetResponse()
 			->SetCode($code)
 			->SetHeader('Location', $location);
-		\MvcCore::GetInstance()->Terminate();
+		$app->Terminate();
 	}
 }

@@ -27,20 +27,15 @@
 		"view" 
 	],
 	"license": ["BSD-3-Clause"],
-	"authors": [
-		{
-			"name": "Tom Flidr",
-			"homepage": "https://github.com/tomFlidr"
-		}
-	],
+	"authors": [{
+		"name": "Tom Flidr",
+		"homepage": "https://github.com/tomFlidr"
+	}],
 	"require": {
 		"php": ">=5.3.0"
 	},
-	"require-dev": {
-		"php": ">=5.3.0"
-	},
 	"suggest": {
-		"mvccore/ext-tracy": "MvcCore Extension - Debug - Tracy - adapter for nette/tracy for better development environment."
+		"mvccore/ext-tracy": "MvcCore Extension - Debug - Tracy (tracy/tracy) - adapter for better development."
 	},
 	"autoload": {
 		"classmap": ["src/"],

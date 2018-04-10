@@ -4,7 +4,7 @@
  * MvcCore
  *
  * This source file is subject to the BSD 3 License
- * For the full copyright and license information, please view 
+ * For the full copyright and license information, please view
  * the LICENSE.md file that are distributed with this source code.
  *
  * @copyright	Copyright (c) 2016 Tom Flídr (https://github.com/mvccore/mvccore)
@@ -13,155 +13,348 @@
 
 namespace MvcCore;
 
+require_once(__DIR__.'/Interfaces/IRouter.php');
+require_once(__DIR__.'/Application.php');
 require_once('Request.php');
 require_once('Route.php');
 require_once('Tool.php');
 
 /**
- * Core router:
- * - main store for all routes
- * - application request routing process before request dispatching in core
- * - currently matched route store
- * - application url completing
- *   - by configured routes into mod_rewrite form
- *   - or into query string form, containing controller and action params
- * - params query string building - primitive param value or array value representation possible
+ * Responsibilities:
+ * - Application router singleton instance managing.
+ * - Global storage for all configured routes.
+ *	 - Instancing all route(s) from application start
+ *	   configuration somewhere in `Bootstrap` class.
+ * - Global storage for currently matched route.
+ * - Matching proper route object in `\MvcCore\Router::Route();`
+ *   by `\MvcCore\Request::$Path`, always called from core in
+ *   `\MvcCore\Application::Run();` => `\MvcCore\Application::routeRequest();`.
+ * - Application url addresses completing:
+ *   - Into `mod_rewrite` form by configured route instances.
+ *   - Into `index.php?` + query string form, containing
+ *     `controller`, `action` and all other params.
  */
-class Router
+class Router implements Interfaces\IRouter
 {
 	/**
-	 * Current singleton instance
+	 * Current `\MvcCore\Router` singleton instance storage.
 	 * @var \MvcCore\Router
 	 */
 	protected static $instance;
 
 	/**
-	 * Current application request
+	 * Internally used `\MvcCore\Request` request object reference for:
+	 * - Routing process in `\MvcCore\Router::Route();` and it's protected submethods.
+	 * - URL addresses completing in `\MvcCore\Router::Url()` and it's protected submethods.
 	 * @var \MvcCore\Request
 	 */
 	protected $request;
-	
+
 	/**
-	 * All application routes to route request
-	 * @var array
+	 * Global application route instances store to match request.
+	 * Keys are route(s) names, values are `\MvcCore\Route` instances.
+	 * @var \MvcCore\Route[]
 	 */
 	protected $routes = array();
 
 	/**
-	 * All application routes to build url
-	 * @var array
+	 * Global application route instances store to complete url addresses.
+	 * Keys are route(s) names and `Controller:Action` combinations,
+	 * values are `\MvcCore\Route` instances.
+	 * @var \MvcCore\Route[]
 	 */
 	protected $urlRoutes = array();
 
 	/**
-	 * Current application http routes
+	 * Matched route by `\MvcCore\Router::Match();` processing or NULL if no match.
+	 * By this route, there is created and dispatched controller lifecycle by core.
 	 * @var \MvcCore\Route
 	 */
 	protected $currentRoute = NULL;
 
 	/**
-	 * Route request to Default:Default route if no route matches.
+	 * `TRUE` if request has to be automaticly dispatched as default
+	 * `Index:Index` route, if there was no route matching current request
+	 * and if request was not `/` (homepage) but `/something-more`.
+	 * Default value: `FALSE`.
 	 * @var bool
 	 */
 	protected $routeToDefaultIfNotMatch = FALSE;
-	
+
+
 	/**
-	 * Get singleton instance by configured class In MvcCore app instance,
-	 * optionaly set routes as first argument.
-	 * @param array $routes 
+	 * Get singleton instance of `\MvcCore\Router` stored here.
+	 * Optionaly set routes as first argument.
+	 * Create proper router intance type in first time by
+	 * configured class name in `\MvcCore\Application` singleton.
+	 *
+	 * Routes could be defined in various forms:
+	 * Example:
+	 *	`\MvcCore\Router::GetInstance(array(
+	 *		"Products:List"	=> "/products-list/<name>/<color>",
+	 *	));`
+	 * or:
+	 *	`\MvcCore\Router::GetInstance(array(
+	 *		'products_list'	=> array(
+	 *			"pattern"			=> "/products-list/<name>/<color>",
+	 *			"controllerAction"	=> "Products:List",
+	 *			"defaults"			=> array("name" => "default-name",	"color" => "red"),
+	 *			"constraints"		=> array("name" => "[^/]*",			"color" => "[a-z]*")
+	 *		)
+	 *	));`
+	 * or:
+	 *	`\MvcCore\Router::GetInstance(array(
+	 *		new Route(
+	 *			"/products-list/<name>/<color>",
+	 *			"Products:List",
+	 *			array("name" => "default-name",	"color" => "red"),
+	 *			array("name" => "[^/]*",		"color" => "[a-z]*")
+	 *		)
+	 *	);`
+	 * or:
+	 *	`\MvcCore\Router::GetInstance(array(
+	 *		new Route(
+	 *			"name"			=> "products_list",
+	 *			"pattern"		=> "#^/products\-list/(?<name>[^/]*)/(?<color>[a-z]*)(?=/$|$)#",
+	 *			"reverse"		=> "/products-list/<name>/<color>",
+	 *			"controller"	=> "Products",
+	 *			"action"		=> "List",
+	 *			"defaults"		=> array("name" => "default-name",	"color" => "red"),
+	 *		)
+	 *	);`
+	 * @param \MvcCore\Route[]|array $routes Keyed array with routes,
+	 *										 keys are route names or route
+	 *										`Controller::Action` definitions.
 	 * @return \MvcCore\Router
 	 */
-	public static function & GetInstance (array $routes = array()) {
-		if (!self::$instance) {
-			$routerClass = \MvcCore::GetInstance()->GetRouterClass();
-			self::$instance = new $routerClass($routes);
+	public static function & GetInstance ($routes = array()) {
+		if (!static::$instance) {
+			$routerClass = \MvcCore\Application::GetInstance()->GetRouterClass();
+			static::$instance = new $routerClass($routes);
 		}
-		return self::$instance;
+		return static::$instance;
 	}
 
     /**
-     * Create router, optionaly set routes into new instance as first argument.
-     * @param array $routes 
+     * Create router as every time new instance,
+	 * no singleton instance management here.
+	 * optionaly set routes as first argument.
+	 * If there is no name configured in route array configuration,
+	 * set route name by given `$routes` array key, if key is not numeric.
+	 *
+	 * Routes could be defined in various forms:
+	 * Example:
+	 *	`new \MvcCore\Router(array(
+	 *		"Products:List"	=> "/products-list/<name>/<color>",
+	 *	));`
+	 * or:
+	 *	`new \MvcCore\Router(array(
+	 *		'products_list'	=> array(
+	 *			"pattern"			=> "/products-list/<name>/<color>",
+	 *			"controllerAction"	=> "Products:List",
+	 *			"defaults"			=> array("name" => "default-name",	"color" => "red"),
+	 *			"constraints"		=> array("name" => "[^/]*",			"color" => "[a-z]*")
+	 *		)
+	 *	));`
+	 * or:
+	 *	`new \MvcCore\Router(array(
+	 *		new Route(
+	 *			"/products-list/<name>/<color>",
+	 *			"Products:List",
+	 *			array("name" => "default-name",	"color" => "red"),
+	 *			array("name" => "[^/]*",		"color" => "[a-z]*")
+	 *		)
+	 *	);`
+	 * or:
+	 *	`new \MvcCore\Router(array(
+	 *		new Route(
+	 *			"name"			=> "products_list",
+	 *			"pattern"		=> "#^/products\-list/(?<name>[^/]*)/(?<color>[a-z]*)(?=/$|$)#",
+	 *			"reverse"		=> "/products-list/<name>/<color>",
+	 *			"controller"	=> "Products",
+	 *			"action"		=> "List",
+	 *			"defaults"		=> array("name" => "default-name",	"color" => "red"),
+	 *		)
+	 *	);`
+	 * @param \MvcCore\Route[]|array $routes Keyed array with routes,
+	 *										 keys are route names or route
+	 *										`Controller::Action` definitions.
+	 * @return \MvcCore\Router
      */
-    public function __construct (array & $routes = array()) {
+    public function __construct ($routes = array()) {
 		if ($routes) $this->SetRoutes($routes);
 	}
 
     /**
-     * Clear and set http routes again
-	 * @param array $routes 
+	 * Clear all possible previously configured routes
+	 * and set new given request routes again.
+	 * If there is no name configured in route array configuration,
+	 * set route name by given `$routes` array key, if key is not numeric.
+	 *
+	 * Routes could be defined in various forms:
+	 * Example:
+	 *	`\MvcCore\Router::GetInstance()->SetRoutes(array(
+	 *		"Products:List"	=> "/products-list/<name>/<color>",
+	 *	));`
+	 * or:
+	 *	`\MvcCore\Router::GetInstance()->SetRoutes(array(
+	 *		'products_list'	=> array(
+	 *			"pattern"			=> "/products-list/<name>/<color>",
+	 *			"controllerAction"	=> "Products:List",
+	 *			"defaults"			=> array("name" => "default-name",	"color" => "red"),
+	 *			"constraints"		=> array("name" => "[^/]*",			"color" => "[a-z]*")
+	 *		)
+	 *	));`
+	 * or:
+	 *	`\MvcCore\Router::GetInstance()->SetRoutes(array(
+	 *		new Route(
+	 *			"/products-list/<name>/<color>",
+	 *			"Products:List",
+	 *			array("name" => "default-name",	"color" => "red"),
+	 *			array("name" => "[^/]*",		"color" => "[a-z]*")
+	 *		)
+	 *	);`
+	 * or:
+	 *	`\MvcCore\Router::GetInstance()->SetRoutes(array(
+	 *		new Route(
+	 *			"name"			=> "products_list",
+	 *			"pattern"		=> "#^/products\-list/(?<name>[^/]*)/(?<color>[a-z]*)(?=/$|$)#",
+	 *			"reverse"		=> "/products-list/<name>/<color>",
+	 *			"controller"	=> "Products",
+	 *			"action"		=> "List",
+	 *			"defaults"		=> array("name" => "default-name",	"color" => "red"),
+	 *		)
+	 *	);`
+	 * @param \MvcCore\Route[]|array $routes Keyed array with routes,
+	 *										 keys are route names or route
+	 *										`Controller::Action` definitions.
 	 * @return \MvcCore\Router
-     */
-    public function SetRoutes (array $routes = array()) {
+	 */
+    public function & SetRoutes ($routes = array()) {
 		$this->routes = array();
 		$this->AddRoutes($routes);
 		return $this;
 	}
 
     /**
-     * Get all configured routes.
-     * @return array
-     */
-    public function GetRoutes () {
-		return $this->routes;
-	}
-
-    /**
 	 * Append or prepend new request routes.
-	 * Routes definition array shoud have items as array
-	 * with route configuration definitions, stdClass with route
-	 * configuration definitions or \MvcCore\Route instance.
-	 * Keys in given array has to be route names as 'Controller:Action'
-	 * strings or any custom route names with defined controller name and
-	 * action name inside route array/stdClass configuration or route instance.
-	 * @param array[]|\stdClass[]|\MvcCore\Route[]	$routes		keyed array with routes, keys are route names or route Controller::Action definitions
-	 * @param bool									$prepend	optional
+	 * If there is no name configured in route array configuration,
+	 * set route name by given `$routes` array key, if key is not numeric.
+	 *
+	 * Routes could be defined in various forms:
+	 * Example:
+	 *	`\MvcCore\Router::GetInstance()->AddRoutes(array(
+	 *		"Products:List"	=> "/products-list/<name>/<color>",
+	 *	));`
+	 * or:
+	 *	`\MvcCore\Router::GetInstance()->AddRoutes(array(
+	 *		'products_list'	=> array(
+	 *			"pattern"			=> "/products-list/<name>/<color>",
+	 *			"controllerAction"	=> "Products:List",
+	 *			"defaults"			=> array("name" => "default-name",	"color" => "red"),
+	 *			"constraints"		=> array("name" => "[^/]*",			"color" => "[a-z]*")
+	 *		)
+	 *	));`
+	 * or:
+	 *	`\MvcCore\Router::GetInstance()->AddRoutes(array(
+	 *		new Route(
+	 *			"/products-list/<name>/<color>",
+	 *			"Products:List",
+	 *			array("name" => "default-name",	"color" => "red"),
+	 *			array("name" => "[^/]*",		"color" => "[a-z]*")
+	 *		)
+	 *	);`
+	 * or:
+	 *	`\MvcCore\Router::GetInstance()->AddRoutes(array(
+	 *		new Route(
+	 *			"name"			=> "products_list",
+	 *			"pattern"		=> "#^/products\-list/(?<name>[^/]*)/(?<color>[a-z]*)(?=/$|$)#",
+	 *			"reverse"		=> "/products-list/<name>/<color>",
+	 *			"controller"	=> "Products",
+	 *			"action"		=> "List",
+	 *			"defaults"		=> array("name" => "default-name",	"color" => "red"),
+	 *		)
+	 *	);`
+	 * @param \MvcCore\Route[]|array $routes Keyed array with routes,
+	 *										 keys are route names or route
+	 *										 `Controller::Action` definitions.
+	 * @param bool $prepend	Optional, if `TRUE`, all given routes will
+	 *						be prepended from the last to the first in
+	 *						given list, not appended.
 	 * @return \MvcCore\Router
 	 */
-    public function AddRoutes (array $routes = array(), $prepend = FALSE) {
+    public function AddRoutes ($routes = array(), $prepend = FALSE) {
 		if ($prepend) $routes = array_reverse($routes);
+		$routeClass = \MvcCore\Application::GetInstance()->GetRouteClass();
 		foreach ($routes as $routeName => & $route) {
 			$routeType = gettype($route);
 			$numericKey = is_numeric($routeName);
-			if ($route instanceof \MvcCore\Route) {
-				if (!$numericKey) {
-					$route->Name = $routeName;
-				}
+			if ($route instanceof \MvcCore\Interfaces\IRoute) {
+				if (!$numericKey) $route->SetName($routeName);
+				$this->AddRoute($route, $prepend);
 			} else if ($routeType == 'array') {
-				if (!$numericKey) {
-					$route['name'] = $routeName;
-				}
+				if (!$numericKey) $route['name'] = $routeName;
+				$this->AddRoute($routeClass::GetInstance($route), $prepend);
 			} else if ($routeType == 'string') {
 				// route name is always Controller:Action
-				$route = array(
+				$this->AddRoute($routeClass::GetInstance(array(
 					'name'		=> $routeName,
 					'pattern'	=> $route
+				)), $prepend);
+			} else {
+				throw new \InvalidArgumentException (
+					"[".__CLASS__."] Route is not possible to assign (key: \"$routeName\", value: " . json_encode($route) . ")."
 				);
 			}
-			$this->AddRoute($route, $prepend);
 		}
 		return $this;
 	}
 
-	/**
+    /**
 	 * Append or prepend new request route.
-	 * Route definition array shoud be array with route 
-	 * configuration definition, stdClass with route configuration 
-	 * definition or \MvcCore\Route instance. In configuration definition is 
-	 * required route name, controller, action, pattern and if pattern contains
-	 * regexp groups, its necessary also to define route reverse.
-	 * Route name should be defined as 'Controller:Action' string or any custom
-	 * route name, but then there is necessary to specify controller name and
-	 * action name inside route array/stdClass configuration or route instance.
-	 * @param array|\stdClass|\MvcCore\Route	$routeCfgOrRoute
-	 * @param bool								$prepend
+	 *
+	 * Route could be defined in various forms:
+	 * Example:
+	 *	`\MvcCore\Router::GetInstance()->AddRoute(array(
+	 *		"name"		=> "Products:List",
+	 *		"pattern"	=> "/products-list/<name>/<color>",
+	 *	));`
+	 * or:
+	 *	`\MvcCore\Router::GetInstance()->AddRoute(array(
+	 *		"name"				=> "products_list",
+	 *		"pattern"			=> "/products-list/<name>/<color>",
+	 *		"controllerAction"	=> "Products:List",
+	 *		"defaults"			=> array("name" => "default-name",	"color" => "red"),
+	 *		"constraints"		=> array("name" => "[^/]*",			"color" => "[a-z]*")
+	 *	));`
+	 * or:
+	 *	`\MvcCore\Router::GetInstance()->AddRoute(new Route(
+	 *		"/products-list/<name>/<color>",
+	 *		"Products:List",
+	 *		array("name" => "default-name",	"color" => "red"),
+	 *		array("name" => "[^/]*",		"color" => "[a-z]*")
+	 *	));`
+	 * or:
+	 *	`\MvcCore\Router::GetInstance()->AddRoute(new Route(
+	 *		"name"			=> "products_list",
+	 *		"pattern"		=> "#^/products\-list/(?<name>[^/]*)/(?<color>[a-z]*)(?=/$|$)#",
+	 *		"reverse"		=> "/products-list/<name>/<color>",
+	 *		"controller"	=> "Products",
+	 *		"action"		=> "List",
+	 *		"defaults"		=> array("name" => "default-name",	"color" => "red"),
+	 *	));`
+	 * @param \MvcCore\Route|\MvcCore\Interfaces\IRoute|array $route Route instance or
+	 *																 route config array.
+	 * @param bool $prepend	Optional, if `TRUE`, given route will
+	 *						be prepended, not appended.
 	 * @return \MvcCore\Router
 	 */
-	public function AddRoute ($routeCfgOrRoute, $prepend = FALSE) {
-		if ($routeCfgOrRoute instanceof \MvcCore\Route) {
-			$instance = & $routeCfgOrRoute;
+	public function AddRoute ($route, $prepend = FALSE) {
+		if ($route instanceof \MvcCore\Interfaces\IRoute) {
+			$instance = & $route;
 		} else {
-			$instance = \MvcCore\Route::GetInstance($routeCfgOrRoute);
+			$routeClass = \MvcCore\Application::GetInstance()->GetRouteClass();
+			$instance = $routeClass::GetInstance($route);
 		}
 		if ($prepend) {
 			$this->routes = array_merge(array($instance->Name => $instance), $this->routes);
@@ -173,18 +366,55 @@ class Router
 		return $this;
 	}
 
+    /**
+	 * Get all configured route(s) as `\MvcCore\Route` instances.
+	 * Keys in returned array are route names, values are route objects.
+	 * @return \MvcCore\Route[]
+	 */
+    public function GetRoutes () {
+		return $this->routes;
+	}
+
 	/**
-	 * Set current route
-	 * @param \MvcCore\Route $currentRoute 
+	 * Get `\MvcCore\Request` object as reference, used internally for:
+	 * - Routing process in `\MvcCore\Router::Route();` and it's protected submethods.
+	 * - URL addresses completing in `\MvcCore\Router::Url()` and it's protected submethods.
+	 * @return \MvcCore\Request
+	 */
+	public function & GetRequest () {
+		return $this->request;
+	}
+
+	/**
+	 * Sets up `\MvcCore\Request` object as reference to use it internally for:
+	 * - Routing process in `\MvcCore\Router::Route();` and it's protected submethods.
+	 * - URL addresses completing in `\MvcCore\Router::Url()` and it's protected submethods.
+	 * This is INTERNAL, not TEMPLATE method, internally called in
+	 * `\MvcCore\Application::Run();` => `\MvcCore\Application::routeRequest();`.
+	 * @param \MvcCore\Request $request
 	 * @return \MvcCore\Router
 	 */
-	public function SetCurrentRoute ($currentRoute) {
+	public function & SetRequest (& $request) {
+		$this->request = & $request;
+		return $this;
+	}
+
+	/**
+	 * Set matched route instance for given request object
+	 * into `\MvcCore\Route::Route();` method. Currently matched
+	 * route is always assigned internally in that method.
+	 * @param \MvcCore\Route $currentRoute
+	 * @return \MvcCore\Router
+	 */
+	public function & SetCurrentRoute ($currentRoute) {
 		$this->currentRoute = $currentRoute;
 		return $this;
 	}
 
 	/**
-	 * Return routed route by http request.
+	 * Get matched route instance reference for given request object
+	 * into `\MvcCore\Route::Route($request);` method. Currently
+	 * matched route is always assigned internally in that method.
 	 * @return \MvcCore\Route
 	 */
 	public function & GetCurrentRoute () {
@@ -192,66 +422,83 @@ class Router
 	}
 
 	/**
-	 * Get state about request routing to 'Default:Default' route if no route matches.
-	 * @param bool $enable 
+	 * Get `TRUE` if request has to be automaticly dispatched as default
+	 * `Index:Index` route, if there was no route matching current request
+	 * and if request was not `/` (homepage) but `/something-more`.
+	 * Default protected property value: `FALSE`.
+	 * @param bool $enable
 	 */
 	public function GetRouteToDefaultIfNotMatch () {
 		return $this->routeToDefaultIfNotMatch;
 	}
 
 	/**
-	 * Set route request to 'Default:Default' route if no route matches.
+	 * Set `TRUE` if request has to be automaticly dispatched as default
+	 * `Index:Index` route, if there was no route matching current request
+	 * and if request was not `/` (homepage) but `/something-more`.
+	 * Default protected property value: `FALSE`.
 	 * @param bool $enable
 	 */
-	public function SetRouteToDefaultIfNotMatch ($enable = TRUE) {
+	public function & SetRouteToDefaultIfNotMatch ($enable = TRUE) {
 		$this->routeToDefaultIfNotMatch = $enable;
 		return $this;
 	}
 
 	/**
-	 * Route application request by configured routes list.
-	 * To route request - custom complete currentRoute property 
-	 * and Params property in referenced application request by 
-	 * current request url. Return routed route as current route 
-	 * as reference.
-	 * This method is always called from \MvcCore app instance 
-	 * to dispatch controller by result route.
-	 * @param \MvcCore\Request $request 
+	 * Route current application request by configured routes list or by query string data.
+	 * - Go throught all configured routes and try to find matching route.
+	 *   - If there is founded matching route - set up `\MvcCore\Router::$currentRoute`.
+	 *   - If there is catched any matching route - reset `\MvcCore\Request::$Params`
+	 *     with default route params and params parsed from matching process.
+	 * - If there was no route matching request, complete `\MvcCore\Router::$currentRoute`
+	 *   with automaticly created `Index:Index` route by configured
+	 *   `\MvcCore\Application::$routeClass` and by `\MvcCore\Router::$routeToDefaultIfNotMatch`.
+	 * - If there is anything in `\MvcCore\Router::$currentRoute` and if it has
+	 *   no controller or action defined, define them by request.
+	 * - Return completed `\MvcCore\Router::$currentRoute` or NULL.
+	 *
+	 * This method is always called from core routing by:
+	 * - `\MvcCore\Application::Run();` => `\MvcCore\Application::routeRequest();`.
 	 * @return \MvcCore\Route
 	 */
-	public function & Route (\MvcCore\Request & $request) {
-		$this->request = $request;
-		$chars = "a-zA-Z0-9\-_/";
-		$controllerName = $request->GetParam('controller', $chars);
-		$actionName = $request->GetParam('action', $chars);
+	public function & Route () {
+		$request = & $this->request;
+		$controllerName = $request->GetControllerName();
+		$actionName = $request->GetActionName();
 		if ($controllerName && $actionName) {
 			$this->routeByControllerAndActionQueryString($controllerName, $actionName);
 		} else {
 			$this->routeByRewriteRoutes();
 		}
-		$requestParams = & $this->request->Params;
-		list($defaultCtrl, $defaultAction) = \MvcCore::GetInstance()->GetDefaultControllerAndActionNames();
-		foreach (array('controller' => $defaultCtrl, 'action' => $defaultAction) as $mvcProperty => $mvcValue) {
-			if (!isset($requestParams[$mvcProperty]) || (isset($requestParams[$mvcProperty])  && strlen($requestParams[$mvcProperty]) === 0)) {
-				$requestParams[$mvcProperty] = \MvcCore\Tool::GetDashedFromPascalCase($mvcValue);
+		$requestParams = & $request->Defaults;
+		$app = \MvcCore\Application::GetInstance();
+		$toolClass = $app->GetToolClass();
+		list($dfltCtrl, $dftlAction) = $app->GetDefaultControllerAndActionNames();
+		foreach (array('controller'=>$dfltCtrl,'action'=>$dftlAction) as $mvcProp => $mvcValue) {
+			if (!isset($requestParams[$mvcProp]) || (
+				isset($requestParams[$mvcProp]) && strlen($requestParams[$mvcProp]) === 0
+			)) {
+				$requestParams[$mvcProp] = $toolClass::GetDashedFromPascalCase($mvcValue);
 			}
 		}
-		if (!$this->currentRoute && ($this->request->Path == '/' || $this->routeToDefaultIfNotMatch)) {
-			$this->currentRoute = \MvcCore\Route::GetInstance(array(
-				'name'			=> "$defaultCtrl:$defaultAction",
-				'controller'	=> $defaultCtrl,
-				'action'		=> $defaultAction,
-			));
+		if (!$this->currentRoute && (
+			$request->Path == '/' || $this->routeToDefaultIfNotMatch
+		)) {
+			$routeClass = $app->GetRouteClass();
+			$this->currentRoute = $routeClass::GetInstance()
+				->SetName("$dfltCtrl:$dftlAction")
+				->SetController($dfltCtrl)
+				->SetAction($dftlAction);
 		}
 		if ($this->currentRoute) {
 			if (!$this->currentRoute->Controller) {
-				$this->currentRoute->Controller = \MvcCore\Tool::GetPascalCaseFromDashed(
-					$requestParams['controller']
+				$this->currentRoute->Controller = $toolClass::GetPascalCaseFromDashed(
+					$request->GetControllerName()
 				);
 			}
 			if (!$this->currentRoute->Action) {
-				$this->currentRoute->Action = \MvcCore\Tool::GetPascalCaseFromDashed(
-					$requestParams['action']
+				$this->currentRoute->Action = $toolClass::GetPascalCaseFromDashed(
+					$request->GetActionName()
 				);
 			}
 		}
@@ -259,33 +506,42 @@ class Router
 	}
 
 	/**
-	 * Generates url by:
-	 * - 'Controller:Action' name and params array
-	 *   (for routes configuration when routes array has keys with 'Controller:Action' strings
-	 *   and routes has not controller name and action name defined inside)
-	 * - route name and params array
+	 * Generates url:
+	 * - By `"Controller:Action"` name and params array
+	 *   (for routes configuration when routes array has keys with `"Controller:Action"` strings
+	 *   and routes has not controller name and action name defined inside).
+	 * - By route name and params array
 	 *	 (route name is key in routes configuration array, should be any string
-	 *	 but routes must have information about controller name and action name inside)
-	 * Result address should have two forms:
-	 * - nice rewrited url by routes configuration
-	 *   (for apps with .htaccess supporting url_rewrite and when first param is key in routes configuration array)
-	 * - for all other cases is url form: index.php?controller=ctrlName&action=actionName
-	 *	 (when first param is not founded in routes configuration array)
-	 * @param string $controllerActionOrRouteName	Should be 'Controller:Action' combination or just any route name as custom specific string
-	 * @param array  $params						optional
+	 *	 but routes must have information about controller name and action name inside).
+	 * Result address (url string) should have two forms:
+	 * - Nice rewrited url by routes configuration
+	 *   (for apps with URL rewrite support (Apache `.htaccess` or IIS URL rewrite module)
+	 *   and when first param is key in routes configuration array).
+	 * - For all other cases is url form like: `"index.php?controller=ctrlName&amp;action=actionName"`
+	 *	 (when first param is not founded in routes configuration array).
+	 * @param string $controllerActionOrRouteName	Should be `"Controller:Action"` combination or just any route name as custom specific string.
+	 * @param array  $params						Optional, array with params, key is param name, value is param value.
 	 * @return string
 	 */
 	public function Url ($controllerActionOrRouteName = 'Index:Index', $params = array()) {
 		$result = '';
+		$request = & $this->request;
 		if (strpos($controllerActionOrRouteName, ':') !== FALSE) {
 			list($ctrlPc, $actionPc) = explode(':', $controllerActionOrRouteName);
-			$requestParams = $this->request->Params;
-			if (!$ctrlPc) $ctrlPc = \MvcCore\Tool::GetPascalCaseFromDashed($requestParams['controller']);
-			if (!$actionPc) $actionPc = \MvcCore\Tool::GetPascalCaseFromDashed($requestParams['action']);
+			if (!$ctrlPc) {
+				$toolClass = \MvcCore\Application::GetInstance()->GetToolClass();
+				$ctrlPc = $toolClass::GetPascalCaseFromDashed($request->GetControllerName());
+			}
+			if (!$actionPc) {
+				$toolClass = \MvcCore\Application::GetInstance()->GetToolClass();
+				$actionPc = $toolClass::GetPascalCaseFromDashed($request->GetActionName());
+			}
 			$controllerActionOrRouteName = "$ctrlPc:$actionPc";
 		} else if ($controllerActionOrRouteName == 'self') {
-			$controllerActionOrRouteName = $this->currentRoute ? $this->currentRoute->Name : ':';
-			$params = array_merge($this->request->Params, $params);
+			$controllerActionOrRouteName = $this->currentRoute
+				? $this->currentRoute->Name
+				: ':';
+			$params = array_merge($request->Defaults, $params);
 			unset($params['controller'], $params['action']);
 		}
 		$absolute = FALSE;
@@ -294,122 +550,91 @@ class Router
 			unset($params['absolute']);
 		}
 		if (isset($this->urlRoutes[$controllerActionOrRouteName])) {
-			$result = $this->urlByRoute($controllerActionOrRouteName, $params);
+			$result = $this->urlByRoute($this->urlRoutes[$controllerActionOrRouteName], $params);
 		} else {
 			$result = $this->urlByQueryString($controllerActionOrRouteName, $params);
 		}
-		if ($absolute) $result = $this->request->DomainUrl . $result;
+		if ($absolute) $result = $request->DomainUrl . $result;
 		return $result;
 	}
 
 	/**
-	 * Complete url with all data in query string
-	 * @param string $controllerActionOrRouteName 
-	 * @param array  $params 
-	 * @return string
-	 */
-	protected function urlByQueryString ($controllerActionOrRouteName, $params) {
-		list($contollerPascalCase, $actionPascalCase) = explode(':', $controllerActionOrRouteName);
-		$controllerDashed = \MvcCore\Tool::GetDashedFromPascalCase($contollerPascalCase);
-		$actionDashed = \MvcCore\Tool::GetDashedFromPascalCase($actionPascalCase);
-		$result = $this->request->BasePath . $this->request->ScriptName 
-			. "?controller=$controllerDashed&action=$actionDashed";
-		if ($params) {
-			$result .= "&" . http_build_query($params, "", "&");
-		}
-		return $result;
-	}
-
-	/**
-	 * Complete url by route instance reverse info
+	 * Complete url with all params in query string.
+	 * Example: `"/application/base-bath/index.php?controller=ctrlName&amp;action=actionName&amp;name=cool-product-name&amp;color=blue"`
 	 * @param string $controllerActionOrRouteName
 	 * @param array  $params
 	 * @return string
 	 */
-	protected function urlByRoute ($controllerActionOrRouteName, $params) {
-		$route = $this->urlRoutes[$controllerActionOrRouteName];
-		$result = $this->request->BasePath . rtrim($route->Reverse, '?&');
-		$allParams = array_merge(
-			is_array($route->Params) ? $route->Params : array(), $params
-		);
-		foreach ($allParams as $key => $value) {
-			$paramKeyReplacement = "{%$key}";
-			if (mb_strpos($result, $paramKeyReplacement) === FALSE) {
-				$glue = (mb_strpos($result, '?') === FALSE) ? '?' : '&';
-				$result .= $glue . http_build_query(array($key => $value));
-			} else {
-				$result = str_replace($paramKeyReplacement, $value, $result);
-			}
-		}
+	protected function urlByQueryString ($controllerActionOrRouteName, $params) {
+		$toolClass = \MvcCore\Application::GetInstance()->GetToolClass();
+		list($ctrlPc, $actionPc) = explode(':', $controllerActionOrRouteName);
+		$result = $this->request->BasePath . $this->request->ScriptName
+			. '?controller=' . $toolClass::GetDashedFromPascalCase($ctrlPc)
+			. '&amp;action=' . $toolClass::GetDashedFromPascalCase($actionPc);
+		if ($params) $result .= '&amp;' . http_build_query($params, '', '&amp;');
 		return $result;
 	}
 
 	/**
-	 * Complete current route and request params by query string
-	 * @param string $controllerName 
-	 * @param string $actionName 
+	 * Complete url by route instance reverse info.
+	 * Example:
+	 *	Input (`\MvcCore\Route::$Reverse`):
+	 *		`"/products-list/<name>/<color>"`
+	 *	Input ($params):
+	 *		`array(
+	 *			"name"		=> "cool-product-name",
+	 *			"color"		=> "red",
+	 *			"variant"	=> array("L", "XL"),
+	 *		);`
+	 *	Output:
+	 *		`/application/base-bath/products-list/cool-product-name/blue?variant[]=L&amp;variant[]=XL"`
+	 * @param \MvcCore\Route &$route
+	 * @param array  $params
+	 * @return string
+	 */
+	protected function urlByRoute (& $route, $params) {
+		return $this->request->BasePath . $route->Url($params);
+	}
+
+	/**
+	 * Complete current route in `\MvcCore\Router::$currentRoute`
+	 * and it's params by query string data. If missing `controller`
+	 * or if missing `action` param, use configured default controller or action name.
+	 * @param string $controllerName
+	 * @param string $actionName
 	 * @return void
 	 */
 	protected function routeByControllerAndActionQueryString ($controllerName, $actionName) {
-		list ($controllerDashed, $controllerPascalCase) = static::completeControllerActionParam($controllerName);
-		list ($actionDashed, $actionPascalCase) = static::completeControllerActionParam($actionName);
-		$this->currentRoute = \MvcCore\Route::GetInstance(array(
-			'name'			=> "$controllerPascalCase:$actionPascalCase",
-			'controller'	=> $controllerPascalCase,
-			'action'		=> $actionPascalCase
-		));
-		$this->request->Params['controller'] = $controllerDashed;
-		$this->request->Params['action'] = $actionDashed;
+		$app = \MvcCore\Application::GetInstance();
+		$toolClass = $app->GetToolClass();
+		$routeClass = $app->GetRouteClass();
+		list($ctrlDfltName, $actionDfltName) = $app->GetDefaultControllerAndActionNames();
+		$controllerPc = $toolClass::GetPascalCaseFromDashed($controllerName ?: $ctrlDfltName);
+		$actionPc = $toolClass::GetPascalCaseFromDashed($actionName ?: $actionDfltName);
+		$this->currentRoute = $routeClass::GetInstance()
+			->SetName("$controllerPc:$actionPc")
+			->SetController($controllerPc)
+			->SetAction($actionPc);
 	}
 
 	/**
-	 * Complete current route and request params by defined routes
+	 * Complete `\MvcCore\Router::$currentRoute` and request params by defined routes.
+	 * Go throught all configured routes and try to find matching route.
+	 * If there is catched any matching route - reset `\MvcCore\Request::$Params`
+	 * with default route params and params parsed from matching process.
 	 * @return void
 	 */
 	protected function routeByRewriteRoutes () {
-		$requestPath = $this->request->Path;
+		$request = & $this->request;
 		foreach ($this->routes as & $route) {
-			preg_match_all($route->Pattern, $requestPath, $patternMatches);
-			if (count($patternMatches) > 0 && count($patternMatches[0]) > 0) {
+			if ($matchedParams = $route->Matches($this->request)) {
 				$this->currentRoute = $route;
-				$controllerName = isset($route->Controller)? $route->Controller: '';
-				$routeParams = array(
-					'controller'	=>	\MvcCore\Tool::GetDashedFromPascalCase(str_replace(array('_', '\\'), '/', $controllerName)),
-					'action'		=>	\MvcCore\Tool::GetDashedFromPascalCase(isset($route->Action)	? $route->Action	: ''),
+				$routeDefaultParams = $route->Defaults ?: array();
+				$request->SetParams(
+					array_merge($routeDefaultParams, $request->Params, $matchedParams)
 				);
-				preg_match_all("#{%([a-zA-Z0-9]*)}#", $route->Reverse, $reverseMatches);
-				if (isset($reverseMatches[1]) && $reverseMatches[1]) {
-					$reverseMatchesNames = $reverseMatches[1];
-					array_shift($patternMatches);
-					foreach ($reverseMatchesNames as $key => $reverseKey) {
-						if (isset($patternMatches[$key]) && count($patternMatches[$key])) {
-							// 1 line bellow is only for route debug panel, only for cases when you
-							// forget to define current rewrite param, this defines null value by default
-							if (!isset($route->Params[$reverseKey])) $route->Params[$reverseKey] = NULL;
-							$routeParams[$reverseKey] = $patternMatches[$key][0];
-						} else {
-							break;	
-						}
-					}
-				}
-				$routeDefaultParams = isset($route->Params) ? $route->Params : array();
-				$this->request->Params = array_merge($routeDefaultParams, $routeParams, $this->request->Params);
 				break;
 			}
 		}
-	}
-
-	/**
-	 * Complete controller and action names in both forms - dashed and pascal case
-	 * @param string $dashed 
-	 * @return string[]
-	 */
-	protected static function completeControllerActionParam ($dashed = '') {
-		$pascalCase = '';
-		$dashed = strlen($dashed) > 0 ? strtolower($dashed) : 'default';
-		$pascalCase = preg_replace_callback("#(\-[a-z])#", function ($m) {return strtoupper(substr($m[0], 1));}, $dashed);
-		$pascalCase = preg_replace_callback("#(_[a-z])#", function ($m) {return strtoupper($m[0]);}, $pascalCase);
-		$pascalCase = ucfirst($pascalCase);
-		return array($dashed, $pascalCase);
 	}
 }

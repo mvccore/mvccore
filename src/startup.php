@@ -4,71 +4,35 @@
  * MvcCore
  *
  * This source file is subject to the BSD 3 License
- * For the full copyright and license information, please view 
+ * For the full copyright and license information, please view
  * the LICENSE.md file that are distributed with this source code.
  *
  * @copyright	Copyright (c) 2016 Tom Flídr (https://github.com/mvccore/mvccore)
  * @license		https://mvccore.github.io/docs/mvccore/4.0.0/LICENCE.md
  */
 
-if (version_compare(PHP_VERSION, '5.3.0', "<")) {
-	$m = "Startup script requires at least PHP version 5.3.0 your PHP version is: " . PHP_VERSION;
+if (version_compare(PHP_VERSION, '5.4.0', "<")) {
+	$m = "Startup script requires at least PHP version 5.4.0 your PHP version is: " . PHP_VERSION;
 	die($m);
 }
-
-/*register_shutdown_function(function () {
-	$e = error_get_last();
-	if (!is_null($e)) var_dump($e);
-});*/
-
 call_user_func(function () {
-
 	error_reporting(E_ALL ^ E_NOTICE);
-
+	$scriptFilename = $_SERVER['SCRIPT_FILENAME'];
 	$scriptFilename = php_sapi_name() == 'cli'
-		? str_replace('\\', '/', getcwd()) . '/' . $_SERVER['SCRIPT_FILENAME']
-		: str_replace('\\', '/', $_SERVER['SCRIPT_FILENAME']);
-	
+		? str_replace('\\', '/', getcwd()) . '/' . $scriptFilename
+		: str_replace('\\', '/', $scriptFilename);
 	if (strpos(__FILE__, 'phar://') === 0) {
 		$appRootPath = 'phar://' . $scriptFilename;
 	} else {
 		$appRootPath = substr($scriptFilename, 0, strrpos($scriptFilename, '/'));
 	}
-	
 	$includePaths = array(
 		$appRootPath,
-		$appRootPath . '/App', 
+		$appRootPath . '/App',
 		$appRootPath . '/Libs',
 	);
-	
-	set_include_path(
-		get_include_path() . PATH_SEPARATOR . implode(PATH_SEPARATOR, $includePaths)
-	);
-
-	/*$throwExceptionIfClassIsGoingToUse = function ($className) {
-		$status = 0;
-		$backTraceLog = debug_backtrace();
-		$autoloadsCount = count(spl_autoload_functions());
-		foreach ($backTraceLog as $backTraceInfo) {
-			if ($status === 0 && $backTraceInfo['function'] == 'spl_autoload_call') {
-				$status = 1;
-			} else if ($status == 1 && $backTraceInfo['function'] == 'class_exists') {
-				$status = 2;
-				break;
-			} else if ($status > 0) {
-				break;
-			}
-		}
-		if ($status < 2 && $autoloadsCount == 1) {
-			//var_dump(debug_backtrace());
-			throw new Exception('[startup.php] Class "' . $className . '" not found.');
-		}
-	};*/
-	
 	$autoload = function ($className) use ($includePaths, $throwExceptionIfClassIsGoingToUse) {
-		
 		$fileName = str_replace(array('_', '\\'), '/', $className) . '.php';
-		
 		$includePath = '';
 		foreach ($includePaths as $path) {
 			$fullPath = $path . '/' . $fileName;
@@ -77,18 +41,7 @@ call_user_func(function () {
 				break;
 			}
 		}
-
-		/*echo '<pre>';
-		print_r(array($fileName, $className, $includePath, $includePaths));
-		echo '</pre>';*/
-		
-		if ($includePath) {
-			include_once($includePath);
-		} else {
-			//$throwExceptionIfClassIsGoingToUse($className);
-		}
+		if ($includePath) include_once($includePath);
 	};
-
 	spl_autoload_register($autoload);
-	
 });

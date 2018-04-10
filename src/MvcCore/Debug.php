@@ -4,7 +4,7 @@
  * MvcCore
  *
  * This source file is subject to the BSD 3 License
- * For the full copyright and license information, please view 
+ * For the full copyright and license information, please view
  * the LICENSE.md file that are distributed with this source code.
  *
  * @copyright	Copyright (c) 2016 Tom Flídr (https://github.com/mvccore/mvccore)
@@ -12,51 +12,42 @@
  */
 
 namespace MvcCore {
-	
+
+	require_once(__DIR__ . '/Interfaces/IDebug.php');
 	require_once('Config.php');
 
 	/**
-	 * Core debug tools
-	 * - printing any value by var_dump(); in fixed 
-	 *   bar at browser window right bottom border
-	 * - timing printing
-	 * - debuging shortcut functions initialization
-	 * - exceptions hdd logging or printing in development mode
+	 * - Printing any variable in content body.
+	 * - Printing any variable in browser debug bar.
+	 * - Time printing.
+	 * - Debuging shortcut functions initialization.
+	 * - Catched exceptions logging or printing in dev mode.
 	 */
-	class Debug
+	class Debug implements Interfaces\IDebug
 	{
-		const
-			DEBUG = 'debug',
-			INFO = 'info',
-			WARNING = 'warning',
-			ERROR = 'error',
-			EXCEPTION = 'exception',
-			CRITICAL = 'critical',
-			JAVASCRIPT = 'javascript';
-
 		/**
-		 * Email recepient to send information about exceptions or errors.
-		 * 'admin@localhost' by default.
+		 * Email recepient to send information about exceptions or errors,
+		 * `"admin@localhost"` by default.
 		 * @var string
 		 */
 		public static $EmailRecepient = 'admin@localhost';
 
 		/**
-		 * Relative path from app root to store any log information.
-		 * '/Var/Logs' by default.
+		 * Relative path from app root to store any log information,
+		 * `"/Var/Logs"` by default.
 		 * @var mixed
 		 */
 		public static $LogDirectory = '/Var/Logs';
 
 		/**
-		 * Semaphore to execute Init(); method only one time.
-		 * TRUE if development, FALSE if anything else
+		 * Semaphore to execute `\MvcCore\Debug::Init();` method only once.
+		 * `TRUE` if development, `FALSE` if anything else.
 		 * @var boolean
 		 */
 		protected static $development = NULL;
-	
+
 		/**
-		 * Debuging and loging handlers, this shoud be customized in extended class.
+		 * Debuging and loging handlers, this should be customized in extended class.
 		 * @var array
 		 */
 		protected static $handlers = array(
@@ -82,7 +73,8 @@ namespace MvcCore {
 		protected static $timers = array();
 
 		/**
-		 * True for cofigured debug class as \MvcCore\Debug, FALSE for any other configured extension
+		 * `TRUE` for cofigured debug class as `\MvcCore\Debug`,
+		 * `FALSE` for any other configured extension.
 		 * @var bool
 		 */
 		protected static $originalDebugClass = TRUE;
@@ -95,16 +87,16 @@ namespace MvcCore {
 		public static $InitGlobalShortHands = array();
 
 		/**
-		 * Initialize debuging and loging.
+		 * Initialize debugging and logging (only once).
 		 * @return void
 		 */
 		public static function Init () {
 			if (!is_null(static::$development)) return;
-			$app = \MvcCore::GetInstance();
+			$app = \MvcCore\Application::GetInstance();
 			$configClass = $app->GetConfigClass();
 			static::$development = $configClass::IsDevelopment();
 			$cfg = $configClass::GetSystem();
-			
+
 			if (isset($cfg->debug)) {
 				$cfgDebug = & $cfg->debug;
 				if (isset($cfgDebug->emailRecepient)) {
@@ -114,7 +106,7 @@ namespace MvcCore {
 					static::$LogDirectory = $cfgDebug->logDirectory;
 				}
 			}
-			
+
 			$scriptPath = php_sapi_name() == 'cli'
 				? str_replace('\\', '/', getcwd()) . '/' . $_SERVER['SCRIPT_FILENAME']
 				: str_replace('\\', '/', $_SERVER['SCRIPT_FILENAME']);
@@ -137,8 +129,7 @@ namespace MvcCore {
 			foreach (static::$handlers as $key => $value) {
 				static::$handlers[$key] = array(__CLASS__, $value);
 			}
-			static::$handlers = (object) static::$handlers;
-			register_shutdown_function(self::$handlers->shutdownHandler);
+			register_shutdown_function(self::$handlers['shutdownHandler']);
 		}
 
 		/**
@@ -151,7 +142,8 @@ namespace MvcCore {
 			if (!is_writable($logDirectory)) {
 				try {
 					chmod($logDirectory, 0777);
-				} catch (\Exception $e) {
+				}
+				catch (\Exception $e) {
 					die('['.static::class.'] ' . $e->getMessage());
 				}
 			}
@@ -159,22 +151,22 @@ namespace MvcCore {
 
 		/**
 		 * Starts/stops stopwatch.
-		 * @param  string  $name time pointer name
-		 * @return float		 elapsed seconds
+		 * @param  string $name time pointer name
+		 * @return float        elapsed seconds
 		 */
 		public static function Timer ($name = NULL) {
 			return static::BarDump(
-				call_user_func(static::$handlers->timer, $name),
+				call_user_func(static::$handlers['timer'], $name),
 				$name
 			);
 		}
 
 		/**
-		 * Dumps information about a variable in readable format.
+		 * Dumps information about any variable in readable format.
 		 * @tracySkipLocation
 		 * @param  mixed  $value	variable to dump
 		 * @param  bool   $return	return output instead of printing it? (bypasses $productionMode)
-		 * @return mixed			variable itself or dump
+		 * @return mixed			variable itself or dump or null
 		 */
 		public static function Dump ($value, $return = FALSE) {
 			if (static::$originalDebugClass) {
@@ -184,13 +176,14 @@ namespace MvcCore {
 				$options['backtraceIndex'] = 1;
 				$result = static::dumpHandler($value, NULL, $options);
 			} else {
-				$result = call_user_func(static::$handlers->dump, $value, $return);
+				$result = call_user_func(static::$handlers['dump'], $value, $return);
 			}
 			if ($return) return $result;
+			return NULL;
 		}
 
 		/**
-		 * Dumps information about a variable in Tracy Debug Bar.
+		 * Dumps information about any variable in browser debug bar.
 		 * @tracySkipLocation
 		 * @param  mixed	$value		variable to dump
 		 * @param  string	$title		optional title
@@ -198,7 +191,7 @@ namespace MvcCore {
 		 * @return mixed				variable itself
 		 */
 		public static function BarDump ($value, $title = NULL, $options = array()) {
-			return call_user_func_array(static::$handlers->barDump, func_get_args());
+			return call_user_func_array(static::$handlers['barDump'], func_get_args());
 		}
 
 		/**
@@ -207,7 +200,7 @@ namespace MvcCore {
 		 * @param  string				$priority
 		 * @return string				logged error filename
 		 */
-		public static function Log ($value, $priority = self::INFO) {
+		public static function Log ($value, $priority = \MvcCore\Interfaces\IDebug::INFO) {
 			$args = func_get_args();
 			if (static::$originalDebugClass) {
 				$content = date('[Y-m-d H-i-s]') . "\n" . static::dumpHandler(
@@ -218,7 +211,7 @@ namespace MvcCore {
 				file_put_contents($fullPath, $content, FILE_APPEND);
 				return $fullPath;
 			} else {
-				return @call_user_func_array(static::$handlers->log, $args);
+				return @call_user_func_array(static::$handlers['log'], $args);
 			}
 		}
 
@@ -228,22 +221,22 @@ namespace MvcCore {
 		 * @param	string	$priority	priority
 		 * @return	bool				was successful?
 		 */
-		public static function FireLog ($message, $priority = self::DEBUG) {
+		public static function FireLog ($message, $priority = \MvcCore\Interfaces\IDebug::DEBUG) {
 			// TODO: implement simple firelog
 			$args = func_get_args();
 			if (static::$originalDebugClass) {
 				$args = array($message, NULL, array('priority' => $priority));
 			}
-			return call_user_func_array(static::$handlers->fireLog, $args);
+			return call_user_func_array(static::$handlers['fireLog'], $args);
 		}
 
 		/**
-		 * Handler to catch uncaught exception.
+		 * Handler to render catched exception.
 		 * @param  \Exception|\Throwable
 		 * @return void
 		 */
 		public static function Exception ($exception, $exit = TRUE) {
-			return call_user_func_array(static::$handlers->exceptionHandler, func_get_args());
+			return call_user_func_array(static::$handlers['exceptionHandler'], func_get_args());
 		}
 
 		/**
@@ -260,7 +253,7 @@ namespace MvcCore {
 					$dumps .= '<pre class="title">'.$values[1].'</pre>';
 				}
 				$dumps .= '<div class="value">'
-					.preg_replace("#\[([^\]]*)\]=>([^\n]*)\n(\s*)#", "[$1] => ", 
+					.preg_replace("#\[([^\]]*)\]=>([^\n]*)\n(\s*)#", "[$1] => ",
 						str_replace("<required>","&lt;required&gt;", $values[0])
 					)
 					.'</div></div>';
@@ -281,14 +274,14 @@ namespace MvcCore {
 		 */
 		protected static function timerHandler ($name = NULL) {
 			$now = microtime(TRUE);
-			if (is_null($name)) return $now - \MvcCore::GetInstance()->GetMicrotime();
+			if (is_null($name)) return $now - \MvcCore\Application::GetInstance()->GetMicrotime();
 			$difference = isset(static::$timers[$name]) ? $now - static::$timers[$name] : 0;
 			static::$timers[$name] = $now;
 			return $difference;
 		}
 
 		/**
-		 * Dump any variable into string throw output buffering, 
+		 * Dump any variable into string throw output buffering,
 		 * store result for printing later. Return printed variable string.
 		 * @param mixed $var
 		 * @param string $title
@@ -310,8 +303,7 @@ namespace MvcCore {
 		}
 
 		/**
-		 * Exception printing for development, logging for production.
-		 * @param \Exception $e
+		 * Print all catched dumps at the end of sended response body.
 		 * @return void
 		 */
 		protected static function exceptionHandler (\Exception $e, $exit = TRUE) {
@@ -319,37 +311,36 @@ namespace MvcCore {
 			//if ($exit) exit;
 		}
 	}
-
 }
 
 namespace {
 	\MvcCore\Debug::$InitGlobalShortHands = function () {
 		/**
-			* Dump a variable.
-			* @param  mixed  $value	variable to dump
-			* @param  string $title	optional title
-			* @param  array  $options	dumper options
-			* @return mixed  variable itself
-			*/
+		 * Dump a variable.
+		 * @param  mixed  $value	variable to dump
+		 * @param  string $title	optional title
+		 * @param  array  $options	dumper options
+		 * @return mixed  variable itself
+		 */
 		function x ($value, $title = NULL, $options = array()) {
 			return \MvcCore\Debug::BarDump($value, $title, $options);
 		}
 		/**
-			* Dumps variables about a variable.
-			* @param  ...mixed  variables to dump
-			*/
+		 * Dumps variables about a variable.
+		 * @param  ...mixed  variables to dump
+		 */
 		function xx () {
 			$args = func_get_args();
 			foreach ($args as $arg) \MvcCore\Debug::BarDump($arg);
 		}
 		/**
-			* Dump a variable and die. If no variable, throw stop exception.
-			* @param  mixed  $var		variable to dump
-			* @param  string $title	optional title
-			* @param  array  $options	dumper options
-			* @throws \Exception
-			* @return void
-			*/
+		 * Dump a variable and die. If no variable, throw stop exception.
+		 * @param  mixed  $var		variable to dump
+		 * @param  string $title	optional title
+		 * @param  array  $options	dumper options
+		 * @throws \Exception
+		 * @return void
+		 */
 		function xxx ($var = NULL, $title = NULL, $options = array()) {
 			$args = func_get_args();
 			if (count($args) === 0) {
