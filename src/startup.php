@@ -33,7 +33,7 @@ call_user_func(function () {
 	);
 	$currentDir = str_replace('\\', '/', __DIR__);
 	if (!in_array($currentDir, $includePaths)) array_unshift($includePaths, $currentDir);
-	$autoload = function ($className) use ($includePaths, $throwExceptionIfClassIsGoingToUse) {
+	$autoload = function ($className) use ($includePaths) {
 		$fileName = str_replace(array('_', '\\'), '/', $className) . '.php';
 		$includePath = '';
 		foreach ($includePaths as $path) {
