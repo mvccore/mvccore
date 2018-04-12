@@ -17,14 +17,14 @@ require_once(__DIR__ . '/Interfaces/IConfig.php');
 require_once(__DIR__.'/../MvcCore.php');
 
 /**
- * Core configuration:
- * - config files reading:
- *   - reading config.ini file by relative path
- *   - parsing and typing ini data into stdClass/array by key types
- *   - typing ini values into integers, floats, booleans or strings
- * - environment management:
- *   - simple environment name detection by comparing server and client ip
- *   - environment name detection by config records about computer name or ip
+ * Responsibility - reading config file(s), detecting environment in system config.
+ * - Config file(s) reading:
+ *   - Reading any `config.ini` file by relative path.
+ *   - Parsing and typing ini data into `stdClass|array` by key types or typing
+ *     ini values into `int|float|bool|string` for all other detected primitives.
+ * - Environment management:
+ *   - Simple environment name detection by comparing server and client ip.
+ *   - Environment name detection by config records about computer name or ip.
  */
 class Config implements Interfaces\IConfig
 {
@@ -74,7 +74,7 @@ class Config implements Interfaces\IConfig
 	 * to store information about final retyping. Keys are addresses
 	 * into result level to be retyped or not, values are arrays.
 	 * First index in values is boolean to define if result level will
-	 * be retyped into \stdClass or not, second index in values is reference
+	 * be retyped into `\stdClass` or not, second index in values is reference
 	 * link to object retyped at the end or not.
 	 * @var array
 	 */
@@ -82,8 +82,8 @@ class Config implements Interfaces\IConfig
 
 	/**
 	 * Static initialization.
-	 * - Called when file is loaded into memory
-	 * - First environment value setup - by server and client ip address
+	 * - Called when file is loaded into memory.
+	 * - First environment value setup - by server and client ip address.
 	 * @return void
 	 */
 	public static function StaticInit () {
@@ -133,7 +133,7 @@ class Config implements Interfaces\IConfig
 
 	/**
 	 * Get environment name as string,
-	 * defined by constants: `\MvcCore\Interfaces\IConfig::ENVIRONMENT_<environment>`
+	 * defined by constants: `\MvcCore\Interfaces\IConfig::ENVIRONMENT_<environment>`.
 	 * @return string
 	 */
 	public static function GetEnvironment () {
@@ -142,7 +142,7 @@ class Config implements Interfaces\IConfig
 
 	/**
 	 * Set environment name as string,
-	 * defined by constants: `\MvcCore\Interfaces\IConfig::ENVIRONMENT_<environment>`
+	 * defined by constants: `\MvcCore\Interfaces\IConfig::ENVIRONMENT_<environment>`.
 	 * @param string $environment
 	 * @return string
 	 */
@@ -172,7 +172,7 @@ class Config implements Interfaces\IConfig
 	/**
 	 * Load ini file and return parsed configuration or `FALSE` in failure.
 	 * - Second environment value setup:
-	 *   - Only if `$systemConfig` param is defined as `TRUE`
+	 *   - Only if `$systemConfig` param is defined as `TRUE`.
 	 *   - By defined IPs or computer names in ini `[environments]` section.
 	 * - Load only sections for current environment name.
 	 * - Retype all `raw string` values into `array`, `float`, `int` or `boolean` types.
@@ -182,7 +182,7 @@ class Config implements Interfaces\IConfig
 	 * @return array|boolean
 	 */
 	public function & Load ($configPath = '', $systemConfig = FALSE) {
-		$cfgFullPath = \MvcCore\Application::GetInstance()->GetRequest()->AppRoot . $configPath;
+		$cfgFullPath = \MvcCore\Application::GetInstance()->GetRequest()->GetAppRoot() . $configPath;
 		if (!file_exists($cfgFullPath)) return FALSE;
 		$rawIniData = parse_ini_file($cfgFullPath, TRUE);
 		$environment = $systemConfig
@@ -224,7 +224,8 @@ class Config implements Interfaces\IConfig
 	}
 
 	/**
-	 * Detect environment name in system config to load proper config sections later.
+	 * Detect environment name in system config 
+	 * to load proper config sections later.
 	 * @param array $rawIni
 	 * @return string
 	 */
@@ -300,7 +301,7 @@ class Config implements Interfaces\IConfig
 	}
 
 	/**
-	 * Return if $rawKey is numeric.
+	 * Return `TRUE` if `$rawKey` is numeric.
 	 * @param string $rawKey
 	 * @return bool
 	 */
@@ -310,7 +311,7 @@ class Config implements Interfaces\IConfig
 	}
 
 	/**
-	 * Retype raw ini value into `array`with retyped it's own values or
+	 * Retype raw ini value into `array` with retyped it's own values or
 	 * retype raw ini value into `float`, `int` or `string`.
 	 * @param string|array $rawValue
 	 * @return array|float|int|string

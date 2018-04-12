@@ -16,14 +16,14 @@ namespace MvcCore\Interfaces;
 require_once(__DIR__.'/../MvcCore.php');
 
 /**
- * Core configuration:
- * - config files reading:
- *   - reading config.ini file by relative path
- *   - parsing and typing ini data into stdClass/array by key types
- *   - typing ini values into integers, floats, booleans or strings
- * - environment management:
- *   - simple environment name detection by comparing server and client ip
- *   - environment name detection by config records about computer name or ip
+ * Responsibility - reading config file(s), detecting environment in system config.
+ * - Config file(s) reading:
+ *   - Reading any `config.ini` file by relative path.
+ *   - Parsing and typing ini data into `stdClass|array` by key types or typing
+ *     ini values into `int|float|bool|string` for all other detected primitives.
+ * - Environment management:
+ *   - Simple environment name detection by comparing server and client ip.
+ *   - Environment name detection by config records about computer name or ip.
  */
 interface IConfig
 {
@@ -34,8 +34,8 @@ interface IConfig
 
 	/**
 	 * Static initialization.
-	 * - Called when file is loaded into memory
-	 * - First environment value setup - by server and client ip address
+	 * - Called when file is loaded into memory.
+	 * - First environment value setup - by server and client ip address.
 	 * @return void
 	 */
 	public static function StaticInit ();
@@ -66,14 +66,14 @@ interface IConfig
 
 	/**
 	 * Get environment name as string,
-	 * defined by constants: `\MvcCore\Interfaces\IConfig::ENVIRONMENT_<environment>`
+	 * defined by constants: `\MvcCore\Interfaces\IConfig::ENVIRONMENT_<environment>`.
 	 * @return string
 	 */
 	public static function GetEnvironment ();
 
 	/**
 	 * Set environment name as string,
-	 * defined by constants: `\MvcCore\Interfaces\IConfig::ENVIRONMENT_<environment>`
+	 * defined by constants: `\MvcCore\Interfaces\IConfig::ENVIRONMENT_<environment>`.
 	 * @param string $environment
 	 * @return string
 	 */
@@ -89,7 +89,7 @@ interface IConfig
 	/**
 	 * Load ini file and return parsed configuration or `FALSE` in failure.
 	 * - Second environment value setup:
-	 *   - Only if `$systemConfig` param is defined as `TRUE`
+	 *   - Only if `$systemConfig` param is defined as `TRUE`.
 	 *   - By defined IPs or computer names in ini `[environments]` section.
 	 * - Load only sections for current environment name.
 	 * - Retype all `raw string` values into `array`, `float`, `int` or `boolean` types.

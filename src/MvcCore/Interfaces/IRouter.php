@@ -17,7 +17,7 @@ require_once('IRequest.php');
 require_once('IRoute.php');
 
 /**
- * Responsibilities:
+ * Responsibility - singleton, routes instancing, request routing and url building.
  * - Application router singleton instance managing.
  * - Global storage for all configured routes.
  *	 - Instancing all route(s) from application start

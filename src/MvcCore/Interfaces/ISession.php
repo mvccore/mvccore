@@ -14,7 +14,7 @@
 namespace MvcCore\Interfaces;
 
 /**
- * Responsibilities:
+ * Responsibility - session data management - starting, writing and expirations.
  * - Safe start (only once)
  *   - By `\MvcCore\Interfaces\ISession::Start()`
  *     - Called by `\MvcCore\Application::GetInstance()->SessionStart();`
@@ -86,6 +86,13 @@ interface ISession
 	 * @return void
 	 */
 	public function Destroy ();
+
+	/**
+	 * Destroy all existing session namespaces in `$_SESSION` storrage
+	 * and internal static storrages, destroy whole PHP session.
+	 * @return void
+	 */
+	public static function DestroyAll ();
 
 	/**
 	 * Magic function triggered by: `isset(\MvcCore\Interfaces\ISession->key);`.

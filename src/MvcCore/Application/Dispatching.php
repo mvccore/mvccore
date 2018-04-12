@@ -23,7 +23,12 @@ include_once('Controller.php');
 include_once('Config.php');
 
 /**
- * `\MvcCore\Application` - Normal Request & Error Request Dispatching
+ * Trait as partial class for `\MvcCore\Application`:
+ * - Processing application run (`\MvcCore\Application::Run();`):
+ *   - Completing request and response.
+ *   - Calling pre/post handlers.
+ *   - Controller/action dispatching.
+ *   - Error handling and error responses.
  */
 trait Dispatching
 {
@@ -299,12 +304,12 @@ trait Dispatching
 		if ($defaultCtrlFullName) {
 			$toolClass = $this->toolClass;
 			$debugClass = $this->debugClass;
-			$this->request->Params = array_merge($this->request->Params, array(
+			$this->request->SetParams(array_merge($this->request->GetParams(), array(
 				'code'		=> 500,
 				'message'	=> $exceptionMessage,
 				'controller'=> $toolClass::GetDashedFromPascalCase($this->defaultControllerName),
 				'action'	=> $toolClass::GetDashedFromPascalCase($this->defaultControllerErrorActionName),
-			));
+			)));
 			return $this->DispatchControllerAction(
 				$defaultCtrlFullName,
 				$this->defaultControllerErrorActionName . "Action",
@@ -335,12 +340,12 @@ trait Dispatching
 		if ($defaultCtrlFullName) {
 			$toolClass = $this->toolClass;
 			$debugClass = $this->debugClass;
-			$this->request->Params = array_merge($this->request->Params, array(
+			$this->request->SetParams(array_merge($this->request->GetParams(), array(
 				'code'		=> 404,
 				'message'	=> $exceptionMessage,
 				'controller'=> $toolClass::GetDashedFromPascalCase($this->defaultControllerName),
 				'action'	=> $toolClass::GetDashedFromPascalCase($this->defaultControllerNotFoundActionName),
-			));
+			)));
 			return $this->DispatchControllerAction(
 				$defaultCtrlFullName,
 				$this->defaultControllerNotFoundActionName . "Action",

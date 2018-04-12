@@ -25,13 +25,13 @@ include_once('Router.php');
 include_once('Request.php');
 
 /**
- * Responsibilities:
- * - Controller lifecycle dispatching.
- *   - Handling setup methods from core dispatching.
+ * Responsibility - controller lifecycle - data preparing, rendering, response completing.
+ * - Controller lifecycle dispatching:
+ *   - Handling setup methods after creation from application core dispatching.
  *   - Calling lifecycle methods (`\MvcCore\Controller::Dispatch();`):
  *     - `\MvcCore\Controller::Init();`
  *     - `\MvcCore\Controller::PreDispatch();`
- *     - Dispatching controller action.
+ *     - Calling routed controller action.
  *     - `\MvcCore\Controller::Render();`
  * - Rendering or no-rendering customization.
  * - HTTP responses and redirects managing and customization.
@@ -352,7 +352,7 @@ class Controller implements Interfaces\IController
 		$this->request = & $request;
 		$this->controller = $request->GetControllerName();
 		$this->action = $request->GetActionName();
-		$this->ajax = $request->Ajax;
+		$this->ajax = $request->IsAjax();
 		if ($this->ajax || (
 			$this->controller == 'controller' && $this->action == 'asset'
 		)) $this->DisableView();
@@ -566,7 +566,7 @@ class Controller implements Interfaces\IController
 		) {
 			throw new \ErrorException("[".__CLASS__."] File path: '$path' is not allowed.", 500);
 		}
-		$path = $this->request->AppRoot . $path;
+		$path = $this->request->GetAppRoot() . $path;
 		if (!file_exists($path)) {
 			throw new \ErrorException("[".__CLASS__."] File not found: '$path'.", 404);
 		}
@@ -702,17 +702,6 @@ class Controller implements Interfaces\IController
 	}
 
 	/**
-	 * Return session namespace instance by configured session class name.
-	 * This method is only shortcut for `\MvcCore\Session::GetNamespace($name)`;
-	 * @param string $name
-	 * @return \MvcCore\Session
-	 */
-	public function & GetSessionNamespace ($name = \MvcCore\Interfaces\ISession::DEFAULT_NAMESPACE_NAME) {
-		$sessionClass = \MvcCore\Application::GetInstance()->GetSessionClass();
-		return $sessionClass::GetNamespace($name);
-	}
-
-	/**
 	 * Render error controller and error action
 	 * for any dispatch exception or error as
 	 * rendered html response or as plain text response.
@@ -754,6 +743,17 @@ class Controller implements Interfaces\IController
 	 */
 	public function Terminate () {
 		\MvcCore\Application::GetInstance()->Terminate();
+	}
+
+	/**
+	 * Return session namespace instance by configured session class name.
+	 * This method is only shortcut for `\MvcCore\Session::GetNamespace($name)`;
+	 * @param string $name
+	 * @return \MvcCore\Session
+	 */
+	public function & GetSessionNamespace ($name = \MvcCore\Interfaces\ISession::DEFAULT_NAMESPACE_NAME) {
+		$sessionClass = \MvcCore\Application::GetInstance()->GetSessionClass();
+		return $sessionClass::GetNamespace($name);
 	}
 
 	/**

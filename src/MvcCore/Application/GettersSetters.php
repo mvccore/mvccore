@@ -14,7 +14,11 @@
 namespace MvcCore\Application;
 
 /**
- * `\MvcCore\Application` - Properties, Getters & Setters
+ * Trait as partial class for `\MvcCore\Application`:
+ * - Main application objects container (request, response, controller, etc.).
+ * - MvcCore compile mode managing (single file mode, php, phar, or no package).
+ * - Global store for all main core class names, to use them as modules,
+ *   to be changed any time (request class, response class, debug class, etc.).
  */
 trait GettersSetters
 {

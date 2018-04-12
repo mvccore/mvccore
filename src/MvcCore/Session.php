@@ -18,7 +18,7 @@ include_once('Application.php');
 include_once('Request.php');
 
 /**
- * Responsibilities:
+ * Responsibility - session data management - starting, writing and expirations.
  * - Safe start (only once)
  *   - By `\MvcCore\Interfaces\ISession::Start()`
  *     - Called by `\MvcCore\Application::GetInstance()->SessionStart();`
@@ -71,10 +71,12 @@ class Session extends \ArrayObject implements Interfaces\ISession
 	 * for example in `Bootstrap.php` by: `\MvcCore\Application::GetInstance()->SessionStart();`
 	 * @return void
 	 */
-	public static function Start () {
+	public static function Start (& $session = array()) {
 		if (static::$started) return;
 		if (!\MvcCore\Application::GetInstance()->GetRequest()->IsAppRequest()) return;
-		$sessionNotStarted = function_exists('session_status') ? session_status() == PHP_SESSION_NONE : session_id() == '' ;
+		$sessionNotStarted = function_exists('session_status')
+			? session_status() == PHP_SESSION_NONE
+			: session_id() == '' ;
 		if ($sessionNotStarted) {
 			session_start();
 			static::setUpMeta();
@@ -92,8 +94,8 @@ class Session extends \ArrayObject implements Interfaces\ISession
 	protected static function setUpMeta () {
 		$metaKey = static::SESSION_METADATA_KEY;
 		$meta = array();
-		if (isset($_SESSION[$metaKey])) {
-			$meta = @unserialize($_SESSION[$metaKey]);
+		if (isset(static::$session[$metaKey])) {
+			$meta = @unserialize(static::$session[$metaKey]);
 		}
 		if (!$meta) {
 			$meta = array(
@@ -137,7 +139,7 @@ class Session extends \ArrayObject implements Interfaces\ISession
 				}
 				error_reporting($currentErrRepLevels);
 				unset($names[$name]);
-				unset($_SESSION[$name]);
+				unset(static::$session[$name]);
 			}
 		}
 	}
@@ -154,7 +156,7 @@ class Session extends \ArrayObject implements Interfaces\ISession
 				if (count($instance) === 0) $instance->Destroy();
 			}
 			$metaKey = static::SESSION_METADATA_KEY;
-			$_SESSION[$metaKey] = serialize(static::$meta);
+			static::$session[$metaKey] = serialize(static::$meta);
 			@session_write_close();
 		});
 	}
@@ -182,7 +184,7 @@ class Session extends \ArrayObject implements Interfaces\ISession
 		if (!static::$started) static::Start();
 		$this->__name = $name;
 		static::$meta->names[$name] = 1;
-		if (!isset($_SESSION[$name])) $_SESSION[$name] = array();
+		if (!isset(static::$session[$name])) static::$session[$name] = array();
 		static::$instances[$name] = $this;
 	}
 
@@ -220,8 +222,29 @@ class Session extends \ArrayObject implements Interfaces\ISession
 		if (isset($names[$name])) unset($names[$name]);
 		if (isset($hoops[$name])) unset($hoops[$name]);
 		if (isset($expirations[$name])) unset($expirations[$name]);
-		if (isset($_SESSION[$name])) unset($_SESSION[$name]);
+		if (isset(static::$session[$name])) unset(static::$session[$name]);
 		if (isset($instances[$name])) unset($instances[$name]);
+	}
+
+	/**
+	 * Destroy all existing session namespaces in `$_SESSION` storrage
+	 * and internal static storrages, destroy whole PHP session.
+	 * @return void
+	 */
+	public static function DestroyAll () {
+		session_destroy();
+		$_SESSION = NULL;
+		static::$started = false;
+		$response = \MvcCore\Application::GetInstance()->GetResponse();
+		if (!$response->IsSent()) {
+			$params = session_get_cookie_params();
+			$response->DeleteCookie(
+				session_name(),
+				$params['path'],
+				$params['domain'],
+				$params['secure']
+			);
+		}
 	}
 
 	/**
@@ -230,7 +253,7 @@ class Session extends \ArrayObject implements Interfaces\ISession
 	 * @return bool
 	 */
 	public function __isset ($key) {
-		return isset($_SESSION[$this->__name][$key]);
+		return isset(static::$session[$this->__name][$key]);
 	}
 
 	/**
@@ -240,7 +263,7 @@ class Session extends \ArrayObject implements Interfaces\ISession
 	 */
 	public function __unset ($key) {
 		$name = $this->__name;
-		if (isset($_SESSION[$name][$key])) unset($_SESSION[$name][$key]);
+		if (isset(static::$session[$name][$key])) unset(static::$session[$name][$key]);
 	}
 
 	/**
@@ -250,7 +273,7 @@ class Session extends \ArrayObject implements Interfaces\ISession
 	 */
 	public function __get ($key) {
 		$name = $this->__name;
-		if (isset($_SESSION[$name][$key])) return $_SESSION[$name][$key];
+		if (isset(static::$session[$name][$key])) return static::$session[$name][$key];
 		return NULL;
 	}
 
@@ -261,7 +284,7 @@ class Session extends \ArrayObject implements Interfaces\ISession
 	 * @return void
 	 */
 	public function __set ($key, $value) {
-		$_SESSION[$this->__name][$key] = $value;
+		static::$session[$this->__name][$key] = $value;
 	}
 
 	/**
@@ -269,6 +292,6 @@ class Session extends \ArrayObject implements Interfaces\ISession
 	 * @return int
 	 */
 	public function count () {
-		return count($_SESSION[$this->__name]);
+		return count(static::$session[$this->__name]);
 	}
 }

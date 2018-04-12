@@ -17,6 +17,8 @@ require_once(__DIR__ . '/Interfaces/IModel.php');
 require_once('Config.php');
 
 /**
+ * Responsibility - static members for connections and by configuration,
+ *                  instances members for active record pattern.
  * - Reading `db` section from system `config.ini` file.
  * - Database `\PDO` connecting by config settings and index.
  * - Instance loaded variables initializing.
@@ -147,7 +149,7 @@ class Model implements Interfaces\IModel {
 
 	/**
 	 * Resource model class with SQL statements.
-	 * @var \MvcCore\Interfaces\IModel
+	 * @var \MvcCore\Model|\MvcCore\Interfaces\IModel
 	 */
 	protected $resource;
 
@@ -183,7 +185,7 @@ class Model implements Interfaces\IModel {
 	 * @param boolean $keysInsensitive			If `TRUE`, set up properties from `$data` with case insensivity.
 	 * @param boolean $includeInheritProperties If `TRUE`, include only fields from current model class and from parent classes.
 	 * @param boolean $publicOnly               If `TRUE`, include only public model fields.
-	 * @return \MvcCore\Interfaces\IModel
+	 * @return \MvcCore\Model|\MvcCore\Interfaces\IModel
 	 */
 	public function & SetUp ($data = array(), $keysInsensitive = FALSE, $includeInheritProperties = TRUE, $publicOnly = TRUE) {
 		$modelClassName = get_class($this);
@@ -216,7 +218,7 @@ class Model implements Interfaces\IModel {
 	/**
 	 * Returns (or creates and holds) instance from local store.
 	 * @param mixed $arg,... unlimited OPTIONAL variables to pass into model `__construct()` method.
-	 * @return \MvcCore\Interfaces\IModel|mixed
+	 * @return \MvcCore\Model|\MvcCore\Interfaces\IModel
 	 */
 	public static function GetInstance (/* $arg1, $arg2, $arg, ... */) {
 		// get `"ClassName"` string from this call: `ClassName::GetInstance();`
@@ -236,7 +238,7 @@ class Model implements Interfaces\IModel {
 	 * @param array  $args              Values array with variables to pass into resource `__construct()` method.
 	 * @param string $modelClassPath
 	 * @param string $resourceClassPath
-	 * @return \MvcCore\Interfaces\IModel (|\MvcCore\Model\IResource)
+	 * @return \MvcCore\Model|\MvcCore\Interfaces\IModel
 	 */
 	public static function GetResource ($args = array(), $modelClassName = '', $resourceClassPath = '\Resource') {
 		$result = NULL;
@@ -263,6 +265,7 @@ class Model implements Interfaces\IModel {
 	/**
 	 * Creates an instance and inits cfg, db and resource properties.
 	 * @param int $connectionIndex
+	 * @return void
 	 */
 	public function Init ($connectionIndex = -1) {
 		$this->db = static::GetDb($connectionIndex);
@@ -289,7 +292,7 @@ class Model implements Interfaces\IModel {
 			// If database is filesystem based, complete app root and extend
 			// relative path in $cfg->dbname to absolute path
 			if ($conArgs->fileDb) {
-				$appRoot = \MvcCore\Application::GetInstance()->GetRequest()->AppRoot;
+				$appRoot = \MvcCore\Application::GetInstance()->GetRequest()->GetAppRoot();
 				if (strpos($appRoot, 'phar://') !== FALSE) {
 					$lastSlashPos = strrpos($appRoot, '/');
 					$appRoot = substr($appRoot, 7, $lastSlashPos - 7);
@@ -367,7 +370,7 @@ class Model implements Interfaces\IModel {
 	 * @param string $rawName
 	 * @param array  $arguments
 	 * @throws \Exception
-	 * @return mixed|\MvcCore\Interfaces\IModel
+	 * @return mixed|\MvcCore\Model
 	 */
 	public function __call ($rawName, $arguments = array()) {
 		$nameBegin = strtolower(substr($rawName, 0, 3));
@@ -386,9 +389,10 @@ class Model implements Interfaces\IModel {
 	 * Set any custom property, not necessary to previously defined.
 	 * @param string $name
 	 * @param mixed  $value
+	 * @return bool
 	 */
 	public function __set ($name, $value) {
-		$this->$name = $value;
+		return $this->$name = $value;
 	}
 
 	/**

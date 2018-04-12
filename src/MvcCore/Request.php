@@ -18,281 +18,354 @@ require_once('Tool.php');
 require_once(__DIR__.'/../MvcCore.php');
 
 /**
- * - Linear request url parsing from `$_SERVER` global variable
- *   (as constructor argument) into local properties describing url sections.
- * - Params reading from `$_GET` and `$_POST` global variables
- *   (as constructor arguments) or readed from direct PHP input: `"php://input"` (in JSON or in query string).
- * - Params recursive cleaning by called developer rules.
+ * Responsibility - request description - url and params inputs parsing and cleaning.
+ * - Linear request url parsing from referenced `$_SERVER` global variable
+ *   (as constructor argument) into local properties, describing url sections.
+ * - Params reading from referenced `$_GET` and `$_POST` global variables
+ *   (as constructor arguments) or reading data from direct PHP
+ *   input `"php://input"` (as encoded JSON data or as query string).
+ * - Headers cleaning and reading by `getallheaders()` or from referenced `$_SERVER['HTTP_...']`.
+ * - Cookies cleaning and reading from referenced `$_COOKIE['...']`.
+ * - Uploaded files by wrapped referenced `$_FILES` global array.
+ * - Primitive values cleaning or array recursive cleaning by called
+ *	 developer rules from params array, headers array and cookies array.
  */
 class Request implements Interfaces\IRequest
 {
 	/**
-	 * Language international code, lowercase, not used by default.
-	 * To use this variable - install `\MvcCore\Router` extension `\MvcCoreExt\Router\Lang` or write your own.
-	 * Example: `"en"`
-	 * @var string
-	 */
-	public $Lang		= '';
-
-	/**
-	 * Country/locale code, uppercase, not used by default.
-	 * To use this variable - install `\MvcCore\Router` extension `\MvcCoreExt\Router\Locale` or write your own.
-	 * Example: `"US"`
-	 * @var string
-	 */
-	public $Locale		= '';
-
-	/**
 	 * Http protocol: `"http:" | "https:"`
 	 * Example: `"http:"`
-	 * @var string
+	 * @var string|NULL
 	 */
-	public $Protocol		= '';
+	protected $protocol			= NULL;
+
+	/**
+	 * `TRUE` if http protocol is `"https:"`
+	 * @var bool|NULL
+	 */
+	protected $isSecure			= NULL;
 
 	/**
 	 * Application server name - domain without any port.
 	 * Example: `"localhost"`
-	 * @var string
+	 * @var string|NULL
 	 */
-	public $ServerName		= '';
+	protected $serverName		= NULL;
 
 	/**
 	 * Application host with port if there is any.
 	 * Example: `"localhost:88"`
-	 * @var string
+	 * @var string|NULL
 	 */
-	public $Host		= '';
+	protected $host				= NULL;
 
 	/**
 	 * Http port parsed by `parse_url()`.
 	 * Example: `"88"`
-	 * @var string
+	 * @var string|NULL
 	 */
-	public $Port		= '';
+	protected $port				= NULL;
 
 	/**
 	 * Requested path in from application root (if `mod_rewrite` enabled), never with query string.
 	 * Example: `"/products/page/2"`
-	 * @var string
+	 * @var string|NULL
 	 */
-	public $Path		= '';
+	protected $path				= NULL;
 
 	/**
 	 * Uri query string without question mark.
 	 * Example: `"param-1=value-1&param-2=value-2&param-3[]=value-3-a&param-3[]=value-3-b"`
-	 * @var string
+	 * @var string|NULL
 	 */
-	public $Query		= '';
+	protected $query			= NULL;
 
 	/**
 	 * Uri fragment parsed by `parse_url()` including hash.
 	 * Example: `"#any-sublink-path"`
-	 * @var mixed
+	 * @var string|NULL
 	 */
-	public $Fragment	= '';
+	protected $fragment			= NULL;
 
 	/**
 	 * `TRUE` if request is requested from browser by `XmlHttpRequest` object
 	 * with http header: `X-Requested-With: AnyJavascriptFrameworkName`, `FALSE` otherwise.
-	 * @var bool
+	 * @var bool|null
 	 */
-	public $Ajax		= FALSE;
+	protected $ajax				= NULL;
 
 	/**
 	 * Php requested script name path from application root.
 	 * Example: `"/index.php"`
-	 * @var string
+	 * @var string|NULL
 	 */
-	public $ScriptName	= '';
+	protected $scriptName		= NULL;
 
 	/**
-	 * Application root path in hard drive.
+	 * Application root path on hard drive.
 	 * Example: `"C:/www/my/development/direcotry/www"`
-	 * @var string
+	 * @var string|NULL
 	 */
-	public $AppRoot		= '';
+	protected $appRoot			= NULL;
 
 	/**
 	 * Base app directory path after domain, if application is placed in domain subdirectory
 	 * Example:
 	 * - full url:  `"http://localhost:88/my/development/direcotry/www/requested/path/after/domain?with=possible&query=string"`
 	 * - base path: `"/my/development/direcotry/www"`
-	 * @var string
+	 * @var string|NULL
 	 */
-	public $BasePath	= '';
+	protected $basePath			= NULL;
 
 	/**
 	 * Request path after domain with possible query string
 	 * Example: `"/requested/path/after/app/root?with=possible&query=string"`
-	 * @var string
+	 * @var string|NULL
 	 */
-	public $RequestPath	= '';
+	protected $requestPath		= NULL;
 
 	/**
 	 * Url to requested domain and possible port.
 	 * Example: `"https://domain.com" | "http://domain:88"` if any port.
-	 * @var string
+	 * @var string|NULL
 	 */
-	public $DomainUrl	= '';
+	protected $domainUrl		= NULL;
 
 	/**
 	 * Base url to application root.
 	 * Example: `"http://domain:88/my/development/direcotry/www"`
-	 * @var string
+	 * @var string|NULL
 	 */
-	public $BaseUrl		= '';
+	protected $baseUrl			= NULL;
 
 	/**
 	 * Request url including scheme, domain, port, path, without any query string
 	 * Example: "`http://localhost:88/my/development/direcotry/www/requested/path/after/domain"`
-	 * @var string
+	 * @var string|NULL
 	 */
-	public $RequestUrl	= '';
+	protected $requestUrl		= NULL;
 
 	/**
 	 * Request url including scheme, domain, port, path and with query string
 	 * Example: `"http://localhost:88/my/development/direcotry/www/requested/path/after/domain?with=possible&query=string"`
-	 * @var string
+	 * @var string|NULL
 	 */
-	public $FullUrl		= '';
+	protected $fullUrl			= NULL;
 
 	/**
 	 * Http method (uppercase) - `GET`, `POST`, `PUT`, `HEAD`...
 	 * Example: `"GET"`
-	 * @var string
+	 * @var string|NULL
 	 */
-	public $Method		= '';
+	protected $method			= NULL;
 
 	/**
 	 * Referer url if any, safely readed by:
 	 * `filter_var($_SERVER['HTTP_REFERER'], FILTER_SANITIZE_URL);`
 	 * Example: `"http://foreing.domain.com/path/where/is/link/to/?my=app"`
-	 * @var string
+	 * @var string|NULL
 	 */
-	public $Referer		= '';
+	protected $referer			= NULL;
+
+	/**
+	 * All raw http headers without any conversion, initialized by
+	 * `getallheaders()` or from `$_SERVER['HTTP_...']`.
+	 * Headers are `key => value` array, headers keys are
+	 * in standard format like: `"Content-Type" | "Content-Length" | "X-Requested-With" ...`.
+	 * @var array|NULL
+	 */
+	protected $headers			= NULL;
 
 	/**
 	 * Raw request params array, with keys defined in route or by query string,
 	 * always with controller and action keys completed by router.
-	 * Example: `array("controller" => "default", "action" => "default", "user" => "' OR 1=1;-- with raw danger value!");`
-	 * To get safe param value - use: `\MvcCore\Request::GetParam("user", "a-zA-Z0-9_");`
-	 * @var array
+	 * Do not read this `$Params` array directly, read it's values by:
+	 * `\MvcCore\Request::GetParam($paramName, $allowedChars, $defaultValueIfNull, $targetType);`.
+	 * Example:
+	 *	`\MvcCore\Request:$Params = array(
+	 *		"controller"	=> "default",
+	 *		"action"		=> "default",
+	 *		"username"		=> "' OR 1=1;-- ",	// be carefull for this content with raw (danger) value!
+	 *	);`
+	 *	// Do not read `$Params` array directly,
+	 *	// to get safe param value use:
+	 *	`\MvcCore\Request::GetParam("username", "a-zA-Z0-9_");` // return `OR` string without danger chars.
+	 * @var array|NULL
 	 */
-	public $Params		= array();
+	protected $params			= NULL;
 
 	/**
-	 * Media site key - `"full" | "tablet" | "mobile"`
-	 * To use this variable - install `\MvcCore\Router` extension `\MvcCoreExt\Router\Media` or write your own.
-	 * Example: "full"
-	 * @var string
+	 * Requested script name, value from `$_SERVER['SCRIPT_NAME']`, always as `index.php`.
+	 * @var string|NULL
 	 */
-	public $MediaSiteKey = '';
+	protected $indexScriptName	= NULL;
+
+	/**
+	 * Request flag if request targets internal package asset or not,
+	 * - 0 => Means request is `Controller:Asset` call for internal package asset.
+	 * - 1 => Means request is classic application request.
+	 * @var int
+	 */
+	protected $appRequest		= -1;
 
 	/**
 	 * Cleaned input param `"controller"`, containing only chars: `"a-zA-Z0-9\-_/"`.
 	 * @var string
 	 */
-	protected $controllerName = NULL;
+	protected $controllerName	= NULL;
 
 	/**
 	 * Cleaned input param `"action"`, containing only chars: `"a-zA-Z0-9\-_/"`.
 	 * @var string
 	 */
-	protected $actionName = NULL;
+	protected $actionName		= NULL;
 
 	/**
-	 * Content of $_SERVER global variable.
+	 * Content of referenced `$_SERVER` global variable.
 	 * @var array
 	 */
-	protected $serverGlobals = array();
+	protected $globalServer	= array();
 
 	/**
-	 * Content of $_GET global variable.
+	 * Content of referenced `$_GET` global variable.
 	 * @var array
 	 */
-	protected $getGlobals = array();
+	protected $globalGet		= array();
 
 	/**
-	 * Content of $_POST global variable.
+	 * Content of referenced `$_POST` global variable.
 	 * @var array
 	 */
-	protected $postGlobals = array();
+	protected $globalPost		= array();
 
 	/**
-	 * Requested script name.
-	 * @var string
+	 * Content of referenced `$_COOKIE` global variable.
+	 * @var array
 	 */
-	protected $indexScriptName = '';
+	protected $globalCookies	= array();
 
 	/**
-	 * Request flag if request targets internal package asset or not,
-	 * - 0 => request is `Controller:Asset` call for internal package asset
-	 * - 1 => request is classic application request
-	 * @var mixed
+	 * Content of referenced `$_FILES` global variable.
+	 * @var array
 	 */
-	protected $appRequest = -1;
+	protected $globalFiles		= array();
 
 	/**
 	 * Static factory to get everytime new instance of http request object.
-	 * Global variables for testing or non-real request rendering should be changed
-	 * and injected here to get different request object from currently called real request.
+	 * Global variables for constructor arguments (`$_SERVER`, `$_GET`, `$_POST`...)
+	 * should be changed to any arrays with any values and injected here to get
+	 * different request object then currently called real request object.
+	 * For example to create fake request object for testing purposes
+	 * or for non-real request rendering into request output cache.
 	 * @param array $server
 	 * @param array $get
 	 * @param array $post
+	 * @param array $cookie
+	 * @param array $files
 	 * @return \MvcCore\Request
 	 */
-	public static function GetInstance (array & $server, array & $get, array & $post) {
+	public static function GetInstance (
+		array & $server = array(),
+		array & $get = array(),
+		array & $post = array(),
+		array & $cookie = array(),
+		array & $files = array()
+	) {
 		$requestClass = \MvcCore\Application::GetInstance()->GetRequestClass();
-		return new $requestClass($server, $get, $post);
+		return new $requestClass($server, $get, $post, $cookie, $files);
 	}
 
     /**
-	 * Creates new instance of http request object.
-	 * Global variables for testing or non-real request rendering should be changed
-	 * and injected here to get different request object from currently called real request.
-     * @param array $server
-     * @param array $get
-     * @param array $post
+	 * Create new instance of http request object.
+	 * Global variables for constructor arguments (`$_SERVER`, `$_GET`, `$_POST`...)
+	 * should be changed to any arrays with any values and injected here to get
+	 * different request object then currently called real request object.
+	 * For example to create fake request object for testing purposes
+	 * or for non-real request rendering into request output cache.
+	 * @param array $server
+	 * @param array $get
+	 * @param array $post
+	 * @param array $cookie
+	 * @param array $files
 	 * @return \MvcCore\Request
-     */
-    public function __construct (array & $server, array & $get, array & $post) {
-		$this->serverGlobals = $server;
-		$this->getGlobals = $get;
-		$this->postGlobals = $post;
+	 */
+    public function __construct (
+		array & $server = array(),
+		array & $get = array(),
+		array & $post = array(),
+		array & $cookie = array(),
+		array & $files = array()
+	) {
+		$this->globalServer = & $server;
+		$this->globalGet = & $get;
+		$this->globalPost = & $post;
+		$this->globalCookies = & $cookie;
+		$this->globalFiles = & $files;
+	}
 
-		$this->initScriptName();
-		$this->initAppRoot();
-		$this->initMethod();
-		$this->initBasePath();
-		$this->initProtocol();
-		$this->initAjax();
-		$this->initParsedUrlSegments();
-		$this->initHttpParams();
-		$this->initPath();
-		$this->initReferer();
-		$this->initUrlCompositions();
 
-		unset($this->serverGlobals, $this->getGlobals, $this->postGlobals);
+	/**
+	 * Set directly all raw http headers without any conversion at once.
+	 * Header name(s) as array keys should be in standard format like:
+	 * `"Content-Type" | "Content-Length" | "X-Requested-With" ...`.
+	 * @param array $headers
+	 * @return \MvcCore\Request
+	 */
+	public function & SetHeaders (& $headers = array()) {
+		$this->headers = & $headers;
+		return $this;
 	}
 
 	/**
-	 * Return `TRUE` boolean flag if request target
-	 * is anything different than `Controller:Asset`.
-	 * @return bool
+	 * Get directly all raw http headers without any conversion at once.
+	 * If headers are not initialized, initialize headers by
+	 * `getallheaders()` or from `$_SERVER['HTTP_...']`.
+	 * Headers are returned as `key => value` array, headers keys are
+	 * in standard format like: `"Content-Type" | "Content-Length" | "X-Requested-With" ...`.
+	 * @return array
 	 */
-	public function IsAppRequest () {
-		if ($this->appRequest == -1) {
-			$this->appRequest = 1;
-			$ctrl = 'controller';
-			$action = 'action';
-			if (isset($this->Params[$ctrl]) && isset($this->Params[$action])) {
-				if ($this->Params[$ctrl] == $ctrl && $this->Params[$action] == 'asset') {
-					$this->appRequest = 0;
-				}
-			}
-		}
-		return (bool) $this->appRequest;
+	public function & GetHeaders () {
+		if (is_null($this->headers)) $this->initHeaders();
+		return $this->headers;
 	}
+
+	/**
+	 * Set directly raw http header value without any conversion.
+	 * Header name should be in standard format like:
+	 * `"Content-Type" | "Content-Length" | "X-Requested-With" ...`.
+	 * @param string $name
+	 * @param string|string[] $value
+	 * @return \MvcCore\Request
+	 */
+	public function & SetHeader ($name = "", $value = "") {
+		if (is_null($this->headers)) $this->initHeaders();
+		$this->headers[$name] = $value;
+		return $this;
+	}
+
+	/**
+	 * Get http header value filtered by characters defined in second
+	 * argument throught `preg_replace()`. Place into second argument
+	 * only char groups you want to keep. Header has to be in format like:
+	 * `"Content-Type" | "Content-Length" | "X-Requested-With" ...`.
+	 * @param string $name Http header string name.
+	 * @param string $pregReplaceAllowedChars List of regular expression characters to only keep.
+	 * @param mixed $ifNullValue Default value returned if given param name is null.
+	 * @param string $targetType Target type to retype param value or default if-null value. If param is an array, every param item will be retyped into given target type.
+	 * @return string|string[]|mixed
+	 */
+	public function GetHeader (
+		$name = "",
+		$pregReplaceAllowedChars = "a-zA-Z0-9_;, /\-\.\@\=\+\?\!",
+		$ifNullValue = NULL,
+		$targetType = NULL
+	) {
+		if (is_null($this->headers)) $this->initHeaders();
+		return $this->getParamFromCollection(
+			$this->headers, $name, $pregReplaceAllowedChars, $ifNullValue, $targetType
+		);
+	}
+
 
 	/**
 	 * Set directly all raw parameters without any conversion at once.
@@ -300,8 +373,17 @@ class Request implements Interfaces\IRequest
 	 * @return \MvcCore\Request
 	 */
 	public function & SetParams (& $params = array()) {
-		$this->Params = $params;
+		$this->params = & $params;
 		return $this;
+	}
+
+	/**
+	 * Get directly all raw parameters without any conversion at once.
+	 * @return array
+	 */
+	public function & GetParams () {
+		if (is_null($this->params)) $this->initParams();
+		return $this->params;
 	}
 
 	/**
@@ -311,12 +393,13 @@ class Request implements Interfaces\IRequest
 	 * @return \MvcCore\Request
 	 */
 	public function & SetParam ($name = "", $value = "") {
-		$this->Params[$name] = $value;
+		if (is_null($this->params)) $this->initParams();
+		$this->params[$name] = $value;
 		return $this;
 	}
 
 	/**
-	 * Get param value from `$_GET` or `$_POST` or `php://input`,
+	 * Get param value from `$_GET`, `$_POST` or `php://input`,
 	 * filtered by characters defined in second argument throught `preg_replace()`.
 	 * Place into second argument only char groups you want to keep.
 	 * @param string $name Parametter string name.
@@ -331,22 +414,149 @@ class Request implements Interfaces\IRequest
 		$ifNullValue = NULL,
 		$targetType = NULL
 	) {
-		$params = $this->Params;
-		if (!isset($params[$name])) return NULL;
-		if (gettype($params[$name]) == 'array') {
-			$result = array();
-			$params = $params[$name];
-			foreach ($params as $key => & $value) {
-				$result[$key] = $this->getParamItem(
-					$value, $pregReplaceAllowedChars, $ifNullValue, $targetType
-				);
+		if (is_null($this->params)) $this->initParams();
+		return $this->getParamFromCollection(
+			$this->params, $name, $pregReplaceAllowedChars, $ifNullValue, $targetType
+		);
+	}
+
+
+	/**
+	 * Set directly whole raw global `$_FILES` without any conversion at once.
+	 * @param array $files
+	 * @return \MvcCore\Request
+	 */
+	public function & SetFiles (& $files = array()) {
+		$this->globalFiles = & $files;
+		return $this;
+	}
+
+	/**
+	 * Return reference to configured global `$_FILES`
+	 * or reference to any other testing array representing it.
+	 * @return array
+	 */
+	public function & GetFiles () {
+		return $this->globalFiles;
+	}
+
+	/**
+	 * Set file item into global `$_FILES` without any conversion at once.
+	 * @param string $file
+	 * @param array $data
+	 * @return \MvcCore\Request
+	 */
+	public function & SetFile ($file = '', $data = array()) {
+		$this->globalFiles[$file] = $data;
+		return $this;
+	}
+
+	/**
+	 * Return item by file name from referenced global `$_FILES`
+	 * or reference to any other testing array item representing it.
+	 * @return array
+	 */
+	public function GetFile ($file = '') {
+		if (isset($this->globalFiles[$file])) return $this->globalFiles[$file];
+		return array();
+	}
+
+
+	/**
+	 * Set directly whole raw global `$_COOKIE` without any conversion at once.
+	 * @param array $cookies
+	 * @return \MvcCore\Request
+	 */
+	public function & SetCookies (& $cookies = array()) {
+		$this->globalCookies = & $cookies;
+		return $this;
+	}
+
+	/**
+	 * Return reference to configured global `$_COOKIE`
+	 * or reference to any other testing array representing it.
+	 * @return array
+	 */
+	public function & GetCookies () {
+		return $this->globalCookies;
+	}
+
+	/**
+	 * Set raw request cookie into referenced global `$_COOKIE` without any conversion.
+	 * @param string $name
+	 * @param string|string[] $value
+	 * @return \MvcCore\Request
+	 */
+	public function & SetCookie ($name = "", $value = "") {
+		$this->globalCookies[$name] = $value;
+		return $this;
+	}
+
+	/**
+	 * Get request cookie value from referenced global `$_COOKIE` variable,
+	 * filtered by characters defined in second argument throught `preg_replace()`.
+	 * Place into second argument only char groups you want to keep.
+	 * @param string $name Cookie string name.
+	 * @param string $pregReplaceAllowedChars List of regular expression characters to only keep.
+	 * @param mixed $ifNullValue Default value returned if given param name is null.
+	 * @param string $targetType Target type to retype param value or default if-null value. If param is an array, every param item will be retyped into given target type.
+	 * @return string|string[]|mixed
+	 */
+	public function GetCookie (
+		$name = "",
+		$pregReplaceAllowedChars = "a-zA-Z0-9_;, /\-\.\@\=\+\?\!",
+		$ifNullValue = NULL,
+		$targetType = NULL
+	) {
+		return $this->getParamFromCollection(
+			$this->globalCookies, $name, $pregReplaceAllowedChars, $ifNullValue, $targetType
+		);
+	}
+
+
+	/**
+	 * Initialize all possible protected values from all globals,
+	 * including all http headers, all params and application inputs.
+	 * This method is not recomanded to use in production mode, it's
+	 * designed mostly for development purposes, to see in one moment,
+	 * what could be inside request after calling any getter method.
+	 * @return void
+	 */
+	public function InitAll () {
+		$this->GetScriptName();
+		$this->GetAppRoot();
+		$this->GetMethod();
+		$this->GetBasePath();
+		$this->GetProtocol();
+		$this->GetServerName();
+		$this->GetHost();
+		$this->GetRequestPath();
+		$this->GetFullUrl();
+		$this->GetReferer();
+		$this->IsAjax();
+		$this->initUrlSegments();
+		$this->initHeaders();
+		$this->initParams();
+	}
+
+	/**
+	 * Return `TRUE` boolean flag if request target
+	 * is anything different than `Controller:Asset`.
+	 * @return bool
+	 */
+	public function IsAppRequest () {
+		if ($this->appRequest == -1) {
+			$this->appRequest = 1;
+			$ctrl = 'controller';
+			$action = 'action';
+			if (is_null($this->params)) $this->initParams();
+			if (isset($this->params[$ctrl]) && isset($this->params[$action])) {
+				if ($this->params[$ctrl] == $ctrl && $this->params[$action] == 'asset') {
+					$this->appRequest = 0;
+				}
 			}
-			return $result;
-		} else {
-			return $this->getParamItem(
-				$params[$name], $pregReplaceAllowedChars, $ifNullValue, $targetType
-			);
 		}
+		return (bool) $this->appRequest;
 	}
 
 	/**
@@ -370,6 +580,7 @@ class Request implements Interfaces\IRequest
 		}
 		return $this->actionName;
 	}
+
 
 	/**
 	 * Sets any custom property `"PropertyName"` by `\MvcCore\Request::SetPropertyName("value")`,
@@ -418,7 +629,360 @@ class Request implements Interfaces\IRequest
 
 
 	/**
-	 * Get filtered param value for characters defined as second argument to use them in `preg_replace()`.
+	 * Php requested script name path from application root.
+	 * Example: `"/index.php"`
+	 * @return string
+	 */
+	public function GetScriptName () {
+		if (is_null($this->scriptName)) {
+			$indexScriptName = $this->getIndexScriptName();
+			$this->scriptName = '/' . substr($indexScriptName, strrpos($indexScriptName, '/') + 1);
+		}
+		return $this->scriptName;
+	}
+
+	/**
+	 * Get application root path on hard drive.
+	 * Example: `"C:/www/my/development/direcotry/www"`
+	 * @return string
+	 */
+	public function GetAppRoot () {
+		if (is_null($this->appRoot)) {
+			// $indexScriptName = $this->getIndexScriptName();
+			// $appRootRelativePath = mb_substr($indexScriptName, 0, strrpos($indexScriptName, '/') + 1);
+			// ucfirst - cause IIS has lower case drive name here - different from __DIR__ value
+			$indexFilePath = ucfirst(str_replace('\\', '/', $this->globalServer['SCRIPT_FILENAME']));
+			if (strpos(__FILE__, 'phar://') === 0) {
+				$appRootFullPath = 'phar://' . $indexFilePath;
+			} else {
+				$appRootFullPath = substr($indexFilePath, 0, mb_strrpos($indexFilePath, '/'));
+			}
+			$this->appRoot = str_replace(array('\\', '//'), '/', $appRootFullPath);
+		}
+		return $this->appRoot;
+	}
+
+	/**
+	 * Get uppercased http method from global `$_SERVER['REQUEST_METHOD']`.
+	 * Example: `"GET" | "POST" | "PUT" | "HEAD"...`
+	 * @return string
+	 */
+	public function GetMethod () {
+		if (is_null($this->method)) {
+			$this->method = strtoupper($this->globalServer['REQUEST_METHOD']);
+		}
+		return $this->method;
+	}
+
+	/**
+	 * Get base app directory path after domain,
+	 * if application is placed in domain subdirectory.
+	 * Example:
+	 * - full url:  `"http://localhost:88/my/development/direcotry/www/requested/path/after/domain?with=possible&query=string"`
+	 * - base path: `"/my/development/direcotry/www"`
+	 * @return void
+	 */
+	public function GetBasePath () {
+		if (is_null($this->basePath)) {
+			$indexScriptName = $this->getIndexScriptName();
+			$lastSlashPos = mb_strrpos($indexScriptName, '/');
+			$this->basePath = $lastSlashPos !== FALSE
+				? mb_substr($indexScriptName, 0, $lastSlashPos)
+				: '';
+		}
+		return $this->basePath;
+	}
+
+	/**
+	 * Get http protocol string.
+	 * Example: `"http:" | "https:"`
+	 * @return void
+	 */
+	public function GetProtocol () {
+		if (is_null($this->protocol)) {
+			$this->protocol = (
+				isset($this->globalServer['HTTPS']) &&
+				strtolower($this->globalServer['HTTPS']) == 'on'
+			)
+				? static::PROTOCOL_HTTPS
+				: static::PROTOCOL_HTTP;
+		}
+		return $this->protocol;
+	}
+
+	/**
+	 * Get `TRUE` if http protocol is `"https:"`.
+	 * @return bool
+	 */
+	public function IsSecure () {
+		if (is_null($this->secure))
+			$this->secure = $this->GetProtocol() == static::PROTOCOL_HTTPS;
+		return $this->secure;
+	}
+
+	/**
+	 * Get referer url if any, safely readed by:
+	 * `filter_var($_SERVER['HTTP_REFERER'], FILTER_SANITIZE_URL);`
+	 * Example: `"http://foreing.domain.com/path/where/is/link/to/?my=app"`
+	 * @return void
+	 */
+	public function GetReferer () {
+		if (is_null($this->referer)) {
+			$referer = isset($_SERVER['HTTP_REFERER']) ? $_SERVER['HTTP_REFERER'] : '';
+			if ($referer) $referer = filter_var($referer, FILTER_SANITIZE_URL) ?: '';
+			$this->referer = $referer;
+		}
+		return $this->referer;
+	}
+
+	/**
+	 * Get application server name - domain without any port.
+	 * Example: `"localhost"`
+	 * @return string
+	 */
+	public function GetServerName () {
+		if (is_null($this->serverName)) $this->serverName = $this->globalServer['SERVER_NAME'];
+		return $this->serverName;
+	}
+
+	/**
+	 * Get application host with port if there is any.
+	 * Example: `"localhost:88"`
+	 * @return string
+	 */
+	public function GetHost () {
+		if (is_null($this->host)) $this->host = $this->globalServer['HTTP_HOST'];
+		return $this->host;
+	}
+
+	/**
+	 * Get http port parsed by `parse_url()`.
+	 * Example: `"88"`
+	 * @return string
+	 */
+	public function GetPort () {
+		if (is_null($this->port)) $this->initUrlSegments();
+		return $this->port;
+	}
+
+	/**
+	 * Get requested path in from application root (if `mod_rewrite` enabled), never with query string.
+	 * Example: `"/products/page/2"`
+	 * @return string
+	 */
+	public function GetPath () {
+		if (is_null($this->path)) $this->initUrlSegments();
+		return $this->path;
+	}
+
+	/**
+	 * Get uri query string without question mark.
+	 * Example: `"param-1=value-1&param-2=value-2&param-3[]=value-3-a&param-3[]=value-3-b"`
+	 * @return string
+	 */
+	public function GetQuery () {
+		if (is_null($this->query)) $this->initUrlSegments();
+		return $this->query;
+	}
+
+	/**
+	 * Get request path after domain with possible query string
+	 * Example: `"/requested/path/after/app/root?with=possible&query=string"`
+	 * @var string
+	 */
+	public function GetRequestPath () {
+	    if (is_null($this->requestPath)) {
+			$query = $this->GetQuery();
+			$this->requestPath = $this->GetPath() . ($query ? '?' . $query : '') . $this->GetFragment();
+		}
+	    return $this->requestPath;
+	}
+
+	/**
+	 * Get url to requested domain and possible port.
+	 * Example: `"https://domain.com" | "http://domain:88"` if any port.
+	 * @var string
+	 */
+	public function GetDomainUrl () {
+	    if (is_null($this->domainUrl)) $this->domainUrl = $this->GetProtocol() . '//' . $this->GetHost();
+	    return $this->domainUrl;
+	}
+
+	/**
+	 * Get base url to application root.
+	 * Example: `"http://domain:88/my/development/direcotry/www"`
+	 * @var string
+	 */
+	public function GetBaseUrl () {
+	    if (is_null($this->baseUrl)) $this->baseUrl = $this->GetDomainUrl() . $this->GetBasePath();
+	    return $this->baseUrl;
+	}
+
+	/**
+	 * Get request url including scheme, domain, port, path, without any query string
+	 * Example: "`http://localhost:88/my/development/direcotry/www/requested/path/after/domain"`
+	 * @var string
+	 */
+	public function GetRequestUrl () {
+	    if (is_null($this->requestUrl)) $this->requestUrl = $this->GetBaseUrl() . $this->GetPath();
+	    return $this->requestUrl;
+	}
+
+	/**
+	 * Get request url including scheme, domain, port, path and with query string
+	 * Example: `"http://localhost:88/my/development/direcotry/www/requested/path/after/domain?with=possible&query=string"`
+	 * @var string
+	 */
+	public function GetFullUrl () {
+	    if (is_null($this->fullUrl)) {
+	        $query = $this->GetQuery();
+	        $this->fullUrl = $this->RequestUrl() . ($query ? '?' . $query : '') . $this->GetFragment();
+	    }
+	    return $this->fullUrl;
+	}
+
+	/**
+	 * Get uri fragment parsed by `parse_url()` including hash.
+	 * Example: `"#any-sublink-path"`
+	 * @return string
+	 */
+	public function GetFragment () {
+		if (is_null($this->fragment)) $this->initUrlSegments();
+		return $this->fragment;
+	}
+
+	/**
+	 * Get `TRUE` if request is requested on the background
+	 * with usual Javascript HTTP header containing:
+	 * `X-Requested-With: AnyJsFrameworkName`.
+	 * @return bool
+	 */
+	public function IsAjax () {
+		if (is_null($this->ajax)) {
+			$this->ajax = (
+				isset($this->globalServer['HTTP_X_REQUESTED_WITH']) &&
+				strlen($this->globalServer['HTTP_X_REQUESTED_WITH']) > 0
+			);
+		}
+		return $this->ajax;
+	}
+
+
+	/**
+	 * Initialize url segments parsed by `parse_url()`
+	 * php method: port, path, query and fragment.
+	 * @return void
+	 */
+	protected function initUrlSegments () {
+		$absoluteUrl = $this->GetProtocol() . '//'
+			. $this->globalServer['HTTP_HOST']
+			. $this->globalServer['REQUEST_URI'];
+		$parsedUrl = parse_url($absoluteUrl);
+		$this->port = $parsedUrl['port'];
+		$this->path = $parsedUrl['path'];
+		$this->query = $parsedUrl['query'];
+		$this->fragment = $parsedUrl['fragment'];
+	}
+
+	/**
+	 * Init raw http headers by `getallheaders()` or from `$_SERVER['HTTP_...']`.
+	 * Headers has to be `key => value` array, headers keys in standard format
+	 * like: `"Content-Type" | "Content-Length" | "X-Requested-With" ...`.
+	 * @return void
+	 */
+	protected function initHeaders () {
+		if (function_exists('getallheaders')) {
+			$headers = getallheaders();
+		} else {
+			$headers = array();
+			foreach ($this->globalServer as $name => $value) {
+				if (substr($name, 0, 5) == 'HTTP_') {
+					$headers[str_replace(' ', '-', ucwords(strtolower(str_replace('_', ' ', substr($name, 5)))))] = $value;
+				} else if ($name == "CONTENT_TYPE") {
+					$headers["Content-Type"] = $value;
+				} else if ($name == "CONTENT_LENGTH") {
+					$headers["Content-Length"] = $value;
+				}
+			}
+		}
+		$this->headers = $headers;
+	}
+
+	/**
+	 * Initialize params from global `$_GET` and (global `$_POST` or direct `php://input`).
+	 * @return void
+	 */
+	protected function initParams () {
+		$params = array_merge($this->globalGet);
+		if ($this->GetMethod() == self::METHOD_POST) {
+			$postValues = array();
+			if (count($this->globalPost) > 0) {
+				$postValues = $this->globalPost;
+			} else {
+				$postValues = $this->initParamsCompletePostData();
+			}
+			$params = array_merge($params, $postValues);
+		}
+		$this->params = $params;
+	}
+
+	/**
+	 * Read and return direct php `POST` input from `php://input`.
+	 * @return array
+	 */
+	protected function initParamsCompletePostData () {
+		$result = array();
+		$rawPhpInput = file_get_contents('php://input');
+		$decodedJsonResult = \MvcCore\Tool::DecodeJson($rawPhpInput);
+		if ($decodedJsonResult->success) {
+			$result = (array) $decodedJsonResult->data;
+		} else {
+			$rows = explode('&', $rawPhpInput);
+			foreach ($rows as $row) {
+				list($key, $value) = explode('=', $row);
+				$result[$key] = $value;
+			}
+		}
+		return $result;
+	}
+
+	/**
+	 * Get param value from given collection (`$_GET`, `$_POST`, `php://input` or http headers),
+	 * filtered by characters defined in second argument throught `preg_replace()`.
+	 * Place into second argument only char groups you want to keep.
+	 * @param array $collection Array with request params or array with request headers.
+	 * @param string $name Parametter string name.
+	 * @param string $pregReplaceAllowedChars List of regular expression characters to only keep.
+	 * @param mixed $ifNullValue Default value returned if given param name is null.
+	 * @param string $targetType Target type to retype param value or default if-null value. If param is an array, every param item will be retyped into given target type.
+	 * @return string|string[]|mixed
+	 */
+	protected function getParamFromCollection (
+		& $paramsCollection = array(),
+		$name = "",
+		$pregReplaceAllowedChars = "a-zA-Z0-9_/\-\.\@",
+		$ifNullValue = NULL,
+		$targetType = NULL
+	) {
+		if (!isset($paramsCollection[$name])) return NULL;
+		if (gettype($paramsCollection[$name]) == 'array') {
+			$result = array();
+			$paramsCollection = $paramsCollection[$name];
+			foreach ($paramsCollection as $key => & $value) {
+				$result[$key] = $this->getParamItem(
+					$value, $pregReplaceAllowedChars, $ifNullValue, $targetType
+				);
+			}
+			return $result;
+		} else {
+			return $this->getParamItem(
+				$paramsCollection[$name], $pregReplaceAllowedChars, $ifNullValue, $targetType
+			);
+		}
+	}
+
+	/**
+	 * Get filtered param or header value for characters defined as second argument to use them in `preg_replace()`.
 	 * @param string|string[]|NULL $rawValue
 	 * @param string $pregReplaceAllowedChars List of regular expression characters to only keep.
 	 * @param mixed $ifNullValue Default value returned if given param name is null.
@@ -458,168 +1022,12 @@ class Request implements Interfaces\IRequest
 	}
 
 	/**
-	 * Initialize `index.php` script name.
-	 * @return void
+	 * Get script name from `$_SERVER['SCRIPT_NAME']`.
+	 * @return string
 	 */
-	protected function initScriptName () {
-		$this->indexScriptName = str_replace('\\', '/', $this->serverGlobals['SCRIPT_NAME']);
-		$this->ScriptName = '/' . substr($this->indexScriptName, strrpos($this->indexScriptName, '/') + 1);
-	}
-
-	/**
-	 * Initialize application root directory.
-	 * @return void
-	 */
-	protected function initAppRoot () {
-		// $appRootRelativePath = mb_substr($this->indexScriptName, 0, strrpos($this->indexScriptName, '/') + 1);
-		// ucfirst - cause IIS has lower case drive name here - different from __DIR__ value
-		$indexFilePath = ucfirst(str_replace('\\', '/', $this->serverGlobals['SCRIPT_FILENAME']));
-		if (strpos(__FILE__, 'phar://') === 0) {
-			$appRootFullPath = 'phar://' . $indexFilePath;
-		} else {
-			$appRootFullPath = substr($indexFilePath, 0, mb_strrpos($indexFilePath, '/'));
-		}
-		$this->AppRoot = str_replace(array('\\', '//'), '/', $appRootFullPath);
-	}
-
-	/**
-	 * Initialize http method.
-	 * @return void
-	 */
-	protected function initMethod () {
-		$this->Method = strtoupper($this->serverGlobals['REQUEST_METHOD']);
-	}
-
-	/**
-	 * Complete base application path like:
-	 * request url:	`"http://localhost/my/development/direcotry/www"`
-	 * base path:	`"/my/development/direcotry/www"`
-	 * @return void
-	 */
-	protected function initBasePath () {
-		$lastSlashPos = mb_strrpos($this->indexScriptName, '/');
-		if ($lastSlashPos !== FALSE) {
-			$this->BasePath = mb_substr($this->indexScriptName, 0, $lastSlashPos);
-		} else {
-			$this->BasePath = '';
-		}
-	}
-
-	/**
-	 * Initialize HTTP protocol.
-	 * @return void
-	 */
-	protected function initProtocol () {
-		$this->Protocol = static::PROTOCOL_HTTP;
-		if (
-			isset($this->serverGlobals['HTTPS']) &&
-			strtolower($this->serverGlobals['HTTPS']) == 'on'
-		) {
-			$this->Protocol = static::PROTOCOL_HTTPS;
-		}
-	}
-
-	/**
-	 * Initialize if request is requested on the background or not
-	 * with usual Javascript HTTP header containing: `X-Requested-With: AnyJsFrameworkName`.
-	 */
-	protected function initAjax () {
-		$this->Ajax = (
-			isset($_SERVER['HTTP_X_REQUESTED_WITH']) &&
-			strlen($_SERVER['HTTP_X_REQUESTED_WITH']) > 0
-		);
-	}
-
-	/**
-	 * Initialize url segments parsed by `parse_url()` php method.
-	 * @return void
-	 */
-	protected function initParsedUrlSegments () {
-		$absoluteUrl = $this->Protocol . '//'
-			. $this->serverGlobals['HTTP_HOST']
-			. $this->serverGlobals['REQUEST_URI'];
-		$parsedUrl = parse_url($absoluteUrl);
-		$keyUc = '';
-		foreach ($parsedUrl as $key => $value) {
-			$keyUc = ucfirst($key);
-			if (isset($this->$keyUc)) {
-				$this->$keyUc = (string) $value;
-			}
-		}
-		$this->ServerName = $this->serverGlobals['SERVER_NAME'];
-		$this->Host = $this->serverGlobals['HTTP_HOST'];
-	}
-
-	/**
-	 * Initialize params from global `$_GET` and (global `$_POST` or direct `php://input`).
-	 * @return void
-	 */
-	protected function initHttpParams () {
-		$params = array_merge($this->getGlobals);
-		if ($this->Method == self::METHOD_POST) {
-			$postValues = array();
-			if (count($this->postGlobals) > 0) {
-				$postValues = $this->postGlobals;
-			} else {
-				$postValues = $this->initParamsCompletePostData();
-			}
-			$params = array_merge($params, $postValues);
-		}
-		$this->Params = $params;
-	}
-
-	/**
-	 * Read and return direct php `POST` input from `php://input`.
-	 * @return array
-	 */
-	private function initParamsCompletePostData () {
-		$result = array();
-		$rawPhpInput = file_get_contents('php://input');
-		$decodedJsonResult = \MvcCore\Tool::DecodeJson($rawPhpInput);
-		if ($decodedJsonResult->success) {
-			$result = (array) $decodedJsonResult->data;
-		} else {
-			$rows = explode('&', $rawPhpInput);
-			foreach ($rows as $row) {
-				list($key, $value) = explode('=', $row);
-				$result[$key] = $value;
-			}
-		}
-		return $result;
-	}
-
-	/**
-	 * Initialize request path.
-	 * @return void
-	 */
-	protected function initPath () {
-		$requestUrl = $this->serverGlobals['REQUEST_URI'];
-		$path = '/' . ltrim(mb_substr($requestUrl, mb_strlen($this->BasePath)), '/');
-		if (mb_strpos($path, '?') !== FALSE) $path = mb_substr($path, 0, mb_strpos($path, '?'));
-		$this->Path = $path;
-	}
-
-	/**
-	 * Initialize referer safely if any.
-	 * @return void
-	 */
-	protected function initReferer () {
-		$referer = isset($_SERVER['HTTP_REFERER']) ? $_SERVER['HTTP_REFERER'] : '';
-		if ($referer) {
-			$referer = filter_var($referer, FILTER_SANITIZE_URL);
-			$this->Referer = $referer ? $referer : '';
-		}
-	}
-
-	/**
-	 * Initialize url compositions.
-	 * @return void
-	 */
-	protected function initUrlCompositions () {
-		$this->RequestPath = $this->Path . (($this->Query) ? '?' . $this->Query : '') . $this->Fragment;
-		$this->DomainUrl = $this->Protocol . '//' . $this->Host;
-		$this->BaseUrl = $this->DomainUrl . $this->BasePath;
-		$this->RequestUrl = $this->BaseUrl . $this->Path;
-		$this->FullUrl = $this->RequestUrl . (($this->Query) ? '?' . $this->Query : '');
+	protected function getIndexScriptName () {
+		if (is_null($this->indexScriptName))
+			$this->indexScriptName = str_replace('\\', '/', $this->globalServer['SCRIPT_NAME']);
+		return $this->indexScriptName;
 	}
 }

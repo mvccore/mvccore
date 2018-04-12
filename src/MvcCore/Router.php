@@ -20,7 +20,7 @@ require_once('Route.php');
 require_once('Tool.php');
 
 /**
- * Responsibilities:
+ * Responsibility - singleton, routes instancing, request routing and url building.
  * - Application router singleton instance managing.
  * - Global storage for all configured routes.
  *	 - Instancing all route(s) from application start
@@ -482,7 +482,7 @@ class Router implements Interfaces\IRouter
 			}
 		}
 		if (!$this->currentRoute && (
-			$request->Path == '/' || $this->routeToDefaultIfNotMatch
+			$request->GetPath() == '/' || $this->routeToDefaultIfNotMatch
 		)) {
 			$routeClass = $app->GetRouteClass();
 			$this->currentRoute = $routeClass::GetInstance()
@@ -568,7 +568,7 @@ class Router implements Interfaces\IRouter
 	protected function urlByQueryString ($controllerActionOrRouteName, $params) {
 		$toolClass = \MvcCore\Application::GetInstance()->GetToolClass();
 		list($ctrlPc, $actionPc) = explode(':', $controllerActionOrRouteName);
-		$result = $this->request->BasePath . $this->request->ScriptName
+		$result = $this->request->BasePath . $this->request->GetScriptName()
 			. '?controller=' . $toolClass::GetDashedFromPascalCase($ctrlPc)
 			. '&amp;action=' . $toolClass::GetDashedFromPascalCase($actionPc);
 		if ($params) $result .= '&amp;' . http_build_query($params, '', '&amp;');
@@ -626,12 +626,13 @@ class Router implements Interfaces\IRouter
 	 */
 	protected function routeByRewriteRoutes () {
 		$request = & $this->request;
+		$requestPath = $request->GetPath();
 		foreach ($this->routes as & $route) {
-			if ($matchedParams = $route->Matches($this->request)) {
+			if ($matchedParams = $route->Matches($requestPath)) {
 				$this->currentRoute = $route;
 				$routeDefaultParams = $route->Defaults ?: array();
 				$request->SetParams(
-					array_merge($routeDefaultParams, $request->Params, $matchedParams)
+					array_merge($routeDefaultParams, $request->GetParams(), $matchedParams)
 				);
 				break;
 			}

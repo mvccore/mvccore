@@ -172,7 +172,7 @@ class View implements Interfaces\IView
 	public static function GetViewScriptFullPath ($typePath = '', $corectedRelativePath = '') {
 		$app = \MvcCore\Application::GetInstance();
 		return implode('/', array(
-			$app->GetRequest()->AppRoot,
+			$app->GetRequest()->GetAppRoot(),
 			$app->GetAppDir(),
 			$app->GetViewsDir(),
 			$typePath,
@@ -260,7 +260,7 @@ class View implements Interfaces\IView
 	public function & Render ($typePath = '', $relativePath = '') {
 		if (!$typePath) $typePath = static::$ScriptsDir;
 		$result = '';
-		$relativePath = $this->_correctRelativePath($this->Controller->GetRequest()->AppRoot, $typePath, $relativePath);
+		$relativePath = $this->_correctRelativePath($this->Controller->GetRequest()->GetAppRoot(), $typePath, $relativePath);
 		$viewScriptFullPath = static::GetViewScriptFullPath($typePath, $relativePath);
 		if (!file_exists($viewScriptFullPath)) {
 			throw new \InvalidArgumentException('['.__CLASS__."] Template not found in path: '$viewScriptFullPath'.");

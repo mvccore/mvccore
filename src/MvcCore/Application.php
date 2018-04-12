@@ -24,7 +24,7 @@ require_once('Tool.php');
 namespace MvcCore;
 
 /**
- * Responsibilities:
+ * Responsibility - singleton, instancing all core classes and handling request.
  * - Global store and managing singleton application instance.
  * - Main application objects container (request, response, controller, etc.).
  * - MvcCore compile mode managing (single file mode, php, phar, or no package).

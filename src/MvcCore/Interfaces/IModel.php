@@ -16,6 +16,8 @@ namespace MvcCore\Interfaces;
 require_once('Config.php');
 
 /**
+ * Responsibility - static members for connections and by configuration,
+ *                  instances members for active record pattern.
  * - Reading `db` section from system `config.ini` file.
  * - Database `\PDO` connecting by config settings and index.
  * - Instance loaded variables initializing.
@@ -58,7 +60,7 @@ interface IModel
 	/**
 	 * Returns (or creates and holds) instance from local store.
 	 * @param mixed $arg,... unlimited OPTIONAL variables to pass into model `__construct()` method.
-	 * @return \MvcCore\Interfaces\IModel|mixed
+	 * @return \MvcCore\Interfaces\IModel
 	 */
 	public static function GetInstance (/* $arg1, $arg2, $arg, ... */);
 
@@ -67,7 +69,7 @@ interface IModel
 	 * @param array  $args              Values array with variables to pass into resource `__construct()` method.
 	 * @param string $modelClassPath
 	 * @param string $resourceClassPath
-	 * @return \MvcCore\Interfaces\IModel (|\MvcCore\Model\IResource)
+	 * @return \MvcCore\Interfaces\IModel
 	 */
 	public static function GetResource (
 		$args = array(),
@@ -78,6 +80,7 @@ interface IModel
 	/**
 	 * Creates an instance and inits cfg, db and resource properties.
 	 * @param int $connectionIndex
+	 * @return void
 	 */
 	public function Init ($connectionIndex = -1);
 
@@ -113,7 +116,7 @@ interface IModel
 	/**
 	 * Set any custom property, not necessary to previously defined.
 	 * @param string $name
-	 * @param mixed  $value
+	 * @param bool   $value
 	 */
 	public function __set ($name, $value);
 

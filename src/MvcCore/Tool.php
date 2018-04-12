@@ -16,7 +16,7 @@ namespace MvcCore;
 require_once(__DIR__ . '/Interfaces/ITool.php');
 
 /**
- * Responsibilities:
+ * Responsibility - static helpers for core classes inheritance, string conversions and JSON.
  * - Static translation functions (supports containing folder or file path):
  *   - `"dashed-case"		=> "PascalCase"`
  *   - `"PascalCase"		=> "dashed-case"`

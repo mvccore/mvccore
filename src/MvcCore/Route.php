@@ -16,7 +16,7 @@ namespace MvcCore;
 require_once(__DIR__ . '/Interfaces/IRoute.php');
 
 /**
- * Responsibilities:
+ * Responsibility - describing request(s) to match and reversely build url addresses.
  * - Describing request to match it (read more about properties).
  * - Matching request by given request object, see `\MvcCore\Route::Matches()`.
  * - Completing url address by given params array, see `\MvcCore\Route::Url()`.
@@ -594,13 +594,13 @@ class Route implements Interfaces\IRoute
 	 * This method is usually called in core request routing process
 	 * from `\MvcCore\Router::Route();` method and it's submethods.
 	 *
-	 * @param \MvcCore\Request $request
+	 * @param string $requestPath
 	 * @return array Matched and params array, keys are matched
 	 *				 params or controller and action params.
 	 */
-	public function Match (& $request) {
+	public function Match ($requestPath) {
 		$matchedParams = array();
-		preg_match_all($this->Match, $request->Path, $matchedValues, PREG_OFFSET_CAPTURE);
+		preg_match_all($this->Match, $requestPath, $matchedValues, PREG_OFFSET_CAPTURE);
 		if (isset($matchedValues[0]) && count($matchedValues[0])) {
 			$controllerName = $this->Controller ?: '';
 			$toolClass = \MvcCore\Application::GetInstance()->GetToolClass();
@@ -608,7 +608,7 @@ class Route implements Interfaces\IRoute
 				'controller'	=>	$toolClass::GetDashedFromPascalCase(str_replace(array('_', '\\'), '/', $controllerName)),
 				'action'		=>	$toolClass::GetDashedFromPascalCase($this->Action ?: ''),
 			);
-			array_shift($matchedValues); // first item is always matched whole `$request->Path` string.
+			array_shift($matchedValues); // first item is always matched whole `$request->GetPath()` string.
 			$index = 0;
 			$matchedKeys = array_keys($matchedValues);
 			$matchedKeysCount = count($matchedKeys) - 1;

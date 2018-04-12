@@ -20,13 +20,13 @@ require_once('IView.php');
 require_once('ISession.php');
 
 /**
- * Responsibilities:
- * - Controller lifecycle dispatching.
- *   - Handling setup methods from core dispatching.
+ * Responsibility - controller lifecycle - data preparing, rendering, response completing.
+ * - Controller lifecycle dispatching:
+ *   - Handling setup methods after creation from application core dispatching.
  *   - Calling lifecycle methods (`\MvcCore\Controller::Dispatch();`):
  *     - `\MvcCore\Controller::Init();`
  *     - `\MvcCore\Controller::PreDispatch();`
- *     - Dispatching controller action.
+ *     - Calling routed controller action.
  *     - `\MvcCore\Controller::Render();`
  * - Rendering or no-rendering customization.
  * - HTTP responses and redirects managing and customization.
@@ -371,14 +371,6 @@ interface IController
 	 */
 	public function AssetUrl ($path = '');
 
-	/**
-	 * Return session namespace instance by configured session class name.
-	 * This method is only shortcut for `\MvcCore\Session::GetNamespace($name)`;
-	 * @param string $name
-	 * @return \MvcCore\Interfaces\ISession
-	 */
-	public function & GetSessionNamespace ($name = \MvcCore\Interfaces\ISession::DEFAULT_NAMESPACE_NAME);
-
 		/**
 	 * Render error controller and error action
 	 * for any dispatch exception or error as
@@ -408,6 +400,14 @@ interface IController
 	 * @return void
 	 */
 	public function Terminate ();
+
+	/**
+	 * Return session namespace instance by configured session class name.
+	 * This method is only shortcut for `\MvcCore\Session::GetNamespace($name)`;
+	 * @param string $name
+	 * @return \MvcCore\Interfaces\ISession
+	 */
+	public static function & GetSessionNamespace ($name = \MvcCore\Interfaces\ISession::DEFAULT_NAMESPACE_NAME);
 
 	/**
 	 * Redirect client browser to another place by `"Location: ..."`

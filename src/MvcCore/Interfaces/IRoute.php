@@ -14,7 +14,7 @@
 namespace MvcCore\Interfaces;
 
 /**
- * Responsibilities:
+ * Responsibility - describing request(s) to match and reversely build url addresses.
  * - Describing request to match it (read more about properties).
  * - Matching request by given request object, see `\MvcCore\Route::Matches()`.
  * - Completing url address by given params array, see `\MvcCore\Route::Url()`.
@@ -291,11 +291,11 @@ interface IRoute
 	 * This method is usually called in core request routing process
 	 * from `\MvcCore\Router::Route();` method and it's submethods.
 	 *
-	 * @param \MvcCore\Request $request
+	 * @param string $requestPath
 	 * @return array Matched and params array, keys are matched
 	 *				 params or controller and action params.
 	 */
-	public function Match (& $request);
+	public function Match ($requestPath);
 
 	/**
 	 * Process route internal data completion (if necessary)

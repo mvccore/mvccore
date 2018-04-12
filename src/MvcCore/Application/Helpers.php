@@ -14,8 +14,11 @@
 namespace MvcCore\Application;
 
 include_once('Tools.php');
+
 /**
- * `\MvcCore\Application` - Helper Methods
+ * Trait as partial class for `\MvcCore\Application`:
+ * - Helper methods for normal requests and error requests dispatching.
+ * - Helper methods for core classes configuration.
  */
 trait Helpers
 {
