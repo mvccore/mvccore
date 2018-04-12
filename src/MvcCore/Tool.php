@@ -13,7 +13,7 @@
 
 namespace MvcCore;
 
-require_once(__DIR__ . '/Interfaces/ITool.php');
+//include_once(__DIR__ . '/Interfaces/ITool.php');
 
 /**
  * Responsibility - static helpers for core classes inheritance, string conversions and JSON.
@@ -82,7 +82,7 @@ class Tool implements Interfaces\ITool
 	 * @throws \Exception
 	 * @return string
 	 */
-	public static function EncodeJson ($data) {
+	public static function EncodeJson (& $data) {
 		$flags = JSON_HEX_TAG | JSON_HEX_APOS | JSON_HEX_QUOT | JSON_HEX_AMP |
 			(defined('JSON_UNESCAPED_SLASHES') ? JSON_UNESCAPED_SLASHES : 0) |
 			(defined('JSON_UNESCAPED_UNICODE') ? JSON_UNESCAPED_UNICODE : 0) |

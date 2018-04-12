@@ -13,7 +13,7 @@
 
 namespace MvcCore\Application;
 
-include_once('Tools.php');
+//include_once(__DIR__.'/../Tools.php');
 
 /**
  * Trait as partial class for `\MvcCore\Application`:

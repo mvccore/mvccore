@@ -13,7 +13,7 @@
 
 namespace MvcCore\Interfaces;
 
-require_once(__DIR__.'/../MvcCore.php');
+//include_once(__DIR__.'/../Application.php');
 
 /**
  * Responsibility - reading config file(s), detecting environment in system config.

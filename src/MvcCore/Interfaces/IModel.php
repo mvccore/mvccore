@@ -13,7 +13,7 @@
 
 namespace MvcCore\Interfaces;
 
-require_once('Config.php');
+//include_once(__DIR__.'/../Config.php');
 
 /**
  * Responsibility - static members for connections and by configuration,

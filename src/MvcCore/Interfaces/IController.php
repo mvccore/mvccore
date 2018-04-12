@@ -13,11 +13,11 @@
 
 namespace MvcCore\Interfaces;
 
-require_once('IRequest.php');
-require_once('IResponse.php');
-require_once('IModel.php');
-require_once('IView.php');
-require_once('ISession.php');
+//include_once('IRequest.php');
+//include_once('IResponse.php');
+//include_once('IModel.php');
+//include_once('IView.php');
+//include_once('ISession.php');
 
 /**
  * Responsibility - controller lifecycle - data preparing, rendering, response completing.
@@ -83,6 +83,7 @@ interface IController
 	 * called in `\MvcCore::DispatchControllerAction();`.
 	 * Call this imediatelly after calling controller methods:
 	 * - `\MvcCore\Controller::__construct()`
+	 * - `\MvcCore\Controller::SetApplication($application)`
 	 * - `\MvcCore\Controller::SetRequest($request)`
 	 * - `\MvcCore\Controller::SetResponse($response)`
 	 * - `\MvcCore\Controller::SetRouter($router)`
@@ -112,15 +113,6 @@ interface IController
 	public function Init ();
 
 	/**
-	 * Initialize all members implementing `\MvcCore\Interfaces\IController` marked
-	 * in doc comments as `@autoinit` into `\MvcCore\Controller::$controllers` array
-	 * and into member property itself. This method is always called inside
-	 * `\MvcCore\Controller::Init();` method, after session has been started.
-	 * @return void
-	 */
-	protected function autoInitProperties ();
-
-	/**
 	 * TEMPLATE method. Call `parent::PreDispatch();` at the method very beginning.
 	 * Application pre render common action - always used in application controllers.
 	 * This is best time to define any common properties or common view properties,
@@ -139,6 +131,22 @@ interface IController
 	 * @return string
 	 */
 	public function GetParam ($name = "", $pregReplaceAllowedChars = "a-zA-Z0-9_/\-\.\@");
+
+	/**
+	 * Get current application singleton instance object as reference.
+	 * @return \MvcCore\Application
+	 */
+	public function & GetApplication ();
+
+	/**
+	 * Sets up `\MvcCore\Application` singleton object.
+	 * This is INTERNAL, not TEMPLATE method, internally called in
+	 * `\MvcCore::DispatchControllerAction()` before controller is dispatched.
+	 * Usually call this as soon as possible after controller creation.
+	 * @param \MvcCore\Application $application
+	 * @return \MvcCore\Controller
+	 */
+	public function & SetApplication (\MvcCore\Interfaces\IApplication & $application);
 
 	/**
 	 * Get current application request object as reference.
@@ -193,7 +201,7 @@ interface IController
 	 * @param \MvcCore\Interfaces\IRouter $router
 	 * @return \MvcCore\Interfaces\IController
 	 */
-	public function & SetRouter (& $router);
+	public function & SetRouter (\MvcCore\Interfaces\IRouter & $router);
 
 	/**
 	 * Boolean about AJAX request.
@@ -220,7 +228,7 @@ interface IController
 	 * @param \MvcCore\Interfaces\IModel $user
 	 * @return \MvcCore\Controller
 	 */
-	public function & SetUser (\MvcCore\Interfaces\IModel & $user);
+	public function & SetUser (& $user);
 
 	/**
 	 * Return current controller view object if any.
@@ -275,7 +283,7 @@ interface IController
 	 * @param string|int $index
 	 * @return \MvcCore\Interfaces\IController
 	 */
-	public function AddChildController (\MvcCore\Interfaces\IController & $controller);
+	public function AddChildController (\MvcCore\Interfaces\IController & $controller, $index = NULL);
 
 	/**
 	 * Get parent controller instance if any.

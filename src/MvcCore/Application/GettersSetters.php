@@ -42,7 +42,7 @@ trait GettersSetters
 	 * Read more about every mode in interface: `\MvcCore\Interfaces\IApplication`.
 	 * @var string
 	 */
-	protected $compiled = null;
+	protected $compiled = NULL;
 
 	/**
 	 * Microtime, when `\MvcCore`Application` class has been declarated.
@@ -60,19 +60,19 @@ trait GettersSetters
 	 * Request object - parsed uri, query params, app paths...
 	 * @var \MvcCore\Request
 	 */
-	protected $request;
+	protected $request = NULL;
 
 	/**
 	 * Response object - storrage for response headers and rendered body.
 	 * @var \MvcCore\Response
 	 */
-	protected $response;
+	protected $response = NULL;
 
 	/**
 	 * Application http router to route request and build url addresses.
 	 * @var \MvcCore\Router
 	 */
-	protected $router = null;
+	protected $router = NULL;
 
 
 	/**
@@ -315,7 +315,7 @@ trait GettersSetters
 	 * @return string
 	 */
 	public function GetRouteClass () {
-		return $this->routerClass;
+		return $this->routeClass;
 	}
 
 	/**
@@ -367,6 +367,10 @@ trait GettersSetters
 	 * @return \MvcCore\Router
 	 */
 	public function & GetRouter () {
+		if (is_null($this->router)) {
+			$routerClass = $this->routerClass;
+			$this->router = $routerClass::GetInstance()->SetRequest($this->GetRequest());
+		}
 		return $this->router;
 	}
 
@@ -383,6 +387,10 @@ trait GettersSetters
 	 * @return \MvcCore\Request
 	 */
 	public function & GetRequest () {
+		if (is_null($this->request)) {
+			$requestClass = $this->requestClass;
+			$this->request = $requestClass::GetInstance($_SERVER, $_GET, $_POST, $_COOKIE, $_FILES);
+		}
 		return $this->request;
 	}
 
@@ -391,6 +399,10 @@ trait GettersSetters
 	 * @return \MvcCore\Response
 	 */
 	public function & GetResponse () {
+		if (is_null($this->response)) {
+			$responseClass = $this->responseClass;
+			$this->response = $responseClass::GetInstance();
+		}
 		return $this->response;
 	}
 

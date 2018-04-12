@@ -13,7 +13,7 @@
 
 namespace MvcCore;
 
-require_once(__DIR__ . '/Interfaces/IView.php');
+//include_once(__DIR__ . '/Interfaces/IView.php');
 
 /**
  * Core view:
@@ -185,7 +185,7 @@ class View implements Interfaces\IView
 	 * @param \MvcCore\Controller $controller
 	 * @return \MvcCore\View
 	 */
-	public function & SetController (& $controller) {
+	public function & SetController (\MvcCore\Interfaces\IController & $controller) {
 		$this->_controller = $controller;
 		return $this;
 	}

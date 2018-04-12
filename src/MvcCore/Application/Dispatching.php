@@ -13,14 +13,14 @@
 
 namespace MvcCore\Application;
 
-include_once('Request.php');
-include_once('Response.php');
-include_once('Debug.php');
-include_once('Session.php');
-include_once('Router.php');
-include_once('View.php');
-include_once('Controller.php');
-include_once('Config.php');
+//include_once(__DIR__.'/../Request.php');
+//include_once(__DIR__.'/../Response.php');
+//include_once(__DIR__.'/../Debug.php');
+//include_once(__DIR__.'/../Session.php');
+//include_once(__DIR__.'/../Router.php');
+//include_once(__DIR__.'/../View.php');
+//include_once(__DIR__.'/../Controller.php');
+//include_once(__DIR__.'/../Config.php');
 
 /**
  * Trait as partial class for `\MvcCore\Application`:
@@ -61,10 +61,8 @@ trait Dispatching
 	 */
 	public function Run ($singleFileUrl = FALSE) {
 		if ($singleFileUrl) $this->compiled = static::COMPILED_SFU;
-		$requestClass = $this->requestClass;
-		$responseClass = $this->responseClass;
-		$this->request = $requestClass::GetInstance($_SERVER, $_GET, $_POST);
-		$this->response = $responseClass::GetInstance();
+		$this->GetRequest(); // triggers creating
+		$this->GetResponse();// triggers creating
 		$debugClass = $this->debugClass;
 		$debugClass::Init();
 		if (!$this->processCustomHandlers($this->preRouteHandlers))			return $this->Terminate();
@@ -96,10 +94,9 @@ trait Dispatching
 	 * @return bool
 	 */
 	protected function routeRequest () {
-		$routerClass = $this->routerClass;
-		$this->router = $routerClass::GetInstance()->SetRequest($this->request);
 		try {
-			$this->router->Route();
+			// `GetRouter()` method triggers creating
+			$this->GetRouter()->Route();
 			return TRUE;
 		} catch (\Exception $e) {
 			return $this->DispatchException($e);
@@ -137,7 +134,7 @@ trait Dispatching
 	 * @param \MvcCore\Route $route
 	 * @return bool
 	 */
-	public function DispatchMvcRequest (& $route = NULL) {
+	public function DispatchMvcRequest (\MvcCore\Interfaces\IRoute & $route = NULL) {
 		if (is_null($route)) return $this->DispatchException(new \Exception('No route for request', 404));
 		list ($controllerNamePascalCase, $actionNamePascalCase) = array($route->Controller, $route->Action);
 		$actionName = $actionNamePascalCase . 'Action';
@@ -190,6 +187,7 @@ trait Dispatching
 		$this->controller = NULL;
 		try {
 			$this->controller = $ctrlClassFullName::GetInstance()
+				->SetApplication($this)
 				->SetRequest($this->request)
 				->SetResponse($this->response)
 				->SetRouter($this->router);

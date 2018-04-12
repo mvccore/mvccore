@@ -13,16 +13,16 @@
 
 namespace MvcCore;
 
-include_once(__DIR__.'/Interfaces/IController.php');
-include_once(__DIR__.'/Interfaces/ISession.php');
-include_once(__DIR__.'/Interfaces/IResponse.php');
-include_once('Application.php');
-include_once('Tool.php');
-include_once('View.php');
-include_once('Request.php');
-include_once('Response.php');
-include_once('Router.php');
-include_once('Request.php');
+//include_once(__DIR__.'/Interfaces/IController.php');
+//include_once(__DIR__.'/Interfaces/ISession.php');
+//include_once(__DIR__.'/Interfaces/IResponse.php');
+//include_once('Application.php');
+//include_once('Tool.php');
+//include_once('View.php');
+//include_once('Request.php');
+//include_once('Response.php');
+//include_once('Router.php');
+//include_once('Request.php');
 
 /**
  * Responsibility - controller lifecycle - data preparing, rendering, response completing.
@@ -209,6 +209,7 @@ class Controller implements Interfaces\IController
 	 * called in `\MvcCore::DispatchControllerAction();`.
 	 * Call this imediatelly after calling controller methods:
 	 * - `\MvcCore\Controller::__construct()`
+	 * - `\MvcCore\Controller::SetApplication($application)`
 	 * - `\MvcCore\Controller::SetRequest($request)`
 	 * - `\MvcCore\Controller::SetResponse($response)`
 	 * - `\MvcCore\Controller::SetRouter($router)`
@@ -252,9 +253,9 @@ class Controller implements Interfaces\IController
 	 * @return void
 	 */
 	public function Init () {
-		\MvcCore\Application::GetInstance()->SessionStart();
+		$this->application->SessionStart();
 		$this->autoInitProperties();
-		foreach ($this->controllers as $controller) {
+		foreach ($this->_childControllers as $controller) {
 			$controller->Init();
 			$controller->dispatchState = 1;
 		}
@@ -275,7 +276,7 @@ class Controller implements Interfaces\IController
 			\ReflectionProperty::IS_PROTECTED |
 			\ReflectionProperty::IS_PRIVATE
 		);
-		$toolsClass = \MvcCore\Application::GetInstance()->GetToolClass();
+		$toolsClass = $this->application->GetToolClass();
 		foreach ($props as $prop) {
 			$docComment = $prop->getDocComment();
 			if (mb_strpos($docComment, '@autoinit') === FALSE) continue;
@@ -303,10 +304,10 @@ class Controller implements Interfaces\IController
 	public function PreDispatch () {
 		if ($this->dispatchState == 0) $this->Init();
 		if ($this->viewEnabled) {
-			$viewClass = \MvcCore\Application::GetInstance()->GetViewClass();
+			$viewClass = $this->application->GetViewClass();
 			$this->view = (new $viewClass)->SetController($this);
 		}
-		foreach ($this->controllers as $controller) {
+		foreach ($this->_childControllers as $controller) {
 			$controller->PreDispatch();
 			$controller->dispatchState = 2;
 		}
@@ -323,6 +324,27 @@ class Controller implements Interfaces\IController
 	 */
 	public function GetParam ($name = "", $pregReplaceAllowedChars = "a-zA-Z0-9_/\-\.\@") {
 		return $this->request->GetParam($name, $pregReplaceAllowedChars);
+	}
+
+	/**
+	 * Get current application singleton instance object as reference.
+	 * @return \MvcCore\Application
+	 */
+	public function & GetApplication () {
+		return $this->application;
+	}
+
+	/**
+	 * Sets up `\MvcCore\Application` singleton object.
+	 * This is INTERNAL, not TEMPLATE method, internally called in
+	 * `\MvcCore::DispatchControllerAction()` before controller is dispatched.
+	 * Usually call this as soon as possible after controller creation.
+	 * @param \MvcCore\Application $application
+	 * @return \MvcCore\Controller
+	 */
+	public function & SetApplication (\MvcCore\Interfaces\IApplication & $application) {
+		$this->application = & $application;
+		return $this;
 	}
 
 	/**
@@ -348,7 +370,7 @@ class Controller implements Interfaces\IController
 	 * @param \MvcCore\Request $request
 	 * @return \MvcCore\Controller
 	 */
-	public function & SetRequest (& $request) {
+	public function & SetRequest (\MvcCore\Interfaces\IRequest & $request) {
 		$this->request = & $request;
 		$this->controller = $request->GetControllerName();
 		$this->action = $request->GetActionName();
@@ -375,7 +397,7 @@ class Controller implements Interfaces\IController
 	 * @param \MvcCore\Response $response
 	 * @return \MvcCore\Controller
 	 */
-	public function & SetResponse (& $response) {
+	public function & SetResponse (\MvcCore\Interfaces\IResponse & $response) {
 		$this->response = & $response;
 		return $this;
 	}
@@ -396,7 +418,7 @@ class Controller implements Interfaces\IController
 	 * @param \MvcCore\Router $router
 	 * @return \MvcCore\Controller
 	 */
-	public function & SetRouter (& $router) {
+	public function & SetRouter (\MvcCore\Interfaces\IRouter & $router) {
 		$this->router = & $router;
 		return $this;
 	}
@@ -451,7 +473,7 @@ class Controller implements Interfaces\IController
 	 * @param \MvcCore\View $view
 	 * @return \MvcCore\Controller
 	 */
-	public function & SetView (& $view) {
+	public function & SetView (\MvcCore\Interfaces\IView & $view) {
 		$this->view = $view;
 		return $this;
 	}
@@ -501,7 +523,7 @@ class Controller implements Interfaces\IController
 	 * @param string|int $index
 	 * @return \MvcCore\Controller
 	 */
-	public function AddChildController (& $controller, $index = NULL) {
+	public function AddChildController (\MvcCore\Interfaces\IController & $controller, $index = NULL) {
 		if (!in_array($controller, $this->_childControllers)) {
 			if (is_null($index)) {
 				$this->_childControllers[] = & $controller;
@@ -619,7 +641,7 @@ class Controller implements Interfaces\IController
 			$actionResult = $this->view->RenderScript($viewScriptPath);
 			if ($currentCtrlIsTopMostParent) {
 				// create top most parent layout view, set up and render to outputResult
-				$viewClass = \MvcCore\Application::GetInstance()->GetViewClass();
+				$viewClass = $this->application->GetViewClass();
 				/** @var $layout \MvcCore\View */
 				$layout = (new $viewClass)->SetController($this)->SetValues($this->view);
 				$outputResult = $layout->RenderLayoutAndContent($this->layout, $actionResult);
@@ -641,7 +663,7 @@ class Controller implements Interfaces\IController
 	 * @return void
 	 */
 	public function HtmlResponse ($output = '', $terminate = FALSE) {
-		$viewClass = \MvcCore\Application::GetInstance()->GetViewClass();
+		$viewClass = $this->application->GetViewClass();
 		$contentTypeHeaderValue = strpos(
 			$viewClass::$Doctype, \MvcCore\Interfaces\IView::DOCTYPE_XHTML
 		) !== FALSE ? 'application/xhtml+xml' : 'text/html' ;
@@ -660,7 +682,7 @@ class Controller implements Interfaces\IController
 	 * @return void
 	 */
 	public function JsonResponse ($data = NULL, $terminate = FALSE) {
-		$toolClass = \MvcCore\Application::GetInstance()->GetToolClass();
+		$toolClass = $this->application->GetToolClass();
 		$output = $toolClass::EncodeJson($data);
 		$this->response
 			->SetHeader('Content-Type', 'text/javascript; charset=utf-8')
@@ -709,7 +731,7 @@ class Controller implements Interfaces\IController
 	 * @return void
 	 */
 	public function RenderError ($exceptionMessage = '') {
-		if (\MvcCore\Application::GetInstance()->IsErrorDispatched()) return;
+		if ($this->application->IsErrorDispatched()) return;
 		throw new \ErrorException(
 			$exceptionMessage ? $exceptionMessage :
 			"Server error: \n'" . $this->request->FullUrl . "'",
@@ -724,7 +746,7 @@ class Controller implements Interfaces\IController
 	 * @return void
 	 */
 	public function RenderNotFound () {
-		if (\MvcCore\Application::GetInstance()->IsNotFoundDispatched()) return;
+		if ($this->application->IsNotFoundDispatched()) return;
 		throw new \ErrorException(
 			"Page not found: \n'" . $this->request->FullUrl . "'", 404
 		);
@@ -742,7 +764,7 @@ class Controller implements Interfaces\IController
 	 * @return void
 	 */
 	public function Terminate () {
-		\MvcCore\Application::GetInstance()->Terminate();
+		$this->application->Terminate();
 	}
 
 	/**
@@ -751,7 +773,7 @@ class Controller implements Interfaces\IController
 	 * @param string $name
 	 * @return \MvcCore\Session
 	 */
-	public function & GetSessionNamespace ($name = \MvcCore\Interfaces\ISession::DEFAULT_NAMESPACE_NAME) {
+	public static function & GetSessionNamespace ($name = \MvcCore\Interfaces\ISession::DEFAULT_NAMESPACE_NAME) {
 		$sessionClass = \MvcCore\Application::GetInstance()->GetSessionClass();
 		return $sessionClass::GetNamespace($name);
 	}

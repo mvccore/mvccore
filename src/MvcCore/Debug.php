@@ -13,9 +13,9 @@
 
 namespace MvcCore {
 
-	require_once(__DIR__ . '/Interfaces/IDebug.php');
-	require_once('Application.php');
-	require_once('Config.php');
+	//include_once(__DIR__ . '/Interfaces/IDebug.php');
+	//include_once('Application.php');
+	//include_once('Config.php');
 
 	/**
 	 * Responsibility - any devel and logging messages and exceptions printing and logging.

@@ -13,9 +13,9 @@
 
 namespace MvcCore;
 
-require_once(__DIR__ . '/Interfaces/IRequest.php');
-require_once('Tool.php');
-require_once(__DIR__.'/../MvcCore.php');
+//include_once(__DIR__ . '/Interfaces/IRequest.php');
+//include_once('Tool.php');
+//include_once('Application.php');
 
 /**
  * Responsibility - request description - url and params inputs parsing and cleaning.
@@ -311,7 +311,7 @@ class Request implements Interfaces\IRequest
 	 * @param array $headers
 	 * @return \MvcCore\Request
 	 */
-	public function & SetHeaders (& $headers = array()) {
+	public function & SetHeaders (array & $headers = array()) {
 		$this->headers = & $headers;
 		return $this;
 	}
@@ -372,7 +372,7 @@ class Request implements Interfaces\IRequest
 	 * @param array $params
 	 * @return \MvcCore\Request
 	 */
-	public function & SetParams (& $params = array()) {
+	public function & SetParams (array & $params = array()) {
 		$this->params = & $params;
 		return $this;
 	}
@@ -426,7 +426,7 @@ class Request implements Interfaces\IRequest
 	 * @param array $files
 	 * @return \MvcCore\Request
 	 */
-	public function & SetFiles (& $files = array()) {
+	public function & SetFiles (array & $files = array()) {
 		$this->globalFiles = & $files;
 		return $this;
 	}
@@ -467,7 +467,7 @@ class Request implements Interfaces\IRequest
 	 * @param array $cookies
 	 * @return \MvcCore\Request
 	 */
-	public function & SetCookies (& $cookies = array()) {
+	public function & SetCookies (array & $cookies = array()) {
 		$this->globalCookies = & $cookies;
 		return $this;
 	}
@@ -589,12 +589,12 @@ class Request implements Interfaces\IRequest
 	 * Throws exception if no property defined by get call or if virtual call
 	 * begins with anything different from 'Set' or 'Get'.
 	 * This method returns custom value for get and `\MvcCore\Request` instance for set.
-	 * @param string $rawName
+	 * @param string $name
 	 * @param array  $arguments
 	 * @throws \Exception
 	 * @return mixed|\MvcCore\Request
 	 */
-	public function __call ($rawName, $arguments = array()) {
+	public function __call ($name, $arguments = array()) {
 		$nameBegin = strtolower(substr($rawName, 0, 3));
 		$name = substr($rawName, 3);
 		if ($nameBegin == 'get' && isset($this->$name)) {

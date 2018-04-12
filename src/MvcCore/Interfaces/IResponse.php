@@ -62,7 +62,7 @@ interface IResponse
 	 * @param array $headers
 	 * @return \MvcCore\Interfaces\IResponse
 	 */
-	public function & SetHeaders ($headers = array());
+	public function & SetHeaders (array $headers = array());
 
 	/**
 	 * Set HTTP response body.

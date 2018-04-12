@@ -64,7 +64,7 @@ interface ISession
 	 * @param string $name
 	 * @return \MvcCore\Interfaces\ISession
 	 */
-	public static function & GetNamespace ($name = self::DEFAULT_NAMESPACE_NAME);
+	public static function & GetNamespace ($name = \MvcCore\Interfaces\ISession::DEFAULT_NAMESPACE_NAME);
 
 	/**
 	 * Set MvcCore session namespace expiration by page request(s) count.

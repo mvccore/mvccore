@@ -73,7 +73,7 @@ interface IDebug
 	 * @param  string						$priority
 	 * @return string						Logged error filename.
 	 */
-	public static function Log ($value, $priority = self::INFO);
+	public static function Log ($value, $priority = \MvcCore\Interfaces\IDebug::INFO);
 
 	/**
 	 * Sends given `$value` into FireLogger console.
@@ -81,7 +81,7 @@ interface IDebug
 	 * @param	string	$priority	Priority.
 	 * @return	bool				Was successful?
 	 */
-	public static function FireLog ($value, $priority = self::DEBUG);
+	public static function FireLog ($value, $priority = \MvcCore\Interfaces\IDebug::DEBUG);
 
 	/**
 	 * Handler to print catched exception in browser, no file logging.

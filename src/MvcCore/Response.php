@@ -13,7 +13,7 @@
 
 namespace MvcCore;
 
-require_once(__DIR__ . '/Interfaces/IResponse.php');
+//include_once(__DIR__ . '/Interfaces/IResponse.php');
 
 use \MvcCore\Interfaces\IResponse;
 
@@ -120,7 +120,7 @@ class Response implements Interfaces\IResponse
 	 * @param array $headers
 	 * @return \MvcCore\Response
 	 */
-	public function & SetHeaders ($headers = array()) {
+	public function & SetHeaders (array $headers = array()) {
 		foreach ($headers as $name => $value) {
 			$this->Headers[$name] = $value;
 		}

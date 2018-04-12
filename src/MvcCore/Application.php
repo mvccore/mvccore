@@ -11,17 +11,12 @@
  * @license		https://mvccore.github.io/docs/mvccore/4.0.0/LICENCE.md
  */
 
-require_once(__DIR__.'/Interfaces/IApplication.php');
-require_once(__DIR__.'/Application/GettersSetters.php');
-require_once(__DIR__.'/Application/Dispatching.php');
-require_once(__DIR__.'/Application/Helpers.php');
-require_once('Debug.php');
-require_once('Request.php');
-require_once('Response.php');
-require_once('Router.php');
-require_once('Tool.php');
-
 namespace MvcCore;
+
+//include_once(__DIR__.'/Interfaces/IApplication.php');
+//include_once(__DIR__.'/Application/GettersSetters.php');
+//include_once(__DIR__.'/Application/Dispatching.php');
+//include_once(__DIR__.'/Application/Helpers.php');
 
 /**
  * Responsibility - singleton, instancing all core classes and handling request.

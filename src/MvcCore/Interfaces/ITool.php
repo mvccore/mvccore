@@ -68,7 +68,7 @@ interface ITool
 	 * @throws \Exception
 	 * @return string
 	 */
-	public static function EncodeJson ($data);
+	public static function EncodeJson (& $data);
 
 	/**
 	 * Safely decode json string into php `stdClass/array`.
@@ -79,7 +79,7 @@ interface ITool
 	 * @param string $jsonStr
 	 * @return object
 	 */
-	public static function DecodeJson ($jsonStr);
+	public static function DecodeJson (& $jsonStr);
 
 	/**
 	 * Get server IP from `$_SERVER` global variable.

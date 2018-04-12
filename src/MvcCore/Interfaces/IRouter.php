@@ -13,8 +13,8 @@
 
 namespace MvcCore\Interfaces;
 
-require_once('IRequest.php');
-require_once('IRoute.php');
+//include_once('IRequest.php');
+//include_once('IRoute.php');
 
 /**
  * Responsibility - singleton, routes instancing, request routing and url building.

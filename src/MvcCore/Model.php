@@ -13,8 +13,8 @@
 
 namespace MvcCore;
 
-require_once(__DIR__ . '/Interfaces/IModel.php');
-require_once('Config.php');
+//include_once(__DIR__ . '/Interfaces/IModel.php');
+//include_once('Config.php');
 
 /**
  * Responsibility - static members for connections and by configuration,

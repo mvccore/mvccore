@@ -13,7 +13,7 @@
 
 namespace MvcCore;
 
-require_once(__DIR__ . '/Interfaces/IRoute.php');
+//include_once(__DIR__ . '/Interfaces/IRoute.php');
 
 /**
  * Responsibility - describing request(s) to match and reversely build url addresses.
@@ -598,7 +598,7 @@ class Route implements Interfaces\IRoute
 	 * @return array Matched and params array, keys are matched
 	 *				 params or controller and action params.
 	 */
-	public function Match ($requestPath) {
+	public function Matches (& $requestPath) {
 		$matchedParams = array();
 		preg_match_all($this->Match, $requestPath, $matchedValues, PREG_OFFSET_CAPTURE);
 		if (isset($matchedValues[0]) && count($matchedValues[0])) {

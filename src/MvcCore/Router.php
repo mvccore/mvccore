@@ -13,11 +13,11 @@
 
 namespace MvcCore;
 
-require_once(__DIR__.'/Interfaces/IRouter.php');
-require_once(__DIR__.'/Application.php');
-require_once('Request.php');
-require_once('Route.php');
-require_once('Tool.php');
+//include_once(__DIR__.'/Interfaces/IRouter.php');
+//include_once(__DIR__.'/Application.php');
+//include_once('Request.php');
+//include_once('Route.php');
+//include_once('Tool.php');
 
 /**
  * Responsibility - singleton, routes instancing, request routing and url building.
@@ -283,7 +283,7 @@ class Router implements Interfaces\IRouter
 	 *						given list, not appended.
 	 * @return \MvcCore\Router
 	 */
-    public function AddRoutes ($routes = array(), $prepend = FALSE) {
+    public function AddRoutes (array $routes = array(), $prepend = FALSE) {
 		if ($prepend) $routes = array_reverse($routes);
 		$routeClass = \MvcCore\Application::GetInstance()->GetRouteClass();
 		foreach ($routes as $routeName => & $route) {
@@ -394,7 +394,7 @@ class Router implements Interfaces\IRouter
 	 * @param \MvcCore\Request $request
 	 * @return \MvcCore\Router
 	 */
-	public function & SetRequest (& $request) {
+	public function & SetRequest (\MvcCore\Interfaces\IRequest & $request) {
 		$this->request = & $request;
 		return $this;
 	}
@@ -406,7 +406,7 @@ class Router implements Interfaces\IRouter
 	 * @param \MvcCore\Route $currentRoute
 	 * @return \MvcCore\Router
 	 */
-	public function & SetCurrentRoute ($currentRoute) {
+	public function & SetCurrentRoute (\MvcCore\Interfaces\IRoute $currentRoute) {
 		$this->currentRoute = $currentRoute;
 		return $this;
 	}
@@ -628,6 +628,7 @@ class Router implements Interfaces\IRouter
 		$request = & $this->request;
 		$requestPath = $request->GetPath();
 		foreach ($this->routes as & $route) {
+			$route->Prepare();
 			if ($matchedParams = $route->Matches($requestPath)) {
 				$this->currentRoute = $route;
 				$routeDefaultParams = $route->Defaults ?: array();

@@ -295,7 +295,7 @@ interface IRoute
 	 * @return array Matched and params array, keys are matched
 	 *				 params or controller and action params.
 	 */
-	public function Match ($requestPath);
+	public function Matches (& $requestPath);
 
 	/**
 	 * Process route internal data completion (if necessary)

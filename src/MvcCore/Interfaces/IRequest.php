@@ -13,7 +13,7 @@
 
 namespace MvcCore\Interfaces;
 
-require_once(__DIR__.'/../MvcCore.php');
+//include_once(__DIR__.'/../Application.php');
 
 /**
  * Responsibility - request description - url and params inputs parsing and cleaning.
@@ -106,7 +106,7 @@ interface IRequest
 	 * @param array $headers
 	 * @return \MvcCore\Interfaces\IRequest
 	 */
-	public function & SetHeaders (& $headers = array());
+	public function & SetHeaders (array & $headers = array());
 
 	/**
 	 * Get directly all raw http headers without any conversion at once.
@@ -152,7 +152,7 @@ interface IRequest
 	 * @param array $params
 	 * @return \MvcCore\Interfaces\IRequest
 	 */
-	public function & SetParams (& $params = array());
+	public function & SetParams (array & $params = array());
 
 	/**
 	 * Get directly all raw parameters without any conversion at once.
@@ -191,7 +191,7 @@ interface IRequest
 	 * @param array $files
 	 * @return \MvcCore\Interfaces\IRequest
 	 */
-	public function & SetFiles (& $files = array());
+	public function & SetFiles (array & $files = array());
 
 	/**
 	 * Return reference to configured global `$_FILES`
@@ -221,7 +221,7 @@ interface IRequest
 	 * @param array $cookies
 	 * @return \MvcCore\Interfaces\IRequest
 	 */
-	public function & SetCookies (& $cookies = array());
+	public function & SetCookies (array & $cookies = array());
 
 	/**
 	 * Return reference to configured global `$_COOKIE`
@@ -293,12 +293,12 @@ interface IRequest
 	 * Throws exception if no property defined by get call or if virtual call
 	 * begins with anything different from 'Set' or 'Get'.
 	 * This method returns custom value for get and `\MvcCore\Request` instance for set.
-	 * @param string $rawName
+	 * @param string $name
 	 * @param array  $arguments
 	 * @throws \Exception
 	 * @return \MvcCore\Interfaces\IRequest
 	 */
-	public function __call ($rawName, $arguments = array());
+	public function __call ($name, $arguments = array());
 
 	/**
 	 * Universal getter, if property not defined, `NULL` is returned.

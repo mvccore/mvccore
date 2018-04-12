@@ -13,7 +13,7 @@
 
 namespace MvcCore\Interfaces;
 
-require_once('IController.php');
+//include_once('IController.php');
 
 /**
  * Core view:
@@ -72,7 +72,7 @@ interface IView
 	 * @param string $helperNamespace,... View helper classes namespace(s)
 	 * @return void
 	 */
-	public static function AddHelpersClassNamespaces (/*...$helper*/);
+	public static function AddHelpersClassNamespaces (/*...$helperNamespace*/);
 
 	/**
 	 * Get view script full path by internal application configuration,
