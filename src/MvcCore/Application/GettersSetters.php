@@ -367,7 +367,7 @@ trait GettersSetters
 	 * @return \MvcCore\Router
 	 */
 	public function & GetRouter () {
-		if (is_null($this->router)) {
+		if ($this->router === NULL) {
 			$routerClass = $this->routerClass;
 			$this->router = $routerClass::GetInstance()->SetRequest($this->GetRequest());
 		}
@@ -387,7 +387,7 @@ trait GettersSetters
 	 * @return \MvcCore\Request
 	 */
 	public function & GetRequest () {
-		if (is_null($this->request)) {
+		if ($this->request === NULL) {
 			$requestClass = $this->requestClass;
 			$this->request = $requestClass::GetInstance($_SERVER, $_GET, $_POST, $_COOKIE, $_FILES);
 		}
@@ -399,7 +399,7 @@ trait GettersSetters
 	 * @return \MvcCore\Response
 	 */
 	public function & GetResponse () {
-		if (is_null($this->response)) {
+		if ($this->response === NULL) {
 			$responseClass = $this->responseClass;
 			$this->response = $responseClass::GetInstance();
 		}
@@ -694,7 +694,7 @@ trait GettersSetters
 		if (!is_callable($handler)) throw new \InvalidArgumentException(
 			"[".__CLASS__."] Pre route handler is not callable (handler: $handler, priorityIndex: $priorityIndex)."
 		);
-		if (is_null($priorityIndex)) {
+		if ($priorityIndex === NULL) {
 			$this->preRouteHandlers[] = $handler;
 		} else {
 			$this->preRouteHandlers[$priorityIndex] = $handler;
@@ -725,7 +725,7 @@ trait GettersSetters
 		if (!is_callable($handler)) throw new \InvalidArgumentException(
 			"[".__CLASS__."] Pre dispatch handler is not callable (handler: $handler, priorityIndex: $priorityIndex)."
 		);
-		if (is_null($priorityIndex)) {
+		if ($priorityIndex === NULL) {
 			$this->preDispatchHandlers[] = $handler;
 		} else {
 			$this->preDispatchHandlers[$priorityIndex] = $handler;
@@ -755,7 +755,7 @@ trait GettersSetters
 		if (!is_callable($handler)) throw new \InvalidArgumentException(
 			"[".__CLASS__."] Post dispatch handler is not callable (handler: $handler, priorityIndex: $priorityIndex)."
 		);
-		if (is_null($priorityIndex)) {
+		if ($priorityIndex === NULL) {
 			$this->postDispatchHandlers[] = $handler;
 		} else {
 			$this->postDispatchHandlers[$priorityIndex] = $handler;

@@ -94,8 +94,8 @@ class Session extends \ArrayObject implements Interfaces\ISession
 	protected static function setUpMeta () {
 		$metaKey = static::SESSION_METADATA_KEY;
 		$meta = array();
-		if (isset(static::$session[$metaKey])) {
-			$meta = @unserialize(static::$session[$metaKey]);
+		if (isset($_SESSION[$metaKey])) {
+			$meta = @unserialize($_SESSION[$metaKey]);
 		}
 		if (!$meta) {
 			$meta = array(
@@ -139,7 +139,7 @@ class Session extends \ArrayObject implements Interfaces\ISession
 				}
 				error_reporting($currentErrRepLevels);
 				unset($names[$name]);
-				unset(static::$session[$name]);
+				unset($_SESSION[$name]);
 			}
 		}
 	}
@@ -156,7 +156,7 @@ class Session extends \ArrayObject implements Interfaces\ISession
 				if (count($instance) === 0) $instance->Destroy();
 			}
 			$metaKey = static::SESSION_METADATA_KEY;
-			static::$session[$metaKey] = serialize(static::$meta);
+			$_SESSION[$metaKey] = serialize(static::$meta);
 			@session_write_close();
 		});
 	}
@@ -184,7 +184,7 @@ class Session extends \ArrayObject implements Interfaces\ISession
 		if (!static::$started) static::Start();
 		$this->__name = $name;
 		static::$meta->names[$name] = 1;
-		if (!isset(static::$session[$name])) static::$session[$name] = array();
+		if (!isset($_SESSION[$name])) $_SESSION[$name] = array();
 		static::$instances[$name] = $this;
 	}
 
@@ -222,7 +222,7 @@ class Session extends \ArrayObject implements Interfaces\ISession
 		if (isset($names[$name])) unset($names[$name]);
 		if (isset($hoops[$name])) unset($hoops[$name]);
 		if (isset($expirations[$name])) unset($expirations[$name]);
-		if (isset(static::$session[$name])) unset(static::$session[$name]);
+		if (isset($_SESSION[$name])) unset($_SESSION[$name]);
 		if (isset($instances[$name])) unset($instances[$name]);
 	}
 
@@ -253,7 +253,7 @@ class Session extends \ArrayObject implements Interfaces\ISession
 	 * @return bool
 	 */
 	public function __isset ($key) {
-		return isset(static::$session[$this->__name][$key]);
+		return isset($_SESSION[$this->__name][$key]);
 	}
 
 	/**
@@ -263,7 +263,7 @@ class Session extends \ArrayObject implements Interfaces\ISession
 	 */
 	public function __unset ($key) {
 		$name = $this->__name;
-		if (isset(static::$session[$name][$key])) unset(static::$session[$name][$key]);
+		if (isset($_SESSION[$name][$key])) unset($_SESSION[$name][$key]);
 	}
 
 	/**
@@ -273,7 +273,7 @@ class Session extends \ArrayObject implements Interfaces\ISession
 	 */
 	public function __get ($key) {
 		$name = $this->__name;
-		if (isset(static::$session[$name][$key])) return static::$session[$name][$key];
+		if (isset($_SESSION[$name][$key])) return $_SESSION[$name][$key];
 		return NULL;
 	}
 
@@ -284,7 +284,7 @@ class Session extends \ArrayObject implements Interfaces\ISession
 	 * @return void
 	 */
 	public function __set ($key, $value) {
-		static::$session[$this->__name][$key] = $value;
+		$_SESSION[$this->__name][$key] = $value;
 	}
 
 	/**
@@ -292,6 +292,6 @@ class Session extends \ArrayObject implements Interfaces\ISession
 	 * @return int
 	 */
 	public function count () {
-		return count(static::$session[$this->__name]);
+		return count($_SESSION[$this->__name]);
 	}
 }

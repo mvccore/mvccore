@@ -80,6 +80,12 @@ class Router implements Interfaces\IRouter
 	 * @var bool
 	 */
 	protected $routeToDefaultIfNotMatch = FALSE;
+	
+	/**
+	 * All cleaned request params for chars to prevent XSS atacks.
+	 * @var array|NULL
+	 */
+	protected $cleanedRequestParams = NULL;
 
 
 	/**
@@ -463,14 +469,14 @@ class Router implements Interfaces\IRouter
 	 */
 	public function & Route () {
 		$request = & $this->request;
-		$controllerName = $request->GetControllerName();
-		$actionName = $request->GetActionName();
-		if ($controllerName && $actionName) {
-			$this->routeByControllerAndActionQueryString($controllerName, $actionName);
+		$requestCtrlName = $request->GetControllerName();
+		$requestActionName = $request->GetActionName();
+		if ($requestCtrlName && $requestActionName) {
+			$this->routeByControllerAndActionQueryString($requestCtrlName, $requestActionName);
 		} else {
 			$this->routeByRewriteRoutes();
 		}
-		$requestParams = & $request->Defaults;
+		$requestParams = & $request->GetParams();
 		$app = \MvcCore\Application::GetInstance();
 		$toolClass = $app->GetToolClass();
 		list($dfltCtrl, $dftlAction) = $app->GetDefaultControllerAndActionNames();
@@ -481,7 +487,7 @@ class Router implements Interfaces\IRouter
 				$requestParams[$mvcProp] = $toolClass::GetDashedFromPascalCase($mvcValue);
 			}
 		}
-		if (!$this->currentRoute && (
+		if ($this->currentRoute === NULL && (
 			$request->GetPath() == '/' || $this->routeToDefaultIfNotMatch
 		)) {
 			$routeClass = $app->GetRouteClass();
@@ -541,7 +547,9 @@ class Router implements Interfaces\IRouter
 			$controllerActionOrRouteName = $this->currentRoute
 				? $this->currentRoute->Name
 				: ':';
-			$params = array_merge($request->Defaults, $params);
+			if ($this->cleanedRequestParams == NULL)
+				$this->cleanedRequestParams = $request->GetParams();
+			$params = array_merge($this->cleanedRequestParams, $params);
 			unset($params['controller'], $params['action']);
 		}
 		$absolute = FALSE;
@@ -554,7 +562,7 @@ class Router implements Interfaces\IRouter
 		} else {
 			$result = $this->urlByQueryString($controllerActionOrRouteName, $params);
 		}
-		if ($absolute) $result = $request->DomainUrl . $result;
+		if ($absolute) $result = $request->GetDomainUrl() . $result;
 		return $result;
 	}
 
@@ -568,7 +576,7 @@ class Router implements Interfaces\IRouter
 	protected function urlByQueryString ($controllerActionOrRouteName, $params) {
 		$toolClass = \MvcCore\Application::GetInstance()->GetToolClass();
 		list($ctrlPc, $actionPc) = explode(':', $controllerActionOrRouteName);
-		$result = $this->request->BasePath . $this->request->GetScriptName()
+		$result = $this->request->GetBasePath() . $this->request->GetScriptName()
 			. '?controller=' . $toolClass::GetDashedFromPascalCase($ctrlPc)
 			. '&amp;action=' . $toolClass::GetDashedFromPascalCase($actionPc);
 		if ($params) $result .= '&amp;' . http_build_query($params, '', '&amp;');
@@ -593,7 +601,7 @@ class Router implements Interfaces\IRouter
 	 * @return string
 	 */
 	protected function urlByRoute (& $route, $params) {
-		return $this->request->BasePath . $route->Url($params);
+		return $this->request->GetBasePath() . $route->Url($params);
 	}
 
 	/**
@@ -604,17 +612,20 @@ class Router implements Interfaces\IRouter
 	 * @param string $actionName
 	 * @return void
 	 */
-	protected function routeByControllerAndActionQueryString ($controllerName, $actionName) {
+	protected function routeByControllerAndActionQueryString ($requestCtrlName, $requestActionName) {
 		$app = \MvcCore\Application::GetInstance();
 		$toolClass = $app->GetToolClass();
 		$routeClass = $app->GetRouteClass();
 		list($ctrlDfltName, $actionDfltName) = $app->GetDefaultControllerAndActionNames();
-		$controllerPc = $toolClass::GetPascalCaseFromDashed($controllerName ?: $ctrlDfltName);
-		$actionPc = $toolClass::GetPascalCaseFromDashed($actionName ?: $actionDfltName);
+		$controllerPc = $toolClass::GetPascalCaseFromDashed($requestCtrlName ?: $ctrlDfltName);
+		$actionPc = $toolClass::GetPascalCaseFromDashed($requestActionName ?: $actionDfltName);
 		$this->currentRoute = $routeClass::GetInstance()
-			->SetName("$controllerPc:$actionPc")
+			->SetName('default')
 			->SetController($controllerPc)
 			->SetAction($actionPc);
+		$this->AddRoute($this->currentRoute, TRUE);
+		$this->request->SetParam('controller', $toolClass::GetDashedFromPascalCase($controllerPc));
+		$this->request->SetParam('action', $toolClass::GetDashedFromPascalCase($actionPc));
 	}
 
 	/**
@@ -630,12 +641,25 @@ class Router implements Interfaces\IRouter
 		foreach ($this->routes as & $route) {
 			$route->Prepare();
 			if ($matchedParams = $route->Matches($requestPath)) {
-				$this->currentRoute = $route;
+				$this->currentRoute = & $route;
 				$routeDefaultParams = $route->Defaults ?: array();
 				$request->SetParams(
 					array_merge($routeDefaultParams, $request->GetParams(), $matchedParams)
 				);
 				break;
+			}
+		}
+		if ($this->currentRoute !== NULL && (!$route->Controller || !$route->Action)) {
+			$app = \MvcCore\Application::GetInstance();
+			$toolClass = $app->GetToolClass();
+			list($ctrlDfltName, $actionDfltName) = $app->GetDefaultControllerAndActionNames();
+			if (!$route->Controller) {
+				$route->Controller = $ctrlDfltName;
+				$request->SetParam('controller', $toolClass::GetDashedFromPascalCase($ctrlDfltName));
+			}
+			if (!$route->Action) {
+				$route->Action = $actionDfltName;
+				$request->SetParam('action', $toolClass::GetDashedFromPascalCase($actionDfltName));
 			}
 		}
 	}

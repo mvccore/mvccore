@@ -248,8 +248,8 @@ class Response implements Interfaces\IResponse
 			$name, $value,
 			$lifetime === 0 ? 0 : time() + $lifetime,
 			$path,
-			is_null($domain) ? $request->GetServerName() : $domain,
-			is_null($secure) ? $request->IsSecure() : $secure,
+			$domain === NULL ? $request->GetServerName() : $domain,
+			$secure === NULL ? $request->IsSecure() : $secure,
 			$httpOnly
 		);
 	}

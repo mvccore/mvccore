@@ -49,7 +49,7 @@ trait Helpers
 	public function CompleteControllerName ($controllerNamePascalCase) {
 		$firstChar = substr($controllerNamePascalCase, 0, 1);
 		if ($firstChar == '\\') return $controllerNamePascalCase;
-		return implode('\\', array(
+		return '\\' . implode('\\', array(
 			$this->appDir,
 			$this->controllersDir,
 			$controllerNamePascalCase

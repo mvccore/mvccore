@@ -94,13 +94,13 @@ class Controller implements Interfaces\IController
 	 * Requested controller name - `"dashed-controller-name"`.
 	 * @var string
 	 */
-	protected $controller = '';
+	protected $controllerName = '';
 
 	/**
 	 * Requested action name - `"dashed-action-name"`.
 	 * @var string
 	 */
-	protected $action = '';
+	protected $actionName = '';
 
 	/**
 	 * Boolean about AJAX request.
@@ -305,7 +305,7 @@ class Controller implements Interfaces\IController
 		if ($this->dispatchState == 0) $this->Init();
 		if ($this->viewEnabled) {
 			$viewClass = $this->application->GetViewClass();
-			$this->view = (new $viewClass)->SetController($this);
+			$this->view = $viewClass::GetInstance()->SetController($this);
 		}
 		foreach ($this->_childControllers as $controller) {
 			$controller->PreDispatch();
@@ -337,7 +337,7 @@ class Controller implements Interfaces\IController
 	/**
 	 * Sets up `\MvcCore\Application` singleton object.
 	 * This is INTERNAL, not TEMPLATE method, internally called in
-	 * `\MvcCore::DispatchControllerAction()` before controller is dispatched.
+	 * `\MvcCore\Application::DispatchControllerAction()` before controller is dispatched.
 	 * Usually call this as soon as possible after controller creation.
 	 * @param \MvcCore\Application $application
 	 * @return \MvcCore\Controller
@@ -358,22 +358,22 @@ class Controller implements Interfaces\IController
 	/**
 	 * Sets up `\MvcCore\Request` object and other protected properties.
 	 * This is INTERNAL, not TEMPLATE method, internally called in
-	 * `\MvcCore::DispatchControllerAction();` before controller is dispatched.
+	 * `\MvcCore\Application::DispatchControllerAction();` before controller is dispatched.
 	 * Usually call this as soon as possible after controller creation
 	 * to set up following controller properties:
 	 * - `\MvcCore\Controller::$request`
 	 * - `\MvcCore\Controller::$response`
 	 * - `\MvcCore\Controller::$router`
-	 * - `\MvcCore\Controller::$controller`
-	 * - `\MvcCore\Controller::$action`
+	 * - `\MvcCore\Controller::$controllerName`
+	 * - `\MvcCore\Controller::$actionName`
 	 * - `\MvcCore\Controller::$ajax`
 	 * @param \MvcCore\Request $request
 	 * @return \MvcCore\Controller
 	 */
 	public function & SetRequest (\MvcCore\Interfaces\IRequest & $request) {
 		$this->request = & $request;
-		$this->controller = $request->GetControllerName();
-		$this->action = $request->GetActionName();
+		$this->controllerName = $request->GetControllerName();
+		$this->actionName = $request->GetActionName();
 		$this->ajax = $request->IsAjax();
 		if ($this->ajax || (
 			$this->controller == 'controller' && $this->action == 'asset'
@@ -525,7 +525,7 @@ class Controller implements Interfaces\IController
 	 */
 	public function AddChildController (\MvcCore\Interfaces\IController & $controller, $index = NULL) {
 		if (!in_array($controller, $this->_childControllers)) {
-			if (is_null($index)) {
+			if ($index === NULL) {
 				$this->_childControllers[] = & $controller;
 			} else {
 				$this->_childControllers[$index] = & $controller;
@@ -623,27 +623,29 @@ class Controller implements Interfaces\IController
 		if ($this->dispatchState == 0) $this->Init();
 		if ($this->dispatchState == 1) $this->PreDispatch();
 		if ($this->viewEnabled) {
-			$currentCtrlIsTopMostParent = is_null($this->_parentController);
+			$currentCtrlIsTopMostParent = $this->_parentController === NULL;
 			// set up values
 			if (!$currentCtrlIsTopMostParent) {
-				$this->view->SetUp($this->_parentController->GetView());
+				$this->view->SetValues($this->_parentController->GetView());
 			}
 			foreach ($this->_childControllers as $ctrlKey => $childCtrl) {
 				if (is_numeric($ctrlKey) && !isset($this->view->$ctrlKey))
 					$this->view->$ctrlKey = $childCtrl;
 			}
-			if (!$controllerDashedName)	$controllerDashedName	= $this->request->GetControllerName();
-			if (!$actionDashedName)		$actionDashedName		= $this->request->GetActionName();
 			// complete paths
-			$controllerPath = str_replace(array('_', '\\'), '/', $controllerDashedName);
-			$viewScriptPath = implode('/', array($controllerPath, $actionDashedName));
+			$controllerPath = str_replace(
+				array('_', '\\'), '/', $controllerDashedName ?: $this->controllerName
+			);
+			$viewScriptPath = implode(
+				'/', array($controllerPath, $actionDashedName ?: $this->actionName)
+			);
 			// render content string
 			$actionResult = $this->view->RenderScript($viewScriptPath);
 			if ($currentCtrlIsTopMostParent) {
 				// create top most parent layout view, set up and render to outputResult
 				$viewClass = $this->application->GetViewClass();
 				/** @var $layout \MvcCore\View */
-				$layout = (new $viewClass)->SetController($this)->SetValues($this->view);
+				$layout = $viewClass::GetInstance()->SetController($this)->SetValues($this->view);
 				$outputResult = $layout->RenderLayoutAndContent($this->layout, $actionResult);
 				unset($layout, $this->view);
 				// send response and exit

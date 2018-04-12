@@ -67,6 +67,15 @@ interface IView
 	public static function StaticInit ();
 
 	/**
+	 * Return always new instance of staticly called class, no singleton.
+	 * Always called from `\MvcCore\Controller::PreDispatch()`.
+	 * This is place where to customize any view creation process,
+	 * before it's created by MvcCore framework to fill and render it.
+	 * @return \MvcCore\Interfaces\IView
+	 */
+	public static function GetInstance ();
+
+	/**
 	 * Add view helpers classes namespace(s),
 	 * Example: `\MvcCore\View::AddHelpersClassNamespaces('\Any\Other\ViewHelpers\Place\', '...');`.
 	 * @param string $helperNamespace,... View helper classes namespace(s)
@@ -102,7 +111,7 @@ interface IView
 	 * @param \MvcCore\Interfaces\IView $view
 	 * @return \MvcCore\Interfaces\IView
 	 */
-	public function & SetValues (& $view);
+	public function & SetValues (\MvcCore\Interfaces\IView & $view);
 
 	/**
 	 * Return rendered controller/action template content as reference.
@@ -190,6 +199,14 @@ interface IView
 	public function __set ($name, $value);
 
 	/**
+	 * Get any value from view context internal store
+	 * except system keys declared in `static::$originalyDeclaredProperties`.
+	 * @param string $name
+	 * @throws \Exception
+	 */
+	public function & __get ($name);
+
+	/**
 	 * Try to call view helper.
 	 * If view helper doesn't exist in global helpers store - create new helper instance.
 	 * If helper already exists in global helpers store - do not create it again - use instance from the store.
@@ -199,5 +216,5 @@ interface IView
 	 * @param mixed $arguments
 	 * @return string|mixed
 	 */
-	public function __call ($method, $arguments);
+	public function & __call ($method, $arguments);
 }

@@ -43,7 +43,7 @@ class Request implements Interfaces\IRequest
 	 * `TRUE` if http protocol is `"https:"`
 	 * @var bool|NULL
 	 */
-	protected $isSecure			= NULL;
+	protected $secure			= NULL;
 
 	/**
 	 * Application server name - domain without any port.
@@ -60,8 +60,9 @@ class Request implements Interfaces\IRequest
 	protected $host				= NULL;
 
 	/**
-	 * Http port parsed by `parse_url()`.
-	 * Example: `"88"`
+	 * Http port defined in requested url if any, parsed by `parse_url(). 
+	 * Empty string if there is no port number in requested address.`.
+	 * Example: `"88" | ""`
 	 * @var string|NULL
 	 */
 	protected $port				= NULL;
@@ -325,7 +326,7 @@ class Request implements Interfaces\IRequest
 	 * @return array
 	 */
 	public function & GetHeaders () {
-		if (is_null($this->headers)) $this->initHeaders();
+		if ($this->headers === NULL) $this->initHeaders();
 		return $this->headers;
 	}
 
@@ -338,14 +339,14 @@ class Request implements Interfaces\IRequest
 	 * @return \MvcCore\Request
 	 */
 	public function & SetHeader ($name = "", $value = "") {
-		if (is_null($this->headers)) $this->initHeaders();
+		if ($this->headers === NULL) $this->initHeaders();
 		$this->headers[$name] = $value;
 		return $this;
 	}
 
 	/**
-	 * Get http header value filtered by characters defined in second
-	 * argument throught `preg_replace()`. Place into second argument
+	 * Get http header value filtered by "rule to keep defined characters only", 
+	 * defined in second argument (by `preg_replace()`). Place into second argument
 	 * only char groups you want to keep. Header has to be in format like:
 	 * `"Content-Type" | "Content-Length" | "X-Requested-With" ...`.
 	 * @param string $name Http header string name.
@@ -360,7 +361,7 @@ class Request implements Interfaces\IRequest
 		$ifNullValue = NULL,
 		$targetType = NULL
 	) {
-		if (is_null($this->headers)) $this->initHeaders();
+		if ($this->headers === NULL) $this->initHeaders();
 		return $this->getParamFromCollection(
 			$this->headers, $name, $pregReplaceAllowedChars, $ifNullValue, $targetType
 		);
@@ -378,12 +379,21 @@ class Request implements Interfaces\IRequest
 	}
 
 	/**
-	 * Get directly all raw parameters without any conversion at once.
+	 * Get directly all raw parameters at once (without any conversion by default).
+	 * If any defined char groups in `$pregReplaceAllowedChars`, there will be returned
+	 * all params filtered by given rule in `preg_replace()`.
+	 * Place into second argument only char groups you want to keep.
+	 * @param string $pregReplaceAllowedChars List of regular expression characters to only keep.
 	 * @return array
 	 */
-	public function & GetParams () {
-		if (is_null($this->params)) $this->initParams();
-		return $this->params;
+	public function & GetParams ($pregReplaceAllowedChars = "") {
+		if ($this->params === NULL) $this->initParams();
+		if ($pregReplaceAllowedChars == "") return $this->params;
+		$cleanedParams = array();
+		foreach ($this->params as $key => &$value) {
+			$cleanedParams[$key] = $this->GetParam($name, $pregReplaceAllowedChars);
+		}
+		return $cleanedParams;
 	}
 
 	/**
@@ -393,14 +403,14 @@ class Request implements Interfaces\IRequest
 	 * @return \MvcCore\Request
 	 */
 	public function & SetParam ($name = "", $value = "") {
-		if (is_null($this->params)) $this->initParams();
+		if ($this->params === NULL) $this->initParams();
 		$this->params[$name] = $value;
 		return $this;
 	}
 
 	/**
-	 * Get param value from `$_GET`, `$_POST` or `php://input`,
-	 * filtered by characters defined in second argument throught `preg_replace()`.
+	 * Get param value from `$_GET`, `$_POST` or `php://input`, filtered by 
+	 * "rule to keep defined characters only", defined in second argument (by `preg_replace()`).
 	 * Place into second argument only char groups you want to keep.
 	 * @param string $name Parametter string name.
 	 * @param string $pregReplaceAllowedChars List of regular expression characters to only keep.
@@ -414,7 +424,7 @@ class Request implements Interfaces\IRequest
 		$ifNullValue = NULL,
 		$targetType = NULL
 	) {
-		if (is_null($this->params)) $this->initParams();
+		if ($this->params === NULL) $this->initParams();
 		return $this->getParamFromCollection(
 			$this->params, $name, $pregReplaceAllowedChars, $ifNullValue, $targetType
 		);
@@ -520,7 +530,7 @@ class Request implements Interfaces\IRequest
 	 * This method is not recomanded to use in production mode, it's
 	 * designed mostly for development purposes, to see in one moment,
 	 * what could be inside request after calling any getter method.
-	 * @return void
+	 * @return \MvcCore\Request
 	 */
 	public function InitAll () {
 		$this->GetScriptName();
@@ -528,6 +538,7 @@ class Request implements Interfaces\IRequest
 		$this->GetMethod();
 		$this->GetBasePath();
 		$this->GetProtocol();
+		$this->IsSecure();
 		$this->GetServerName();
 		$this->GetHost();
 		$this->GetRequestPath();
@@ -537,6 +548,7 @@ class Request implements Interfaces\IRequest
 		$this->initUrlSegments();
 		$this->initHeaders();
 		$this->initParams();
+		return $this;
 	}
 
 	/**
@@ -549,7 +561,7 @@ class Request implements Interfaces\IRequest
 			$this->appRequest = 1;
 			$ctrl = 'controller';
 			$action = 'action';
-			if (is_null($this->params)) $this->initParams();
+			if ($this->params === NULL) $this->initParams();
 			if (isset($this->params[$ctrl]) && isset($this->params[$action])) {
 				if ($this->params[$ctrl] == $ctrl && $this->params[$action] == 'asset') {
 					$this->appRequest = 0;
@@ -564,7 +576,7 @@ class Request implements Interfaces\IRequest
 	 * @return string
 	 */
 	public function GetControllerName () {
-		if (is_null($this->controllerName)) {
+		if ($this->controllerName === NULL) {
 			$this->controllerName = $this->GetParam('controller', 'a-zA-Z0-9\-_/', '', 'string');
 		}
 		return $this->controllerName;
@@ -575,7 +587,7 @@ class Request implements Interfaces\IRequest
 	 * @return string
 	 */
 	public function GetActionName () {
-		if (is_null($this->actionName)) {
+		if ($this->actionName === NULL) {
 			$this->actionName = $this->GetParam('action', 'a-zA-Z0-9\-_/', '', 'string');
 		}
 		return $this->actionName;
@@ -595,15 +607,15 @@ class Request implements Interfaces\IRequest
 	 * @return mixed|\MvcCore\Request
 	 */
 	public function __call ($name, $arguments = array()) {
-		$nameBegin = strtolower(substr($rawName, 0, 3));
-		$name = substr($rawName, 3);
-		if ($nameBegin == 'get' && isset($this->$name)) {
-			return $this->$name;
+		$nameBegin = strtolower(substr($name, 0, 3));
+		$prop = substr($name, 3);
+		if ($nameBegin == 'get' && isset($this->$prop)) {
+			return $this->$prop;
 		} else if ($nameBegin == 'set') {
-			$this->$name = isset($arguments[0]) ? $arguments[0] : NULL;
+			$this->$prop = isset($arguments[0]) ? $arguments[0] : NULL;
 			return $this;
 		} else {
-			throw new \InvalidArgumentException('['.__CLASS__."] No property with name '$name' defined.");
+			throw new \InvalidArgumentException('['.__CLASS__."] No property with name '$prop' defined.");
 		}
 	}
 
@@ -634,7 +646,7 @@ class Request implements Interfaces\IRequest
 	 * @return string
 	 */
 	public function GetScriptName () {
-		if (is_null($this->scriptName)) {
+		if ($this->scriptName === NULL) {
 			$indexScriptName = $this->getIndexScriptName();
 			$this->scriptName = '/' . substr($indexScriptName, strrpos($indexScriptName, '/') + 1);
 		}
@@ -647,7 +659,7 @@ class Request implements Interfaces\IRequest
 	 * @return string
 	 */
 	public function GetAppRoot () {
-		if (is_null($this->appRoot)) {
+		if ($this->appRoot === NULL) {
 			// $indexScriptName = $this->getIndexScriptName();
 			// $appRootRelativePath = mb_substr($indexScriptName, 0, strrpos($indexScriptName, '/') + 1);
 			// ucfirst - cause IIS has lower case drive name here - different from __DIR__ value
@@ -668,7 +680,7 @@ class Request implements Interfaces\IRequest
 	 * @return string
 	 */
 	public function GetMethod () {
-		if (is_null($this->method)) {
+		if ($this->method === NULL) {
 			$this->method = strtoupper($this->globalServer['REQUEST_METHOD']);
 		}
 		return $this->method;
@@ -683,7 +695,7 @@ class Request implements Interfaces\IRequest
 	 * @return void
 	 */
 	public function GetBasePath () {
-		if (is_null($this->basePath)) {
+		if ($this->basePath === NULL) {
 			$indexScriptName = $this->getIndexScriptName();
 			$lastSlashPos = mb_strrpos($indexScriptName, '/');
 			$this->basePath = $lastSlashPos !== FALSE
@@ -699,7 +711,7 @@ class Request implements Interfaces\IRequest
 	 * @return void
 	 */
 	public function GetProtocol () {
-		if (is_null($this->protocol)) {
+		if ($this->protocol === NULL) {
 			$this->protocol = (
 				isset($this->globalServer['HTTPS']) &&
 				strtolower($this->globalServer['HTTPS']) == 'on'
@@ -715,7 +727,7 @@ class Request implements Interfaces\IRequest
 	 * @return bool
 	 */
 	public function IsSecure () {
-		if (is_null($this->secure))
+		if ($this->secure === NULL)
 			$this->secure = $this->GetProtocol() == static::PROTOCOL_HTTPS;
 		return $this->secure;
 	}
@@ -727,7 +739,7 @@ class Request implements Interfaces\IRequest
 	 * @return void
 	 */
 	public function GetReferer () {
-		if (is_null($this->referer)) {
+		if ($this->referer === NULL) {
 			$referer = isset($_SERVER['HTTP_REFERER']) ? $_SERVER['HTTP_REFERER'] : '';
 			if ($referer) $referer = filter_var($referer, FILTER_SANITIZE_URL) ?: '';
 			$this->referer = $referer;
@@ -741,7 +753,7 @@ class Request implements Interfaces\IRequest
 	 * @return string
 	 */
 	public function GetServerName () {
-		if (is_null($this->serverName)) $this->serverName = $this->globalServer['SERVER_NAME'];
+		if ($this->serverName === NULL) $this->serverName = $this->globalServer['SERVER_NAME'];
 		return $this->serverName;
 	}
 
@@ -751,17 +763,18 @@ class Request implements Interfaces\IRequest
 	 * @return string
 	 */
 	public function GetHost () {
-		if (is_null($this->host)) $this->host = $this->globalServer['HTTP_HOST'];
+		if ($this->host === NULL) $this->host = $this->globalServer['HTTP_HOST'];
 		return $this->host;
 	}
 
 	/**
-	 * Get http port parsed by `parse_url()`.
-	 * Example: `"88"`
+	 * Http port defined in requested url if any, parsed by `parse_url(). 
+	 * Empty string if there is no port number in requested address.`.
+	 * Example: `"88" | ""`
 	 * @return string
 	 */
 	public function GetPort () {
-		if (is_null($this->port)) $this->initUrlSegments();
+		if ($this->port === NULL) $this->initUrlSegments();
 		return $this->port;
 	}
 
@@ -771,7 +784,7 @@ class Request implements Interfaces\IRequest
 	 * @return string
 	 */
 	public function GetPath () {
-		if (is_null($this->path)) $this->initUrlSegments();
+		if ($this->path === NULL) $this->initUrlSegments();
 		return $this->path;
 	}
 
@@ -781,7 +794,7 @@ class Request implements Interfaces\IRequest
 	 * @return string
 	 */
 	public function GetQuery () {
-		if (is_null($this->query)) $this->initUrlSegments();
+		if ($this->query === NULL) $this->initUrlSegments();
 		return $this->query;
 	}
 
@@ -791,7 +804,7 @@ class Request implements Interfaces\IRequest
 	 * @var string
 	 */
 	public function GetRequestPath () {
-	    if (is_null($this->requestPath)) {
+	    if ($this->requestPath === NULL) {
 			$query = $this->GetQuery();
 			$this->requestPath = $this->GetPath() . ($query ? '?' . $query : '') . $this->GetFragment();
 		}
@@ -804,7 +817,7 @@ class Request implements Interfaces\IRequest
 	 * @var string
 	 */
 	public function GetDomainUrl () {
-	    if (is_null($this->domainUrl)) $this->domainUrl = $this->GetProtocol() . '//' . $this->GetHost();
+	    if ($this->domainUrl === NULL) $this->domainUrl = $this->GetProtocol() . '//' . $this->GetHost();
 	    return $this->domainUrl;
 	}
 
@@ -814,7 +827,7 @@ class Request implements Interfaces\IRequest
 	 * @var string
 	 */
 	public function GetBaseUrl () {
-	    if (is_null($this->baseUrl)) $this->baseUrl = $this->GetDomainUrl() . $this->GetBasePath();
+	    if ($this->baseUrl === NULL) $this->baseUrl = $this->GetDomainUrl() . $this->GetBasePath();
 	    return $this->baseUrl;
 	}
 
@@ -824,7 +837,7 @@ class Request implements Interfaces\IRequest
 	 * @var string
 	 */
 	public function GetRequestUrl () {
-	    if (is_null($this->requestUrl)) $this->requestUrl = $this->GetBaseUrl() . $this->GetPath();
+	    if ($this->requestUrl === NULL) $this->requestUrl = $this->GetBaseUrl() . $this->GetPath();
 	    return $this->requestUrl;
 	}
 
@@ -834,9 +847,9 @@ class Request implements Interfaces\IRequest
 	 * @var string
 	 */
 	public function GetFullUrl () {
-	    if (is_null($this->fullUrl)) {
+	    if ($this->fullUrl === NULL) {
 	        $query = $this->GetQuery();
-	        $this->fullUrl = $this->RequestUrl() . ($query ? '?' . $query : '') . $this->GetFragment();
+	        $this->fullUrl = $this->GetRequestUrl() . ($query ? '?' . $query : '') . $this->GetFragment();
 	    }
 	    return $this->fullUrl;
 	}
@@ -847,7 +860,7 @@ class Request implements Interfaces\IRequest
 	 * @return string
 	 */
 	public function GetFragment () {
-		if (is_null($this->fragment)) $this->initUrlSegments();
+		if ($this->fragment === NULL) $this->initUrlSegments();
 		return $this->fragment;
 	}
 
@@ -858,7 +871,7 @@ class Request implements Interfaces\IRequest
 	 * @return bool
 	 */
 	public function IsAjax () {
-		if (is_null($this->ajax)) {
+		if ($this->ajax === NULL) {
 			$this->ajax = (
 				isset($this->globalServer['HTTP_X_REQUESTED_WITH']) &&
 				strlen($this->globalServer['HTTP_X_REQUESTED_WITH']) > 0
@@ -878,10 +891,10 @@ class Request implements Interfaces\IRequest
 			. $this->globalServer['HTTP_HOST']
 			. $this->globalServer['REQUEST_URI'];
 		$parsedUrl = parse_url($absoluteUrl);
-		$this->port = $parsedUrl['port'];
-		$this->path = $parsedUrl['path'];
-		$this->query = $parsedUrl['query'];
-		$this->fragment = $parsedUrl['fragment'];
+		$this->port = $parsedUrl['port'] ?: '';
+		$this->path = mb_substr($parsedUrl['path'] ?: '', mb_strlen($this->GetBasePath()));
+		$this->query = $parsedUrl['query'] ?: '';
+		$this->fragment = $parsedUrl['fragment'] ?: '';
 	}
 
 	/**
@@ -995,15 +1008,18 @@ class Request implements Interfaces\IRequest
 		$ifNullValue = NULL,
 		$targetType = NULL
 	) {
-		if (is_null($rawValue)) {
-			if (is_null($targetType)) return $ifNullValue;
-			return settype($ifNullValue, $targetType);
+		if ($rawValue === NULL) {
+			if ($targetType === NULL) return $ifNullValue;
+			$result = is_scalar($ifNullValue) ? $ifNullValue : clone $ifNullValue;
+			settype($result, $targetType);
+			return $result;
 		} else {
 			$rawValue = trim($rawValue);
 			if (mb_strlen($rawValue) === 0) return "";
 			if (mb_strlen($pregReplaceAllowedChars) > 0 || $pregReplaceAllowedChars == ".*") {
-				if (is_null($targetType)) return $rawValue;
-				return settype($rawValue, $targetType);
+				if ($targetType === NULL) return $rawValue;
+				settype($rawValue, $targetType);
+				return $rawValue;
 			} else if (gettype($rawValue) == 'array') {
 				$result = array();
 				foreach ((array) $rawValue as $key => & $value) {
@@ -1015,8 +1031,9 @@ class Request implements Interfaces\IRequest
 			} else {
 				$pattern = "#[^" . $pregReplaceAllowedChars . "]#";
 				$result = preg_replace($pattern, "", $rawValue);
-				if (is_null($targetType)) return $result;
-				return settype($result, $targetType);
+				if ($targetType === NULL) return $result;
+				settype($result, $targetType);
+				return $result;
 			}
 		}
 	}
@@ -1026,7 +1043,7 @@ class Request implements Interfaces\IRequest
 	 * @return string
 	 */
 	protected function getIndexScriptName () {
-		if (is_null($this->indexScriptName))
+		if ($this->indexScriptName === NULL)
 			$this->indexScriptName = str_replace('\\', '/', $this->globalServer['SCRIPT_NAME']);
 		return $this->indexScriptName;
 	}

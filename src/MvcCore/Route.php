@@ -682,7 +682,7 @@ class Route implements Interfaces\IRoute
 		// (because there is a little probability, that developer defined records in default array
 		// in simillar order as params in reverse pattern) and check if `<paramName>` by this last
 		// default record is somewhere at the end of reverse pattern - if it is - set up last param.
-		if (is_null($this->LastPatternParam) && $this->Defaults) {
+		if ($this->LastPatternParam === NULL && $this->Defaults) {
 			$defaultsKeys = array_reverse(array_keys($this->Defaults));
 			$reverseLength = mb_strlen($this->Reverse);
 			$lastCharIsSlash = mb_substr($this->Reverse, $reverseLength - 2, 1) == '/';

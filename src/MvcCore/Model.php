@@ -170,7 +170,7 @@ class Model implements Interfaces\IModel {
 			if (!$includeInheritProperties && $property->class != $modelClassName) continue;
 			$propertyName = $property->name;
 			if (isset($systemProperties[$propertyName])) continue;
-			if (!$getNullValues && is_null($this->$propertyName)) continue;
+			if (!$getNullValues && $this->$propertyName === NULL) continue;
 			$data[$propertyName] = $this->$propertyName;
 		}
 		return $data;

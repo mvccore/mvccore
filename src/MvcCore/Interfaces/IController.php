@@ -163,8 +163,8 @@ interface IController
 	 * - `\MvcCore\Controller::$request`
 	 * - `\MvcCore\Controller::$response`
 	 * - `\MvcCore\Controller::$router`
-	 * - `\MvcCore\Controller::$controller`
-	 * - `\MvcCore\Controller::$action`
+	 * - `\MvcCore\Controller::$controllerName`
+	 * - `\MvcCore\Controller::$actionName`
 	 * - `\MvcCore\Controller::$ajax`
 	 * @param \MvcCore\Interfaces\IRequest $request
 	 * @return \MvcCore\Interfaces\IController

@@ -150,6 +150,17 @@ class View implements Interfaces\IView
 	}
 
 	/**
+	 * Return always new instance of staticly called class, no singleton.
+	 * Always called from `\MvcCore\Controller::PreDispatch()`.
+	 * This is place where to customize any view creation process,
+	 * before it's created by MvcCore framework to fill and render it.
+	 * @return \MvcCore\View
+	 */
+	public static function GetInstance () {
+		return new static();
+	}
+
+	/**
 	 * Add view helpers classes namespace(s),
 	 * Example: `\MvcCore\View::AddHelpersClassNamespaces('\Any\Other\ViewHelpers\Place\', '...');`.
 	 * @param string $helperNamespace,... View helper classes namespace(s)
@@ -204,10 +215,8 @@ class View implements Interfaces\IView
 	 * @param \MvcCore\View $view
 	 * @return \MvcCore\View
 	 */
-	public function & SetValues (& $view) {
-		foreach ($view->_store as $key => $value) {
-			$this->$key = $value;
-		}
+	public function & SetValues (\MvcCore\Interfaces\IView & $view) {
+		$this->_store = array_merge($this->_store, $view->_store);
 		return $this;
 	}
 
@@ -260,7 +269,10 @@ class View implements Interfaces\IView
 	public function & Render ($typePath = '', $relativePath = '') {
 		if (!$typePath) $typePath = static::$ScriptsDir;
 		$result = '';
-		$relativePath = $this->_correctRelativePath($this->Controller->GetRequest()->GetAppRoot(), $typePath, $relativePath);
+		$relativePath = $this->_correctRelativePath(
+			$this->_controller->GetRequest()->GetAppRoot(), 
+			$typePath, $relativePath
+		);
 		$viewScriptFullPath = static::GetViewScriptFullPath($typePath, $relativePath);
 		if (!file_exists($viewScriptFullPath)) {
 			throw new \InvalidArgumentException('['.__CLASS__."] Template not found in path: '$viewScriptFullPath'.");
@@ -319,7 +331,7 @@ class View implements Interfaces\IView
 	 * @return string
 	 */
 	public function AssetUrl ($path = '') {
-		return $this->Controller->AssetUrl($path);
+		return $this->_controller->AssetUrl($path);
 	}
 
 	/**
@@ -335,7 +347,22 @@ class View implements Interfaces\IView
 				'['.__CLASS__."] It's not possible to change property: '$name' originaly declared in class ".__CLASS__.'.'
 			);
 		}
-		$this->_store[$name] = & $value;
+		return $this->_store[$name] = & $value;
+	}
+
+	/**
+	 * Get any value from view context internal store
+	 * except system keys declared in `static::$originalyDeclaredProperties`.
+	 * @param string $name
+	 * @throws \Exception
+	 */
+	public function & __get ($name) {
+		if (isset(static::$originalyDeclaredProperties[$name])) {
+			throw new \InvalidArgumentException(
+				'['.__CLASS__."] It's not possible to get internal private property: '$name' in class ".__CLASS__.'.'
+			);
+		}
+		return $this->_store[$name];
 	}
 
 	/**
@@ -348,7 +375,7 @@ class View implements Interfaces\IView
 	 * @param mixed $arguments
 	 * @return string|mixed
 	 */
-	public function __call ($method, $arguments) {
+	public function & __call ($method, $arguments) {
 		$result = '';
 		$helperFound = FALSE;
 		foreach (static::$HelpersClassesNamespaces as $helperClassBase) {

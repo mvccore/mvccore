@@ -59,13 +59,13 @@ namespace MvcCore {
 		 * @var array
 		 */
 		protected static $handlers = array(
-			'timer'				=> 'timerHandler',
-			'dump'				=> 'dumpHandler',
-			'barDump'			=> 'dumpHandler',
-			'log'				=> 'dumpHandler',
-			'fireLog'			=> 'dumpHandler',
-			'exceptionHandler'	=> 'exceptionHandler',
-			'shutdownHandler'	=> 'ShutdownHandler',
+			'timer'				=> 'self::timerHandler',
+			'dump'				=> 'self::dumpHandler',
+			'barDump'			=> 'self::dumpHandler',
+			'log'				=> 'self::dumpHandler',
+			'fireLog'			=> 'self::dumpHandler',
+			'exceptionHandler'	=> 'self::exceptionHandler',
+			'shutdownHandler'	=> 'self::ShutdownHandler',
 		);
 
 		/**
@@ -92,7 +92,7 @@ namespace MvcCore {
 		 * @return void
 		 */
 		public static function Init () {
-			if (!is_null(static::$development)) return;
+			if (static::$development !== NULL) return;
 			$app = \MvcCore\Application::GetInstance();
 			$configClass = $app->GetConfigClass();
 			static::$development = $configClass::IsDevelopment();
@@ -157,7 +157,8 @@ namespace MvcCore {
 		public static function Timer ($name = NULL) {
 			return static::BarDump(
 				call_user_func(static::$handlers['timer'], $name),
-				$name
+				$name,
+				array('backtraceIndex' => 3)
 			);
 		}
 
@@ -247,17 +248,42 @@ namespace MvcCore {
 		 * @return void
 		 */
 		public static function ShutdownHandler () {
-			if (!count(static::$dumps)) return;
+			if (!count(self::$dumps)) return;
+			$app = \MvcCore\Application::GetInstance();
+			$appRoot = $app->GetRequest()->GetAppRoot();
+			$response = $app->GetResponse();
+			if (!$response->IsHtmlOutput()) return;
 			$dumps = '';
 			$dieDump = FALSE;
-			foreach (static::$dumps as $values) {
+			foreach (self::$dumps as $values) {
 				$dumps .= '<div class="item">';
-				if (!is_null($values[1])) {
+				if ($values[1] !== NULL) {
 					$dumps .= '<pre class="title">'.$values[1].'</pre>';
 				}
 				$dumps .= '<div class="value">'
 					.preg_replace("#\[([^\]]*)\]=>([^\n]*)\n(\s*)#", "[$1] => ",
-						str_replace("<required>","&lt;required&gt;", $values[0])
+						str_replace("<required>","&lt;required&gt;", 
+							preg_replace_callback (
+								"#\<small class\=\"file\"\>([^\<]*)\</small\>#", 
+								function ($m) use ($appRoot) {
+									$str = $m[1];
+									$pos = strrpos($str, ':');
+									if ($pos !== FALSE) {
+										$file = substr($str, 0, $pos);
+										$line = substr($str, $pos + 1);
+									} else {
+										$file = $str;
+										$line = 0;
+									}
+									$displayedFile = str_replace('\\', '/', $file);
+									if (strpos($displayedFile, $appRoot) === 0) {
+										$displayedFile = substr($displayedFile, strlen($appRoot));
+									}
+									return '<a class="editor" href="editor://open/?file='.rawurlencode($file).'&amp;line='.$line.'">'.$displayedFile.':'.$line.'</a>';
+								},
+								$values[0]
+							)
+						)
 					)
 					.'</div></div>';
 				if (isset($values[2]['dieDumpCall']) && $values[2]['dieDumpCall']) $dieDump = TRUE;
@@ -265,7 +291,7 @@ namespace MvcCore {
 			$template = file_get_contents(__DIR__.'/debug.html');
 			echo str_replace(
 				array('%mvccoreDumps%', '%mvccoreDumpsCount%', '%mvccoreDumpsClose%'),
-				array($dumps, count(static::$dumps), $dieDump ? ';' : 'q();'),
+				array($dumps, count(self::$dumps), $dieDump ? 'q(!0);' : 'q();'),
 				$template
 			);
 		}
@@ -277,8 +303,8 @@ namespace MvcCore {
 		 */
 		protected static function timerHandler ($name = NULL) {
 			$now = microtime(TRUE);
-			if (is_null($name)) return $now - \MvcCore\Application::GetInstance()->GetMicrotime();
-			$difference = isset(static::$timers[$name]) ? $now - static::$timers[$name] : 0;
+			if ($name === NULL) return $now - \MvcCore\Application::GetInstance()->GetMicrotime();
+			$difference = round((isset(static::$timers[$name]) ? $now - static::$timers[$name] : 0) * 1000) / 1000;
 			static::$timers[$name] = $now;
 			return $difference;
 		}
@@ -301,7 +327,7 @@ namespace MvcCore {
 			$backtrace = debug_backtrace(DEBUG_BACKTRACE_IGNORE_ARGS, $backtraceIndex + 1);
 			$originalPlace = (object) $backtrace[$backtraceIndex];
 			$content = '<small class="file">' . $originalPlace->file . ':' . $originalPlace->line . '</small>' . $content;
-			if (!isset($options['doNotStore'])) static::$dumps[] = array($content, $title, $options);
+			if (!isset($options['doNotStore'])) self::$dumps[] = array($content, $title, $options);
 			return $content;
 		}
 

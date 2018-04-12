@@ -129,8 +129,8 @@ interface IRequest
 	public function & SetHeader ($name = "", $value = "");
 
 	/**
-	 * Get http header value filtered by characters defined in second
-	 * argument throught `preg_replace()`. Place into second argument
+	 * Get http header value filtered by "rule to keep defined characters only", 
+	 * defined in second argument (by `preg_replace()`). Place into second argument
 	 * only char groups you want to keep. Header has to be in format like:
 	 * `"Content-Type" | "Content-Length" | "X-Requested-With" ...`.
 	 * @param string $name Http header string name.
@@ -155,10 +155,14 @@ interface IRequest
 	public function & SetParams (array & $params = array());
 
 	/**
-	 * Get directly all raw parameters without any conversion at once.
+	 * Get directly all raw parameters at once (without any conversion by default).
+	 * If any defined char groups in `$pregReplaceAllowedChars`, there will be returned
+	 * all params filtered by given rule in `preg_replace()`.
+	 * Place into second argument only char groups you want to keep.
+	 * @param string $pregReplaceAllowedChars List of regular expression characters to only keep.
 	 * @return array
 	 */
-	public function & GetParams ();
+	public function & GetParams ($pregReplaceAllowedChars = "");
 
 	/**
 	 * Set directly raw parameter value without any conversion.
@@ -169,8 +173,8 @@ interface IRequest
 	public function & SetParam ($name = "", $value = "");
 
 	/**
-	 * Get param value from `$_GET`, `$_POST` or `php://input`,
-	 * filtered by characters defined in second argument throught `preg_replace()`.
+	 * Get param value from `$_GET`, `$_POST` or `php://input`, filtered by 
+	 * "rule to keep defined characters only", defined in second argument (by `preg_replace()`).
 	 * Place into second argument only char groups you want to keep.
 	 * @param string $name Parametter string name.
 	 * @param string $pregReplaceAllowedChars List of regular expression characters to only keep.
@@ -262,7 +266,7 @@ interface IRequest
 	 * This method is not recomanded to use in production mode, it's
 	 * designed mostly for development purposes, to see in one moment,
 	 * what could be inside request after calling any getter method.
-	 * @return void
+	 * @return \MvcCore\Interfaces\IRequest
 	 */
 	public function InitAll ();
 

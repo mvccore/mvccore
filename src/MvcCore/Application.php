@@ -58,7 +58,7 @@ class Application implements \MvcCore\Interfaces\IApplication
 	public static function StaticInit () {
 		$instance = static::GetInstance();
 		$instance->microtime = microtime(TRUE);
-		if (is_null($instance->compiled)) {
+		if ($instance->compiled === NULL) {
 			$compiled = static::NOT_COMPILED;
 			if (strpos(__FILE__, 'phar://') === 0) {
 				$compiled = static::COMPILED_PHAR;

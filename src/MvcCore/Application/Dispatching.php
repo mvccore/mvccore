@@ -135,19 +135,19 @@ trait Dispatching
 	 * @return bool
 	 */
 	public function DispatchMvcRequest (\MvcCore\Interfaces\IRoute & $route = NULL) {
-		if (is_null($route)) return $this->DispatchException(new \Exception('No route for request', 404));
-		list ($controllerNamePascalCase, $actionNamePascalCase) = array($route->Controller, $route->Action);
-		$actionName = $actionNamePascalCase . 'Action';
+		if ($route === NULL) return $this->DispatchException(new \Exception('No route for request', 404));
+		list ($ctrlPc, $actionPc) = array($route->Controller, $route->Action);
+		$actionName = $actionPc . 'Action';
 		$viewClass = $this->viewClass;
 		$viewScriptFullPath = $viewClass::GetViewScriptFullPath(
 			$viewClass::$ScriptsDir,
 			$this->request->GetControllerName() . '/' . $this->request->GetActionName()
 		);
-		if ($controllerNamePascalCase == 'Controller') {
+		if ($ctrlPc == 'Controller') {
 			$controllerName = $this->controllerClass;
 		} else {
-			// App_Controllers_$controllerNamePascalCase
-			$controllerName = $this->CompleteControllerName($controllerNamePascalCase);
+			// `App_Controllers_<$ctrlPc>`
+			$controllerName = $this->CompleteControllerName($ctrlPc);
 			if (!class_exists($controllerName)) {
 				// if controller doesn't exists - check if at least view exists
 				if (file_exists($viewScriptFullPath)) {
@@ -308,6 +308,7 @@ trait Dispatching
 				'controller'=> $toolClass::GetDashedFromPascalCase($this->defaultControllerName),
 				'action'	=> $toolClass::GetDashedFromPascalCase($this->defaultControllerErrorActionName),
 			)));
+			$this->response->SetCode(500);
 			return $this->DispatchControllerAction(
 				$defaultCtrlFullName,
 				$this->defaultControllerErrorActionName . "Action",
@@ -344,6 +345,7 @@ trait Dispatching
 				'controller'=> $toolClass::GetDashedFromPascalCase($this->defaultControllerName),
 				'action'	=> $toolClass::GetDashedFromPascalCase($this->defaultControllerNotFoundActionName),
 			)));
+			$this->response->SetCode(404);
 			return $this->DispatchControllerAction(
 				$defaultCtrlFullName,
 				$this->defaultControllerNotFoundActionName . "Action",
