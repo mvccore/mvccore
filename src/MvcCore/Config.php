@@ -13,8 +13,10 @@
 
 namespace MvcCore;
 
+
+include_once(__DIR__ . '/Application.php');
+include_once(__DIR__ . '/Tool.php'); // because of static init
 //include_once(__DIR__ . '/Interfaces/IConfig.php');
-//include_once('Application.php');
 
 /**
  * Responsibility - reading config file(s), detecting environment in system config.
@@ -224,7 +226,7 @@ class Config implements Interfaces\IConfig
 	}
 
 	/**
-	 * Detect environment name in system config 
+	 * Detect environment name in system config
 	 * to load proper config sections later.
 	 * @param array $rawIni
 	 * @return string

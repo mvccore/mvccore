@@ -73,20 +73,20 @@ namespace MvcCore;
 class Controller implements Interfaces\IController
 {
 	/**
-	 * Request object - parsed uri, query params, app paths...
-	 * @var \MvcCore\Request
+     * Request object - parsed uri, query params, app paths...
+	 * @var \MvcCore\Request|\MvcCore\Interfaces\IRequest
 	 */
 	protected $request;
 
 	/**
 	 * Response object - storrage for response headers and rendered body.
-	 * @var \MvcCore\Response
+     * @var \MvcCore\Response|\MvcCore\Interfaces\IResponse
 	 */
 	protected $response;
 
 	/**
 	 * Application router object - reference storrage for application router to crate url addresses.
-	 * @var \MvcCore\Router
+     * @var \MvcCore\Router|\MvcCore\Interfaces\IRouter
 	 */
 	protected $router;
 
@@ -114,7 +114,7 @@ class Controller implements Interfaces\IController
 	 * Class store object for view properties.
 	 * Before `\MvcCore\Controller::PreDispatch();` is called
 	 * in controller lifecycle, this property will be still `NULL`.
-	 * @var \MvcCore\View
+     * @var \MvcCore\View|\MvcCore\Interfaces\IView
 	 */
 	protected $view = NULL;
 

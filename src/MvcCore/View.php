@@ -13,6 +13,7 @@
 
 namespace MvcCore;
 
+include_once(__DIR__ . '/Application.php'); // because of static init
 //include_once(__DIR__ . '/Interfaces/IView.php');
 
 /**
@@ -90,7 +91,7 @@ class View implements Interfaces\IView
 
 	/**
 	 * Controller instance.
-	 * @var \MvcCore\Controller
+	 * @var \MvcCore\Controller|\MvcCore\Interfaces\IController
 	 */
 	private $_controller = NULL;
 
@@ -270,7 +271,7 @@ class View implements Interfaces\IView
 		if (!$typePath) $typePath = static::$ScriptsDir;
 		$result = '';
 		$relativePath = $this->_correctRelativePath(
-			$this->_controller->GetRequest()->GetAppRoot(), 
+			$this->_controller->GetRequest()->GetAppRoot(),
 			$typePath, $relativePath
 		);
 		$viewScriptFullPath = static::GetViewScriptFullPath($typePath, $relativePath);

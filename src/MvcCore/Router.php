@@ -38,7 +38,7 @@ class Router implements Interfaces\IRouter
 {
 	/**
 	 * Current `\MvcCore\Router` singleton instance storage.
-	 * @var \MvcCore\Router
+     * @var \MvcCore\Router
 	 */
 	protected static $instance;
 
@@ -46,14 +46,14 @@ class Router implements Interfaces\IRouter
 	 * Internally used `\MvcCore\Request` request object reference for:
 	 * - Routing process in `\MvcCore\Router::Route();` and it's protected submethods.
 	 * - URL addresses completing in `\MvcCore\Router::Url()` and it's protected submethods.
-	 * @var \MvcCore\Request
+     * @var \MvcCore\Request|\MvcCore\Interfaces\IRequest
 	 */
 	protected $request;
 
 	/**
 	 * Global application route instances store to match request.
 	 * Keys are route(s) names, values are `\MvcCore\Route` instances.
-	 * @var \MvcCore\Route[]
+     * @var \MvcCore\Route[]|\MvcCore\Interfaces\IRoute[]
 	 */
 	protected $routes = array();
 
@@ -68,7 +68,7 @@ class Router implements Interfaces\IRouter
 	/**
 	 * Matched route by `\MvcCore\Router::Match();` processing or NULL if no match.
 	 * By this route, there is created and dispatched controller lifecycle by core.
-	 * @var \MvcCore\Route
+     * @var \MvcCore\Route|\MvcCore\Interfaces\IRoute
 	 */
 	protected $currentRoute = NULL;
 
@@ -80,7 +80,7 @@ class Router implements Interfaces\IRouter
 	 * @var bool
 	 */
 	protected $routeToDefaultIfNotMatch = FALSE;
-	
+
 	/**
 	 * All cleaned request params for chars to prevent XSS atacks.
 	 * @var array|NULL
@@ -638,7 +638,8 @@ class Router implements Interfaces\IRouter
 	protected function routeByRewriteRoutes () {
 		$request = & $this->request;
 		$requestPath = $request->GetPath();
-		foreach ($this->routes as & $route) {
+        /** @var $route \MvcCore\Interfaces\IRoute */
+        foreach ($this->routes as & $route) {
 			$route->Prepare();
 			if ($matchedParams = $route->Matches($requestPath)) {
 				$this->currentRoute = & $route;

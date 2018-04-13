@@ -184,9 +184,10 @@ trait Dispatching
 		$viewScriptFullPath,
 		callable $exceptionCallback
 	) {
-		$this->controller = NULL;
+        /** @var $controller \MvcCore\Controller */
+		$controller = NULL;
 		try {
-			$this->controller = $ctrlClassFullName::GetInstance()
+			$controller = $ctrlClassFullName::GetInstance()
 				->SetApplication($this)
 				->SetRequest($this->request)
 				->SetResponse($this->response)
@@ -202,8 +203,9 @@ trait Dispatching
 				));
 			}
 		}
+        $this->controller =  & $controller;
 		try {
-			$this->controller->Dispatch($actionName);
+			$controller->Dispatch($actionName);
 		} catch (\Exception $e) {
 			return $exceptionCallback($e);
 		}

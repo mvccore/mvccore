@@ -60,7 +60,7 @@ class Request implements Interfaces\IRequest
 	protected $host				= NULL;
 
 	/**
-	 * Http port defined in requested url if any, parsed by `parse_url(). 
+	 * Http port defined in requested url if any, parsed by `parse_url().
 	 * Empty string if there is no port number in requested address.`.
 	 * Example: `"88" | ""`
 	 * @var string|NULL
@@ -345,7 +345,7 @@ class Request implements Interfaces\IRequest
 	}
 
 	/**
-	 * Get http header value filtered by "rule to keep defined characters only", 
+	 * Get http header value filtered by "rule to keep defined characters only",
 	 * defined in second argument (by `preg_replace()`). Place into second argument
 	 * only char groups you want to keep. Header has to be in format like:
 	 * `"Content-Type" | "Content-Length" | "X-Requested-With" ...`.
@@ -390,8 +390,8 @@ class Request implements Interfaces\IRequest
 		if ($this->params === NULL) $this->initParams();
 		if ($pregReplaceAllowedChars == "") return $this->params;
 		$cleanedParams = array();
-		foreach ($this->params as $key => &$value) {
-			$cleanedParams[$key] = $this->GetParam($name, $pregReplaceAllowedChars);
+		foreach ($this->params as $name => &$value) {
+			$cleanedParams[$name] = $this->GetParam($name, $pregReplaceAllowedChars);
 		}
 		return $cleanedParams;
 	}
@@ -409,7 +409,7 @@ class Request implements Interfaces\IRequest
 	}
 
 	/**
-	 * Get param value from `$_GET`, `$_POST` or `php://input`, filtered by 
+	 * Get param value from `$_GET`, `$_POST` or `php://input`, filtered by
 	 * "rule to keep defined characters only", defined in second argument (by `preg_replace()`).
 	 * Place into second argument only char groups you want to keep.
 	 * @param string $name Parametter string name.
@@ -768,7 +768,7 @@ class Request implements Interfaces\IRequest
 	}
 
 	/**
-	 * Http port defined in requested url if any, parsed by `parse_url(). 
+	 * Http port defined in requested url if any, parsed by `parse_url().
 	 * Empty string if there is no port number in requested address.`.
 	 * Example: `"88" | ""`
 	 * @return string
