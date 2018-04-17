@@ -36,66 +36,71 @@ interface IDebug
 		JAVASCRIPT = 'javascript';
 
 	/**
-	 * Initialize debugging and logging, once only.
-	 * @return void
-	 */
+     * Initialize debugging and logging, once only.
+     * @param bool $forceDevelopmentMode If defined as `TRUE` or `FALSE`,
+     *                                   debug mode will be set not by config but by this value.
+     * @return void
+     */
 	public static function Init ();
 
 	/**
-	 * Starts/stops stopwatch.
-	 * @param  string $name Time pointer name.
-	 * @return float        Elapsed seconds.
-	 */
+     * Starts/stops stopwatch.
+     * @param  string $name Time pointer name.
+     * @return float        Elapsed seconds.
+     */
 	public static function Timer ($name = NULL);
 
 	/**
-	 * Dumps information about any variable in readable format and return it.
-	 * @param  mixed  $value	Variable to dump.
-	 * @param  bool   $return	Return output instead of printing it.
-	 * @return mixed			Variable itself or dump or null.
-	 */
+     * Dumps information about any variable in readable format and return it.
+     * In non-development mode - store dumped variable in `debug.log`.
+     * @param  mixed  $value	Variable to dump.
+     * @param  bool   $return	Return output instead of printing it.
+     * @return mixed			Variable itself or dumped variable string.
+     */
 	public static function Dump ($value, $return = FALSE);
 
 	/**
-	 * Dump any variable with output buffering in browser debug bar,
-	 * store result for printing later. Return printed variable as string.
-	 * @param  mixed	$value		Variable to dump.
-	 * @param  string	$title		Optional title.
-	 * @param  array	$options	Dumper options.
-	 * @return mixed				Variable itself.
-	 */
+     * Dump any variable with output buffering in browser debug bar.
+     * In non-development mode - store dumped variable in `debug.log`.
+     * Return printed variable as string.
+     * @param  mixed	$value		Variable to dump.
+     * @param  string	$title		Optional title.
+     * @param  array	$options	Dumper options.
+     * @return mixed				Variable itself.
+     */
 	public static function BarDump ($value, $title = NULL, $options = array());
 
 	/**
-	 * Logs any message or exception with log datetime, in `*.log` file
-	 * by given log level, in configured logging directory.
-	 * @param  string|\Exception|\Throwable	$value
-	 * @param  string						$priority
-	 * @return string						Logged error filename.
-	 */
+     * Logs any message or exception with log datetime, in `*.log` file
+     * by given log level, in configured logging directory.
+     * @param  string|\Exception|\Throwable	$value
+     * @param  string						$priority
+     * @return string						Logging filename fullpath.
+     */
 	public static function Log ($value, $priority = \MvcCore\Interfaces\IDebug::INFO);
 
 	/**
-	 * Sends given `$value` into FireLogger console.
-	 * @param	mixed	$value	Message to log.
-	 * @param	string	$priority	Priority.
-	 * @return	bool				Was successful?
-	 */
+     * Sends given `$value` into FireLogger console.
+     * @param	mixed	$value	Message to log.
+     * @param	string	$priority	Priority.
+     * @return	bool				Was successful?
+     */
 	public static function FireLog ($value, $priority = \MvcCore\Interfaces\IDebug::DEBUG);
 
 	/**
-	 * Handler to print catched exception in browser, no file logging.
-	 * If you want to log exception to file, use `\MvcCore\Debug::Log($e);` instead.
-	 * @param  \Exception|\Throwable
-	 * @return void
-	 */
+     * Print catched exception in browser.
+     * In non-development mode - store dumped exception in `exception.log`.
+     * @param \Exception|\Throwable $exception
+     * @param bool $exit
+     * @return void
+     */
 	public static function Exception ($exception, $exit = TRUE);
 
 	/**
-	 * Print all catched dumps at the end of sended response body as browser debug bar.
-	 * This function is called from registered shutdown handler by
-	 * `register_shutdown_function()` from `\MvcCore\Debug::initHandlers();`.
-	 * @return void
-	 */
+     * Print all stored dumps at the end of sended response body as browser debug bar.
+     * This function is called from registered shutdown handler by
+     * `register_shutdown_function()` from `\MvcCore\Debug::initHandlers();`.
+     * @return void
+     */
 	public static function ShutdownHandler ();
 }

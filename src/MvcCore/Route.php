@@ -95,9 +95,9 @@ class Route implements Interfaces\IRoute
 	 *   matching all to the end of address. It has to be the last one.
 	 *
 	 * Example: `"/products-list/<name>/<color*>"`.
-	 * @var string
+	 * @var string|NULL
 	 */
-    public $Pattern		= '';
+    public $Pattern		= NULL;
 
 	/**
 	 * Route match pattern in raw form (to use it as it is) to match proper request.
@@ -114,9 +114,9 @@ class Route implements Interfaces\IRoute
 	 * conversion into `\MvcCore\Route::$Match` and `\MvcCore\Route::$Reverse` properties.
 	 *
 	 * Example: `"#^/products\-list/(?<name>[^/]*)/(?<color>[a-z]*)#"`
-	 * @var string
+	 * @var string|NULL
 	 */
-	public $Match		= '';
+	public $Match		= NULL;
 
 	/**
 	 * Route reverse address replacements pattern to build url.
@@ -137,9 +137,9 @@ class Route implements Interfaces\IRoute
 	 * conversion into `\MvcCore\Route::$Match` and `\MvcCore\Route::$Reverse` properties.
 	 *
 	 * Example: `"/products-list/<name>/<color>"`
-	 * @var string
+	 * @var string|NULL
 	 */
-	public $Reverse		= '';
+	public $Reverse		= NULL;
 
     /**
 	 * Not required. Route name is your custom keyword/term
@@ -236,7 +236,7 @@ class Route implements Interfaces\IRoute
 	public $LastPatternParam = NULL;
 
 	/**
-	 * Automaticly completed to `TRUE` in `\MvcCore\Route::Prepare()` process,
+	 * Automaticly completed to `TRUE` in `\MvcCore\Route::Matches()` process,
 	 * if route has `\MvcCore\Route::$Match` and `\MvcCore\Route::$Reverse` defined.
 	 * Route preparing process is called in routing process in `\MvcCore\Router::Route();`.
 	 *
@@ -249,7 +249,16 @@ class Route implements Interfaces\IRoute
 	 *
 	 * @var bool
 	 */
-	protected $prepared = FALSE;
+	//protected $matchInitialized = FALSE;
+
+
+    //protected $reverseInitialized = FALSE;
+
+    /**
+     * Summary of $reverseParams
+     * @var array|NULL
+     */
+    protected $reverseParams = NULL;
 
 
 	/**
@@ -600,6 +609,7 @@ class Route implements Interfaces\IRoute
 	 */
 	public function Matches (& $requestPath) {
 		$matchedParams = array();
+        if ($this->Match === NULL) $this->initMatch();
 		preg_match_all($this->Match, $requestPath, $matchedValues, PREG_OFFSET_CAPTURE);
 		if (isset($matchedValues[0]) && count($matchedValues[0])) {
 			$controllerName = $this->Controller ?: '';
@@ -627,6 +637,7 @@ class Route implements Interfaces\IRoute
 				$matchedParams[$matchedKey] = $matchedValue[0][0];
 				$index += 1;
 			}
+            if ($this->LastPatternParam === NULL) $this->initReverseAndLastPatternParam();
 			if (isset($matchedParams[$this->LastPatternParam])) {
 				$matchedParams[$this->LastPatternParam] = rtrim($matchedParams[$this->LastPatternParam], '/');
 			}
@@ -649,53 +660,54 @@ class Route implements Interfaces\IRoute
 	 * `\MvcCore\Router::Route();` method and it's submethods.
 	 * @return void
 	 */
-	public function Prepare () {
-		if ($this->prepared) return;
-		$matchLength = mb_strlen($this->Match);
-		$reverseLength = mb_strlen($this->Reverse);
-		// if there is anything in match pattern and reverse replacements pattern - route is prepared:
-		if (!$matchLength || !$reverseLength) {
-			if (mb_strlen($this->Pattern) === 0) {
-				throw new \LogicException(
-					"[".__CLASS__."] Route configuration property `\MvcCore\Route::\$Pattern` is missing "
-					."to parse it and complete properties `\MvcCore\Route::\$Match` and `\MvcCore\Route::\$Reverse` correctly."
-				);
-			}
-			// if there is no match regular expression - parse `\MvcCore\Route::\$Pattern`
-			// and compile `\MvcCore\Route::\$Match` regular expression property:
-			if (!$matchLength) {
-				// escape all regular expression special characters before parsing except `<` and `>`:
-				$matchPattern = addcslashes($this->Pattern, "#[](){}-?!=^$.+|:\\");
-				// parse all presented `<param>` occurances in `$pattern` argument:
-				$matchPatternParams = $this->parsePatternParams($matchPattern);
-				// compile match regular expression from parsed params and custom constraints:
-				$this->Match = $this->compileMatchPattern($matchPattern, $matchPatternParams);
-			}
-			// if there is no reverse replacements expression,
-			// process greedy replacement fix on `\MvcCore\Route::\$Pattern` only:
-			if (!$reverseLength) $this->Reverse = str_replace(
-				array('<*', '*>'), array('<', '>'), $this->Pattern
-			);
-			$this->Reverse = rtrim($this->Reverse, '?&');
-		}
-		// if there is still no last param parsed - take the last record(s) name(s) from defaults,
-		// (because there is a little probability, that developer defined records in default array
-		// in simillar order as params in reverse pattern) and check if `<paramName>` by this last
-		// default record is somewhere at the end of reverse pattern - if it is - set up last param.
-		if ($this->LastPatternParam === NULL && $this->Defaults) {
-			$defaultsKeys = array_reverse(array_keys($this->Defaults));
-			$reverseLength = mb_strlen($this->Reverse);
-			$lastCharIsSlash = mb_substr($this->Reverse, $reverseLength - 2, 1) == '/';
-			foreach ($defaultsKeys as $defaultsKey) {
-				$pos = mb_strpos($this->Reverse, '<'.$defaultsKey.'>') + mb_strlen($defaultsKey) + 2;
-				if ($pos === $reverseLength - 1 || ($pos === $reverseLength - 2 && $lastCharIsSlash)) {
-					$this->LastPatternParam = $defaultsKey;
-					break;
-				}
-			}
-		}
-		$this->prepared = TRUE;
-	}
+    public function initMatch () {
+        // if there is no match regular expression - parse `\MvcCore\Route::\$Pattern`
+        // and compile `\MvcCore\Route::\$Match` regular expression property.
+        if (mb_strlen($this->Pattern) === 0) throw new \LogicException(
+			"[".__CLASS__."] Route configuration property `\MvcCore\Route::\$Pattern` is missing "
+			."to parse it and complete property(ies) `\MvcCore\Route::\$Match` (and `\MvcCore\Route::\$Reverse`) correctly."
+		);
+        // escape all regular expression special characters before parsing except `<` and `>`:
+        $matchPattern = addcslashes($this->Pattern, "#[](){}-?!=^$.+|:\\");
+        // parse all presented `<param>` occurances in `$pattern` argument:
+        $matchPatternParams = $this->parsePatternParams($matchPattern);
+        // compile match regular expression from parsed params and custom constraints:
+        if ($this->Reverse === NULL) {
+            list($this->Match, $this->Reverse) = $this->compileMatchAndReversePattern($matchPattern, $matchPatternParams, TRUE);
+        } else {
+            list($this->Match, $reverse) = $this->compileMatchAndReversePattern($matchPattern, $matchPatternParams, FALSE);
+        }
+    }
+
+    protected function initReverseAndLastPatternParam () {
+        $index = 0;
+        $reverse = & $this->Reverse;
+        $reverseParams = array();
+        $closePos = -1;
+        $paramName = '';
+        while (TRUE) {
+            $openPos = mb_strpos($reverse, '<', $index);
+            if ($openPos === FALSE) break;
+            $openPosPlusOne = $openPos + 1;
+            $closePos = mb_strpos($reverse, '<', $openPosPlusOne);
+            if ($closePos === FALSE) break;
+            $paramName = mb_substr($reverse, $openPosPlusOne, $closePos - $openPosPlusOne);
+            $reverseParams[] = $paramName;
+        }
+        $this->reverseParams = $reverseParams;
+        // Init `\MvcCore\Route::$LastPatternParam` - if this function is
+        // called from `\MvcCore\Route::Matches()`, after this route has been matched
+        // and also when there were configured for this route `\MvcCore\Route::$Match`
+        // value and `\MvcCore\Route::$Reverse` value together:
+        if ($this->LastPatternParam === NULL && $paramName) {
+            $reverseLengthMinusTwo = mb_strlen($reverse) - 2;
+            $lastCharIsSlash = mb_substr($reverse, $reverseLengthMinusTwo, 1) == '/';
+            $closePosPlusOne = $closePos + 1;
+            if ($closePosPlusOne === $reverseLengthMinusTwo + 1 || ($lastCharIsSlash && $closePosPlusOne === $reverseLengthMinusTwo)) {
+                $this->LastPatternParam = $paramName;
+            }
+        }
+    }
 
 	/**
 	 * Complete route url by given params array and route
@@ -716,24 +728,33 @@ class Route implements Interfaces\IRoute
 	 *		`"/products-list/<name>/<color*>"`
 	 *	Output:
 	 *		`"/products-list/cool-product-name/blue?variant[]=L&amp;variant[]=XL"`
-	 * @param array $params
+     * @param array $params
+     * @param array $cleanedGetRequestParams `$_GET` request params with escaped chars: `<` and `>`.;
 	 * @return string
 	 */
-	public function Url (& $params) {
+	public function Url (& $params, & $cleanedGetRequestParams) {
+        if ($this->reverseParams === NULL)
+            $this->initReverseAndLastPatternParam();
 		$result = $this->Reverse;
-		$allParams = array_merge(
-			is_array($this->Defaults) ? $this->Defaults : array(), $params
-		);
-		foreach ($allParams as $key => $value) {
-			$paramKeyReplacement = '<'.$key.'>';
-			if (mb_strpos($result, $paramKeyReplacement) === FALSE) {
-				$glue = (mb_strpos($result, '?') === FALSE) ? '?' : '&amp;';
-				$result .= $glue . http_build_query(array($key => $value));
-			} else {
-				$result = str_replace($paramKeyReplacement, $value, $result);
-			}
+		$givenParamsKeys = array_merge(array(), $params);
+		foreach ($this->reverseParams as $paramName) {
+			$paramKeyReplacement = '<'.$paramName.'>';
+            $paramValue = (
+                isset($params[$paramName])
+                    ? $params[$paramName]
+                    : isset($cleanedGetRequestParams[$paramName])
+                        ? $cleanedGetRequestParams[$paramName]
+                        : isset($this->Defaults[$paramName])
+                            ? $this->Defaults[$paramName]
+                            : ''
+            );
+            $result = str_replace($paramKeyReplacement, $paramValue, $result);
+            unset($givenParamsKeys[$paramName]);
 		}
-		return $result;
+        if ($givenParamsKeys)
+            $result .= ($this->reverseParams ? '&amp;' : '?')
+                . http_build_query($givenParamsKeys);
+        return $result;
 	}
 
 	/**
@@ -842,12 +863,14 @@ class Route implements Interfaces\IRoute
 	 * @param array[] $matchPatternParams
 	 * @return string
 	 */
-	protected function compileMatchPattern (& $matchPattern, & $matchPatternParams) {
+	protected function compileMatchAndReversePattern (& $matchPattern, & $matchPatternParams, $compileReverse) {
 		$constraints = $this->Constraints;
 		$defaultConstraint = static::$DefaultConstraint;
 		$trailingSlash = FALSE;
+        $reverse = '';
 		if ($matchPatternParams) {
-			$newMatch = mb_substr($matchPattern, 0, $matchPatternParams[0][2]);
+			$match = mb_substr($matchPattern, 0, $matchPatternParams[0][2]);
+            if ($compileReverse) $reverse = $match;
 			foreach ($matchPatternParams as $i => $matchPatternParam) {
 				list($paramName, $matchedParamName, $index, $length, $greedy) = $matchPatternParam;
 				$customConstraint = isset($constraints[$paramName]);
@@ -857,9 +880,11 @@ class Route implements Interfaces\IRoute
 					$nextItemStart = $matchPatternParams[$i + 1][2];
 					$start = $index + $length;
 					$urlPartBeforeNext = mb_substr($matchPattern, $start, $nextItemStart - $start);
+                    $urlPartBeforeNextReverse = $urlPartBeforeNext;
 				} else {
 					// else if this param is the last one:
 					$urlPartBeforeNext = mb_substr($matchPattern, $index + $length);
+                    $urlPartBeforeNextReverse = $urlPartBeforeNext;
 					// if there is nothing more in url or just only a slash char `/`:
 					if ($urlPartBeforeNext == '' || $urlPartBeforeNext == '/') {
 						$trailingSlash = TRUE;
@@ -870,20 +895,25 @@ class Route implements Interfaces\IRoute
 				$constraint = $customConstraint
 					? $constraints[$paramName]
 					: $defaultConstraint;
-				$newMatch .= '(?' . $matchedParamName . $constraint . ')' . $urlPartBeforeNext;
+				$match .= '(?' . $matchedParamName . $constraint . ')' . $urlPartBeforeNext;
+                if ($compileReverse) $reverse .= $matchedParamName . $urlPartBeforeNextReverse;
 			}
-			$matchPattern = $newMatch;
+			$matchPattern = $match;
 		} else if ($matchPattern != '/') {
-			$lengthWithotLastChar = mb_strlen($matchPattern) - 1;
-			if (mb_strrpos($matchPattern, '/') === $lengthWithotLastChar) {
-				$matchPattern = mb_substr($matchPattern, 0, $lengthWithotLastChar);
+			$lengthWithoutLastChar = mb_strlen($matchPattern) - 1;
+			if (mb_strrpos($matchPattern, '/') === $lengthWithoutLastChar) {
+				$matchPattern = mb_substr($matchPattern, 0, $lengthWithoutLastChar);
 				$trailingSlash = TRUE;
 			}
+            $reverse = $compileReverse ? $this->Pattern : '';
 		}
-		return '#'
+		return array(
+            '#'
 			. (mb_strpos($matchPattern, '/') === 0 ? '^' : '')
 			. $matchPattern
 			. ($trailingSlash ? '(?=/$|$)' : '$')
-			. '#';
+			. '#',
+            $reverse
+        );
 	}
 }

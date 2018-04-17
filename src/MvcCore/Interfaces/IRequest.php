@@ -129,12 +129,12 @@ interface IRequest
 	public function & SetHeader ($name = "", $value = "");
 
 	/**
-	 * Get http header value filtered by "rule to keep defined characters only", 
+	 * Get http header value filtered by "rule to keep defined characters only",
 	 * defined in second argument (by `preg_replace()`). Place into second argument
 	 * only char groups you want to keep. Header has to be in format like:
 	 * `"Content-Type" | "Content-Length" | "X-Requested-With" ...`.
 	 * @param string $name Http header string name.
-	 * @param string $pregReplaceAllowedChars List of regular expression characters to only keep.
+	 * @param string|array $pregReplaceAllowedChars If String - list of regular expression characters to only keep, if array - `preg_replace()` pattern and reverse.
 	 * @param mixed $ifNullValue Default value returned if given param name is null.
 	 * @param string $targetType Target type to retype param value or default if-null value. If param is an array, every param item will be retyped into given target type.
 	 * @return string|string[]|mixed
@@ -159,10 +159,10 @@ interface IRequest
 	 * If any defined char groups in `$pregReplaceAllowedChars`, there will be returned
 	 * all params filtered by given rule in `preg_replace()`.
 	 * Place into second argument only char groups you want to keep.
-	 * @param string $pregReplaceAllowedChars List of regular expression characters to only keep.
+	 * @param string|array $pregReplaceAllowedChars If String - list of regular expression characters to only keep, if array - `preg_replace()` pattern and reverse.
 	 * @return array
 	 */
-	public function & GetParams ($pregReplaceAllowedChars = "");
+	public function & GetParams ($pregReplaceAllowedChars = array("\<\>", ""));
 
 	/**
 	 * Set directly raw parameter value without any conversion.
@@ -173,11 +173,11 @@ interface IRequest
 	public function & SetParam ($name = "", $value = "");
 
 	/**
-	 * Get param value from `$_GET`, `$_POST` or `php://input`, filtered by 
+	 * Get param value from `$_GET`, `$_POST` or `php://input`, filtered by
 	 * "rule to keep defined characters only", defined in second argument (by `preg_replace()`).
 	 * Place into second argument only char groups you want to keep.
 	 * @param string $name Parametter string name.
-	 * @param string $pregReplaceAllowedChars List of regular expression characters to only keep.
+	 * @param string|array $pregReplaceAllowedChars If String - list of regular expression characters to only keep, if array - `preg_replace()` pattern and reverse.
 	 * @param mixed $ifNullValue Default value returned if given param name is null.
 	 * @param string $targetType Target type to retype param value or default if-null value. If param is an array, every param item will be retyped into given target type.
 	 * @return string|string[]|mixed
@@ -247,7 +247,7 @@ interface IRequest
 	 * filtered by characters defined in second argument throught `preg_replace()`.
 	 * Place into second argument only char groups you want to keep.
 	 * @param string $name Cookie string name.
-	 * @param string $pregReplaceAllowedChars List of regular expression characters to only keep.
+	 * @param string|array $pregReplaceAllowedChars If String - list of regular expression characters to only keep, if array - `preg_replace()` pattern and reverse.
 	 * @param mixed $ifNullValue Default value returned if given param name is null.
 	 * @param string $targetType Target type to retype param value or default if-null value. If param is an array, every param item will be retyped into given target type.
 	 * @return string|string[]|mixed

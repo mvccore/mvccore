@@ -61,8 +61,8 @@ trait Dispatching
 	 */
 	public function Run ($singleFileUrl = FALSE) {
 		if ($singleFileUrl) $this->compiled = static::COMPILED_SFU;
-		$this->GetRequest(); // triggers creating
-		$this->GetResponse();// triggers creating
+		$this->GetRequest(); // triggers creation
+		$this->GetResponse();// triggers creation
 		$debugClass = $this->debugClass;
 		$debugClass::Init();
 		if (!$this->processCustomHandlers($this->preRouteHandlers))			return $this->Terminate();

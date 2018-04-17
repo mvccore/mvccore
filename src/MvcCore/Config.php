@@ -103,33 +103,41 @@ class Config implements Interfaces\IConfig
 
 	/**
 	 * Return `TRUE` if environment is `"development"`.
+     * @param bool $autoloadSystemConfig If `TRUE`, environment will be detected by loaded system config.
 	 * @return bool
 	 */
-	public static function IsDevelopment () {
+	public static function IsDevelopment ($autoloadSystemConfig = FALSE) {
+        if ($autoloadSystemConfig) static::GetSystem();
 		return static::$environment == static::ENVIRONMENT_DEVELOPMENT;
 	}
 
 	/**
-	 * Return `TRUE` if environment is `"beta"`.
+     * Return `TRUE` if environment is `"beta"`.
+     * @param bool $autoloadSystemConfig If `TRUE`, environment will be detected by loaded system config.
 	 * @return bool
 	 */
-	public static function IsBeta () {
+	public static function IsBeta ($autoloadSystemConfig = FALSE) {
+        if ($autoloadSystemConfig) static::GetSystem();
 		return static::$environment == static::ENVIRONMENT_BETA;
 	}
 
 	/**
-	 * Return `TRUE` if environment is `"alpha"`.
+     * Return `TRUE` if environment is `"alpha"`.
+     * @param bool $autoloadSystemConfig If `TRUE`, environment will be detected by loaded system config.
 	 * @return bool
 	 */
-	public static function IsAlpha () {
+	public static function IsAlpha ($autoloadSystemConfig = FALSE) {
+        if ($autoloadSystemConfig) static::GetSystem();
 		return static::$environment == static::ENVIRONMENT_ALPHA;
 	}
 
 	/**
-	 * Return `TRUE` if environment is `"production"`.
+     * Return `TRUE` if environment is `"production"`.
+     * @param bool $autoloadSystemConfig If `TRUE`, environment will be detected by loaded system config.
 	 * @return bool
 	 */
-	public static function IsProduction () {
+	public static function IsProduction ($autoloadSystemConfig = FALSE) {
+        if ($autoloadSystemConfig) static::GetSystem();
 		return static::$environment == static::ENVIRONMENT_PRODUCTION;
 	}
 

@@ -334,7 +334,8 @@ interface IRoute
 	 *	Output:
 	 *		`"/products-list/cool-product-name/blue?variant[]=L&amp;variant[]=XL"`
 	 * @param array $params
+     * @param array $cleanedGetRequestParams `$_GET` request params with escaped chars: `<` and `>`.;
 	 * @return string
 	 */
-	public function Url (& $params);
+	public function Url (& $params, & $cleanedGetRequestParams);
 }

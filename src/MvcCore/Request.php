@@ -350,7 +350,7 @@ class Request implements Interfaces\IRequest
 	 * only char groups you want to keep. Header has to be in format like:
 	 * `"Content-Type" | "Content-Length" | "X-Requested-With" ...`.
 	 * @param string $name Http header string name.
-	 * @param string $pregReplaceAllowedChars List of regular expression characters to only keep.
+	 * @param string|array $pregReplaceAllowedChars If String - list of regular expression characters to only keep, if array - `preg_replace()` pattern and reverse.
 	 * @param mixed $ifNullValue Default value returned if given param name is null.
 	 * @param string $targetType Target type to retype param value or default if-null value. If param is an array, every param item will be retyped into given target type.
 	 * @return string|string[]|mixed
@@ -383,15 +383,16 @@ class Request implements Interfaces\IRequest
 	 * If any defined char groups in `$pregReplaceAllowedChars`, there will be returned
 	 * all params filtered by given rule in `preg_replace()`.
 	 * Place into second argument only char groups you want to keep.
-	 * @param string $pregReplaceAllowedChars List of regular expression characters to only keep.
+     * @param string|array $pregReplaceAllowedChars If String - list of regular expression characters to only keep, if array - `preg_replace()` pattern and reverse.
 	 * @return array
 	 */
-	public function & GetParams ($pregReplaceAllowedChars = "") {
+	public function & GetParams ($pregReplaceAllowedChars = array("\<\>", "")) {
 		if ($this->params === NULL) $this->initParams();
 		if ($pregReplaceAllowedChars == "") return $this->params;
 		$cleanedParams = array();
-		foreach ($this->params as $name => &$value) {
-			$cleanedParams[$name] = $this->GetParam($name, $pregReplaceAllowedChars);
+		foreach ($this->params as $key => &$value) {
+            $cleanedKey = $this->cleanParamValue($key, $pregReplaceAllowedChars);
+			$cleanedParams[$cleanedKey] = $this->GetParam($key, $pregReplaceAllowedChars);
 		}
 		return $cleanedParams;
 	}
@@ -413,7 +414,7 @@ class Request implements Interfaces\IRequest
 	 * "rule to keep defined characters only", defined in second argument (by `preg_replace()`).
 	 * Place into second argument only char groups you want to keep.
 	 * @param string $name Parametter string name.
-	 * @param string $pregReplaceAllowedChars List of regular expression characters to only keep.
+	 * @param string|array $pregReplaceAllowedChars If String - list of regular expression characters to only keep, if array - `preg_replace()` pattern and reverse.
 	 * @param mixed $ifNullValue Default value returned if given param name is null.
 	 * @param string $targetType Target type to retype param value or default if-null value. If param is an array, every param item will be retyped into given target type.
 	 * @return string|string[]|mixed
@@ -507,7 +508,7 @@ class Request implements Interfaces\IRequest
 	 * filtered by characters defined in second argument throught `preg_replace()`.
 	 * Place into second argument only char groups you want to keep.
 	 * @param string $name Cookie string name.
-	 * @param string $pregReplaceAllowedChars List of regular expression characters to only keep.
+	 * @param string|array $pregReplaceAllowedChars If String - list of regular expression characters to only keep, if array - `preg_replace()` pattern and reverse.
 	 * @param mixed $ifNullValue Default value returned if given param name is null.
 	 * @param string $targetType Target type to retype param value or default if-null value. If param is an array, every param item will be retyped into given target type.
 	 * @return string|string[]|mixed
@@ -965,7 +966,7 @@ class Request implements Interfaces\IRequest
 	 * Place into second argument only char groups you want to keep.
 	 * @param array $collection Array with request params or array with request headers.
 	 * @param string $name Parametter string name.
-	 * @param string $pregReplaceAllowedChars List of regular expression characters to only keep.
+	 * @param string|array $pregReplaceAllowedChars If String - list of regular expression characters to only keep, if array - `preg_replace()` pattern and reverse.
 	 * @param mixed $ifNullValue Default value returned if given param name is null.
 	 * @param string $targetType Target type to retype param value or default if-null value. If param is an array, every param item will be retyped into given target type.
 	 * @return string|string[]|mixed
@@ -982,7 +983,8 @@ class Request implements Interfaces\IRequest
 			$result = array();
 			$paramsCollection = $paramsCollection[$name];
 			foreach ($paramsCollection as $key => & $value) {
-				$result[$key] = $this->getParamItem(
+                $cleanedKey = $this->cleanParamValue($key, $pregReplaceAllowedChars);
+				$result[$cleanedKey] = $this->getParamItem(
 					$value, $pregReplaceAllowedChars, $ifNullValue, $targetType
 				);
 			}
@@ -997,7 +999,7 @@ class Request implements Interfaces\IRequest
 	/**
 	 * Get filtered param or header value for characters defined as second argument to use them in `preg_replace()`.
 	 * @param string|string[]|NULL $rawValue
-	 * @param string $pregReplaceAllowedChars List of regular expression characters to only keep.
+	 * @param string|array $pregReplaceAllowedChars If String - list of regular expression characters to only keep, if array - `preg_replace()` pattern and reverse.
 	 * @param mixed $ifNullValue Default value returned if given param name is null.
 	 * @param string $targetType Target type to retype param value or default if-null value. If param is an array, every param item will be retyped into given target type.
 	 * @return string|string[]|mixed
@@ -1016,27 +1018,42 @@ class Request implements Interfaces\IRequest
 		} else {
 			$rawValue = trim($rawValue);
 			if (mb_strlen($rawValue) === 0) return "";
-			if (mb_strlen($pregReplaceAllowedChars) > 0 || $pregReplaceAllowedChars == ".*") {
+			if (!is_array($pregReplaceAllowedChars) && (mb_strlen($pregReplaceAllowedChars) > 0 || $pregReplaceAllowedChars == ".*")) {
 				if ($targetType === NULL) return $rawValue;
 				settype($rawValue, $targetType);
 				return $rawValue;
 			} else if (gettype($rawValue) == 'array') {
 				$result = array();
 				foreach ((array) $rawValue as $key => & $value) {
-					$result[$key] = $this->getParamItem(
+                    $cleanedKey = $this->cleanParamValue($key, $pregReplaceAllowedChars);
+					$result[$cleanedKey] = $this->getParamItem(
 						$value, $pregReplaceAllowedChars, $ifNullValue, $targetType
 					);
 				}
 				return $result;
 			} else {
-				$pattern = "#[^" . $pregReplaceAllowedChars . "]#";
-				$result = preg_replace($pattern, "", $rawValue);
+                $result = $this->cleanParamValue($rawValue, $pregReplaceAllowedChars);
 				if ($targetType === NULL) return $result;
 				settype($result, $targetType);
 				return $result;
 			}
 		}
 	}
+
+    /**
+     * Clean param value by given list of allowed chars or by given `preg_replace()` pattern and reverse.
+     * @param string $rawValue
+     * @param string|array $pregReplaceAllowedChars If String - list of regular expression characters to only keep, if array - `preg_replace()` pattern and reverse.
+     * @return string
+     */
+    protected function cleanParamValue ($rawValue, $pregReplaceAllowedChars = "a-zA-Z0-9_/\-\.\@") {
+        $pregReplaceAllowedCharsIsArray = is_array($pregReplaceAllowedChars);
+        if ($pregReplaceAllowedCharsIsArray) {
+            return preg_replace($pregReplaceAllowedChars[0], $pregReplaceAllowedChars[1], $rawValue);
+        } else {
+            return preg_replace("#[^" . $pregReplaceAllowedChars . "]#", "", $rawValue);
+        }
+    }
 
 	/**
 	 * Get script name from `$_SERVER['SCRIPT_NAME']`.

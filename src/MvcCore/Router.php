@@ -532,6 +532,7 @@ class Router implements Interfaces\IRouter
 	public function Url ($controllerActionOrRouteName = 'Index:Index', $params = array()) {
 		$result = '';
 		$request = & $this->request;
+        if ($this->cleanedRequestParams == NULL) $this->initCleanedRequestParams();
 		if (strpos($controllerActionOrRouteName, ':') !== FALSE) {
 			list($ctrlPc, $actionPc) = explode(':', $controllerActionOrRouteName);
 			if (!$ctrlPc) {
@@ -547,8 +548,6 @@ class Router implements Interfaces\IRouter
 			$controllerActionOrRouteName = $this->currentRoute
 				? $this->currentRoute->Name
 				: ':';
-			if ($this->cleanedRequestParams == NULL)
-				$this->cleanedRequestParams = $request->GetParams();
 			$params = array_merge($this->cleanedRequestParams, $params);
 			unset($params['controller'], $params['action']);
 		}
@@ -601,7 +600,7 @@ class Router implements Interfaces\IRouter
 	 * @return string
 	 */
 	protected function urlByRoute (& $route, $params) {
-		return $this->request->GetBasePath() . $route->Url($params);
+		return $this->request->GetBasePath() . $route->Url($params, $this->cleanedRequestParams);
 	}
 
 	/**
@@ -664,4 +663,15 @@ class Router implements Interfaces\IRouter
 			}
 		}
 	}
+
+    protected function initCleanedRequestParams () {
+        $cleanedRequestParams = array();
+        $request = & $this->request;
+        $charsToReplace = array('<' => '&lt;', '>' => '&gt;');
+        foreach ($_GET as $rawName => $rawValue) {
+            $paramName = strtr($rawName, $charsToReplace);
+            $cleanedRequestParams[$paramName] = strtr($rawValue, $charsToReplace);
+        }
+        $this->cleanedRequestParams = $cleanedRequestParams;
+    }
 }
