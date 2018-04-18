@@ -240,7 +240,7 @@ namespace MvcCore {
 				$dumpedValue = static::dumpHandler(
 					$exception, NULL, array('store' => !$exit, 'backtraceIndex' => 1)
 				);
-				if (static::$development && $exit) {
+				if (static::$development) {
 					echo $dumpedValue;
 				} else {
 					static::storeLogRecord($dumpedValue, \MvcCore\Interfaces\IDebug::EXCEPTION);
@@ -258,7 +258,7 @@ namespace MvcCore {
 		 */
 		public static function ShutdownHandler () {
 			$error = error_get_last();
-			if (isset($error['type'])) static::Exception($error, FALSE);
+			if (isset($error['type'])) static::Exception($error);
 			if (!count(self::$dumps)) return;
 			$app = \MvcCore\Application::GetInstance();
 			$appRoot = $app->GetRequest()->GetAppRoot();
@@ -344,7 +344,17 @@ namespace MvcCore {
 			$content = date('[Y-m-d H-i-s]') . "\n" . $value;
 			$content = preg_replace("#\n(\s)#", "\n\t$1", $content) . "\n";
 			if (!static::$logDirectoryInitialized) static::initLogDirectory();
-			$fullPath = static::$LogDirectory . DIRECTORY_SEPARATOR . $priority . '.log';
+			$fullPath = static::$LogDirectory . '/' . $priority . '.log';
+			if (!is_dir(static::$LogDirectory)) {
+				mkdir(static::$LogDirectory);
+				if (!is_writable(static::$LogDirectory)) {
+					try {
+						chmod(static::$LogDirectory, 0777);
+					} catch (\Exception $e) {
+						die('['.__CLASS__.'] ' . $e->getMessage());
+					}
+				}
+			}
 			file_put_contents($fullPath, $content, FILE_APPEND);
 			return $fullPath;
 		}
@@ -392,11 +402,12 @@ namespace MvcCore {
 			if (!is_writable($logDirAbsPath)) {
 				try {
 					chmod($logDirAbsPath, 0777);
-				}
-				catch (\Exception $e) {
+				} catch (\Exception $e) {
 					die('['.__CLASS__.'] ' . $e->getMessage());
 				}
 			}
+
+			static::$logDirectoryInitialized = TRUE;
 		}
 	}
 }

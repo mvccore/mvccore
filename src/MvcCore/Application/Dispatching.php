@@ -159,7 +159,8 @@ trait Dispatching
 		return $this->DispatchControllerAction(
 			$controllerName,
 			$actionName,
-			$viewScriptFullPath, function (\Exception & $e) {
+			$viewScriptFullPath,
+			function (\Exception & $e) {
 				return $this->DispatchException($e);
 			}
 		);
@@ -277,7 +278,7 @@ trait Dispatching
 		$debugClass = $this->debugClass;
 		$configClass = $this->configClass;
 		if ($e->getCode() == 404) {
-			$debugClass::Log($e, \MvcCore\Interfaces\IDebug::ERROR);
+			$debugClass::Log($e->getMessage().": ".$this->request->GetFullUrl(), \MvcCore\Interfaces\IDebug::INFO);
 			return $this->RenderNotFound($e->getMessage());
 		} else if ($configClass::IsDevelopment(TRUE)) {
 			$debugClass::Exception($e);
@@ -304,17 +305,25 @@ trait Dispatching
 		if ($defaultCtrlFullName) {
 			$toolClass = $this->toolClass;
 			$debugClass = $this->debugClass;
-			$this->request->SetParams(array_merge($this->request->GetParams(''), array(
+			$viewClass = $this->viewClass;
+			$ctrlNameDc = $toolClass::GetDashedFromPascalCase($this->defaultControllerName);
+			$actionNameDc = $toolClass::GetDashedFromPascalCase($this->defaultControllerErrorActionName);
+			$newParams = array_merge($this->request->GetParams(''), array(
 				'code'		=> 500,
 				'message'	=> $exceptionMessage,
-				'controller'=> $toolClass::GetDashedFromPascalCase($this->defaultControllerName),
-				'action'	=> $toolClass::GetDashedFromPascalCase($this->defaultControllerErrorActionName),
-			)));
+				'controller'=> $ctrlNameDc,
+				'action'	=> $actionNameDc,
+			));
+			$this->request->SetParams($newParams)
+				->SetControllerName($ctrlNameDc)
+				->SetActionName($actionNameDc);
 			$this->response->SetCode(500);
 			return $this->DispatchControllerAction(
 				$defaultCtrlFullName,
 				$this->defaultControllerErrorActionName . "Action",
-				'',
+				$viewClass::GetViewScriptFullPath(
+					$viewClass::$ScriptsDir, $ctrlNameDc . '/' . $actionNameDc
+				),
 				function (\Exception & $e) use ($exceptionMessage, $debugClass) {
 					$debugClass::Log($e, \MvcCore\Interfaces\IDebug::EXCEPTION);
 					$this->RenderError500PlainText($exceptionMessage . PHP_EOL . PHP_EOL . $e->getMessage());
@@ -341,17 +350,25 @@ trait Dispatching
 		if ($defaultCtrlFullName) {
 			$toolClass = $this->toolClass;
 			$debugClass = $this->debugClass;
-			$this->request->SetParams(array_merge($this->request->GetParams(''), array(
+			$viewClass = $this->viewClass;
+			$ctrlNameDc = $toolClass::GetDashedFromPascalCase($this->defaultControllerName);
+			$actionNameDc = $toolClass::GetDashedFromPascalCase($this->defaultControllerNotFoundActionName);
+			$newParams = array_merge($this->request->GetParams(''), array(
 				'code'		=> 404,
 				'message'	=> $exceptionMessage,
-				'controller'=> $toolClass::GetDashedFromPascalCase($this->defaultControllerName),
-				'action'	=> $toolClass::GetDashedFromPascalCase($this->defaultControllerNotFoundActionName),
-			)));
+				'controller'=> $ctrlNameDc,
+				'action'	=> $actionNameDc,
+			));
+			$this->request->SetParams($newParams)
+				->SetControllerName($ctrlNameDc)
+				->SetActionName($actionNameDc);
 			$this->response->SetCode(404);
 			return $this->DispatchControllerAction(
 				$defaultCtrlFullName,
 				$this->defaultControllerNotFoundActionName . "Action",
-				'',
+				$viewClass::GetViewScriptFullPath(
+					$viewClass::$ScriptsDir, $ctrlNameDc . '/' . $actionNameDc
+				),
 				function (\Exception & $e) use ($exceptionMessage, $debugClass) {
 					$debugClass::Log($e, \MvcCore\Interfaces\IDebug::EXCEPTION);
 					$this->RenderError404PlainText($exceptionMessage);

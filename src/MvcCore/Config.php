@@ -95,34 +95,13 @@ class Config implements Interfaces\IConfig
 	protected $objectTypes = array();
 
 	/**
-	 * Static initialization.
-	 * - Called when file is loaded into memory.
-	 * - First environment value setup - by server and client ip address.
-	 * @return void
-	 */
-	public static function StaticInit () {
-		if (!static::$environment) {
-			self::$_app = & \MvcCore\Application::GetInstance();
-			$request = & self::$_app->GetRequest();
-			self::$_appRoot = $request->GetAppRoot();
-			$serverAddress = $request->GetServerIp();
-			$remoteAddress = $request->GetClientIp();
-			if ($serverAddress == $remoteAddress) {
-				static::$environment = static::ENVIRONMENT_DEVELOPMENT;
-			} else {
-				static::$environment = static::ENVIRONMENT_PRODUCTION;
-			}
-		}
-	}
-
-	/**
 	 * Return `TRUE` if environment is `"development"`.
 	 * @param bool $autoloadSystemConfig If `TRUE`, environment will be detected by loaded system config.
 	 * @return bool
 	 */
 	public static function IsDevelopment ($autoloadSystemConfig = FALSE) {
 		if ($autoloadSystemConfig) static::GetSystem();
-		return static::$environment == static::ENVIRONMENT_DEVELOPMENT;
+		return static::GetEnvironment($autoloadSystemConfig) == static::ENVIRONMENT_DEVELOPMENT;
 	}
 
 	/**
@@ -132,7 +111,7 @@ class Config implements Interfaces\IConfig
 	 */
 	public static function IsBeta ($autoloadSystemConfig = FALSE) {
 		if ($autoloadSystemConfig) static::GetSystem();
-		return static::$environment == static::ENVIRONMENT_BETA;
+		return static::GetEnvironment($autoloadSystemConfig) == static::ENVIRONMENT_BETA;
 	}
 
 	/**
@@ -141,8 +120,7 @@ class Config implements Interfaces\IConfig
 	 * @return bool
 	 */
 	public static function IsAlpha ($autoloadSystemConfig = FALSE) {
-		if ($autoloadSystemConfig) static::GetSystem();
-		return static::$environment == static::ENVIRONMENT_ALPHA;
+		return static::GetEnvironment($autoloadSystemConfig) == static::ENVIRONMENT_ALPHA;
 	}
 
 	/**
@@ -151,8 +129,7 @@ class Config implements Interfaces\IConfig
 	 * @return bool
 	 */
 	public static function IsProduction ($autoloadSystemConfig = FALSE) {
-		if ($autoloadSystemConfig) static::GetSystem();
-		return static::$environment == static::ENVIRONMENT_PRODUCTION;
+		return static::GetEnvironment($autoloadSystemConfig) == static::ENVIRONMENT_PRODUCTION;
 	}
 
 	/**
@@ -161,7 +138,11 @@ class Config implements Interfaces\IConfig
 	 * @return string
 	 */
 	public static function GetEnvironment ($autoloadSystemConfig = FALSE) {
-		if ($autoloadSystemConfig) static::GetSystem();
+		if ($autoloadSystemConfig) {
+			static::GetSystem();
+		} else {
+			static::initEnvironmentByIps();
+		}
 		return static::$environment;
 	}
 
@@ -195,11 +176,12 @@ class Config implements Interfaces\IConfig
 	 */
 	public static function & GetSystem () {
 		if (!static::$systemConfig) {
-			$systemConfigClass = self::$_app->GetConfigClass();
+			$app = & \MvcCore\Application::GetInstance();
+			$systemConfigClass = $app->GetConfigClass();
 			$instance = $systemConfigClass::GetInstance();
 			static::$systemConfig = $instance->Load(str_replace(
 				'%appPath%',
-				self::$_app->GetAppDir(),
+				$app->GetAppDir(),
 				$systemConfigClass::$SystemConfigPath
 			), TRUE);
 		}
@@ -219,7 +201,7 @@ class Config implements Interfaces\IConfig
 	 * @return array|boolean
 	 */
 	public function & Load ($configPath = '', $systemConfig = FALSE) {
-		$cfgFullPath = self::$_appRoot . $configPath;
+		$cfgFullPath = \MvcCore\Application::GetInstance()->GetRequest()->GetAppRoot() . $configPath;
 		if (!file_exists($cfgFullPath)) return $this->result;
 		$rawIniData = parse_ini_file($cfgFullPath, TRUE);
 		if ($rawIniData === FALSE) return $this->result;
@@ -234,6 +216,23 @@ class Config implements Interfaces\IConfig
 		}
 		unset($this->objectTypes);
 		return $this->result;
+	}
+
+	/**
+	 * First environment value setup - by server and client ip address.
+	 * @return void
+	 */
+	protected static function initEnvironmentByIps () {
+		if (static::$environment === NULL) {
+			$request = & \MvcCore\Application::GetInstance()->GetRequest();
+			$serverAddress = $request->GetServerIp();
+			$remoteAddress = $request->GetClientIp();
+			if ($serverAddress == $remoteAddress) {
+				static::$environment = static::ENVIRONMENT_DEVELOPMENT;
+			} else {
+				static::$environment = static::ENVIRONMENT_PRODUCTION;
+			}
+		}
 	}
 
 	/**
@@ -271,7 +270,7 @@ class Config implements Interfaces\IConfig
 		$environment = '';
 		if (isset($rawIni['environments'])) {
 			$environments = & $rawIni['environments'];
-			$serverAddress = ','.self::$_app->GetRequest()->GetServerIp().',';
+			$serverAddress = ','.\MvcCore\Application::GetInstance()->GetRequest()->GetServerIp().',';
 			$serverComputerName = ','.gethostname().',';
 			foreach ($environments as $environmentName => $environmentComputerNamesOrIps) {
 				$environmentComputerNamesOrIps = ','.$environmentComputerNamesOrIps.',';
@@ -402,4 +401,3 @@ class Config implements Interfaces\IConfig
 		}
 	}
 }
-\MvcCore\Config::StaticInit();

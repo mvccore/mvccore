@@ -33,14 +33,6 @@ interface IConfig
 	const ENVIRONMENT_PRODUCTION = 'production';
 
 	/**
-	 * Static initialization.
-	 * - Called when file is loaded into memory.
-	 * - First environment value setup - by server and client ip address.
-	 * @return void
-	 */
-	public static function StaticInit ();
-
-	/**
 	 * Return `TRUE` if environment is `"development"`.
 	 * @param bool $autoloadSystemConfig If `TRUE`, environment will be detected by loaded system config.
 	 * @return bool

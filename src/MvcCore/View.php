@@ -177,22 +177,15 @@ class View implements Interfaces\IView
 	public static function StaticInit () {
 		self::$_app = & \MvcCore\Application::GetInstance();
 		self::$_toolClass = self::$_app->GetToolClass();
-		$appDir = self::$_app->GetAppDir();
-		$viewsDir = self::$_app->GetViewsDir();
 		static::$HelpersClassesNamespaces = array(
 			'\MvcCore\Ext\View\Helpers\\',
 			// and '\App\Views\Helpers\' by default:
 			'\\' . implode('\\', array(
-				$appDir,
-				$viewsDir,
+				self::$_app->GetAppDir(),
+				self::$_app->GetViewsDir(),
 				static::$HelpersDir
 			)) . '\\',
 		);
-		self::$_viewScriptsFullPathBase = implode('/', array(
-			self::$_app->GetRequest()->GetAppRoot(),
-			$appDir,
-			$viewsDir
-		));
 	}
 
 	/**
@@ -227,6 +220,7 @@ class View implements Interfaces\IView
 	 * @return string
 	 */
 	public static function GetViewScriptFullPath ($typePath = '', $corectedRelativePath = '') {
+		if (self::$_viewScriptsFullPathBase === NULL) self::_initViewScriptsFullPathBase();
 		return implode('/', array(
 			self::$_viewScriptsFullPathBase,
 			$typePath,
@@ -478,6 +472,7 @@ class View implements Interfaces\IView
 	private function _correctRelativePath ($typePath, $relativePath) {
 		$result = str_replace('\\', '/', $relativePath);
 		if (substr($relativePath, 0, 2) == './') {
+			if (self::$_viewScriptsFullPathBase === NULL) self::_initViewScriptsFullPathBase();
 			$typedViewDirFullPath = implode('/', array(
 				self::$_viewScriptsFullPathBase, $typePath
 			));
@@ -490,6 +485,20 @@ class View implements Interfaces\IView
 			}
 		}
 		return $result;
+	}
+
+	/**
+	 * Init view scripts full class string for methods:
+	 * - `\MvcCore\View::GetViewScriptFullPath();`
+	 * - `\MvcCore\View::_correctRelativePath();`
+	 * @return void
+	 */
+	private static function _initViewScriptsFullPathBase () {
+		self::$_viewScriptsFullPathBase = implode('/', array(
+			self::$_app->GetRequest()->GetAppRoot(),
+			self::$_app->GetAppDir(),
+			self::$_app->GetViewsDir()
+		));
 	}
 }
 View::StaticInit();

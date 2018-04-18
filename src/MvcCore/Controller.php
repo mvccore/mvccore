@@ -223,7 +223,7 @@ class Controller implements Interfaces\IController
 	 *							 in controller without any change.
 	 * @return void
 	 */
-	public function Dispatch ($actionName = "Index") {
+	public function Dispatch ($actionName = "IndexAction") {
 		// \MvcCore\Debug::Timer('dispatch');
 		$this->Init();
 		$this->dispatchState = 1;
