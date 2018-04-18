@@ -46,9 +46,9 @@ class Router implements Interfaces\IRouter
 	 * Internally used `\MvcCore\Request` request object reference for:
 	 * - Routing process in `\MvcCore\Router::Route();` and it's protected submethods.
 	 * - URL addresses completing in `\MvcCore\Router::Url()` and it's protected submethods.
-	 * @var \MvcCore\Request|\MvcCore\Interfaces\IRequest
+	 * @var \MvcCore\Request|\MvcCore\Interfaces\IRequest|NULL
 	 */
-	protected $request;
+	protected $request = NULL;
 
 	/**
 	 * Global application route instances store to match request.
@@ -89,27 +89,27 @@ class Router implements Interfaces\IRouter
 
 	/**
 	 * Reference to singleton instance in `\MvcCore\Application::GetInstance();`.
-	 * @var \MvcCore\Application
+	 * @var \MvcCore\Application|NULL
 	 */
-	private static $_app;
+	private static $_app = NULL;
 
 	/**
 	 * Reference to `\MvcCore\Application::GetInstance()->GetRouterClass();`.
-	 * @var string
+	 * @var string|NULL
 	 */
-	private static $_routerClass;
+	private static $_routerClass = NULL;
 
 	/**
 	 * Reference to `\MvcCore\Application::GetInstance()->GetRouteClass();`.
-	 * @var string
+	 * @var string|NULL
 	 */
-	private static $_routeClass;
+	private static $_routeClass = NULL;
 
 	/**
 	 * Reference to `\MvcCore\Application::GetInstance()->GetToolClass();`.
-	 * @var string
+	 * @var string|NULL
 	 */
-	private static $_toolClass;
+	private static $_toolClass = NULL;
 
 
 	/**

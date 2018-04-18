@@ -315,6 +315,56 @@ interface IRequest
 	 */
 	public function GetActionName ();
 
+	/**
+	 * Set language international code.
+	 * Use this lang storage by your own decision.
+	 * Example: `"en" | "de"`
+	 * @var string|NULL
+	 */
+	public function & SetLang ($lang);
+
+	/**
+	 * Get language international code, lowercase, not used by default.
+	 * To use this variable - install  `\MvcCore\Router` extension `\MvcCore\Ext\Router\Lang`
+	 * Or use this variable by your own decision.
+	 * Example: `"en" | "de"`
+	 * @var string|NULL
+	 */
+	public function GetLang ();
+
+	/**
+	 * Set country/locale code, uppercase.
+	 * Use this locale storage by your own decision.
+	 * Example: `"US" | "UK"`
+	 * @var string|NULL
+	 */
+	public function & SetLocale ($locale);
+
+	/**
+	 * Get country/locale code, uppercase, not used by default.
+	 * To use this variable - install `\MvcCore\Router` extension `\MvcCore\Ext\Router\Lang`
+	 * Or use this variable by your own decision.
+	 * Example: `"US" | "UK"`
+	 * @var string|NULL
+	 */
+	public function GetLocale ();
+
+	/**
+	 * Set media site key - `"full" | "tablet" | "mobile"`.
+	 * Use this media site key storage by your own decision.
+	 * Example: `"full" | "tablet" | "mobile"`
+	 * @var string|NULL
+	 */
+	public function & SetMediaSiteKey ($mediaSiteKey);
+
+	/**
+	 * Get media site key - `"full" | "tablet" | "mobile"`.
+	 * To use this variable - install `\MvcCore\Router` extension `\MvcCoreExt\Router\Media`
+	 * Or use this variable by your own decision.
+	 * Example: `"full" | "tablet" | "mobile"`
+	 * @var string|NULL
+	 */
+	public function GetMediaSiteKey ();
 
 	/**
 	 * Sets any custom property `"PropertyName"` by `\MvcCore\Request::SetPropertyName("value")`,

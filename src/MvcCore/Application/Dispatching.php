@@ -371,10 +371,19 @@ trait Dispatching
 	public function RenderError500PlainText ($text = '') {
 		if (!$text) $text = 'Internal Server Error.';
 		$responseClass = $this->responseClass;
+		$htmlResponse = FALSE;
+		$obContent = ob_get_clean();
+		if (mb_strlen($obContent) > 0)
+			$htmlResponse = mb_strpos($obContent, '<') !== FALSE && mb_strpos($obContent, '>') !== FALSE;
+		if ($htmlResponse) {
+			$text = '<pre><big>Error 500</big>: '.PHP_EOL.PHP_EOL.$text.'</pre>'.$obContent;
+		} else {
+			$text = 'Error 500: '.PHP_EOL.PHP_EOL.$text.$obContent;
+		}
 		$this->response = $responseClass::GetInstance(
 			\MvcCore\Interfaces\IResponse::INTERNAL_SERVER_ERROR,
-			array('Content-Type' => 'text/plain'),
-			'Error 500: '.PHP_EOL.PHP_EOL.$text
+			array('Content-Type' => $htmlResponse ? 'text/html' : 'text/plain'),
+			$text
 		);
 		return TRUE;
 	}
@@ -386,11 +395,21 @@ trait Dispatching
 	 * @return bool
 	 */
 	public function RenderError404PlainText ($text = '') {
+		if (!$text) $text = 'Page not found.';
 		$responseClass = $this->responseClass;
+		$htmlResponse = FALSE;
+		$obContent = ob_get_clean();
+		if (mb_strlen($obContent) > 0)
+			$htmlResponse = mb_strpos($obContent, '<') !== FALSE && mb_strpos($obContent, '>') !== FALSE;
+		if ($htmlResponse) {
+			$text = '<pre><big>Error 404</big>: '.PHP_EOL.PHP_EOL.$text.'</pre>'.$obContent;
+		} else {
+			$text = 'Error 404: '.PHP_EOL.PHP_EOL.$text.$obContent;
+		}
 		$this->response = $responseClass::GetInstance(
 			\MvcCore\Interfaces\IResponse::NOT_FOUND,
-			array('Content-Type' => 'text/plain'),
-			'Error 404: '.PHP_EOL.PHP_EOL.$text
+			array('Content-Type' => $htmlResponse ? 'text/html' : 'text/plain'),
+			$text
 		);
 		return TRUE;
 	}

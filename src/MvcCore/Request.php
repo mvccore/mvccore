@@ -33,6 +33,33 @@ namespace MvcCore;
 class Request implements Interfaces\IRequest
 {
 	/**
+	 * Language international code, lowercase, not used by default.
+	 * To use this variable - install  `\MvcCore\Router` extension `\MvcCore\Ext\Router\Lang`
+	 * Or use this variable by your own decision.
+	 * Example: `"en" | "de"`
+	 * @var string|NULL
+	 */
+	protected $lang				= NULL;
+
+	/**
+	 * Country/locale code, uppercase, not used by default.
+	 * To use this variable - install `\MvcCore\Router` extension `\MvcCore\Ext\Router\Lang`
+	 * Or use this variable by your own decision.
+	 * Example: `"US" | "UK"`
+	 * @var string|NULL
+	 */
+	protected $locale			= NULL;
+
+	/**
+	 * Media site key - `"full" | "tablet" | "mobile"`.
+	 * To use this variable - install `\MvcCore\Router` extension `\MvcCoreExt\Router\Media`
+	 * Or use this variable by your own decision.
+	 * Example: `"full" | "tablet" | "mobile"`
+	 * @var string|NULL
+	 */
+	protected $mediaSiteKey = '';
+
+	/**
 	 * Http protocol: `"http:" | "https:"`
 	 * Example: `"http:"`
 	 * @var string|NULL
@@ -642,6 +669,72 @@ class Request implements Interfaces\IRequest
 			    $this->actionName = $this->GetParam('action', 'a-zA-Z0-9\-_/', '', 'string');
 		}
 		return $this->actionName;
+	}
+
+	/**
+	 * Set language international code.
+	 * Use this lang storage by your own decision.
+	 * Example: `"en" | "de"`
+	 * @var string|NULL
+	 */
+	public function & SetLang ($lang) {
+		$this->lang = $lang;
+		return $this;
+	}
+
+	/**
+	 * Get language international code, lowercase, not used by default.
+	 * To use this variable - install  `\MvcCore\Router` extension `\MvcCore\Ext\Router\Lang`
+	 * Or use this variable by your own decision.
+	 * Example: `"en" | "de"`
+	 * @var string|NULL
+	 */
+	public function GetLang () {
+		return $this->lang;
+	}
+
+	/**
+	 * Set country/locale code, uppercase.
+	 * Use this locale storage by your own decision.
+	 * Example: `"US" | "UK"`
+	 * @var string|NULL
+	 */
+	public function & SetLocale ($locale) {
+		$this->locale = $locale;
+		return $this;
+	}
+
+	/**
+	 * Get country/locale code, uppercase, not used by default.
+	 * To use this variable - install `\MvcCore\Router` extension `\MvcCore\Ext\Router\Lang`
+	 * Or use this variable by your own decision.
+	 * Example: `"US" | "UK"`
+	 * @var string|NULL
+	 */
+	public function GetLocale () {
+		$this->locale;
+	}
+
+	/**
+	 * Set media site key - `"full" | "tablet" | "mobile"`.
+	 * Use this media site key storage by your own decision.
+	 * Example: `"full" | "tablet" | "mobile"`
+	 * @var string|NULL
+	 */
+	public function & SetMediaSiteKey ($mediaSiteKey) {
+		$this->mediaSiteKey = $mediaSiteKey;
+		return $this;
+	}
+
+	/**
+	 * Get media site key - `"full" | "tablet" | "mobile"`.
+	 * To use this variable - install `\MvcCore\Router` extension `\MvcCoreExt\Router\Media`
+	 * Or use this variable by your own decision.
+	 * Example: `"full" | "tablet" | "mobile"`
+	 * @var string|NULL
+	 */
+	public function GetMediaSiteKey () {
+		return $this->mediaSiteKey;
 	}
 
 

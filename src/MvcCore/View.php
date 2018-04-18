@@ -81,6 +81,13 @@ class View implements Interfaces\IView
 	public static $LayoutsDir = 'Layouts';
 
 	/**
+	 * MvcCore extension class name for view helpers.
+	 * Helpers view implementing this interface could have better setup.
+	 * @var string
+	 */
+	public static $HelpersInterfaceClassName = 'MvcCore\Ext\View\Helpers\IHelper';
+
+	/**
 	 * Helpers classes namespaces, where are all configured view helpers placed.
 	 * For read & write.
 	 * @var array
@@ -109,6 +116,15 @@ class View implements Interfaces\IView
 	private $_store = array();
 
 	/**
+	 * Helpers instances storrage for current view instance.
+	 * Keys in array are helper method names.
+	 * Every view has it's own helpers storrage to recognize
+	 * if helper has been already used inside current view or not.
+	 * @var array
+	 */
+	private $_helpers = array();
+
+	/**
 	 * Currently rendered php/html file path(s).
 	 * @var array
 	 */
@@ -122,15 +138,18 @@ class View implements Interfaces\IView
 	protected static $originalyDeclaredProperties = array(
 		'_controller'		=> 1,
 		'_store'			=> 1,
+		'_helpers'			=> 1,
 		'_content'			=> 1,
 		'_renderedFullPaths'=> 1,
 	);
 
 	/**
-	 * Helpers instances storrage. Keys in array are helper method names.
+	 * Global helpers instances storrage.
+	 * Keys in array are helper method names.
+	 * These helpers instances are used for all views.
 	 * @var array
 	 */
-	private static $_helpers = array();
+	private static $_globalHelpers = array();
 
 	/**
 	 * Cached base full path for repeat method calls `\MvcCore\View::GetViewScriptFullPath();`.
@@ -140,9 +159,15 @@ class View implements Interfaces\IView
 
 	/**
 	 * Reference to singleton instance in `\MvcCore\Application::GetInstance();`.
-	 * @var \MvcCore\Application
+	 * @var \MvcCore\Application|NULL
 	 */
 	private static $_app = NULL;
+
+	/**
+	 * Reference to `\MvcCore\Application::GetInstance()->GetToolClass();`.
+	 * @var string|NULL
+	 */
+	private static $_toolClass = NULL;
 
 	/**
 	 * Static initialization to complete
@@ -151,6 +176,7 @@ class View implements Interfaces\IView
 	 */
 	public static function StaticInit () {
 		self::$_app = & \MvcCore\Application::GetInstance();
+		self::$_toolClass = & self::$_app->GetToolClass();
 		$appDir = & self::$_app->GetAppDir();
 		$viewsDir = & self::$_app->GetViewsDir();
 		static::$HelpersClassesNamespaces = array(
@@ -387,32 +413,52 @@ class View implements Interfaces\IView
 	 * If helper already exists in global helpers store - do not create it again - use instance from the store.
 	 * Then call it's public method named in the same way as helper and return result
 	 * as it is, without any conversion. So then there could be called any other helper method if whole helper instance is returned.
-	 * @param string $method
-	 * @param mixed $arguments
-	 * @return string|mixed
+	 * @param string $method View helper method name in pascal case.
+	 * @param mixed $arguments View helper method arguments.
+	 * @throws \InvalidArgumentException If view doesn't exist in configured namespaces.
+	 * @return string|mixed View helper string result or view helper instace or any other view helper result type.
 	 */
 	public function & __call ($method, $arguments) {
 		$result = '';
-		$helperFound = FALSE;
-		foreach (static::$HelpersClassesNamespaces as $helperClassBase) {
-			$className = $helperClassBase . ucfirst($method);
-			if (class_exists($className)) {
-				$helperFound = TRUE;
-				$helpers = & self::$_helpers;
-				if (isset($helpers[$method]) && get_class($helpers[$method]) == $className) {
-					$instance = & $helpers[$method];
-				} else {
-					$instance = new $className($this);
-					$helpers[$method] = & $instance;
+		$setUpViewAgain = FALSE;
+		$implementsIHelper = FALSE;
+		$instance = NULL;
+		if (isset($this->_helpers[$method])) {
+			$instance = & $this->_helpers[$method];
+		} else if (isset(self::$_globalHelpers[$method])) {
+			$globalHelpersRecord = & self::$_globalHelpers[$method];
+			$instance = & $globalHelpersRecord[0];
+			$implementsIHelper = $globalHelpersRecord[1];
+			$setUpViewAgain = TRUE;
+		} else {
+			$helperFound = FALSE;
+			$toolClass = self::$_toolClass;
+			$helpersInterface = static::$HelpersInterfaceClassName;
+			foreach (static::$HelpersClassesNamespaces as $helperClassBase) {
+				$className = $helperClassBase . ucfirst($method);
+				if (class_exists($className)) {
+					$helperFound = TRUE;
+					$setUpViewAgain = TRUE;
+					if ($toolClass::CheckClassInterface($className, $helpersInterface, FALSE)) {
+						$implementsIHelper = TRUE;
+						$instance = & $className::GetInstance();
+					} else {
+						$instance = new $className();
+					}
+					self::$_globalHelpers[$method] = array(& $instance, $implementsIHelper, $className);
+					break;
 				}
-				$result = call_user_func_array(array($instance, $method), $arguments);
-				break;
 			}
+			if (!$helperFound) throw new \InvalidArgumentException(
+				"[".__CLASS__."] View helper method '$method' is not possible to handle by any configured view helper "
+				." (View helper namespaces: '".implode("', '", static::$HelpersClassesNamespaces)."')."
+			);
 		}
-		if (!$helperFound) throw new \InvalidArgumentException(
-			"[".__CLASS__."] View helper method '$method' is not possible to handle by any configured view helper "
-			." (View helper namespaces: '".implode("', '", static::$HelpersClassesNamespaces)."')."
-		);
+		if ($setUpViewAgain) {
+			if ($implementsIHelper) $instance->SetView($this);
+			$this->_helpers[$method] = & $instance;
+		}
+		$result = call_user_func_array(array($instance, $method), $arguments);
 		return $result;
 	}
 

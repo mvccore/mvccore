@@ -154,12 +154,14 @@ class Tool implements Interfaces\ITool
 	 * Check if given class implements given interface, else throw an exception.
 	 * @param string $testClassName
 	 * @param string $interfaceName
+	 * @param bool $throwException
 	 * @throws \Exception
 	 * @return boolean
 	 */
-	public static function CheckClassInterface ($testClassName, $interfaceName) {
+	public static function CheckClassInterface ($testClassName, $interfaceName, $throwException = TRUE) {
 		if (in_array($interfaceName, (new \ReflectionClass($testClassName))
 			->getInterfaceNames())) return TRUE;
+		if (!$throwException) return FALSE;
 		throw new \InvalidArgumentException(
 			"[".__CLASS__."] Class '$testClassName' doesn't implement interface '$interfaceName'."
 		);
