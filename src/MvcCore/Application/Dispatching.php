@@ -279,7 +279,7 @@ trait Dispatching
 		if ($e->getCode() == 404) {
 			$debugClass::Log($e, \MvcCore\Interfaces\IDebug::ERROR);
 			return $this->RenderNotFound($e->getMessage());
-		} else if ($configClass::IsDevelopment()) {
+		} else if ($configClass::IsDevelopment(TRUE)) {
 			$debugClass::Exception($e);
 			return FALSE;
 		} else {
@@ -369,16 +369,20 @@ trait Dispatching
 	 * @return bool
 	 */
 	public function RenderError500PlainText ($text = '') {
-		if (!$text) $text = 'Internal Server Error.';
-		$responseClass = $this->responseClass;
 		$htmlResponse = FALSE;
-		$obContent = ob_get_clean();
-		if (mb_strlen($obContent) > 0)
-			$htmlResponse = mb_strpos($obContent, '<') !== FALSE && mb_strpos($obContent, '>') !== FALSE;
-		if ($htmlResponse) {
-			$text = '<pre><big>Error 500</big>: '.PHP_EOL.PHP_EOL.$text.'</pre>'.$obContent;
+		$responseClass = $this->responseClass;
+		$configClass = $this->configClass;
+		if (!$configClass::IsDevelopment(TRUE)) {
+			$text = 'Error 500: Internal Server Error.';
 		} else {
-			$text = 'Error 500: '.PHP_EOL.PHP_EOL.$text.$obContent;
+			$obContent = ob_get_clean();
+			if (mb_strlen($obContent) > 0)
+				$htmlResponse = mb_strpos($obContent, '<') !== FALSE && mb_strpos($obContent, '>') !== FALSE;
+			if ($htmlResponse) {
+				$text = '<pre><big>Error 500</big>: '.PHP_EOL.PHP_EOL.$text.'</pre>'.$obContent;
+			} else {
+				$text = 'Error 500: '.PHP_EOL.PHP_EOL.$text.$obContent;
+			}
 		}
 		$this->response = $responseClass::GetInstance(
 			\MvcCore\Interfaces\IResponse::INTERNAL_SERVER_ERROR,
@@ -395,16 +399,20 @@ trait Dispatching
 	 * @return bool
 	 */
 	public function RenderError404PlainText ($text = '') {
-		if (!$text) $text = 'Page not found.';
-		$responseClass = $this->responseClass;
 		$htmlResponse = FALSE;
-		$obContent = ob_get_clean();
-		if (mb_strlen($obContent) > 0)
-			$htmlResponse = mb_strpos($obContent, '<') !== FALSE && mb_strpos($obContent, '>') !== FALSE;
-		if ($htmlResponse) {
-			$text = '<pre><big>Error 404</big>: '.PHP_EOL.PHP_EOL.$text.'</pre>'.$obContent;
+		$responseClass = $this->responseClass;
+		$configClass = $this->configClass;
+		if (!$configClass::IsDevelopment(TRUE)) {
+			$text = 'Error 404: Page not found.';
 		} else {
-			$text = 'Error 404: '.PHP_EOL.PHP_EOL.$text.$obContent;
+			$obContent = ob_get_clean();
+			if (mb_strlen($obContent) > 0)
+				$htmlResponse = mb_strpos($obContent, '<') !== FALSE && mb_strpos($obContent, '>') !== FALSE;
+			if ($htmlResponse) {
+				$text = '<pre><big>Error 404</big>: '.PHP_EOL.PHP_EOL.$text.'</pre>'.$obContent;
+			} else {
+				$text = 'Error 404: '.PHP_EOL.PHP_EOL.$text.$obContent;
+			}
 		}
 		$this->response = $responseClass::GetInstance(
 			\MvcCore\Interfaces\IResponse::NOT_FOUND,
