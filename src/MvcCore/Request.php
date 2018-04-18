@@ -169,6 +169,12 @@ class Request implements Interfaces\IRequest
 	protected $referer			= NULL;
 
 	/**
+     * Timestamp of the start of the request, with microsecond precision.
+     * @var float
+     */
+	protected $microtime        = NULL;
+
+	/**
 	 * All raw http headers without any conversion, initialized by
 	 * `getallheaders()` or from `$_SERVER['HTTP_...']`.
 	 * Headers are `key => value` array, headers keys are
@@ -205,9 +211,9 @@ class Request implements Interfaces\IRequest
 	 * Request flag if request targets internal package asset or not,
 	 * - 0 => Means request is `Controller:Asset` call for internal package asset.
 	 * - 1 => Means request is classic application request.
-	 * @var int
+	 * @var bool|NULL
 	 */
-	protected $appRequest		= -1;
+	protected $appRequest		= NULL;
 
 	/**
 	 * Cleaned input param `"controller"`, containing only chars: `"a-zA-Z0-9\-_/"`.
@@ -276,6 +282,7 @@ class Request implements Interfaces\IRequest
 		return new $requestClass($server, $get, $post, $cookie, $files);
 	}
 
+
     /**
 	 * Create new instance of http request object.
 	 * Global variables for constructor arguments (`$_SERVER`, `$_GET`, `$_POST`...)
@@ -304,6 +311,18 @@ class Request implements Interfaces\IRequest
 		$this->globalFiles = & $files;
 	}
 
+    /**
+     * Get one of the global data collections stored as protected properties inside request object.
+     * Example:
+     *  // to get global `$_GET` with raw values:
+     *  `$globalGet = $request->GetGlobalCollection('get');`
+     * @param string $type
+     * @return array
+     */
+    public function & GetGlobalCollection ($type) {
+        $collection = 'global'.ucfirst(strtolower($type));
+        return $this->$collection;
+    }
 
 	/**
 	 * Set directly all raw http headers without any conversion at once.
@@ -318,16 +337,23 @@ class Request implements Interfaces\IRequest
 	}
 
 	/**
-	 * Get directly all raw http headers without any conversion at once.
+     * Get directly all raw http headers at once (with/without conversion).
 	 * If headers are not initialized, initialize headers by
 	 * `getallheaders()` or from `$_SERVER['HTTP_...']`.
 	 * Headers are returned as `key => value` array, headers keys are
-	 * in standard format like: `"Content-Type" | "Content-Length" | "X-Requested-With" ...`.
+     * in standard format like: `"Content-Type" | "Content-Length" | "X-Requested-With" ...`.
+     * @param string|array $pregReplaceAllowedChars If String - list of regular expression characters to only keep, if array - `preg_replace()` pattern and reverse.
 	 * @return array
 	 */
-	public function & GetHeaders () {
-		if ($this->headers === NULL) $this->initHeaders();
-		return $this->headers;
+	public function & GetHeaders ($pregReplaceAllowedChars = array('#\<\>#', '')) {
+        if ($this->headers === NULL) $this->initHeaders();
+		if ($pregReplaceAllowedChars === '') return $this->headers;
+		$cleanedHeaders = array();
+		foreach ($this->headers as $key => & $value) {
+            $cleanedKey = $this->cleanParamValue($key, $pregReplaceAllowedChars);
+			$cleanedHeaders[$cleanedKey] = $this->GetHeader($key, $pregReplaceAllowedChars);
+		}
+		return $cleanedHeaders;
 	}
 
 	/**
@@ -379,18 +405,17 @@ class Request implements Interfaces\IRequest
 	}
 
 	/**
-	 * Get directly all raw parameters at once (without any conversion by default).
-	 * If any defined char groups in `$pregReplaceAllowedChars`, there will be returned
-	 * all params filtered by given rule in `preg_replace()`.
-	 * Place into second argument only char groups you want to keep.
+	 * Get directly all raw parameters at once (with/without conversion).
+     * If any defined char groups in `$pregReplaceAllowedChars`, there will be returned
+     * all params filtered by given rule in `preg_replace()`.
      * @param string|array $pregReplaceAllowedChars If String - list of regular expression characters to only keep, if array - `preg_replace()` pattern and reverse.
 	 * @return array
 	 */
-	public function & GetParams ($pregReplaceAllowedChars = array("\<\>", "")) {
+	public function & GetParams ($pregReplaceAllowedChars = array('#\<\>#', '')) {
 		if ($this->params === NULL) $this->initParams();
-		if ($pregReplaceAllowedChars == "") return $this->params;
+		if ($pregReplaceAllowedChars === '') return $this->params;
 		$cleanedParams = array();
-		foreach ($this->params as $key => &$value) {
+		foreach ($this->params as $key => & $value) {
             $cleanedKey = $this->cleanParamValue($key, $pregReplaceAllowedChars);
 			$cleanedParams[$cleanedKey] = $this->GetParam($key, $pregReplaceAllowedChars);
 		}
@@ -545,6 +570,7 @@ class Request implements Interfaces\IRequest
 		$this->GetRequestPath();
 		$this->GetFullUrl();
 		$this->GetReferer();
+        $this->GetMicrotime();
 		$this->IsAjax();
 		$this->initUrlSegments();
 		$this->initHeaders();
@@ -553,23 +579,33 @@ class Request implements Interfaces\IRequest
 	}
 
 	/**
-	 * Return `TRUE` boolean flag if request target
-	 * is anything different than `Controller:Asset`.
-	 * @return bool
-	 */
+     * Return `TRUE` boolean flag if request target
+     * is anything different than `Controller:Asset`.
+     * @return bool
+     */
 	public function IsAppRequest () {
-		if ($this->appRequest == -1) {
-			$this->appRequest = 1;
-			$ctrl = 'controller';
-			$action = 'action';
-			if ($this->params === NULL) $this->initParams();
-			if (isset($this->params[$ctrl]) && isset($this->params[$action])) {
-				if ($this->params[$ctrl] == $ctrl && $this->params[$action] == 'asset') {
-					$this->appRequest = 0;
-				}
-			}
+		if ($this->appRequest === NULL) {
+            $ctrl = $this->GetControllerName();
+            $action = $this->GetActionName();
+			if ($ctrl !== NULL && $action !== NULL) {
+                $this->appRequest = FALSE;
+                if ($ctrl === 'controller' && $action === 'asset')
+				    $this->appRequest = TRUE;
+            }
 		}
-		return (bool) $this->appRequest;
+		return $this->appRequest;
+	}
+
+	/**
+     * Set cleaned requested controller name into `\MvcCore\Request::$controllerName;`
+     * and into `\MvcCore\Request::$Params['controller'];`.
+     * @param string $controllerName
+	 * @return \MvcCore\Request
+	 */
+	public function & SetControllerName ($controllerName) {
+		$this->controllerName = $controllerName;
+        $this->params['controller'] = $controllerName;
+        return $this;
 	}
 
 	/**
@@ -578,9 +614,22 @@ class Request implements Interfaces\IRequest
 	 */
 	public function GetControllerName () {
 		if ($this->controllerName === NULL) {
-			$this->controllerName = $this->GetParam('controller', 'a-zA-Z0-9\-_/', '', 'string');
+            if (isset($this->globalGet['controller']))
+			    $this->controllerName = $this->GetParam('controller', 'a-zA-Z0-9\-_/', '', 'string');
 		}
 		return $this->controllerName;
+	}
+
+	/**
+     * Set cleaned requested controller name into `\MvcCore\Request::$actionName;`
+     * and into `\MvcCore\Request::$Params['action'];`.
+     * @param string $actionName
+     * @return \MvcCore\Request
+     */
+	public function & SetActionName ($actionName) {
+		$this->actionName = $actionName;
+        $this->params['action'] = $actionName;
+        return $this;
 	}
 
 	/**
@@ -589,7 +638,8 @@ class Request implements Interfaces\IRequest
 	 */
 	public function GetActionName () {
 		if ($this->actionName === NULL) {
-			$this->actionName = $this->GetParam('action', 'a-zA-Z0-9\-_/', '', 'string');
+            if (isset($this->globalGet['action']))
+			    $this->actionName = $this->GetParam('action', 'a-zA-Z0-9\-_/', '', 'string');
 		}
 		return $this->actionName;
 	}
@@ -604,7 +654,7 @@ class Request implements Interfaces\IRequest
 	 * This method returns custom value for get and `\MvcCore\Request` instance for set.
 	 * @param string $name
 	 * @param array  $arguments
-	 * @throws \Exception
+     * @throws \InvalidArgumentException
 	 * @return mixed|\MvcCore\Request
 	 */
 	public function __call ($name, $arguments = array()) {
@@ -693,7 +743,7 @@ class Request implements Interfaces\IRequest
 	 * Example:
 	 * - full url:  `"http://localhost:88/my/development/direcotry/www/requested/path/after/domain?with=possible&query=string"`
 	 * - base path: `"/my/development/direcotry/www"`
-	 * @return void
+	 * @return string
 	 */
 	public function GetBasePath () {
 		if ($this->basePath === NULL) {
@@ -709,7 +759,7 @@ class Request implements Interfaces\IRequest
 	/**
 	 * Get http protocol string.
 	 * Example: `"http:" | "https:"`
-	 * @return void
+	 * @return string
 	 */
 	public function GetProtocol () {
 		if ($this->protocol === NULL) {
@@ -737,7 +787,7 @@ class Request implements Interfaces\IRequest
 	 * Get referer url if any, safely readed by:
 	 * `filter_var($_SERVER['HTTP_REFERER'], FILTER_SANITIZE_URL);`
 	 * Example: `"http://foreing.domain.com/path/where/is/link/to/?my=app"`
-	 * @return void
+	 * @return string
 	 */
 	public function GetReferer () {
 		if ($this->referer === NULL) {
@@ -746,6 +796,15 @@ class Request implements Interfaces\IRequest
 			$this->referer = $referer;
 		}
 		return $this->referer;
+	}
+
+	/**
+     * Get timestamp of the start of the request, with microsecond precision.
+     * @return float
+     */
+	public function GetMicrotime () {
+        if ($this->microtime === NULL) $this->microtime = $this->globalServer['REQUEST_TIME_FLOAT'];
+		return $this->microtime;
 	}
 
 	/**
@@ -802,7 +861,7 @@ class Request implements Interfaces\IRequest
 	/**
 	 * Get request path after domain with possible query string
 	 * Example: `"/requested/path/after/app/root?with=possible&query=string"`
-	 * @var string
+     * @return string
 	 */
 	public function GetRequestPath () {
 	    if ($this->requestPath === NULL) {
@@ -815,7 +874,7 @@ class Request implements Interfaces\IRequest
 	/**
 	 * Get url to requested domain and possible port.
 	 * Example: `"https://domain.com" | "http://domain:88"` if any port.
-	 * @var string
+     * @return string
 	 */
 	public function GetDomainUrl () {
 	    if ($this->domainUrl === NULL) $this->domainUrl = $this->GetProtocol() . '//' . $this->GetHost();
@@ -825,7 +884,7 @@ class Request implements Interfaces\IRequest
 	/**
 	 * Get base url to application root.
 	 * Example: `"http://domain:88/my/development/direcotry/www"`
-	 * @var string
+     * @return string
 	 */
 	public function GetBaseUrl () {
 	    if ($this->baseUrl === NULL) $this->baseUrl = $this->GetDomainUrl() . $this->GetBasePath();
@@ -835,7 +894,7 @@ class Request implements Interfaces\IRequest
 	/**
 	 * Get request url including scheme, domain, port, path, without any query string
 	 * Example: "`http://localhost:88/my/development/direcotry/www/requested/path/after/domain"`
-	 * @var string
+     * @return string
 	 */
 	public function GetRequestUrl () {
 	    if ($this->requestUrl === NULL) $this->requestUrl = $this->GetBaseUrl() . $this->GetPath();
@@ -845,7 +904,7 @@ class Request implements Interfaces\IRequest
 	/**
 	 * Get request url including scheme, domain, port, path and with query string
 	 * Example: `"http://localhost:88/my/development/direcotry/www/requested/path/after/domain?with=possible&query=string"`
-	 * @var string
+     * @return string
 	 */
 	public function GetFullUrl () {
 	    if ($this->fullUrl === NULL) {

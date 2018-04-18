@@ -202,12 +202,6 @@ interface IApplication
 	public function GetViewClass ();
 
 	/**
-	 * Get microtime, when `\MvcCore\Application` class has been declarated.
-	 * @return string
-	 */
-	public function GetMicrotime ();
-
-	/**
 	 * Returns currently used instance of protected `\MvcCore\Application::$router;`.
 	 * @return \MvcCore\Interfaces\IRouter
 	 */

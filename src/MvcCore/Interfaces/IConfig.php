@@ -84,6 +84,16 @@ interface IConfig
 	public static function SetEnvironment ($environment = \MvcCore\Interfaces\IConfig::ENVIRONMENT_PRODUCTION);
 
 	/**
+     * This is INTERNAL method.
+     * Return always new instance of staticly called class, no singleton.
+     * Always called from `\MvcCore\Config::GetSystem()` before system config is loaded.
+     * This is place where to customize any config creation process,
+     * before it's created by MvcCore framework.
+     * @return \MvcCore\Config
+	 */
+	public static function & GetInstance ();
+
+	/**
 	 * Get system config ini file as `stdClass`es and `array`s,
 	 * placed by default in: `"/App/config.ini"`.
 	 * @return \stdClass|array|boolean

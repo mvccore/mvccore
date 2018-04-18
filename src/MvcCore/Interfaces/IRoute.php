@@ -135,13 +135,13 @@ interface IRoute
 	 * This property is always used to match request by `\MvcCore\Request::Path`
 	 * by classic PHP regualar expression matching by `preg_match_all();`.
 	 *
-	 * Required together with `\MvcCore\Route::$Reverse` property, if you
-	 * have not configured `\MvcCore\Route::$Pattern` property instead.
-	 *
-	 * To define the route object by assigning properties `\MvcCore\Route::$Match` and
-	 * `\MvcCore\Route::$Reverse` together is little bit more anoying way to define it
-	 * (because you have to write almost the same information twice), but is't the best
-	 * speed solution, because there is no `\MvcCore\Route::$Pattern` parsing and
+     * Required together with `\MvcCore\Route::$Reverse` property, if you
+     * have not configured `\MvcCore\Route::$Pattern` property instead.
+     *
+     * To define the route object by assigning properties `\MvcCore\Route::$Match` and
+     * `\MvcCore\Route::$Reverse` together is little bit more anoying way to define it
+     * (because you have to write almost the same information twice), but it's the best
+     * speed solution, because there is no `\MvcCore\Route::$Pattern` parsing and
 	 * conversion into `\MvcCore\Route::$Match` and `\MvcCore\Route::$Reverse` properties.
 	 *
 	 * Example: `"#^/products\-list/(?<name>[^/]*)/(?<color>[a-z]*)#"`
@@ -161,12 +161,12 @@ interface IRoute
 	 *
 	 * This is only very simple string with replacement places (like `<name>` or
 	 * `<page>`) for given values by `\MvcCore\Router::Url($name, $params);` method.
-	 *
-	 * To define the route object by assigning properties `\MvcCore\Route::$Match` and
-	 * `\MvcCore\Route::$Reverse` together is little bit more anoying way to define it
-	 * (because you have to write almost the same information twice), but is't the best
-	 * speed solution, because there is no `\MvcCore\Route::$Pattern` parsing and
-	 * conversion into `\MvcCore\Route::$Match` and `\MvcCore\Route::$Reverse` properties.
+     *
+     * To define the route object by assigning properties `\MvcCore\Route::$Match` and
+     * `\MvcCore\Route::$Reverse` together is little bit more anoying way to define it
+     * (because you have to write almost the same information twice), but it's the best
+     * speed solution, because there is no `\MvcCore\Route::$Pattern` parsing and
+     * conversion into `\MvcCore\Route::$Match` and `\MvcCore\Route::$Reverse` properties.
 	 *
 	 * Example: `"/products-list/<name>/<color>"`
 	 * @var string
@@ -190,24 +190,29 @@ interface IRoute
 	public function & SetName ($name);
 
 	/**
-	 * Set controller name to dispatch, in pascal case. Required only if
-	 * there is no `controller` param inside `\MvcCore\Route::$Pattern`
-	 * or inside `\MvcCore\Route::$Match property`.
-	 *
-	 * It should contain namespaces and backslashes
-	 * as class namespaces delimiters.
-	 *
-	 * Example: `"Products" | "Front\Business\Products"`
+     * Set controller name to dispatch, in pascal case. Required only if
+     * there is no `controller` param inside `\MvcCore\Route::$Pattern`
+     * or inside `\MvcCore\Route::$Match properties as url params`.
+     *
+     * It should contain controller class namespaces defined in standard PHP notation.
+     * If there is backslash at the beginning - controller class will not be loaded from
+     * standard controllers directory (`/App/Controllers`) but from different specified place
+     * by full controller class name.
+     *
+     * Example:
+     *  `"Products"                             // placed in /App/Controllers/Products.php`
+     *  `"Front\Business\Products"              // placed in /App/Controllers/Front/Business/Products.php`
+     *  `"\Anywhere\Else\Controllers\Products"  // placed in /Anywhere/Else/Controllers/Products.php`
 	 * @param string $controller
 	 * @return \MvcCore\Interfaces\IRoute
 	 */
 	public function & SetController ($controller);
 
 	/**
-	 * Set action name to call in controller dispatching, in pascal case.
-	 * Required, if there is no `action` param inside `\MvcCore\Route::$Pattern`
-	 * or inside `\MvcCore\Route::$Match property`.
-	 *
+     * Set action name to call it in controller dispatch processing, in pascal case.
+     * Required, if there is no `action` param inside `\MvcCore\Route::$Pattern`
+     * or inside `\MvcCore\Route::$Match properties as url params`.
+     *
 	 * If this property has value `"List"`, then public
 	 * method in target controller has to be named as:
 	 * `public function ListAction () {...}`.
@@ -219,8 +224,10 @@ interface IRoute
 	public function & SetAction ($action);
 
 	/**
-	 * Set target controller name and controller action name to dispatch
-	 * to gether in one setter, in pascal case, separated by colon.
+     * Set target controller name and controller action name
+     * together in one setter, in pascal case, separated by colon.
+     * There are also controller namespace definition posibilities as
+     * in `\MvcCore\Route::SetController();` setter method.
 	 *
 	 * Example: `"Products:List"`
 	 * @return \MvcCore\Interfaces\IRoute
@@ -230,14 +237,13 @@ interface IRoute
 	/**
 	 * Set route rewrited params default values and also any other params default values.
 	 * It could be used for any application request input - `$_GET`, `$_POST` or `php://input`.
-	 *
-	 * If you like more faster routes by more specific declaration by declarating
-	 * `\MvcCore\Route::$Match` and `\MvcCore\Route::$Reverse` property together,
-	 * you could define `\MvcCore\Route::$LastPatternParam` values as last record
-	 * key in this `\MvcCore\Route::$Defaults` array.
-	 *
-	 * Example: `array("name" => "default-name", "color" => "red",);`.
-	 * @param array $defaults
+     *
+     * Example:
+     *  `array(
+     *      "name"  => "default-name",
+     *      "color" => "red"
+     *  );`.
+     * @param array $defaults
 	 * @return \MvcCore\Interfaces\IRoute
 	 */
 	public function & SetDefaults ($defaults = array());
@@ -259,60 +265,18 @@ interface IRoute
 	 */
 	public function & SetConstraints ($constraints = array());
 
-
-	/**
-	 * Set very optionally param name, which has to be also inside `\MvcCore\Route::$Pattern`
-	 * or inside `\MvcCore\Route::$Match` pattern property defined as the last one. And after it,
-	 * there could be only trailing slash or nothing (pattern end). This trailing slash
-	 * param definition automaticly trims this last param in pattern for right trailing
-	 * slash automaticly when route is matched.
-	 *
-	 * This property is automaticly completed by route preparing, when is parsed
-	 * `\MvcCore\Route::$Pattern` string into `\MvcCore\Route::$Match` regex pattern.
-	 *
-	 * If you like more faster routes by more specific declaration by declarating
-	 * `\MvcCore\Route::$Match` and `\MvcCore\Route::$Reverse` property together,
-	 * you could define this param as last record key in `\MvcCore\Route::$Defaults`
-	 * or by setter method `\MvcCore\Route::SetLastPatternParam` or by constructor
-	 * configuration array record names as `lastPatternParam`.
-	 *
-	 * If you don't define this, there will be a trailing slash inside value of this param
-	 * sometimes. Which you have to clean manualy anytime in controller. No big deal.
-	 *
-	 * @param string $lastPatternParam
-	 * @return \MvcCore\Interfaces\IRoute
-	 */
-	public function & SetLastPatternParam ($lastPatternParam = '');
-
-	/**
-	 * Return array of matched params, with matched controller and action names,
-	 * if route matches request `\MvcCore\Request::$Path` property by `preg_match_all()`.
-	 *
-	 * This method is usually called in core request routing process
-	 * from `\MvcCore\Router::Route();` method and it's submethods.
-	 *
-	 * @param string $requestPath
-	 * @return array Matched and params array, keys are matched
-	 *				 params or controller and action params.
-	 */
+    /**
+     * Return array of matched params, with matched controller and action names,
+     * if route matches request `\MvcCore\Request::$Path` property by `preg_match_all()`.
+     *
+     * This method is usually called in core request routing process
+     * from `\MvcCore\Router::Route();` method and it's submethods.
+     *
+     * @param string $requestPath
+     * @return array Matched and params array, keys are matched
+     *				 params or controller and action params.
+     */
 	public function Matches (& $requestPath);
-
-	/**
-	 * Process route internal data completion (if necessary)
-	 * before processing route matching by `\MvcCore\Route::Matches();`.
-	 *
-	 * Because for matching, there is always necessary to have completed:
-	 * - `\MvcCore\Route::$Match`
-	 * - `\MvcCore\Route::$Reverse`
-	 * - `\MvcCore\Route::$LastPatternParam`
-	 *
-	 * If those properties are completed, there is internally
-	 * switched route to prepared state. This method is usually
-	 * called in core request routing process from
-	 * `\MvcCore\Router::Route();` method and it's submethods.
-	 * @return void
-	 */
-	public function Prepare ();
 
 	/**
 	 * Complete route url by given params array and route
@@ -334,7 +298,7 @@ interface IRoute
 	 *	Output:
 	 *		`"/products-list/cool-product-name/blue?variant[]=L&amp;variant[]=XL"`
 	 * @param array $params
-     * @param array $cleanedGetRequestParams `$_GET` request params with escaped chars: `<` and `>`.;
+     * @param array $cleanedGetRequestParams Request query params with escaped chars: `<` and `>`.;
 	 * @return string
 	 */
 	public function Url (& $params, & $cleanedGetRequestParams);

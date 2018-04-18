@@ -127,10 +127,22 @@ class View implements Interfaces\IView
 	);
 
 	/**
-	 * Helpers instances storrage. Keys in array are helper method names.
+     * Helpers instances storrage. Keys in array are helper method names.
 	 * @var array
 	 */
 	private static $_helpers = array();
+
+    /**
+     * Cached base full path for repeat method calls `\MvcCore\View::GetViewScriptFullPath();`.
+     * @var string
+     */
+    private static $_viewScriptsFullPathBase = NULL;
+
+    /**
+     * Reference to singleton instance in `\MvcCore\Application::GetInstance();`.
+     * @var \MvcCore\Application
+     */
+    private static $_app = NULL;
 
 	/**
 	 * Static initialization to complete
@@ -138,16 +150,23 @@ class View implements Interfaces\IView
 	 * @return void
 	 */
 	public static function StaticInit () {
-		$app = \MvcCore\Application::GetInstance();
+		self::$_app = & \MvcCore\Application::GetInstance();
+        $appDir = & self::$_app->GetAppDir();
+        $viewsDir = & self::$_app->GetViewsDir();
 		static::$HelpersClassesNamespaces = array(
 			'\MvcCore\Ext\View\Helpers\\',
 			// and '\App\Views\Helpers\' by default:
 			'\\' . implode('\\', array(
-				$app->GetAppDir(),
-				$app->GetViewsDir(),
+				$appDir,
+				$viewsDir,
 				static::$HelpersDir
 			)) . '\\',
 		);
+        self::$_viewScriptsFullPathBase = implode('/', array(
+			self::$_app->GetRequest()->GetAppRoot(),
+			$appDir,
+			$viewsDir
+		));
 	}
 
 	/**
@@ -182,11 +201,8 @@ class View implements Interfaces\IView
 	 * @return string
 	 */
 	public static function GetViewScriptFullPath ($typePath = '', $corectedRelativePath = '') {
-		$app = \MvcCore\Application::GetInstance();
 		return implode('/', array(
-			$app->GetRequest()->GetAppRoot(),
-			$app->GetAppDir(),
-			$app->GetViewsDir(),
+			self::$_viewScriptsFullPathBase,
 			$typePath,
 			$corectedRelativePath . static::$Extension
 		));
@@ -271,7 +287,6 @@ class View implements Interfaces\IView
 		if (!$typePath) $typePath = static::$ScriptsDir;
 		$result = '';
 		$relativePath = $this->_correctRelativePath(
-			$this->_controller->GetRequest()->GetAppRoot(),
 			$typePath, $relativePath
 		);
 		$viewScriptFullPath = static::GetViewScriptFullPath($typePath, $relativePath);
@@ -383,13 +398,14 @@ class View implements Interfaces\IView
 			$className = $helperClassBase . ucfirst($method);
 			if (class_exists($className)) {
 				$helperFound = TRUE;
-				if (isset(self::$_helpers[$method]) && get_class(self::$_helpers[$method]) == $className) {
-					$instance = self::$_helpers[$method];
-					$result = call_user_func_array(array($instance, $method), $arguments);
+                $helpers = & self::$_helpers;
+				if (isset($helpers[$method]) && get_class($helpers[$method]) == $className) {
+					$instance = & $helpers[$method];
 				} else {
 					$instance = new $className($this);
-					$result = call_user_func_array(array($instance, $method), $arguments);
+                    $helpers[$method] = & $instance;
 				}
+                $result = call_user_func_array(array($instance, $method), $arguments);
 				break;
 			}
 		}
@@ -403,17 +419,15 @@ class View implements Interfaces\IView
 	/**
 	 * If relative path declared in view starts with `"./anything/else.phtml"`,
 	 * then change relative path to correct `"./"` context and return full path.
-	 * @param string $appRoot
 	 * @param string $typePath
 	 * @param string $relativePath
 	 * @return string full path
 	 */
-	private function _correctRelativePath ($appRoot, $typePath, $relativePath) {
+	private function _correctRelativePath ($typePath, $relativePath) {
 		$result = str_replace('\\', '/', $relativePath);
 		if (substr($relativePath, 0, 2) == './') {
-			$app = \MvcCore\Application::GetInstance();
 			$typedViewDirFullPath = implode('/', array(
-				$appRoot, $app->GetAppDir(), $app->GetViewsDir(), $typePath
+				self::$_viewScriptsFullPathBase, $typePath
 			));
 			$lastRenderedFullPath = $this->_renderedFullPaths[count($this->_renderedFullPaths) - 1];
 			$renderedRelPath = substr($lastRenderedFullPath, strlen($typedViewDirFullPath));

@@ -195,7 +195,7 @@ trait Dispatching
 		} catch (\Exception $e) {
 			return $this->DispatchException(new \ErrorException($e->getMessage(), 404));
 		}
-		if (!method_exists($this->controller, $actionName) && $ctrlClassFullName !== $this->controllerClass) {
+		if (!method_exists($controller, $actionName) && $ctrlClassFullName !== $this->controllerClass) {
 			if (!file_exists($viewScriptFullPath)) {
 				return $this->DispatchException(new \ErrorException(
 					"Controller '$ctrlClassFullName' has not method '$actionName' "
@@ -304,7 +304,7 @@ trait Dispatching
 		if ($defaultCtrlFullName) {
 			$toolClass = $this->toolClass;
 			$debugClass = $this->debugClass;
-			$this->request->SetParams(array_merge($this->request->GetParams(), array(
+			$this->request->SetParams(array_merge($this->request->GetParams(''), array(
 				'code'		=> 500,
 				'message'	=> $exceptionMessage,
 				'controller'=> $toolClass::GetDashedFromPascalCase($this->defaultControllerName),
@@ -341,7 +341,7 @@ trait Dispatching
 		if ($defaultCtrlFullName) {
 			$toolClass = $this->toolClass;
 			$debugClass = $this->debugClass;
-			$this->request->SetParams(array_merge($this->request->GetParams(), array(
+			$this->request->SetParams(array_merge($this->request->GetParams(''), array(
 				'code'		=> 404,
 				'message'	=> $exceptionMessage,
 				'controller'=> $toolClass::GetDashedFromPascalCase($this->defaultControllerName),

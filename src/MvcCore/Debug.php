@@ -94,6 +94,18 @@ namespace MvcCore {
          */
         protected static $logDirectoryInitialized = FALSE;
 
+        /**
+         * Reference to singleton instance in `\MvcCore\Application::GetInstance();`.
+         * @var \MvcCore\Application
+         */
+        protected static $app;
+
+        /**
+         * Reference to `\MvcCore\Application::GetInstance()->GetRequest()->GetMicrotime();`.
+         * @var float
+         */
+        protected static $requestBegin;
+
 		/**
 		 * Initialize debugging and logging, once only.
          * @param bool $forceDevelopmentMode If defined as `TRUE` or `FALSE`,
@@ -103,19 +115,20 @@ namespace MvcCore {
 		public static function Init ($forceDevelopmentMode = NULL) {
 			if (static::$development !== NULL) return;
 
-            $app = \MvcCore\Application::GetInstance();
+            static::$app = & \MvcCore\Application::GetInstance();
+            static::$requestBegin = & static::$app->GetRequest()->GetMicrotime();
 
             if (gettype($forceDevelopmentMode) == 'boolean') {
                 static::$development = $forceDevelopmentMode;
             } else {
-                $configClass = $app->GetConfigClass();
+                $configClass = static::$app->GetConfigClass();
                 static::$development = $configClass::IsDevelopment(TRUE);
             }
 
             // do not initialize log directory here every time, initialize log
             //directory only if there is necessary to log something - later.
 
-			static::$originalDebugClass = $app->GetDebugClass() == get_called_class();
+			static::$originalDebugClass = static::$app->GetDebugClass() == get_called_class();
 			static::initHandlers();
 			$initGlobalShortHandsHandler = static::$InitGlobalShortHands;
 			$initGlobalShortHandsHandler();
@@ -242,7 +255,7 @@ namespace MvcCore {
 		 */
 		public static function ShutdownHandler () {
 			if (!count(self::$dumps)) return;
-			$app = \MvcCore\Application::GetInstance();
+            $app = \MvcCore\Application::GetInstance();
 			$appRoot = $app->GetRequest()->GetAppRoot();
 			$response = $app->GetResponse();
 			if (!$response->IsHtmlOutput()) return;
@@ -286,7 +299,7 @@ namespace MvcCore {
 		 */
 		protected static function timerHandler ($name = NULL) {
 			$now = microtime(TRUE);
-			if ($name === NULL) return $now - \MvcCore\Application::GetInstance()->GetMicrotime();
+			if ($name === NULL) return $now - static::$requestBegin;
 			$difference = round((isset(static::$timers[$name]) ? $now - static::$timers[$name] : 0) * 1000) / 1000;
 			static::$timers[$name] = $now;
 			return $difference;
@@ -350,8 +363,7 @@ namespace MvcCore {
          */
 		protected static function initLogDirectory () {
             if (static::$logDirectoryInitialized) return;
-            $app = \MvcCore\Application::GetInstance();
-            $configClass = $app->GetConfigClass();
+            $configClass = static::$app->GetConfigClass();
             $cfg = $configClass::GetSystem();
             $logDirRelPath = static::$LogDirectory;
 			if ($cfg !== FALSE && isset($cfg->debug)) {
@@ -398,32 +410,35 @@ namespace {
 			return \MvcCore\Debug::BarDump($value, $title, $options);
 		}
 		/**
-		 * Dumps multiple variables with output buffering in browser debug bar.
-		 * store result for printing later.
-		 * @param  ...mixed  Variables to dump.
-		 * @return void
-		 */
+         * Dumps multiple variables with output buffering in browser debug bar.
+         * store result for printing later.
+         * @param  ...mixed  Variables to dump.
+         * @return void
+         */
 		function xx () {
 			$args = func_get_args();
 			foreach ($args as $arg) \MvcCore\Debug::BarDump($arg);
 		}
 		/**
-		 * Dump a variable and die. If no variable, throw stop exception.
-		 * @param  mixed  $value	Variable to dump.
-		 * @param  string $title	Optional title.
-		 * @param  array  $options	Dumper options.
-		 * @throws \Exception
-		 * @return void
-		 */
-		function xxx ($value = NULL, $title = NULL, $options = array()) {
+         * Dump variables and die. If no variable, throw stop exception.
+         * @param  ...mixed  $args	Variables to dump.
+         * @throws \Exception
+         * @return void
+         */
+		function xxx (/*...$args*/) {
 			$args = func_get_args();
 			if (count($args) === 0) {
 				throw new \Exception("Stopped.");
 			} else {
+				ob_start();
 				@header("Content-Type: text/html; charset=utf-8");
-				foreach ($args as $arg) \MvcCore\Debug::Dump($arg, FALSE, TRUE);
+				echo '<pre><code>';
+				foreach ($args as $arg) {
+					$dumpedArg = \MvcCore\Debug::Dump($arg, TRUE, TRUE);
+					echo preg_replace("#\[([^\]]*)\]=>([^\n]*)\n(\s*)#", "[$1] => ", $dumpedArg);
+					echo '</code></pre>';
+				}
 			}
-			echo ob_get_clean();
 			die();
 		}
 	};

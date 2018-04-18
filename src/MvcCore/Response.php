@@ -273,7 +273,7 @@ class Response implements Interfaces\IResponse
 	 * @return void
 	 */
 	protected function addTimeAndMemoryHeader () {
-		$mtBegin = \MvcCore\Application::GetInstance()->GetMicrotime();
+		$mtBegin = \MvcCore\Application::GetInstance()->GetRequest()->GetMicrotime();
 		$time = number_format((microtime(TRUE) - $mtBegin) * 1000, 1, '.', ' ');
 		$ram = function_exists('memory_get_peak_usage') ? number_format(memory_get_peak_usage() / 1000000, 2, '.', ' ') : 'n/a';
 		header("X-MvcCore-Cpu-Ram: $time ms, $ram MB");

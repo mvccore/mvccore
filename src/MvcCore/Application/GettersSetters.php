@@ -45,12 +45,6 @@ trait GettersSetters
 	protected $compiled = NULL;
 
 	/**
-	 * Microtime, when `\MvcCore`Application` class has been declarated.
-	 * @var int
-	 */
-	protected $microtime = 0;
-
-	/**
 	 * Top most parent controller instance currently dispatched by application.
 	 * @var \MvcCore\Controller
 	 */
@@ -355,14 +349,6 @@ trait GettersSetters
 	}
 
 	/**
-	 * Get microtime, when `\MvcCore\Application` class has been declarated.
-	 * @return string
-	 */
-	public function GetMicrotime () {
-		return $this->microtime;
-	}
-
-	/**
 	 * Returns currently used instance of protected `\MvcCore\Application::$router;`.
 	 * @return \MvcCore\Router
 	 */
@@ -481,7 +467,7 @@ trait GettersSetters
 	 * @return \MvcCore\Application
 	 */
 	public function & SetConfigClass ($configClass) {
-		return $this->setCoreClass($configClass, 'configClass', '\MvcCore\Interfaces\IConfig');
+		return $this->setCoreClass($configClass, 'configClass', 'MvcCore\Interfaces\IConfig');
 	}
 
 	/**
@@ -493,7 +479,7 @@ trait GettersSetters
 	 * @return \MvcCore\Application
 	 */
 	public function & SetControllerClass ($controllerClass) {
-		return $this->setCoreClass($controllerClass, 'configClass', '\MvcCore\Interfaces\IController');
+		return $this->setCoreClass($controllerClass, 'configClass', 'MvcCore\Interfaces\IController');
 	}
 
 	/**
@@ -504,7 +490,7 @@ trait GettersSetters
 	 * @return \MvcCore\Application
 	 */
 	public function & SetDebugClass ($debugClass) {
-		return $this->setCoreClass($debugClass, 'debugClass', '\MvcCore\Interfaces\IDebug');
+		return $this->setCoreClass($debugClass, 'debugClass', 'MvcCore\Interfaces\IDebug');
 	}
 
 	/**
@@ -515,7 +501,7 @@ trait GettersSetters
 	 * @return \MvcCore\Application
 	 */
 	public function & SetRequestClass ($requestClass) {
-		return $this->setCoreClass($requestClass, 'requestClass', '\MvcCore\Interfaces\IRequest');
+		return $this->setCoreClass($requestClass, 'requestClass', 'MvcCore\Interfaces\IRequest');
 	}
 
 	/**
@@ -526,7 +512,7 @@ trait GettersSetters
 	 * @return \MvcCore\Application
 	 */
 	public function & SetResponseClass ($responseClass) {
-		return $this->setCoreClass($responseClass, 'responseClass', '\MvcCore\Interfaces\IResponse');
+		return $this->setCoreClass($responseClass, 'responseClass', 'MvcCore\Interfaces\IResponse');
 	}
 
 	/**
@@ -538,7 +524,7 @@ trait GettersSetters
 	 * @return \MvcCore\Application
 	 */
 	public function & SetRouteClass ($routeClass) {
-		return $this->setCoreClass($routeClass, 'routerClass', '\MvcCore\Interfaces\IRoute');
+		return $this->setCoreClass($routeClass, 'routerClass', 'MvcCore\Interfaces\IRoute');
 	}
 
 	/**
@@ -549,18 +535,18 @@ trait GettersSetters
 	 * @return \MvcCore\Application
 	 */
 	public function & SetRouterClass ($routerClass) {
-		return $this->setCoreClass($routerClass, 'routerClass', '\MvcCore\Interfaces\IRouter');
+		return $this->setCoreClass($routerClass, 'routerClass', 'MvcCore\Interfaces\IRouter');
 	}
 
 	/**
 	 * Set application session class implementing `\MvcCore\Interfaces\ISession`.
 	 * Class to configure session namespaces, session opening, writing and expirations.
 	 * Core configuration method.
-	 * @param string $sessionClass
+     * @param string $sessionClass
 	 * @return \MvcCore\Application
 	 */
 	public function & SetSessionClass ($sessionClass) {
-		return $this->setCoreClass($sessionClass, 'sessionClass', '\MvcCore\Interfaces\ISession');
+		return $this->setCoreClass($sessionClass, 'sessionClass', 'MvcCore\Interfaces\ISession');
 	}
 
 	/**
@@ -571,7 +557,7 @@ trait GettersSetters
 	 * @return \MvcCore\Application
 	 */
 	public function & SetToolClass ($toolClass) {
-		return $this->setCoreClass($toolClass, 'toolClass', '\MvcCore\ITool');
+		return $this->setCoreClass($toolClass, 'toolClass', 'MvcCore\Interfaces\ITool');
 	}
 
 	/**
@@ -582,7 +568,7 @@ trait GettersSetters
 	 * @return \MvcCore\Application
 	 */
 	public function & SetViewClass ($viewClass) {
-		return $this->setCoreClass($viewClass, 'viewClass', '\MvcCore\IView');
+		return $this->setCoreClass($viewClass, 'viewClass', 'MvcCore\Interfaces\IView');
 	}
 
 

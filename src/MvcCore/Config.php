@@ -64,6 +64,18 @@ class Config implements Interfaces\IConfig
 		'false'	=> FALSE,
 	);
 
+    /**
+     * Reference to singleton instance in `\MvcCore\Application::GetInstance();`.
+     * @var \MvcCore\Application
+     */
+    private static $_app;
+
+    /**
+     * Reference to `\MvcCore\Application::GetInstance()->GetRequest()->GetAppRoot();`.
+     * @var string
+     */
+    private static $_appRoot;
+
 	/**
 	 * Temporary variable used when ini file is parsed and loaded
 	 * to store complete result to return.
@@ -90,7 +102,9 @@ class Config implements Interfaces\IConfig
 	 */
 	public static function StaticInit () {
 		if (!static::$environment) {
-			$toolClass = \MvcCore\Application::GetInstance()->GetToolClass();
+            self::$_app = & \MvcCore\Application::GetInstance();
+			self::$_appRoot = & self::$_app->GetRequest()->GetAppRoot();
+            $toolClass = & self::$_app->GetToolClass();
 			$serverAddress = $toolClass::GetServerIp();
 			$remoteAddress = $toolClass::GetClientIp();
 			if ($serverAddress == $remoteAddress) {
@@ -154,10 +168,22 @@ class Config implements Interfaces\IConfig
 	 * Set environment name as string,
 	 * defined by constants: `\MvcCore\Interfaces\IConfig::ENVIRONMENT_<environment>`.
 	 * @param string $environment
-	 * @return string
-	 */
+     * @return string
+     */
 	public static function SetEnvironment ($environment = \MvcCore\Interfaces\IConfig::ENVIRONMENT_PRODUCTION) {
 		static::$environment = $environment;
+	}
+
+	/**
+     * This is INTERNAL method.
+     * Return always new instance of staticly called class, no singleton.
+     * Always called from `\MvcCore\Config::GetSystem()` before system config is loaded.
+     * This is place where to customize any config creation process,
+     * before it's created by MvcCore framework.
+	 * @return \MvcCore\Config
+	 */
+	public static function & GetInstance () {
+		return new static();
 	}
 
 	/**
@@ -167,12 +193,11 @@ class Config implements Interfaces\IConfig
 	 */
 	public static function & GetSystem () {
 		if (!static::$systemConfig) {
-			$app = \MvcCore\Application::GetInstance();
-			$systemConfigClass = $app->GetConfigClass();
-			$instance = new $systemConfigClass;
+			$systemConfigClass = self::$_app->GetConfigClass();
+			$instance = $systemConfigClass::GetInstance();
 			static::$systemConfig = $instance->Load(str_replace(
 				'%appPath%',
-				$app->GetAppDir(),
+				self::$_app->GetAppDir(),
 				$systemConfigClass::$SystemConfigPath
 			), TRUE);
 		}
@@ -192,7 +217,7 @@ class Config implements Interfaces\IConfig
 	 * @return array|boolean
 	 */
 	public function & Load ($configPath = '', $systemConfig = FALSE) {
-		$cfgFullPath = \MvcCore\Application::GetInstance()->GetRequest()->GetAppRoot() . $configPath;
+		$cfgFullPath = self::$_appRoot . $configPath;
 		if (!file_exists($cfgFullPath)) return FALSE;
 		$rawIniData = parse_ini_file($cfgFullPath, TRUE);
 		$environment = $systemConfig

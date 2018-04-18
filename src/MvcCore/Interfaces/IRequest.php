@@ -99,6 +99,16 @@ interface IRequest
 	);
 
 
+    /**
+     * Get one of the global data collections stored as protected properties inside request object.
+     * Example:
+     *  // to get global `$_GET` with raw values:
+     *  `$globalGet = $request->GetGlobalCollection('get');`
+     * @param string $type
+     * @return array
+     */
+    public function & GetGlobalCollection ($type);
+
 	/**
 	 * Set directly all raw http headers without any conversion at once.
 	 * Header name(s) as array keys should be in standard format like:
@@ -109,13 +119,14 @@ interface IRequest
 	public function & SetHeaders (array & $headers = array());
 
 	/**
-	 * Get directly all raw http headers without any conversion at once.
-	 * If headers are not initialized, initialize headers by
-	 * `getallheaders()` or from `$_SERVER['HTTP_...']`.
-	 * Headers are returned as `key => value` array, headers keys are
-	 * in standard format like: `"Content-Type" | "Content-Length" | "X-Requested-With" ...`.
-	 * @return array
-	 */
+     * Get directly all raw http headers at once (with/without conversion).
+     * If headers are not initialized, initialize headers by
+     * `getallheaders()` or from `$_SERVER['HTTP_...']`.
+     * Headers are returned as `key => value` array, headers keys are
+     * in standard format like: `"Content-Type" | "Content-Length" | "X-Requested-With" ...`.
+     * @param string|array $pregReplaceAllowedChars If String - list of regular expression characters to only keep, if array - `preg_replace()` pattern and reverse.
+     * @return array
+     */
 	public function & GetHeaders ();
 
 	/**
@@ -155,14 +166,13 @@ interface IRequest
 	public function & SetParams (array & $params = array());
 
 	/**
-	 * Get directly all raw parameters at once (without any conversion by default).
-	 * If any defined char groups in `$pregReplaceAllowedChars`, there will be returned
-	 * all params filtered by given rule in `preg_replace()`.
-	 * Place into second argument only char groups you want to keep.
-	 * @param string|array $pregReplaceAllowedChars If String - list of regular expression characters to only keep, if array - `preg_replace()` pattern and reverse.
-	 * @return array
-	 */
-	public function & GetParams ($pregReplaceAllowedChars = array("\<\>", ""));
+     * Get directly all raw parameters at once (with/without conversion).
+     * If any defined char groups in `$pregReplaceAllowedChars`, there will be returned
+     * all params filtered by given rule in `preg_replace()`.
+     * @param string|array $pregReplaceAllowedChars If String - list of regular expression characters to only keep, if array - `preg_replace()` pattern and reverse.
+     * @return array
+     */
+	public function & GetParams ($pregReplaceAllowedChars = array('#\<\>#', ''));
 
 	/**
 	 * Set directly raw parameter value without any conversion.
@@ -278,10 +288,26 @@ interface IRequest
 	public function IsAppRequest ();
 
 	/**
+     * Set cleaned requested controller name into `\MvcCore\Request::$controllerName;`
+     * and into `\MvcCore\Request::$Params['controller'];`.
+     * @param string $controllerName
+     * @return \MvcCore\Interfaces\IRequest
+     */
+	public function & SetControllerName ($controllerName);
+
+	/**
 	 * Return cleaned requested controller name from `\MvcCore\Request::$Params['controller'];`.
 	 * @return string
 	 */
 	public function GetControllerName ();
+
+	/**
+     * Set cleaned requested controller name into `\MvcCore\Request::$actionName;`
+     * and into `\MvcCore\Request::$Params['action'];`.
+     * @param string $actionName
+     * @return \MvcCore\Interfaces\IRequest
+     */
+	public function & SetActionName ($actionName);
 
 	/**
 	 * Return cleaned requested action name from `\MvcCore\Request::$Params['action'];`.
@@ -299,7 +325,7 @@ interface IRequest
 	 * This method returns custom value for get and `\MvcCore\Request` instance for set.
 	 * @param string $name
 	 * @param array  $arguments
-	 * @throws \Exception
+     * @throws \InvalidArgumentException
 	 * @return \MvcCore\Interfaces\IRequest
 	 */
 	public function __call ($name, $arguments = array());
@@ -347,30 +373,36 @@ interface IRequest
 	 * Example:
 	 * - full url:  `"http://localhost:88/my/development/direcotry/www/requested/path/after/domain?with=possible&query=string"`
 	 * - base path: `"/my/development/direcotry/www"`
-	 * @return void
+	 * @return string
 	 */
 	public function GetBasePath ();
 
 	/**
 	 * Get http protocol string.
 	 * Example: `"http:" | "https:"`
-	 * @return void
+	 * @return string
 	 */
 	public function GetProtocol ();
 
 	/**
-	 * Get `TRUE` if http protocol is `"https:"`.
-	 * @return bool
-	 */
+     * Get `TRUE` if http protocol is `"https:"`.
+     * @return bool
+     */
 	public function IsSecure ();
 
 	/**
-	 * Get referer url if any, safely readed by:
-	 * `filter_var($_SERVER['HTTP_REFERER'], FILTER_SANITIZE_URL);`
-	 * Example: `"http://foreing.domain.com/path/where/is/link/to/?my=app"`
-	 * @return void
+     * Get referer url if any, safely readed by:
+     * `filter_var($_SERVER['HTTP_REFERER'], FILTER_SANITIZE_URL);`
+     * Example: `"http://foreing.domain.com/path/where/is/link/to/?my=app"`
+	 * @return string
 	 */
 	public function GetReferer ();
+
+	/**
+     * Get timestamp of the start of the request, with microsecond precision.
+     * @return float
+     */
+	public function GetMicrotime ();
 
 	/**
 	 * Get application server name - domain without any port.
@@ -410,35 +442,35 @@ interface IRequest
 	/**
 	 * Get request path after domain with possible query string
 	 * Example: `"/requested/path/after/app/root?with=possible&query=string"`
-	 * @var string
+     * @return string
 	 */
 	public function GetRequestPath ();
 
 	/**
 	 * Get url to requested domain and possible port.
 	 * Example: `"https://domain.com" | "http://domain:88"` if any port.
-	 * @var string
+     * @return string
 	 */
 	public function GetDomainUrl ();
 
 	/**
 	 * Get base url to application root.
 	 * Example: `"http://domain:88/my/development/direcotry/www"`
-	 * @var string
+     * @return string
 	 */
 	public function GetBaseUrl ();
 
 	/**
 	 * Get request url including scheme, domain, port, path, without any query string
 	 * Example: "`http://localhost:88/my/development/direcotry/www/requested/path/after/domain"`
-	 * @var string
+     * @return string
 	 */
 	public function GetRequestUrl ();
 
 	/**
 	 * Get request url including scheme, domain, port, path and with query string
 	 * Example: `"http://localhost:88/my/development/direcotry/www/requested/path/after/domain?with=possible&query=string"`
-	 * @var string
+     * @return string
 	 */
 	public function GetFullUrl ();
 

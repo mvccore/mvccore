@@ -158,8 +158,8 @@ class Tool implements Interfaces\ITool
 	 * @return boolean
 	 */
 	public static function CheckClassInterface ($testClassName, $interfaceName) {
-		$interfaces = class_implements($testClassName, TRUE); // load the class by autoload
-		if (isset($interfaces[$interfaceName])) return TRUE;
+        if (in_array($interfaceName, (new \ReflectionClass($testClassName))
+            ->getInterfaceNames())) return TRUE;
 		throw new \InvalidArgumentException(
 			"[".__CLASS__."] Class '$testClassName' doesn't implement interface '$interfaceName'."
 		);

@@ -193,7 +193,7 @@ class Controller implements Interfaces\IController
 
 	/**
 	 * Return always new instance of staticly called class, no singleton.
-	 * Always called from `\MvcCore::DispatchControllerAction()` before controller is dispatched,
+	 * Always called from `\MvcCore\Application::DispatchControllerAction()` before controller is dispatched,
 	 * or always called in `\MvcCore\Controller::autoInitMembers();` in base controller initialization.
 	 * This is place where to customize any controller creation process,
 	 * before it's created by MvcCore framework to dispatch it.
