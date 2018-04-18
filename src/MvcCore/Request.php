@@ -196,6 +196,18 @@ class Request implements Interfaces\IRequest
 	protected $referer			= NULL;
 
 	/**
+	 * Server ip address string.
+	 * @var string|NULL
+	 */
+	protected $serverIp			= NULL;
+
+	/**
+	 * Client ip address string.
+	 * @var string|NULL
+	 */
+	protected $clientIp			= NULL;
+
+	/**
 	 * Timestamp of the start of the request, with microsecond precision.
 	 * @var float
 	 */
@@ -602,6 +614,8 @@ class Request implements Interfaces\IRequest
 		$this->initUrlSegments();
 		$this->initHeaders();
 		$this->initParams();
+		$this->GetServerIp();
+		$this->GetClientIp();
 		return $this;
 	}
 
@@ -1018,6 +1032,36 @@ class Request implements Interfaces\IRequest
 	}
 
 	/**
+	 * Get server IP from `$_SERVER` global variable.
+	 * @return string
+	 */
+	public function GetServerIp () {
+		if ($this->serverIp === NULL) {
+			$this->serverIp = (isset($this->globalServer['SERVER_ADDR'])
+				? $this->globalServer['SERVER_ADDR']
+				: (isset($this->globalServer['LOCAL_ADDR'])
+					? $this->globalServer['LOCAL_ADDR']
+					: ''));
+		}
+		return $this->serverIp;
+	}
+
+	/**
+	 * Get client IP from `$_SERVER` global variable.
+	 * @return string
+	 */
+	public function GetClientIp () {
+		if ($this->clientIp === NULL) {
+			$this->clientIp = (isset($this->globalServer['REMOTE_ADDR'])
+				? $this->globalServer['REMOTE_ADDR']
+				: (isset($this->globalServer['HTTP_X_CLIENT_IP'])
+					? $this->globalServer['HTTP_X_CLIENT_IP']
+					: ''));
+		}
+		return $this->clientIp;
+	}
+
+	/**
 	 * Get `TRUE` if request is requested on the background
 	 * with usual Javascript HTTP header containing:
 	 * `X-Requested-With: AnyJsFrameworkName`.
@@ -1044,10 +1088,11 @@ class Request implements Interfaces\IRequest
 			. $this->globalServer['HTTP_HOST']
 			. $this->globalServer['REQUEST_URI'];
 		$parsedUrl = parse_url($absoluteUrl);
-		$this->port = $parsedUrl['port'] ?: '';
-		$this->path = mb_substr($parsedUrl['path'] ?: '', mb_strlen($this->GetBasePath()));
-		$this->query = $parsedUrl['query'] ?: '';
-		$this->fragment = $parsedUrl['fragment'] ?: '';
+		$this->port = isset($parsedUrl['port']) ? $parsedUrl['port'] : '';
+		$this->path = isset($parsedUrl['path']) ? $parsedUrl['path'] : '';
+		$this->path = mb_substr($this->path, mb_strlen($this->GetBasePath()));
+		$this->query = isset($parsedUrl['query']) ? $parsedUrl['query'] : '';
+		$this->fragment = isset($parsedUrl['fragment']) ? $parsedUrl['fragment'] : '';
 	}
 
 	/**

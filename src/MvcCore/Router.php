@@ -161,9 +161,9 @@ class Router implements Interfaces\IRouter
 		if (!static::$instance) {
 			/** @var $app \MvcCore\Application */
 			$app = & \MvcCore\Application::GetInstance();
-			self::$_routeClass = & $app->GetRouteClass();
-			self::$_toolClass = & $app->GetToolClass();
-			$routerClass = & $app->GetRouterClass();
+			self::$_routeClass = $app->GetRouteClass();
+			self::$_toolClass = $app->GetToolClass();
+			$routerClass = $app->GetRouterClass();
 			self::$_routerClass = & $routerClass;
 			self::$_app = & $app;
 			static::$instance = new $routerClass($routes);
@@ -661,9 +661,8 @@ class Router implements Interfaces\IRouter
 			if ($matchedParams = $route->Matches($requestPath)) {
 				$this->currentRoute = & $route;
 				$routeDefaultParams = $route->Defaults ?: array();
-				$request->SetParams(
-					array_merge($routeDefaultParams, $request->GetParams(''), $matchedParams)
-				);
+				$newParams = array_merge($routeDefaultParams, $request->GetParams(''), $matchedParams);
+				$request->SetParams($newParams);
 				break;
 			}
 		}

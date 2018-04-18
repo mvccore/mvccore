@@ -376,7 +376,7 @@ class Controller implements Interfaces\IController
 		$this->actionName = $request->GetActionName();
 		$this->ajax = $request->IsAjax();
 		if ($this->ajax || (
-			$this->controller == 'controller' && $this->action == 'asset'
+			$this->controllerName == 'controller' && $this->actionName == 'asset'
 		)) $this->DisableView();
 		return $this;
 	}

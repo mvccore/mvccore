@@ -79,9 +79,9 @@ class Config implements Interfaces\IConfig
 	/**
 	 * Temporary variable used when ini file is parsed and loaded
 	 * to store complete result to return.
-	 * @var array|\stdClass
+	 * @var array|\stdClass|bool
 	 */
-	protected $result = array();
+	protected $result = FALSE;
 
 	/**
 	 * Temporary variable used when ini file is parsed and loaded,
@@ -103,10 +103,10 @@ class Config implements Interfaces\IConfig
 	public static function StaticInit () {
 		if (!static::$environment) {
 			self::$_app = & \MvcCore\Application::GetInstance();
-			self::$_appRoot = & self::$_app->GetRequest()->GetAppRoot();
-			$toolClass = & self::$_app->GetToolClass();
-			$serverAddress = $toolClass::GetServerIp();
-			$remoteAddress = $toolClass::GetClientIp();
+			$request = & self::$_app->GetRequest();
+			self::$_appRoot = $request->GetAppRoot();
+			$serverAddress = $request->GetServerIp();
+			$remoteAddress = $request->GetClientIp();
 			if ($serverAddress == $remoteAddress) {
 				static::$environment = static::ENVIRONMENT_DEVELOPMENT;
 			} else {
@@ -160,7 +160,8 @@ class Config implements Interfaces\IConfig
 	 * defined by constants: `\MvcCore\Interfaces\IConfig::ENVIRONMENT_<environment>`.
 	 * @return string
 	 */
-	public static function GetEnvironment () {
+	public static function GetEnvironment ($autoloadSystemConfig = FALSE) {
+		if ($autoloadSystemConfig) static::GetSystem();
 		return static::$environment;
 	}
 
@@ -183,7 +184,8 @@ class Config implements Interfaces\IConfig
 	 * @return \MvcCore\Config
 	 */
 	public static function & GetInstance () {
-		return new static();
+		$instance = new static();
+		return $instance;
 	}
 
 	/**
@@ -218,12 +220,13 @@ class Config implements Interfaces\IConfig
 	 */
 	public function & Load ($configPath = '', $systemConfig = FALSE) {
 		$cfgFullPath = self::$_appRoot . $configPath;
-		if (!file_exists($cfgFullPath)) return FALSE;
+		if (!file_exists($cfgFullPath)) return $this->result;
 		$rawIniData = parse_ini_file($cfgFullPath, TRUE);
+		if ($rawIniData === FALSE) return $this->result;
+		$this->result = array();
 		$environment = $systemConfig
 			? $this->detectEnvironmentBySystemConfig($rawIniData)
 			: static::$environment;
-		if ($rawIniData === FALSE) return FALSE;
 		$iniData = $this->prepareIniDataToParse($rawIniData, $environment);
 		$this->processIniData($iniData);
 		foreach ($this->objectTypes as & $objectType) {
@@ -268,7 +271,7 @@ class Config implements Interfaces\IConfig
 		$environment = '';
 		if (isset($rawIni['environments'])) {
 			$environments = & $rawIni['environments'];
-			$serverAddress = ','.static::getServerIp().',';
+			$serverAddress = ','.self::$_app->GetRequest()->GetServerIp().',';
 			$serverComputerName = ','.gethostname().',';
 			foreach ($environments as $environmentName => $environmentComputerNamesOrIps) {
 				$environmentComputerNamesOrIps = ','.$environmentComputerNamesOrIps.',';

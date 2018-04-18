@@ -532,6 +532,18 @@ interface IRequest
 	public function GetFragment ();
 
 	/**
+	 * Get server IP from `$_SERVER` global variable.
+	 * @return string
+	 */
+	public function GetServerIp ();
+
+	/**
+	 * Get client IP from `$_SERVER` global variable.
+	 * @return string
+	 */
+	public function GetClientIp ();
+
+	/**
 	 * Get `TRUE` if request is requested on the background
 	 * with usual Javascript HTTP header containing:
 	 * `X-Requested-With: AnyJsFrameworkName`.

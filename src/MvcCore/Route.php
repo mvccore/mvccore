@@ -332,18 +332,18 @@ class Route implements Interfaces\IRoute
 		if ($argsCount === 0) return $this;
 		if (gettype($patternOrConfig) == 'array') {
 			$data = (object) $patternOrConfig;
-			$this->Name = $data->name ?: '';
+			$this->Name = isset($data->name) ? $data->name : '';
 			if (isset($data->controllerAction)) {
 				list($this->Controller, $this->Action) = explode(':', $data->controllerAction);
 			} else {
-				$this->Controller = $data->controller ? : '';
-				$this->Action = $data->action ?: '';
+				$this->Controller = isset($data->controller) ? $data->controller : '';
+				$this->Action = isset($data->action) ? $data->action : '';
 			}
-			$this->Pattern = $data->pattern ?: NULL;
-			$this->Match = $data->match ?: NULL;
-			$this->Reverse = $data->reverse ?: NULL;
-			$this->Defaults = $data->defaults ?: array();
-			$this->Constraints = $data->constraints ?: array();
+			$this->Pattern = isset($data->pattern) ? $data->pattern : NULL;
+			$this->Match = isset($data->match) ? $data->match : NULL;
+			$this->Reverse = isset($data->reverse) ? $data->reverse : NULL;
+			$this->Defaults = isset($data->defaults) ? $data->defaults : array();
+			$this->Constraints = isset($data->constraints) ? $data->constraints : array();
 		} else {
 			$this->Pattern = $patternOrConfig;
 			list($this->Controller, $this->Action) = explode(':', $controllerAction);
@@ -514,9 +514,9 @@ class Route implements Interfaces\IRoute
 	 * Set route rewrited params default values and also any other params default values.
 	 * It could be used for any application request input - `$_GET`, `$_POST` or `php://input`.
 	 *
-	 * Example: 
+	 * Example:
 	 *  `array(
-	 *      "name"  => "default-name", 
+	 *      "name"  => "default-name",
 	 *      "color" => "red"
 	 *  );`.
 	 * @param array $defaults

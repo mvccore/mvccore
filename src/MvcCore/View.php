@@ -176,9 +176,9 @@ class View implements Interfaces\IView
 	 */
 	public static function StaticInit () {
 		self::$_app = & \MvcCore\Application::GetInstance();
-		self::$_toolClass = & self::$_app->GetToolClass();
-		$appDir = & self::$_app->GetAppDir();
-		$viewsDir = & self::$_app->GetViewsDir();
+		self::$_toolClass = self::$_app->GetToolClass();
+		$appDir = self::$_app->GetAppDir();
+		$viewsDir = self::$_app->GetViewsDir();
 		static::$HelpersClassesNamespaces = array(
 			'\MvcCore\Ext\View\Helpers\\',
 			// and '\App\Views\Helpers\' by default:
@@ -445,7 +445,7 @@ class View implements Interfaces\IView
 					} else {
 						$instance = new $className();
 					}
-					self::$_globalHelpers[$method] = array(& $instance, $implementsIHelper, $className);
+					self::$_globalHelpers[$method] = array(& $instance, $implementsIHelper);
 					break;
 				}
 			}
@@ -458,7 +458,13 @@ class View implements Interfaces\IView
 			if ($implementsIHelper) $instance->SetView($this);
 			$this->_helpers[$method] = & $instance;
 		}
-		$result = call_user_func_array(array($instance, $method), $arguments);
+		if (method_exists($instance, $method)) {
+			$result = call_user_func_array(array($instance, $method), $arguments);
+		} else {
+			throw new \InvalidArgumentException(
+				"[".__CLASS__."] View helper instance '".get_class($instance)."' has no method '$method'."
+			);
+		}
 		return $result;
 	}
 

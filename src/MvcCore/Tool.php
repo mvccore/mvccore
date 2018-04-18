@@ -127,30 +127,6 @@ class Tool implements Interfaces\ITool
 	}
 
 	/**
-	 * Get server IP from `$_SERVER` global variable.
-	 * @return string
-	 */
-	public static function GetServerIp () {
-		return isset($_SERVER['SERVER_ADDR'])
-			? $_SERVER['SERVER_ADDR']
-			: isset($_SERVER['LOCAL_ADDR'])
-				? $_SERVER['LOCAL_ADDR']
-				: '';
-	}
-
-	/**
-	 * Get client IP from `$_SERVER` global variable.
-	 * @return string
-	 */
-	public static function GetClientIp () {
-		return isset($_SERVER['HTTP_X_CLIENT_IP'])
-			? $_SERVER['HTTP_X_CLIENT_IP']
-			: isset($_SERVER['REMOTE_ADDR'])
-				? $_SERVER['REMOTE_ADDR']
-				: '';
-	}
-
-	/**
 	 * Check if given class implements given interface, else throw an exception.
 	 * @param string $testClassName
 	 * @param string $interfaceName

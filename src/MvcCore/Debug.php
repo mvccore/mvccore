@@ -116,7 +116,7 @@ namespace MvcCore {
 			if (static::$development !== NULL) return;
 
 			static::$app = & \MvcCore\Application::GetInstance();
-			static::$requestBegin = & static::$app->GetRequest()->GetMicrotime();
+			static::$requestBegin = static::$app->GetRequest()->GetMicrotime();
 
 			if (gettype($forceDevelopmentMode) == 'boolean') {
 				static::$development = $forceDevelopmentMode;
@@ -128,7 +128,7 @@ namespace MvcCore {
 			// do not initialize log directory here every time, initialize log
 			//directory only if there is necessary to log something - later.
 
-			static::$originalDebugClass = static::$app->GetDebugClass() == get_called_class();
+			static::$originalDebugClass = ltrim(static::$app->GetDebugClass(), '\\') == get_called_class();
 			static::initHandlers();
 			$initGlobalShortHandsHandler = static::$InitGlobalShortHands;
 			$initGlobalShortHandsHandler();
@@ -238,10 +238,13 @@ namespace MvcCore {
 		public static function Exception ($exception, $exit = TRUE) {
 			if (static::$originalDebugClass) {
 				$dumpedValue = static::dumpHandler(
-					$exception, NULL, array('store' => FALSE, 'backtraceIndex' => 1)
+					$exception, NULL, array('store' => !$exit, 'backtraceIndex' => 1)
 				);
-				if (!static::$development)
+				if (static::$development && $exit) {
+					echo $dumpedValue;
+				} else {
 					static::storeLogRecord($dumpedValue, \MvcCore\Interfaces\IDebug::EXCEPTION);
+				}
 			} else {
 				@call_user_func_array(static::$handlers['exceptionHandler'], func_get_args());
 			}
@@ -254,6 +257,8 @@ namespace MvcCore {
 		 * @return void
 		 */
 		public static function ShutdownHandler () {
+			$error = error_get_last();
+			if (isset($error['type'])) static::Exception($error, FALSE);
 			if (!count(self::$dumps)) return;
 			$app = \MvcCore\Application::GetInstance();
 			$appRoot = $app->GetRequest()->GetAppRoot();

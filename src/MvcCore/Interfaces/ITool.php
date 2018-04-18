@@ -82,18 +82,6 @@ interface ITool
 	public static function DecodeJson (& $jsonStr);
 
 	/**
-	 * Get server IP from `$_SERVER` global variable.
-	 * @return string
-	 */
-	public static function GetServerIp ();
-
-	/**
-	 * Get client IP from `$_SERVER` global variable.
-	 * @return string
-	 */
-	public static function GetClientIp ();
-
-	/**
 	 * Check if given class implements given interface, else throw an exception.
 	 * @param string $testClassName
 	 * @param string $interfaceName
