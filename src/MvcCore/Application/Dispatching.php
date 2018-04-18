@@ -8,7 +8,7 @@
  * the LICENSE.md file that are distributed with this source code.
  *
  * @copyright	Copyright (c) 2016 Tom Flídr (https://github.com/mvccore/mvccore)
- * @license		https://mvccore.github.io/docs/mvccore/4.0.0/LICENCE.md
+ * @license  https://mvccore.github.io/docs/mvccore/5.0.0/LICENCE.md
  */
 
 namespace MvcCore\Application;
@@ -184,7 +184,7 @@ trait Dispatching
 		$viewScriptFullPath,
 		callable $exceptionCallback
 	) {
-        /** @var $controller \MvcCore\Controller */
+		/** @var $controller \MvcCore\Controller */
 		$controller = NULL;
 		try {
 			$controller = $ctrlClassFullName::GetInstance()
@@ -203,7 +203,7 @@ trait Dispatching
 				));
 			}
 		}
-        $this->controller =  & $controller;
+		$this->controller =  & $controller;
 		try {
 			$controller->Dispatch($actionName);
 		} catch (\Exception $e) {

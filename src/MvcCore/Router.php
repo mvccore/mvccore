@@ -8,7 +8,7 @@
  * the LICENSE.md file that are distributed with this source code.
  *
  * @copyright	Copyright (c) 2016 Tom Flídr (https://github.com/mvccore/mvccore)
- * @license		https://mvccore.github.io/docs/mvccore/4.0.0/LICENCE.md
+ * @license  https://mvccore.github.io/docs/mvccore/5.0.0/LICENCE.md
  */
 
 namespace MvcCore;
@@ -38,7 +38,7 @@ class Router implements Interfaces\IRouter
 {
 	/**
 	 * Current `\MvcCore\Router` singleton instance storage.
-     * @var \MvcCore\Router
+	 * @var \MvcCore\Router
 	 */
 	protected static $instance;
 
@@ -46,14 +46,14 @@ class Router implements Interfaces\IRouter
 	 * Internally used `\MvcCore\Request` request object reference for:
 	 * - Routing process in `\MvcCore\Router::Route();` and it's protected submethods.
 	 * - URL addresses completing in `\MvcCore\Router::Url()` and it's protected submethods.
-     * @var \MvcCore\Request|\MvcCore\Interfaces\IRequest
+	 * @var \MvcCore\Request|\MvcCore\Interfaces\IRequest
 	 */
 	protected $request;
 
 	/**
 	 * Global application route instances store to match request.
 	 * Keys are route(s) names, values are `\MvcCore\Route` instances.
-     * @var \MvcCore\Route[]|\MvcCore\Interfaces\IRoute[]
+	 * @var \MvcCore\Route[]|\MvcCore\Interfaces\IRoute[]
 	 */
 	protected $routes = array();
 
@@ -68,7 +68,7 @@ class Router implements Interfaces\IRouter
 	/**
 	 * Matched route by `\MvcCore\Router::Match();` processing or NULL if no match.
 	 * By this route, there is created and dispatched controller lifecycle by core.
-     * @var \MvcCore\Route|\MvcCore\Interfaces\IRoute
+	 * @var \MvcCore\Route|\MvcCore\Interfaces\IRoute
 	 */
 	protected $currentRoute = NULL;
 
@@ -87,33 +87,33 @@ class Router implements Interfaces\IRouter
 	 */
 	protected $cleanedRequestParams = NULL;
 
-    /**
-     * Reference to singleton instance in `\MvcCore\Application::GetInstance();`.
-     * @var \MvcCore\Application
-     */
-    private static $_app;
+	/**
+	 * Reference to singleton instance in `\MvcCore\Application::GetInstance();`.
+	 * @var \MvcCore\Application
+	 */
+	private static $_app;
 
-    /**
-     * Reference to `\MvcCore\Application::GetInstance()->GetRouterClass();`.
-     * @var string
-     */
-    private static $_routerClass;
+	/**
+	 * Reference to `\MvcCore\Application::GetInstance()->GetRouterClass();`.
+	 * @var string
+	 */
+	private static $_routerClass;
 
-    /**
-     * Reference to `\MvcCore\Application::GetInstance()->GetRouteClass();`.
-     * @var string
-     */
-    private static $_routeClass;
+	/**
+	 * Reference to `\MvcCore\Application::GetInstance()->GetRouteClass();`.
+	 * @var string
+	 */
+	private static $_routeClass;
 
-    /**
-     * Reference to `\MvcCore\Application::GetInstance()->GetToolClass();`.
-     * @var string
-     */
-    private static $_toolClass;
+	/**
+	 * Reference to `\MvcCore\Application::GetInstance()->GetToolClass();`.
+	 * @var string
+	 */
+	private static $_toolClass;
 
 
 	/**
-     * Get singleton instance of `\MvcCore\Router` stored always here.
+	 * Get singleton instance of `\MvcCore\Router` stored always here.
 	 * Optionaly set routes as first argument.
 	 * Create proper router instance type at first time by
 	 * configured class name in `\MvcCore\Application` singleton.
@@ -159,20 +159,20 @@ class Router implements Interfaces\IRouter
 	 */
 	public static function & GetInstance ($routes = array()) {
 		if (!static::$instance) {
-            /** @var $app \MvcCore\Application */
-            $app = & \MvcCore\Application::GetInstance();
-            self::$_routeClass = & $app->GetRouteClass();
-            self::$_toolClass = & $app->GetToolClass();
-            $routerClass = & $app->GetRouterClass();
-            self::$_routerClass = & $routerClass;
-            self::$_app = & $app;
+			/** @var $app \MvcCore\Application */
+			$app = & \MvcCore\Application::GetInstance();
+			self::$_routeClass = & $app->GetRouteClass();
+			self::$_toolClass = & $app->GetToolClass();
+			$routerClass = & $app->GetRouterClass();
+			self::$_routerClass = & $routerClass;
+			self::$_app = & $app;
 			static::$instance = new $routerClass($routes);
 		}
 		return static::$instance;
 	}
 
-    /**
-     * Create router as every time new instance,
+	/**
+	 * Create router as every time new instance,
 	 * no singleton instance management here.
 	 * optionaly set routes as first argument.
 	 * If there is no name configured in route array configuration,
@@ -216,12 +216,12 @@ class Router implements Interfaces\IRouter
 	 *										 keys are route names or route
 	 *										`Controller::Action` definitions.
 	 * @return \MvcCore\Router
-     */
-    public function __construct ($routes = array()) {
+	 */
+	public function __construct ($routes = array()) {
 		if ($routes) $this->SetRoutes($routes);
 	}
 
-    /**
+	/**
 	 * Clear all possible previously configured routes
 	 * and set new given request routes again.
 	 * If there is no name configured in route array configuration,
@@ -266,13 +266,13 @@ class Router implements Interfaces\IRouter
 	 *										`Controller::Action` definitions.
 	 * @return \MvcCore\Router
 	 */
-    public function & SetRoutes ($routes = array()) {
+	public function & SetRoutes ($routes = array()) {
 		$this->routes = array();
 		$this->AddRoutes($routes);
 		return $this;
 	}
 
-    /**
+	/**
 	 * Append or prepend new request routes.
 	 * If there is no name configured in route array configuration,
 	 * set route name by given `$routes` array key, if key is not numeric.
@@ -319,7 +319,7 @@ class Router implements Interfaces\IRouter
 	 *						given list, not appended.
 	 * @return \MvcCore\Router
 	 */
-    public function & AddRoutes (array $routes = array(), $prepend = FALSE) {
+	public function & AddRoutes (array $routes = array(), $prepend = FALSE) {
 		if ($prepend) $routes = array_reverse($routes);
 		$routeClass = self::$_routeClass;
 		foreach ($routes as $routeName => & $route) {
@@ -346,12 +346,12 @@ class Router implements Interfaces\IRouter
 		return $this;
 	}
 
-    /**
+	/**
 	 * Append or prepend new request route.
-     * Set up route by route name into `\MvcCore\Router::$routes` array
-     * to route incoming request and also set up route by route name and
-     * by `Controller:Action` combination into `\MvcCore\Router::$urlRoutes`
-     * array to build url addresses.
+	 * Set up route by route name into `\MvcCore\Router::$routes` array
+	 * to route incoming request and also set up route by route name and
+	 * by `Controller:Action` combination into `\MvcCore\Router::$urlRoutes`
+	 * array to build url addresses.
 	 *
 	 * Route could be defined in various forms:
 	 * Example:
@@ -406,12 +406,12 @@ class Router implements Interfaces\IRouter
 		return $this;
 	}
 
-    /**
+	/**
 	 * Get all configured route(s) as `\MvcCore\Route` instances.
 	 * Keys in returned array are route names, values are route objects.
 	 * @return \MvcCore\Route[]
 	 */
-    public function & GetRoutes () {
+	public function & GetRoutes () {
 		return $this->routes;
 	}
 
@@ -486,25 +486,25 @@ class Router implements Interfaces\IRouter
 
 	/**
 	 * Route current application request by configured routes list or by query string data.
-     * - If there is strictly defined `controller` and `action` value in query string,
-     *   route request by given values, add new route and complete new empty
-     *   `\MvcCore\Router::$currentRoute` route with `controller` and `action` values from query string.
-     * - If there is no strictly defined `controller` and `action` value in query string,
-     *   go throught all configured routes and try to find matching route:
-     *   - If there is catched any matching route:
-     *     - Set up `\MvcCore\Router::$currentRoute`.
-     *     - Reset `\MvcCore\Request::$params` again with with default route params,
-     *       with request params itself and with params parsed from matching process.
-     * - If there is no route matching the request and also if the request is targeting homepage
-     *   or there is no route matching the request and also if the request is targeting something
-     *   else and also router is configured to route to default controller and action if no route
-     *   founded, complete `\MvcCore\Router::$currentRoute` with new empty automaticly created route
-     *   targeting default controller and action by configuration in application instance (`Index:Index`)
+	 * - If there is strictly defined `controller` and `action` value in query string,
+	 *   route request by given values, add new route and complete new empty
+	 *   `\MvcCore\Router::$currentRoute` route with `controller` and `action` values from query string.
+	 * - If there is no strictly defined `controller` and `action` value in query string,
+	 *   go throught all configured routes and try to find matching route:
+	 *   - If there is catched any matching route:
+	 *     - Set up `\MvcCore\Router::$currentRoute`.
+	 *     - Reset `\MvcCore\Request::$params` again with with default route params,
+	 *       with request params itself and with params parsed from matching process.
+	 * - If there is no route matching the request and also if the request is targeting homepage
+	 *   or there is no route matching the request and also if the request is targeting something
+	 *   else and also router is configured to route to default controller and action if no route
+	 *   founded, complete `\MvcCore\Router::$currentRoute` with new empty automaticly created route
+	 *   targeting default controller and action by configuration in application instance (`Index:Index`)
 	 *   and route type create by configured `\MvcCore\Application::$routeClass` class name.
 	 * - Return completed `\MvcCore\Router::$currentRoute` or NULL.
 	 *
-     * This method is always called from core routing by:
-     * - `\MvcCore\Application::Run();` => `\MvcCore\Application::routeRequest();`.
+	 * This method is always called from core routing by:
+	 * - `\MvcCore\Application::Run();` => `\MvcCore\Application::routeRequest();`.
 	 * @return \MvcCore\Route
 	 */
 	public function & Route () {
@@ -520,7 +520,7 @@ class Router implements Interfaces\IRouter
 			$request->GetPath() == '/' || $this->routeToDefaultIfNotMatch
 		)) {
 			$routeClass = self::$_routeClass;
-            list($dfltCtrl, $dftlAction) = self::$_app->GetDefaultControllerAndActionNames();
+			list($dfltCtrl, $dftlAction) = self::$_app->GetDefaultControllerAndActionNames();
 			$this->currentRoute = $routeClass::GetInstance()
 				->SetName("$dfltCtrl:$dftlAction")
 				->SetController($dfltCtrl)
@@ -550,7 +550,7 @@ class Router implements Interfaces\IRouter
 	public function Url ($controllerActionOrRouteName = 'Index:Index', $params = array()) {
 		$result = '';
 		$request = & $this->request;
-        if ($this->cleanedRequestParams == NULL) $this->initCleanedRequestParams();
+		if ($this->cleanedRequestParams == NULL) $this->initCleanedRequestParams();
 		if (strpos($controllerActionOrRouteName, ':') !== FALSE) {
 			list($ctrlPc, $actionPc) = explode(':', $controllerActionOrRouteName);
 			if (!$ctrlPc) {
@@ -648,16 +648,16 @@ class Router implements Interfaces\IRouter
 	 * Complete `\MvcCore\Router::$currentRoute` and request params by defined routes.
 	 * Go throught all configured routes and try to find matching route.
 	 * If there is catched any matching route - reset `\MvcCore\Request::$params`
-     * with default route params, with params itself and with params parsed from matching process.
-     * @param string $controllerName
-     * @param string $actionName
+	 * with default route params, with params itself and with params parsed from matching process.
+	 * @param string $controllerName
+	 * @param string $actionName
 	 * @return void
 	 */
 	protected function routeByRewriteRoutes ($requestCtrlName, $requestActionName) {
 		$request = & $this->request;
 		$requestPath = $request->GetPath();
-        /** @var $route \MvcCore\Route */
-        foreach ($this->routes as & $route) {
+		/** @var $route \MvcCore\Route */
+		foreach ($this->routes as & $route) {
 			if ($matchedParams = $route->Matches($requestPath)) {
 				$this->currentRoute = & $route;
 				$routeDefaultParams = $route->Defaults ?: array();
@@ -681,21 +681,21 @@ class Router implements Interfaces\IRouter
 		}
 	}
 
-    /**
-     * Go throught all query string params and prepare, escape all chars (`<` and `>`)
-     * to prevent any XSS attacks, when there is used request params to automaticly complete
-     * remaining param values in url address building process.
-     * @return void
-     */
-    protected function initCleanedRequestParams () {
-        $cleanedRequestParams = array();
-        $request = & $this->request;
-        $charsToReplace = array('<' => '&lt;', '>' => '&gt;');
-        $globalGet = & $request->GetGlobalCollection('get');
-        foreach ($globalGet as $rawName => $rawValue) {
-            $paramName = strtr($rawName, $charsToReplace);
-            $cleanedRequestParams[$paramName] = strtr($rawValue, $charsToReplace);
-        }
-        $this->cleanedRequestParams = $cleanedRequestParams;
-    }
+	/**
+	 * Go throught all query string params and prepare, escape all chars (`<` and `>`)
+	 * to prevent any XSS attacks, when there is used request params to automaticly complete
+	 * remaining param values in url address building process.
+	 * @return void
+	 */
+	protected function initCleanedRequestParams () {
+		$cleanedRequestParams = array();
+		$request = & $this->request;
+		$charsToReplace = array('<' => '&lt;', '>' => '&gt;');
+		$globalGet = & $request->GetGlobalCollection('get');
+		foreach ($globalGet as $rawName => $rawValue) {
+			$paramName = strtr($rawName, $charsToReplace);
+			$cleanedRequestParams[$paramName] = strtr($rawValue, $charsToReplace);
+		}
+		$this->cleanedRequestParams = $cleanedRequestParams;
+	}
 }

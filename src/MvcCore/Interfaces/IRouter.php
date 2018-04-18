@@ -8,7 +8,7 @@
  * the LICENSE.md file that are distributed with this source code.
  *
  * @copyright	Copyright (c) 2016 Tom Flídr (https://github.com/mvccore/mvccore)
- * @license		https://mvccore.github.io/docs/mvccore/4.0.0/LICENCE.md
+ * @license  https://mvccore.github.io/docs/mvccore/5.0.0/LICENCE.md
  */
 
 namespace MvcCore\Interfaces;
@@ -35,9 +35,9 @@ interface IRouter
 {
 	/**
 	 * Get singleton instance of `\MvcCore\Router` stored always here.
-     * Optionaly set routes as first argument.
-     * Create proper router instance type at first time by
-     * configured class name in `\MvcCore\Application` singleton.
+	 * Optionaly set routes as first argument.
+	 * Create proper router instance type at first time by
+	 * configured class name in `\MvcCore\Application` singleton.
 	 *
 	 * Routes could be defined in various forms:
 	 * Example:
@@ -80,7 +80,7 @@ interface IRouter
 	 */
 	public static function & GetInstance ($routes = array());
 
-    /**
+	/**
 	 * Clear all possible previously configured routes
 	 * and set new given request routes again.
 	 *
@@ -123,9 +123,9 @@ interface IRouter
 	 *													 `Controller::Action` definitions.
 	 * @return \MvcCore\Interfaces\IRouter
 	 */
-    public function & SetRoutes ($routes = array());
+	public function & SetRoutes ($routes = array());
 
-    /**
+	/**
 	 * Append or prepend new request routes.
 	 * If there is no name configured in route array configuration,
 	 * set route name by given `$routes` array key, if key is not numeric.
@@ -172,14 +172,14 @@ interface IRouter
 	 *						given list, not appended.
 	 * @return \MvcCore\Interfaces\IRouter
 	 */
-    public function & AddRoutes (array $routes = array(), $prepend = FALSE);
+	public function & AddRoutes (array $routes = array(), $prepend = FALSE);
 
 	/**
-     * Append or prepend new request route.
-     * Set up route by route name into `\MvcCore\Router::$routes` array
-     * to route incoming request and also set up route by route name and
-     * by `Controller:Action` combination into `\MvcCore\Router::$urlRoutes`
-     * array to build url addresses.
+	 * Append or prepend new request route.
+	 * Set up route by route name into `\MvcCore\Router::$routes` array
+	 * to route incoming request and also set up route by route name and
+	 * by `Controller:Action` combination into `\MvcCore\Router::$urlRoutes`
+	 * array to build url addresses.
 	 *
 	 * Route could be defined in various forms:
 	 * Example:
@@ -218,12 +218,12 @@ interface IRouter
 	 */
 	public function & AddRoute ($route, $prepend = FALSE);
 
-    /**
+	/**
 	 * Get all configured route(s) as `\MvcCore\Route` instances.
 	 * Keys in returned array are route names, values are route objects.
 	 * @return \MvcCore\Interfaces\IRoute[]
 	 */
-    public function & GetRoutes ();
+	public function & GetRoutes ();
 
 	/**
 	 * Get `\MvcCore\Request` object as reference, used internally for:
@@ -280,27 +280,27 @@ interface IRouter
 	public function & SetRouteToDefaultIfNotMatch ($enable = TRUE);
 
 	/**
-     * Route current application request by configured routes list or by query string data.
-     * - If there is strictly defined `controller` and `action` value in query string,
-     *   route request by given values, add new route and complete new empty
-     *   `\MvcCore\Router::$currentRoute` route with `controller` and `action` values from query string.
-     * - If there is no strictly defined `controller` and `action` value in query string,
-     *   go throught all configured routes and try to find matching route:
-     *   - If there is catched any matching route:
-     *     - Set up `\MvcCore\Router::$currentRoute`.
-     *     - Reset `\MvcCore\Request::$params` again with with default route params,
-     *       with request params itself and with params parsed from matching process.
-     * - If there is no route matching the request and also if the request is targeting homepage
-     *   or there is no route matching the request and also if the request is targeting something
-     *   else and also router is configured to route to default controller and action if no route
-     *   founded, complete `\MvcCore\Router::$currentRoute` with new empty automaticly created route
-     *   targeting default controller and action by configuration in application instance (`Index:Index`)
-     *   and route type create by configured `\MvcCore\Application::$routeClass` class name.
-     * - Return completed `\MvcCore\Router::$currentRoute` or NULL.
-     *
-     * This method is always called from core routing by:
-     * - `\MvcCore\Application::Run();` => `\MvcCore\Application::routeRequest();`.
-     * @return \MvcCore\Interfaces\IRoute
+	 * Route current application request by configured routes list or by query string data.
+	 * - If there is strictly defined `controller` and `action` value in query string,
+	 *   route request by given values, add new route and complete new empty
+	 *   `\MvcCore\Router::$currentRoute` route with `controller` and `action` values from query string.
+	 * - If there is no strictly defined `controller` and `action` value in query string,
+	 *   go throught all configured routes and try to find matching route:
+	 *   - If there is catched any matching route:
+	 *     - Set up `\MvcCore\Router::$currentRoute`.
+	 *     - Reset `\MvcCore\Request::$params` again with with default route params,
+	 *       with request params itself and with params parsed from matching process.
+	 * - If there is no route matching the request and also if the request is targeting homepage
+	 *   or there is no route matching the request and also if the request is targeting something
+	 *   else and also router is configured to route to default controller and action if no route
+	 *   founded, complete `\MvcCore\Router::$currentRoute` with new empty automaticly created route
+	 *   targeting default controller and action by configuration in application instance (`Index:Index`)
+	 *   and route type create by configured `\MvcCore\Application::$routeClass` class name.
+	 * - Return completed `\MvcCore\Router::$currentRoute` or NULL.
+	 *
+	 * This method is always called from core routing by:
+	 * - `\MvcCore\Application::Run();` => `\MvcCore\Application::routeRequest();`.
+	 * @return \MvcCore\Interfaces\IRoute
 	 */
 	public function & Route ();
 

@@ -8,7 +8,7 @@
  * the LICENSE.md file that are distributed with this source code.
  *
  * @copyright	Copyright (c) 2016 Tom Flídr (https://github.com/mvccore/mvccore)
- * @license		https://mvccore.github.io/docs/mvccore/4.0.0/LICENCE.md
+ * @license  https://mvccore.github.io/docs/mvccore/5.0.0/LICENCE.md
  */
 
 namespace MvcCore\Interfaces;
@@ -26,16 +26,16 @@ namespace MvcCore\Interfaces;
  */
 interface ITool
 {
-    /**
+	/**
 	 * Convert all strings `"from" => "to"`:
 	 * - `"MyCustomValue"				=> "my-custom-value"`
 	 * - `"MyCustom/Value/InsideFolder"	=> "my-custom/value/inside-folder"`
-     * @param string $pascalCase
-     * @return string
-     */
-    public static function GetDashedFromPascalCase ($pascalCase = '');
+	 * @param string $pascalCase
+	 * @return string
+	 */
+	public static function GetDashedFromPascalCase ($pascalCase = '');
 
-    /**
+	/**
 	 * Convert all string `"from" => "to"`:
 	 * - `"my-custom-value"					=> "MyCustomValue"`
 	 * - `"my-custom/value/inside-folder"	=> "MyCustom/Value/InsideFolder"`
@@ -44,16 +44,16 @@ interface ITool
 	 */
 	public static function GetPascalCaseFromDashed ($dashed = '');
 
-    /**
+	/**
 	 * Convert all string `"from" => "to"`:
 	 * - `"MyCutomValue"				=> "my_custom_value"`
 	 * - `"MyCutom/Value/InsideFolder"	=> "my_custom/value/inside_folder"`
 	 * @param string $pascalCase
 	 * @return string
 	 */
-    public static function GetUnderscoredFromPascalCase ($pascalCase = '');
+	public static function GetUnderscoredFromPascalCase ($pascalCase = '');
 
-    /**
+	/**
 	 * Convert all string `"from" => "to"`:
 	 * - `"my_custom_value"					=> "MyCutomValue"`
 	 * - `"my_custom/value/inside_folder"	=> "MyCutom/Value/InsideFolder"`

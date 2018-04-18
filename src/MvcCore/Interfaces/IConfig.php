@@ -8,7 +8,7 @@
  * the LICENSE.md file that are distributed with this source code.
  *
  * @copyright	Copyright (c) 2016 Tom Flídr (https://github.com/mvccore/mvccore)
- * @license		https://mvccore.github.io/docs/mvccore/4.0.0/LICENCE.md
+ * @license  https://mvccore.github.io/docs/mvccore/5.0.0/LICENCE.md
  */
 
 namespace MvcCore\Interfaces;
@@ -41,29 +41,29 @@ interface IConfig
 	public static function StaticInit ();
 
 	/**
-     * Return `TRUE` if environment is `"development"`.
-     * @param bool $autoloadSystemConfig If `TRUE`, environment will be detected by loaded system config.
+	 * Return `TRUE` if environment is `"development"`.
+	 * @param bool $autoloadSystemConfig If `TRUE`, environment will be detected by loaded system config.
 	 * @return bool
 	 */
 	public static function IsDevelopment ($autoloadSystemConfig = FALSE);
 
 	/**
-     * Return `TRUE` if environment is `"beta"`.
-     * @param bool $autoloadSystemConfig If `TRUE`, environment will be detected by loaded system config.
+	 * Return `TRUE` if environment is `"beta"`.
+	 * @param bool $autoloadSystemConfig If `TRUE`, environment will be detected by loaded system config.
 	 * @return bool
 	 */
 	public static function IsBeta ($autoloadSystemConfig = FALSE);
 
 	/**
-     * Return `TRUE` if environment is `"alpha"`.
-     * @param bool $autoloadSystemConfig If `TRUE`, environment will be detected by loaded system config.
+	 * Return `TRUE` if environment is `"alpha"`.
+	 * @param bool $autoloadSystemConfig If `TRUE`, environment will be detected by loaded system config.
 	 * @return bool
 	 */
 	public static function IsAlpha ($autoloadSystemConfig = FALSE);
 
 	/**
-     * Return `TRUE` if environment is `"production"`.
-     * @param bool $autoloadSystemConfig If `TRUE`, environment will be detected by loaded system config.
+	 * Return `TRUE` if environment is `"production"`.
+	 * @param bool $autoloadSystemConfig If `TRUE`, environment will be detected by loaded system config.
 	 * @return bool
 	 */
 	public static function IsProduction ($autoloadSystemConfig = FALSE);
@@ -84,12 +84,12 @@ interface IConfig
 	public static function SetEnvironment ($environment = \MvcCore\Interfaces\IConfig::ENVIRONMENT_PRODUCTION);
 
 	/**
-     * This is INTERNAL method.
-     * Return always new instance of staticly called class, no singleton.
-     * Always called from `\MvcCore\Config::GetSystem()` before system config is loaded.
-     * This is place where to customize any config creation process,
-     * before it's created by MvcCore framework.
-     * @return \MvcCore\Config
+	 * This is INTERNAL method.
+	 * Return always new instance of staticly called class, no singleton.
+	 * Always called from `\MvcCore\Config::GetSystem()` before system config is loaded.
+	 * This is place where to customize any config creation process,
+	 * before it's created by MvcCore framework.
+	 * @return \MvcCore\Config
 	 */
 	public static function & GetInstance ();
 

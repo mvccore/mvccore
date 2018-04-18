@@ -8,7 +8,7 @@
  * the LICENSE.md file that are distributed with this source code.
  *
  * @copyright	Copyright (c) 2016 Tom Flídr (https://github.com/mvccore/mvccore)
- * @license		https://mvccore.github.io/docs/mvccore/4.0.0/LICENCE.md
+ * @license  https://mvccore.github.io/docs/mvccore/5.0.0/LICENCE.md
  */
 
 namespace MvcCore;
@@ -28,14 +28,14 @@ namespace MvcCore;
  */
 class Tool implements Interfaces\ITool
 {
-    /**
+	/**
 	 * Convert all strings `"from" => "to"`:
 	 * - `"MyCustomValue"				=> "my-custom-value"`
 	 * - `"MyCustom/Value/InsideFolder"	=> "my-custom/value/inside-folder"`
 	 * @param string $pascalCase
 	 * @return string
 	 */
-    public static function GetDashedFromPascalCase ($pascalCase = '') {
+	public static function GetDashedFromPascalCase ($pascalCase = '') {
 		return strtolower(preg_replace("#([a-z])([A-Z])#", "$1-$2", lcfirst($pascalCase)));
 	}
 
@@ -59,7 +59,7 @@ class Tool implements Interfaces\ITool
 	 * @param string $pascalCase
 	 * @return string
 	 */
-    public static function GetUnderscoredFromPascalCase ($pascalCase = '') {
+	public static function GetUnderscoredFromPascalCase ($pascalCase = '') {
 		return strtolower(preg_replace("#([a-z])([A-Z])#", "$1_$2", lcfirst($pascalCase)));
 	}
 
@@ -158,8 +158,8 @@ class Tool implements Interfaces\ITool
 	 * @return boolean
 	 */
 	public static function CheckClassInterface ($testClassName, $interfaceName) {
-        if (in_array($interfaceName, (new \ReflectionClass($testClassName))
-            ->getInterfaceNames())) return TRUE;
+		if (in_array($interfaceName, (new \ReflectionClass($testClassName))
+			->getInterfaceNames())) return TRUE;
 		throw new \InvalidArgumentException(
 			"[".__CLASS__."] Class '$testClassName' doesn't implement interface '$interfaceName'."
 		);

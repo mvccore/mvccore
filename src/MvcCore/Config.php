@@ -8,7 +8,7 @@
  * the LICENSE.md file that are distributed with this source code.
  *
  * @copyright	Copyright (c) 2016 Tom Flídr (https://github.com/mvccore/mvccore)
- * @license		https://mvccore.github.io/docs/mvccore/4.0.0/LICENCE.md
+ * @license  https://mvccore.github.io/docs/mvccore/5.0.0/LICENCE.md
  */
 
 namespace MvcCore;
@@ -64,17 +64,17 @@ class Config implements Interfaces\IConfig
 		'false'	=> FALSE,
 	);
 
-    /**
-     * Reference to singleton instance in `\MvcCore\Application::GetInstance();`.
-     * @var \MvcCore\Application
-     */
-    private static $_app;
+	/**
+	 * Reference to singleton instance in `\MvcCore\Application::GetInstance();`.
+	 * @var \MvcCore\Application
+	 */
+	private static $_app;
 
-    /**
-     * Reference to `\MvcCore\Application::GetInstance()->GetRequest()->GetAppRoot();`.
-     * @var string
-     */
-    private static $_appRoot;
+	/**
+	 * Reference to `\MvcCore\Application::GetInstance()->GetRequest()->GetAppRoot();`.
+	 * @var string
+	 */
+	private static $_appRoot;
 
 	/**
 	 * Temporary variable used when ini file is parsed and loaded
@@ -102,9 +102,9 @@ class Config implements Interfaces\IConfig
 	 */
 	public static function StaticInit () {
 		if (!static::$environment) {
-            self::$_app = & \MvcCore\Application::GetInstance();
+			self::$_app = & \MvcCore\Application::GetInstance();
 			self::$_appRoot = & self::$_app->GetRequest()->GetAppRoot();
-            $toolClass = & self::$_app->GetToolClass();
+			$toolClass = & self::$_app->GetToolClass();
 			$serverAddress = $toolClass::GetServerIp();
 			$remoteAddress = $toolClass::GetClientIp();
 			if ($serverAddress == $remoteAddress) {
@@ -117,41 +117,41 @@ class Config implements Interfaces\IConfig
 
 	/**
 	 * Return `TRUE` if environment is `"development"`.
-     * @param bool $autoloadSystemConfig If `TRUE`, environment will be detected by loaded system config.
+	 * @param bool $autoloadSystemConfig If `TRUE`, environment will be detected by loaded system config.
 	 * @return bool
 	 */
 	public static function IsDevelopment ($autoloadSystemConfig = FALSE) {
-        if ($autoloadSystemConfig) static::GetSystem();
+		if ($autoloadSystemConfig) static::GetSystem();
 		return static::$environment == static::ENVIRONMENT_DEVELOPMENT;
 	}
 
 	/**
-     * Return `TRUE` if environment is `"beta"`.
-     * @param bool $autoloadSystemConfig If `TRUE`, environment will be detected by loaded system config.
+	 * Return `TRUE` if environment is `"beta"`.
+	 * @param bool $autoloadSystemConfig If `TRUE`, environment will be detected by loaded system config.
 	 * @return bool
 	 */
 	public static function IsBeta ($autoloadSystemConfig = FALSE) {
-        if ($autoloadSystemConfig) static::GetSystem();
+		if ($autoloadSystemConfig) static::GetSystem();
 		return static::$environment == static::ENVIRONMENT_BETA;
 	}
 
 	/**
-     * Return `TRUE` if environment is `"alpha"`.
-     * @param bool $autoloadSystemConfig If `TRUE`, environment will be detected by loaded system config.
+	 * Return `TRUE` if environment is `"alpha"`.
+	 * @param bool $autoloadSystemConfig If `TRUE`, environment will be detected by loaded system config.
 	 * @return bool
 	 */
 	public static function IsAlpha ($autoloadSystemConfig = FALSE) {
-        if ($autoloadSystemConfig) static::GetSystem();
+		if ($autoloadSystemConfig) static::GetSystem();
 		return static::$environment == static::ENVIRONMENT_ALPHA;
 	}
 
 	/**
-     * Return `TRUE` if environment is `"production"`.
-     * @param bool $autoloadSystemConfig If `TRUE`, environment will be detected by loaded system config.
+	 * Return `TRUE` if environment is `"production"`.
+	 * @param bool $autoloadSystemConfig If `TRUE`, environment will be detected by loaded system config.
 	 * @return bool
 	 */
 	public static function IsProduction ($autoloadSystemConfig = FALSE) {
-        if ($autoloadSystemConfig) static::GetSystem();
+		if ($autoloadSystemConfig) static::GetSystem();
 		return static::$environment == static::ENVIRONMENT_PRODUCTION;
 	}
 
@@ -168,18 +168,18 @@ class Config implements Interfaces\IConfig
 	 * Set environment name as string,
 	 * defined by constants: `\MvcCore\Interfaces\IConfig::ENVIRONMENT_<environment>`.
 	 * @param string $environment
-     * @return string
-     */
+	 * @return string
+	 */
 	public static function SetEnvironment ($environment = \MvcCore\Interfaces\IConfig::ENVIRONMENT_PRODUCTION) {
 		static::$environment = $environment;
 	}
 
 	/**
-     * This is INTERNAL method.
-     * Return always new instance of staticly called class, no singleton.
-     * Always called from `\MvcCore\Config::GetSystem()` before system config is loaded.
-     * This is place where to customize any config creation process,
-     * before it's created by MvcCore framework.
+	 * This is INTERNAL method.
+	 * Return always new instance of staticly called class, no singleton.
+	 * Always called from `\MvcCore\Config::GetSystem()` before system config is loaded.
+	 * This is place where to customize any config creation process,
+	 * before it's created by MvcCore framework.
 	 * @return \MvcCore\Config
 	 */
 	public static function & GetInstance () {

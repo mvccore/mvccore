@@ -8,7 +8,7 @@
  * the LICENSE.md file that are distributed with this source code.
  *
  * @copyright	Copyright (c) 2016 Tom Flídr (https://github.com/mvccore/mvccore)
- * @license		https://mvccore.github.io/docs/mvccore/4.0.0/LICENCE.md
+ * @license  https://mvccore.github.io/docs/mvccore/5.0.0/LICENCE.md
  */
 
 namespace MvcCore {
@@ -87,46 +87,46 @@ namespace MvcCore {
 		 */
 		protected static $originalDebugClass = TRUE;
 
-        /**
-         * `TRUE` if debug class is MvcCore original debug class and
-         * if logs directory has been already initialized.
-         * @var bool
-         */
-        protected static $logDirectoryInitialized = FALSE;
+		/**
+		 * `TRUE` if debug class is MvcCore original debug class and
+		 * if logs directory has been already initialized.
+		 * @var bool
+		 */
+		protected static $logDirectoryInitialized = FALSE;
 
-        /**
-         * Reference to singleton instance in `\MvcCore\Application::GetInstance();`.
-         * @var \MvcCore\Application
-         */
-        protected static $app;
+		/**
+		 * Reference to singleton instance in `\MvcCore\Application::GetInstance();`.
+		 * @var \MvcCore\Application
+		 */
+		protected static $app;
 
-        /**
-         * Reference to `\MvcCore\Application::GetInstance()->GetRequest()->GetMicrotime();`.
-         * @var float
-         */
-        protected static $requestBegin;
+		/**
+		 * Reference to `\MvcCore\Application::GetInstance()->GetRequest()->GetMicrotime();`.
+		 * @var float
+		 */
+		protected static $requestBegin;
 
 		/**
 		 * Initialize debugging and logging, once only.
-         * @param bool $forceDevelopmentMode If defined as `TRUE` or `FALSE`,
-         *                                   debug mode will be set not by config but by this value.
+		 * @param bool $forceDevelopmentMode If defined as `TRUE` or `FALSE`,
+		 *                                   debug mode will be set not by config but by this value.
 		 * @return void
 		 */
 		public static function Init ($forceDevelopmentMode = NULL) {
 			if (static::$development !== NULL) return;
 
-            static::$app = & \MvcCore\Application::GetInstance();
-            static::$requestBegin = & static::$app->GetRequest()->GetMicrotime();
+			static::$app = & \MvcCore\Application::GetInstance();
+			static::$requestBegin = & static::$app->GetRequest()->GetMicrotime();
 
-            if (gettype($forceDevelopmentMode) == 'boolean') {
-                static::$development = $forceDevelopmentMode;
-            } else {
-                $configClass = static::$app->GetConfigClass();
-                static::$development = $configClass::IsDevelopment(TRUE);
-            }
+			if (gettype($forceDevelopmentMode) == 'boolean') {
+				static::$development = $forceDevelopmentMode;
+			} else {
+				$configClass = static::$app->GetConfigClass();
+				static::$development = $configClass::IsDevelopment(TRUE);
+			}
 
-            // do not initialize log directory here every time, initialize log
-            //directory only if there is necessary to log something - later.
+			// do not initialize log directory here every time, initialize log
+			//directory only if there is necessary to log something - later.
 
 			static::$originalDebugClass = static::$app->GetDebugClass() == get_called_class();
 			static::initHandlers();
@@ -148,50 +148,50 @@ namespace MvcCore {
 		}
 
 		/**
-         * Dumps information about any variable in readable format and return it.
-         * In non-development mode - store dumped variable in `debug.log`.
+		 * Dumps information about any variable in readable format and return it.
+		 * In non-development mode - store dumped variable in `debug.log`.
 		 * @param  mixed  $value	Variable to dump.
-         * @param  bool   $return	Return output instead of printing it.
+		 * @param  bool   $return	Return output instead of printing it.
 		 * @return mixed			Variable itself or dumped variable string.
 		 */
 		public static function Dump ($value, $return = FALSE) {
 			if (static::$originalDebugClass) {
-                $args = func_get_args();
-                $options = array('store' => FALSE, 'backtraceIndex' => 1);
-                if (isset($args[2]) && $args[2]) $options['lastDump'] = TRUE;
-                $dumpedValue = static::dumpHandler($value, NULL, $options);
+				$args = func_get_args();
+				$options = array('store' => FALSE, 'backtraceIndex' => 1);
+				if (isset($args[2]) && $args[2]) $options['lastDump'] = TRUE;
+				$dumpedValue = static::dumpHandler($value, NULL, $options);
 			} else {
 				$dumpedValue = @call_user_func(static::$handlers['dump'], $value, $return);
 			}
 			if ($return) return $dumpedValue;
-            if (static::$development) {
-                echo $dumpedValue;
-            } else {
-                static::storeLogRecord($dumpedValue, \MvcCore\Interfaces\IDebug::DEBUG);
-            }
+			if (static::$development) {
+				echo $dumpedValue;
+			} else {
+				static::storeLogRecord($dumpedValue, \MvcCore\Interfaces\IDebug::DEBUG);
+			}
 			return $value;
 		}
 
 		/**
 		 * Dump any variable with output buffering in browser debug bar.
 		 * In non-development mode - store dumped variable in `debug.log`.
-         * Return printed variable as string.
+		 * Return printed variable as string.
 		 * @param  mixed	$value		Variable to dump.
 		 * @param  string	$title		Optional title.
 		 * @param  array	$options	Dumper options.
 		 * @return mixed				Variable itself.
 		 */
 		public static function BarDump ($value, $title = NULL, $options = array()) {
-            if (static::$originalDebugClass) {
-                if (!isset($options['backtraceIndex'])) $options['backtraceIndex'] = 1;
-                $options['store'] = static::$development;
-                $dumpedValue = static::dumpHandler($value, $title, $options);
+			if (static::$originalDebugClass) {
+				if (!isset($options['backtraceIndex'])) $options['backtraceIndex'] = 1;
+				$options['store'] = static::$development;
+				$dumpedValue = static::dumpHandler($value, $title, $options);
 			} else {
-                $dumpedValue = @call_user_func_array(static::$handlers['barDump'], func_get_args());
+				$dumpedValue = @call_user_func_array(static::$handlers['barDump'], func_get_args());
 			}
-            if (!static::$development) {
-                static::storeLogRecord($dumpedValue, \MvcCore\Interfaces\IDebug::DEBUG);
-            }
+			if (!static::$development) {
+				static::storeLogRecord($dumpedValue, \MvcCore\Interfaces\IDebug::DEBUG);
+			}
 			return $value;
 		}
 
@@ -229,19 +229,19 @@ namespace MvcCore {
 		}
 
 		/**
-         * Print catched exception in browser.
-         * In non-development mode - store dumped exception in `exception.log`.
-         * @param \Exception|\Throwable $exception
-         * @param bool $exit
+		 * Print catched exception in browser.
+		 * In non-development mode - store dumped exception in `exception.log`.
+		 * @param \Exception|\Throwable $exception
+		 * @param bool $exit
 		 * @return void
 		 */
 		public static function Exception ($exception, $exit = TRUE) {
-            if (static::$originalDebugClass) {
+			if (static::$originalDebugClass) {
 				$dumpedValue = static::dumpHandler(
 					$exception, NULL, array('store' => FALSE, 'backtraceIndex' => 1)
 				);
-                if (!static::$development)
-                    static::storeLogRecord($dumpedValue, \MvcCore\Interfaces\IDebug::EXCEPTION);
+				if (!static::$development)
+					static::storeLogRecord($dumpedValue, \MvcCore\Interfaces\IDebug::EXCEPTION);
 			} else {
 				@call_user_func_array(static::$handlers['exceptionHandler'], func_get_args());
 			}
@@ -255,28 +255,28 @@ namespace MvcCore {
 		 */
 		public static function ShutdownHandler () {
 			if (!count(self::$dumps)) return;
-            $app = \MvcCore\Application::GetInstance();
+			$app = \MvcCore\Application::GetInstance();
 			$appRoot = $app->GetRequest()->GetAppRoot();
 			$response = $app->GetResponse();
 			if (!$response->IsHtmlOutput()) return;
 			$dumps = '';
 			$lastDump = FALSE;
 			foreach (self::$dumps as $values) {
-                $options = $values[2];
+				$options = $values[2];
 				$dumps .= '<div class="item">';
 				if ($values[1] !== NULL) {
 					$dumps .= '<pre class="title">'.$values[1].'</pre>';
 				}
-                $file = $options['file'];
-                $line = $options['line'];
-                $displayedFile = str_replace('\\', '/', $file);
-                if (strpos($displayedFile, $appRoot) === 0) {
-                    $displayedFile = substr($displayedFile, strlen($appRoot));
-                }
-                $link = '<a class="editor" href="editor://open/?file='
-                    .rawurlencode($file).'&amp;line='.$line.'">'
-                        .$displayedFile.':'.$line
-                    .'</a>';
+				$file = $options['file'];
+				$line = $options['line'];
+				$displayedFile = str_replace('\\', '/', $file);
+				if (strpos($displayedFile, $appRoot) === 0) {
+					$displayedFile = substr($displayedFile, strlen($appRoot));
+				}
+				$link = '<a class="editor" href="editor://open/?file='
+					.rawurlencode($file).'&amp;line='.$line.'">'
+						.$displayedFile.':'.$line
+					.'</a>';
 				$dumps .= '<div class="value">'
 					.preg_replace("#\[([^\]]*)\]=>([^\n]*)\n(\s*)#", "[$1] => ",
 						str_replace("<required>","&lt;required&gt;",$link.$values[0])
@@ -322,34 +322,34 @@ namespace MvcCore {
 			$backtraceIndex = isset($options['backtraceIndex']) ? $options['backtraceIndex'] : 2 ;
 			$backtrace = debug_backtrace(DEBUG_BACKTRACE_IGNORE_ARGS, $backtraceIndex + 1);
 			$originalPlace = (object) $backtrace[$backtraceIndex];
-            $options['file'] = $originalPlace->file;
-            $options['line'] = $originalPlace->line;
+			$options['file'] = $originalPlace->file;
+			$options['line'] = $originalPlace->line;
 			if ($options['store']) self::$dumps[] = array($content, $title, $options);
 			return $content;
 		}
 
-        /**
-         * Store given log record in text file.
-         * Return full path where the message has been writen.
-         * @param mixed $value
-         * @param string $priority
-         * @return string
-         */
-        protected static function storeLogRecord ($value, $priority) {
-            $content = date('[Y-m-d H-i-s]') . "\n" . $value;
-            $content = preg_replace("#\n(\s)#", "\n\t$1", $content) . "\n";
-            if (!static::$logDirectoryInitialized) static::initLogDirectory();
-            $fullPath = static::$LogDirectory . DIRECTORY_SEPARATOR . $priority . '.log';
-            file_put_contents($fullPath, $content, FILE_APPEND);
-            return $fullPath;
-        }
+		/**
+		 * Store given log record in text file.
+		 * Return full path where the message has been writen.
+		 * @param mixed $value
+		 * @param string $priority
+		 * @return string
+		 */
+		protected static function storeLogRecord ($value, $priority) {
+			$content = date('[Y-m-d H-i-s]') . "\n" . $value;
+			$content = preg_replace("#\n(\s)#", "\n\t$1", $content) . "\n";
+			if (!static::$logDirectoryInitialized) static::initLogDirectory();
+			$fullPath = static::$LogDirectory . DIRECTORY_SEPARATOR . $priority . '.log';
+			file_put_contents($fullPath, $content, FILE_APPEND);
+			return $fullPath;
+		}
 
 		/**
-         * Initialize debuging and logging handlers.
-         * @return void
-         */
+		 * Initialize debuging and logging handlers.
+		 * @return void
+		 */
 		protected static function initHandlers () {
-            $className = get_called_class();
+			$className = get_called_class();
 			foreach (static::$handlers as $key => $value) {
 				static::$handlers[$key] = array($className, $value);
 			}
@@ -357,15 +357,15 @@ namespace MvcCore {
 		}
 
 		/**
-         * If log directory doesn't exist, create new directory - relative from app root.
-         * @param string $logDirAbsPath Absolute directory path.
-         * @return void
-         */
+		 * If log directory doesn't exist, create new directory - relative from app root.
+		 * @param string $logDirAbsPath Absolute directory path.
+		 * @return void
+		 */
 		protected static function initLogDirectory () {
-            if (static::$logDirectoryInitialized) return;
-            $configClass = static::$app->GetConfigClass();
-            $cfg = $configClass::GetSystem();
-            $logDirRelPath = static::$LogDirectory;
+			if (static::$logDirectoryInitialized) return;
+			$configClass = static::$app->GetConfigClass();
+			$cfg = $configClass::GetSystem();
+			$logDirRelPath = static::$LogDirectory;
 			if ($cfg !== FALSE && isset($cfg->debug)) {
 				$cfgDebug = & $cfg->debug;
 				if (isset($cfgDebug->emailRecepient))
@@ -381,14 +381,14 @@ namespace MvcCore {
 			$lastSlashPos = strrpos($scriptPath, '/');
 			$appRoot = substr($scriptPath, 0, $lastSlashPos !== FALSE ? $lastSlashPos : strlen($scriptPath));
 			$logDirAbsPath = $appRoot . $logDirRelPath;
-            static::$LogDirectory = $logDirAbsPath;
+			static::$LogDirectory = $logDirAbsPath;
 
 			if (!is_dir($logDirAbsPath)) mkdir($logDirAbsPath, 0777, TRUE);
 			if (!is_writable($logDirAbsPath)) {
 				try {
 					chmod($logDirAbsPath, 0777);
 				}
-                catch (\Exception $e) {
+				catch (\Exception $e) {
 					die('['.__CLASS__.'] ' . $e->getMessage());
 				}
 			}
@@ -410,21 +410,21 @@ namespace {
 			return \MvcCore\Debug::BarDump($value, $title, $options);
 		}
 		/**
-         * Dumps multiple variables with output buffering in browser debug bar.
-         * store result for printing later.
-         * @param  ...mixed  Variables to dump.
-         * @return void
-         */
+		 * Dumps multiple variables with output buffering in browser debug bar.
+		 * store result for printing later.
+		 * @param  ...mixed  Variables to dump.
+		 * @return void
+		 */
 		function xx () {
 			$args = func_get_args();
 			foreach ($args as $arg) \MvcCore\Debug::BarDump($arg);
 		}
 		/**
-         * Dump variables and die. If no variable, throw stop exception.
-         * @param  ...mixed  $args	Variables to dump.
-         * @throws \Exception
-         * @return void
-         */
+		 * Dump variables and die. If no variable, throw stop exception.
+		 * @param  ...mixed  $args	Variables to dump.
+		 * @throws \Exception
+		 * @return void
+		 */
 		function xxx (/*...$args*/) {
 			$args = func_get_args();
 			if (count($args) === 0) {

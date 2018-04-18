@@ -8,7 +8,7 @@
  * the LICENSE.md file that are distributed with this source code.
  *
  * @copyright	Copyright (c) 2016 Tom Flídr (https://github.com/mvccore/mvccore)
- * @license		https://mvccore.github.io/docs/mvccore/4.0.0/LICENCE.md
+ * @license  https://mvccore.github.io/docs/mvccore/5.0.0/LICENCE.md
  */
 
 namespace MvcCore;
@@ -135,11 +135,11 @@ class Model implements Interfaces\IModel {
 	 */
 	protected $autoInit = TRUE;
 
-    /**
-     * `\PDO` instance.
-     * @var \PDO
-     */
-    protected $db;
+	/**
+	 * `\PDO` instance.
+	 * @var \PDO
+	 */
+	protected $db;
 
 	/**
 	 * System config section for database under called connection index in constructor.
@@ -260,7 +260,7 @@ class Model implements Interfaces\IModel {
 	 */
 	public function __construct ($connectionIndex = -1) {
 		if ($this->autoInit) $this->Init($connectionIndex);
-    }
+	}
 
 	/**
 	 * Creates an instance and inits cfg, db and resource properties.
@@ -311,7 +311,7 @@ class Model implements Interfaces\IModel {
 			}
 			// store new connection under config index for all other model classes
 			static::$connections[$connectionIndex] = $connection;
-        }
+		}
 		return static::$connections[$connectionIndex];
 	}
 

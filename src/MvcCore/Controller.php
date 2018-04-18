@@ -8,7 +8,7 @@
  * the LICENSE.md file that are distributed with this source code.
  *
  * @copyright	Copyright (c) 2016 Tom Flídr (https://github.com/mvccore/mvccore)
- * @license		https://mvccore.github.io/docs/mvccore/4.0.0/LICENCE.md
+ * @license  https://mvccore.github.io/docs/mvccore/5.0.0/LICENCE.md
  */
 
 namespace MvcCore;
@@ -73,20 +73,20 @@ namespace MvcCore;
 class Controller implements Interfaces\IController
 {
 	/**
-     * Request object - parsed uri, query params, app paths...
+	 * Request object - parsed uri, query params, app paths...
 	 * @var \MvcCore\Request|\MvcCore\Interfaces\IRequest
 	 */
 	protected $request;
 
 	/**
 	 * Response object - storrage for response headers and rendered body.
-     * @var \MvcCore\Response|\MvcCore\Interfaces\IResponse
+	 * @var \MvcCore\Response|\MvcCore\Interfaces\IResponse
 	 */
 	protected $response;
 
 	/**
 	 * Application router object - reference storrage for application router to crate url addresses.
-     * @var \MvcCore\Router|\MvcCore\Interfaces\IRouter
+	 * @var \MvcCore\Router|\MvcCore\Interfaces\IRouter
 	 */
 	protected $router;
 
@@ -114,7 +114,7 @@ class Controller implements Interfaces\IController
 	 * Class store object for view properties.
 	 * Before `\MvcCore\Controller::PreDispatch();` is called
 	 * in controller lifecycle, this property will be still `NULL`.
-     * @var \MvcCore\View|\MvcCore\Interfaces\IView
+	 * @var \MvcCore\View|\MvcCore\Interfaces\IView
 	 */
 	protected $view = NULL;
 

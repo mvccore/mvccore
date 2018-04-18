@@ -8,7 +8,7 @@
  * the LICENSE.md file that are distributed with this source code.
  *
  * @copyright	Copyright (c) 2016 Tom Flídr (https://github.com/mvccore/mvccore)
- * @license		https://mvccore.github.io/docs/mvccore/4.0.0/LICENCE.md
+ * @license  https://mvccore.github.io/docs/mvccore/5.0.0/LICENCE.md
  */
 
 namespace MvcCore;
@@ -127,22 +127,22 @@ class View implements Interfaces\IView
 	);
 
 	/**
-     * Helpers instances storrage. Keys in array are helper method names.
+	 * Helpers instances storrage. Keys in array are helper method names.
 	 * @var array
 	 */
 	private static $_helpers = array();
 
-    /**
-     * Cached base full path for repeat method calls `\MvcCore\View::GetViewScriptFullPath();`.
-     * @var string
-     */
-    private static $_viewScriptsFullPathBase = NULL;
+	/**
+	 * Cached base full path for repeat method calls `\MvcCore\View::GetViewScriptFullPath();`.
+	 * @var string
+	 */
+	private static $_viewScriptsFullPathBase = NULL;
 
-    /**
-     * Reference to singleton instance in `\MvcCore\Application::GetInstance();`.
-     * @var \MvcCore\Application
-     */
-    private static $_app = NULL;
+	/**
+	 * Reference to singleton instance in `\MvcCore\Application::GetInstance();`.
+	 * @var \MvcCore\Application
+	 */
+	private static $_app = NULL;
 
 	/**
 	 * Static initialization to complete
@@ -151,8 +151,8 @@ class View implements Interfaces\IView
 	 */
 	public static function StaticInit () {
 		self::$_app = & \MvcCore\Application::GetInstance();
-        $appDir = & self::$_app->GetAppDir();
-        $viewsDir = & self::$_app->GetViewsDir();
+		$appDir = & self::$_app->GetAppDir();
+		$viewsDir = & self::$_app->GetViewsDir();
 		static::$HelpersClassesNamespaces = array(
 			'\MvcCore\Ext\View\Helpers\\',
 			// and '\App\Views\Helpers\' by default:
@@ -162,7 +162,7 @@ class View implements Interfaces\IView
 				static::$HelpersDir
 			)) . '\\',
 		);
-        self::$_viewScriptsFullPathBase = implode('/', array(
+		self::$_viewScriptsFullPathBase = implode('/', array(
 			self::$_app->GetRequest()->GetAppRoot(),
 			$appDir,
 			$viewsDir
@@ -398,14 +398,14 @@ class View implements Interfaces\IView
 			$className = $helperClassBase . ucfirst($method);
 			if (class_exists($className)) {
 				$helperFound = TRUE;
-                $helpers = & self::$_helpers;
+				$helpers = & self::$_helpers;
 				if (isset($helpers[$method]) && get_class($helpers[$method]) == $className) {
 					$instance = & $helpers[$method];
 				} else {
 					$instance = new $className($this);
-                    $helpers[$method] = & $instance;
+					$helpers[$method] = & $instance;
 				}
-                $result = call_user_func_array(array($instance, $method), $arguments);
+				$result = call_user_func_array(array($instance, $method), $arguments);
 				break;
 			}
 		}

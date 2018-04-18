@@ -8,7 +8,7 @@
  * the LICENSE.md file that are distributed with this source code.
  *
  * @copyright	Copyright (c) 2016 Tom Flídr (https://github.com/mvccore/mvccore)
- * @license		https://mvccore.github.io/docs/mvccore/4.0.0/LICENCE.md
+ * @license  https://mvccore.github.io/docs/mvccore/5.0.0/LICENCE.md
  */
 
 namespace MvcCore\Application;
@@ -542,7 +542,7 @@ trait GettersSetters
 	 * Set application session class implementing `\MvcCore\Interfaces\ISession`.
 	 * Class to configure session namespaces, session opening, writing and expirations.
 	 * Core configuration method.
-     * @param string $sessionClass
+	 * @param string $sessionClass
 	 * @return \MvcCore\Application
 	 */
 	public function & SetSessionClass ($sessionClass) {
