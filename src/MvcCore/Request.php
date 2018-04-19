@@ -805,8 +805,8 @@ class Request implements Interfaces\IRequest
 	 */
 	public function GetScriptName () {
 		if ($this->scriptName === NULL) {
-			$indexScriptName = $this->getIndexScriptName();
-			$this->scriptName = '/' . substr($indexScriptName, strrpos($indexScriptName, '/') + 1);
+			$indexScriptName = $this->getScriptFullPath();
+			$this->scriptName = '/' . mb_substr($indexScriptName, mb_strrpos($indexScriptName, '/') + 1);
 		}
 		return $this->scriptName;
 	}
@@ -818,8 +818,6 @@ class Request implements Interfaces\IRequest
 	 */
 	public function GetAppRoot () {
 		if ($this->appRoot === NULL) {
-			// $indexScriptName = $this->getIndexScriptName();
-			// $appRootRelativePath = mb_substr($indexScriptName, 0, strrpos($indexScriptName, '/') + 1);
 			// ucfirst - cause IIS has lower case drive name here - different from __DIR__ value
 			$indexFilePath = ucfirst(str_replace('\\', '/', $this->globalServer['SCRIPT_FILENAME']));
 			if (strpos(__FILE__, 'phar://') === 0) {
@@ -854,11 +852,24 @@ class Request implements Interfaces\IRequest
 	 */
 	public function GetBasePath () {
 		if ($this->basePath === NULL) {
-			$indexScriptName = $this->getIndexScriptName();
-			$lastSlashPos = mb_strrpos($indexScriptName, '/');
-			$this->basePath = $lastSlashPos !== FALSE
-				? mb_substr($indexScriptName, 0, $lastSlashPos)
-				: '';
+			$this->basePath = '';
+			$scriptName = $this->getScriptFullPath();
+			$lastSlashPos = mb_strrpos($scriptName, '/');
+			if ($lastSlashPos !== 0) {
+				$redirectUrl = isset($this->globalServer['REDIRECT_URL']) ? $this->globalServer['REDIRECT_URL'] : '';
+				$redirectUrlLength = mb_strlen($redirectUrl);
+				$requestUri = $this->globalServer['REQUEST_URI'];
+				if ($redirectUrlLength === 0 || ($redirectUrlLength > 0 && $redirectUrl === $requestUri)) {
+					$this->basePath = mb_substr($scriptName, 0, $lastSlashPos);
+				} else {
+					// request was redirected by Apache `mod_rewrite` with `DPI` flag:
+					$requestUriPosInRedirectUri = mb_strrpos($redirectUrl, $requestUri);
+					$apacheRedirectedPath = mb_substr($redirectUrl, 0, $requestUriPosInRedirectUri);
+					$scriptName = mb_substr($scriptName, mb_strlen($apacheRedirectedPath));
+					$lastSlashPos = mb_strrpos($scriptName, '/');
+					$this->basePath = mb_substr($scriptName, 0, $lastSlashPos);
+				}
+			}
 		}
 		return $this->basePath;
 	}
@@ -1256,7 +1267,7 @@ class Request implements Interfaces\IRequest
 	 * Get script name from `$_SERVER['SCRIPT_NAME']`.
 	 * @return string
 	 */
-	protected function getIndexScriptName () {
+	protected function getScriptFullPath () {
 		if ($this->indexScriptName === NULL)
 			$this->indexScriptName = str_replace('\\', '/', $this->globalServer['SCRIPT_NAME']);
 		return $this->indexScriptName;
