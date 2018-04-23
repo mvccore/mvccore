@@ -720,7 +720,7 @@ class Request implements Interfaces\IRequest
 	 * @var string|NULL
 	 */
 	public function GetLocale () {
-		$this->locale;
+		return $this->locale;
 	}
 
 	/**

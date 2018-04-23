@@ -47,6 +47,12 @@ class Response implements Interfaces\IResponse
 	public $Headers = array();
 
 	/**
+	 * Response content encoding.
+	 * @var string|NULL
+	 */
+	public $Encoding = NULL;
+
+	/**
 	 * Response HTTP body.
 	 * @var string
 	 */
@@ -124,6 +130,16 @@ class Response implements Interfaces\IResponse
 		foreach ($headers as $name => $value) {
 			$this->Headers[$name] = $value;
 		}
+		return $this;
+	}
+
+	/**
+	 * Set HTTP response content encoding.
+	 * @param int $encoding
+	 * @return \MvcCore\Response
+	 */
+	public function & SetEncoding ($encoding = 'utf-8') {
+		$this->Encoding = $encoding;
 		return $this;
 	}
 
@@ -214,8 +230,13 @@ class Response implements Interfaces\IResponse
 		if ($this->IsSent()) return;
 		$code = $this->Code;
 		$status = isset(static::$CodeMessages[$code]) ? ' ' . static::$CodeMessages[$code] : '';
+		if (!isset($this->Headers['Content-Encoding']) && !$this->Encoding) $this->Encoding = 'utf-8';
+		$this->Headers['Content-Encoding'] = $this->Encoding;
 		header("HTTP/1.0 $code $status");
 		foreach ($this->Headers as $name => $value) {
+			if ($name == 'Content-Type') {
+				if (strpos($value, 'charset=') === FALSE) $value .= '; charset=' . $this->Encoding;
+			}
 			header($name . ": " . $value);
 		}
 		$this->addTimeAndMemoryHeader();

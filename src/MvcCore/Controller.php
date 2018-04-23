@@ -669,9 +669,9 @@ class Controller implements Interfaces\IController
 		$contentTypeHeaderValue = strpos(
 			$viewClass::$Doctype, \MvcCore\Interfaces\IView::DOCTYPE_XHTML
 		) !== FALSE ? 'application/xhtml+xml' : 'text/html' ;
-		$this->response
-			->SetHeader('Content-Type', $contentTypeHeaderValue . '; charset=utf-8')
-			->SetBody($output);
+		if (!isset($this->response->Headers['Content-Type']))
+			$this->response->SetHeader('Content-Type', $contentTypeHeaderValue);
+		$this->response->SetBody($output);
 		if ($terminate) $this->Terminate();
 	}
 
@@ -686,8 +686,9 @@ class Controller implements Interfaces\IController
 	public function JsonResponse ($data = NULL, $terminate = FALSE) {
 		$toolClass = $this->application->GetToolClass();
 		$output = $toolClass::EncodeJson($data);
+		if (!isset($this->response->Headers['Content-Type']))
+			$this->response->SetHeader('Content-Type', 'text/javascript');
 		$this->response
-			->SetHeader('Content-Type', 'text/javascript; charset=utf-8')
 			->SetHeader('Content-Length', strlen($output))
 			->SetBody($output);
 		if ($terminate) $this->Terminate();
