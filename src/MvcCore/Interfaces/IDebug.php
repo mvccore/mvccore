@@ -55,9 +55,10 @@ interface IDebug
 	 * In non-development mode - store dumped variable in `debug.log`.
 	 * @param  mixed  $value	Variable to dump.
 	 * @param  bool   $return	Return output instead of printing it.
+	 * @param  bool   $exit		`TRUE` for last dump call by `xxx();` method to dump and `exit;`.
 	 * @return mixed			Variable itself or dumped variable string.
 	 */
-	public static function Dump ($value, $return = FALSE);
+	public static function Dump ($value, $return = FALSE, $exit = FALSE);
 
 	/**
 	 * Dump any variable with output buffering in browser debug bar.

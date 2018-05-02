@@ -65,10 +65,10 @@ trait Dispatching
 		$this->GetResponse();// triggers creation
 		$debugClass = $this->debugClass;
 		$debugClass::Init();
-		if (!$this->processCustomHandlers($this->preRouteHandlers))			return $this->Terminate();
-		if (!$this->routeRequest())											return $this->Terminate();
-		if (!$this->processCustomHandlers($this->preDispatchHandlers))		return $this->Terminate();
-		if (!$this->DispatchMvcRequest($this->router->GetCurrentRoute()))	return $this->Terminate();
+		if (!$this->ProcessCustomHandlers($this->preRouteHandlers))			return $this->Terminate();
+		if (!$this->RouteRequest())											return $this->Terminate();
+		if (!$this->ProcessCustomHandlers($this->preDispatchHandlers))		return $this->Terminate();
+		if (!$this->DispatchRequestByRoute($this->router->GetCurrentRoute()))	return $this->Terminate();
 		// Post-dispatch handlers processing moved to: `$this->Terminate();` to process them every time.
 		// if (!$this->processCustomHandlers($this->postDispatchHandlers))	return $this->Terminate();
 		return $this->Terminate();
@@ -93,7 +93,7 @@ trait Dispatching
 	 * `\MvcCore\Router::GetCurrentRoute();`
 	 * @return bool
 	 */
-	protected function routeRequest () {
+	public function RouteRequest () {
 		try {
 			// `GetRouter()` method triggers creating
 			$this->GetRouter()->Route();
@@ -111,7 +111,7 @@ trait Dispatching
 	 * @param callable[] $handlers
 	 * @return bool
 	 */
-	protected function processCustomHandlers (& $handlers = array()) {
+	public function ProcessCustomHandlers (& $handlers = array()) {
 		if (!$this->request->IsAppRequest()) return TRUE;
 		$result = TRUE;
 		foreach ($handlers as $handler) {
@@ -134,7 +134,7 @@ trait Dispatching
 	 * @param \MvcCore\Route $route
 	 * @return bool
 	 */
-	public function DispatchMvcRequest (\MvcCore\Interfaces\IRoute & $route = NULL) {
+	public function DispatchRequestByRoute (\MvcCore\Interfaces\IRoute & $route = NULL) {
 		if ($route === NULL) return $this->DispatchException(new \Exception('No route for request', 404));
 		list ($ctrlPc, $actionPc) = array($route->Controller, $route->Action);
 		$actionName = $actionPc . 'Action';
@@ -200,11 +200,11 @@ trait Dispatching
 			if (!file_exists($viewScriptFullPath)) {
 				return $this->DispatchException(new \ErrorException(
 					"Controller '$ctrlClassFullName' has not method '$actionName' "
-					."or view doesn't exists in path: '$viewScriptFullPath'.", 404
+					."and view doesn't exists in path: '$viewScriptFullPath'.", 404
 				));
 			}
 		}
-		$this->controller =  & $controller;
+		$this->controller = & $controller;
 		try {
 			$controller->Dispatch($actionName);
 		} catch (\Exception $e) {

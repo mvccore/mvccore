@@ -539,13 +539,33 @@ interface IApplication
 	public function SessionStart ();
 
 	/**
+	 * Route request by router obtained by default by calling:
+	 * `\MvcCore\Router::GetInstance();`.
+	 * Store requested route inside configured
+	 * router class to get it later by calling:
+	 * `\MvcCore\Router::GetCurrentRoute();`
+	 * @return bool
+	 */
+	public function RouteRequest ();
+
+	/**
+	 * Process pre-route, pre-request or post-dispatch
+	 * handlers queue by queue index. Call every handler in queue
+	 * in try catch mode to catch any exceptions to call:
+	 * `\MvcCore\Application::DispatchException($e);`.
+	 * @param callable[] $handlers
+	 * @return bool
+	 */
+	public function ProcessCustomHandlers (& $handlers = array());
+
+	/**
 	 * If controller class exists - try to dispatch controller,
 	 * if only view file exists - try to render targeted view file
 	 * with configured core controller instance (`\MvcCore\Controller` by default).
 	 * @param \MvcCore\Interfaces\IRoute &$route
 	 * @return bool
 	 */
-	public function DispatchMvcRequest (\MvcCore\Interfaces\IRoute & $route = NULL);
+	public function DispatchRequestByRoute (\MvcCore\Interfaces\IRoute & $route = NULL);
 
 	/**
 	 * Dispatch controller by:

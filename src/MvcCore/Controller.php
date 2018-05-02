@@ -226,19 +226,18 @@ class Controller implements Interfaces\IController
 	public function Dispatch ($actionName = "IndexAction") {
 		// \MvcCore\Debug::Timer('dispatch');
 		$this->Init();
-		$this->dispatchState = 1;
+		if ($this->dispatchState < 1) $this->dispatchState = 1;
 		// \MvcCore\Debug::Timer('dispatch');
 		$this->PreDispatch();
-		$this->dispatchState = 2;
+		if ($this->dispatchState < 2) $this->dispatchState = 2;
 		// \MvcCore\Debug::Timer('dispatch');
 		if (method_exists($this, $actionName)) $this->$actionName();
-		$this->dispatchState = 3;
+		if ($this->dispatchState < 3) $this->dispatchState = 3;
 		// \MvcCore\Debug::Timer('dispatch');
 		$this->Render(
-			$this->request->GetControllerName(),// dashed ctrl name
-			$this->request->GetActionName()		// dashed action name
+			$this->controllerName,	// dashed ctrl name
+			$this->actionName		// dashed action name
 		);
-		$this->dispatchState = 4;
 		// \MvcCore\Debug::Timer('dispatch');
 	}
 
@@ -615,14 +614,14 @@ class Controller implements Interfaces\IController
 	 * - If controller has no other parent controller, render layout view aroud action view.
 	 * - For top most parent controller - store rendered action and layout view in response object and return empty string.
 	 * - For child controller - return rendered action view as string.
-	 * @param string $controllerDashedName
-	 * @param string $actionDashedName
+	 * @param string $controllerOrActionNameDashed
+	 * @param string $actionNameDashed
 	 * @return string
 	 */
-	public function Render ($controllerDashedName = '', $actionDashedName = '') {
+	public function Render ($controllerOrActionNameDashed = NULL, $actionNameDashed = NULL) {
 		if ($this->dispatchState == 0) $this->Init();
 		if ($this->dispatchState == 1) $this->PreDispatch();
-		if ($this->viewEnabled) {
+		if ($this->dispatchState < 4 && $this->viewEnabled) {
 			$currentCtrlIsTopMostParent = $this->_parentController === NULL;
 			// set up values
 			if (!$currentCtrlIsTopMostParent) {
@@ -633,11 +632,19 @@ class Controller implements Interfaces\IController
 					$this->view->$ctrlKey = $childCtrl;
 			}
 			// complete paths
+			if ($actionNameDashed !== NULL) {
+				$controllerNameDashed = $controllerOrActionNameDashed;
+			} else {
+				$controllerNameDashed = $this->controllerName;
+				$actionNameDashed = $controllerOrActionNameDashed !== NULL
+					? $controllerOrActionNameDashed
+					: $this->actionName;
+			}
 			$controllerPath = str_replace(
-				array('_', '\\'), '/', $controllerDashedName ?: $this->controllerName
+				array('_', '\\'), '/', $controllerNameDashed ?: $this->controllerName
 			);
 			$viewScriptPath = implode(
-				'/', array($controllerPath, $actionDashedName ?: $this->actionName)
+				'/', array($controllerPath, $actionNameDashed ?: $this->actionName)
 			);
 			// render content string
 			$actionResult = $this->view->RenderScript($viewScriptPath);
@@ -648,12 +655,15 @@ class Controller implements Interfaces\IController
 				$layout = $viewClass::GetInstance()->SetController($this)->SetValues($this->view);
 				$outputResult = $layout->RenderLayoutAndContent($this->layout, $actionResult);
 				unset($layout, $this->view);
-				// send response and exit
+				// set up response only
 				$this->HtmlResponse($outputResult);
 			} else {
+				// return response
+				$this->dispatchState = 4;
 				return $actionResult;
 			}
 		}
+		$this->dispatchState = 4;
 		return '';
 	}
 
@@ -669,9 +679,11 @@ class Controller implements Interfaces\IController
 		$contentTypeHeaderValue = strpos(
 			$viewClass::$Doctype, \MvcCore\Interfaces\IView::DOCTYPE_XHTML
 		) !== FALSE ? 'application/xhtml+xml' : 'text/html' ;
-		if (!isset($this->response->Headers['Content-Type']))
+		if (!$this->response->HasHeader('Content-Type'))
 			$this->response->SetHeader('Content-Type', $contentTypeHeaderValue);
-		$this->response->SetBody($output);
+		$this->response
+			->SetCode(\MvcCore\Interfaces\IResponse::OK)
+			->SetBody($output);
 		if ($terminate) $this->Terminate();
 	}
 
@@ -686,9 +698,10 @@ class Controller implements Interfaces\IController
 	public function JsonResponse ($data = NULL, $terminate = FALSE) {
 		$toolClass = $this->application->GetToolClass();
 		$output = $toolClass::EncodeJson($data);
-		if (!isset($this->response->Headers['Content-Type']))
+		if (!$this->response->HasHeader('Content-Type'))
 			$this->response->SetHeader('Content-Type', 'text/javascript');
 		$this->response
+			->SetCode(\MvcCore\Interfaces\IResponse::OK)
 			->SetHeader('Content-Length', strlen($output))
 			->SetBody($output);
 		if ($terminate) $this->Terminate();

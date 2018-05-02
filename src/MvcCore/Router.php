@@ -670,11 +670,11 @@ class Router implements Interfaces\IRouter
 			$toolClass = self::$_toolClass;
 			list($ctrlDfltName, $actionDfltName) = self::$_app->GetDefaultControllerAndActionNames();
 			if (!$route->Controller) {
-				$route->Controller = $requestCtrlName ?: $ctrlDfltName;
+				$route->Controller = $toolClass::GetPascalCaseFromDashed($requestCtrlName) ?: $ctrlDfltName;
 				$request->SetControllerName($toolClass::GetDashedFromPascalCase($route->Controller));
 			}
 			if (!$route->Action) {
-				$route->Action = $requestActionName ?: $actionDfltName;
+				$route->Action = $toolClass::GetPascalCaseFromDashed($requestActionName) ?: $actionDfltName;
 				$request->SetActionName($toolClass::GetDashedFromPascalCase($route->Action));
 			}
 		}

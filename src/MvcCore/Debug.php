@@ -131,7 +131,7 @@ namespace MvcCore {
 			static::$originalDebugClass = ltrim(static::$app->GetDebugClass(), '\\') == get_called_class();
 			static::initHandlers();
 			$initGlobalShortHandsHandler = static::$InitGlobalShortHands;
-			$initGlobalShortHandsHandler();
+			$initGlobalShortHandsHandler(static::$development);
 		}
 
 		/**
@@ -152,13 +152,13 @@ namespace MvcCore {
 		 * In non-development mode - store dumped variable in `debug.log`.
 		 * @param  mixed  $value	Variable to dump.
 		 * @param  bool   $return	Return output instead of printing it.
+		 * @param  bool   $exit		`TRUE` for last dump call by `xxx();` method to dump and `exit;`.
 		 * @return mixed			Variable itself or dumped variable string.
 		 */
-		public static function Dump ($value, $return = FALSE) {
+		public static function Dump ($value, $return = FALSE, $exit = FALSE) {
 			if (static::$originalDebugClass) {
-				$args = func_get_args();
 				$options = array('store' => FALSE, 'backtraceIndex' => 1);
-				if (isset($args[2]) && $args[2]) $options['lastDump'] = TRUE;
+				if ($exit) $options['lastDump'] = TRUE;
 				$dumpedValue = static::dumpHandler($value, NULL, $options);
 			} else {
 				$dumpedValue = @call_user_func(static::$handlers['dump'], $value, $return);
@@ -259,11 +259,12 @@ namespace MvcCore {
 		public static function ShutdownHandler () {
 			$error = error_get_last();
 			if (isset($error['type'])) static::Exception($error);
-			if (!count(self::$dumps)) return;
+			$dumpsCount = count(self::$dumps);
+			if (!$dumpsCount) return;
 			$app = \MvcCore\Application::GetInstance();
 			$appRoot = $app->GetRequest()->GetAppRoot();
 			$response = $app->GetResponse();
-			if (!$response->IsHtmlOutput()) return;
+			if ($response->HasHeader('Content-Type') && !$response->IsHtmlOutput()) return;
 			$dumps = '';
 			$lastDump = FALSE;
 			foreach (self::$dumps as $values) {
@@ -413,7 +414,7 @@ namespace MvcCore {
 }
 
 namespace {
-	\MvcCore\Debug::$InitGlobalShortHands = function () {
+	\MvcCore\Debug::$InitGlobalShortHands = function ($development) {
 		/**
 		 * Dump any variable with output buffering in browser debug bar,
 		 * store result for printing later. Return printed variable as string.
@@ -423,6 +424,7 @@ namespace {
 		 * @return mixed				Variable itself.
 		 */
 		function x ($value, $title = NULL, $options = array()) {
+			$options['backtraceIndex'] = 2;
 			return \MvcCore\Debug::BarDump($value, $title, $options);
 		}
 		/**
@@ -433,29 +435,48 @@ namespace {
 		 */
 		function xx () {
 			$args = func_get_args();
-			foreach ($args as $arg) \MvcCore\Debug::BarDump($arg);
+			foreach ($args as $arg) \MvcCore\Debug::BarDump($arg, NULL, array('backtraceIndex' => 2));
 		}
-		/**
-		 * Dump variables and die. If no variable, throw stop exception.
-		 * @param  ...mixed  $args	Variables to dump.
-		 * @throws \Exception
-		 * @return void
-		 */
-		function xxx (/*...$args*/) {
-			$args = func_get_args();
-			if (count($args) === 0) {
-				throw new \Exception("Stopped.");
-			} else {
-				ob_start();
-				@header("Content-Type: text/html; charset=utf-8");
-				echo '<pre><code>';
-				foreach ($args as $arg) {
-					$dumpedArg = \MvcCore\Debug::Dump($arg, TRUE, TRUE);
-					echo preg_replace("#\[([^\]]*)\]=>([^\n]*)\n(\s*)#", "[$1] => ", $dumpedArg);
-					echo '</code></pre>';
+
+		if ($development) {
+			/**
+			 * Dump variables and die. If no variable, throw stop exception.
+			 * @param  ...mixed  $args	Variables to dump.
+			 * @throws \Exception
+			 * @return void
+			 */
+			function xxx (/*...$args*/) {
+				$args = func_get_args();
+				if (count($args) === 0) {
+					throw new \Exception("Stopped.");
+				} else {
+					ob_start();
+					\MvcCore\Application::GetInstance()->GetResponse()->SetHeader('Content-Type', 'text/html');
+					@header('Content-Type: text/html');
+					echo '<pre><code>';
+					foreach ($args as $arg) {
+						$dumpedArg = \MvcCore\Debug::Dump($arg, TRUE, TRUE);
+						echo preg_replace("#\[([^\]]*)\]=>([^\n]*)\n(\s*)#", "[$1] => ", $dumpedArg);
+						echo '</code></pre>';
+					}
 				}
+				die();
 			}
-			die();
+		} else {
+			/**
+			 * Log variables and die. If no variable, throw stop exception.
+			 * @param  ...mixed  $args	Variables to dump.
+			 * @throws \Exception
+			 * @return void
+			 */
+			function xxx (/*...$args*/) {
+				$args = func_get_args();
+				if (count($args) === 0)
+					throw new \Exception("Stopped.");
+				else
+					foreach ($args as $arg) \MvcCore\Debug::Log($arg, \MvcCore\Interfaces\IDebug::DEBUG);
+				die();
+			}
 		}
 	};
 }

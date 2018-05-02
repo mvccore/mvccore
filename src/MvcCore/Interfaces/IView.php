@@ -195,6 +195,7 @@ interface IView
 	 * @param string $name
 	 * @param mixed $value
 	 * @throws \Exception
+	 * @return bool
 	 */
 	public function __set ($name, $value);
 
@@ -203,8 +204,9 @@ interface IView
 	 * except system keys declared in `static::$originalyDeclaredProperties`.
 	 * @param string $name
 	 * @throws \Exception
+	 * @return mixed
 	 */
-	public function & __get ($name);
+	public function __get ($name);
 
 	/**
 	 * Try to call view helper.
@@ -216,5 +218,5 @@ interface IView
 	 * @param mixed $arguments
 	 * @return string|mixed
 	 */
-	public function & __call ($method, $arguments);
+	public function __call ($method, $arguments);
 }

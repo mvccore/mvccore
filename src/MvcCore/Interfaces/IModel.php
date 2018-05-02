@@ -78,26 +78,116 @@ interface IModel
 	);
 
 	/**
-	 * Creates an instance and inits cfg, db and resource properties.
-	 * @param int $connectionIndex
+	 * Initialize `$this->config`, `$this->db` and `$this->resource` properties.
+	 * If no `$connectionName` specified by first argument, return connection
+	 * config by connection name defined first in `static::$connectionName`
+	 * and if there is nothing, return connection config by connection name
+	 * defined in `\MvcCore\Model::$connectionName`.
+	 * @param string|int|NULL $connectionName Optional. If not set, there is used value from `static::$connectionName`.
 	 * @return void
 	 */
-	public function Init ($connectionIndex = -1);
+	public function Init ($connectionName = NULL);
 
 	/**
-	 * Returns database connection by connection index (cached by local store)
+	 * Returns `\PDO` database connection by connection name/index,
+	 * usually by system ini config values (cached by local store)
 	 * or create new connection of no connection cached.
-	 * @param int $connectionIndex
+	 * @param string|int|array|NULL $connectionNameOrConfig
 	 * @return \PDO
 	 */
-	public static function GetDb ($connectionIndex = -1);
+	public static function GetDb ($connectionNameOrConfig = NULL);
 
 	/**
-	 * Returns database config by connection index as `\stdClass` (cached by local store).
-	 * @param int $connectionIndex
-	 * @return object
+	 * Get all known database connection config records as indexed/named array with `\stdClass` objects.
+	 * Keys in array are connection config names/indexes and `\stdClass` values are config values.
+	 * @return \stdClass[]
 	 */
-	public static function GetCfg ($connectionIndex = -1);
+	public static function & GetConfigs ();
+
+	/**
+	 * Set all known configuration at once, optionaly set default connection name/index.
+	 * Example:
+	 *	`\MvcCore\Model::SetConfigs(array(
+	 *		// connection name: 'mysql-cdcol':
+	 *		'mysql-cdcol'	=> array(
+	 *			'driver'	=> 'mysql',
+	 *			'host'		=> 'localhost',
+	 *			'user'		=> 'root',
+	 *			'password'	=> '1234',
+	 *			'database'	=> 'cdcol',
+	 *		),
+	 *		// connection name: 'mssql-tests':
+	 *		'mssql-tests' => array(
+	 *			'driver'	=> 'mssql',
+	 *			'host'		=> '.\SQLEXPRESS',
+	 *			'user'		=> 'sa',
+	 *			'password'	=> '1234',
+	 *			'database'	=> 'tests',
+	 *		)
+	 *	);`
+	 * or:
+	 *	`\MvcCore\Model::SetConfigs(array(
+	 *		// connection index: 0:
+	 *		array(
+	 *			'driver'	=> 'mysql',
+	 *			'host'		=> 'localhost',
+	 *			'user'		=> 'root',
+	 *			'password'	=> '1234',
+	 *			'database'	=> 'cdcol',
+	 *		),
+	 *		// connection index: 1:
+	 *		array(
+	 *			'driver'	=> 'mssql',
+	 *			'host'		=> '.\SQLEXPRESS',
+	 *			'user'		=> 'sa',
+	 *			'password'	=> '1234',
+	 *			'database'	=> 'tests',
+	 *		)
+	 *	);`
+	 * @param \stdClass[]|array[] $configs Configuration array with `\stdClass` objects or arrays with configuration data.
+	 * @return bool
+	 */
+	public static function SetConfigs (array $configs = array());
+
+	/**
+	 * Returns database connection config by connection index (integer)
+	 * or by connection name (string) as `\stdClass` (cached by local store).
+	 * @param int|string|NULL $connectionName
+	 * @return \stdClass
+	 */
+	public static function & GetConfig ($connectionName = NULL);
+
+	/**
+	 * Set configuration array with optional connection name/index.
+	 * If there is array key `name` or `index` inside config `array` or `\stdClass`,
+	 * it's value is used for connection name or index or there is no param `$connectionName` defined.
+	 * Example:
+	 *	`\MvcCore\Model::SetConfig(array(
+	 *		'name'		=> 'mysql-cdcol',
+	 *		'driver'	=> 'mysql',		'host'		=> 'localhost',
+	 *		'user'		=> 'root',		'password'	=> '1234',		'database' => 'cdcol',
+	 *	));`
+	 * or:
+	 *	`\MvcCore\Model::SetConfig(array(
+	 *		'index'		=> 0,
+	 *		'driver'	=> 'mysql',	'host'		=> 'localhost',
+	 *		'user'		=> 'root',	'password'	=> '1234',		'database' => 'cdcol',
+	 *	));`
+	 * or:
+	 *	`\MvcCore\Model::SetConfig(array(
+	 *		'driver'	=> 'mysql',	'host'		=> 'localhost',
+	 *		'user'		=> 'root',	'password'	=> '1234',		'database' => 'cdcol',
+	 *	), 'mysql-cdcol');`
+	 * or:
+	 *	`\MvcCore\Model::SetConfig(array(
+	 *		'driver'	=> 'mysql',	'host'		=> 'localhost',
+	 *		'user'		=> 'root',	'password'	=> '1234',		'database' => 'cdcol',
+	 *	), 0);`
+	 * @param \stdClass[]|array[] $config
+	 * @param string|int|NULL $connectionName
+	 * @return string|int
+	 */
+	public static function SetConfig (array $config = array(), $connectionName = NULL);
 
 	/**
 	 * Sets any custom property `"PropertyName"` by `\MvcCore\Interfaces\IModel::SetPropertyName("value")`,
@@ -116,7 +206,9 @@ interface IModel
 	/**
 	 * Set any custom property, not necessary to previously defined.
 	 * @param string $name
-	 * @param bool   $value
+	 * @param mixed  $value
+	 * @throws \InvalidArgumentException If name is `"autoInit" || "db" || "config" || "resource"`
+	 * @return bool
 	 */
 	public function __set ($name, $value);
 
@@ -124,6 +216,7 @@ interface IModel
 	 * Get any custom property, not necessary to previously defined,
 	 * if property is not defined, NULL is returned.
 	 * @param string $name
+	 * @throws \InvalidArgumentException If name is `"autoInit" || "db" || "config" || "resource"`
 	 * @return mixed
 	 */
 	public function __get ($name);

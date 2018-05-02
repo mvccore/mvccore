@@ -44,13 +44,41 @@ interface IResponse
 
 	/**
 	 * Set HTTP response code.
-	 * @param int $code
+	 * @param int $code `200 | 301 | 404`
 	 * @return \MvcCore\Interfaces\IResponse
 	 */
 	public function & SetCode ($code);
 
 	/**
+	 * Get HTTP response code.
+	 * @return int `200 | 301 | 404`
+	 */
+	public function GetCode ();
+
+	/**
+	 * Set multiple HTTP response headers as `key => value` array.
+	 * All given headers are automaticly merged with previously setted headers.
+	 * If you change second argument to true, all previous request object and PHP
+	 * headers are removed and given headers will be only headers for output.
+	 * There is automaticly set response encoding from value for
+	 * `Content-Type` header, if contains any `charset=...`.
+	 * There is automaticly set response encoding from value for
+	 * `Content-Encoding` header.
+	 * Example: `$request->SetHeader(array('Content-Type' => 'text/plain; charset=utf-8'));`
+	 * @param array $headers
+	 * @param bool $cleanAllPrevious `FALSE` by default. If `TRUE`, all previous headers
+	 *								 set by PHP `header()` or by this object will be removed.
+	 * @return \MvcCore\Interfaces\IResponse
+	 */
+	public function & SetHeaders (array $headers = array());
+
+	/**
 	 * Set HTTP response header.
+	 * There is automaticly set response encoding from value for
+	 * `Content-Type` header, if contains any `charset=...`.
+	 * There is automaticly set response encoding from value for
+	 * `Content-Encoding` header.
+	 * Example: `$request->SetHeader('Content-Type', 'text/plain; charset=utf-8');`
 	 * @param string $name
 	 * @param string $value
 	 * @return \MvcCore\Interfaces\IResponse
@@ -58,11 +86,37 @@ interface IResponse
 	public function & SetHeader ($name, $value);
 
 	/**
-	 * Set multiple HTTP response headers as `key => value` array.
-	 * @param array $headers
+	 * Get HTTP response header by name.
+	 * Example: `$request->GetHeader('Content-Type'); // returns 'text/plain; charset=utf-8'`
+	 * @param string $name
+	 * @return string|NULL
+	 */
+	public function GetHeader ($name);
+
+	/**
+	 * Get if response has any HTTP response header by given `$name`.
+	 * Example:
+	 *	`$request->GetHeader('Content-Type'); // returns TRUE if there is header 'Content-Type'
+	 *	`$request->GetHeader('content-type'); // returns FALSE if there is header 'Content-Type'
+	 * @param string $name
+	 * @return bool
+	 */
+	public function HasHeader ($name);
+
+	/**
+	 * Set HTTP response content encoding.
+	 * Example: `$response->SetEncoding('utf-8');`
+	 * @param string $encoding
 	 * @return \MvcCore\Interfaces\IResponse
 	 */
-	public function & SetHeaders (array $headers = array());
+	public function & SetEncoding ($encoding = 'utf-8');
+
+	/**
+	 * Get HTTP response content encoding.
+	 * Example: `$response->GetEncoding(); // returns 'utf-8'`
+	 * @return string|NULL
+	 */
+	public function GetEncoding ();
 
 	/**
 	 * Set HTTP response body.
@@ -76,17 +130,24 @@ interface IResponse
 	 * @param string $body
 	 * @return \MvcCore\Interfaces\IResponse
 	 */
-	public function PrependBody ($body);
+	public function & PrependBody ($body);
 
 	/**
 	 * Append HTTP response body.
 	 * @param string $body
 	 * @return \MvcCore\Interfaces\IResponse
 	 */
-	public function AppendBody ($body);
+	public function & AppendBody ($body);
 
 	/**
-	 * Consolidate headers array from PHP response headers array by calling `headers_list()`.
+	 * Get HTTP response body.
+	 * @return string|NULL
+	 */
+	public function & GetBody ();
+
+	/**
+	 * Consolidate all headers from PHP response
+	 * by calling `headers_list()` into local headers list.
 	 * @return void
 	 */
 	public function UpdateHeaders ();
@@ -98,7 +159,8 @@ interface IResponse
 	public function IsRedirect ();
 
 	/**
-	 * Return if response has any html/xhtml header inside.
+	 * Returns if response has any `text/html` or `application/xhtml+xml`
+	 * substring in `Content-Type` header.
 	 * @return bool
 	 */
 	public function IsHtmlOutput ();

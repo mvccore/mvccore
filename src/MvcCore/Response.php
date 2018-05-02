@@ -36,31 +36,39 @@ class Response implements Interfaces\IResponse
 
 	/**
 	 * Response HTTP code.
-	 * @var int
+	 * Example: `200 | 301 | 404`
+	 * @var int|NULL
 	 */
-	public $Code = self::OK;
+	protected $code = NULL;
 
 	/**
-	 * Response HTTP headers.
-	 * @var array
+	 * Response HTTP headers as `key => value` array.
+	 * Example:
+	 *	`array(
+	 *		'Content-Type'		=> 'text/html',
+	 *		'Content-Encoding'	=> 'utf-8'
+	 *	);`
+	 * @var \string[]
 	 */
-	public $Headers = array();
+	protected $headers = array();
 
 	/**
 	 * Response content encoding.
-	 * @var string|NULL
+	 * Example: `"utf-8" | "windows-1250" | "ISO-8859-2"`
+	 * @var \string|NULL
 	 */
-	public $Encoding = NULL;
+	protected $encoding = NULL;
 
 	/**
 	 * Response HTTP body.
-	 * @var string
+	 * Example: `"<!DOCTYPE html><html lang="en"><head><meta ..."`
+	 * @var \string|NULL
 	 */
-	public $Body = '';
+	protected $body = NULL;
 
 	/**
 	 * `TRUE` if headers or body has been sent.
-	 * @var string
+	 * @var bool
 	 */
 	protected $sent = FALSE;
 
@@ -94,9 +102,9 @@ class Response implements Interfaces\IResponse
 		$headers = array(),
 		$body = ''
 	) {
-		$this->Code = $code;
-		$this->Headers = $headers;
-		$this->Body = $body;
+		$this->code = $code;
+		$this->headers = $headers;
+		$this->body = $body;
 	}
 
 	/**
@@ -105,42 +113,118 @@ class Response implements Interfaces\IResponse
 	 * @return \MvcCore\Response
 	 */
 	public function & SetCode ($code) {
-		$this->Code = $code;
+		$this->code = $code;
+		http_response_code($code);
+		return $this;
+	}
+
+	/**
+	 * Get HTTP response code.
+	 * @return int
+	 */
+	public function GetCode () {
+		if ($this->code === NULL) {
+			$phpCode = http_response_code();
+			$this->code = $phpCode === FALSE ? static::OK : $phpCode;
+		}
+		return $this->code;
+	}
+
+	/**
+	 * Set multiple HTTP response headers as `key => value` array.
+	 * All given headers are automaticly merged with previously setted headers.
+	 * If you change second argument to true, all previous request object and PHP
+	 * headers are removed and given headers will be only headers for output.
+	 * There is automaticly set response encoding from value for
+	 * `Content-Type` header, if contains any `charset=...`.
+	 * There is automaticly set response encoding from value for
+	 * `Content-Encoding` header.
+	 * Example: `$request->SetHeader(array('Content-Type' => 'text/plain; charset=utf-8'));`
+	 * @param array $headers
+	 * @param bool $cleanAllPrevious `FALSE` by default. If `TRUE`, all previous headers
+	 *								 set by PHP `header()` or by this object will be removed.
+	 * @return \MvcCore\Response
+	 */
+	public function & SetHeaders (array $headers = array(), $cleanAllPrevious = FALSE) {
+		if ($cleanAllPrevious) {
+			$this->UpdateHeaders();
+			foreach ($this->headers as $name => $value) header_remove($name);
+			$this->headers = array();
+		}
+		foreach ($headers as $name => $value) {
+			$this->SetHeader($name, $value);
+		}
 		return $this;
 	}
 
 	/**
 	 * Set HTTP response header.
+	 * There is automaticly set response encoding from value for
+	 * `Content-Type` header, if contains any `charset=...`.
+	 * There is automaticly set response encoding from value for
+	 * `Content-Encoding` header.
+	 * Example: `$request->SetHeader('Content-Type', 'text/plain; charset=utf-8');`
 	 * @param string $name
 	 * @param string $value
 	 * @return \MvcCore\Response
 	 */
 	public function & SetHeader ($name, $value) {
 		header($name . ": " . $value);
-		$this->Headers[$name] = $value;
+		$this->headers[$name] = $value;
+		if ($name === 'Content-Type') {
+			$charsetPos = strpos($value, 'charset');
+			if ($charsetPos !== FALSE) {
+				$equalPos = strpos($value, '=', $charsetPos);
+				if ($equalPos !== FALSE) $this->SetEncoding(
+					trim(substr($value, $equalPos + 1))
+				);
+			}
+		}
+		if ($name === 'Content-Encoding') $this->encoding = $value;
 		return $this;
 	}
 
 	/**
-	 * Set multiple HTTP response headers as `key => value` array.
-	 * @param array $headers
-	 * @return \MvcCore\Response
+	 * Get HTTP response header by name. If header dowsn't exists, null is returned.
+	 * Example: `$request->GetHeader('Content-Type'); // returns 'text/plain; charset=utf-8'`
+	 * @param string $name
+	 * @return string|NULL
 	 */
-	public function & SetHeaders (array $headers = array()) {
-		foreach ($headers as $name => $value) {
-			$this->Headers[$name] = $value;
-		}
-		return $this;
+	public function GetHeader ($name) {
+		return isset($this->headers[$name]) ? $this->headers[$name] : NULL;
+	}
+
+	/**
+	 * Get if response has any HTTP response header by given `$name`.
+	 * Example:
+	 *	`$request->GetHeader('Content-Type'); // returns TRUE if there is header 'Content-Type'
+	 *	`$request->GetHeader('content-type'); // returns FALSE if there is header 'Content-Type'
+	 * @param string $name
+	 * @return bool
+	 */
+	public function HasHeader ($name) {
+		return isset($this->headers[$name]);
 	}
 
 	/**
 	 * Set HTTP response content encoding.
-	 * @param int $encoding
+	 * Example: `$response->SetEncoding('utf-8');`
+	 * @param string $encoding
 	 * @return \MvcCore\Response
 	 */
 	public function & SetEncoding ($encoding = 'utf-8') {
-		$this->Encoding = $encoding;
+		$this->encoding = $encoding;
+		$this->headers['Content-Encoding'] = $encoding;
 		return $this;
+	}
+
+	/**
+	 * Get HTTP response content encoding.
+	 * Example: `$response->GetEncoding(); // returns 'utf-8'`
+	 * @return string|NULL
+	 */
+	public function GetEncoding () {
+		return $this->encoding;
 	}
 
 	/**
@@ -149,7 +233,7 @@ class Response implements Interfaces\IResponse
 	 * @return \MvcCore\Response
 	 */
 	public function & SetBody ($body) {
-		$this->Body = & $body;
+		$this->body = & $body;
 		return $this;
 	}
 
@@ -158,8 +242,8 @@ class Response implements Interfaces\IResponse
 	 * @param string $body
 	 * @return \MvcCore\Response
 	 */
-	public function PrependBody ($body) {
-		$this->Body = $body . $this->Body;
+	public function & PrependBody ($body) {
+		$this->body = $body . $this->body;
 		return $this;
 	}
 
@@ -168,13 +252,22 @@ class Response implements Interfaces\IResponse
 	 * @param string $body
 	 * @return \MvcCore\Response
 	 */
-	public function AppendBody ($body) {
-		$this->Body .= $body;
+	public function & AppendBody ($body) {
+		$this->body .= $body;
 		return $this;
 	}
 
 	/**
-	 * Consolidate headers array from PHP response headers array by calling `headers_list()`.
+	 * Get HTTP response body.
+	 * @return string|NULL
+	 */
+	public function & GetBody () {
+		return $this->body;
+	}
+
+	/**
+	 * Consolidate all headers from PHP response
+	 * by calling `headers_list()` into local headers list.
 	 * @return void
 	 */
 	public function UpdateHeaders () {
@@ -190,7 +283,7 @@ class Response implements Interfaces\IResponse
 				$name = $rawHeader;
 				$value = '';
 			}
-  			$this->Headers[$name] = $value;
+  			$this->headers[$name] = $value;
 		}
 	}
 
@@ -199,16 +292,17 @@ class Response implements Interfaces\IResponse
 	 * @return bool
 	 */
 	public function IsRedirect () {
-		return isset($this->Headers['Location']);
+		return isset($this->headers['Location']);
 	}
 
 	/**
-	 * Return if response has any html/xhtml header inside.
+	 * Returns if response has any `text/html` or `application/xhtml+xml` 
+	 * substring in `Content-Type` header.
 	 * @return bool
 	 */
 	public function IsHtmlOutput () {
-		if (isset($this->Headers['Content-Type'])) {
-			$value = $this->Headers['Content-Type'];
+		if (isset($this->headers['Content-Type'])) {
+			$value = $this->headers['Content-Type'];
 			return strpos($value, 'text/html') !== FALSE || strpos($value, 'application/xhtml+xml') !== FALSE;
 		}
 		return FALSE;
@@ -228,19 +322,27 @@ class Response implements Interfaces\IResponse
 	 */
 	public function Send () {
 		if ($this->IsSent()) return;
-		$code = $this->Code;
+		$code = $this->GetCode();
 		$status = isset(static::$CodeMessages[$code]) ? ' ' . static::$CodeMessages[$code] : '';
-		if (!isset($this->Headers['Content-Encoding']) && !$this->Encoding) $this->Encoding = 'utf-8';
-		$this->Headers['Content-Encoding'] = $this->Encoding;
+		if (!isset($this->headers['Content-Encoding'])) {
+			if (!$this->encoding) $this->encoding = 'utf-8';
+			$this->headers['Content-Encoding'] = $this->encoding;
+		}
 		header("HTTP/1.0 $code $status");
-		foreach ($this->Headers as $name => $value) {
+		foreach ($this->headers as $name => $value) {
 			if ($name == 'Content-Type') {
-				if (strpos($value, 'charset=') === FALSE) $value .= '; charset=' . $this->Encoding;
+				$charsetMatched = FALSE;
+				$charsetPos = strpos($value, 'charset');
+				if ($charsetPos !== FALSE) {
+					$equalPos = strpos($value, '=', $charsetPos);
+					if ($equalPos !== FALSE) $charsetMatched = TRUE;
+				}
+				if (!$charsetMatched) $value .= ';charset=' . $this->encoding;
 			}
 			header($name . ": " . $value);
 		}
 		$this->addTimeAndMemoryHeader();
-		echo $this->Body;
+		echo $this->body;
 		$this->sent = TRUE;
 	}
 

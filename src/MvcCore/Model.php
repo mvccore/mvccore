@@ -57,25 +57,25 @@ class Model implements Interfaces\IModel {
 			'options'	=> array(),
 		),
 		'firebird'		=> array(
-			'dsn'		=> '{driver}:host={host};dbname={dbname};charset=UTF8',
+			'dsn'		=> '{driver}:host={host};dbname={database};charset=UTF8',
 			'auth'		=> TRUE,
 			'fileDb'	=> TRUE,
 			'options'	=> array()
 		),
 		'ibm'			=> array(
-			'dsn'		=> 'ibm:DRIVER={IBM DB2 ODBC DRIVER};DATABASE={dbname};HOSTNAME={host};PORT={port};PROTOCOL=TCPIP;',
+			'dsn'		=> 'ibm:DRIVER={IBM DB2 ODBC DRIVER};DATABASE={database};HOSTNAME={host};PORT={port};PROTOCOL=TCPIP;',
 			'auth'		=> TRUE,
 			'fileDb'	=> FALSE,
 			'options'	=> array(),
 		),
 		'informix'		=> array(
-			'dsn'		=> '{driver}:host={host};service={service};database={dbname};server={server};protocol={protocol};EnableScrollableCursors=1',
+			'dsn'		=> '{driver}:host={host};service={service};database={database};server={server};protocol={protocol};EnableScrollableCursors=1',
 			'auth'		=> TRUE,
 			'fileDb'	=> FALSE,
 			'options'	=> array(),
 		),
 		'mysql'			=> array(
-			'dsn'		=> '{driver}:host={host};dbname={dbname}',
+			'dsn'		=> '{driver}:host={host};dbname={database}',
 			'auth'		=> TRUE,
 			'fileDb'	=> FALSE,
 			'options'	=> array(
@@ -85,19 +85,19 @@ class Model implements Interfaces\IModel {
 			),
 		),
 		'sqlite'		=> array(
-			'dsn'		=> '{driver}:{dbname}',
+			'dsn'		=> '{driver}:{database}',
 			'auth'		=> FALSE,
 			'fileDb'	=> TRUE,
 			'options'	=> array(),
 		),
 		'sqlsrv'		=> array(
-			'dsn'		=> '{driver}:Server={host};Database={dbname}',
+			'dsn'		=> '{driver}:Server={host};Database={database}',
 			'auth'		=> TRUE,
 			'fileDb'	=> FALSE,
 			'options'	=> array(),
 		),
 		'default'		=> array(
-			'dsn'		=> '{driver}:host={host};dbname={dbname}',
+			'dsn'		=> '{driver}:host={host};dbname={database}',
 			'auth'		=> TRUE,
 			'fileDb'	=> FALSE,
 			'options'	=> array(),
@@ -105,29 +105,29 @@ class Model implements Interfaces\IModel {
 	);
 
 	/**
-	 * Default database connection index, in config ini defined in section `db.defaultDbIndex = 0`.
-	 * In extended classes - use this for connection index of current model if different.
-	 * @var int
+	 * Default database connection name/index, in config ini defined in section `db.default = name`.
+	 * In extended classes - use this for connection name/index of current model if different.
+	 * @var string|int|NULL
 	 */
-	protected static $connectionIndex = -1;
+	protected static $connectionName = NULL;
 
 	/**
 	 * `\PDO` connections array, keyed by connection indexes from system config.
-	 * @var array
+	 * @var \PDO[]
 	 */
 	protected static $connections = array();
 
 	/**
 	 * Instance of current class, if there is necessary to use it as singleton.
-	 * @var array
+	 * @var \MvcCore\Model[]|\MvcCore\Interfaces\IModel[]
 	 */
 	protected static $instances = array();
 
 	/**
-	 * System config sections array with \`stdClass` objects, keyed by connection indexes.
-	 * @var array
+	 * System config sections array with `\stdClass` objects, keyed by connection indexes.
+	 * @var \stdClass[]
 	 */
-	protected static $configs = array();
+	protected static $configs = NULL;
 
 	/**
 	 * Automaticly initialize config, db connection and resource class.
@@ -145,13 +145,25 @@ class Model implements Interfaces\IModel {
 	 * System config section for database under called connection index in constructor.
 	 * @var \stdClass
 	 */
-	protected $cfg;
+	protected $config;
 
 	/**
 	 * Resource model class with SQL statements.
 	 * @var \MvcCore\Model|\MvcCore\Interfaces\IModel
 	 */
 	protected $resource;
+
+	/**
+	 * Originaly declared internal model properties to protect their
+	 * possible overwriting by `__set()` or `__get()` magic methods.
+	 * @var array
+	 */
+	protected static $protectedProperties = array(
+		'autoInit'	=> 1,
+		'db'		=> 1,
+		'config'	=> 1,
+		'resource'	=> 1,
+	);
 
 	/**
 	 * Collect all model class public and inherit field values into array.
@@ -162,14 +174,13 @@ class Model implements Interfaces\IModel {
 	 */
 	public function GetValues ($getNullValues = FALSE, $includeInheritProperties = TRUE, $publicOnly = TRUE) {
 		$data = array();
-		$systemProperties = array('autoInit' => 1, 'db' => 1, 'cfg' => 1, 'resource' => 1);
 		$modelClassName = get_class($this);
 		$classReflector = new \ReflectionClass($modelClassName);
 		$properties = $publicOnly ? $classReflector->getProperties(\ReflectionProperty::IS_PUBLIC) : $classReflector->getProperties();
 		foreach ($properties as $property) {
 			if (!$includeInheritProperties && $property->class != $modelClassName) continue;
 			$propertyName = $property->name;
-			if (isset($systemProperties[$propertyName])) continue;
+			if (isset(static::$protectedProperties[$propertyName])) continue;
 			if (!$getNullValues && $this->$propertyName === NULL) continue;
 			$data[$propertyName] = $this->$propertyName;
 		}
@@ -255,39 +266,57 @@ class Model implements Interfaces\IModel {
 	}
 
 	/**
-	 * Creates an instance and inits cfg, db and resource properties.
-	 * @param int $connectionIndex
+	 * Automaticly initialize `$this-config`, `$this->db` and `$this->resource` properties
+	 * if local protected property `$this->autoInit` is still `TRUE` (`TRUE` as default in `\MvcCore\Model`).
+	 * @param string|int|NULL $connectionName Optional. If not set, there is used value from `static::$connectionName`.
+	 * @return void
 	 */
-	public function __construct ($connectionIndex = -1) {
-		if ($this->autoInit) $this->Init($connectionIndex);
+	public function __construct ($connectionName = NULL) {
+		if ($this->autoInit) $this->Init($connectionName);
 	}
 
 	/**
-	 * Creates an instance and inits cfg, db and resource properties.
-	 * @param int $connectionIndex
+	 * Initialize `$this->config`, `$this->db` and `$this->resource` properties.
+	 * If no `$connectionName` specified by first argument, return connection
+	 * config by connection name defined first in `static::$connectionName`
+	 * and if there is nothing, return connection config by connection name
+	 * defined in `\MvcCore\Model::$connectionName`.
+	 * @param string|int|NULL $connectionName Optional. If not set, there is used value from `static::$connectionName`.
 	 * @return void
 	 */
-	public function Init ($connectionIndex = -1) {
-		$this->db = static::GetDb($connectionIndex);
-		$this->cfg = static::GetCfg($connectionIndex);
+	public function Init ($connectionName = NULL) {
+		if ($connectionName === NULL) $connectionName = static::$connectionName;
+		if ($connectionName === NULL) $connectionName = self::$connectionName;
+		$this->db = static::GetDb($connectionName);
+		$this->config = static::GetConfig($connectionName);
 		$this->resource = static::GetResource(array(), get_class($this));
 	}
 
 	/**
-	 * Returns database connection by connection index (cached by local store)
+	 * Returns `\PDO` database connection by connection name/index,
+	 * usually by system ini config values (cached by local store)
 	 * or create new connection of no connection cached.
-	 * @param int $connectionIndex
+	 * @param string|int|array|NULL $connectionNameOrConfig
 	 * @return \PDO
 	 */
-	public static function GetDb ($connectionIndex = -1) {
-		if (!isset(static::$connections[$connectionIndex])) {
-			static::loadConfigs();
-			if ($connectionIndex == -1) $connectionIndex = static::$connectionIndex;
-			if ($connectionIndex == -1) $connectionIndex = self::$connectionIndex;
+	public static function GetDb ($connectionNameOrConfig = NULL) {
+		if (gettype($connectionNameOrConfig) == 'array') {
+			// if first argument is database connection configuration - set it up and return new connection name
+			if (static::$configs === NULL) static::loadConfigs(FALSE);
+			$connectionName = static::SetConfig($connectionNameOrConfig);
+		} else {
+			// if no connection index specified, try to get from class or from base model
+			if (static::$configs === NULL) static::loadConfigs(TRUE);
+			$connectionName = $connectionNameOrConfig;
+			if ($connectionName == NULL) $connectionName = static::$connectionName;
+			if ($connectionName == NULL) $connectionName = self::$connectionName;
+		}
+		// if no connection exists under connection name key - connect to database
+		if (!isset(static::$connections[$connectionName])) {
 			// get system config 'db' data
 			// and get predefined constructor arguments by driver value from config
-			$cfg = static::GetCfg($connectionIndex);
-			$conArgs = (object) self::$connectionArguments[isset(self::$connectionArguments[$cfg->driver]) ? $cfg->driver:'default'];
+			$cfg = static::GetConfig($connectionName);
+			$conArgs = (object) self::$connectionArguments[isset(self::$connectionArguments[$cfg->driver]) ? $cfg->driver : 'default'];
 			$connection = NULL;
 			// If database is filesystem based, complete app root and extend
 			// relative path in $cfg->dbname to absolute path
@@ -302,62 +331,183 @@ class Model implements Interfaces\IModel {
 			// Process connection string (dsn) with config replacements
 			$dsn = $conArgs->dsn;
 			foreach ((array) $cfg as $key => $value) $dsn = str_replace('{'.$key.'}', $value, $dsn);
-			// If database required username and password credentials,
+			// If database required user and password credentials,
 			// connect with wull arguments count or only with one (sqllite only)
 			if ($conArgs->auth) {
-				$connection = new \PDO($dsn, $cfg->username, $cfg->password, $conArgs->options);
+				$connection = new \PDO($dsn, $cfg->user, $cfg->password, $conArgs->options);
 			} else {
 				$connection = new \PDO($dsn);
 			}
 			// store new connection under config index for all other model classes
-			static::$connections[$connectionIndex] = $connection;
+			static::$connections[$connectionName] = $connection;
 		}
-		return static::$connections[$connectionIndex];
+		return static::$connections[$connectionName];
 	}
 
 	/**
-	 * Returns database config by connection index as `\stdClass` (cached by local store).
-	 * @param int $connectionIndex
-	 * @return object
+	 * Get all known database connection config records as indexed/named array with `\stdClass` objects.
+	 * Keys in array are connection config names/indexes and `\stdClass` values are config values.
+	 * @return \stdClass[]
 	 */
-	public static function GetCfg ($connectionIndex = -1) {
-		static::loadConfigs();
-		if ($connectionIndex == -1) $connectionIndex = static::$connectionIndex;
-		if ($connectionIndex == -1) $connectionIndex = self::$connectionIndex;
-		$baseType = gettype(static::$configs);
-		if ($baseType == 'array' && isset(static::$configs[$connectionIndex])) {
-			return static::$configs[$connectionIndex];
-		} else if ($baseType == 'object' && isset(static::$configs->$connectionIndex)) {
-			return static::$configs->$connectionIndex;
-		} else {
-			return static::$configs;
-		}
+	public static function & GetConfigs () {
+		if (static::$configs === NULL) static::loadConfigs(TRUE);
+		return static::$configs;
 	}
 
 	/**
-	 * Initializes configuration data.
+	 * Set all known configuration at once, optionaly set default connection name/index.
+	 * Example:
+	 *	`\MvcCore\Model::SetConfigs(array(
+	 *		// connection name: 'mysql-cdcol':
+	 *		'mysql-cdcol'	=> array(
+	 *			'driver'	=> 'mysql',	'host'		=> 'localhost',
+	 *			'user'		=> 'root',	'password'	=> '1234',		'database' => 'cdcol',
+	 *		),
+	 *		// connection name: 'mssql-tests':
+	 *		'mssql-tests' => array(
+	 *			'driver'	=> 'mssql',	'host' => '.\SQLEXPRESS',
+	 *			'user'		=> 'sa',	'password' => '1234', 'database' => 'tests',
+	 *		)
+	 *	);`
+	 * or:
+	 *	`\MvcCore\Model::SetConfigs(array(
+	 *		// connection index: 0:
+	 *		array(
+	 *			'driver'	=> 'mysql',	'host'		=> 'localhost',
+	 *			'user'		=> 'root',	'password'	=> '1234',		'database' => 'cdcol',
+	 *		),
+	 *		// connection index: 1:
+	 *		array(
+	 *			'driver'	=> 'mssql',	'host' => '.\SQLEXPRESS',
+	 *			'user'		=> 'sa',	'password' => '1234', 'database' => 'tests',
+	 *		)
+	 *	);`
+	 * @param \stdClass[]|array[] $configs Configuration array with `\stdClass` objects or arrays with configuration data.
+	 * @return bool
+	 */
+	public static function SetConfigs (array $configs = array(), $defaultConnectionName = NULL) {
+		static::$configs = array();
+		foreach ($configs as $key => $value) static::$configs[$key] = (object) $value;
+		static::$configs = & $configs;
+		if ($defaultConnectionName !== NULL) self::$defaultConnectionName = $defaultConnectionName;
+		return TRUE;
+	}
+
+	/**
+	 * Returns database connection config by connection index (integer)
+	 * or by connection name (string) as `\stdClass` (cached by local store).
+	 * @param int|string|NULL $connectionName
+	 * @return \stdClass
+	 */
+	public static function & GetConfig ($connectionName = NULL) {
+		if (static::$configs === NULL) static::loadConfigs(TRUE);
+		return static::$configs[$connectionName];
+	}
+
+	/**
+	 * Set configuration array with optional connection name/index.
+	 * If there is array key `name` or `index` inside config `array` or `\stdClass`,
+	 * it's value is used for connection name or index or there is no param `$connectionName` defined.
+	 * Example:
+	 *	`\MvcCore\Model::SetConfig(array(
+	 *		'name'		=> 'mysql-cdcol',
+	 *		'driver'	=> 'mysql',		'host'		=> 'localhost',
+	 *		'user'		=> 'root',		'password'	=> '1234',		'database' => 'cdcol',
+	 *	));`
+	 * or:
+	 *	`\MvcCore\Model::SetConfig(array(
+	 *		'index'		=> 0,
+	 *		'driver'	=> 'mysql',	'host'		=> 'localhost',
+	 *		'user'		=> 'root',	'password'	=> '1234',		'database' => 'cdcol',
+	 *	));`
+	 * or:
+	 *	`\MvcCore\Model::SetConfig(array(
+	 *		'driver'	=> 'mysql',	'host'		=> 'localhost',
+	 *		'user'		=> 'root',	'password'	=> '1234',		'database' => 'cdcol',
+	 *	), 'mysql-cdcol');`
+	 * or:
+	 *	`\MvcCore\Model::SetConfig(array(
+	 *		'driver'	=> 'mysql',	'host'		=> 'localhost',
+	 *		'user'		=> 'root',	'password'	=> '1234',		'database' => 'cdcol',
+	 *	), 0);`
+	 * @param \stdClass[]|array[] $config
+	 * @param string|int|NULL $connectionName
+	 * @return string|int
+	 */
+	public static function SetConfig (array $config = array(), $connectionName = NULL) {
+		if (static::$configs === NULL) static::loadConfigs(FALSE);
+		if ($connectionName === NULL) {
+			if (isset($config['name'])) {
+				$connectionName = $config['name'];
+			} else if (isset($config['index'])) {
+				$connectionName = $config['index'];
+			}
+		}
+		if ($connectionName === NULL) {
+			$configNumericKeys = array_filter(array_keys(static::$configs), 'is_numeric');
+			if ($configNumericKeys) {
+				sort($configNumericKeys);
+				$connectionName = $configNumericKeys[count($configNumericKeys) - 1] + 1; // last + 1
+			} else {
+				$connectionName = 0;
+			}
+		}
+		static::$configs[$connectionName] = (object) $config;
+		return $connectionName;
+	}
+
+	/**
+	 * Initializes configuration data from system config if any
+	 * into local `static::$configs` array, keyed by connection name or index.
 	 * @throws \Exception
 	 * @return void
 	 */
-	protected static function loadConfigs () {
-		if (empty(static::$configs)) {
-			$cfg = \MvcCore\Config::GetSystem();
-			if ($cfg === FALSE) {
-				$cfgPath = \MvcCore\Config::$SystemConfigPath;
-				throw new \Exception('['.__CLASS__."] System config.ini not found in '$cfgPath'.");
+	protected static function loadConfigs ($throwExceptionIfNoSysConfig = TRUE) {
+		$configClass = \MvcCore\Application::GetInstance()->GetConfigClass();
+		$systemCfg = $configClass::GetSystem();
+		if ($systemCfg === FALSE && $throwExceptionIfNoSysConfig) throw new \Exception(
+			"[".__CLASS__."] System config.ini not found in '" . $configClass::$SystemConfigPath . "'."
+		);
+		if (!isset($systemCfg->db) && $throwExceptionIfNoSysConfig) throw new \Exception(
+			"[".__CLASS__."] No [db] section and no records matched 'db.*' found in system config.ini."
+		);
+		$systemCfgDb = & $systemCfg->db;
+		$cfgType = gettype($systemCfgDb);
+		$configs = array();
+		$defaultConnectionName = NULL;
+		// db.default - default connection index for models, where is no connection name/index defined inside class.
+		if ($cfgType == 'array') {
+			// multiple connections defined, indexed by some numbers, maybe default connection specified.
+			if (isset($systemCfgDb['defaultName'])) $defaultConnectionName = $systemCfgDb['defaultName'];
+			foreach ($systemCfgDb as $key => $value) {
+				if ($key == 'defaultName') continue;
+				$configs[$key] = (object) $value;
 			}
-			if (!isset($cfg->db)) {
-				throw new \Exception('['.__CLASS__."] No [db] section and no records matched 'db.*' found in system config.ini.");
+		} else if ($cfgType == 'object') {
+			// Multiple connections defined or single connection defined:
+			// - Single connection defined - `$systemCfg->db` contains directly record for `driver`.
+			// - Multiple connections defined - indexed by strings, maybe default connection specified.
+			if (isset($systemCfgDb->defaultName)) $defaultConnectionName = $systemCfgDb->defaultName;
+			if (isset($systemCfgDb->driver)) {
+				$configs[0] = $systemCfgDb;
+			} else {
+				foreach ($systemCfgDb as $key => $value) {
+					if ($key == 'defaultName') continue;
+					$configs[$key] = (object) $value;
+				}
 			}
-			$cfgType = gettype($cfg->db);
-			// db.defaultDbIndex - default connection index for modelses, where is no connection index strictly defined
-			if ($cfgType == 'array' && isset($cfg->db['defaultDbIndex'])) {
-				self::$connectionIndex = $cfg->db['defaultDbIndex'];
-			} else if ($cfgType == 'object' && isset($cfg->db->defaultDbIndex)) {
-				self::$connectionIndex = $cfg->db->defaultDbIndex;
-			}
-			static::$configs = $cfg->db;
 		}
+		if ($defaultConnectionName !== NULL) {
+			if ($configs) {
+				reset($configs);
+				$defaultConnectionName = key($configs);
+			}
+			if (!isset($configs[$defaultConnectionName])) throw new \Exception(
+				"[".__CLASS__."] No default connection name '$defaultConnectionName' found in 'db.*' section in system config.ini."
+			);
+			self::$connectionName = $defaultConnectionName;
+		}
+		static::$configs = & $configs;
 	}
 
 	/**
@@ -369,8 +519,8 @@ class Model implements Interfaces\IModel {
 	 * This method returns custom value for get and `\MvcCore\Interfaces\IModel` instance for set.
 	 * @param string $rawName
 	 * @param array  $arguments
-	 * @throws \Exception
-	 * @return mixed|\MvcCore\Model
+	 * @throws \InvalidArgumentException If `strtolower($rawName)` doesn't begin with `"get"` or with `"set"`.
+	 * @return mixed|\MvcCore\Model|\MvcCore\Interfaces\IModel
 	 */
 	public function __call ($rawName, $arguments = array()) {
 		$nameBegin = strtolower(substr($rawName, 0, 3));
@@ -389,9 +539,15 @@ class Model implements Interfaces\IModel {
 	 * Set any custom property, not necessary to previously defined.
 	 * @param string $name
 	 * @param mixed  $value
+	 * @throws \InvalidArgumentException If name is `"autoInit" || "db" || "config" || "resource"`
 	 * @return bool
 	 */
 	public function __set ($name, $value) {
+		if (isset(static::$protectedProperties[$name])) {
+			throw new \InvalidArgumentException(
+				'['.__CLASS__."] It's not possible to change property: '$name' originaly declared in class ".__CLASS__.'.'
+			);
+		}
 		return $this->$name = $value;
 	}
 
@@ -399,9 +555,15 @@ class Model implements Interfaces\IModel {
 	 * Get any custom property, not necessary to previously defined,
 	 * if property is not defined, NULL is returned.
 	 * @param string $name
+	 * @throws \InvalidArgumentException If name is `"autoInit" || "db" || "config" || "resource"`
 	 * @return mixed
 	 */
 	public function __get ($name) {
+		if (isset(static::$protectedProperties[$name])) {
+			throw new \InvalidArgumentException(
+				'['.__CLASS__."] It's not possible to get property: '$name' originaly declared in class ".__CLASS__.'.'
+			);
+		}
 		return (isset($this->$name)) ? $this->$name : null;
 	}
 }

@@ -43,9 +43,9 @@ class Config implements Interfaces\IConfig
 	 * - `"beta"`
 	 * - `"alpha"`
 	 * - `"production"`
-	 * @var string
+	 * @var string|NULL
 	 */
-	protected static $environment = '';
+	protected static $environment = NULL;
 
 	/**
 	 * System config object placed by default in: `"/App/config.ini"`.
@@ -100,8 +100,7 @@ class Config implements Interfaces\IConfig
 	 * @return bool
 	 */
 	public static function IsDevelopment ($autoloadSystemConfig = FALSE) {
-		if ($autoloadSystemConfig) static::GetSystem();
-		return static::GetEnvironment($autoloadSystemConfig) == static::ENVIRONMENT_DEVELOPMENT;
+		return static::GetEnvironment($autoloadSystemConfig) === static::ENVIRONMENT_DEVELOPMENT;
 	}
 
 	/**
@@ -110,8 +109,7 @@ class Config implements Interfaces\IConfig
 	 * @return bool
 	 */
 	public static function IsBeta ($autoloadSystemConfig = FALSE) {
-		if ($autoloadSystemConfig) static::GetSystem();
-		return static::GetEnvironment($autoloadSystemConfig) == static::ENVIRONMENT_BETA;
+		return static::GetEnvironment($autoloadSystemConfig) === static::ENVIRONMENT_BETA;
 	}
 
 	/**
@@ -120,7 +118,7 @@ class Config implements Interfaces\IConfig
 	 * @return bool
 	 */
 	public static function IsAlpha ($autoloadSystemConfig = FALSE) {
-		return static::GetEnvironment($autoloadSystemConfig) == static::ENVIRONMENT_ALPHA;
+		return static::GetEnvironment($autoloadSystemConfig) === static::ENVIRONMENT_ALPHA;
 	}
 
 	/**
@@ -129,7 +127,7 @@ class Config implements Interfaces\IConfig
 	 * @return bool
 	 */
 	public static function IsProduction ($autoloadSystemConfig = FALSE) {
-		return static::GetEnvironment($autoloadSystemConfig) == static::ENVIRONMENT_PRODUCTION;
+		return static::GetEnvironment($autoloadSystemConfig) === static::ENVIRONMENT_PRODUCTION;
 	}
 
 	/**
@@ -138,11 +136,10 @@ class Config implements Interfaces\IConfig
 	 * @return string
 	 */
 	public static function GetEnvironment ($autoloadSystemConfig = FALSE) {
-		if ($autoloadSystemConfig) {
-			static::GetSystem();
-		} else {
+		if ($autoloadSystemConfig)
+			if (static::GetSystem() === FALSE) static::initEnvironmentByIps();
+		else
 			static::initEnvironmentByIps();
-		}
 		return static::$environment;
 	}
 
@@ -264,10 +261,10 @@ class Config implements Interfaces\IConfig
 	 * Detect environment name in system config
 	 * to load proper config sections later.
 	 * @param array $rawIni
-	 * @return string
+	 * @return string|NULL
 	 */
 	protected function detectEnvironmentBySystemConfig (array & $rawIni = array()) {
-		$environment = '';
+		$environment = NULL;
 		if (isset($rawIni['environments'])) {
 			$environments = & $rawIni['environments'];
 			$serverAddress = ','.\MvcCore\Application::GetInstance()->GetRequest()->GetServerIp().',';

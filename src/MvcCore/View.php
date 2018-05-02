@@ -131,11 +131,11 @@ class View implements Interfaces\IView
 	private $_renderedFullPaths = array();
 
 	/**
-	 * Originaly declared internal view properties list to protect
-	 * their possible overwriting by `__set()` magic method.
-	 * @var string
+	 * Originaly declared internal view properties to protect their
+	 * possible overwriting by `__set()` or `__get()` magic methods.
+	 * @var array
 	 */
-	protected static $originalyDeclaredProperties = array(
+	protected static $protectedProperties = array(
 		'_controller'		=> 1,
 		'_store'			=> 1,
 		'_helpers'			=> 1,
@@ -372,13 +372,14 @@ class View implements Interfaces\IView
 
 	/**
 	 * Set any value into view context internal store
-	 * except system keys declared in `static::$originalyDeclaredProperties`.
+	 * except system keys declared in `static::$protectedProperties`.
 	 * @param string $name
 	 * @param mixed $value
 	 * @throws \Exception
+	 * @return bool
 	 */
 	public function __set ($name, $value) {
-		if (isset(static::$originalyDeclaredProperties[$name])) {
+		if (isset(static::$protectedProperties[$name])) {
 			throw new \InvalidArgumentException(
 				'['.__CLASS__."] It's not possible to change property: '$name' originaly declared in class ".__CLASS__.'.'
 			);
@@ -388,17 +389,18 @@ class View implements Interfaces\IView
 
 	/**
 	 * Get any value from view context internal store
-	 * except system keys declared in `static::$originalyDeclaredProperties`.
+	 * except system keys declared in `static::$protectedProperties`.
 	 * @param string $name
 	 * @throws \Exception
+	 * @return mixed
 	 */
-	public function & __get ($name) {
-		if (isset(static::$originalyDeclaredProperties[$name])) {
+	public function __get ($name) {
+		if (isset(static::$protectedProperties[$name])) {
 			throw new \InvalidArgumentException(
 				'['.__CLASS__."] It's not possible to get internal private property: '$name' in class ".__CLASS__.'.'
 			);
 		}
-		return $this->_store[$name];
+		return isset($this->_store[$name]) ? $this->_store[$name] : NULL;
 	}
 
 	/**
@@ -412,7 +414,7 @@ class View implements Interfaces\IView
 	 * @throws \InvalidArgumentException If view doesn't exist in configured namespaces.
 	 * @return string|mixed View helper string result or view helper instace or any other view helper result type.
 	 */
-	public function & __call ($method, $arguments) {
+	public function __call ($method, $arguments) {
 		$result = '';
 		$setUpViewAgain = FALSE;
 		$implementsIHelper = FALSE;

@@ -698,6 +698,7 @@ class Request implements Interfaces\IRequest
 	 * @var string|NULL
 	 */
 	public function GetLang () {
+		if ($this->lang === NULL) $this->initLangAndLocale();
 		return $this->lang;
 	}
 
@@ -720,6 +721,7 @@ class Request implements Interfaces\IRequest
 	 * @var string|NULL
 	 */
 	public function GetLocale () {
+		if ($this->locale === NULL) $this->initLangAndLocale();
 		return $this->locale;
 	}
 
@@ -1246,6 +1248,8 @@ class Request implements Interfaces\IRequest
 			$redirectUrl = isset($this->globalServer['REDIRECT_URL']) ? $this->globalServer['REDIRECT_URL'] : '';
 			$redirectUrlLength = mb_strlen($redirectUrl);
 			$requestUri = $this->globalServer['REQUEST_URI'];
+			$questionMarkPos = mb_strpos($requestUri, '?');
+			if ($questionMarkPos !== FALSE) $requestUri = mb_substr($requestUri, 0, $questionMarkPos);
 			if ($redirectUrlLength === 0 || ($redirectUrlLength > 0 && $redirectUrl === $requestUri)) {
 				$this->basePath = mb_substr($this->scriptName, 0, $lastSlashPos);
 				$this->scriptName = '/' . mb_substr($this->scriptName, $lastSlashPos + 1);
@@ -1260,5 +1264,10 @@ class Request implements Interfaces\IRequest
 		} else {
 			$this->scriptName = '/' . mb_substr($this->scriptName, $lastSlashPos + 1);
 		}
+	}
+
+	protected function initLangAndLocale () {
+		$langAndLocale = locale_accept_from_http($this->globalServer['HTTP_ACCEPT_LANGUAGE']);
+		if ($langAndLocale !== NULL) list($this->lang, $this->locale) = explode('_', $langAndLocale);
 	}
 }
