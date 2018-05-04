@@ -266,6 +266,87 @@ class View implements Interfaces\IView
 	}
 
 	/**
+	 * Get currently rendered view file full path.
+	 * If this method is called outside of rendering process, `NULL` is returned.
+	 * @return string|NULL
+	 */
+	public function GetCurrentViewFullPath () {
+		$result = NULL;
+		$count = count($this->_renderedFullPaths);
+		if ($count > 0)
+			$result = $this->_renderedFullPaths[$count - 1];
+		return $result;
+	}
+
+	/**
+	 * Get currently rendered view file directory full path.
+	 * If this method is called outside of rendering process, `NULL` is returned.
+	 * @return string|NULL
+	 */
+	public function GetCurrentViewDirectory () {
+		$result = $this->GetCurrentViewFullPath();
+		$lastSlashPos = mb_strrpos($result, '/');
+		if ($lastSlashPos !== FALSE) {
+			$result = mb_substr($result, 0, $lastSlashPos);
+		}
+		return $result;
+	}
+
+	/**
+	 * Get currently rendered parent view file full path.
+	 * Parent view file could be any view file, where is called `$this->RenderScript(...);`
+	 * method to render sub-view file (actual view file) or it could be any view file
+	 * from parent controller or if current controller has no parent controller,
+	 * it could be layout view script full path.
+	 * If this method is called outside of rendering process, `NULL` is returned.
+	 * @return string|NULL
+	 */
+	public function GetParentViewFullPath () {
+		$result = NULL;
+		$count = count($this->_renderedFullPaths);
+		if ($count > 1) {
+			$result = $this->_renderedFullPaths[$count - 2];
+		} else {
+			$controller = $this->_controller;
+			$parentCtrl = $controller->GetParentController();
+			if ($parentCtrl !== NULL) {
+				while (TRUE) {
+					$parentCtrlView = $parentCtrl->GetView();
+					if ($parentCtrlView === NULL) {
+						$parentCtrl->GetParentController();
+						if ($parentCtrl === NULL) break;
+					}
+					$result = $parentCtrlView->GetCurrentViewFullPath();
+					if ($result !== NULL) break;
+				}
+			}
+			if ($result === NULL) {
+				$relativePath = $this->_correctRelativePath(static::$LayoutsDir, $controller->GetLayout());
+				return static::GetViewScriptFullPath(static::$LayoutsDir, $relativePath);
+			}
+		}
+		return $result;
+	}
+
+	/**
+	 * Get currently rendered parent view file directory full path.
+	 * Parent view file could be any view file, where is called `$this->RenderScript(...);`
+	 * method to render sub-view file (actual view file) or it could be any view file
+	 * from parent controller or if current controller has no parent controller,
+	 * it could be layout view script full path.
+	 * If this method is called outside of rendering process, `NULL` is returned.
+	 * @return string|NULL
+	 */
+	public function GetParentViewDirectory () {
+		$result = $this->GetParentViewFullPath();
+		$lastSlashPos = mb_strrpos($result, '/');
+		if ($lastSlashPos !== FALSE) {
+			$result = mb_substr($result, 0, $lastSlashPos);
+		}
+		return $result;
+	}
+
+	/**
 	 * Render controller/action template script and return it's result as reference.
 	 * @param string $relativePath
 	 * @return string
@@ -371,6 +452,78 @@ class View implements Interfaces\IView
 	}
 
 	/**
+	 * Try to get view helper.
+	 * If view helper doesn't exist in global helpers store - create new helper instance.
+	 * If helper already exists in global helpers store - do not create it again - use instance from the store.
+	 * @param string $helperName View helper method name in pascal case.
+	 * @throws \InvalidArgumentException If view doesn't exist in configured namespaces.
+	 * @return \MvcCore\Ext\View\Helpers\AbstractHelper|\MvcCore\Ext\View\Helpers\IHelper|mixed View helper instance.
+	 */
+	public function & GetHelper ($helperName) {
+		$setUpViewAgain = FALSE;
+		$implementsIHelper = FALSE;
+		$instance = NULL;
+		if (isset($this->_helpers[$helperName])) {
+			$instance = & $this->_helpers[$helperName];
+		} else if (isset(self::$_globalHelpers[$helperName])) {
+			$globalHelpersRecord = & self::$_globalHelpers[$helperName];
+			$instance = & $globalHelpersRecord[0];
+			$implementsIHelper = $globalHelpersRecord[1];
+			$setUpViewAgain = TRUE;
+		} else {
+			$helperFound = FALSE;
+			$toolClass = self::$_toolClass;
+			$helpersInterface = static::$HelpersInterfaceClassName;
+			foreach (static::$HelpersClassesNamespaces as $helperClassBase) {
+				$className = $helperClassBase . ucfirst($helperName);
+				if (class_exists($className)) {
+					$helperFound = TRUE;
+					$setUpViewAgain = TRUE;
+					if ($toolClass::CheckClassInterface($className, $helpersInterface, FALSE)) {
+						$implementsIHelper = TRUE;
+						$instance = & $className::GetInstance();
+					} else {
+						$instance = new $className();
+					}
+					self::$_globalHelpers[$helperName] = array(& $instance, $implementsIHelper);
+					break;
+				}
+			}
+			if (!$helperFound) throw new \InvalidArgumentException(
+				"[".__CLASS__."] View helper method '$helperName' is not possible to handle by any configured view helper "
+				." (View helper namespaces: '".implode("', '", static::$HelpersClassesNamespaces)."')."
+			);
+		}
+		if ($setUpViewAgain) {
+			if ($implementsIHelper) $instance->SetView($this);
+			$this->_helpers[$helperName] = & $instance;
+		}
+		return $instance;
+	}
+
+	/**
+	 * Set view helper for current template or for all templates globaly by default.
+	 * If view helper already exist in global helpers store - it's overwritten.
+	 * @param string $helperName View helper method name in pascal case.
+	 * @param \MvcCore\Ext\View\Helpers\AbstractHelper|\MvcCore\Ext\View\Helpers\IHelper|mixed $instance View helper instance.
+	 * @param bool $forAllTemplates register this helper instance for all rendered views in the future.
+	 * @return \MvcCore\View|\MvcCore\Interfaces\IView
+	 */
+	public function & SetHelper ($helperName, & $instance, $forAllTemplates = TRUE) {
+		$implementsIHelper = FALSE;
+		if ($forAllTemplates) {
+			$toolClass = self::$_toolClass;
+			$helpersInterface = static::$HelpersInterfaceClassName;
+			$className = get_class($instance);
+			$implementsIHelper = $toolClass::CheckClassInterface($className, $helpersInterface, FALSE);
+			self::$_globalHelpers[$helperName] = array(& $instance, $implementsIHelper);
+		}
+		$this->_helpers[$helperName] = & $instance;
+		if ($implementsIHelper) $instance->SetView($this);
+		return $this;
+	}
+
+	/**
 	 * Set any value into view context internal store
 	 * except system keys declared in `static::$protectedProperties`.
 	 * @param string $name
@@ -404,6 +557,33 @@ class View implements Interfaces\IView
 	}
 
 	/**
+	 * Get if any value from view context internal store exists
+	 * except system keys declared in `static::$protectedProperties`.
+	 * @param string $name
+	 * @return bool
+	 */
+	public function __isset ($name) {
+		if (isset(static::$protectedProperties[$name])) return TRUE;
+		return isset($this->_store[$name]);
+	}
+
+	/**
+	 * Unset any value from view context internal store
+	 * except system keys declared in `static::$protectedProperties`.
+	 * @param string $name
+	 * @return void
+	 */
+	public function __unset ($name) {
+		if (isset(static::$protectedProperties[$name])) {
+			throw new \InvalidArgumentException(
+				'['.__CLASS__."] It's not possible to unset internal private property: '$name' in class ".__CLASS__.'.'
+			);
+		}
+		if (isset($this->_store[$name]))
+			unset($this->_store[$name]);
+	}
+
+	/**
 	 * Try to call view helper.
 	 * If view helper doesn't exist in global helpers store - create new helper instance.
 	 * If helper already exists in global helpers store - do not create it again - use instance from the store.
@@ -412,48 +592,11 @@ class View implements Interfaces\IView
 	 * @param string $method View helper method name in pascal case.
 	 * @param mixed $arguments View helper method arguments.
 	 * @throws \InvalidArgumentException If view doesn't exist in configured namespaces.
-	 * @return string|mixed View helper string result or view helper instace or any other view helper result type.
+	 * @return \MvcCore\Ext\View\Helpers\AbstractHelper|\MvcCore\Ext\View\Helpers\IHelper|string|mixed View helper string result or view helper instance or any other view helper result type.
 	 */
 	public function __call ($method, $arguments) {
 		$result = '';
-		$setUpViewAgain = FALSE;
-		$implementsIHelper = FALSE;
-		$instance = NULL;
-		if (isset($this->_helpers[$method])) {
-			$instance = & $this->_helpers[$method];
-		} else if (isset(self::$_globalHelpers[$method])) {
-			$globalHelpersRecord = & self::$_globalHelpers[$method];
-			$instance = & $globalHelpersRecord[0];
-			$implementsIHelper = $globalHelpersRecord[1];
-			$setUpViewAgain = TRUE;
-		} else {
-			$helperFound = FALSE;
-			$toolClass = self::$_toolClass;
-			$helpersInterface = static::$HelpersInterfaceClassName;
-			foreach (static::$HelpersClassesNamespaces as $helperClassBase) {
-				$className = $helperClassBase . ucfirst($method);
-				if (class_exists($className)) {
-					$helperFound = TRUE;
-					$setUpViewAgain = TRUE;
-					if ($toolClass::CheckClassInterface($className, $helpersInterface, FALSE)) {
-						$implementsIHelper = TRUE;
-						$instance = & $className::GetInstance();
-					} else {
-						$instance = new $className();
-					}
-					self::$_globalHelpers[$method] = array(& $instance, $implementsIHelper);
-					break;
-				}
-			}
-			if (!$helperFound) throw new \InvalidArgumentException(
-				"[".__CLASS__."] View helper method '$method' is not possible to handle by any configured view helper "
-				." (View helper namespaces: '".implode("', '", static::$HelpersClassesNamespaces)."')."
-			);
-		}
-		if ($setUpViewAgain) {
-			if ($implementsIHelper) $instance->SetView($this);
-			$this->_helpers[$method] = & $instance;
-		}
+		$instance = & $this->GetHelper($method);
 		if (method_exists($instance, $method)) {
 			$result = call_user_func_array(array($instance, $method), $arguments);
 		} else {

@@ -38,6 +38,13 @@ namespace MvcCore\Interfaces;
  * - Optional direct code evaluation.
  * - No special view language implemented.
  *   - Why to use such stupid things, if we have configured `short_open_tags` by default? `<?=...?>`
+ *
+ * MvcCore view helpers:
+ * @method MvcCore\Ext\View\Helpers\Css Css($groupName = self::GROUP_NAME_DEFAULT) Get css helper instance by group name ("mvccore/ext-view-helper-assets").
+ * @method MvcCore\Ext\View\Helpers\Js Js($groupName = self::GROUP_NAME_DEFAULT) Get js helper instance by group name ("mvccore/ext-view-helper-assets").
+ * @method string FormatDateTime($dateTimeOrTimestamp = NULL, $dateTypeOrFormatMask = NULL, $timeType = NULL, $timeZone = NULL, $calendar = NULL) Format given datetime by `Intl` extension or by `strftime()` as fallback ("mvccore/ext-view-helper-formatdatetime").
+ * @method string FormatNumber($number = 0.0, $decimals = 0, $dec_point = NULL , $thousands_sep = NULL) ("mvccore/ext-view-helper-formatnumber")
+ * @method string FormatMoney($number = 0.0, $decimals = 0, $dec_point = NULL , $thousands_sep = NULL) ("mvccore/ext-view-helper-formatmoney")
  */
 interface IView
 {
@@ -120,6 +127,42 @@ interface IView
 	public function & GetContent ();
 
 	/**
+	 * Get currently rendered view file full path.
+	 * If this method is called outside of rendering process, `NULL` is returned.
+	 * @return string|NULL
+	 */
+	public function GetCurrentViewFullPath ();
+
+	/**
+	 * Get currently rendered view file directory full path.
+	 * If this method is called outside of rendering process, `NULL` is returned.
+	 * @return string|NULL
+	 */
+	public function GetCurrentViewDirectory ();
+
+	/**
+	 * Get currently rendered parent view file full path.
+	 * Parent view file could be any view file, where is called `$this->RenderScript(...);`
+	 * method to render sub-view file (actual view file) or it could be any view file
+	 * from parent controller or if current controller has no parent controller,
+	 * it could be layout view script full path.
+	 * If this method is called outside of rendering process, `NULL` is returned.
+	 * @return string|NULL
+	 */
+	public function GetParentViewFullPath ();
+
+	/**
+	 * Get currently rendered parent view file directory full path.
+	 * Parent view file could be any view file, where is called `$this->RenderScript(...);`
+	 * method to render sub-view file (actual view file) or it could be any view file
+	 * from parent controller or if current controller has no parent controller,
+	 * it could be layout view script full path.
+	 * If this method is called outside of rendering process, `NULL` is returned.
+	 * @return string|NULL
+	 */
+	public function GetParentViewDirectory ();
+
+	/**
 	 * Render controller/action template script and return it's result as reference.
 	 * @param string $relativePath
 	 * @return string
@@ -190,6 +233,26 @@ interface IView
 	public function AssetUrl ($path = '');
 
 	/**
+	 * Try to get view helper.
+	 * If view helper doesn't exist in global helpers store - create new helper instance.
+	 * If helper already exists in global helpers store - do not create it again - use instance from the store.
+	 * @param string $helperName View helper method name in pascal case.
+	 * @throws \InvalidArgumentException If view doesn't exist in configured namespaces.
+	 * @return \MvcCore\Ext\View\Helpers\AbstractHelper|\MvcCore\Ext\View\Helpers\IHelper|mixed View helper instance.
+	 */
+	public function & GetHelper ($helperName);
+
+	/**
+	 * Set view helper for current template or for all templates globaly by default.
+	 * If view helper already exist in global helpers store - it's overwritten.
+	 * @param string $helperName View helper method name in pascal case.
+	 * @param \MvcCore\Ext\View\Helpers\AbstractHelper|\MvcCore\Ext\View\Helpers\IHelper|mixed $instance View helper instance.
+	 * @param bool $forAllTemplates register this helper instance for all rendered views in the future.
+	 * @return \MvcCore\Interfaces\IView
+	 */
+	public function & SetHelper ($helperName, & $instance, $forAllTemplates = TRUE);
+
+	/**
 	 * Set any value into view context internal store
 	 * except system keys declared in `static::$originalyDeclaredProperties`.
 	 * @param string $name
@@ -207,6 +270,22 @@ interface IView
 	 * @return mixed
 	 */
 	public function __get ($name);
+
+	/**
+	 * Get if any value from view context internal store exists
+	 * except system keys declared in `static::$protectedProperties`.
+	 * @param string $name
+	 * @return bool
+	 */
+	public function __isset ($name);
+
+	/**
+	 * Unset any value from view context internal store
+	 * except system keys declared in `static::$protectedProperties`.
+	 * @param string $name
+	 * @return void
+	 */
+	public function __unset ($name);
 
 	/**
 	 * Try to call view helper.

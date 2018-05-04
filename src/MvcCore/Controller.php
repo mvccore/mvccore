@@ -73,6 +73,12 @@ namespace MvcCore;
 class Controller implements Interfaces\IController
 {
 	/**
+	 * Reference to `\MvcCore\Application` singleton object.
+	 * @var \MvcCore\Application|\MvcCore\Interfaces\IApplication
+	 */
+	protected $application;
+
+	/**
 	 * Request object - parsed uri, query params, app paths...
 	 * @var \MvcCore\Request|\MvcCore\Interfaces\IRequest
 	 */
@@ -286,7 +292,7 @@ class Controller implements Interfaces\IController
 			if ($pos === FALSE) continue;
 			$className = trim(mb_substr($docComment, 0, $pos));
 			if (!@class_exists($className)) continue;
-			if (!$toolsClass::CheckClassInterface($className, '\MvcCore\Interfaces\IController')) continue;
+			if (!$toolsClass::CheckClassInterface($className, 'MvcCore\Interfaces\IController')) continue;
 			$instance = $className::GetInstance();
 			$this->AddChildController($instance, $prop->getName());
 			$prop->setValue($this, $instance);
@@ -532,10 +538,12 @@ class Controller implements Interfaces\IController
 			$controller->_parentController = & $this;
 			$controller->layout = $this->layout;
 			$controller->viewEnabled = $this->IsViewEnabled();
-			$controller->user = $this->user;
 			$controller
+				->SetApplication($this->application)
+				->SetRouter($this->router)
 				->SetRequest($this->request)
-				->SetResponse($this->response);
+				->SetResponse($this->response)
+				->SetUser($this->user);
 		}
 		return $this;
 	}
@@ -628,24 +636,11 @@ class Controller implements Interfaces\IController
 				$this->view->SetValues($this->_parentController->GetView());
 			}
 			foreach ($this->_childControllers as $ctrlKey => $childCtrl) {
-				if (is_numeric($ctrlKey) && !isset($this->view->$ctrlKey))
+				if (!is_numeric($ctrlKey) && !isset($this->view->$ctrlKey))
 					$this->view->$ctrlKey = $childCtrl;
 			}
 			// complete paths
-			if ($actionNameDashed !== NULL) {
-				$controllerNameDashed = $controllerOrActionNameDashed;
-			} else {
-				$controllerNameDashed = $this->controllerName;
-				$actionNameDashed = $controllerOrActionNameDashed !== NULL
-					? $controllerOrActionNameDashed
-					: $this->actionName;
-			}
-			$controllerPath = str_replace(
-				array('_', '\\'), '/', $controllerNameDashed ?: $this->controllerName
-			);
-			$viewScriptPath = implode(
-				'/', array($controllerPath, $actionNameDashed ?: $this->actionName)
-			);
+			$viewScriptPath = $this->renderGetViewScriptPath($controllerOrActionNameDashed, $actionNameDashed);
 			// render content string
 			$actionResult = $this->view->RenderScript($viewScriptPath);
 			if ($currentCtrlIsTopMostParent) {
@@ -665,6 +660,45 @@ class Controller implements Interfaces\IController
 		}
 		$this->dispatchState = 4;
 		return '';
+	}
+
+	/**
+	 * Complete view script path by given controller and action or only by given action rendering arguments.
+	 * @param string $controllerOrActionNameDashed
+	 * @param string $actionNameDashed
+	 * @return string
+	 */
+	protected function renderGetViewScriptPath ($controllerOrActionNameDashed = NULL, $actionNameDashed = NULL) {
+		$currentCtrlIsTopMostParent = $this->_parentController === NULL;
+		if ($actionNameDashed !== NULL) { // if action defined - take first argument controller
+			$controllerNameDashed = $controllerOrActionNameDashed;
+		} else { // if no action defined - we need to complete controller dashed name
+			if ($currentCtrlIsTopMostParent) { // if controller is tom most one - take routed controller name
+				$controllerNameDashed = $this->controllerName;
+			} else {
+				// if controller is child controller - translate classs name
+				// without default controllers directory into dashed name
+				$ctrlsDefaultNamespace = $this->application->GetAppDir() . '\\' . $this->application->GetControllersDir();
+				$currentCtrlClassName = get_class($this);
+				if (mb_strpos($currentCtrlClassName, $ctrlsDefaultNamespace) === 0)
+					$currentCtrlClassName = mb_substr($currentCtrlClassName, mb_strlen($ctrlsDefaultNamespace) + 1);
+				$currentCtrlClassName = str_replace('\\', '/', $currentCtrlClassName);
+				$toolClass = $this->application->GetToolClass();
+				$controllerNameDashed = $toolClass::GetDashedFromPascalCase($currentCtrlClassName);
+			}
+			if ($controllerOrActionNameDashed !== NULL) {
+				$actionNameDashed = $controllerOrActionNameDashed;
+			} else {
+				if ($currentCtrlIsTopMostParent) {// if controller is top most parent - use routed action name
+					$actionNameDashed = $this->actionName;
+				} else {// if no action name defined - use default action name from core - usually `index`
+					$defaultCtrlAction = $this->application->GetDefaultControllerAndActionNames();
+					$actionNameDashed = $defaultCtrlAction[1];
+				}
+			}
+		}
+		$controllerPath = str_replace(array('_', '\\'), '/', $controllerNameDashed);
+		return implode('/', array($controllerPath, $actionNameDashed));
 	}
 
 	/**
