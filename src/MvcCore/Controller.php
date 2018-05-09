@@ -587,7 +587,7 @@ class Controller implements Interfaces\IController
 	 */
 	public function AssetAction () {
 		$ext = '';
-		$path = $this->GetParam('path');
+		$path = $this->GetParam('path', 'a-zA-Z0-9_\-\/\.');
 		$path = '/' . ltrim(str_replace('..', '', $path), '/');
 		if (
 			strpos($path, static::$staticPath) !== 0 &&

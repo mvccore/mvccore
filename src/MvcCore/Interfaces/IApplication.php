@@ -635,10 +635,11 @@ interface IApplication
 	 *	- If request is not in development mode:
 	 *		- Log error and try to render error page by configured controller and error action:,
 	 *		  `\App\Controllers\Index::Error();` by default.
-	 * @param \Exception $e
+	 * @param \Exception|string $exceptionOrMessage
+	 * @param int|NULL $code
 	 * @return bool
 	 */
-	public function DispatchException (\Exception $e);
+	public function DispatchException ($exceptionOrMessage, $code = NULL);
 
 	/**
 	 * Render error by configured default controller and error action,

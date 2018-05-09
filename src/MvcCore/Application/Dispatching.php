@@ -135,7 +135,7 @@ trait Dispatching
 	 * @return bool
 	 */
 	public function DispatchRequestByRoute (\MvcCore\Interfaces\IRoute & $route = NULL) {
-		if ($route === NULL) return $this->DispatchException(new \Exception('No route for request', 404));
+		if ($route === NULL) return $this->DispatchException('No route for request', 404);
 		list ($ctrlPc, $actionPc) = array($route->Controller, $route->Action);
 		$actionName = $actionPc . 'Action';
 		$viewClass = $this->viewClass;
@@ -153,6 +153,8 @@ trait Dispatching
 				if (file_exists($viewScriptFullPath)) {
 					// if view exists - change controller name to core controller, if not let it go to exception
 					$controllerName = $this->controllerClass;
+				} else {
+					return $this->DispatchException("Controller class `$controllerName` doesn't exist.", 404);
 				}
 			}
 		}
@@ -194,14 +196,19 @@ trait Dispatching
 				->SetResponse($this->response)
 				->SetRouter($this->router);
 		} catch (\Exception $e) {
-			return $this->DispatchException(new \ErrorException($e->getMessage(), 404));
+			return $this->DispatchException($e->getMessage(), 404);
 		}
 		if (!method_exists($controller, $actionName) && $ctrlClassFullName !== $this->controllerClass) {
 			if (!file_exists($viewScriptFullPath)) {
-				return $this->DispatchException(new \ErrorException(
-					"Controller '$ctrlClassFullName' has not method '$actionName' "
-					."and view doesn't exists in path: '$viewScriptFullPath'.", 404
-				));
+				$appRoot = $this->request->GetAppRoot();
+				$viewScriptPath = mb_strpos($viewScriptFullPath, $appRoot) === FALSE
+					? $viewScriptFullPath
+					: mb_substr($viewScriptFullPath, mb_strlen($appRoot));
+				return $this->DispatchException(
+					"Controller class `$ctrlClassFullName` has not method `$actionName` \n"
+					."or view doesn't exists: `$viewScriptPath`.",
+					404
+				);
 			}
 		}
 		$this->controller = & $controller;
@@ -270,22 +277,34 @@ trait Dispatching
 	 *	- If request is not in development mode:
 	 *		- Log error and try to render error page by configured controller and error action:,
 	 *		  `\App\Controllers\Index::Error();` by default.
-	 * @param \Exception $e
+	 * @param \Exception|string $exceptionOrMessage
+	 * @param int|NULL $code
 	 * @return bool
 	 */
-	public function DispatchException (\Exception $e) {
+	public function DispatchException ($exceptionOrMessage, $code = NULL) {
 		if (class_exists('\Packager_Php')) return FALSE; // packing process
+		$exception = NULL;
+		if ($exceptionOrMessage instanceof \Exception) {
+			$exception = $exceptionOrMessage;
+		} else {
+			try {
+				if ($code === NULL) throw new \Exception($exceptionOrMessage);
+				throw new \ErrorException($exceptionOrMessage, $code);
+			} catch (\Exception $e) {
+				$exception = $e;
+			}
+		}
 		$debugClass = $this->debugClass;
 		$configClass = $this->configClass;
-		if ($e->getCode() == 404) {
-			$debugClass::Log($e->getMessage().": ".$this->request->GetFullUrl(), \MvcCore\Interfaces\IDebug::INFO);
-			return $this->RenderNotFound($e->getMessage());
+		if ($exception->getCode() == 404) {
+			$debugClass::Log($exception->getMessage().": ".$this->request->GetFullUrl(), \MvcCore\Interfaces\IDebug::INFO);
+			return $this->RenderNotFound($exception->getMessage());
 		} else if ($configClass::IsDevelopment(TRUE)) {
-			$debugClass::Exception($e);
+			$debugClass::Exception($exception);
 			return FALSE;
 		} else {
-			$debugClass::Log($e, \MvcCore\Interfaces\IDebug::EXCEPTION);
-			return $this->RenderError($e);
+			$debugClass::Log($exception, \MvcCore\Interfaces\IDebug::EXCEPTION);
+			return $this->RenderError($exception);
 		}
 	}
 

@@ -48,11 +48,11 @@ trait Helpers
 	 */
 	public function CompleteControllerName ($controllerNamePascalCase) {
 		$firstChar = substr($controllerNamePascalCase, 0, 1);
-		if ($firstChar == '\\') return $controllerNamePascalCase;
+		if ($firstChar == '\\') return str_replace('/', '\\', $controllerNamePascalCase);
 		return '\\' . implode('\\', array(
 			$this->appDir,
 			$this->controllersDir,
-			$controllerNamePascalCase
+			str_replace('/', '\\', $controllerNamePascalCase)
 		));
 	}
 

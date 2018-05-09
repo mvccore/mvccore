@@ -194,7 +194,7 @@ interface IRequest
 	 */
 	public function GetParam (
 		$name = "",
-		$pregReplaceAllowedChars = "a-zA-Z0-9_/\-\.\@",
+		$pregReplaceAllowedChars = "a-zA-Z0-9_;, /\-\@\:",
 		$ifNullValue = NULL,
 		$targetType = NULL
 	);

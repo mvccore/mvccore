@@ -479,7 +479,7 @@ class Request implements Interfaces\IRequest
 	 */
 	public function GetParam (
 		$name = "",
-		$pregReplaceAllowedChars = "a-zA-Z0-9_/\-\.\@",
+		$pregReplaceAllowedChars = "a-zA-Z0-9_;, /\-\@\:",
 		$ifNullValue = NULL,
 		$targetType = NULL
 	) {
@@ -650,7 +650,7 @@ class Request implements Interfaces\IRequest
 	public function GetControllerName () {
 		if ($this->controllerName === NULL) {
 			if (isset($this->globalGet['controller']))
-			    $this->controllerName = $this->GetParam('controller', 'a-zA-Z0-9\-_/', '', 'string');
+				$this->controllerName = $this->GetParam('controller', 'a-zA-Z0-9\-_/', '', 'string');
 		}
 		return $this->controllerName;
 	}
@@ -674,7 +674,7 @@ class Request implements Interfaces\IRequest
 	public function GetActionName () {
 		if ($this->actionName === NULL) {
 			if (isset($this->globalGet['action']))
-			    $this->actionName = $this->GetParam('action', 'a-zA-Z0-9\-_/', '', 'string');
+				$this->actionName = $this->GetParam('action', 'a-zA-Z0-9\-_', '', 'string');
 		}
 		return $this->actionName;
 	}
@@ -1155,7 +1155,7 @@ class Request implements Interfaces\IRequest
 	protected function getParamFromCollection (
 		& $paramsCollection = array(),
 		$name = "",
-		$pregReplaceAllowedChars = "a-zA-Z0-9_/\-\.\@",
+		$pregReplaceAllowedChars = "a-zA-Z0-9_;, /\-\@\:",
 		$ifNullValue = NULL,
 		$targetType = NULL
 	) {
@@ -1187,23 +1187,33 @@ class Request implements Interfaces\IRequest
 	 */
 	protected function getParamItem (
 		& $rawValue = NULL,
-		$pregReplaceAllowedChars = "a-zA-Z0-9_/\-\.\@",
+		$pregReplaceAllowedChars = "a-zA-Z0-9_;, /\-\@\:",
 		$ifNullValue = NULL,
 		$targetType = NULL
 	) {
 		if ($rawValue === NULL) {
+			// if there is NULL in target collection
 			if ($targetType === NULL) return $ifNullValue;
 			$result = is_scalar($ifNullValue) ? $ifNullValue : clone $ifNullValue;
 			settype($result, $targetType);
 			return $result;
 		} else {
+			// if there is not NULL in target collection
 			$rawValue = trim($rawValue);
-			if (mb_strlen($rawValue) === 0) return "";
-			if (!is_array($pregReplaceAllowedChars) && (mb_strlen($pregReplaceAllowedChars) > 0 || $pregReplaceAllowedChars == ".*")) {
-				if ($targetType === NULL) return $rawValue;
-				settype($rawValue, $targetType);
-				return $rawValue;
+			if (mb_strlen($rawValue) === 0) {
+				// if value after trim is empty string, return empty string (retyped if necessary)
+				$result = "";
+				if ($targetType === NULL) return $result;
+				settype($result, $targetType);
+				return $result;
+			} else if ($pregReplaceAllowedChars == '.*') {
+				// if there is something in target collection and all chars are allowed
+				$result = $rawValue;
+				if ($targetType === NULL) return $result;
+				settype($result, $targetType);
+				return $result;
 			} else if (gettype($rawValue) == 'array') {
+				// if there is something in target collection and it's an array
 				$result = array();
 				foreach ((array) $rawValue as $key => & $value) {
 					$cleanedKey = $this->cleanParamValue($key, $pregReplaceAllowedChars);
@@ -1213,6 +1223,7 @@ class Request implements Interfaces\IRequest
 				}
 				return $result;
 			} else {
+				// if there is something in target collection and it's not an array
 				$result = $this->cleanParamValue($rawValue, $pregReplaceAllowedChars);
 				if ($targetType === NULL) return $result;
 				settype($result, $targetType);
@@ -1227,9 +1238,8 @@ class Request implements Interfaces\IRequest
 	 * @param string|array $pregReplaceAllowedChars If String - list of regular expression characters to only keep, if array - `preg_replace()` pattern and reverse.
 	 * @return string
 	 */
-	protected function cleanParamValue ($rawValue, $pregReplaceAllowedChars = "a-zA-Z0-9_/\-\.\@") {
-		$pregReplaceAllowedCharsIsArray = is_array($pregReplaceAllowedChars);
-		if ($pregReplaceAllowedCharsIsArray) {
+	protected function cleanParamValue ($rawValue, $pregReplaceAllowedChars = "a-zA-Z0-9_;, /\-\@\:") {
+		if (is_array($pregReplaceAllowedChars)) {
 			return preg_replace($pregReplaceAllowedChars[0], $pregReplaceAllowedChars[1], $rawValue);
 		} else {
 			return preg_replace("#[^" . $pregReplaceAllowedChars . "]#", "", $rawValue);

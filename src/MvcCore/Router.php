@@ -517,7 +517,8 @@ class Router implements Interfaces\IRouter
 			$this->routeByRewriteRoutes($requestCtrlName, $requestActionName);
 		}
 		if ($this->currentRoute === NULL && (
-			$request->GetPath() == '/' || $this->routeToDefaultIfNotMatch
+			($request->GetPath() == '/' || $request->GetPath() == $request->GetScriptName()) ||
+			$this->routeToDefaultIfNotMatch
 		)) {
 			$routeClass = self::$_routeClass;
 			list($dfltCtrl, $dftlAction) = self::$_app->GetDefaultControllerAndActionNames();
