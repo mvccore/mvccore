@@ -525,6 +525,10 @@ class Router implements Interfaces\IRouter
 				->SetName("$dfltCtrl:$dftlAction")
 				->SetController($dfltCtrl)
 				->SetAction($dftlAction);
+			$toolClass = static::$_toolClass;
+			$this->request
+				->SetControllerName($toolClass::GetDashedFromPascalCase($dfltCtrl))
+				->SetActionName($toolClass::GetDashedFromPascalCase($dftlAction));
 		}
 		return $this->currentRoute;
 	}
@@ -640,8 +644,9 @@ class Router implements Interfaces\IRouter
 			->SetController($controllerPc)
 			->SetAction($actionPc);
 		$this->AddRoute($this->currentRoute, TRUE);
-		$this->request->SetControllerName($toolClass::GetDashedFromPascalCase($controllerPc));
-		$this->request->SetActionName($toolClass::GetDashedFromPascalCase($actionPc));
+		$this->request
+			->SetControllerName($toolClass::GetDashedFromPascalCase($controllerPc))
+			->SetActionName($toolClass::GetDashedFromPascalCase($actionPc));
 	}
 
 	/**
