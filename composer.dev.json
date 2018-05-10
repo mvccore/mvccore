@@ -31,18 +31,24 @@
 		"name": "Tom Flidr",
 		"homepage": "https://github.com/tomFlidr"
 	}],
+	"repositories": [{
+		"packagist.org": false
+	},{
+		"type": "vcs",
+		"url": "../../../packages/tracy/tracy"
+	}],
 	"require": {
-		"php": ">=5.3.0"
+		"php": ">=5.4.0"
 	},
 	"require-dev": {
 		"mvccore/ext-debug-tracy": "^2.4"
 	},
 	"suggest": {
-		"mvccore/ext-debug-tracy": "MvcCore Extension - Debug - Tracy (tracy/tracy) - adapter for better development."
+		"mvccore/ext-tracy": "MvcCore Extension - Debug - Tracy (tracy/tracy) - adapter for better development."
 	},
 	"autoload": {
 		"classmap": ["src/"],
 		"files": ["src/startup.php"]
 	},
-	"minimum-stability": "stable"
+	"minimum-stability": "dev"
 }
