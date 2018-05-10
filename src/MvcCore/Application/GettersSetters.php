@@ -252,6 +252,15 @@ trait GettersSetters
 	 * @return string
 	 */
 	public function GetCompiled () {
+		if ($this->compiled === NULL) {
+			$compiled = static::NOT_COMPILED;
+			if (strpos(__FILE__, 'phar://') === 0) {
+				$compiled = static::COMPILED_PHAR;
+			} else if (class_exists('\Packager_Php_Wrapper')) {
+				$compiled = constant('\Packager_Php_Wrapper::FS_MODE');
+			}
+			$this->compiled = $compiled;
+		}
 		return $this->compiled;
 	}
 

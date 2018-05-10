@@ -60,7 +60,7 @@ trait Dispatching
 	 * @return \MvcCore\Application
 	 */
 	public function Run ($singleFileUrl = FALSE) {
-		if ($singleFileUrl) $this->compiled = static::COMPILED_SFU;
+		if ($singleFileUrl) $this->SetCompiled(static::COMPILED_SFU);
 		$this->GetRequest(); // triggers creation
 		$this->GetResponse();// triggers creation
 		$debugClass = $this->debugClass;

@@ -50,25 +50,6 @@ class Application implements \MvcCore\Interfaces\IApplication
 	 ***********************************************************************************/
 
 	/**
-	 * Static constructor (called INTERNALY - do not call this in application).
-	 * It initializes application compilation mode before:
-	 * `\MvcCore\Application::GetInstance()->Run();`.
-	 * @return void
-	 */
-	public static function StaticInit () {
-		$instance = & static::GetInstance();
-		if ($instance->compiled === NULL) {
-			$compiled = static::NOT_COMPILED;
-			if (strpos(__FILE__, 'phar://') === 0) {
-				$compiled = static::COMPILED_PHAR;
-			} else if (class_exists('\Packager_Php_Wrapper')) {
-				$compiled = constant('\Packager_Php_Wrapper::FS_MODE');
-			}
-			$instance->compiled = $compiled;
-		}
-	}
-
-	/**
 	 * Returns singleton `\MvcCore\Application` instance as reference.
 	 * @return \MvcCore\Application
 	 */
@@ -77,4 +58,3 @@ class Application implements \MvcCore\Interfaces\IApplication
 		return static::$instance;
 	}
 }
-Application::StaticInit();

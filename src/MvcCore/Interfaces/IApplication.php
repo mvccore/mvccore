@@ -98,14 +98,6 @@ interface IApplication
 	 ***********************************************************************************/
 
 	/**
-	 * Static constructor (called INTERNALY - do not call this in application).
-	 * It initializes application compilation mode before:
-	 * `\MvcCore\Application::GetInstance()->Run();`.
-	 * @return void
-	 */
-	public static function StaticInit ();
-
-	/**
 	 * Returns singleton `\MvcCore\Application` instance as reference.
 	 * @return \MvcCore\Interfaces\IApplication
 	 */
