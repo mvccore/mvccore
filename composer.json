@@ -35,7 +35,7 @@
 		"php": ">=5.3.0"
 	},
 	"require-dev": {
-		"mvccore/ext-debug-tracy": "^2.4"
+		"mvccore/ext-debug-tracy": "2.4.*"
 	},
 	"suggest": {
 		"mvccore/ext-debug-tracy": "MvcCore Extension - Debug - Tracy (tracy/tracy) - adapter for better development."
