@@ -614,11 +614,10 @@ class Request implements Interfaces\IRequest
 	}
 
 	/**
-	 * Return `TRUE` boolean flag if request target
-	 * is anything different than `Controller:Asset`.
+	 * Return `TRUE` boolean flag if request targets `Controller:Asset`.
 	 * @return bool
 	 */
-	public function IsAppRequest () {
+	public function IsInternalRequest () {
 		if ($this->appRequest === NULL) {
 			$ctrl = $this->GetControllerName();
 			$action = $this->GetActionName();

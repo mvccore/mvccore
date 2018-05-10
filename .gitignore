@@ -54,4 +54,4 @@ Temporary Items
 # Project files
 *.phpproj
 *.phpproj.user
-/composer.dev.json
+composer.dev.json

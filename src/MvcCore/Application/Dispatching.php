@@ -112,7 +112,7 @@ trait Dispatching
 	 * @return bool
 	 */
 	public function ProcessCustomHandlers (& $handlers = array()) {
-		if (!$this->request->IsAppRequest()) return TRUE;
+		if ($this->request->IsInternalRequest() === TRUE) return TRUE;
 		$result = TRUE;
 		foreach ($handlers as $handler) {
 			try {

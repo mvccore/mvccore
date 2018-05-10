@@ -73,7 +73,7 @@ class Session extends \ArrayObject implements Interfaces\ISession
 	 */
 	public static function Start (& $session = array()) {
 		if (static::$started) return;
-		if (!\MvcCore\Application::GetInstance()->GetRequest()->IsAppRequest()) return;
+		if (\MvcCore\Application::GetInstance()->GetRequest()->IsInternalRequest() === TRUE) return;
 		$sessionNotStarted = function_exists('session_status')
 			? session_status() == PHP_SESSION_NONE
 			: session_id() == '' ;
