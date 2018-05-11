@@ -278,7 +278,7 @@ interface IRequest
 	 * what could be inside request after calling any getter method.
 	 * @return \MvcCore\Interfaces\IRequest
 	 */
-	public function InitAll ();
+	public function & InitAll ();
 
 	/**
 	 * Return `TRUE` boolean flag if request targets `Controller:Asset`.

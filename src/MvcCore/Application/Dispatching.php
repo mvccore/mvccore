@@ -114,10 +114,14 @@ trait Dispatching
 	public function ProcessCustomHandlers (& $handlers = array()) {
 		if ($this->request->IsInternalRequest() === TRUE) return TRUE;
 		$result = TRUE;
-		foreach ($handlers as $handler) {
+		foreach ($handlers as $handlersRecord) {
+			list ($handler, $isClosure) = $handlersRecord;
 			try {
-				call_user_func($handler, $this->request, $this->response);
-				// $handler($this->request, $this->response);
+				if ($isClosure) {
+					$handler($this->request, $this->response);
+				} else {
+					call_user_func($handler, $req, $res);
+				}
 			} catch (\Exception $e) {
 				$this->DispatchException($e);
 				$result = FALSE;
@@ -136,7 +140,7 @@ trait Dispatching
 	 */
 	public function DispatchRequestByRoute (\MvcCore\Interfaces\IRoute & $route = NULL) {
 		if ($route === NULL) return $this->DispatchException('No route for request', 404);
-		list ($ctrlPc, $actionPc) = array($route->Controller, $route->Action);
+		list ($ctrlPc, $actionPc) = array($route->GetController(), $route->GetAction());
 		$actionName = $actionPc . 'Action';
 		$viewClass = $this->viewClass;
 		$viewScriptFullPath = $viewClass::GetViewScriptFullPath(

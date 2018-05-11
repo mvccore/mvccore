@@ -211,7 +211,7 @@ class Request implements Interfaces\IRequest
 	 * Timestamp of the start of the request, with microsecond precision.
 	 * @var float
 	 */
-	protected $microtime        = NULL;
+	protected $microtime		= NULL;
 
 	/**
 	 * All raw http headers without any conversion, initialized by
@@ -591,7 +591,7 @@ class Request implements Interfaces\IRequest
 	 * what could be inside request after calling any getter method.
 	 * @return \MvcCore\Request
 	 */
-	public function InitAll () {
+	public function & InitAll () {
 		$this->GetScriptName();
 		$this->GetAppRoot();
 		$this->GetMethod();
@@ -605,9 +605,9 @@ class Request implements Interfaces\IRequest
 		$this->GetReferer();
 		$this->GetMicrotime();
 		$this->IsAjax();
-		$this->initUrlSegments();
-		$this->initHeaders();
-		$this->initParams();
+		if ($this->port === NULL) $this->initUrlSegments();
+		if ($this->headers === NULL) $this->initHeaders();
+		if ($this->params === NULL) $this->initParams();
 		$this->GetServerIp();
 		$this->GetClientIp();
 		return $this;
@@ -624,7 +624,7 @@ class Request implements Interfaces\IRequest
 			if ($ctrl !== NULL && $action !== NULL) {
 				$this->appRequest = FALSE;
 				if ($ctrl === 'controller' && $action === 'asset')
-				    $this->appRequest = TRUE;
+					$this->appRequest = TRUE;
 			}
 		}
 		return $this->appRequest;
@@ -954,11 +954,11 @@ class Request implements Interfaces\IRequest
 	 * @return string
 	 */
 	public function GetRequestPath () {
-	    if ($this->requestPath === NULL) {
+		if ($this->requestPath === NULL) {
 			$query = $this->GetQuery();
 			$this->requestPath = $this->GetPath() . ($query ? '?' . $query : '') . $this->GetFragment();
 		}
-	    return $this->requestPath;
+		return $this->requestPath;
 	}
 
 	/**
@@ -967,8 +967,8 @@ class Request implements Interfaces\IRequest
 	 * @return string
 	 */
 	public function GetDomainUrl () {
-	    if ($this->domainUrl === NULL) $this->domainUrl = $this->GetProtocol() . '//' . $this->GetHost();
-	    return $this->domainUrl;
+		if ($this->domainUrl === NULL) $this->domainUrl = $this->GetProtocol() . '//' . $this->GetHost();
+		return $this->domainUrl;
 	}
 
 	/**
@@ -977,8 +977,8 @@ class Request implements Interfaces\IRequest
 	 * @return string
 	 */
 	public function GetBaseUrl () {
-	    if ($this->baseUrl === NULL) $this->baseUrl = $this->GetDomainUrl() . $this->GetBasePath();
-	    return $this->baseUrl;
+		if ($this->baseUrl === NULL) $this->baseUrl = $this->GetDomainUrl() . $this->GetBasePath();
+		return $this->baseUrl;
 	}
 
 	/**
@@ -987,8 +987,8 @@ class Request implements Interfaces\IRequest
 	 * @return string
 	 */
 	public function GetRequestUrl () {
-	    if ($this->requestUrl === NULL) $this->requestUrl = $this->GetBaseUrl() . $this->GetPath();
-	    return $this->requestUrl;
+		if ($this->requestUrl === NULL) $this->requestUrl = $this->GetBaseUrl() . $this->GetPath();
+		return $this->requestUrl;
 	}
 
 	/**
@@ -997,11 +997,11 @@ class Request implements Interfaces\IRequest
 	 * @return string
 	 */
 	public function GetFullUrl () {
-	    if ($this->fullUrl === NULL) {
-	        $query = $this->GetQuery();
-	        $this->fullUrl = $this->GetRequestUrl() . ($query ? '?' . $query : '') . $this->GetFragment();
-	    }
-	    return $this->fullUrl;
+		if ($this->fullUrl === NULL) {
+			$query = $this->GetQuery();
+			$this->fullUrl = $this->GetRequestUrl() . ($query ? '?' . $query : '') . $this->GetFragment();
+		}
+		return $this->fullUrl;
 	}
 
 	/**
@@ -1058,6 +1058,46 @@ class Request implements Interfaces\IRequest
 			);
 		}
 		return $this->ajax;
+	}
+
+	/**
+	 * Parse list of comma separated language tags and sort it by the
+	 * quality value from `$this->globalServer['HTTP_ACCEPT_LANGUAGE']`.
+	 * @param string[] $languagesList
+	 * @return array
+	 */
+	public static function ParseHttpAcceptLang ($languagesList) {
+		$languages = array();
+		$languageRanges = explode(',', trim($languagesList));
+		foreach ($languageRanges as $languageRange) {
+			$regExpResult = preg_match(
+				"/(\*|[a-zA-Z0-9]{1,8}(?:-[a-zA-Z0-9]{1,8})*)(?:\s*;\s*q\s*=\s*(0(?:\.\d{0,3})|1(?:\.0{0,3})))?/",
+				trim($languageRange),
+				$match
+			);
+			if ($regExpResult) {
+				$priority = isset($match[2])
+					? (string) floatval($match[2])
+					: '1.0';
+				if (!isset($languages[$priority])) $languages[$priority] = array();
+				$langOrLangWithLocale = str_replace('-', '_', $match[1]);
+				$delimiterPos = strpos($langOrLangWithLocale, '_');
+				if ($delimiterPos !== FALSE) {
+					$languages[$priority][] = array(
+						strtolower(substr($langOrLangWithLocale, 0, $delimiterPos)),
+						strtoupper(substr($langOrLangWithLocale, $delimiterPos + 1))
+					);
+				} else {
+					$languages[$priority][] = array(
+						strtolower($langOrLangWithLocale),
+						NULL
+					);
+				}
+			}
+		}
+		krsort($languages);
+		reset($languages);
+		return $languages;
 	}
 
 
@@ -1276,7 +1316,17 @@ class Request implements Interfaces\IRequest
 	}
 
 	protected function initLangAndLocale () {
-		$langAndLocale = locale_accept_from_http($this->globalServer['HTTP_ACCEPT_LANGUAGE']);
-		if ($langAndLocale !== NULL) list($this->lang, $this->locale) = explode('_', $langAndLocale);
+		$rawUaLanguages = $this->globalServer['HTTP_ACCEPT_LANGUAGE'];
+		if (extension_loaded('Intl')) {
+			$langAndLocaleStr = \locale_accept_from_http($rawUaLanguages);
+			$langAndLocaleArr = $langAndLocaleStr !== NULL
+				? explode('_', $langAndLocaleStr)
+				: array(NULL, NULL);
+		} else {
+			$languagesAndLocales = static::ParseHttpAcceptLang($rawUaLanguages);
+			$langAndLocaleArr = current($languagesAndLocales);
+			if (gettype($langAndLocaleArr) == 'array') $langAndLocaleArr = current($langAndLocaleArr);
+		}
+		list($this->lang, $this->locale) = $langAndLocaleArr;
 	}
 }

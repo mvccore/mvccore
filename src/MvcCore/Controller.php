@@ -372,10 +372,11 @@ class Controller implements Interfaces\IController
 	 * - `\MvcCore\Controller::$controllerName`
 	 * - `\MvcCore\Controller::$actionName`
 	 * - `\MvcCore\Controller::$ajax`
-	 * @param \MvcCore\Request $request
+	 * @param \MvcCore\Request|\MvcCore\Interfaces\IRequest $request
 	 * @return \MvcCore\Controller
 	 */
 	public function & SetRequest (\MvcCore\Interfaces\IRequest & $request) {
+		/** @var $request \MvcCore\Request */
 		$this->request = & $request;
 		$this->controllerName = $request->GetControllerName();
 		$this->actionName = $request->GetActionName();

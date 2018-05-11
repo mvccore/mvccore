@@ -396,13 +396,14 @@ class Router implements Interfaces\IRouter
 			$routeClass = self::$_routeClass;
 			$instance = $routeClass::GetInstance($route);
 		}
+		$routeName = $instance->GetName();
 		if ($prepend) {
-			$this->routes = array_merge(array($instance->Name => $instance), $this->routes);
+			$this->routes = array_merge(array($routeName => $instance), $this->routes);
 		} else {
-			$this->routes[$instance->Name] = & $instance;
+			$this->routes[$routeName] = & $instance;
 		}
-		$this->urlRoutes[$instance->Name] = & $instance;
-		$this->urlRoutes[$instance->Controller . ':' . $instance->Action] = & $instance;
+		$this->urlRoutes[$routeName] = & $instance;
+		$this->urlRoutes[$instance->GetControllerAction()] = & $instance;
 		return $this;
 	}
 
@@ -569,7 +570,7 @@ class Router implements Interfaces\IRouter
 			$controllerActionOrRouteName = "$ctrlPc:$actionPc";
 		} else if ($controllerActionOrRouteName == 'self') {
 			$controllerActionOrRouteName = $this->currentRoute
-				? $this->currentRoute->Name
+				? $this->currentRoute->GetName()
 				: ':';
 			$params = array_merge($this->cleanedRequestParams, $params);
 			unset($params['controller'], $params['action']);
@@ -666,23 +667,34 @@ class Router implements Interfaces\IRouter
 		foreach ($this->routes as & $route) {
 			if ($matchedParams = $route->Matches($requestPath)) {
 				$this->currentRoute = & $route;
-				$routeDefaultParams = $route->Defaults ?: array();
+				$routeDefaultParams = $route->GetDefaults() ?: array();
 				$newParams = array_merge($routeDefaultParams, $request->GetParams(''), $matchedParams);
 				$request->SetParams($newParams);
 				break;
 			}
 		}
-		if ($this->currentRoute !== NULL && (!$route->Controller || !$route->Action)) {
+		if ($this->currentRoute !== NULL) {
 			$toolClass = self::$_toolClass;
-			list($ctrlDfltName, $actionDfltName) = self::$_app->GetDefaultControllerAndActionNames();
-			if (!$route->Controller) {
-				$route->Controller = $toolClass::GetPascalCaseFromDashed($requestCtrlName) ?: $ctrlDfltName;
-				$request->SetControllerName($toolClass::GetDashedFromPascalCase($route->Controller));
+			$routeCtrl = $route->GetController();
+			$routeAction = $route->GetAction();
+			if (!$routeCtrl || !$routeAction) {
+				list($ctrlDfltName, $actionDfltName) = self::$_app->GetDefaultControllerAndActionNames();
+				if (!$routeCtrl)
+					$route->SetController(
+						$requestCtrlName 
+							? $toolClass::GetPascalCaseFromDashed($requestCtrlName) 
+							: $ctrlDfltName
+					);
+				if (!$routeAction)
+					$route->SetAction(
+						$requestActionName 
+							? $toolClass::GetPascalCaseFromDashed($requestActionName) 
+							: $actionDfltName
+						);
 			}
-			if (!$route->Action) {
-				$route->Action = $toolClass::GetPascalCaseFromDashed($requestActionName) ?: $actionDfltName;
-				$request->SetActionName($toolClass::GetDashedFromPascalCase($route->Action));
-			}
+			$request
+				->SetControllerName($toolClass::GetDashedFromPascalCase($route->GetController()))
+				->SetActionName($toolClass::GetDashedFromPascalCase($route->GetAction()));
 		}
 	}
 

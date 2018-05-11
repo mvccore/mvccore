@@ -446,7 +446,7 @@ interface IApplication
 	 *		$request->customVar = 'custom_value';
 	 * });`
 	 * @param callable $handler
-	 * @param int $priorityIndex
+	 * @param int|NULL $priorityIndex
 	 * @return \MvcCore\Interfaces\IApplication
 	 */
 	public function & AddPreRouteHandler (callable $handler, $priorityIndex = NULL);
@@ -467,7 +467,7 @@ interface IApplication
 	 *		$request->customVar = 'custom_value';
 	 * });`
 	 * @param callable $handler
-	 * @param int $priorityIndex
+	 * @param int|NULL $priorityIndex
 	 * @return \MvcCore\Interfaces\IApplication
 	 */
 	public function & AddPreDispatchHandler (callable $handler, $priorityIndex = NULL);
@@ -487,7 +487,7 @@ interface IApplication
 	 *		$request->customVar = 'custom_value';
 	 * });`
 	 * @param callable $handler
-	 * @param int $priorityIndex
+	 * @param int|NULL $priorityIndex
 	 * @return \MvcCore\Interfaces\IApplication
 	 */
 	public function & AddPostDispatchHandler (callable $handler, $priorityIndex = NULL);

@@ -94,4 +94,26 @@ trait Helpers
 			$this->$coreClassVar = $newCoreClassName;
 		return $this;
 	}
+
+	/**
+	 * Set preroute, predispatch or post dispatche handler under specific priority index.
+	 * @param array $handlers Application handlers collection reference.
+	 * @param callable $handler
+	 * @param int|NULL $priorityIndex
+	 * @return \MvcCore\Application
+	 */
+	protected function & setHandler (array & $handlers, callable $handler, $priorityIndex = NULL) {
+		$reflection = new \ReflectionFunction($handler);
+		$isClosure = $reflection->isClosure();
+		if ($priorityIndex === NULL) {
+			$handlers[] = array($handler, $isClosure);
+		} else {
+			if (isset($handlers[$priorityIndex])) {
+				array_splice($handlers, $priorityIndex, 0, array($handler, $isClosure));
+			} else {
+				$handlers[$priorityIndex] = array($handler, $isClosure);
+			}
+		}
+		return $this;
+	}
 }

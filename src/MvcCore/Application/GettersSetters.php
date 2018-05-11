@@ -71,7 +71,8 @@ trait GettersSetters
 
 	/**
 	 * Pre route custom closure calls storrage.
-	 * Every item in this array has to be `callable`.
+	 * Every item in this array has to be array with `callable`
+	 * and `boolean` if `callable` is closure instance.
 	 * Params in callable should be two with following types:
 	 *	- `\MvcCore\Request`
 	 *	- `\MvcCore\Response`
@@ -82,13 +83,14 @@ trait GettersSetters
 	 * ) {
 	 *		$request->customVar = 'custom_value';
 	 * });`
-	 * @var callable[]
+	 * @var \array[]
 	 */
 	protected $preRouteHandlers = array();
 
 	/**
 	 * Pre dispatch custom calls storrage.
-	 * Every item in this array has to be `callable`.
+	 * Every item in this array has to be array with `callable`
+	 * and `boolean` if `callable` is closure instance.
 	 * Params in `callable` should be two with following types:
 	 *	- `\MvcCore\Request`
 	 *	- `\MvcCore\Response`
@@ -99,13 +101,14 @@ trait GettersSetters
 	 * ) {
 	 *		$request->customVar = 'custom_value';
 	 * });`
-	 * @var callable[]
+	 * @var \array[]
 	 */
 	protected $preDispatchHandlers = array();
 
 	/**
 	 * Post dispatch custom calls storrage.
-	 * Every item in this array has to be `callable`.
+	 * Every item in this array has to be array with `callable`
+	 * and `boolean` if `callable` is closure instance.
 	 * Params in `callable` should be two with following types:
 	 *	- `\MvcCore\Request`
 	 *	- `\MvcCore\Response`
@@ -116,7 +119,7 @@ trait GettersSetters
 	 * ) {
 	 *		$request->customVar = 'custom_value';
 	 * });`
-	 * @var callable[]
+	 * @var \array[]
 	 */
 	protected $postDispatchHandlers = array();
 
@@ -682,19 +685,14 @@ trait GettersSetters
 	 *		$request->customVar = 'custom_value';
 	 * });`
 	 * @param callable $handler
-	 * @param int $priorityIndex
+	 * @param int|NULL $priorityIndex
 	 * @return \MvcCore\Application
 	 */
 	public function & AddPreRouteHandler (callable $handler, $priorityIndex = NULL) {
 		if (!is_callable($handler)) throw new \InvalidArgumentException(
 			"[".__CLASS__."] Pre route handler is not callable (handler: $handler, priorityIndex: $priorityIndex)."
 		);
-		if ($priorityIndex === NULL) {
-			$this->preRouteHandlers[] = $handler;
-		} else {
-			$this->preRouteHandlers[$priorityIndex] = $handler;
-		}
-		return $this;
+		return $this->setHandler($this->preRouteHandlers, $handler, $priorityIndex);
 	}
 
 	/**
@@ -713,19 +711,14 @@ trait GettersSetters
 	 *		$request->customVar = 'custom_value';
 	 * });`
 	 * @param callable $handler
-	 * @param int $priorityIndex
+	 * @param int|NULL $priorityIndex
 	 * @return \MvcCore\Application
 	 */
 	public function & AddPreDispatchHandler (callable $handler, $priorityIndex = NULL) {
 		if (!is_callable($handler)) throw new \InvalidArgumentException(
 			"[".__CLASS__."] Pre dispatch handler is not callable (handler: $handler, priorityIndex: $priorityIndex)."
 		);
-		if ($priorityIndex === NULL) {
-			$this->preDispatchHandlers[] = $handler;
-		} else {
-			$this->preDispatchHandlers[$priorityIndex] = $handler;
-		}
-		return $this;
+		return $this->setHandler($this->preDispatchHandlers, $handler, $priorityIndex);
 	}
 
 	/**
@@ -743,18 +736,13 @@ trait GettersSetters
 	 *		$request->customVar = 'custom_value';
 	 * });`
 	 * @param callable $handler
-	 * @param int $priorityIndex
+	 * @param int|NULL $priorityIndex
 	 * @return \MvcCore\Application
 	 */
 	public function & AddPostDispatchHandler (callable $handler, $priorityIndex = NULL) {
 		if (!is_callable($handler)) throw new \InvalidArgumentException(
 			"[".__CLASS__."] Post dispatch handler is not callable (handler: $handler, priorityIndex: $priorityIndex)."
 		);
-		if ($priorityIndex === NULL) {
-			$this->postDispatchHandlers[] = $handler;
-		} else {
-			$this->postDispatchHandlers[$priorityIndex] = $handler;
-		}
-		return $this;
+		return $this->setHandler($this->postDispatchHandlers, $handler, $priorityIndex);
 	}
 }

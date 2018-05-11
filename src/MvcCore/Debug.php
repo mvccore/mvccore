@@ -128,7 +128,7 @@ namespace MvcCore {
 			// do not initialize log directory here every time, initialize log
 			//directory only if there is necessary to log something - later.
 
-			static::$originalDebugClass = ltrim(static::$app->GetDebugClass(), '\\') == get_called_class();
+			static::$originalDebugClass = ltrim(static::$app->GetDebugClass(), '\\') == __CLASS__;
 			static::initHandlers();
 			$initGlobalShortHandsHandler = static::$InitGlobalShortHands;
 			$initGlobalShortHandsHandler(static::$development);
@@ -369,7 +369,7 @@ namespace MvcCore {
 			foreach (static::$handlers as $key => $value) {
 				static::$handlers[$key] = array($className, $value);
 			}
-			register_shutdown_function(self::$handlers['shutdownHandler']);
+			register_shutdown_function(static::$handlers['shutdownHandler']);
 		}
 
 		/**

@@ -23,28 +23,28 @@ namespace MvcCore;
  *
  * Main Properties:
  * - `$Pattern`
- *   Required, if you have not configured `\MvcCore\Route::$Match` and
- *   `\MvcCore\Route::$Reverse` property instead. Very basic URL address
+ *   Required, if you have not configured `\MvcCore\Route::$match` and
+ *   `\MvcCore\Route::$reverse` property instead. Very basic URL address
  *   form to match and parse rewrited params by it. Address to parse
- *   and prepare `\MvcCore\Route::$Match` property and `\MvcCore\Route::$Reverse`
+ *   and prepare `\MvcCore\Route::$match` property and `\MvcCore\Route::$reverse`
  *   property. automaticly in `\MvcCore\Route::Prepare();` call.
  * - `$Match`
- *   Required together with `\MvcCore\Route::$Reverse` property, if you
- *   have not configured `\MvcCore\Route::$Pattern` property instead.
+ *   Required together with `\MvcCore\Route::$reverse` property, if you
+ *   have not configured `\MvcCore\Route::$pattern` property instead.
  *   This property is always used to match request by `\MvcCore\Request::Path`
  *   by classic PHP regualar expression matching by `preg_match_all();`.
  * - `$Reverse`
- *   Required together with `\MvcCore\Route::$Match` property, if you
- *   have not configured `\MvcCore\Route::$Pattern` property instead.
+ *   Required together with `\MvcCore\Route::$match` property, if you
+ *   have not configured `\MvcCore\Route::$pattern` property instead.
  *   This property is always used to complete url address by called params
  *   array and by this string with rewrite params replacements inside.
  * - `$Controller`
- *   Required, if there is no `controller` param inside `\MvcCore\Route::$Pattern`
- *   or inside `\MvcCore\Route::$Match property`. Controller class name to dispatch
+ *   Required, if there is no `controller` param inside `\MvcCore\Route::$pattern`
+ *   or inside `\MvcCore\Route::$match property`. Controller class name to dispatch
  *   in pascal case form, namespaces and including slashes as namespace delimiters.
  * - `$Action`
- *   Required, if there is no `action` param inside `\MvcCore\Route::$Pattern`
- *   or inside `\MvcCore\Route::$Match property`. Public method in controller
+ *   Required, if there is no `action` param inside `\MvcCore\Route::$pattern`
+ *   or inside `\MvcCore\Route::$match property`. Public method in controller
  *   in pascal case form, but in controller named as `public function <CoolName>Action () {...`.
  * - `$Name`
  *   Not required, if you want to create url addresses always by `Controller:Action`
@@ -78,8 +78,8 @@ class Route implements Interfaces\IRoute
 	 *
 	 * To define route by this form is the most comfortable way,
 	 * but a way slower, because there is necessary every request
-	 * to convert this value into `\MvcCore\Route::$Match` and into
-	 * `\MvcCore\Route::$Reverse` properties correctly and you can
+	 * to convert this value into `\MvcCore\Route::$match` and into
+	 * `\MvcCore\Route::$reverse` properties correctly and you can
 	 * specify those both properties manualy, if you are not too lazy.
 	 *
 	 * This match and reverse definition has to be in very basic form
@@ -97,26 +97,26 @@ class Route implements Interfaces\IRoute
 	 * Example: `"/products-list/<name>/<color*>"`.
 	 * @var string|NULL
 	 */
-	public $Pattern		= NULL;
+	protected $pattern		= NULL;
 
 	/**
 	 * Route match pattern in raw form (to use it as it is) to match proper request.
 	 * This property is always used to match request by `\MvcCore\Request::Path`
 	 * by classic PHP regualar expression matching by `preg_match_all();`.
 	 *
-	 * Required together with `\MvcCore\Route::$Reverse` property, if you
-	 * have not configured `\MvcCore\Route::$Pattern` property instead.
+	 * Required together with `\MvcCore\Route::$reverse` property, if you
+	 * have not configured `\MvcCore\Route::$pattern` property instead.
 	 *
-	 * To define the route object by assigning properties `\MvcCore\Route::$Match` and
-	 * `\MvcCore\Route::$Reverse` together is little bit more anoying way to define it
+	 * To define the route object by assigning properties `\MvcCore\Route::$match` and
+	 * `\MvcCore\Route::$reverse` together is little bit more anoying way to define it
 	 * (because you have to write almost the same information twice), but it's the best
-	 * speed solution, because there is no `\MvcCore\Route::$Pattern` parsing and
-	 * conversion into `\MvcCore\Route::$Match` and `\MvcCore\Route::$Reverse` properties.
+	 * speed solution, because there is no `\MvcCore\Route::$pattern` parsing and
+	 * conversion into `\MvcCore\Route::$match` and `\MvcCore\Route::$reverse` properties.
 	 *
 	 * Example: `"#^/products\-list/(?<name>[^/]*)/(?<color>[a-z]*)#"`
 	 * @var string|NULL
 	 */
-	public $Match		= NULL;
+	protected $match		= NULL;
 
 	/**
 	 * Route reverse address replacements pattern to build url.
@@ -124,22 +124,22 @@ class Route implements Interfaces\IRoute
 	 * - No regular expression characters escaping (`[](){}<>|=+*.!?-/`).
 	 * - No start `^` or end `$` regular expression characters.
 	 *
-	 * Required together with `\MvcCore\Route::$Match` property, if you
-	 * have not configured `\MvcCore\Route::$Pattern` property instead.
+	 * Required together with `\MvcCore\Route::$match` property, if you
+	 * have not configured `\MvcCore\Route::$pattern` property instead.
 	 *
 	 * This is only very simple string with replacement places (like `<name>` or
 	 * `<page>`) for given values by `\MvcCore\Router::Url($name, $params);` method.
 	 *
-	 * To define the route object by assigning properties `\MvcCore\Route::$Match` and
-	 * `\MvcCore\Route::$Reverse` together is little bit more anoying way to define it
+	 * To define the route object by assigning properties `\MvcCore\Route::$match` and
+	 * `\MvcCore\Route::$reverse` together is little bit more anoying way to define it
 	 * (because you have to write almost the same information twice), but it's the best
-	 * speed solution, because there is no `\MvcCore\Route::$Pattern` parsing and
-	 * conversion into `\MvcCore\Route::$Match` and `\MvcCore\Route::$Reverse` properties.
+	 * speed solution, because there is no `\MvcCore\Route::$pattern` parsing and
+	 * conversion into `\MvcCore\Route::$match` and `\MvcCore\Route::$reverse` properties.
 	 *
 	 * Example: `"/products-list/<name>/<color>"`
 	 * @var string|NULL
 	 */
-	public $Reverse		= NULL;
+	protected $reverse		= NULL;
 
 	/**
 	 * Not required. Route name is your custom keyword/term
@@ -153,12 +153,12 @@ class Route implements Interfaces\IRoute
 	 * Example: `"products_list" | "Products:Gallery"`
 	 * @var string
 	 */
-	public $Name		= '';
+	protected $name		= '';
 
 	/**
 	 * Controller name to dispatch, in pascal case. Required only if
-	 * there is no `controller` param inside `\MvcCore\Route::$Pattern`
-	 * or inside `\MvcCore\Route::$Match properties as url params`.
+	 * there is no `controller` param inside `\MvcCore\Route::$pattern`
+	 * or inside `\MvcCore\Route::$match properties as url params`.
 	 *
 	 * It should contain controller class namespaces defined in standard PHP notation.
 	 * If there is backslash at the beginning - controller class will not be loaded from
@@ -171,12 +171,12 @@ class Route implements Interfaces\IRoute
 	 *  `"\Anywhere\Else\Controllers\Products"  // placed in /Anywhere/Else/Controllers/Products.php`
 	 * @var string
 	 */
-	public $Controller	= '';
+	protected $controller	= '';
 
 	/**
 	 * Action name to call in controller dispatching, in pascal case.
-	 * Required, if there is no `action` param inside `\MvcCore\Route::$Pattern`
-	 * or inside `\MvcCore\Route::$Match property`.
+	 * Required, if there is no `action` param inside `\MvcCore\Route::$pattern`
+	 * or inside `\MvcCore\Route::$match property`.
 	 *
 	 * If this property has value `"List"`, then public
 	 * method in target controller has to be named as:
@@ -185,7 +185,7 @@ class Route implements Interfaces\IRoute
 	 * Example: `"List"`
 	 * @var string
 	 */
-	public $Action		= '';
+	protected $action		= '';
 
 	/**
 	 * Route rewrited params default values and also any other params default values.
@@ -194,7 +194,7 @@ class Route implements Interfaces\IRoute
 	 * Example: `array("name" => "default-name", "color" => "red",);`.
 	 * @var array
 	 */
-	public $Defaults		= array();
+	protected $defaults		= array();
 
 	/**
 	 * Array with param names and their custom regular expression
@@ -210,19 +210,19 @@ class Route implements Interfaces\IRoute
 	 *	);`
 	 * @var array
 	 */
-	public $Constraints		= array();
+	protected $constraints		= array();
 
 	/**
-	 * Optional, param name, which has to be also inside `\MvcCore\Route::$Pattern` or
-	 * inside `\MvcCore\Route::$Match` or inside `\MvcCore\Route::$Reverse` pattern property
+	 * Optional, param name, which has to be also inside `\MvcCore\Route::$pattern` or
+	 * inside `\MvcCore\Route::$match` or inside `\MvcCore\Route::$reverse` pattern property
 	 * as the last one. And after it's value, there could be only trailing slash or nothing
 	 * (pattern end). This trailing slash param definition automaticly trims this last param
 	 * value for right trailing slash when route is matched.
 	 *
 	 * This property is automaticly completed by method `\MvcCore\Route::initMatch()`,
-	 * when there is parsed `\MvcCore\Route::$Pattern` string into `\MvcCore\Route::$Match` property
+	 * when there is parsed `\MvcCore\Route::$pattern` string into `\MvcCore\Route::$match` property
 	 * or it is automaticly completed by method `\MvcCore\Route::initReverse()`, when
-	 * there is parsed `\MvcCore\Route::$Reverse` string into `\MvcCore\Route::$reverseParams`
+	 * there is parsed `\MvcCore\Route::$reverse` string into `\MvcCore\Route::$reverseParams`
 	 * array to build url addresses.
 	 *
 	 * @var string|NULL
@@ -332,39 +332,39 @@ class Route implements Interfaces\IRoute
 		if ($argsCount === 0) return $this;
 		if (gettype($patternOrConfig) == 'array') {
 			$data = (object) $patternOrConfig;
-			$this->Name = isset($data->name) ? $data->name : '';
+			$this->name = isset($data->name) ? $data->name : '';
 			if (isset($data->controllerAction)) {
-				list($this->Controller, $this->Action) = explode(':', $data->controllerAction);
+				list($this->controller, $this->action) = explode(':', $data->controllerAction);
 			} else {
-				$this->Controller = isset($data->controller) ? $data->controller : '';
-				$this->Action = isset($data->action) ? $data->action : '';
+				$this->controller = isset($data->controller) ? $data->controller : '';
+				$this->action = isset($data->action) ? $data->action : '';
 			}
-			$this->Pattern = isset($data->pattern) ? $data->pattern : NULL;
-			$this->Match = isset($data->match) ? $data->match : NULL;
-			$this->Reverse = isset($data->reverse) ? $data->reverse : NULL;
-			$this->Defaults = isset($data->defaults) ? $data->defaults : array();
-			$this->Constraints = isset($data->constraints) ? $data->constraints : array();
+			$this->pattern = isset($data->pattern) ? $data->pattern : NULL;
+			$this->match = isset($data->match) ? $data->match : NULL;
+			$this->reverse = isset($data->reverse) ? $data->reverse : NULL;
+			$this->defaults = isset($data->defaults) ? $data->defaults : array();
+			$this->constraints = isset($data->constraints) ? $data->constraints : array();
 		} else {
-			$this->Pattern = $patternOrConfig;
-			list($this->Controller, $this->Action) = explode(':', $controllerAction);
-			$this->Name = '';
-			$this->Match = NULL;
-			$this->Reverse = NULL;
-			$this->Defaults = $defaults;
-			$this->Constraints = $constraints;
+			$this->pattern = $patternOrConfig;
+			list($this->controller, $this->action) = explode(':', $controllerAction);
+			$this->name = '';
+			$this->match = NULL;
+			$this->reverse = NULL;
+			$this->defaults = $defaults;
+			$this->constraints = $constraints;
 		}
-		if (!$this->Controller && !$this->Action && strpos($this->Name, ':') !== FALSE) {
-			list($this->Controller, $this->Action) = explode(':', $this->Name);
+		if (!$this->controller && !$this->action && strpos($this->name, ':') !== FALSE) {
+			list($this->controller, $this->action) = explode(':', $this->name);
 		}
 	}
 
 	/**
-	 * Set route pattern to match request url and to build url address.
+	 * Get route pattern to match request url and to build url address.
 	 *
 	 * To define route by this form is the most comfortable way,
 	 * but a way slower, because there is necessary every request
-	 * to convert this value into `\MvcCore\Route::$Match` and into
-	 * `\MvcCore\Route::$Reverse` properties correctly and you can
+	 * to convert this value into `\MvcCore\Route::$match` and into
+	 * `\MvcCore\Route::$reverse` properties correctly and you can
 	 * specify those both properties manualy, if you are not too lazy.
 	 *
 	 * This match and reverse definition has to be in very basic form
@@ -380,12 +380,61 @@ class Route implements Interfaces\IRoute
 	 *   matching all to the end of address. It has to be the last one.
 	 *
 	 * Example: `"/products-list/<name>/<color*>"`.
-	 * @var string
+	 * @return string|NULL
+	 */
+	public function GetPattern () {
+		return $this->pattern;
+	}
+
+	/**
+	 * Set route pattern to match request url and to build url address.
+	 *
+	 * To define route by this form is the most comfortable way,
+	 * but a way slower, because there is necessary every request
+	 * to convert this value into `\MvcCore\Route::$match` and into
+	 * `\MvcCore\Route::$reverse` properties correctly and you can
+	 * specify those both properties manualy, if you are not too lazy.
+	 *
+	 * This match and reverse definition has to be in very basic form
+	 * without regular expression escaping or advanced rules:
+	 * - No regular expression border `#` characters, it will be
+	 *   used internally in route parsing.
+	 * - No start `^` or end `$` regular expression characters,
+	 *   those characters will be added automaticly.
+	 * - No escaping of regular expression characters:
+	 *   `[](){}<>|=+*.!?-/`, those characters will be escaped
+	 *   in route preparing process.
+	 * - star char inside param name (`<color*>`) means greedy param
+	 *   matching all to the end of address. It has to be the last one.
+	 *
+	 * Example: `"/products-list/<name>/<color*>"`.
+	 * @param string $pattern
 	 * @return \MvcCore\Route
 	 */
 	public function & SetPattern ($pattern) {
-		$this->Pattern = $pattern;
+		$this->pattern = $pattern;
 		return $this;
+	}
+
+	/**
+	 * Get route match pattern in raw form (to use it as it is) to match proper request.
+	 * This property is always used to match request by `\MvcCore\Request::Path`
+	 * by classic PHP regualar expression matching by `preg_match_all();`.
+	 *
+	 * Required together with `\MvcCore\Route::$reverse` property, if you
+	 * have not configured `\MvcCore\Route::$pattern` property instead.
+	 *
+	 * To define the route object by assigning properties `\MvcCore\Route::$match` and
+	 * `\MvcCore\Route::$reverse` together is little bit more anoying way to define it
+	 * (because you have to write almost the same information twice), but it's the best
+	 * speed solution, because there is no `\MvcCore\Route::$pattern` parsing and
+	 * conversion into `\MvcCore\Route::$match` and `\MvcCore\Route::$reverse` properties.
+	 *
+	 * Example: `"#^/products\-list/(?<name>[^/]*)/(?<color>[a-z]*)#"`
+	 * @return string|NULL
+	 */
+	public function GetMatch () {
+		return $this->match;
 	}
 
 	/**
@@ -393,22 +442,47 @@ class Route implements Interfaces\IRoute
 	 * This property is always used to match request by `\MvcCore\Request::Path`
 	 * by classic PHP regualar expression matching by `preg_match_all();`.
 	 *
-	 * Required together with `\MvcCore\Route::$Reverse` property, if you
-	 * have not configured `\MvcCore\Route::$Pattern` property instead.
+	 * Required together with `\MvcCore\Route::$reverse` property, if you
+	 * have not configured `\MvcCore\Route::$pattern` property instead.
 	 *
-	 * To define the route object by assigning properties `\MvcCore\Route::$Match` and
-	 * `\MvcCore\Route::$Reverse` together is little bit more anoying way to define it
+	 * To define the route object by assigning properties `\MvcCore\Route::$match` and
+	 * `\MvcCore\Route::$reverse` together is little bit more anoying way to define it
 	 * (because you have to write almost the same information twice), but it's the best
-	 * speed solution, because there is no `\MvcCore\Route::$Pattern` parsing and
-	 * conversion into `\MvcCore\Route::$Match` and `\MvcCore\Route::$Reverse` properties.
+	 * speed solution, because there is no `\MvcCore\Route::$pattern` parsing and
+	 * conversion into `\MvcCore\Route::$match` and `\MvcCore\Route::$reverse` properties.
 	 *
 	 * Example: `"#^/products\-list/(?<name>[^/]*)/(?<color>[a-z]*)#"`
-	 * @var string
+	 * @param string $match
 	 * @return \MvcCore\Route
 	 */
 	public function & SetMatch ($match) {
-		$this->Match = $match;
+		$this->match = $match;
 		return $this;
+	}
+
+	/**
+	 * Get route reverse address replacements pattern to build url.
+	 * - No regular expression border `#` characters.
+	 * - No regular expression characters escaping (`[](){}<>|=+*.!?-/`).
+	 * - No start `^` or end `$` regular expression characters.
+	 *
+	 * Required together with `\MvcCore\Route::$match` property, if you
+	 * have not configured `\MvcCore\Route::$pattern` property instead.
+	 *
+	 * This is only very simple string with replacement places (like `<name>` or
+	 * `<page>`) for given values by `\MvcCore\Router::Url($name, $params);` method.
+	 *
+	 * To define the route object by assigning properties `\MvcCore\Route::$match` and
+	 * `\MvcCore\Route::$reverse` together is little bit more anoying way to define it
+	 * (because you have to write almost the same information twice), but it's the best
+	 * speed solution, because there is no `\MvcCore\Route::$pattern` parsing and
+	 * conversion into `\MvcCore\Route::$match` and `\MvcCore\Route::$reverse` properties.
+	 *
+	 * Example: `"/products-list/<name>/<color>"`
+	 * @return string|NULL
+	 */
+	public function GetReverse () {
+		return $this->reverse;
 	}
 
 	/**
@@ -417,25 +491,41 @@ class Route implements Interfaces\IRoute
 	 * - No regular expression characters escaping (`[](){}<>|=+*.!?-/`).
 	 * - No start `^` or end `$` regular expression characters.
 	 *
-	 * Required together with `\MvcCore\Route::$Match` property, if you
-	 * have not configured `\MvcCore\Route::$Pattern` property instead.
+	 * Required together with `\MvcCore\Route::$match` property, if you
+	 * have not configured `\MvcCore\Route::$pattern` property instead.
 	 *
 	 * This is only very simple string with replacement places (like `<name>` or
 	 * `<page>`) for given values by `\MvcCore\Router::Url($name, $params);` method.
 	 *
-	 * To define the route object by assigning properties `\MvcCore\Route::$Match` and
-	 * `\MvcCore\Route::$Reverse` together is little bit more anoying way to define it
+	 * To define the route object by assigning properties `\MvcCore\Route::$match` and
+	 * `\MvcCore\Route::$reverse` together is little bit more anoying way to define it
 	 * (because you have to write almost the same information twice), but it's the best
-	 * speed solution, because there is no `\MvcCore\Route::$Pattern` parsing and
-	 * conversion into `\MvcCore\Route::$Match` and `\MvcCore\Route::$Reverse` properties.
+	 * speed solution, because there is no `\MvcCore\Route::$pattern` parsing and
+	 * conversion into `\MvcCore\Route::$match` and `\MvcCore\Route::$reverse` properties.
 	 *
 	 * Example: `"/products-list/<name>/<color>"`
-	 * @var string
+	 * @param string $reverse
 	 * @return \MvcCore\Route
 	 */
 	public function & SetReverse ($reverse) {
-		$this->Reverse = $reverse;
+		$this->reverse = $reverse;
 		return $this;
+	}
+
+	/**
+	 * Get route name. It's your custom keyword/term
+	 * or pascal case combination of controller and action
+	 * describing `"Controller:Action"` target to be dispatched.
+	 *
+	 * By this name there is selected proper route object to
+	 * complete url string by given params in router method:
+	 * `\MvcCore\Router:Url($name, $params);`.
+	 *
+	 * Example: `"products_list" | "Products:Gallery"`
+	 * @return string
+	 */
+	public function GetName () {
+		return $this->name;
 	}
 
 	/**
@@ -452,14 +542,34 @@ class Route implements Interfaces\IRoute
 	 * @return \MvcCore\Route
 	 */
 	public function & SetName ($name) {
-		$this->Name = $name;
+		$this->name = $name;
 		return $this;
 	}
 
 	/**
+	 * Get controller name to dispatch, in pascal case. Required only if
+	 * there is no `controller` param inside `\MvcCore\Route::$pattern`
+	 * or inside `\MvcCore\Route::$match properties as url params`.
+	 *
+	 * It should contain controller class namespaces defined in standard PHP notation.
+	 * If there is backslash at the beginning - controller class will not be loaded from
+	 * standard controllers directory (`/App/Controllers`) but from different specified place
+	 * by full controller class name.
+	 *
+	 * Example:
+	 *  `"Products"                             // placed in /App/Controllers/Products.php`
+	 *  `"Front\Business\Products"              // placed in /App/Controllers/Front/Business/Products.php`
+	 *  `"\Anywhere\Else\Controllers\Products"  // placed in /Anywhere/Else/Controllers/Products.php`
+	 * @return string
+	 */
+	public function GetController () {
+		return $this->controller;
+	}
+
+	/**
 	 * Set controller name to dispatch, in pascal case. Required only if
-	 * there is no `controller` param inside `\MvcCore\Route::$Pattern`
-	 * or inside `\MvcCore\Route::$Match properties as url params`.
+	 * there is no `controller` param inside `\MvcCore\Route::$pattern`
+	 * or inside `\MvcCore\Route::$match properties as url params`.
 	 *
 	 * It should contain controller class namespaces defined in standard PHP notation.
 	 * If there is backslash at the beginning - controller class will not be loaded from
@@ -474,14 +584,30 @@ class Route implements Interfaces\IRoute
 	 * @return \MvcCore\Route
 	 */
 	public function & SetController ($controller) {
-		$this->Controller = $controller;
+		$this->controller = $controller;
 		return $this;
 	}
 
 	/**
+	 * Get action name to call it in controller dispatch processing, in pascal case.
+	 * Required, if there is no `action` param inside `\MvcCore\Route::$pattern`
+	 * or inside `\MvcCore\Route::$match properties as url params`.
+	 *
+	 * If this property has value `"List"`, then public
+	 * method in target controller has to be named as:
+	 * `public function ListAction () {...}`.
+	 *
+	 * Example: `"List"`
+	 * @return string
+	 */
+	public function GetAction () {
+		return $this->action;
+	}
+
+	/**
 	 * Set action name to call it in controller dispatch processing, in pascal case.
-	 * Required, if there is no `action` param inside `\MvcCore\Route::$Pattern`
-	 * or inside `\MvcCore\Route::$Match properties as url params`.
+	 * Required, if there is no `action` param inside `\MvcCore\Route::$pattern`
+	 * or inside `\MvcCore\Route::$match properties as url params`.
 	 *
 	 * If this property has value `"List"`, then public
 	 * method in target controller has to be named as:
@@ -492,8 +618,21 @@ class Route implements Interfaces\IRoute
 	 * @return \MvcCore\Route
 	 */
 	public function & SetAction ($action) {
-		$this->Action = $action;
+		$this->action = $action;
 		return $this;
+	}
+
+	/**
+	 * Get target controller name and controller action name
+	 * together in one setter, in pascal case, separated by colon.
+	 * There are also controller namespace definition posibilities as
+	 * in `\MvcCore\Route::GetController();` getter method.
+	 *
+	 * Example: `"Products:List"`
+	 * @return string
+	 */
+	public function GetControllerAction () {
+		return $this->controller . ':' . $this->action;
 	}
 
 	/**
@@ -506,8 +645,23 @@ class Route implements Interfaces\IRoute
 	 * @return \MvcCore\Route
 	 */
 	public function & SetControllerAction ($controllerAction) {
-		list($this->Controller, $this->Action) = explode(':', $controllerAction);
+		list($this->controller, $this->action) = explode(':', $controllerAction);
 		return $this;
+	}
+
+	/**
+	 * Get route rewrited params default values and also any other params default values.
+	 * It could be used for any application request input - `$_GET`, `$_POST` or `php://input`.
+	 *
+	 * Example:
+	 *  `array(
+	 *      "name"  => "default-name",
+	 *      "color" => "red"
+	 *  );`.
+	 * @return array
+	 */
+	public function & GetDefaults () {
+		return $this->defaults;
 	}
 
 	/**
@@ -523,8 +677,26 @@ class Route implements Interfaces\IRoute
 	 * @return \MvcCore\Route
 	 */
 	public function & SetDefaults ($defaults = array()) {
-		$this->Defaults = $defaults;
+		$this->defaults = $defaults;
 		return $this;
+	}
+
+	/**
+	 * Get array with param names and their custom regular expression
+	 * matching rules. Not required, for all rewrited params there is used
+	 * default matching rule from `\MvcCore\Route::$DefaultConstraint`.
+	 * It shoud be changed to any value. The value is `"[^/]*"` by default.
+	 * It means "Any character(s) in any length, except next slash".
+	 *
+	 * Example:
+	 *	`array(
+	 *		"name"	=> "[^/]*",
+	 *		"color"	=> "[a-z]*",
+	 *	);`
+	 * @return array
+	 */
+	public function & GetConstraints () {
+		return $this->constraints;
 	}
 
 	/**
@@ -543,7 +715,7 @@ class Route implements Interfaces\IRoute
 	 * @return \MvcCore\Route
 	 */
 	public function & SetConstraints ($constraints = array()) {
-		$this->Constraints = $constraints;
+		$this->constraints = $constraints;
 		return $this;
 	}
 
@@ -560,14 +732,14 @@ class Route implements Interfaces\IRoute
 	 */
 	public function Matches (& $requestPath) {
 		$matchedParams = array();
-		if ($this->Match === NULL) $this->initMatch();
-		preg_match_all($this->Match, $requestPath, $matchedValues, PREG_OFFSET_CAPTURE);
+		if ($this->match === NULL) $this->initMatch();
+		preg_match_all($this->match, $requestPath, $matchedValues, PREG_OFFSET_CAPTURE);
 		if (isset($matchedValues[0]) && count($matchedValues[0])) {
-			$controllerName = $this->Controller ?: '';
+			$controllerName = $this->controller ?: '';
 			$toolClass = \MvcCore\Application::GetInstance()->GetToolClass();
 			$matchedParams = array(
 				'controller'	=>	$toolClass::GetDashedFromPascalCase(str_replace(array('_', '\\'), '/', $controllerName)),
-				'action'		=>	$toolClass::GetDashedFromPascalCase($this->Action ?: ''),
+				'action'		=>	$toolClass::GetDashedFromPascalCase($this->action ?: ''),
 			);
 			array_shift($matchedValues); // first item is always matched whole `$request->GetPath()` string.
 			$index = 0;
@@ -584,7 +756,7 @@ class Route implements Interfaces\IRoute
 				}
 				// 1 line bellow is only for route debug panel, only for cases when you
 				// forget to define current rewrite param, this defines null value by default
-				if (!isset($this->Defaults[$matchedKey])) $this->Defaults[$matchedKey] = NULL;
+				if (!isset($this->defaults[$matchedKey])) $this->defaults[$matchedKey] = NULL;
 				$matchedParams[$matchedKey] = $matchedValue[0][0];
 				$index += 1;
 			}
@@ -611,7 +783,7 @@ class Route implements Interfaces\IRoute
 	 *			"color"		=> "blue",
 	 *			"variants"	=> array("L", "XL"),
 	 *		);`
-	 *	Input (`\MvcCore\Route::$Reverse`):
+	 *	Input (`\MvcCore\Route::$reverse`):
 	 *		`"/products-list/<name>/<color*>"`
 	 *	Output:
 	 *		`"/products-list/cool-product-name/blue?variant[]=L&amp;variant[]=XL"`
@@ -621,7 +793,7 @@ class Route implements Interfaces\IRoute
 	 */
 	public function Url (& $params, & $cleanedGetRequestParams) {
 		if ($this->reverseParams === NULL) $this->initReverse();
-		$result = $this->Reverse;
+		$result = $this->reverse;
 		$givenParamsKeys = array_merge(array(), $params);
 		foreach ($this->reverseParams as $paramName) {
 			$paramKeyReplacement = '<'.$paramName.'>';
@@ -631,7 +803,7 @@ class Route implements Interfaces\IRoute
 					: isset($cleanedGetRequestParams[$paramName])
 						? $cleanedGetRequestParams[$paramName]
 						: isset($this->Defaults[$paramName])
-							? $this->Defaults[$paramName]
+							? $this->defaults[$paramName]
 							: ''
 			);
 			$result = str_replace($paramKeyReplacement, $paramValue, $result);
@@ -658,24 +830,37 @@ class Route implements Interfaces\IRoute
 	public function initMatch () {
 		// if there is no match regular expression - parse `\MvcCore\Route::\$Pattern`
 		// and compile `\MvcCore\Route::\$Match` regular expression property.
-		if (mb_strlen($this->Pattern) === 0) throw new \LogicException(
+		if (mb_strlen($this->pattern) === 0) throw new \LogicException(
 			"[".__CLASS__."] Route configuration property `\MvcCore\Route::\$Pattern` is missing "
 			."to parse it and complete property(ies) `\MvcCore\Route::\$Match` (and `\MvcCore\Route::\$Reverse`) correctly."
 		);
 		// escape all regular expression special characters before parsing except `<` and `>`:
-		$matchPattern = addcslashes($this->Pattern, "#[](){}-?!=^$.+|:\\");
+		$matchPattern = addcslashes($this->pattern, "#[](){}-?!=^$.+|:\\");
 		// parse all presented `<param>` occurances in `$pattern` argument:
 		$matchPatternParams = $this->parsePatternParams($matchPattern);
 		// compile match regular expression from parsed params and custom constraints:
-		if ($this->Reverse === NULL) {
-			list($this->Match, $this->Reverse) = $this->compileMatchAndReversePattern(
+		if ($this->reverse === NULL) {
+			list($this->match, $this->reverse) = $this->compileMatchAndReversePattern(
 				$matchPattern, $matchPatternParams, TRUE
 			);
 		} else {
-			list($this->Match, $reverse) = $this->compileMatchAndReversePattern(
+			list($this->match, $reverse) = $this->compileMatchAndReversePattern(
 				$matchPattern, $matchPatternParams, FALSE
 			);
 		}
+	}
+
+	/**
+	 * Initialize all possible protected values (`match`, `reverse` etc...)
+	 * This method is not recomanded to use in production mode, it's
+	 * designed mostly for development purposes, to see what could be inside route.
+	 * @return \MvcCore\Route|\MvcCore\Interfaces\IRoute
+	 */
+	public function & InitAll () {
+		if ($this->match === NULL) $this->initMatch();
+		if ($this->lastPatternParam === NULL) $this->initReverse();
+		if ($this->reverseParams === NULL) $this->initReverse();
+		return $this;
 	}
 
 	/**
@@ -741,9 +926,9 @@ class Route implements Interfaces\IRoute
 	 * Internal method for `\MvcCore\Route::initMatch();` processing,
 	 * always called from `\MvcCore\Router::Matches();` request routing.
 	 *
-	 * Compile and return value for `\MvcCore\Route::$Match` pattern,
-	 * (optionaly by `$compileReverse` also for `\MvcCore\Route::$Reverse`)
-	 * from escaped `\MvcCore\Route::$Pattern` and given params statistics
+	 * Compile and return value for `\MvcCore\Route::$match` pattern,
+	 * (optionaly by `$compileReverse` also for `\MvcCore\Route::$reverse`)
+	 * from escaped `\MvcCore\Route::$pattern` and given params statistics
 	 * and from configured route constraints for regular expression:
 	 * - If pattern starts with slash `/`, set automaticly into
 	 *   result regular expression start rule (`#^/...`).
@@ -776,7 +961,7 @@ class Route implements Interfaces\IRoute
 	 *		);`
 	 *	Input (`$compileReverse`):
 	 *		`TRUE`
-	 *	Input (`$this->Constraints`):
+	 *	Input (`$this->constraints`):
 	 *		`array(
 	 *			"name"	=> "[^/]*",
 	 *			"color"	=> "[a-z]*",
@@ -791,7 +976,7 @@ class Route implements Interfaces\IRoute
 	 * @return string[]
 	 */
 	protected function compileMatchAndReversePattern (& $matchPattern, & $matchPatternParams, $compileReverse) {
-		$constraints = $this->Constraints;
+		$constraints = $this->constraints;
 		$defaultConstraint = static::$DefaultConstraint;
 		$trailingSlash = FALSE;
 		$reverse = '';
@@ -839,7 +1024,7 @@ class Route implements Interfaces\IRoute
 				$trailingSlash = TRUE;
 			}
 			if ($compileReverse) {
-				$reverse = $this->Pattern;
+				$reverse = $this->pattern;
 				$this->reverseParams = array();
 			} else {
 				$reverse = '';
@@ -864,7 +1049,7 @@ class Route implements Interfaces\IRoute
 	 */
 	protected function initReverse () {
 		$index = 0;
-		$reverse = & $this->Reverse;
+		$reverse = & $this->reverse;
 		$reverseParams = array();
 		$closePos = -1;
 		$paramName = '';
@@ -881,8 +1066,8 @@ class Route implements Interfaces\IRoute
 		// Init `\MvcCore\Route::$lastPatternParam`.
 		// Init that property only if this function is
 		// called from `\MvcCore\Route::Matches()`, after current route has been matched
-		// and also when there were configured for this route `\MvcCore\Route::$Match`
-		// value and `\MvcCore\Route::$Reverse` value together:
+		// and also when there were configured for this route `\MvcCore\Route::$match`
+		// value and `\MvcCore\Route::$reverse` value together:
 		if ($this->lastPatternParam === NULL && $paramName) {
 			$reverseLengthMinusTwo = mb_strlen($reverse) - 2;
 			$lastCharIsSlash = mb_substr($reverse, $reverseLengthMinusTwo, 1) == '/';
