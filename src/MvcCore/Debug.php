@@ -231,7 +231,7 @@ namespace MvcCore {
 		/**
 		 * Print catched exception in browser.
 		 * In non-development mode - store dumped exception in `exception.log`.
-		 * @param \Exception|\Throwable $exception
+		 * @param \Exception|\Error|\Throwable|array $exception
 		 * @param bool $exit
 		 * @return void
 		 */
