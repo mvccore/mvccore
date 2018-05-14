@@ -64,6 +64,12 @@ class Session extends \ArrayObject implements Interfaces\ISession
 	protected static $instances = array();
 
 	/**
+	 * Unix epoch for current request session start moment.
+	 * @var int
+	 */
+	protected static $sessionStartTime = 0;
+
+	/**
 	 * Session safe start only once.
 	 * - called by `\MvcCore\Application::GetInstance()->SessionStart();`
 	 *   - called by `\MvcCore\Controller::Init();`
@@ -79,10 +85,29 @@ class Session extends \ArrayObject implements Interfaces\ISession
 			: session_id() == '' ;
 		if ($sessionNotStarted) {
 			session_start();
+			static::$sessionStartTime = time();
 			static::setUpMeta();
 			static::setUpData();
 		}
 		static::$started = TRUE;
+	}
+
+	/**
+	 * Get unix epoch for current request session start moment.
+	 * This method is used for debuging purposses.
+	 * @return int
+	 */
+	public static function GetSessionStartTime () {
+		return static::$sessionStartTime;
+	}
+
+	/**
+	 * Get session metadata about session namespaces.
+	 * This method is used for debuging purposses.
+	 * @return \stdClass
+	 */
+	public static function GetSessionMetadata () {
+		return static::$meta;
 	}
 
 	/**
@@ -94,17 +119,16 @@ class Session extends \ArrayObject implements Interfaces\ISession
 	protected static function setUpMeta () {
 		$metaKey = static::SESSION_METADATA_KEY;
 		$meta = array();
-		if (isset($_SESSION[$metaKey])) {
+		if (isset($_SESSION[$metaKey]))
 			$meta = @unserialize($_SESSION[$metaKey]);
-		}
-		if (!$meta) {
+		if (!$meta)
 			$meta = array(
 				'names'			=> array(),
 				'hoops'			=> array(),
 				'expirations'	=> array(),
 			);
-		}
-		static::$meta = (object) $meta;
+		$meta = (object) $meta;
+		static::$meta = & $meta;
 	}
 
 	/**
@@ -121,14 +145,13 @@ class Session extends \ArrayObject implements Interfaces\ISession
 		foreach ($hoops as $name => $hoop) {
 			$hoops[$name] -= 1;
 		}
-		$now = time();
 		foreach ($names as $name => $one) {
 			$unset = array();
 			if (isset($hoops[$name])) {
 				if ($hoops[$name] < 0) $unset[] = 'hoops';
 			}
 			if (isset($expirations[$name])) {
-				if ($expirations[$name] < $now) $unset[] = 'expirations';
+				if ($expirations[$name] < static::$sessionStartTime) $unset[] = 'expirations';
 			}
 			if ($unset) {
 				$currentErrRepLevels = error_reporting();
@@ -152,9 +175,10 @@ class Session extends \ArrayObject implements Interfaces\ISession
 	 */
 	public static function Close () {
 		register_shutdown_function(function () {
-			foreach (static::$instances as & $instance) {
-				if (count($instance) === 0) $instance->Destroy();
-			}
+			foreach (static::$instances as & $instance)
+				if (count((array) $_SESSION[$instance->__name]) === 0)
+					// if there is nothing in namespace - destroy it. It's useless.
+					$instance->Destroy();
 			$metaKey = static::SESSION_METADATA_KEY;
 			$_SESSION[$metaKey] = serialize(static::$meta);
 			@session_write_close();
@@ -204,7 +228,7 @@ class Session extends \ArrayObject implements Interfaces\ISession
 	 * @return \MvcCore\Interfaces\ISession
 	 */
 	public function & SetExpirationSeconds ($seconds) {
-		static::$meta->expirations[$this->__name] = time() + $seconds;
+		static::$meta->expirations[$this->__name] = static::$sessionStartTime + $seconds;
 		return $this;
 	}
 
@@ -292,6 +316,6 @@ class Session extends \ArrayObject implements Interfaces\ISession
 	 * @return int
 	 */
 	public function count () {
-		return count($_SESSION[$this->__name]);
+		return count((array) $_SESSION[$this->__name]);
 	}
 }

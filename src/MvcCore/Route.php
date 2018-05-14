@@ -800,11 +800,11 @@ class Route implements Interfaces\IRoute
 			$paramValue = (
 				isset($params[$paramName])
 					? $params[$paramName]
-					: isset($cleanedGetRequestParams[$paramName])
+					: (isset($cleanedGetRequestParams[$paramName])
 						? $cleanedGetRequestParams[$paramName]
-						: isset($this->Defaults[$paramName])
+						: (isset($this->defaults[$paramName])
 							? $this->defaults[$paramName]
-							: ''
+							: ''))
 			);
 			$result = str_replace($paramKeyReplacement, $paramValue, $result);
 			unset($givenParamsKeys[$paramName]);
@@ -1017,17 +1017,22 @@ class Route implements Interfaces\IRoute
 				}
 			}
 			$matchPattern = $match;
-		} else if ($matchPattern != '/') {
-			$lengthWithoutLastChar = mb_strlen($matchPattern) - 1;
-			if (mb_strrpos($matchPattern, '/') === $lengthWithoutLastChar) {
-				$matchPattern = mb_substr($matchPattern, 0, $lengthWithoutLastChar);
-				$trailingSlash = TRUE;
-			}
-			if ($compileReverse) {
-				$reverse = $this->pattern;
+		} else {
+			if ($matchPattern == '/') {
+				$reverse = '/';
 				$this->reverseParams = array();
 			} else {
-				$reverse = '';
+				$lengthWithoutLastChar = mb_strlen($matchPattern) - 1;
+				if (mb_strrpos($matchPattern, '/') === $lengthWithoutLastChar) {
+					$matchPattern = mb_substr($matchPattern, 0, $lengthWithoutLastChar);
+					$trailingSlash = TRUE;
+				}
+				if ($compileReverse) {
+					$reverse = $this->pattern;
+					$this->reverseParams = array();
+				} else {
+					$reverse = '';
+				}
 			}
 		}
 		return array(
@@ -1050,6 +1055,8 @@ class Route implements Interfaces\IRoute
 	protected function initReverse () {
 		$index = 0;
 		$reverse = & $this->reverse;
+		if ($this->reverse == NULL && $this->pattern !== NULL)
+			return $this->initMatch();
 		$reverseParams = array();
 		$closePos = -1;
 		$paramName = '';

@@ -52,6 +52,19 @@ interface ISession
 	public static function Start ();
 
 	/**
+	 * Get unix epoch for current request session start moment.
+	 * @return int
+	 */
+	public static function GetSessionStartTime ();
+
+	/**
+	 * Get session metadata about session namespaces.
+	 * This method is used for debuging purposses.
+	 * @return \stdClass
+	 */
+	public static function GetSessionMetadata ();
+
+	/**
 	 * Write and close session in `\MvcCore::Terminate();`.
 	 * Serialize all metadata and call php function to write session into php session storrage.
 	 * (HDD, Redis, database, etc., depends on php configuration).

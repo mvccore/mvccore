@@ -316,6 +316,8 @@ class Model implements Interfaces\IModel {
 			// get system config 'db' data
 			// and get predefined constructor arguments by driver value from config
 			$cfg = static::GetConfig($connectionName);
+			if ($cfg === NULL)
+				$cfg = current(static::$configs); // if still nothing - take first database record
 			$conArgs = (object) self::$connectionArguments[isset(self::$connectionArguments[$cfg->driver]) ? $cfg->driver : 'default'];
 			$connection = NULL;
 			// If database is filesystem based, complete app root and extend
@@ -326,11 +328,12 @@ class Model implements Interfaces\IModel {
 					$lastSlashPos = strrpos($appRoot, '/');
 					$appRoot = substr($appRoot, 7, $lastSlashPos - 7);
 				}
-				$cfg->dbname = realpath($appRoot . $cfg->dbname);
+				$cfg->database = str_replace('\\', '/', realpath($appRoot . $cfg->database));
 			}
 			// Process connection string (dsn) with config replacements
 			$dsn = $conArgs->dsn;
-			foreach ((array) $cfg as $key => $value) $dsn = str_replace('{'.$key.'}', $value, $dsn);
+			foreach ((array) $cfg as $key => $value)
+				$dsn = str_replace('{'.$key.'}', $value, $dsn);
 			// If database required user and password credentials,
 			// connect with wull arguments count or only with one (sqllite only)
 			if ($conArgs->auth) {

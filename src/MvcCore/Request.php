@@ -380,7 +380,7 @@ class Request implements Interfaces\IRequest
 	 */
 	public function & GetHeaders ($pregReplaceAllowedChars = array('#\<\>#', '')) {
 		if ($this->headers === NULL) $this->initHeaders();
-		if ($pregReplaceAllowedChars === '') return $this->headers;
+		if ($pregReplaceAllowedChars === '' || $pregReplaceAllowedChars === '.*') return $this->headers;
 		$cleanedHeaders = array();
 		foreach ($this->headers as $key => & $value) {
 			$cleanedKey = $this->cleanParamValue($key, $pregReplaceAllowedChars);

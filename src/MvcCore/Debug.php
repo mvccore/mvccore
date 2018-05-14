@@ -437,7 +437,6 @@ namespace {
 			$args = func_get_args();
 			foreach ($args as $arg) \MvcCore\Debug::BarDump($arg, NULL, array('backtraceIndex' => 2));
 		}
-
 		if ($development) {
 			/**
 			 * Dump variables and die. If no variable, throw stop exception.
@@ -448,9 +447,8 @@ namespace {
 			function xxx (/*...$args*/) {
 				$args = func_get_args();
 				if (count($args) === 0) {
-					throw new \Exception("Stopped.");
+					throw new \ErrorException('Stopped.', 500);
 				} else {
-					ob_start();
 					\MvcCore\Application::GetInstance()->GetResponse()->SetHeader('Content-Type', 'text/html');
 					@header('Content-Type: text/html');
 					echo '<pre><code>';
@@ -460,7 +458,7 @@ namespace {
 						echo '</code></pre>';
 					}
 				}
-				die();
+				exit;
 			}
 		} else {
 			/**
@@ -471,11 +469,11 @@ namespace {
 			 */
 			function xxx (/*...$args*/) {
 				$args = func_get_args();
-				if (count($args) === 0)
-					throw new \Exception("Stopped.");
-				else
-					foreach ($args as $arg) \MvcCore\Debug::Log($arg, \MvcCore\Interfaces\IDebug::DEBUG);
-				die();
+				if (count($args) > 0)
+					foreach ($args as $arg)
+						\MvcCore\Debug::Log($arg, \MvcCore\Interfaces\IDebug::DEBUG);
+				echo 'Error 500 - Stopped.';
+				exit;
 			}
 		}
 	};
