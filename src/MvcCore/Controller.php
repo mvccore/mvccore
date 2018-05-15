@@ -232,12 +232,15 @@ class Controller implements Interfaces\IController
 	public function Dispatch ($actionName = "IndexAction") {
 		// \MvcCore\Debug::Timer('dispatch');
 		$this->Init();
+		if ($this->dispatchState == 5) return; // terminated or redirected
 		if ($this->dispatchState < 1) $this->dispatchState = 1;
 		// \MvcCore\Debug::Timer('dispatch');
 		$this->PreDispatch();
+		if ($this->dispatchState == 5) return; // terminated or redirected
 		if ($this->dispatchState < 2) $this->dispatchState = 2;
 		// \MvcCore\Debug::Timer('dispatch');
 		if (method_exists($this, $actionName)) $this->$actionName();
+		if ($this->dispatchState == 5) return; // terminated or redirected
 		if ($this->dispatchState < 3) $this->dispatchState = 3;
 		// \MvcCore\Debug::Timer('dispatch');
 		$this->Render(
@@ -815,6 +818,7 @@ class Controller implements Interfaces\IController
 	 * @return void
 	 */
 	public function Terminate () {
+		$this->dispatchState = 5;
 		$this->application->Terminate();
 	}
 
@@ -840,7 +844,9 @@ class Controller implements Interfaces\IController
 		$app = \MvcCore\Application::GetInstance();
 		$app->GetResponse()
 			->SetCode($code)
+			//->SetHeader('Refresh', '0;url='.$location);
 			->SetHeader('Location', $location);
+		$app->GetController()->dispatchState = 5;
 		$app->Terminate();
 	}
 }

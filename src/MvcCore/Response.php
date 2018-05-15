@@ -296,7 +296,7 @@ class Response implements Interfaces\IResponse
 	}
 
 	/**
-	 * Returns if response has any `text/html` or `application/xhtml+xml` 
+	 * Returns if response has any `text/html` or `application/xhtml+xml`
 	 * substring in `Content-Type` header.
 	 * @return bool
 	 */
@@ -343,6 +343,7 @@ class Response implements Interfaces\IResponse
 		}
 		$this->addTimeAndMemoryHeader();
 		echo $this->body;
+		if (ob_get_level()) echo ob_get_clean();
 		$this->sent = TRUE;
 	}
 

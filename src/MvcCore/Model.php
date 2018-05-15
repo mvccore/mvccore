@@ -201,7 +201,9 @@ class Model implements Interfaces\IModel {
 	public function & SetUp ($data = array(), $keysInsensitive = FALSE, $includeInheritProperties = TRUE, $publicOnly = TRUE) {
 		$modelClassName = get_class($this);
 		$classReflector = new \ReflectionClass($modelClassName);
-		$properties = $publicOnly ? $classReflector->getProperties(\ReflectionProperty::IS_PUBLIC) : $classReflector->getProperties();
+		$properties = $publicOnly
+			? $classReflector->getProperties(\ReflectionProperty::IS_PUBLIC)
+			: $classReflector->getProperties();
 		$dataKeys = $keysInsensitive ? ','.implode(',', array_keys($data)).',' : '' ;
 		foreach ($properties as $property) {
 			if (!$includeInheritProperties && $property->class != $modelClassName) continue;

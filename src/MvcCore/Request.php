@@ -446,7 +446,7 @@ class Request implements Interfaces\IRequest
 	 */
 	public function & GetParams ($pregReplaceAllowedChars = array('#\<\>#', '')) {
 		if ($this->params === NULL) $this->initParams();
-		if ($pregReplaceAllowedChars === '') return $this->params;
+		if ($pregReplaceAllowedChars === '' || $pregReplaceAllowedChars === '.*') return $this->params;
 		$cleanedParams = array();
 		foreach ($this->params as $key => & $value) {
 			$cleanedKey = $this->cleanParamValue($key, $pregReplaceAllowedChars);
