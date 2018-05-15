@@ -455,7 +455,13 @@ interface IRoute
 	 * @param array $cleanedGetRequestParams Request query params with escaped chars: `<` and `>`.;
 	 * @return string
 	 */
-	public function Url (& $params, & $cleanedGetRequestParams);
+	public function Url (& $params = array(), & $cleanedGetRequestParams = array());
+
+	/**
+	 * Render all instance properties values into string.
+	 * @return string
+	 */
+	public function __toString ();
 
 	/**
 	 * Initialize all possible protected values (`match`, `reverse` etc...)

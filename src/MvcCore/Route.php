@@ -332,12 +332,13 @@ class Route implements Interfaces\IRoute
 		if ($argsCount === 0) return $this;
 		if (gettype($patternOrConfig) == 'array') {
 			$data = (object) $patternOrConfig;
-			$this->name = isset($data->name) ? $data->name : '';
 			if (isset($data->controllerAction)) {
 				list($this->controller, $this->action) = explode(':', $data->controllerAction);
+				$this->name = isset($data->name) ? $data->name : $data->controllerAction;
 			} else {
 				$this->controller = isset($data->controller) ? $data->controller : '';
 				$this->action = isset($data->action) ? $data->action : '';
+				$this->name = isset($data->name) ? $data->name : $this->controller . ':' . $this->action ;
 			}
 			$this->pattern = isset($data->pattern) ? $data->pattern : NULL;
 			$this->match = isset($data->match) ? $data->match : NULL;
@@ -791,7 +792,7 @@ class Route implements Interfaces\IRoute
 	 * @param array $cleanedGetRequestParams Request query params with escaped chars: `<` and `>`.;
 	 * @return string
 	 */
-	public function Url (& $params, & $cleanedGetRequestParams) {
+	public function Url (& $params = array(), & $cleanedGetRequestParams = array()) {
 		if ($this->reverseParams === NULL) $this->initReverse();
 		$result = $this->reverse;
 		$givenParamsKeys = array_merge(array(), $params);
@@ -816,6 +817,30 @@ class Route implements Interfaces\IRoute
 	}
 
 	/**
+	 * Render all instance properties values into string.
+	 * @return string
+	 */
+	public function __toString () {
+		$type = new \ReflectionClass($this);
+		/** @var $props \ReflectionProperty[] */
+		$allProps = $type->getProperties(
+			\ReflectionProperty::IS_PUBLIC | \ReflectionProperty::IS_PROTECTED | \ReflectionProperty::IS_PRIVATE
+		);
+		$result = array();
+		/** @var $prop \ReflectionProperty */
+		foreach ($allProps as & $prop) {
+			if ($prop->isStatic()) continue;
+			if ($prop->isPrivate()) $prop->setAccessible(TRUE);
+			$value = NULL;
+			try {
+				$value = $prop->getValue($this);
+			} catch (\Exception $e) {};
+			$result[] = '"' . $prop->getName() . '":"' . ($value === NULL ? 'NULL' : var_export($value)) . '"';
+		}
+		return '{'.implode(', ', $result) . '}';
+	}
+
+	/**
 	 * Initialize `\MvcCore\Router::$Match` property (and `\MvcCore\Router::$lastPatternParam`
 	 * property) from `\MvcCore\Router::$Pattern`, optionaly initialize
 	 * `\MvcCore\Router::$Reverse` property if there is nothing inside.
@@ -827,12 +852,13 @@ class Route implements Interfaces\IRoute
 	 * `\MvcCore\Router::Matches();` method.
 	 * @return void
 	 */
-	public function initMatch () {
+	protected function initMatch () {
 		// if there is no match regular expression - parse `\MvcCore\Route::\$Pattern`
 		// and compile `\MvcCore\Route::\$Match` regular expression property.
 		if (mb_strlen($this->pattern) === 0) throw new \LogicException(
-			"[".__CLASS__."] Route configuration property `\MvcCore\Route::\$Pattern` is missing "
-			."to parse it and complete property(ies) `\MvcCore\Route::\$Match` (and `\MvcCore\Route::\$Reverse`) correctly."
+			"[".__CLASS__."] Route configuration property `\MvcCore\Route::\$rattern` is missing "
+			."to parse it and complete property(ies) `\MvcCore\Route::\$match` "
+			."(and `\MvcCore\Route::\$reverse`) correctly ($this)."
 		);
 		// escape all regular expression special characters before parsing except `<` and `>`:
 		$matchPattern = addcslashes($this->pattern, "#[](){}-?!=^$.+|:\\");
@@ -912,7 +938,7 @@ class Route implements Interfaces\IRoute
 			if ($greedy) {
 				if ($greedyCatched) throw new \LogicException(
 					"[".__CLASS__."] Route could have greedy `<param_name*>` with star "
-					."to include slashes only as the very last parameter."
+					."to include slashes only as the very last parameter ($this)."
 				);
 				$greedyCatched = TRUE;
 				$paramName = str_replace('*', '', $paramName);
