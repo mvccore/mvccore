@@ -88,6 +88,22 @@ class Router implements Interfaces\IRouter
 	protected $cleanedRequestParams = NULL;
 
 	/**
+	 * Trrailing slash behaviour - integer state about what to do with trailing
+	 * slash in all requested url except homepage. Possible states are:
+	 * - `-1` (`\MvcCore\Interfaces\IRouter::TRAILING_SLASH_REMOVE`)
+	 *        Always remove trailing slash from requested url if there
+	 *        is any and redirect to it, except homepage.
+	 * -  `0` (`\MvcCore\Interfaces\IRouter::TRAILING_SLASH_BENEVOLENT`)
+	 *        Be absolutely benevolent for trailing slash in requested url.
+	 * -  `1` (`\MvcCore\Interfaces\IRouter::TRAILING_SLASH_ALWAYS`)
+	 *        Always keep trailing slash in requested url or always add trailing
+	 *        slash into url and redirect to it.
+	 * Default value is `-1` - `\MvcCore\Interfaces\IRouter::TRAILING_SLASH_REMOVE`
+	 * @var int
+	 */
+	protected $trailingSlashBehaviour = -1;
+
+	/**
 	 * Reference to singleton instance in `\MvcCore\Application::GetInstance();`.
 	 * @var \MvcCore\Application|NULL
 	 */
@@ -486,6 +502,51 @@ class Router implements Interfaces\IRouter
 	}
 
 	/**
+	 * Get trrailing slash behaviour - integer state about what to do with trailing
+	 * slash in all requested url except homepage. Possible states are:
+	 * - `-1` (`\MvcCore\Interfaces\IRouter::TRAILING_SLASH_REMOVE`)
+	 *        Always remove trailing slash from requested url if there
+	 *        is any and redirect to it, except homepage.
+	 * -  `0` (`\MvcCore\Interfaces\IRouter::TRAILING_SLASH_BENEVOLENT`)
+	 *        Be absolutely benevolent for trailing slash in requested url.
+	 * -  `1` (`\MvcCore\Interfaces\IRouter::TRAILING_SLASH_ALWAYS`)
+	 *        Always keep trailing slash in requested url or always add trailing
+	 *        slash into url and redirect to it.
+	 * Default value is `-1` - `\MvcCore\Interfaces\IRouter::TRAILING_SLASH_REMOVE`
+	 * @return int
+	 */
+	public function GetTrailingSlashBehaviour () {
+		return $this->trailingSlashBehaviour;
+	}
+
+	/**
+	 * Set trrailing slash behaviour - integer state about what to do with trailing
+	 * slash in all requested url except homepage. Possible states are:
+	 * - `-1` (`\MvcCore\Interfaces\IRouter::TRAILING_SLASH_REMOVE`)
+	 *        Always remove trailing slash from requested url if there
+	 *        is any and redirect to it, except homepage.
+	 * -  `0` (`\MvcCore\Interfaces\IRouter::TRAILING_SLASH_BENEVOLENT`)
+	 *        Be absolutely benevolent for trailing slash in requested url.
+	 * -  `1` (`\MvcCore\Interfaces\IRouter::TRAILING_SLASH_ALWAYS`)
+	 *        Always keep trailing slash in requested url or always add trailing
+	 *        slash into url and redirect to it.
+	 * Default value is `-1` - `\MvcCore\Interfaces\IRouter::TRAILING_SLASH_REMOVE`
+	 * @param int $trailingSlashBehaviour `-1` (`\MvcCore\Interfaces\IRouter::TRAILING_SLASH_REMOVE`)
+	 *                                         Always remove trailing slash from requested url if there
+	 *                                         is any and redirect to it, except homepage.
+	 *                                     `0` (`\MvcCore\Interfaces\IRouter::TRAILING_SLASH_BENEVOLENT`)
+	 *                                         Be absolutely benevolent for trailing slash in requested url.
+	 *                                     `1` (`\MvcCore\Interfaces\IRouter::TRAILING_SLASH_ALWAYS`)
+	 *                                         Always keep trailing slash in requested url or always add trailing
+	 *                                         slash into url and redirect to it.
+	 * @return \MvcCore\Router|\MvcCore\Interfaces\IRouter
+	 */
+	public function & SetTrailingSlashBehaviour ($trailingSlashBehaviour = -1) {
+		$this->trailingSlashBehaviour = $trailingSlashBehaviour;
+		return $this;
+	}
+
+	/**
 	 * Route current application request by configured routes list or by query string data.
 	 * - If there is strictly defined `controller` and `action` value in query string,
 	 *   route request by given values, add new route and complete new empty
@@ -509,6 +570,7 @@ class Router implements Interfaces\IRouter
 	 * @return \MvcCore\Route
 	 */
 	public function & Route () {
+		$this->redirectToProperTrailingSlashIfNecessary();
 		$request = & $this->request;
 		$requestCtrlName = $request->GetControllerName();
 		$requestActionName = $request->GetActionName();
@@ -681,14 +743,14 @@ class Router implements Interfaces\IRouter
 				list($ctrlDfltName, $actionDfltName) = self::$_app->GetDefaultControllerAndActionNames();
 				if (!$routeCtrl)
 					$route->SetController(
-						$requestCtrlName 
-							? $toolClass::GetPascalCaseFromDashed($requestCtrlName) 
+						$requestCtrlName
+							? $toolClass::GetPascalCaseFromDashed($requestCtrlName)
 							: $ctrlDfltName
 					);
 				if (!$routeAction)
 					$route->SetAction(
-						$requestActionName 
-							? $toolClass::GetPascalCaseFromDashed($requestActionName) 
+						$requestActionName
+							? $toolClass::GetPascalCaseFromDashed($requestActionName)
 							: $actionDfltName
 						);
 			}
@@ -714,5 +776,58 @@ class Router implements Interfaces\IRouter
 			$cleanedRequestParams[$paramName] = strtr($rawValue, $charsToReplace);
 		}
 		$this->cleanedRequestParams = $cleanedRequestParams;
+	}
+
+	/**
+	 * Redirect to proper trailing slash url version only
+	 * if it is necessary by `\MvcCore\Router::$trailingSlashBehaviour`
+	 * and if it is necessary by last character in request path.
+	 * @return void
+	 */
+	protected function redirectToProperTrailingSlashIfNecessary () {
+		if (!$this->trailingSlashBehaviour) return;
+		$path = $this->request->GetPath();
+		if ($path == '/') 
+			return; // do not redirect for homepage with trailing slash
+		if ($path == '') {
+			// add homepage trailing slash and redirect
+			$this->redirect(
+				$this->request->GetBaseUrl()
+				. '/'
+				. $this->request->GetQuery(TRUE)
+				. $this->request->GetFragment(TRUE)
+			);
+		}
+		$lastPathChar = mb_substr($path, mb_strlen($path) - 1);
+		if ($lastPathChar == '/' && $this->trailingSlashBehaviour == \MvcCore\Interfaces\IRouter::TRAILING_SLASH_REMOVE) {
+			// remove trailing slash and redirect
+			$this->redirect(
+				$this->request->GetBaseUrl()
+				. rtrim($path, '/')
+				. $this->request->GetQuery(TRUE)
+				. $this->request->GetFragment(TRUE)
+			);
+		} else if ($lastPathChar != '/' && $this->trailingSlashBehaviour == \MvcCore\Interfaces\IRouter::TRAILING_SLASH_ALWAYS) {
+			// add trailing slash and redirect
+			$this->redirect(
+				$this->request->GetBaseUrl()
+				. $path . '/'
+				. $this->request->GetQuery(TRUE)
+				. $this->request->GetFragment(TRUE)
+			);
+		}
+	}
+
+	/**
+	 * Redirect request to given url with optional code and terminate application.
+	 * @param string	$url New location url.
+	 * @param int		$code Http status code, 301 by default.
+	 */
+	protected function redirect ($url, $code = 301) {
+		$app = \MvcCore\Application::GetInstance();
+		$app->GetResponse()
+			->SetCode($code)
+			->SetHeader('Location', $url);
+		$app->Terminate();
 	}
 }

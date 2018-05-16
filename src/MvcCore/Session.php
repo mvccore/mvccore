@@ -48,13 +48,20 @@ class Session extends \ArrayObject implements Interfaces\ISession
 
 	/**
 	 * Metadata array or stdClass with all MvcCore namespaces metadata information:
-	 * - `"names"`			=> array with all presented records names
-	 * - `"hoops"`			=> array with all records and their page requests count to expire
-	 * - `"expirations"`	=> array with all records expiration times
+	 * - `"names"`			=> Array with all namespace records names.
+	 * - `"hoops"`			=> Array with all namespace records page requests count to expire.
+	 * - `"expirations"`	=> Array with all records expiration times.
 	 * This metadata arrays are decoded from `$_SESSION` storrage only once at in session start.
 	 * @var array|\stdClass
 	 */
-	protected static $meta = array();
+	protected static $meta = array(
+		/** @var \string[] Array with all namespace records names. */
+		'names'			=> array(),
+		/** @var \int[] Array with all namespace records page requests count to expire. Keyed by namespace names. */
+		'hoops'			=> array(),
+		/** @var \int[] Array with all records expiration times. Keyed by namespace names. */
+		'expirations'	=> array(),
+	);
 
 	/**
 	 * Array of created `\MvcCore\Interfaces\ISession` instances,
@@ -68,6 +75,13 @@ class Session extends \ArrayObject implements Interfaces\ISession
 	 * @var int
 	 */
 	protected static $sessionStartTime = 0;
+
+	/**
+	 * The highest expiration in seconds for namespace with
+	 * the highest expiration to set expiration for `PHPSESSID` cookie.
+	 * @var int
+	 */
+	protected static $sessionMaxTime = 0;
 
 	/**
 	 * Session safe start only once.
@@ -86,6 +100,7 @@ class Session extends \ArrayObject implements Interfaces\ISession
 		if ($sessionNotStarted) {
 			session_start();
 			static::$sessionStartTime = time();
+			static::$sessionMaxTime = static::$sessionStartTime;
 			static::setUpMeta();
 			static::setUpData();
 		}
@@ -99,6 +114,20 @@ class Session extends \ArrayObject implements Interfaces\ISession
 	 */
 	public static function GetSessionStartTime () {
 		return static::$sessionStartTime;
+	}
+
+	/**
+	 * Get the highest expiration in seconds for namespace with
+	 * the highest expiration to set expiration for `PHPSESSID` cookie.
+	 * @return int
+	 */
+	public static function GetSessionMaxTime () {
+		static::$sessionMaxTime = static::$sessionStartTime;
+		foreach (static::$meta->expirations as $expiration) {
+			if ($expiration > static::$sessionMaxTime)
+				static::$sessionMaxTime = $expiration;
+		}
+		return static::$sessionMaxTime;
 	}
 
 	/**
@@ -151,7 +180,12 @@ class Session extends \ArrayObject implements Interfaces\ISession
 				if ($hoops[$name] < 0) $unset[] = 'hoops';
 			}
 			if (isset($expirations[$name])) {
-				if ($expirations[$name] < static::$sessionStartTime) $unset[] = 'expirations';
+				$expiration = $expirations[$name];
+				if ($expiration < static::$sessionStartTime) {
+					$unset[] = 'expirations';
+				} else if ($expiration > static::$sessionMaxTime) {
+					static::$sessionMaxTime = $expiration;
+				}
 			}
 			if ($unset) {
 				$currentErrRepLevels = error_reporting();
@@ -187,7 +221,7 @@ class Session extends \ArrayObject implements Interfaces\ISession
 
 	/**
 	 * Get new or existing MvcCore session namespace instance.
-	 * @param string $name
+	 * @param string $name Session namespace unique name.
 	 * @return \MvcCore\Interfaces\ISession
 	 */
 	public static function & GetNamespace (
@@ -224,12 +258,38 @@ class Session extends \ArrayObject implements Interfaces\ISession
 
 	/**
 	 * Set MvcCore session namespace expiration by expiration seconds.
+	 * Zero (`0`) means "until the browser is closed" if there is no more
+	 * higher namespace expirations in whole session.
 	 * @param int $seconds
 	 * @return \MvcCore\Interfaces\ISession
 	 */
-	public function & SetExpirationSeconds ($seconds) {
+	public function & SetExpirationSeconds ($seconds = 0) {
 		static::$meta->expirations[$this->__name] = static::$sessionStartTime + $seconds;
 		return $this;
+	}
+
+	/**
+	 * Send `PHPSESSID` http cookie with session id hash before response body is sent.
+	 * This function is always called by `\MvcCore\Application::Terminate();` at the request end.
+	 * @return void
+	 */
+	public static function SendCookie () {
+		$maxExpiration = static::GetSessionMaxTime();
+		$response = & \MvcCore\Application::GetInstance()->GetResponse();
+		if (!$response->IsSent()) {
+			$params = (object) session_get_cookie_params();
+			$response->SetCookie(
+				session_name(),
+				session_id(),
+				($maxExpiration > static::$sessionStartTime
+					? (static::$sessionMaxTime - static::$sessionStartTime)
+					: (isset($params->lifetime) ? $params->lifetime : 0)),
+				$params->path,
+				$params->domain,
+				$params->secure,
+				TRUE
+			);
+		}
 	}
 
 	/**
@@ -259,14 +319,14 @@ class Session extends \ArrayObject implements Interfaces\ISession
 		session_destroy();
 		$_SESSION = NULL;
 		static::$started = false;
-		$response = \MvcCore\Application::GetInstance()->GetResponse();
+		$response = & \MvcCore\Application::GetInstance()->GetResponse();
 		if (!$response->IsSent()) {
-			$params = session_get_cookie_params();
+			$params = (object) session_get_cookie_params();
 			$response->DeleteCookie(
 				session_name(),
-				$params['path'],
-				$params['domain'],
-				$params['secure']
+				$params->path,
+				$params->domain,
+				$params->secure
 			);
 		}
 	}
@@ -309,6 +369,25 @@ class Session extends \ArrayObject implements Interfaces\ISession
 	 */
 	public function __set ($key, $value) {
 		$_SESSION[$this->__name][$key] = $value;
+	}
+
+	/**
+	 * Print all about current session namespace instance for debug purposses.
+	 * @return array
+	 */
+	public function __debugInfo () {
+		$hoops = isset(static::$meta->hoops[$this->__name])
+			? static::$meta->hoops[$this->__name]
+			: NULL;
+		$expiration = isset(static::$meta->expirations[$this->__name])
+			? static::$meta->expirations[$this->__name]
+			: NULL;
+		return array(
+			'name'					=> $this->__name,
+			'expirationSeconds'		=> date('D, d M Y H:i:s', $expiration),
+			'expirationHoops'		=> $hoops,
+			'values'				=> $_SESSION[$this->__name],
+		);
 	}
 
 	/**

@@ -34,6 +34,22 @@ namespace MvcCore\Interfaces;
 interface IRouter
 {
 	/**
+	 * Always keep trailing slash in requested url or
+	 * always add trailing slash into url and redirect to it.
+	 */
+	const TRAILING_SLASH_ALWAYS = 1;
+
+	/**
+	 * Be absolutely benevolent for trailing slash in requested url.
+	 */
+	const TRAILING_SLASH_BENEVOLENT = 0;
+
+	/**
+	 * Always remove trailing slash from requested url if there is any and redirect to it, except homepage.
+	 */
+	const TRAILING_SLASH_REMOVE = -1;
+
+	/**
 	 * Get singleton instance of `\MvcCore\Router` stored always here.
 	 * Optionaly set routes as first argument.
 	 * Create proper router instance type at first time by
@@ -278,6 +294,48 @@ interface IRouter
 	 * @return \MvcCore\Interfaces\IRoute
 	 */
 	public function & SetRouteToDefaultIfNotMatch ($enable = TRUE);
+
+
+
+	/**
+	 * Get trrailing slash behaviour - integer state about what to do with trailing
+	 * slash in all requested url except homepage. Possible states are:
+	 * - `-1` (`\MvcCore\Interfaces\IRouter::TRAILING_SLASH_REMOVE`)
+	 *        Always remove trailing slash from requested url if there
+	 *        is any and redirect to it, except homepage.
+	 * -  `0` (`\MvcCore\Interfaces\IRouter::TRAILING_SLASH_BENEVOLENT`)
+	 *        Be absolutely benevolent for trailing slash in requested url.
+	 * -  `1` (`\MvcCore\Interfaces\IRouter::TRAILING_SLASH_ALWAYS`)
+	 *        Always keep trailing slash in requested url or always add trailing
+	 *        slash into url and redirect to it.
+	 * Default value is `-1` - `\MvcCore\Interfaces\IRouter::TRAILING_SLASH_REMOVE`
+	 * @return int
+	 */
+	public function GetTrailingSlashBehaviour ();
+
+	/**
+	 * Set trrailing slash behaviour - integer state about what to do with trailing
+	 * slash in all requested url except homepage. Possible states are:
+	 * - `-1` (`\MvcCore\Interfaces\IRouter::TRAILING_SLASH_REMOVE`)
+	 *        Always remove trailing slash from requested url if there
+	 *        is any and redirect to it, except homepage.
+	 * -  `0` (`\MvcCore\Interfaces\IRouter::TRAILING_SLASH_BENEVOLENT`)
+	 *        Be absolutely benevolent for trailing slash in requested url.
+	 * -  `1` (`\MvcCore\Interfaces\IRouter::TRAILING_SLASH_ALWAYS`)
+	 *        Always keep trailing slash in requested url or always add trailing
+	 *        slash into url and redirect to it.
+	 * Default value is `-1` - `\MvcCore\Interfaces\IRouter::TRAILING_SLASH_REMOVE`
+	 * @param int $trailingSlashBehaviour `-1` (`\MvcCore\Interfaces\IRouter::TRAILING_SLASH_REMOVE`)
+	 *                                         Always remove trailing slash from requested url if there
+	 *                                         is any and redirect to it, except homepage.
+	 *                                     `0` (`\MvcCore\Interfaces\IRouter::TRAILING_SLASH_BENEVOLENT`)
+	 *                                         Be absolutely benevolent for trailing slash in requested url.
+	 *                                     `1` (`\MvcCore\Interfaces\IRouter::TRAILING_SLASH_ALWAYS`)
+	 *                                         Always keep trailing slash in requested url or always add trailing
+	 *                                         slash into url and redirect to it.
+	 * @return \MvcCore\Interfaces\IRouter
+	 */
+	public function & SetTrailingSlashBehaviour ($trailingSlashBehaviour = -1);
 
 	/**
 	 * Route current application request by configured routes list or by query string data.

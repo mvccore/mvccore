@@ -778,6 +778,17 @@ class Controller implements Interfaces\IController
 	}
 
 	/**
+	 * Alias for `\MvcCore\Session::GetNamespace($name);`
+	 * but called with configured session core class name.
+	 * @param mixed $name
+	 * @return \MvcCore\Interfaces\ISession
+	 */
+	public function GetSessionNamespace ($name = \MvcCore\Interfaces\ISession::DEFAULT_NAMESPACE_NAME) {
+		$sessionClass = $this->application->GetSessionClass();
+		return $sessionClass::GetNamespace($name);
+	}
+
+	/**
 	 * Render error controller and error action
 	 * for any dispatch exception or error as
 	 * rendered html response or as plain text response.
@@ -820,17 +831,6 @@ class Controller implements Interfaces\IController
 	public function Terminate () {
 		$this->dispatchState = 5;
 		$this->application->Terminate();
-	}
-
-	/**
-	 * Return session namespace instance by configured session class name.
-	 * This method is only shortcut for `\MvcCore\Session::GetNamespace($name)`;
-	 * @param string $name
-	 * @return \MvcCore\Session
-	 */
-	public static function & GetSessionNamespace ($name = \MvcCore\Interfaces\ISession::DEFAULT_NAMESPACE_NAME) {
-		$sessionClass = \MvcCore\Application::GetInstance()->GetSessionClass();
-		return $sessionClass::GetNamespace($name);
 	}
 
 	/**

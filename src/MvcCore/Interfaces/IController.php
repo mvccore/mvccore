@@ -379,6 +379,14 @@ interface IController
 	 */
 	public function AssetUrl ($path = '');
 
+	/**
+	 * Alias for `\MvcCore\Session::GetNamespace($name);` 
+	 * but called with configured session core class name.
+	 * @param mixed $name
+	 * @return \MvcCore\Interfaces\ISession
+	 */
+	public function GetSessionNamespace ($name = \MvcCore\Interfaces\ISession::DEFAULT_NAMESPACE_NAME);
+
 		/**
 	 * Render error controller and error action
 	 * for any dispatch exception or error as
@@ -408,14 +416,6 @@ interface IController
 	 * @return void
 	 */
 	public function Terminate ();
-
-	/**
-	 * Return session namespace instance by configured session class name.
-	 * This method is only shortcut for `\MvcCore\Session::GetNamespace($name)`;
-	 * @param string $name
-	 * @return \MvcCore\Interfaces\ISession
-	 */
-	public static function & GetSessionNamespace ($name = \MvcCore\Interfaces\ISession::DEFAULT_NAMESPACE_NAME);
 
 	/**
 	 * Redirect client browser to another place by `"Location: ..."`

@@ -261,6 +261,7 @@ trait Dispatching
 	public function Terminate () {
 		$this->processCustomHandlers($this->postDispatchHandlers);
 		$sessionClass = $this->sessionClass;
+		$sessionClass::SendCookie();
 		$sessionClass::Close();
 		$this->response->Send(); // headers (if still possible) and echo
 		// exit; // Why to force exit? What if we want to do something more?

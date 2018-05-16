@@ -74,7 +74,7 @@ interface ISession
 
 	/**
 	 * Get new or existing MvcCore session namespace instance.
-	 * @param string $name
+	 * @param string $name Session namespace unique name.
 	 * @return \MvcCore\Interfaces\ISession
 	 */
 	public static function & GetNamespace ($name = \MvcCore\Interfaces\ISession::DEFAULT_NAMESPACE_NAME);
@@ -92,6 +92,13 @@ interface ISession
 	 * @return \MvcCore\Interfaces\ISession
 	 */
 	public function & SetExpirationSeconds ($seconds);
+
+	/**
+	 * Send `PHPSESSID` http cookie with session id hash before response body is sent.
+	 * This function is always called by `\MvcCore\Application::Terminate();` at the request end.
+	 * @return void
+	 */
+	public static function SendCookie ();
 
 	/**
 	 * Destroy whole session namespace in `$_SESSION` storrage
@@ -135,6 +142,12 @@ interface ISession
 	 * @return void
 	 */
 	public function __set ($key, $value);
+
+	/**
+	 * Print all about current session namespace instance for debug purposses.
+	 * @return array
+	 */
+	public function __debugInfo ();
 
 	/**
 	 * Magic `\ArrayObject` function triggered by: `count(\MvcCore\Interfaces\ISession);`.

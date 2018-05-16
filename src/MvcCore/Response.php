@@ -368,7 +368,7 @@ class Response implements Interfaces\IResponse
 			"[".__CLASS__."] Cannot set cookie after HTTP headers have been sent."
 		);
 		$request = \MvcCore\Application::GetInstance()->GetRequest();
-		return setcookie(
+		return \setcookie(
 			$name, $value,
 			$lifetime === 0 ? 0 : time() + $lifetime,
 			$path,

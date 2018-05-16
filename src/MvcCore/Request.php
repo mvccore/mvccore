@@ -941,13 +941,20 @@ class Request implements Interfaces\IRequest
 	}
 
 	/**
-	 * Get uri query string without question mark.
+	 * Get uri query string (without question mark character by default).
 	 * Example: `"param-1=value-1&param-2=value-2&param-3[]=value-3-a&param-3[]=value-3-b"`
+	 * @param bool $withQuestionMark If `FALSE` (by default), query string is returned always without question
+	 *                               mark character at the beginning.
+	 *                               If `TRUE`, and query string contains any character(s), query string is returned
+	 *                               with question mark character at the beginning. But if query string contains no
+	 *                               character(s), query string is returned as EMPTY STRING WITHOUT question mark character.
 	 * @return string
 	 */
-	public function GetQuery () {
+	public function GetQuery ($withQuestionMark = FALSE) {
 		if ($this->query === NULL) $this->initUrlSegments();
-		return $this->query;
+		return ($withQuestionMark && mb_strlen($this->query) > 0)
+			? '?' . $this->query
+			: $this->query;
 	}
 
 	/**
@@ -957,8 +964,7 @@ class Request implements Interfaces\IRequest
 	 */
 	public function GetRequestPath () {
 		if ($this->requestPath === NULL) {
-			$query = $this->GetQuery();
-			$this->requestPath = $this->GetPath() . ($query ? '?' . $query : '') . $this->GetFragment();
+			$this->requestPath = $this->GetPath() . $this->GetQuery(TRUE) . $this->GetFragment(TRUE);
 		}
 		return $this->requestPath;
 	}
@@ -1000,20 +1006,26 @@ class Request implements Interfaces\IRequest
 	 */
 	public function GetFullUrl () {
 		if ($this->fullUrl === NULL) {
-			$query = $this->GetQuery();
-			$this->fullUrl = $this->GetRequestUrl() . ($query ? '?' . $query : '') . $this->GetFragment();
+			$this->fullUrl = $this->GetRequestUrl() . $this->GetQuery(TRUE) . $this->GetFragment(TRUE);
 		}
 		return $this->fullUrl;
 	}
 
 	/**
-	 * Get uri fragment parsed by `parse_url()` including hash.
-	 * Example: `"#any-sublink-path"`
+	 * Get uri fragment parsed by `parse_url()` (without hash character by default).
+	 * Example: `"any-sublink-path"`
+	 * @param bool $withHash If `FALSE` (by default), fragment is returned always without hash character
+	 *                       at the beginning.
+	 *                       If `TRUE`, and fragment contains any character(s), fragment is returned
+	 *                       with hash character at the beginning. But if fragment contains no
+	 *                       character(s), fragment is returned as EMPTY STRING WITHOUT hash character.
 	 * @return string
 	 */
-	public function GetFragment () {
+	public function GetFragment ($withHash = FALSE) {
 		if ($this->fragment === NULL) $this->initUrlSegments();
-		return $this->fragment;
+		return ($withHash && mb_strlen($this->fragment) > 0)
+			? '?' . $this->fragment
+			: $this->fragment;
 	}
 
 	/**

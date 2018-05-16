@@ -225,7 +225,7 @@ class Route implements Interfaces\IRoute
 	 * there is parsed `\MvcCore\Route::$reverse` string into `\MvcCore\Route::$reverseParams`
 	 * array to build url addresses.
 	 *
-	 * @var string|NULL
+	 * @var \string|NULL
 	 */
 	protected $lastPatternParam = NULL;
 
@@ -234,7 +234,7 @@ class Route implements Interfaces\IRoute
 	 * by method `\MvcCore\Route::initMatchm();` if necessary or by method
 	 * `\MvcCore\Route::initReverse();` after it's necessary
 	 * to complete url address string in method `\MvcCore\Route::Url();`.
-	 * @var string[]|NULL
+	 * @var \string[]|NULL
 	 */
 	protected $reverseParams = NULL;
 
@@ -870,7 +870,7 @@ class Route implements Interfaces\IRoute
 				$matchPattern, $matchPatternParams, TRUE
 			);
 		} else {
-			list($this->match, $reverse) = $this->compileMatchAndReversePattern(
+			list($this->match,) = $this->compileMatchAndReversePattern(
 				$matchPattern, $matchPatternParams, FALSE
 			);
 		}
@@ -1051,8 +1051,8 @@ class Route implements Interfaces\IRoute
 				$lengthWithoutLastChar = mb_strlen($matchPattern) - 1;
 				if (mb_strrpos($matchPattern, '/') === $lengthWithoutLastChar) {
 					$matchPattern = mb_substr($matchPattern, 0, $lengthWithoutLastChar);
-					$trailingSlash = TRUE;
 				}
+				$trailingSlash = TRUE;
 				if ($compileReverse) {
 					$reverse = $this->pattern;
 					$this->reverseParams = array();
