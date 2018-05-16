@@ -881,7 +881,9 @@ class Request implements Interfaces\IRequest
 	 */
 	public function GetReferer () {
 		if ($this->referer === NULL) {
-			$referer = isset($_SERVER['HTTP_REFERER']) ? $_SERVER['HTTP_REFERER'] : '';
+			$referer = isset($this->globalServer['HTTP_REFERER'])
+				? $this->globalServer['HTTP_REFERER']
+				: '';
 			if ($referer) $referer = filter_var($referer, FILTER_SANITIZE_URL) ?: '';
 			$this->referer = $referer;
 		}
