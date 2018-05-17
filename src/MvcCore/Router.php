@@ -424,7 +424,7 @@ class Router implements Interfaces\IRouter
 				$errorMsgs[] = 'Route with name `'.$routeName.'` has already been defined between router routes.';
 			if (isset($this->urlRoutes[$controllerAction]))
 				$errorMsgs[] = 'Route with `Controller:Action` combination: `'.$controllerAction.'` has already been defined between router routes.';
-			if ($errorMsgs) 
+			if ($errorMsgs)
 				throw new \InvalidArgumentException('['.__CLASS__.'] '.implode(' ',$errorMsgs));
 		}
 		if ($prepend) {
@@ -739,9 +739,10 @@ class Router implements Interfaces\IRouter
 	protected function routeByRewriteRoutes ($requestCtrlName, $requestActionName) {
 		$request = & $this->request;
 		$requestPath = $request->GetPath();
+		$requestMethod = $request->GetMethod();
 		/** @var $route \MvcCore\Route */
 		foreach ($this->routes as & $route) {
-			if ($matchedParams = $route->Matches($requestPath)) {
+			if ($matchedParams = $route->Matches($requestPath, $requestMethod)) {
 				$this->currentRoute = & $route;
 				$routeDefaultParams = $route->GetDefaults() ?: array();
 				$newParams = array_merge($routeDefaultParams, $request->GetParams(''), $matchedParams);

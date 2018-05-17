@@ -95,7 +95,7 @@ class Route implements Interfaces\IRoute
 	 *   matching all to the end of address. It has to be the last one.
 	 *
 	 * Example: `"/products-list/<name>/<color*>"`.
-	 * @var string|NULL
+	 * @var string|\string[]|NULL
 	 */
 	protected $pattern		= NULL;
 
@@ -114,7 +114,7 @@ class Route implements Interfaces\IRoute
 	 * conversion into `\MvcCore\Route::$match` and `\MvcCore\Route::$reverse` properties.
 	 *
 	 * Example: `"#^/products\-list/(?<name>[^/]*)/(?<color>[a-z]*)#"`
-	 * @var string|NULL
+	 * @var string|\string[]|NULL
 	 */
 	protected $match		= NULL;
 
@@ -137,7 +137,7 @@ class Route implements Interfaces\IRoute
 	 * conversion into `\MvcCore\Route::$match` and `\MvcCore\Route::$reverse` properties.
 	 *
 	 * Example: `"/products-list/<name>/<color>"`
-	 * @var string|NULL
+	 * @var string|\string[]|NULL
 	 */
 	protected $reverse		= NULL;
 
@@ -192,7 +192,7 @@ class Route implements Interfaces\IRoute
 	 * It could be used for any application request input - `$_GET`, `$_POST` or `php://input`.
 	 *
 	 * Example: `array("name" => "default-name", "color" => "red",);`.
-	 * @var array
+	 * @var array|\array[]
 	 */
 	protected $defaults		= array();
 
@@ -208,9 +208,18 @@ class Route implements Interfaces\IRoute
 	 *		"name"	=> "[^/]*",
 	 *		"color"	=> "[a-z]*",
 	 *	);`
-	 * @var array
+	 * @var array|\array[]
 	 */
 	protected $constraints		= array();
+
+	/**
+	 * Http method to only match requests with this defined method.
+	 * If `NULL`, request with any http method could be matched by this route.
+	 * Value has to be upper case.
+	 * Example: `"POST" | \MvcCore\Interfaces\IRequest::METHOD_POST`
+	 * @var string|NULL
+	 */
+	protected $method = NULL;
 
 	/**
 	 * Optional, param name, which has to be also inside `\MvcCore\Route::$pattern` or
@@ -231,7 +240,7 @@ class Route implements Interfaces\IRoute
 
 	/**
 	 * Array with strings, containing all reverse pattern params, parsed automaticly
-	 * by method `\MvcCore\Route::initMatchm();` if necessary or by method
+	 * by method `\MvcCore\Route::initMatch();` if necessary or by method
 	 * `\MvcCore\Route::initReverse();` after it's necessary
 	 * to complete url address string in method `\MvcCore\Route::Url();`.
 	 * @var \string[]|NULL
@@ -272,17 +281,19 @@ class Route implements Interfaces\IRoute
 	 *		"action"		=> "List",
 	 *		"defaults"		=> array("name" => "default-name",	"color" => "red"),
 	 * ));`
-	 * @param $patternOrConfig	string|array	Required, configuration array or route pattern value to parse into match and reverse patterns.
-	 * @param $controllerAction	string			Optional, controller and action name in pascale case like: `"Photogallery:List"`.
-	 * @param $defaults			string			Optional, default param values like: `array("name" => "default-name", "page" => 1)`.
-	 * @param $constraints		array			Optional, params regex constraints for regular expression match fn no `"match"` record in configuration array as first argument defined.
+	 * @param string|array	$patternOrConfig	Required, configuration array or route pattern value to parse into match and reverse patterns.
+	 * @param string		$controllerAction	Optional, controller and action name in pascale case like: `"Photogallery:List"`.
+	 * @param string		$defaults			Optional, default param values like: `array("name" => "default-name", "page" => 1)`.
+	 * @param array			$constraints		Optional, params regex constraints for regular expression match fn no `"match"` record in configuration array as first argument defined.
+	 * @param array			$method				Optional, http method to only match requests by this method. If `NULL` (by default), request with any http method could be matched by this route. Given value is automaticly converted to upper case.
 	 * @return \MvcCore\Route
 	 */
 	public static function GetInstance (
 		$patternOrConfig = NULL,
 		$controllerAction = NULL,
 		$defaults = array(),
-		$constraints = array()
+		$constraints = array(),
+		$method = NULL
 	) {
 		return (new \ReflectionClass(get_called_class()))
 			->newInstanceArgs(func_get_args());
@@ -315,17 +326,19 @@ class Route implements Interfaces\IRoute
 	 *		"action"		=> "List",
 	 *		"defaults"		=> array("name" => "default-name",	"color" => "red"),
 	 * ));`
-	 * @param $patternOrConfig	string|array	Required, configuration array or route pattern value to parse into match and reverse patterns.
-	 * @param $controllerAction	string			Optional, controller and action name in pascale case like: `"Photogallery:List"`.
-	 * @param $defaults			array			Optional, default param values like: `array("name" => "default-name", "page" => 1)`.
-	 * @param $constraints		array			Optional, params regex constraints for regular expression match fn no `"match"` record in configuration array as first argument defined.
+	 * @param string|array $patternOrConfig	Required, configuration array or route pattern value to parse into match and reverse patterns.
+	 * @param string $controllerAction		Optional, controller and action name in pascale case like: `"Photogallery:List"`.
+	 * @param array $defaults				Optional, default param values like: `array("name" => "default-name", "page" => 1)`.
+	 * @param array $constraints			Optional, params regex constraints for regular expression match fn no `"match"` record in configuration array as first argument defined.
+	 * @param array $method					Optional, http method to only match requests by this method. If `NULL` (by default), request with any http method could be matched by this route. Given value is automaticly converted to upper case.
 	 * @return \MvcCore\Route
 	 */
 	public function __construct (
 		$patternOrConfig = NULL,
 		$controllerAction = NULL,
 		$defaults = array(),
-		$constraints = array()
+		$constraints = array(),
+		$method = NULL
 	) {
 		$args = func_get_args();
 		$argsCount = count($args);
@@ -345,6 +358,7 @@ class Route implements Interfaces\IRoute
 			$this->reverse = isset($data->reverse) ? $data->reverse : NULL;
 			$this->defaults = isset($data->defaults) ? $data->defaults : array();
 			$this->constraints = isset($data->constraints) ? $data->constraints : array();
+			$this->method = isset($data->method) ? $data->method : NULL ;
 		} else {
 			$this->pattern = $patternOrConfig;
 			list($this->controller, $this->action) = explode(':', $controllerAction);
@@ -353,7 +367,9 @@ class Route implements Interfaces\IRoute
 			$this->reverse = NULL;
 			$this->defaults = $defaults;
 			$this->constraints = $constraints;
+			$this->method = $method;
 		}
+		$this->method = $method === NULL ? NULL : strtoupper($method);
 		if (!$this->controller && !$this->action && strpos($this->name, ':') !== FALSE) {
 			list($this->controller, $this->action) = explode(':', $this->name);
 		}
@@ -381,9 +397,10 @@ class Route implements Interfaces\IRoute
 	 *   matching all to the end of address. It has to be the last one.
 	 *
 	 * Example: `"/products-list/<name>/<color*>"`.
-	 * @return string|NULL
+	 * @param string $lang Lowercase language code, `NULL` by default, not implemented in core.
+	 * @return string|\string[]|NULL
 	 */
-	public function GetPattern () {
+	public function GetPattern ($lang = NULL) {
 		return $this->pattern;
 	}
 
@@ -409,10 +426,11 @@ class Route implements Interfaces\IRoute
 	 *   matching all to the end of address. It has to be the last one.
 	 *
 	 * Example: `"/products-list/<name>/<color*>"`.
-	 * @param string $pattern
+	 * @param string|\string[] $pattern
+	 * @param string $lang Lowercase language code, `NULL` by default, not implemented in core.
 	 * @return \MvcCore\Route
 	 */
-	public function & SetPattern ($pattern) {
+	public function & SetPattern ($pattern, $lang = NULL) {
 		$this->pattern = $pattern;
 		return $this;
 	}
@@ -432,9 +450,10 @@ class Route implements Interfaces\IRoute
 	 * conversion into `\MvcCore\Route::$match` and `\MvcCore\Route::$reverse` properties.
 	 *
 	 * Example: `"#^/products\-list/(?<name>[^/]*)/(?<color>[a-z]*)#"`
-	 * @return string|NULL
+	 * @param string $lang Lowercase language code, `NULL` by default, not implemented in core.
+	 * @return string|\string[]|NULL
 	 */
-	public function GetMatch () {
+	public function GetMatch ($lang = NULL) {
 		return $this->match;
 	}
 
@@ -453,10 +472,11 @@ class Route implements Interfaces\IRoute
 	 * conversion into `\MvcCore\Route::$match` and `\MvcCore\Route::$reverse` properties.
 	 *
 	 * Example: `"#^/products\-list/(?<name>[^/]*)/(?<color>[a-z]*)#"`
-	 * @param string $match
+	 * @param string|\string[] $match
+	 * @param string $lang Lowercase language code, `NULL` by default, not implemented in core.
 	 * @return \MvcCore\Route
 	 */
-	public function & SetMatch ($match) {
+	public function & SetMatch ($match, $lang = NULL) {
 		$this->match = $match;
 		return $this;
 	}
@@ -480,9 +500,10 @@ class Route implements Interfaces\IRoute
 	 * conversion into `\MvcCore\Route::$match` and `\MvcCore\Route::$reverse` properties.
 	 *
 	 * Example: `"/products-list/<name>/<color>"`
-	 * @return string|NULL
+	 * @param string $lang Lowercase language code, `NULL` by default, not implemented in core.
+	 * @return string|\string[]|NULL
 	 */
-	public function GetReverse () {
+	public function GetReverse ($lang = NULL) {
 		return $this->reverse;
 	}
 
@@ -505,10 +526,11 @@ class Route implements Interfaces\IRoute
 	 * conversion into `\MvcCore\Route::$match` and `\MvcCore\Route::$reverse` properties.
 	 *
 	 * Example: `"/products-list/<name>/<color>"`
-	 * @param string $reverse
+	 * @param string|\string[] $reverse
+	 * @param string $lang Lowercase language code, `NULL` by default, not implemented in core.
 	 * @return \MvcCore\Route
 	 */
-	public function & SetReverse ($reverse) {
+	public function & SetReverse ($reverse, $lang = NULL) {
 		$this->reverse = $reverse;
 		return $this;
 	}
@@ -658,10 +680,11 @@ class Route implements Interfaces\IRoute
 	 *  `array(
 	 *      "name"  => "default-name",
 	 *      "color" => "red"
-	 *  );`.
-	 * @return array
+	 *  );`
+	 * @param string $lang Lowercase language code, `NULL` by default, not implemented in core.
+	 * @return array|\array[]
 	 */
-	public function & GetDefaults () {
+	public function & GetDefaults ($lang = NULL) {
 		return $this->defaults;
 	}
 
@@ -674,10 +697,11 @@ class Route implements Interfaces\IRoute
 	 *      "name"  => "default-name",
 	 *      "color" => "red"
 	 *  );`.
-	 * @param array $defaults
+	 * @param array|\array[] $defaults
+	 * @param string $lang Lowercase language code, `NULL` by default, not implemented in core.
 	 * @return \MvcCore\Route
 	 */
-	public function & SetDefaults ($defaults = array()) {
+	public function & SetDefaults ($defaults = array(), $lang = NULL) {
 		$this->defaults = $defaults;
 		return $this;
 	}
@@ -694,9 +718,10 @@ class Route implements Interfaces\IRoute
 	 *		"name"	=> "[^/]*",
 	 *		"color"	=> "[a-z]*",
 	 *	);`
-	 * @return array
+	 * @param string $lang Lowercase language code, `NULL` by default, not implemented in core.
+	 * @return array|\array[]
 	 */
-	public function & GetConstraints () {
+	public function & GetConstraints ($lang = NULL) {
 		return $this->constraints;
 	}
 
@@ -712,11 +737,36 @@ class Route implements Interfaces\IRoute
 	 *		"name"	=> "[^/]*",
 	 *		"color"	=> "[a-z]*",
 	 *	);`
-	 * @param array $constraints
+	 * @param array|\array[] $constraints
+	 * @param string $lang Lowercase language code, `NULL` by default, not implemented in core.
 	 * @return \MvcCore\Route
 	 */
-	public function & SetConstraints ($constraints = array()) {
+	public function & SetConstraints ($constraints = array(), $lang = NULL) {
 		$this->constraints = $constraints;
+		return $this;
+	}
+
+	/**
+	 * Get http method to only match requests with this defined method.
+	 * If `NULL` (by default), request with any http method could be matched by this route.
+	 * Value is automaticly in upper case.
+	 * Example: `"POST" | \MvcCore\Interfaces\IRequest::METHOD_POST`
+	 * @return string|NULL
+	 */
+	public function GetMethod () {
+		return $this->method;
+	}
+
+	/**
+	 * Set http method to only match requests with this defined method.
+	 * If `NULL` (by default), request with any http method could be matched by this route.
+	 * Given value is automaticly converted to upper case.
+	 * Example: `"POST" | \MvcCore\Interfaces\IRequest::METHOD_POST`
+	 * @param string|NULL $method
+	 * @return \MvcCore\Route
+	 */
+	public function & SetMethod ($method = NULL) {
+		$this->method = strtoupper($method);
 		return $this;
 	}
 
@@ -728,12 +778,17 @@ class Route implements Interfaces\IRoute
 	 * from `\MvcCore\Router::Route();` method and it's submethods.
 	 *
 	 * @param string $requestPath
+	 * @param string $requestMethod
 	 * @return array Matched and params array, keys are matched
 	 *				 params or controller and action params.
 	 */
-	public function Matches (& $requestPath) {
+	public function Matches ($requestPath, $requestMethod) {
 		$matchedParams = array();
-		if ($this->match === NULL) $this->initMatch();
+		if ($this->match === NULL) {
+			list($this->match, $reverse) = $this->initMatch();
+			if ($this->reverse === NULL) $this->reverse = $reverse;
+		}
+		if ($this->method !== NULL && $this->method !== $requestMethod) return $matchedParams;
 		preg_match_all($this->match, $requestPath, $matchedValues, PREG_OFFSET_CAPTURE);
 		if (isset($matchedValues[0]) && count($matchedValues[0])) {
 			$controllerName = $this->controller ?: '';
@@ -841,6 +896,22 @@ class Route implements Interfaces\IRoute
 	}
 
 	/**
+	 * Initialize all possible protected values (`match`, `reverse` etc...)
+	 * This method is not recomanded to use in production mode, it's
+	 * designed mostly for development purposes, to see what could be inside route.
+	 * @return \MvcCore\Route|\MvcCore\Interfaces\IRoute
+	 */
+	public function & InitAll () {
+		if ($this->match === NULL) {
+			list($this->match, $reverse) = $this->initMatch();
+			if ($this->reverse === NULL) $this->reverse = $reverse;
+		}
+		if ($this->lastPatternParam === NULL) $this->initReverse();
+		if ($this->reverseParams === NULL) $this->initReverse();
+		return $this;
+	}
+
+	/**
 	 * Initialize `\MvcCore\Router::$Match` property (and `\MvcCore\Router::$lastPatternParam`
 	 * property) from `\MvcCore\Router::$Pattern`, optionaly initialize
 	 * `\MvcCore\Router::$Reverse` property if there is nothing inside.
@@ -850,43 +921,35 @@ class Route implements Interfaces\IRoute
 	 *   complete also reverse property.
 	 * This method is usually called in core request routing process from
 	 * `\MvcCore\Router::Matches();` method.
-	 * @return void
+	 * @param string $lang Lowercase language code, `NULL` by default, not implemented in core.
+	 * @return \string[]
 	 */
-	protected function initMatch () {
+	protected function initMatch ($lang = NULL) {
+		$match = NULL;
+		$reverse = NULL;
 		// if there is no match regular expression - parse `\MvcCore\Route::\$Pattern`
 		// and compile `\MvcCore\Route::\$Match` regular expression property.
-		if (mb_strlen($this->pattern) === 0) throw new \LogicException(
-			"[".__CLASS__."] Route configuration property `\MvcCore\Route::\$rattern` is missing "
+		$pattern = $this->GetPattern($lang);
+		if (mb_strlen($pattern) === 0) throw new \LogicException(
+			"[".__CLASS__."] Route configuration property `\MvcCore\Route::\$pattern` is missing "
 			."to parse it and complete property(ies) `\MvcCore\Route::\$match` "
 			."(and `\MvcCore\Route::\$reverse`) correctly ($this)."
 		);
 		// escape all regular expression special characters before parsing except `<` and `>`:
-		$matchPattern = addcslashes($this->pattern, "#[](){}-?!=^$.+|:\\");
+		$matchPattern = addcslashes($pattern, "#[](){}-?!=^$.+|:\\");
 		// parse all presented `<param>` occurances in `$pattern` argument:
 		$matchPatternParams = $this->parsePatternParams($matchPattern);
 		// compile match regular expression from parsed params and custom constraints:
 		if ($this->reverse === NULL) {
-			list($this->match, $this->reverse) = $this->compileMatchAndReversePattern(
-				$matchPattern, $matchPatternParams, TRUE
+			list($match, $reverse) = $this->compileMatchAndReversePattern(
+				$matchPattern, $matchPatternParams, TRUE, $lang
 			);
 		} else {
-			list($this->match,) = $this->compileMatchAndReversePattern(
-				$matchPattern, $matchPatternParams, FALSE
+			list($match, $reverse) = $this->compileMatchAndReversePattern(
+				$matchPattern, $matchPatternParams, FALSE, $lang
 			);
 		}
-	}
-
-	/**
-	 * Initialize all possible protected values (`match`, `reverse` etc...)
-	 * This method is not recomanded to use in production mode, it's
-	 * designed mostly for development purposes, to see what could be inside route.
-	 * @return \MvcCore\Route|\MvcCore\Interfaces\IRoute
-	 */
-	public function & InitAll () {
-		if ($this->match === NULL) $this->initMatch();
-		if ($this->lastPatternParam === NULL) $this->initReverse();
-		if ($this->reverseParams === NULL) $this->initReverse();
-		return $this;
+		return array($match, $reverse);
 	}
 
 	/**
@@ -918,7 +981,7 @@ class Route implements Interfaces\IRoute
 	 *		);
 	 * @param string $match Route pattern with escaped all special regex characters except `<` and `>`.
 	 * @throws \LogicException Thrown, when founded any other param after greedy param.
-	 * @return array[] Statistics about founded params occurances.
+	 * @return \array[] Statistics about founded params occurances.
 	 */
 	protected function & parsePatternParams (& $match) {
 		$matched = array();
@@ -998,11 +1061,12 @@ class Route implements Interfaces\IRoute
 	 *		    "/products-list/<name>/<color>"
 	 *		)`
 	 * @param string $matchPattern
-	 * @param array[] $matchPatternParams
-	 * @return string[]
+	 * @param \array[] $matchPatternParams
+	 * @param string $lang Lowercase language code, `NULL` by default, not implemented in core.
+	 * @return \string[]
 	 */
-	protected function compileMatchAndReversePattern (& $matchPattern, & $matchPatternParams, $compileReverse) {
-		$constraints = $this->constraints;
+	protected function compileMatchAndReversePattern (& $matchPattern, & $matchPatternParams, $compileReverse, $lang = NULL) {
+		$constraints = $this->GetConstraints($lang);
 		$defaultConstraint = static::$DefaultConstraint;
 		$trailingSlash = FALSE;
 		$reverse = '';
@@ -1054,7 +1118,7 @@ class Route implements Interfaces\IRoute
 				}
 				$trailingSlash = TRUE;
 				if ($compileReverse) {
-					$reverse = $this->pattern;
+					$reverse = $this->GetPattern($lang);
 					$this->reverseParams = array();
 				} else {
 					$reverse = '';
@@ -1076,13 +1140,16 @@ class Route implements Interfaces\IRoute
 	 * when route has been matched and when there is still no `\MvcCore\Route::$reverseParams`
 	 * defined (`NULL`). It means that matched route has been defined by match and reverse
 	 * patterns, because there was no pattern property parsing to prepare values bellow before.
+	 * @param string $lang Lowercase language code, `NULL` by default, not implemented in core.
 	 * @return void
 	 */
-	protected function initReverse () {
+	protected function initReverse ($lang = NULL) {
 		$index = 0;
-		$reverse = & $this->reverse;
-		if ($this->reverse == NULL && $this->pattern !== NULL)
-			return $this->initMatch();
+		$reverse = $this->GetReverse($lang);
+		if ($reverse === NULL && $this->GetPattern($lang) !== NULL) {
+			$this->initMatch($lang);
+			return;
+		}
 		$reverseParams = array();
 		$closePos = -1;
 		$paramName = '';

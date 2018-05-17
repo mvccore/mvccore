@@ -95,13 +95,20 @@ interface IRoute
 	 *		"action"		=> "List",
 	 *		"defaults"		=> array("name" => "default-name",	"color" => "red"),
 	 * ));`
-	 * @param $patternOrConfig	string|array	Required, configuration array or route pattern value to parse into match and reverse patterns.
-	 * @param $controllerAction	string			Optional, controller and action name in pascale case like: `"Photogallery:List"`.
-	 * @param $defaults			string			Optional, default param values like: `array("name" => "default-name", "page" => 1)`.
-	 * @param $constraints		array			Optional, params regex constraints for regular expression match fn no `"match"` record in configuration array as first argument defined.
+	 * @param string|array	$patternOrConfig	Required, configuration array or route pattern value to parse into match and reverse patterns.
+	 * @param string		$controllerAction	Optional, controller and action name in pascale case like: `"Photogallery:List"`.
+	 * @param string		$defaults			Optional, default param values like: `array("name" => "default-name", "page" => 1)`.
+	 * @param array			$constraints		Optional, params regex constraints for regular expression match fn no `"match"` record in configuration array as first argument defined.
+	 * @param array			$method				Optional, http method to only match requests by this method. If `NULL` (by default), request with any http method could be matched by this route. Given value is automaticly converted to upper case.
 	 * @return \MvcCore\Interfaces\IRoute
 	 */
-	public static function GetInstance ($object);
+	public static function GetInstance (
+		$patternOrConfig = NULL,
+		$controllerAction = NULL,
+		$defaults = array(),
+		$constraints = array(),
+		$method = NULL
+	);
 
 	/**
 	 * Get route pattern to match request url and to build url address.
@@ -125,9 +132,10 @@ interface IRoute
 	 *   matching all to the end of address. It has to be the last one.
 	 *
 	 * Example: `"/products-list/<name>/<color*>"`.
-	 * @return string|NULL
+	 * @param string $lang Lowercase language code, `NULL` by default, not implemented in core.
+	 * @return string|\string[]|NULL
 	 */
-	public function GetPattern ();
+	public function GetPattern ($lang = NULL);
 
 	/**
 	 * Set route pattern to match request url and to build url address.
@@ -151,10 +159,11 @@ interface IRoute
 	 *   matching all to the end of address. It has to be the last one.
 	 *
 	 * Example: `"/products-list/<name>/<color*>"`.
-	 * @param string $pattern
+	 * @param string|\string[] $pattern
+	 * @param string $lang Lowercase language code, `NULL` by default, not implemented in core.
 	 * @return \MvcCore\Interfaces\IRoute
 	 */
-	public function & SetPattern ($pattern);
+	public function & SetPattern ($pattern, $lang = NULL);
 
 	/**
 	 * Get route match pattern in raw form (to use it as it is) to match proper request.
@@ -171,9 +180,10 @@ interface IRoute
 	 * conversion into `\MvcCore\Route::$match` and `\MvcCore\Route::$reverse` properties.
 	 *
 	 * Example: `"#^/products\-list/(?<name>[^/]*)/(?<color>[a-z]*)#"`
-	 * @return string|NULL
+	 * @param string $lang Lowercase language code, `NULL` by default, not implemented in core.
+	 * @return string|\string[]|NULL
 	 */
-	public function GetMatch ();
+	public function GetMatch ($lang = NULL);
 
 	/**
 	 * Set route match pattern in raw form (to use it as it is) to match proper request.
@@ -190,10 +200,11 @@ interface IRoute
 	 * conversion into `\MvcCore\Route::$match` and `\MvcCore\Route::$reverse` properties.
 	 *
 	 * Example: `"#^/products\-list/(?<name>[^/]*)/(?<color>[a-z]*)#"`
-	 * @param string $match
+	 * @param string|\string[] $match
+	 * @param string $lang Lowercase language code, `NULL` by default, not implemented in core.
 	 * @return \MvcCore\Interfaces\IRoute
 	 */
-	public function & SetMatch ($match);
+	public function & SetMatch ($match, $lang = NULL);
 
 	/**
 	 * Get route reverse address replacements pattern to build url.
@@ -214,9 +225,10 @@ interface IRoute
 	 * conversion into `\MvcCore\Route::$match` and `\MvcCore\Route::$reverse` properties.
 	 *
 	 * Example: `"/products-list/<name>/<color>"`
-	 * @return string|NULL
+	 * @param string $lang Lowercase language code, `NULL` by default, not implemented in core.
+	 * @return string|\string[]|NULL
 	 */
-	public function GetReverse ();
+	public function GetReverse ($lang = NULL);
 
 	/**
 	 * Set route reverse address replacements pattern to build url.
@@ -237,10 +249,11 @@ interface IRoute
 	 * conversion into `\MvcCore\Route::$match` and `\MvcCore\Route::$reverse` properties.
 	 *
 	 * Example: `"/products-list/<name>/<color>"`
-	 * @param string $reverse
+	 * @param string|\string[] $reverse
+	 * @param string $lang Lowercase language code, `NULL` by default, not implemented in core.
 	 * @return \MvcCore\Interfaces\IRoute
 	 */
-	public function & SetReverse ($reverse);
+	public function & SetReverse ($reverse, $lang = NULL);
 
 	/**
 	 * Get route name. It's your custom keyword/term
@@ -368,9 +381,10 @@ interface IRoute
 	 *      "name"  => "default-name",
 	 *      "color" => "red"
 	 *  );`.
-	 * @return array
+	 * @param string $lang Lowercase language code, `NULL` by default, not implemented in core.
+	 * @return array|\array[]
 	 */
-	public function & GetDefaults ();
+	public function & GetDefaults ($lang = NULL);
 
 	/**
 	 * Set route rewrited params default values and also any other params default values.
@@ -381,10 +395,11 @@ interface IRoute
 	 *      "name"  => "default-name",
 	 *      "color" => "red"
 	 *  );`.
-	 * @param array $defaults
+	 * @param array|\array[] $defaults
+	 * @param string $lang Lowercase language code, `NULL` by default, not implemented in core.
 	 * @return \MvcCore\Interfaces\IRoute
 	 */
-	public function & SetDefaults ($defaults = array());
+	public function & SetDefaults ($defaults = array(), $lang = NULL);
 
 	/**
 	 * Get array with param names and their custom regular expression
@@ -398,9 +413,10 @@ interface IRoute
 	 *		"name"	=> "[^/]*",
 	 *		"color"	=> "[a-z]*",
 	 *	);`
-	 * @return array
+	 * @param string $lang Lowercase language code, `NULL` by default, not implemented in core.
+	 * @return array|\array[]
 	 */
-	public function & GetConstraints ();
+	public function & GetConstraints ($lang = NULL);
 
 	/**
 	 * Set array with param names and their custom regular expression
@@ -414,10 +430,30 @@ interface IRoute
 	 *		"name"	=> "[^/]*",
 	 *		"color"	=> "[a-z]*",
 	 *	);`
-	 * @param array $constraints
+	 * @param array|\array[] $constraints
+	 * @param string $lang Lowercase language code, `NULL` by default, not implemented in core.
 	 * @return \MvcCore\Interfaces\IRoute
 	 */
-	public function & SetConstraints ($constraints = array());
+	public function & SetConstraints ($constraints = array(), $lang = NULL);
+
+	/**
+	 * Get http method to only match requests with this defined method.
+	 * If `NULL` (by default), request with any http method could be matched by this route.
+	 * Value is automaticly in upper case.
+	 * Example: `"POST" | \MvcCore\Interfaces\IRequest::METHOD_POST`
+	 * @return string|NULL
+	 */
+	public function GetMethod ();
+
+	/**
+	 * Set http method to only match requests with this defined method.
+	 * If `NULL` (by default), request with any http method could be matched by this route.
+	 * Given value is automaticly converted to upper case.
+	 * Example: `"POST" | \MvcCore\Interfaces\IRequest::METHOD_POST`
+	 * @param string|NULL $method
+	 * @return \MvcCore\Interfaces\IRoute
+	 */
+	public function & SetMethod ($method = NULL);
 
 	/**
 	 * Return array of matched params, with matched controller and action names,
@@ -427,10 +463,11 @@ interface IRoute
 	 * from `\MvcCore\Router::Route();` method and it's submethods.
 	 *
 	 * @param string $requestPath
+	 * @param string $requestMethod
 	 * @return array Matched and params array, keys are matched
 	 *				 params or controller and action params.
 	 */
-	public function Matches (& $requestPath);
+	public function Matches ($requestPath, $requestMethod);
 
 	/**
 	 * Complete route url by given params array and route
