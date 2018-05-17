@@ -403,9 +403,13 @@ class Router implements Interfaces\IRouter
 	 *																 route config array.
 	 * @param bool $prepend	Optional, if `TRUE`, given route will
 	 *						be prepended, not appended.
+	 * @param bool $throwExceptionForDuplication `TRUE` by default. Throw an exception,
+	 *											 if route `name` or route `Controller:Action`
+	 *											 has been defined already. If `FALSE` old route
+	 *											 is overwriten by new one.
 	 * @return \MvcCore\Router
 	 */
-	public function & AddRoute ($route, $prepend = FALSE) {
+	public function & AddRoute ($route, $prepend = FALSE, $throwExceptionForDuplication = TRUE) {
 		if ($route instanceof \MvcCore\Interfaces\IRoute) {
 			$instance = & $route;
 		} else {
@@ -413,13 +417,23 @@ class Router implements Interfaces\IRouter
 			$instance = $routeClass::GetInstance($route);
 		}
 		$routeName = $instance->GetName();
+		$controllerAction = $instance->GetControllerAction();
+		if ($throwExceptionForDuplication) {
+			$errorMsgs = array();
+			if (isset($this->routes[$routeName]))
+				$errorMsgs[] = 'Route with name `'.$routeName.'` has already been defined between router routes.';
+			if (isset($this->urlRoutes[$controllerAction]))
+				$errorMsgs[] = 'Route with `Controller:Action` combination: `'.$controllerAction.'` has already been defined between router routes.';
+			if ($errorMsgs) 
+				throw new \InvalidArgumentException('['.__CLASS__.'] '.implode(' ',$errorMsgs));
+		}
 		if ($prepend) {
 			$this->routes = array_merge(array($routeName => $instance), $this->routes);
 		} else {
 			$this->routes[$routeName] = & $instance;
 		}
 		$this->urlRoutes[$routeName] = & $instance;
-		$this->urlRoutes[$instance->GetControllerAction()] = & $instance;
+		$this->urlRoutes[$controllerAction] = & $instance;
 		return $this;
 	}
 
@@ -787,7 +801,7 @@ class Router implements Interfaces\IRouter
 	protected function redirectToProperTrailingSlashIfNecessary () {
 		if (!$this->trailingSlashBehaviour) return;
 		$path = $this->request->GetPath();
-		if ($path == '/') 
+		if ($path == '/')
 			return; // do not redirect for homepage with trailing slash
 		if ($path == '') {
 			// add homepage trailing slash and redirect

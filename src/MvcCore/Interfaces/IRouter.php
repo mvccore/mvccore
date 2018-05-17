@@ -230,9 +230,13 @@ interface IRouter
 	 * @param \MvcCore\Interfaces\IRoute|array $route Route instance or
 	 *												  route config array.
 	 * @param bool $prepend
+	 * @param bool $throwExceptionForDuplication `TRUE` by default. Throw an exception,
+	 *											 if route `name` or route `Controller:Action`
+	 *											 has been defined already. If `FALSE` old route
+	 *											 is overwriten by new one.
 	 * @return \MvcCore\Interfaces\IRouter
 	 */
-	public function & AddRoute ($route, $prepend = FALSE);
+	public function & AddRoute ($route, $prepend = FALSE, $throwExceptionForDuplication = TRUE);
 
 	/**
 	 * Get all configured route(s) as `\MvcCore\Route` instances.
