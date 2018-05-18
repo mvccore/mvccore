@@ -357,7 +357,7 @@ class Route implements Interfaces\IRoute
 			$this->match = isset($data->match) ? $data->match : NULL;
 			$this->reverse = isset($data->reverse) ? $data->reverse : NULL;
 			$this->defaults = isset($data->defaults) ? $data->defaults : array();
-			$this->constraints = isset($data->constraints) ? $data->constraints : array();
+			$this->SetConstraints(isset($data->constraints) ? $data->constraints : array());
 			$this->method = isset($data->method) ? $data->method : NULL ;
 		} else {
 			$this->pattern = $patternOrConfig;
@@ -366,10 +366,10 @@ class Route implements Interfaces\IRoute
 			$this->match = NULL;
 			$this->reverse = NULL;
 			$this->defaults = $defaults;
-			$this->constraints = $constraints;
+			$this->SetConstraints($constraints);
 			$this->method = $method;
 		}
-		$this->method = $method === NULL ? NULL : strtoupper($method);
+		$this->method = $this->method === NULL ? NULL : strtoupper($this->method);
 		if (!$this->controller && !$this->action && strpos($this->name, ':') !== FALSE) {
 			list($this->controller, $this->action) = explode(':', $this->name);
 		}
@@ -743,6 +743,9 @@ class Route implements Interfaces\IRoute
 	 */
 	public function & SetConstraints ($constraints = array(), $lang = NULL) {
 		$this->constraints = $constraints;
+		foreach ($constraints as $key => $value)
+			if (!isset($this->defaults[$key]))
+				$this->defaults[$key] = NULL;
 		return $this;
 	}
 
@@ -768,6 +771,19 @@ class Route implements Interfaces\IRoute
 	public function & SetMethod ($method = NULL) {
 		$this->method = strtoupper($method);
 		return $this;
+	}
+
+	/**
+	 * Return parsed reverse params as array with param names from reverse pattern string.
+	 * Example: `array("name", "color");`
+	 * @return \string[]|NULL
+	 */
+	public function & GetReverseParams () {
+		if ($this->reverseParams === NULL) {
+			$reverse = $this->initReverse();
+			if ($this->reverse === NULL) $this->reverse = $reverse;
+		}
+		return $this->reverseParams;
 	}
 
 	/**
@@ -816,7 +832,7 @@ class Route implements Interfaces\IRoute
 				$matchedParams[$matchedKey] = $matchedValue[0][0];
 				$index += 1;
 			}
-			if ($this->lastPatternParam === NULL) $this->initReverse();
+			if ($this->lastPatternParam === NULL) $this->reverse = $this->initReverse();
 			if (isset($matchedParams[$this->lastPatternParam])) {
 				$matchedParams[$this->lastPatternParam] = rtrim($matchedParams[$this->lastPatternParam], '/');
 			}
@@ -845,10 +861,11 @@ class Route implements Interfaces\IRoute
 	 *		`"/products-list/cool-product-name/blue?variant[]=L&amp;variant[]=XL"`
 	 * @param array $params
 	 * @param array $cleanedGetRequestParams Request query params with escaped chars: `<` and `>`.;
+	 * @param string $queryStringParamsSepatator Query params separator, `&` by default. Always automaticly completed by router instance.
 	 * @return string
 	 */
-	public function Url (& $params = array(), & $cleanedGetRequestParams = array()) {
-		if ($this->reverseParams === NULL) $this->initReverse();
+	public function Url (& $params = array(), & $cleanedGetRequestParams = array(), $queryStringParamsSepatator = '&') {
+		if ($this->reverseParams === NULL) $this->reverse = $this->initReverse();
 		$result = $this->reverse;
 		$givenParamsKeys = array_merge(array(), $params);
 		foreach ($this->reverseParams as $paramName) {
@@ -865,9 +882,10 @@ class Route implements Interfaces\IRoute
 			$result = str_replace($paramKeyReplacement, $paramValue, $result);
 			unset($givenParamsKeys[$paramName]);
 		}
-		if ($givenParamsKeys)
-			$result .= ($this->reverseParams ? '&amp;' : '?')
-				. http_build_query($givenParamsKeys);
+		if ($givenParamsKeys) {
+			$result .= ($this->reverseParams ? $queryStringParamsSepatator : '?')
+				. http_build_query($givenParamsKeys, NULL, $queryStringParamsSepatator);
+		}
 		return $result;
 	}
 
@@ -906,8 +924,8 @@ class Route implements Interfaces\IRoute
 			list($this->match, $reverse) = $this->initMatch();
 			if ($this->reverse === NULL) $this->reverse = $reverse;
 		}
-		if ($this->lastPatternParam === NULL) $this->initReverse();
-		if ($this->reverseParams === NULL) $this->initReverse();
+		if ($this->lastPatternParam === NULL) $this->reverse = $this->initReverse();
+		if ($this->reverseParams === NULL) $this->reverse = $this->initReverse();
 		return $this;
 	}
 
@@ -1141,14 +1159,14 @@ class Route implements Interfaces\IRoute
 	 * defined (`NULL`). It means that matched route has been defined by match and reverse
 	 * patterns, because there was no pattern property parsing to prepare values bellow before.
 	 * @param string $lang Lowercase language code, `NULL` by default, not implemented in core.
-	 * @return void
+	 * @return string
 	 */
 	protected function initReverse ($lang = NULL) {
 		$index = 0;
 		$reverse = $this->GetReverse($lang);
 		if ($reverse === NULL && $this->GetPattern($lang) !== NULL) {
-			$this->initMatch($lang);
-			return;
+			list(, $reverse) = $this->initMatch();
+			return $reverse;
 		}
 		$reverseParams = array();
 		$closePos = -1;
@@ -1157,8 +1175,9 @@ class Route implements Interfaces\IRoute
 			$openPos = mb_strpos($reverse, '<', $index);
 			if ($openPos === FALSE) break;
 			$openPosPlusOne = $openPos + 1;
-			$closePos = mb_strpos($reverse, '<', $openPosPlusOne);
+			$closePos = mb_strpos($reverse, '>', $openPosPlusOne);
 			if ($closePos === FALSE) break;
+			$index = $closePos + 1;
 			$paramName = mb_substr($reverse, $openPosPlusOne, $closePos - $openPosPlusOne);
 			$reverseParams[] = $paramName;
 		}
@@ -1176,5 +1195,6 @@ class Route implements Interfaces\IRoute
 				$this->lastPatternParam = $paramName;
 			}
 		}
+		return $reverse;
 	}
 }

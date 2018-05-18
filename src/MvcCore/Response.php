@@ -309,6 +309,18 @@ class Response implements Interfaces\IResponse
 	}
 
 	/**
+	 * Returns if response has any `xml` substring in `Content-Type` header.
+	 * @return bool
+	 */
+	public function IsXmlOutput () {
+		if (isset($this->headers['Content-Type'])) {
+			$value = $this->headers['Content-Type'];
+			return strpos($value, 'xml') !== FALSE;
+		}
+		return FALSE;
+	}
+
+	/**
 	 * `TRUE` if headers or body has been sent.
 	 * @return bool
 	 */

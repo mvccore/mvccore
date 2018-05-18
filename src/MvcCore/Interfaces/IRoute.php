@@ -456,6 +456,13 @@ interface IRoute
 	public function & SetMethod ($method = NULL);
 
 	/**
+	 * Return parsed reverse params as array with param names from reverse pattern string.
+	 * Example: `array("name", "color");`
+	 * @return \string[]|NULL
+	 */
+	public function & GetReverseParams ();
+
+	/**
 	 * Return array of matched params, with matched controller and action names,
 	 * if route matches request `\MvcCore\Request::$Path` property by `preg_match_all()`.
 	 *
@@ -490,9 +497,10 @@ interface IRoute
 	 *		`"/products-list/cool-product-name/blue?variant[]=L&amp;variant[]=XL"`
 	 * @param array $params
 	 * @param array $cleanedGetRequestParams Request query params with escaped chars: `<` and `>`.;
+	 * @param string $queryStringParamsSepatator Query params separator, `&` by default. Always automaticly completed by router instance.
 	 * @return string
 	 */
-	public function Url (& $params = array(), & $cleanedGetRequestParams = array());
+	public function Url (& $params = array(), & $cleanedGetRequestParams = array(), $queryParamsSepatator = '&');
 
 	/**
 	 * Render all instance properties values into string.

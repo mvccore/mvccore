@@ -41,7 +41,7 @@ interface IDebug
 	 *                                   debug mode will be set not by config but by this value.
 	 * @return void
 	 */
-	public static function Init ();
+	public static function Init ($forceDevelopmentMode = NULL);
 
 	/**
 	 * Starts/stops stopwatch.

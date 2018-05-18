@@ -327,26 +327,24 @@ trait Dispatching
 		);
 		$exceptionMessage = $e->getMessage();
 		if ($defaultCtrlFullName) {
-			$toolClass = $this->toolClass;
 			$debugClass = $this->debugClass;
 			$viewClass = $this->viewClass;
-			$ctrlNameDc = $toolClass::GetDashedFromPascalCase($this->defaultControllerName);
-			$actionNameDc = $toolClass::GetDashedFromPascalCase($this->defaultControllerErrorActionName);
-			$newParams = array_merge($this->request->GetParams(''), array(
+			$this->router->SetOrCreateDefaultRouteAsCurrent(
+				\MvcCore\Interfaces\IRouter::DEFAULT_ROUTE_NAME_ERROR,
+				$this->defaultControllerName, $this->defaultControllerErrorActionName
+			);
+			$newParams = array_merge($this->request->GetParams('.*'), array(
 				'code'		=> 500,
 				'message'	=> $exceptionMessage,
-				'controller'=> $ctrlNameDc,
-				'action'	=> $actionNameDc,
 			));
-			$this->request->SetParams($newParams)
-				->SetControllerName($ctrlNameDc)
-				->SetActionName($actionNameDc);
+			$this->request->SetParams($newParams);
 			$this->response->SetCode(500);
 			return $this->DispatchControllerAction(
 				$defaultCtrlFullName,
 				$this->defaultControllerErrorActionName . "Action",
 				$viewClass::GetViewScriptFullPath(
-					$viewClass::$ScriptsDir, $ctrlNameDc . '/' . $actionNameDc
+					$viewClass::$ScriptsDir,
+					$this->request->GetControllerName() . '/' . $this->request->GetActionName()
 				),
 				function (\Exception & $e) use ($exceptionMessage, $debugClass) {
 					$debugClass::Log($e, \MvcCore\Interfaces\IDebug::EXCEPTION);
@@ -372,26 +370,24 @@ trait Dispatching
 			$this->defaultControllerNotFoundActionName
 		);
 		if ($defaultCtrlFullName) {
-			$toolClass = $this->toolClass;
 			$debugClass = $this->debugClass;
 			$viewClass = $this->viewClass;
-			$ctrlNameDc = $toolClass::GetDashedFromPascalCase($this->defaultControllerName);
-			$actionNameDc = $toolClass::GetDashedFromPascalCase($this->defaultControllerNotFoundActionName);
-			$newParams = array_merge($this->request->GetParams(''), array(
+			$this->router->SetOrCreateDefaultRouteAsCurrent(
+				\MvcCore\Interfaces\IRouter::DEFAULT_ROUTE_NAME_NOT_FOUND,
+				$this->defaultControllerName, $this->defaultControllerErrorActionName
+			);
+			$newParams = array_merge($this->request->GetParams('.*'), array(
 				'code'		=> 404,
 				'message'	=> $exceptionMessage,
-				'controller'=> $ctrlNameDc,
-				'action'	=> $actionNameDc,
 			));
-			$this->request->SetParams($newParams)
-				->SetControllerName($ctrlNameDc)
-				->SetActionName($actionNameDc);
+			$this->request->SetParams($newParams);
 			$this->response->SetCode(404);
 			return $this->DispatchControllerAction(
 				$defaultCtrlFullName,
 				$this->defaultControllerNotFoundActionName . "Action",
 				$viewClass::GetViewScriptFullPath(
-					$viewClass::$ScriptsDir, $ctrlNameDc . '/' . $actionNameDc
+					$viewClass::$ScriptsDir,
+					$this->request->GetControllerName() . '/' . $this->request->GetActionName()
 				),
 				function (\Exception & $e) use ($exceptionMessage, $debugClass) {
 					$debugClass::Log($e, \MvcCore\Interfaces\IDebug::EXCEPTION);

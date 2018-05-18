@@ -378,7 +378,7 @@ class Request implements Interfaces\IRequest
 	 * @param string|array $pregReplaceAllowedChars If String - list of regular expression characters to only keep, if array - `preg_replace()` pattern and reverse.
 	 * @return array
 	 */
-	public function & GetHeaders ($pregReplaceAllowedChars = array('#\<\>#', '')) {
+	public function & GetHeaders ($pregReplaceAllowedChars = array('#[\<\>]#', '')) {
 		if ($this->headers === NULL) $this->initHeaders();
 		if ($pregReplaceAllowedChars === '' || $pregReplaceAllowedChars === '.*') return $this->headers;
 		$cleanedHeaders = array();
@@ -442,13 +442,18 @@ class Request implements Interfaces\IRequest
 	 * If any defined char groups in `$pregReplaceAllowedChars`, there will be returned
 	 * all params filtered by given rule in `preg_replace()`.
 	 * @param string|array $pregReplaceAllowedChars If String - list of regular expression characters to only keep, if array - `preg_replace()` pattern and reverse.
+	 * @param array $onlyKeys Array with keys to get only. If empty (by default), all possible params are returned.
 	 * @return array
 	 */
-	public function & GetParams ($pregReplaceAllowedChars = array('#\<\>#', '')) {
+	public function & GetParams ($pregReplaceAllowedChars = array('#[\<\>]#', ''), $onlyKeys = array()) {
 		if ($this->params === NULL) $this->initParams();
-		if ($pregReplaceAllowedChars === '' || $pregReplaceAllowedChars === '.*') return $this->params;
+		if ($pregReplaceAllowedChars === '' || $pregReplaceAllowedChars === '.*') {
+			$result = $onlyKeys ? array_intersect_key($this->params, array_flip($onlyKeys)) : $this->params;
+			return $result;
+		}
 		$cleanedParams = array();
 		foreach ($this->params as $key => & $value) {
+			if ($onlyKeys && !in_array($key, $onlyKeys)) continue;
 			$cleanedKey = $this->cleanParamValue($key, $pregReplaceAllowedChars);
 			$cleanedParams[$cleanedKey] = $this->GetParam($key, $pregReplaceAllowedChars);
 		}

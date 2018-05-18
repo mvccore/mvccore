@@ -90,8 +90,10 @@ trait Helpers
 	 * @return \MvcCore\Application
 	 */
 	protected function & setCoreClass ($newCoreClassName, $coreClassVar, $coreClassInterface) {
-		if (call_user_func(array($this->toolClass, 'CheckClassInterface'), $newCoreClassName, $coreClassInterface))
-			$this->$coreClassVar = $newCoreClassName;
+		if (call_user_func(
+			array($this->toolClass, 'CheckClassInterface'), 
+			$newCoreClassName, $coreClassInterface, TRUE, TRUE // check static methods and throw an exception if false
+		)) $this->$coreClassVar = $newCoreClassName;
 		return $this;
 	}
 

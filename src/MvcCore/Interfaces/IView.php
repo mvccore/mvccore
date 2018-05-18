@@ -67,6 +67,12 @@ interface IView
 	const DOCTYPE_HTML5 = 'HTML5';
 
 	/**
+	 * View output document type for any XML file.
+	 * @var string
+	 */
+	const DOCTYPE_XML = 'XML';
+
+	/**
 	 * Static initialization to complete
 	 * `static::$HelpersClassesNamespaces` by application configuration.
 	 * @return void

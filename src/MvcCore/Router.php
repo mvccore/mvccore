@@ -104,6 +104,15 @@ class Router implements Interfaces\IRouter
 	protected $trailingSlashBehaviour = -1;
 
 	/**
+	 * Query string params separator, always initialized by configured response type.
+	 * If response has no `Content-Type` header yet, query string separator is automaticly
+	 * configured to `&`. That's why is very important to define response content type
+	 * as the very first command in controller `Init()` method, if you want to send XML content.
+	 * @var string|NULL
+	 */
+	protected $queryParamsSepatator = NULL;
+
+	/**
 	 * Reference to singleton instance in `\MvcCore\Application::GetInstance();`.
 	 * @var \MvcCore\Application|NULL
 	 */
@@ -333,9 +342,13 @@ class Router implements Interfaces\IRouter
 	 * @param bool $prepend	Optional, if `TRUE`, all given routes will
 	 *						be prepended from the last to the first in
 	 *						given list, not appended.
+	 * @param bool $throwExceptionForDuplication `TRUE` by default. Throw an exception,
+	 *											 if route `name` or route `Controller:Action`
+	 *											 has been defined already. If `FALSE` old route
+	 *											 is overwriten by new one.
 	 * @return \MvcCore\Router
 	 */
-	public function & AddRoutes (array $routes = array(), $prepend = FALSE) {
+	public function & AddRoutes (array $routes = array(), $prepend = FALSE, $throwExceptionForDuplication = TRUE) {
 		if ($prepend) $routes = array_reverse($routes);
 		$routeClass = self::$_routeClass;
 		foreach ($routes as $routeName => & $route) {
@@ -343,16 +356,16 @@ class Router implements Interfaces\IRouter
 			$numericKey = is_numeric($routeName);
 			if ($route instanceof \MvcCore\Interfaces\IRoute) {
 				if (!$numericKey) $route->SetName($routeName);
-				$this->AddRoute($route, $prepend);
+				$this->AddRoute($route, $prepend, $throwExceptionForDuplication);
 			} else if ($routeType == 'array') {
 				if (!$numericKey) $route['name'] = $routeName;
-				$this->AddRoute($routeClass::GetInstance($route), $prepend);
+				$this->AddRoute($routeClass::GetInstance($route), $prepend, $throwExceptionForDuplication);
 			} else if ($routeType == 'string') {
 				// route name is always Controller:Action
 				$this->AddRoute($routeClass::GetInstance(array(
 					'name'		=> $routeName,
 					'pattern'	=> $route
-				)), $prepend);
+				)), $prepend, $throwExceptionForDuplication);
 			} else {
 				throw new \InvalidArgumentException (
 					"[".__CLASS__."] Route is not possible to assign (key: \"$routeName\", value: " . json_encode($route) . ")."
@@ -438,12 +451,54 @@ class Router implements Interfaces\IRouter
 	}
 
 	/**
+	 * Return `TRUE` if router has any route by given route name, `FALSE` otherwise.
+	 * @param string|\MvcCore\Interfaces\IRoute $routeOrRouteName
+	 * @return boolean
+	 */
+	public function HasRoute ($routeOrRouteName) {
+		if (is_string($routeOrRouteName)) {
+			return isset($this->routes[$routeOrRouteName]);
+		} else /*if ($routeOrRouteName instanceof \MvcCore\Interfaces\IRoute)*/ {
+			return isset($this->routes[$routeOrRouteName->GetName()]) || isset($this->routes[$routeOrRouteName->GetControllerAction()]);
+		}
+		//return FALSE;
+	}
+
+	/**
+	 * Remove route from router by given name and return removed route instance.
+	 * If router has no route by given name, `NULL` is returned.
+	 * @param string $routeName
+	 * @return \MvcCore\Route|\MvcCore\Interfaces\IRoute|NULL
+	 */
+	public function RemoveRoute ($routeName) {
+		$result = NULL;
+		if (isset($this->routes[$routeName])) {
+			$result = $this->routes[$routeName];
+			unset($this->routes[$routeName]);
+			$controllerAction = $result->GetControllerAction();
+			if (isset($this->urlRoutes[$routeName])) unset($this->urlRoutes[$routeName]);
+			if (isset($this->urlRoutes[$controllerAction])) unset($this->urlRoutes[$controllerAction]);
+		}
+		return $result;
+	}
+
+	/**
 	 * Get all configured route(s) as `\MvcCore\Route` instances.
 	 * Keys in returned array are route names, values are route objects.
 	 * @return \MvcCore\Route[]
 	 */
 	public function & GetRoutes () {
 		return $this->routes;
+	}
+
+	/**
+	 * Get configured `\MvcCore\Route` route instances by route name, `NULL` if no route presented.
+	 * @return \MvcCore\Route|NULL
+	 */
+	public function & GetRoute ($routeName) {
+		if (isset($this->routes[$routeName]))
+			return $this->routes[$routeName];
+		return NULL;
 	}
 
 	/**
@@ -597,16 +652,10 @@ class Router implements Interfaces\IRouter
 			($request->GetPath() == '/' || $request->GetPath() == $request->GetScriptName()) ||
 			$this->routeToDefaultIfNotMatch
 		)) {
-			$routeClass = self::$_routeClass;
 			list($dfltCtrl, $dftlAction) = self::$_app->GetDefaultControllerAndActionNames();
-			$this->currentRoute = $routeClass::GetInstance()
-				->SetName("$dfltCtrl:$dftlAction")
-				->SetController($dfltCtrl)
-				->SetAction($dftlAction);
-			$toolClass = static::$_toolClass;
-			$this->request
-				->SetControllerName($toolClass::GetDashedFromPascalCase($dfltCtrl))
-				->SetActionName($toolClass::GetDashedFromPascalCase($dftlAction));
+			$this->SetOrCreateDefaultRouteAsCurrent(
+				\MvcCore\Interfaces\IRouter::DEFAULT_ROUTE_NAME, $dfltCtrl, $dftlAction
+			);
 		}
 		return $this->currentRoute;
 	}
@@ -666,6 +715,72 @@ class Router implements Interfaces\IRouter
 	}
 
 	/**
+	 * Try to found any existing route by `$routeName` argument
+	 * or try to find any existing route by `$controllerPc:$actionPc` arguments
+	 * combination and set this founded route instance as current route object.
+	 *
+	 * Target request object reference to this newly configured current route object.
+	 *
+	 * If no route by name or controller and action combination found,
+	 * create new empty route by configured route class from application core
+	 * and set up this new route by given `$routeName`, `$controllerPc`, `$actionPc`
+	 * with route match pattern to match any request `#/(?<path>.*)#` and with reverse
+	 * pattern `/<path>` to create url by single `path` param only. Add this newly
+	 * created route into routes and set this new route as current route object.
+	 *
+	 * This method is always called internaly for following cases:
+	 * - When router has no routes configured and request is necessary
+	 *   to route by query string arguments only (controller and action).
+	 * - When no route matched and when is necessary to create
+	 *   default route object for homepage, handled by `Index:Index` by default.
+	 * - When no route matched and when router is configured to route
+	 *   requests to default route if no route matched by
+	 *   `$router->SetRouteToDefaultIfNotMatch();`.
+	 * - When is necessary to create not found route or error route
+	 *   when there was not possible to route the request or when
+	 *   there was any uncatched exception in controller or template
+	 *   catched later by application.
+	 *
+	 * @param string $routeName Always as `default`, `error` or `not_found`, by constants:
+	 *                         `\MvcCore\Interfaces\IRouter::DEFAULT_ROUTE_NAME`
+	 *                         `\MvcCore\Interfaces\IRouter::DEFAULT_ROUTE_NAME_ERROR`
+	 *                         `\MvcCore\Interfaces\IRouter::DEFAULT_ROUTE_NAME_NOT_FOUND`
+	 * @param string $controllerPc Controller name in pascal case.
+	 * @param string $actionPc Action name with pascal case without ending `Action` substring.
+	 * @return \MvcCore\Route|\MvcCore\Interfaces\IRoute
+	 */
+	public function & SetOrCreateDefaultRouteAsCurrent ($routeName, $controllerPc, $actionPc) {
+		$ctrlActionRouteName = $controllerPc.':'. $actionPc;
+		if (isset($this->routes[$ctrlActionRouteName])) {
+			$defaultRoute = $this->routes[$ctrlActionRouteName];
+		} else if (isset($this->routes[$routeName])) {
+			$defaultRoute = $this->routes[$routeName];
+		} else {
+			$routeClass = self::$_routeClass;
+			$defaultRoute = $routeClass::GetInstance()
+				->SetMatch('#/(?<path>.*)#')
+				->SetReverse('/<path>')
+				->SetName($routeName)
+				->SetController($controllerPc)
+				->SetAction($actionPc)
+				->SetDefaults(array(
+					'path'		=> NULL,
+					'controller'=> NULL,
+					'action'	=> NULL,
+				));
+			$this->AddRoute($defaultRoute, TRUE, FALSE);
+			if (!$this->request->IsInternalRequest())
+				$this->request->SetParam('path', $this->request->GetPath());
+		}
+		$toolClass = self::$_toolClass;
+		$this->request
+			->SetControllerName($toolClass::GetDashedFromPascalCase($defaultRoute->GetController()))
+			->SetActionName($toolClass::GetDashedFromPascalCase($defaultRoute->GetAction()));
+		$this->currentRoute = $defaultRoute;
+		return $defaultRoute;
+	}
+
+	/**
 	 * Complete url with all params in query string.
 	 * Example: `"/application/base-bath/index.php?controller=ctrlName&amp;action=actionName&amp;name=cool-product-name&amp;color=blue"`
 	 * @param string $controllerActionOrRouteName
@@ -675,10 +790,11 @@ class Router implements Interfaces\IRouter
 	protected function urlByQueryString ($controllerActionOrRouteName, $params) {
 		$toolClass = self::$_toolClass;
 		list($ctrlPc, $actionPc) = explode(':', $controllerActionOrRouteName);
+		$amp = $this->getQueryStringParamsSepatator();
 		$result = $this->request->GetBasePath() . $this->request->GetScriptName()
 			. '?controller=' . $toolClass::GetDashedFromPascalCase($ctrlPc)
-			. '&amp;action=' . $toolClass::GetDashedFromPascalCase($actionPc);
-		if ($params) $result .= '&amp;' . http_build_query($params, '', '&amp;');
+			. $amp . 'action=' . $toolClass::GetDashedFromPascalCase($actionPc);
+		if ($params) $result .= $amp . http_build_query($params, '', $amp);
 		return $result;
 	}
 
@@ -700,7 +816,9 @@ class Router implements Interfaces\IRouter
 	 * @return string
 	 */
 	protected function urlByRoute (& $route, $params) {
-		return $this->request->GetBasePath() . $route->Url($params, $this->cleanedRequestParams);
+		return $this->request->GetBasePath() . $route->Url(
+			$params, $this->cleanedRequestParams, $this->getQueryStringParamsSepatator()
+		);
 	}
 
 	/**
@@ -713,18 +831,12 @@ class Router implements Interfaces\IRouter
 	 */
 	protected function routeByControllerAndActionQueryString ($requestCtrlName, $requestActionName) {
 		$toolClass = self::$_toolClass;
-		$routeClass = self::$_routeClass;
 		list($ctrlDfltName, $actionDfltName) = self::$_app->GetDefaultControllerAndActionNames();
-		$controllerPc = $toolClass::GetPascalCaseFromDashed($requestCtrlName ?: $ctrlDfltName);
-		$actionPc = $toolClass::GetPascalCaseFromDashed($requestActionName ?: $actionDfltName);
-		$this->currentRoute = $routeClass::GetInstance()
-			->SetName('default')
-			->SetController($controllerPc)
-			->SetAction($actionPc);
-		$this->AddRoute($this->currentRoute, TRUE);
-		$this->request
-			->SetControllerName($toolClass::GetDashedFromPascalCase($controllerPc))
-			->SetActionName($toolClass::GetDashedFromPascalCase($actionPc));
+		$this->SetOrCreateDefaultRouteAsCurrent(
+			\MvcCore\Interfaces\IRouter::DEFAULT_ROUTE_NAME,
+			$toolClass::GetPascalCaseFromDashed($requestCtrlName ?: $ctrlDfltName),
+			$toolClass::GetPascalCaseFromDashed($requestActionName ?: $actionDfltName)
+		);
 	}
 
 	/**
@@ -741,6 +853,7 @@ class Router implements Interfaces\IRouter
 		$requestPath = $request->GetPath();
 		$requestMethod = $request->GetMethod();
 		/** @var $route \MvcCore\Route */
+		reset($this->routes);
 		foreach ($this->routes as & $route) {
 			if ($matchedParams = $route->Matches($requestPath, $requestMethod)) {
 				$this->currentRoute = & $route;
@@ -844,5 +957,26 @@ class Router implements Interfaces\IRouter
 			->SetCode($code)
 			->SetHeader('Location', $url);
 		$app->Terminate();
+	}
+
+	/**
+	 * Return XML query string separator `&amp;`, if response has any `Content-Type` header with `xml` substring inside
+	 * or return XML query string separator `&amp;` if `\MvcCore\View::$Doctype` is has any `XML` or any `XHTML` substring inside.
+	 * Otherwise return HTML query string separator `&`.
+	 * @return string
+	 */
+	protected function getQueryStringParamsSepatator () {
+		if ($this->queryParamsSepatator === NULL) {
+			$response = \MvcCore\Application::GetInstance()->GetResponse();
+			if ($response->HasHeader('Content-Type')) {
+				$this->queryParamsSepatator = $response->IsXmlOutput() ? '&amp;' : '&';
+			} else {
+				$this->queryParamsSepatator = (
+					strpos(\MvcCore\View::$Doctype, \MvcCore\View::DOCTYPE_XML) !== FALSE ||
+					strpos(\MvcCore\View::$Doctype, \MvcCore\View::DOCTYPE_XHTML) !== FALSE
+				) ? '&amp;' : '&';
+			}
+		}
+		return $this->queryParamsSepatator;
 	}
 }

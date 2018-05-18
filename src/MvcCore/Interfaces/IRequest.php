@@ -170,9 +170,10 @@ interface IRequest
 	 * If any defined char groups in `$pregReplaceAllowedChars`, there will be returned
 	 * all params filtered by given rule in `preg_replace()`.
 	 * @param string|array $pregReplaceAllowedChars If String - list of regular expression characters to only keep, if array - `preg_replace()` pattern and reverse.
+	 * @param array $onlyKeys Array with keys to get only. If empty (by default), all possible params are returned.
 	 * @return array
 	 */
-	public function & GetParams ($pregReplaceAllowedChars = array('#\<\>#', ''));
+	public function & GetParams ($pregReplaceAllowedChars = array('#[\<\>]#', ''), $onlyKeys = array());
 
 	/**
 	 * Set directly raw parameter value without any conversion.

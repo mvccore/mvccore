@@ -342,6 +342,15 @@ interface IController
 	public function HtmlResponse ($output = "", $terminate = TRUE);
 
 	/**
+	 * Store rendered XML output inside `\MvcCore\Controller::$response`
+	 * to send into client browser later in `MvcCore::Terminate();`.
+	 * @param string $output
+	 * @param bool $terminate
+	 * @return void
+	 */
+	public function XmlResponse ($output = "", $terminate = TRUE);
+
+	/**
 	 * Serialize any PHP value into `JSON string` and store
 	 * it inside `\MvcCore\Controller::$response` to send it
 	 * into client browser later in `MvcCore::Terminate();`.
@@ -380,7 +389,7 @@ interface IController
 	public function AssetUrl ($path = '');
 
 	/**
-	 * Alias for `\MvcCore\Session::GetNamespace($name);` 
+	 * Alias for `\MvcCore\Session::GetNamespace($name);`
 	 * but called with configured session core class name.
 	 * @param mixed $name
 	 * @return \MvcCore\Interfaces\ISession

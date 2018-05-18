@@ -166,6 +166,12 @@ interface IResponse
 	public function IsHtmlOutput ();
 
 	/**
+	 * Returns if response has any `xml` substring in `Content-Type` header.
+	 * @return bool
+	 */
+	public function IsXmlOutput ();
+
+	/**
 	 * `TRUE` if headers or body has been sent.
 	 * @return bool
 	 */

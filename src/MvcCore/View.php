@@ -55,6 +55,7 @@ class View implements Interfaces\IView
 	 * - `\MvcCore\Interfaces\IView::DOCTYPE_HTML4`
 	 * - `\MvcCore\Interfaces\IView::DOCTYPE_XHTML`
 	 * - `\MvcCore\Interfaces\IView::DOCTYPE_HTML5`
+	 * - `\MvcCore\Interfaces\IView::DOCTYPE_XML`
 	 * @var string
 	 */
 	public static $Doctype = self::DOCTYPE_HTML5;
@@ -479,7 +480,7 @@ class View implements Interfaces\IView
 				if (class_exists($className)) {
 					$helperFound = TRUE;
 					$setUpViewAgain = TRUE;
-					if ($toolClass::CheckClassInterface($className, $helpersInterface, FALSE)) {
+					if ($toolClass::CheckClassInterface($className, $helpersInterface, FALSE, FALSE)) {
 						$implementsIHelper = TRUE;
 						$instance = & $className::GetInstance();
 					} else {
@@ -515,7 +516,7 @@ class View implements Interfaces\IView
 			$toolClass = self::$_toolClass;
 			$helpersInterface = static::$HelpersInterfaceClassName;
 			$className = get_class($instance);
-			$implementsIHelper = $toolClass::CheckClassInterface($className, $helpersInterface, FALSE);
+			$implementsIHelper = $toolClass::CheckClassInterface($className, $helpersInterface, FALSE, FALSE);
 			self::$_globalHelpers[$helperName] = array(& $instance, $implementsIHelper);
 		}
 		$this->_helpers[$helperName] = & $instance;

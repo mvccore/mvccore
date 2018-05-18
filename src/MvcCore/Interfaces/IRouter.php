@@ -34,6 +34,30 @@ namespace MvcCore\Interfaces;
 interface IRouter
 {
 	/**
+	 * Default system route name, automaticly created for requests:
+	 * - For requests with explicitly defined controler and action in query string.
+	 * - For requests targeting homepage with controller and action `Index:Index`.
+	 * - For requests targeting any not matched path by other routes with
+	 *   configured router as `$router->SetRouteToDefaultIfNotMatch();` which
+	 *   target default route with controller and action `Index:Index`.
+	 */
+	const DEFAULT_ROUTE_NAME = 'default';
+
+	/**
+	 * Default system route name, automaticly created for error requests,
+	 * where was uncatched exception in controller or template, catched by application.
+	 * This route is created with controller and action `Index:Error` by default.
+	 */
+	const DEFAULT_ROUTE_NAME_ERROR = 'error';
+
+	/**
+	 * Default system route name, automaticly created for not matched requests,
+	 * where was not possible to found requested controller or template or anything else.
+	 * This route is created with controller and action `Index:NotFound` by default.
+	 */
+	const DEFAULT_ROUTE_NAME_NOT_FOUND = 'not_found';
+
+	/**
 	 * Always keep trailing slash in requested url or
 	 * always add trailing slash into url and redirect to it.
 	 */
@@ -186,9 +210,13 @@ interface IRouter
 	 * @param bool $prepend Optional, if `TRUE`, all given routes will
 	 *						be prepended from the last to the first in
 	 *						given list, not appended.
+	 * @param bool $throwExceptionForDuplication `TRUE` by default. Throw an exception,
+	 *											 if route `name` or route `Controller:Action`
+	 *											 has been defined already. If `FALSE` old route
+	 *											 is overwriten by new one.
 	 * @return \MvcCore\Interfaces\IRouter
 	 */
-	public function & AddRoutes (array $routes = array(), $prepend = FALSE);
+	public function & AddRoutes (array $routes = array(), $prepend = FALSE, $throwExceptionForDuplication = TRUE);
 
 	/**
 	 * Append or prepend new request route.
@@ -237,6 +265,27 @@ interface IRouter
 	 * @return \MvcCore\Interfaces\IRouter
 	 */
 	public function & AddRoute ($route, $prepend = FALSE, $throwExceptionForDuplication = TRUE);
+
+	/**
+	 * Return `TRUE` if router has any route by given route name, `FALSE` otherwise.
+	 * @param string|\MvcCore\Interfaces\IRoute $routeOrRouteName
+	 * @return boolean
+	 */
+	public function HasRoute ($routeOrRouteName);
+
+	/**
+	 * Remove route from router by given name and return removed route instance.
+	 * If router has no route by given name, `NULL` is returned.
+	 * @param string $routeName
+	 * @return \MvcCore\Interfaces\IRoute|NULL
+	 */
+	public function RemoveRoute ($routeName);
+
+	/**
+	 * Get configured `\MvcCore\Route` route instances by route name, `NULL` if no route presented.
+	 * @return \MvcCore\Interfaces\IRoute|NULL
+	 */
+	public function & GetRoute ($routeName);
 
 	/**
 	 * Get all configured route(s) as `\MvcCore\Route` instances.
@@ -385,4 +434,41 @@ interface IRouter
 	 * @return string
 	 */
 	public function Url ($controllerActionOrRouteName = 'Index:Index', $params = array());
+
+	/**
+	 * Try to found any existing route by `$routeName` argument
+	 * or try to find any existing route by `$controllerPc:$actionPc` arguments
+	 * combination and set this founded route instance as current route object.
+	 *
+	 * Target request object reference to this newly configured current route object.
+	 *
+	 * If no route by name or controller and action combination found,
+	 * create new empty route by configured route class from application core
+	 * and set up this new route by given `$routeName`, `$controllerPc`, `$actionPc`
+	 * with route match pattern to match any request `#/(?<path>.*)#` and with reverse
+	 * pattern `/<path>` to create url by single `path` param only. Add this newly
+	 * created route into routes and set this new route as current route object.
+	 *
+	 * This method is always called internaly for following cases:
+	 * - When router has no routes configured and request is necessary
+	 *   to route by query string arguments only (controller and action).
+	 * - When no route matched and when is necessary to create
+	 *   default route object for homepage, handled by `Index:Index` by default.
+	 * - When no route matched and when router is configured to route
+	 *   requests to default route if no route matched by
+	 *   `$router->SetRouteToDefaultIfNotMatch();`.
+	 * - When is necessary to create not found route or error route
+	 *   when there was not possible to route the request or when
+	 *   there was any uncatched exception in controller or template
+	 *   catched later by application.
+	 *
+	 * @param string $routeName Always as `default`, `error` or `not_found`, by constants:
+	 *                         `\MvcCore\Interfaces\IRouter::DEFAULT_ROUTE_NAME`
+	 *                         `\MvcCore\Interfaces\IRouter::DEFAULT_ROUTE_NAME_ERROR`
+	 *                         `\MvcCore\Interfaces\IRouter::DEFAULT_ROUTE_NAME_NOT_FOUND`
+	 * @param string $controllerPc Controller name in pascal case.
+	 * @param string $actionPc Action name with pascal case without ending `Action` substring.
+	 * @return \MvcCore\Interfaces\IRoute
+	 */
+	public function & SetOrCreateDefaultRouteAsCurrent ($routeName, $controllerPc, $actionPc);
 }

@@ -262,6 +262,8 @@ class Controller implements Interfaces\IController
 	 */
 	public function Init () {
 		$this->application->SessionStart();
+		$responseContentType = $this->ajax ? 'text/javascript' : 'text/html';
+		$this->response->SetHeader('Content-Type', $responseContentType);
 		$this->autoInitProperties();
 		foreach ($this->_childControllers as $controller) {
 			$controller->Init();
@@ -295,7 +297,7 @@ class Controller implements Interfaces\IController
 			if ($pos === FALSE) continue;
 			$className = trim(mb_substr($docComment, 0, $pos));
 			if (!@class_exists($className)) continue;
-			if (!$toolsClass::CheckClassInterface($className, 'MvcCore\Interfaces\IController')) continue;
+			if (!$toolsClass::CheckClassInterface($className, 'MvcCore\Interfaces\IController', FALSE, TRUE)) continue;
 			$instance = $className::GetInstance();
 			$this->AddChildController($instance, $prop->getName());
 			$prop->setValue($this, $instance);
@@ -655,7 +657,7 @@ class Controller implements Interfaces\IController
 				$outputResult = $layout->RenderLayoutAndContent($this->layout, $actionResult);
 				unset($layout, $this->view);
 				// set up response only
-				$this->HtmlResponse($outputResult);
+				$this->XmlResponse($outputResult);
 			} else {
 				// return response
 				$this->dispatchState = 4;
@@ -713,12 +715,28 @@ class Controller implements Interfaces\IController
 	 * @return void
 	 */
 	public function HtmlResponse ($output = '', $terminate = FALSE) {
-		$viewClass = $this->application->GetViewClass();
-		$contentTypeHeaderValue = strpos(
-			$viewClass::$Doctype, \MvcCore\Interfaces\IView::DOCTYPE_XHTML
-		) !== FALSE ? 'application/xhtml+xml' : 'text/html' ;
-		if (!$this->response->HasHeader('Content-Type'))
+		if (!$this->response->HasHeader('Content-Type')) {
+			$contentTypeHeaderValue = strpos(
+				\MvcCore\View::$Doctype, \MvcCore\View::DOCTYPE_XHTML
+			) !== FALSE ? 'application/xhtml+xml' : 'text/html' ;
 			$this->response->SetHeader('Content-Type', $contentTypeHeaderValue);
+		}
+		$this->response
+			->SetCode(\MvcCore\Interfaces\IResponse::OK)
+			->SetBody($output);
+		if ($terminate) $this->Terminate();
+	}
+
+	/**
+	 * Store rendered XML output inside `\MvcCore\Controller::$response`
+	 * to send into client browser later in `MvcCore::Terminate();`.
+	 * @param string $output
+	 * @param bool $terminate
+	 * @return void
+	 */
+	public function XmlResponse ($output = '', $terminate = FALSE) {
+		if (!$this->response->HasHeader('Content-Type'))
+			$this->response->SetHeader('Content-Type', 'application/xml');
 		$this->response
 			->SetCode(\MvcCore\Interfaces\IResponse::OK)
 			->SetBody($output);

@@ -29,6 +29,13 @@ namespace MvcCore;
 class Tool implements Interfaces\ITool
 {
 	/**
+	 * Cache with keys by full interface class names and with values with 
+	 * only static and also only public method names by the interface name.
+	 * @var array
+	 */
+	protected static $interfacesStaticMethodsCache = array();
+
+	/**
 	 * Convert all strings `"from" => "to"`:
 	 * - `"MyCustomValue"				=> "my-custom-value"`
 	 * - `"MyCustom/Value/InsideFolder"	=> "my-custom/value/inside-folder"`
@@ -128,18 +135,69 @@ class Tool implements Interfaces\ITool
 
 	/**
 	 * Check if given class implements given interface, else throw an exception.
-	 * @param string $testClassName
-	 * @param string $interfaceName
-	 * @param bool $throwException
+	 * @param string $testClassName Full test class name.
+	 * @param string $interfaceName Full interface class name.
+	 * @param bool $checkStaticMethods Check implementation of all static methods by interface static methods.
+	 * @param bool $throwException If `TRUE`, throw an exception if something is not implemented or if `FALSE` return `FALSE` only.
 	 * @throws \Exception
 	 * @return boolean
 	 */
-	public static function CheckClassInterface ($testClassName, $interfaceName, $throwException = TRUE) {
-		if (in_array($interfaceName, (new \ReflectionClass($testClassName))
-			->getInterfaceNames())) return TRUE;
+	public static function CheckClassInterface ($testClassName, $interfaceName, $checkStaticMethods = FALSE, $throwException = TRUE) {
+		$result = TRUE;
+		$errorMsg = '';
+		// check given test class for all implemented instance methods by given interface
+		$testClassType = new \ReflectionClass($testClassName);
+		if (in_array($interfaceName, $testClassType->getInterfaceNames())) {
+			$result = TRUE;
+		} else {
+			$errorMsg = "Class `$testClassName` doesn't implement interface `$interfaceName`.";
+		}
+		if ($checkStaticMethods) {
+			// check given test class for all implemented static methods by given interface
+			$allStaticsImplemented = TRUE;
+			$interfaceMethods = static::checkClassInterfaceGetPublicStaticMethods($interfaceName);
+			foreach ($interfaceMethods as $methodName) {
+				if (!$testClassType->hasMethod($methodName)) {
+					$allStaticsImplemented = FALSE;
+					$errorMsg = "Class `$testClassName` doesn't implement static method `$methodName` from interface `$interfaceName`.";
+					break;
+				}
+				$testClassStaticMethod = $testClassType->getMethod($methodName);
+				if (!$testClassStaticMethod->isStatic()) {
+					$allStaticsImplemented = FALSE;
+					$errorMsg = "Class `$testClassName` doesn't implement static method `$methodName` from interface `$interfaceName`, method is not static.";
+					break;
+				}
+				// arguments compatibility in presented static method are automaticly checked by PHP
+			}
+			if (!$allStaticsImplemented) $result = FALSE;
+		}
+		// return result or thrown an exception
+		if ($result) return TRUE;
 		if (!$throwException) return FALSE;
-		throw new \InvalidArgumentException(
-			"[".__CLASS__."] Class '$testClassName' doesn't implement interface '$interfaceName'."
-		);
+		throw new \InvalidArgumentException("[".__CLASS__."] " . $errorMsg);
+	}
+
+	/**
+	 * Complete array with only static and also only public method names by given interface name.
+	 * Return completed array and cache it in static local array.
+	 * @param string $interfaceName
+	 * @return array
+	 */
+	protected static function & checkClassInterfaceGetPublicStaticMethods ($interfaceName) {
+		if (!isset(static::$interfacesStaticMethodsCache[$interfaceName])) {
+			$methods = array();
+			$interfaceType = new \ReflectionClass($interfaceName);
+			$publicOrStaticMethods = $interfaceType->getMethods(\ReflectionMethod::IS_PUBLIC | \ReflectionMethod::IS_STATIC);
+			/** @var $publicOrStaticMethod \ReflectionMethod */
+			foreach ($publicOrStaticMethods as $publicOrStaticMethod) {
+				// filter methods for public and also static method only
+				if ($publicOrStaticMethod->isStatic() && $publicOrStaticMethod->isPublic()) {
+					$methods[] = $publicOrStaticMethod->getName();
+				}
+			}
+			static::$interfacesStaticMethodsCache[$interfaceName] = $methods;
+		}
+		return static::$interfacesStaticMethodsCache[$interfaceName];
 	}
 }
