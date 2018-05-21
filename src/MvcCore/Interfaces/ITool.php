@@ -88,7 +88,7 @@ interface ITool
 	 * @param string $interfaceName Full interface class name.
 	 * @param bool $checkStaticMethods Check implementation of all static methods by interface static methods.
 	 * @param bool $throwException If `TRUE`, throw an exception if something is not implemented or if `FALSE` return `FALSE` only.
-	 * @throws \Exception
+	 * @throws \InvalidArgumentException
 	 * @return boolean
 	 */
 	public static function CheckClassInterface ($testClassName, $interfaceName, $checkStaticMethods = FALSE, $throwException = TRUE);

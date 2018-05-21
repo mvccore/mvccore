@@ -452,10 +452,31 @@ interface IApplication
 	public function & AddPreRouteHandler (callable $handler, $priorityIndex = NULL);
 
 	/**
-	 * Add pre dispatch handler into pre dispatch handlers queue to process them after
+	 * Add post route handler into post route handlers queue to process them after
+	 * every request has been completed into `\MvcCore\Request` describing object, after
 	 * every request has been routed by `\MvcCore\Router::Route();` call and before
-	 * every request will be dispatched by `\MvcCore\Controller::Dispatch();`, which triggers
-	 * methods `\MvcCore\Controller::Init();`, `\MvcCore\Controller::PreDispatch();` etc.
+	 * every request has created target controller instance.
+	 * Callable should be void and it's params should be two with following types:
+	 *	- `\MvcCore\Request`
+	 *	- `\MvcCore\Response`
+	 * Example:
+	 * `\MvcCore\Application::GetInstance()->AddPostRouteHandler(function(
+	 *		\MvcCore\Request & $request,
+	 *		\MvcCore\Response & $response
+	 * ) {
+	 *		$request->customVar = 'custom_value';
+	 * });`
+	 * @param callable $handler
+	 * @param int|NULL $priorityIndex
+	 * @return \MvcCore\Interfaces\IApplication
+	 */
+	public function & AddPostRouteHandler (callable $handler, $priorityIndex = NULL);
+
+	/**
+	 * Add pre dispatch handler into pre dispatch handlers queue to process them after
+	 * every request has been routed by `\MvcCore\Router::Route();` call, after
+	 * every request has been dispatched by `\MvcCore\Controller::Dispatch();` and
+	 * after every request has created and prepared target controller instance to dispatch.
 	 * Callable should be void and it's params should be two with following types:
 	 *	- `\MvcCore\Request`
 	 *	- `\MvcCore\Response`
@@ -506,9 +527,10 @@ interface IApplication
 	 *      - Init debugging and logging by `\MvcCore\Debug::Init();`.
 	 * - 2. (Process pre-route handlers queue.)
 	 * - 3. Route request by your router or with `\MvcCore\Router::Route()` by default.
-	 * - 4. (Process pre-dispatch handlers queue.)
-	 * - 5. Dispatch controller lifecycle:
-	 *  	- Create and set up controller.
+	 * - 4. (Process post-route handlers queue.)
+	 * - 5. Create and set up controller instance.
+	 * - 6. (Process pre-dispatch handlers queue.)
+	 * - 7. Dispatch controller lifecycle.
 	 *  	- Call `\MvcCore\Controller::Init()` and `\MvcCore\Controller::PreDispatch()`.
 	 *      - Call routed action method.
 	 *      - Call `\MvcCore\Controller::Render()` to render all views.

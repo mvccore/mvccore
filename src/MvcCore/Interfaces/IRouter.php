@@ -436,6 +436,34 @@ interface IRouter
 	public function Url ($controllerActionOrRouteName = 'Index:Index', $params = array());
 
 	/**
+	 * Complete non-absolute, non-localized url with all params in query string.
+	 * Example: `"/application/base-bath/index.php?controller=ctrlName&amp;action=actionName&amp;name=cool-product-name&amp;color=blue"`
+	 * @param string $controllerActionOrRouteName
+	 * @param array  $params
+	 * @return string
+	 */
+	public function UrlByQueryString ($controllerActionOrRouteName = 'Index:Index', & $params = array());
+
+	/**
+	 * Complete non-absolute, non-localized url by route instance reverse info.
+	 * Example:
+	 *	Input (`\MvcCore\Route::$Reverse`):
+	 *		`"/products-list/<name>/<color>"`
+	 *	Input ($params):
+	 *		`array(
+	 *			"name"		=> "cool-product-name",
+	 *			"color"		=> "red",
+	 *			"variant"	=> array("L", "XL"),
+	 *		);`
+	 *	Output:
+	 *		`/application/base-bath/products-list/cool-product-name/blue?variant[]=L&amp;variant[]=XL"`
+	 * @param \MvcCore\Interfaces\IRoute &$route
+	 * @param array $params
+	 * @return string
+	 */
+	public function UrlByRoute (\MvcCore\Interfaces\IRoute & $route, & $params = array());
+
+	/**
 	 * Try to found any existing route by `$routeName` argument
 	 * or try to find any existing route by `$controllerPc:$actionPc` arguments
 	 * combination and set this founded route instance as current route object.

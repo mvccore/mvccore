@@ -681,7 +681,6 @@ class Router implements Interfaces\IRouter
 	public function Url ($controllerActionOrRouteName = 'Index:Index', $params = array()) {
 		$result = '';
 		$request = & $this->request;
-		if ($this->cleanedRequestParams == NULL) $this->initCleanedRequestParams();
 		if (strpos($controllerActionOrRouteName, ':') !== FALSE) {
 			list($ctrlPc, $actionPc) = explode(':', $controllerActionOrRouteName);
 			if (!$ctrlPc) {
@@ -697,7 +696,7 @@ class Router implements Interfaces\IRouter
 			$controllerActionOrRouteName = $this->currentRoute
 				? $this->currentRoute->GetName()
 				: ':';
-			$params = array_merge($this->cleanedRequestParams, $params);
+			$params = array_merge($this->getCleanedRequestParams(), $params);
 			unset($params['controller'], $params['action']);
 		}
 		$absolute = FALSE;
@@ -706,9 +705,9 @@ class Router implements Interfaces\IRouter
 			unset($params['absolute']);
 		}
 		if (isset($this->urlRoutes[$controllerActionOrRouteName])) {
-			$result = $this->urlByRoute($this->urlRoutes[$controllerActionOrRouteName], $params);
+			$result = $this->UrlByRoute($this->urlRoutes[$controllerActionOrRouteName], $params);
 		} else {
-			$result = $this->urlByQueryString($controllerActionOrRouteName, $params);
+			$result = $this->UrlByQueryString($controllerActionOrRouteName, $params);
 		}
 		if ($absolute) $result = $request->GetDomainUrl() . $result;
 		return $result;
@@ -781,13 +780,13 @@ class Router implements Interfaces\IRouter
 	}
 
 	/**
-	 * Complete url with all params in query string.
+	 * Complete non-absolute, non-localized url with all params in query string.
 	 * Example: `"/application/base-bath/index.php?controller=ctrlName&amp;action=actionName&amp;name=cool-product-name&amp;color=blue"`
 	 * @param string $controllerActionOrRouteName
 	 * @param array  $params
 	 * @return string
 	 */
-	protected function urlByQueryString ($controllerActionOrRouteName, $params) {
+	public function UrlByQueryString ($controllerActionOrRouteName = 'Index:Index', & $params = array()) {
 		$toolClass = self::$_toolClass;
 		list($ctrlPc, $actionPc) = explode(':', $controllerActionOrRouteName);
 		$amp = $this->getQueryStringParamsSepatator();
@@ -799,7 +798,7 @@ class Router implements Interfaces\IRouter
 	}
 
 	/**
-	 * Complete url by route instance reverse info.
+	 * Complete non-absolute, non-localized url by route instance reverse info.
 	 * Example:
 	 *	Input (`\MvcCore\Route::$Reverse`):
 	 *		`"/products-list/<name>/<color>"`
@@ -812,12 +811,12 @@ class Router implements Interfaces\IRouter
 	 *	Output:
 	 *		`/application/base-bath/products-list/cool-product-name/blue?variant[]=L&amp;variant[]=XL"`
 	 * @param \MvcCore\Route &$route
-	 * @param array  $params
+	 * @param array $params
 	 * @return string
 	 */
-	protected function urlByRoute (& $route, $params) {
+	public function UrlByRoute (\MvcCore\Interfaces\IRoute & $route, & $params = array()) {
 		return $this->request->GetBasePath() . $route->Url(
-			$params, $this->cleanedRequestParams, $this->getQueryStringParamsSepatator()
+			$params, $this->getCleanedRequestParams(), $this->getQueryStringParamsSepatator()
 		);
 	}
 
@@ -892,18 +891,21 @@ class Router implements Interfaces\IRouter
 	 * Go throught all query string params and prepare, escape all chars (`<` and `>`)
 	 * to prevent any XSS attacks, when there is used request params to automaticly complete
 	 * remaining param values in url address building process.
-	 * @return void
+	 * @return array
 	 */
-	protected function initCleanedRequestParams () {
-		$cleanedRequestParams = array();
-		$request = & $this->request;
-		$charsToReplace = array('<' => '&lt;', '>' => '&gt;');
-		$globalGet = & $request->GetGlobalCollection('get');
-		foreach ($globalGet as $rawName => $rawValue) {
-			$paramName = strtr($rawName, $charsToReplace);
-			$cleanedRequestParams[$paramName] = strtr($rawValue, $charsToReplace);
+	protected function & getCleanedRequestParams () {
+		if ($this->cleanedRequestParams === NULL) {
+			$cleanedRequestParams = array();
+			$request = & $this->request;
+			$charsToReplace = array('<' => '&lt;', '>' => '&gt;');
+			$globalGet = & $request->GetGlobalCollection('get');
+			foreach ($globalGet as $rawName => $rawValue) {
+				$paramName = strtr($rawName, $charsToReplace);
+				$cleanedRequestParams[$paramName] = strtr($rawValue, $charsToReplace);
+			}
+			$this->cleanedRequestParams = $cleanedRequestParams;
 		}
-		$this->cleanedRequestParams = $cleanedRequestParams;
+		return $this->cleanedRequestParams;
 	}
 
 	/**

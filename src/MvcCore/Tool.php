@@ -29,7 +29,7 @@ namespace MvcCore;
 class Tool implements Interfaces\ITool
 {
 	/**
-	 * Cache with keys by full interface class names and with values with 
+	 * Cache with keys by full interface class names and with values with
 	 * only static and also only public method names by the interface name.
 	 * @var array
 	 */
@@ -139,7 +139,7 @@ class Tool implements Interfaces\ITool
 	 * @param string $interfaceName Full interface class name.
 	 * @param bool $checkStaticMethods Check implementation of all static methods by interface static methods.
 	 * @param bool $throwException If `TRUE`, throw an exception if something is not implemented or if `FALSE` return `FALSE` only.
-	 * @throws \Exception
+	 * @throws \InvalidArgumentException
 	 * @return boolean
 	 */
 	public static function CheckClassInterface ($testClassName, $interfaceName, $checkStaticMethods = FALSE, $throwException = TRUE) {

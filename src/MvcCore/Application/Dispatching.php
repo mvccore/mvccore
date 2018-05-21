@@ -45,9 +45,10 @@ trait Dispatching
 	 *      - Init debugging and logging by `\MvcCore\Debug::Init();`.
 	 * - 2. (Process pre-route handlers queue.)
 	 * - 3. Route request by your router or with `\MvcCore\Router::Route()` by default.
-	 * - 4. (Process pre-dispatch handlers queue.)
-	 * - 5. Dispatch controller lifecycle:
-	 *  	- Create and set up controller.
+	 * - 4. (Process post-route handlers queue.)
+	 * - 5. Create and set up controller instance.
+	 * - 6. (Process pre-dispatch handlers queue.)
+	 * - 7. Dispatch controller lifecycle.
 	 *  	- Call `\MvcCore\Controller::Init()` and `\MvcCore\Controller::PreDispatch()`.
 	 *      - Call routed action method.
 	 *      - Call `\MvcCore\Controller::Render()` to render all views.
@@ -67,7 +68,7 @@ trait Dispatching
 		$debugClass::Init();
 		if (!$this->ProcessCustomHandlers($this->preRouteHandlers))			return $this->Terminate();
 		if (!$this->RouteRequest())											return $this->Terminate();
-		if (!$this->ProcessCustomHandlers($this->preDispatchHandlers))		return $this->Terminate();
+		if (!$this->ProcessCustomHandlers($this->postRouteHandlers))		return $this->Terminate();
 		if (!$this->DispatchRequestByRoute($this->router->GetCurrentRoute()))	return $this->Terminate();
 		// Post-dispatch handlers processing moved to: `$this->Terminate();` to process them every time.
 		// if (!$this->processCustomHandlers($this->postDispatchHandlers))	return $this->Terminate();
@@ -216,6 +217,7 @@ trait Dispatching
 			}
 		}
 		$this->controller = & $controller;
+		if (!$this->ProcessCustomHandlers($this->preDispatchHandlers)) return FALSE;
 		try {
 			$controller->Dispatch($actionName);
 		} catch (\Exception $e) {

@@ -87,6 +87,25 @@ trait GettersSetters
 	 */
 	protected $preRouteHandlers = array();
 
+
+	/**
+	 * Post route custom closure calls storrage.
+	 * Every item in this array has to be array with `callable`
+	 * and `boolean` if `callable` is closure instance.
+	 * Params in callable should be two with following types:
+	 *	- `\MvcCore\Request`
+	 *	- `\MvcCore\Response`
+	 * Example:
+	 * `\MvcCore\Application::GetInstance()->AddPostRouteHandler(function(
+	 *		\MvcCore\Request & $request,
+	 *		\MvcCore\Response & $response
+	 * ) {
+	 *		$request->customVar = 'custom_value';
+	 * });`
+	 * @var \array[]
+	 */
+	protected $postRouteHandlers = array();
+
 	/**
 	 * Pre dispatch custom calls storrage.
 	 * Every item in this array has to be array with `callable`
@@ -479,7 +498,7 @@ trait GettersSetters
 	 * @return \MvcCore\Application
 	 */
 	public function & SetConfigClass ($configClass) {
-		return $this->setCoreClass($configClass, 'configClass', 'MvcCore\Interfaces\IConfig');
+		return $this->setCoreClass($configClass, 'configClass', \MvcCore\Interfaces\IConfig::class);
 	}
 
 	/**
@@ -491,7 +510,7 @@ trait GettersSetters
 	 * @return \MvcCore\Application
 	 */
 	public function & SetControllerClass ($controllerClass) {
-		return $this->setCoreClass($controllerClass, 'configClass', 'MvcCore\Interfaces\IController');
+		return $this->setCoreClass($controllerClass, 'configClass', \MvcCore\Interfaces\IController::class);
 	}
 
 	/**
@@ -502,7 +521,7 @@ trait GettersSetters
 	 * @return \MvcCore\Application
 	 */
 	public function & SetDebugClass ($debugClass) {
-		return $this->setCoreClass($debugClass, 'debugClass', 'MvcCore\Interfaces\IDebug');
+		return $this->setCoreClass($debugClass, 'debugClass', \MvcCore\Interfaces\IDebug::class);
 	}
 
 	/**
@@ -513,7 +532,7 @@ trait GettersSetters
 	 * @return \MvcCore\Application
 	 */
 	public function & SetRequestClass ($requestClass) {
-		return $this->setCoreClass($requestClass, 'requestClass', 'MvcCore\Interfaces\IRequest');
+		return $this->setCoreClass($requestClass, 'requestClass', \MvcCore\Interfaces\IRequest::class);
 	}
 
 	/**
@@ -524,7 +543,7 @@ trait GettersSetters
 	 * @return \MvcCore\Application
 	 */
 	public function & SetResponseClass ($responseClass) {
-		return $this->setCoreClass($responseClass, 'responseClass', 'MvcCore\Interfaces\IResponse');
+		return $this->setCoreClass($responseClass, 'responseClass', \MvcCore\Interfaces\IResponse::class);
 	}
 
 	/**
@@ -536,7 +555,7 @@ trait GettersSetters
 	 * @return \MvcCore\Application
 	 */
 	public function & SetRouteClass ($routeClass) {
-		return $this->setCoreClass($routeClass, 'routerClass', 'MvcCore\Interfaces\IRoute');
+		return $this->setCoreClass($routeClass, 'routerClass', \MvcCore\Interfaces\IRoute::class);
 	}
 
 	/**
@@ -547,7 +566,7 @@ trait GettersSetters
 	 * @return \MvcCore\Application
 	 */
 	public function & SetRouterClass ($routerClass) {
-		return $this->setCoreClass($routerClass, 'routerClass', 'MvcCore\Interfaces\IRouter');
+		return $this->setCoreClass($routerClass, 'routerClass', \MvcCore\Interfaces\IRouter::class);
 	}
 
 	/**
@@ -558,7 +577,7 @@ trait GettersSetters
 	 * @return \MvcCore\Application
 	 */
 	public function & SetSessionClass ($sessionClass) {
-		return $this->setCoreClass($sessionClass, 'sessionClass', 'MvcCore\Interfaces\ISession');
+		return $this->setCoreClass($sessionClass, 'sessionClass', \MvcCore\Interfaces\ISession::class);
 	}
 
 	/**
@@ -569,7 +588,7 @@ trait GettersSetters
 	 * @return \MvcCore\Application
 	 */
 	public function & SetToolClass ($toolClass) {
-		return $this->setCoreClass($toolClass, 'toolClass', 'MvcCore\Interfaces\ITool');
+		return $this->setCoreClass($toolClass, 'toolClass', \MvcCore\Interfaces\ITool::class);
 	}
 
 	/**
@@ -580,7 +599,7 @@ trait GettersSetters
 	 * @return \MvcCore\Application
 	 */
 	public function & SetViewClass ($viewClass) {
-		return $this->setCoreClass($viewClass, 'viewClass', 'MvcCore\Interfaces\IView');
+		return $this->setCoreClass($viewClass, 'viewClass', \MvcCore\Interfaces\IView::class);
 	}
 
 
@@ -696,10 +715,36 @@ trait GettersSetters
 	}
 
 	/**
-	 * Add pre dispatch handler into pre dispatch handlers queue to process them after
+	 * Add post route handler into post route handlers queue to process them after
+	 * every request has been completed into `\MvcCore\Request` describing object, after
 	 * every request has been routed by `\MvcCore\Router::Route();` call and before
-	 * every request will be dispatched by `\MvcCore\Controller::Dispatch();`, which triggers
-	 * methods `\MvcCore\Controller::Init();`, `\MvcCore\Controller::PreDispatch();` etc.
+	 * every request has created target controller instance.
+	 * Callable should be void and it's params should be two with following types:
+	 *	- `\MvcCore\Request`
+	 *	- `\MvcCore\Response`
+	 * Example:
+	 * `\MvcCore\Application::GetInstance()->AddPostRouteHandler(function(
+	 *		\MvcCore\Request & $request,
+	 *		\MvcCore\Response & $response
+	 * ) {
+	 *		$request->customVar = 'custom_value';
+	 * });`
+	 * @param callable $handler
+	 * @param int|NULL $priorityIndex
+	 * @return \MvcCore\Application
+	 */
+	public function & AddPostRouteHandler (callable $handler, $priorityIndex = NULL) {
+		if (!is_callable($handler)) throw new \InvalidArgumentException(
+			"[".__CLASS__."] Post route handler is not callable (handler: $handler, priorityIndex: $priorityIndex)."
+		);
+		return $this->setHandler($this->postRouteHandlers, $handler, $priorityIndex);
+	}
+
+	/**
+	 * Add pre dispatch handler into pre dispatch handlers queue to process them after
+	 * every request has been routed by `\MvcCore\Router::Route();` call, after
+	 * every request has been dispatched by `\MvcCore\Controller::Dispatch();` and
+	 * after every request has created and prepared target controller instance to dispatch.
 	 * Callable should be void and it's params should be two with following types:
 	 *	- `\MvcCore\Request`
 	 *	- `\MvcCore\Response`
