@@ -81,12 +81,13 @@ interface IView
 
 	/**
 	 * Return always new instance of staticly called class, no singleton.
-	 * Always called from `\MvcCore\Controller::PreDispatch()`.
+	 * Always called from `\MvcCore\Controller::PreDispatch()` and
+	 * `\MvcCore\Controller::Render()` to create layout view.
 	 * This is place where to customize any view creation process,
 	 * before it's created by MvcCore framework to fill and render it.
 	 * @return \MvcCore\Interfaces\IView
 	 */
-	public static function GetInstance ();
+	public static function CreateInstance ();
 
 	/**
 	 * Add view helpers classes namespace(s),

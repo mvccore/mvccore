@@ -75,7 +75,7 @@ interface IController
 	 * before it's created by MvcCore framework to dispatch it.
 	 * @return \MvcCore\Interfaces\IController
 	 */
-	public static function GetInstance ();
+	public static function CreateInstance ();
 
 	/**
 	 * Dispatching controller life cycle by given action.

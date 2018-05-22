@@ -205,7 +205,7 @@ class Controller implements Interfaces\IController
 	 * before it's created by MvcCore framework to dispatch it.
 	 * @return \MvcCore\Controller
 	 */
-	public static function GetInstance () {
+	public static function CreateInstance () {
 		return new static();
 	}
 
@@ -298,7 +298,7 @@ class Controller implements Interfaces\IController
 			$className = trim(mb_substr($docComment, 0, $pos));
 			if (!@class_exists($className)) continue;
 			if (!$toolsClass::CheckClassInterface($className, \MvcCore\Interfaces\IController::class, FALSE, TRUE)) continue;
-			$instance = $className::GetInstance();
+			$instance = $className::CreateInstance();
 			$this->AddChildController($instance, $prop->getName());
 			$prop->setValue($this, $instance);
 		}
@@ -315,7 +315,7 @@ class Controller implements Interfaces\IController
 		if ($this->dispatchState == 0) $this->Init();
 		if ($this->viewEnabled) {
 			$viewClass = $this->application->GetViewClass();
-			$this->view = $viewClass::GetInstance()->SetController($this);
+			$this->view = $viewClass::CreateInstance()->SetController($this);
 		}
 		foreach ($this->_childControllers as $controller) {
 			$controller->PreDispatch();
@@ -653,7 +653,7 @@ class Controller implements Interfaces\IController
 				// create top most parent layout view, set up and render to outputResult
 				$viewClass = $this->application->GetViewClass();
 				/** @var $layout \MvcCore\View */
-				$layout = $viewClass::GetInstance()->SetController($this)->SetValues($this->view);
+				$layout = $viewClass::CreateInstance()->SetController($this)->SetValues($this->view);
 				$outputResult = $layout->RenderLayoutAndContent($this->layout, $actionResult);
 				unset($layout, $this->view);
 				// set up response only

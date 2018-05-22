@@ -90,7 +90,7 @@ interface IRequest
 	 * @param array $files
 	 * @return \MvcCore\Interfaces\IRequest
 	 */
-	public static function GetInstance (
+	public static function CreateInstance (
 		array & $server = array(),
 		array & $get = array(),
 		array & $post = array(),

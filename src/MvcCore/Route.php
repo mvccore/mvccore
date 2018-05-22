@@ -288,7 +288,7 @@ class Route implements Interfaces\IRoute
 	 * @param array			$method				Optional, http method to only match requests by this method. If `NULL` (by default), request with any http method could be matched by this route. Given value is automaticly converted to upper case.
 	 * @return \MvcCore\Route
 	 */
-	public static function GetInstance (
+	public static function CreateInstance (
 		$patternOrConfig = NULL,
 		$controllerAction = NULL,
 		$defaults = array(),

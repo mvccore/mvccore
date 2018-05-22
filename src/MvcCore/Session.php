@@ -221,12 +221,14 @@ class Session extends \ArrayObject implements Interfaces\ISession
 
 	/**
 	 * Get new or existing MvcCore session namespace instance.
+	 * If session is not started, start session.
 	 * @param string $name Session namespace unique name.
 	 * @return \MvcCore\Interfaces\ISession
 	 */
 	public static function & GetNamespace (
 		$name = \MvcCore\Interfaces\ISession::DEFAULT_NAMESPACE_NAME
 	) {
+		if (!static::$started) static::Start();
 		if (!isset(static::$instances[$name])) {
 			static::$instances[$name] = new static($name);
 		}

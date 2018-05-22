@@ -121,7 +121,7 @@ trait Dispatching
 				if ($isClosure) {
 					$handler($this->request, $this->response);
 				} else {
-					call_user_func($handler, $req, $res);
+					call_user_func($handler, $this->request, $this->response);
 				}
 			} catch (\Exception $e) {
 				$this->DispatchException($e);
@@ -195,7 +195,7 @@ trait Dispatching
 		/** @var $controller \MvcCore\Controller */
 		$controller = NULL;
 		try {
-			$controller = $ctrlClassFullName::GetInstance()
+			$controller = $ctrlClassFullName::CreateInstance()
 				->SetApplication($this)
 				->SetRequest($this->request)
 				->SetResponse($this->response)
@@ -423,7 +423,7 @@ trait Dispatching
 				$text = 'Error 500: '.PHP_EOL.PHP_EOL.$text.$obContent;
 			}
 		}
-		$this->response = $responseClass::GetInstance(
+		$this->response = $responseClass::CreateInstance(
 			\MvcCore\Interfaces\IResponse::INTERNAL_SERVER_ERROR,
 			array('Content-Type' => $htmlResponse ? 'text/html' : 'text/plain'),
 			$text
@@ -453,7 +453,7 @@ trait Dispatching
 				$text = 'Error 404: '.PHP_EOL.PHP_EOL.$text.$obContent;
 			}
 		}
-		$this->response = $responseClass::GetInstance(
+		$this->response = $responseClass::CreateInstance(
 			\MvcCore\Interfaces\IResponse::NOT_FOUND,
 			array('Content-Type' => $htmlResponse ? 'text/html' : 'text/plain'),
 			$text

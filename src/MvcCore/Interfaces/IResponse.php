@@ -36,7 +36,7 @@ interface IResponse
 	 * @param string	$body
 	 * @return \MvcCore\Interfaces\IResponse
 	 */
-	public static function GetInstance (
+	public static function CreateInstance (
 		$code = \MvcCore\Interfaces\IResponse::OK,
 		$headers = array(),
 		$body = ''

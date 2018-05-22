@@ -20,7 +20,7 @@ namespace MvcCore\Application;
  * - Global store for all main core class names, to use them as modules,
  *   to be changed any time (request class, response class, debug class, etc.).
  */
-trait GettersSetters
+trait PropsGettersSetters
 {
 	/***********************************************************************************
 	 *                       `\MvcCore\Application` - Properties                       *
@@ -406,7 +406,7 @@ trait GettersSetters
 	public function & GetRequest () {
 		if ($this->request === NULL) {
 			$requestClass = $this->requestClass;
-			$this->request = $requestClass::GetInstance($_SERVER, $_GET, $_POST, $_COOKIE, $_FILES);
+			$this->request = $requestClass::CreateInstance($_SERVER, $_GET, $_POST, $_COOKIE, $_FILES);
 		}
 		return $this->request;
 	}
@@ -418,7 +418,7 @@ trait GettersSetters
 	public function & GetResponse () {
 		if ($this->response === NULL) {
 			$responseClass = $this->responseClass;
-			$this->response = $responseClass::GetInstance();
+			$this->response = $responseClass::CreateInstance();
 		}
 		return $this->response;
 	}

@@ -304,7 +304,7 @@ class Request implements Interfaces\IRequest
 	 * @param array $files
 	 * @return \MvcCore\Request
 	 */
-	public static function GetInstance (
+	public static function CreateInstance (
 		array & $server = array(),
 		array & $get = array(),
 		array & $post = array(),

@@ -83,10 +83,10 @@ interface IConfig
 	 * before it's created by MvcCore framework.
 	 * @return \MvcCore\Config
 	 */
-	public static function & GetInstance ();
+	public static function & CreateInstance ();
 
 	/**
-	 * Get system config ini file as `stdClass`es and `array`s,
+	 * Get singleton system config ini file as `stdClass`es and `array`s,
 	 * placed by default in: `"/App/config.ini"`.
 	 * @return \stdClass|array|boolean
 	 */

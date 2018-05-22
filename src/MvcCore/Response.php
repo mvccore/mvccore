@@ -81,7 +81,7 @@ class Response implements Interfaces\IResponse
 	 * @param string	$body
 	 * @return \MvcCore\Response
 	 */
-	public static function GetInstance (
+	public static function CreateInstance (
 		$code = \MvcCore\Interfaces\IResponse::OK,
 		$headers = array(),
 		$body = ''

@@ -74,6 +74,7 @@ interface ISession
 
 	/**
 	 * Get new or existing MvcCore session namespace instance.
+	 * If session is not started, start session.
 	 * @param string $name Session namespace unique name.
 	 * @return \MvcCore\Interfaces\ISession
 	 */

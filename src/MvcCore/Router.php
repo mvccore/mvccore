@@ -359,10 +359,10 @@ class Router implements Interfaces\IRouter
 				$this->AddRoute($route, $prepend, $throwExceptionForDuplication);
 			} else if ($routeType == 'array') {
 				if (!$numericKey) $route['name'] = $routeName;
-				$this->AddRoute($routeClass::GetInstance($route), $prepend, $throwExceptionForDuplication);
+				$this->AddRoute($routeClass::CreateInstance($route), $prepend, $throwExceptionForDuplication);
 			} else if ($routeType == 'string') {
 				// route name is always Controller:Action
-				$this->AddRoute($routeClass::GetInstance(array(
+				$this->AddRoute($routeClass::CreateInstance(array(
 					'name'		=> $routeName,
 					'pattern'	=> $route
 				)), $prepend, $throwExceptionForDuplication);
@@ -427,7 +427,7 @@ class Router implements Interfaces\IRouter
 			$instance = & $route;
 		} else {
 			$routeClass = self::$_routeClass;
-			$instance = $routeClass::GetInstance($route);
+			$instance = $routeClass::CreateInstance($route);
 		}
 		$routeName = $instance->GetName();
 		$controllerAction = $instance->GetControllerAction();
@@ -756,7 +756,7 @@ class Router implements Interfaces\IRouter
 			$defaultRoute = $this->routes[$routeName];
 		} else {
 			$routeClass = self::$_routeClass;
-			$defaultRoute = $routeClass::GetInstance()
+			$defaultRoute = $routeClass::CreateInstance()
 				->SetMatch('#/(?<path>.*)#')
 				->SetReverse('/<path>')
 				->SetName($routeName)

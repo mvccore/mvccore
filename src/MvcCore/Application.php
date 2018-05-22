@@ -41,7 +41,7 @@ class Application implements \MvcCore\Interfaces\IApplication
 	 * Traits in PHP is the only option, how to get something
 	 * analogicly the same as partial classes C#.
 	 */
-	use \MvcCore\Application\GettersSetters;
+	use \MvcCore\Application\PropsGettersSetters;
 	use \MvcCore\Application\Dispatching;
 	use \MvcCore\Application\Helpers;
 
