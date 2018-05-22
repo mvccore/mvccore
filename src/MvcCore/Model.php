@@ -221,6 +221,8 @@ class Model implements Interfaces\IModel {
 			}
 			if (preg_match('/@var\s+([^\s]+)/', $property->getDocComment(), $matches)) {
 				list(, $type) = $matches;
+				$pipePos = strpos($type, '|');
+				if ($pipePos !== FALSE) $type = substr($type, 0, $pipePos);
 				settype($value, $type);
 			}
 			$this->$propertyName = $value;
