@@ -40,8 +40,8 @@ namespace MvcCore\Interfaces;
  *   - Why to use such stupid things, if we have configured `short_open_tags` by default? `<?=...?>`
  *
  * MvcCore view helpers:
- * @method MvcCore\Ext\View\Helpers\Css Css($groupName = self::GROUP_NAME_DEFAULT) Get css helper instance by group name ("mvccore/ext-view-helper-assets").
- * @method MvcCore\Ext\View\Helpers\Js Js($groupName = self::GROUP_NAME_DEFAULT) Get js helper instance by group name ("mvccore/ext-view-helper-assets").
+ * @method MvcCore\Ext\Views\Helpers\Css Css($groupName = self::GROUP_NAME_DEFAULT) Get css helper instance by group name ("mvccore/ext-view-helper-assets").
+ * @method MvcCore\Ext\Views\Helpers\Js Js($groupName = self::GROUP_NAME_DEFAULT) Get js helper instance by group name ("mvccore/ext-view-helper-assets").
  * @method string FormatDateTime($dateTimeOrTimestamp = NULL, $dateTypeOrFormatMask = NULL, $timeType = NULL, $timeZone = NULL, $calendar = NULL) Format given datetime by `Intl` extension or by `strftime()` as fallback ("mvccore/ext-view-helper-formatdatetime").
  * @method string FormatNumber($number = 0.0, $decimals = 0, $dec_point = NULL , $thousands_sep = NULL) ("mvccore/ext-view-helper-formatnumber")
  * @method string FormatMoney($number = 0.0, $decimals = 0, $dec_point = NULL , $thousands_sep = NULL) ("mvccore/ext-view-helper-formatmoney")
@@ -245,7 +245,7 @@ interface IView
 	 * If helper already exists in global helpers store - do not create it again - use instance from the store.
 	 * @param string $helperName View helper method name in pascal case.
 	 * @throws \InvalidArgumentException If view doesn't exist in configured namespaces.
-	 * @return \MvcCore\Ext\View\Helpers\AbstractHelper|\MvcCore\Ext\View\Helpers\IHelper|mixed View helper instance.
+	 * @return \MvcCore\Ext\Views\Helpers\AbstractHelper|\MvcCore\Ext\Views\Helpers\IHelper|mixed View helper instance.
 	 */
 	public function & GetHelper ($helperName);
 
@@ -253,7 +253,7 @@ interface IView
 	 * Set view helper for current template or for all templates globaly by default.
 	 * If view helper already exist in global helpers store - it's overwritten.
 	 * @param string $helperName View helper method name in pascal case.
-	 * @param \MvcCore\Ext\View\Helpers\AbstractHelper|\MvcCore\Ext\View\Helpers\IHelper|mixed $instance View helper instance.
+	 * @param \MvcCore\Ext\Views\Helpers\AbstractHelper|\MvcCore\Ext\Views\Helpers\IHelper|mixed $instance View helper instance.
 	 * @param bool $forAllTemplates register this helper instance for all rendered views in the future.
 	 * @return \MvcCore\Interfaces\IView
 	 */

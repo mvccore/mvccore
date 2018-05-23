@@ -86,7 +86,7 @@ class View implements Interfaces\IView
 	 * Helpers view implementing this interface could have better setup.
 	 * @var string
 	 */
-	public static $HelpersInterfaceClassName = 'MvcCore\Ext\View\Helpers\IHelper';
+	public static $HelpersInterfaceClassName = 'MvcCore\Ext\Views\Helpers\IHelper';
 
 	/**
 	 * Helpers classes namespaces, where are all configured view helpers placed.
@@ -94,7 +94,7 @@ class View implements Interfaces\IView
 	 * @var array
 	 */
 	public static $HelpersClassesNamespaces = array(
-		/*'\MvcCore\Ext\View\Helpers\'*/
+		/*'\MvcCore\Ext\Views\Helpers\'*/
 	);
 
 	/**
@@ -179,7 +179,7 @@ class View implements Interfaces\IView
 		self::$_app = & \MvcCore\Application::GetInstance();
 		self::$_toolClass = self::$_app->GetToolClass();
 		static::$HelpersClassesNamespaces = array(
-			'\MvcCore\Ext\View\Helpers\\',
+			'\MvcCore\Ext\Views\Helpers\\',
 			// and '\App\Views\Helpers\' by default:
 			'\\' . implode('\\', array(
 				self::$_app->GetAppDir(),
@@ -459,7 +459,7 @@ class View implements Interfaces\IView
 	 * If helper already exists in global helpers store - do not create it again - use instance from the store.
 	 * @param string $helperName View helper method name in pascal case.
 	 * @throws \InvalidArgumentException If view doesn't exist in configured namespaces.
-	 * @return \MvcCore\Ext\View\Helpers\AbstractHelper|\MvcCore\Ext\View\Helpers\IHelper|mixed View helper instance.
+	 * @return \MvcCore\Ext\Views\Helpers\AbstractHelper|\MvcCore\Ext\Views\Helpers\IHelper|mixed View helper instance.
 	 */
 	public function & GetHelper ($helperName) {
 		$setUpViewAgain = FALSE;
@@ -507,7 +507,7 @@ class View implements Interfaces\IView
 	 * Set view helper for current template or for all templates globaly by default.
 	 * If view helper already exist in global helpers store - it's overwritten.
 	 * @param string $helperName View helper method name in pascal case.
-	 * @param \MvcCore\Ext\View\Helpers\AbstractHelper|\MvcCore\Ext\View\Helpers\IHelper|mixed $instance View helper instance.
+	 * @param \MvcCore\Ext\Views\Helpers\AbstractHelper|\MvcCore\Ext\Views\Helpers\IHelper|mixed $instance View helper instance.
 	 * @param bool $forAllTemplates register this helper instance for all rendered views in the future.
 	 * @return \MvcCore\View|\MvcCore\Interfaces\IView
 	 */
@@ -594,7 +594,7 @@ class View implements Interfaces\IView
 	 * @param string $method View helper method name in pascal case.
 	 * @param mixed $arguments View helper method arguments.
 	 * @throws \InvalidArgumentException If view doesn't exist in configured namespaces.
-	 * @return \MvcCore\Ext\View\Helpers\AbstractHelper|\MvcCore\Ext\View\Helpers\IHelper|string|mixed View helper string result or view helper instance or any other view helper result type.
+	 * @return \MvcCore\Ext\Views\Helpers\AbstractHelper|\MvcCore\Ext\Views\Helpers\IHelper|string|mixed View helper string result or view helper instance or any other view helper result type.
 	 */
 	public function __call ($method, $arguments) {
 		$result = '';
