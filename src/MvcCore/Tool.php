@@ -143,7 +143,7 @@ class Tool implements Interfaces\ITool
 	 * @return boolean
 	 */
 	public static function CheckClassInterface ($testClassName, $interfaceName, $checkStaticMethods = FALSE, $throwException = TRUE) {
-		$result = TRUE;
+		$result = FALSE;
 		$errorMsg = '';
 		// check given test class for all implemented instance methods by given interface
 		$testClassType = new \ReflectionClass($testClassName);
@@ -152,7 +152,7 @@ class Tool implements Interfaces\ITool
 		} else {
 			$errorMsg = "Class `$testClassName` doesn't implement interface `$interfaceName`.";
 		}
-		if ($checkStaticMethods) {
+		if ($result && $checkStaticMethods) {
 			// check given test class for all implemented static methods by given interface
 			$allStaticsImplemented = TRUE;
 			$interfaceMethods = static::checkClassInterfaceGetPublicStaticMethods($interfaceName);

@@ -481,7 +481,7 @@ class View implements Interfaces\IView
 				if (class_exists($className)) {
 					$helperFound = TRUE;
 					$setUpViewAgain = TRUE;
-					if ($toolClass::CheckClassInterface($className, $helpersInterface, FALSE, FALSE)) {
+					if ($toolClass::CheckClassInterface($className, $helpersInterface, TRUE, FALSE)) {
 						$implementsIHelper = TRUE;
 						$instance = & $className::GetInstance();
 					} else {
