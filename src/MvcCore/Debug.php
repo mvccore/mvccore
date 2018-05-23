@@ -347,14 +347,15 @@ namespace MvcCore {
 			if (!static::$logDirectoryInitialized) static::initLogDirectory();
 			$fullPath = static::$LogDirectory . '/' . $priority . '.log';
 			if (!is_dir(static::$LogDirectory)) {
-				mkdir(static::$LogDirectory);
-				if (!is_writable(static::$LogDirectory)) {
-					try {
-						chmod(static::$LogDirectory, 0777);
-					} catch (\Exception $e) {
-						die('['.__CLASS__.'] ' . $e->getMessage());
-					}
-				}
+				if (!mkdir(static::$LogDirectory))
+					throw new \RuntimeException(
+						'['.__CLASS__."] It was not possible to create log directory: `".static::$LogDirectory."`."
+					);
+				if (!is_writable(static::$LogDirectory))
+					if (!chmod(static::$LogDirectory, 0777))
+						throw new \RuntimeException(
+							'['.__CLASS__."] It was not possible to set log directory: `".static::$LogDirectory."` to writeable mode 0777."
+						);
 			}
 			file_put_contents($fullPath, $content, FILE_APPEND);
 			return $fullPath;
