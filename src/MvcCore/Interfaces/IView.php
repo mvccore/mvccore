@@ -73,8 +73,14 @@ interface IView
 	const DOCTYPE_XML = 'XML';
 
 	/**
+	 * MvcCore extension class name for view helpers.
+	 * Helpers view implementing this interface could have better setup.
+	 */
+	const HELPERS_INTERFACE_CLASS_NAME = 'MvcCore\\Ext\\Views\\Helpers\\IHelper';
+
+	/**
 	 * Static initialization to complete
-	 * `static::$HelpersClassesNamespaces` by application configuration.
+	 * `static::$helpersNamespaces` by application configuration.
 	 * @return void
 	 */
 	public static function StaticInit ();
@@ -90,12 +96,124 @@ interface IView
 	public static function CreateInstance ();
 
 	/**
-	 * Add view helpers classes namespace(s),
-	 * Example: `\MvcCore\View::AddHelpersClassNamespaces('\Any\Other\ViewHelpers\Place\', '...');`.
-	 * @param string $helperNamespace,... View helper classes namespace(s)
+	 * Get view scripts files extension with leading dot char.
+	 * Default value: `".phtml"`.
+	 * @return string
+	 */
+	public static function GetExtension ();
+
+	/**
+	 * Set view scripts files extension.
+	 * given value could be with or without leading dot char.
+	 * @param string $extension Extension with or without leading dot char.
 	 * @return void
 	 */
-	public static function AddHelpersClassNamespaces (/*...$helperNamespace*/);
+	public static function SetExtension ($extension = '.phtml');
+
+	/**
+	 * Get output document type (to automaticly and optionaly send proper
+	 * HTTP header `Content-Type`, if there is no `Content-Type` HTTP
+	 * header in response object yet).
+	 * This value could be used also for any other custom purposses.
+	 * Possible values:
+	 * - `HTML4` - `\MvcCore\Interfaces\IView::DOCTYPE_HTML4`
+	 * - `XHTML` - `\MvcCore\Interfaces\IView::DOCTYPE_XHTML`
+	 * - `HTML5` - `\MvcCore\Interfaces\IView::DOCTYPE_HTML5`
+	 * - `XML`   - `\MvcCore\Interfaces\IView::DOCTYPE_XML`
+	 * Default value: `HTML5`.
+	 * @return string
+	 */
+	public static function GetDoctype ();
+
+	/**
+	 * Set output document type (to automaticly and optionaly send proper
+	 * HTTP header `Content-Type`, if there is no `Content-Type` HTTP
+	 * header in response object yet).
+	 * This value could be used also for any other custom purposses.
+	 * Possible values:
+	 * - `HTML4` - `\MvcCore\Interfaces\IView::DOCTYPE_HTML4`
+	 * - `XHTML` - `\MvcCore\Interfaces\IView::DOCTYPE_XHTML`
+	 * - `HTML5` - `\MvcCore\Interfaces\IView::DOCTYPE_HTML5`
+	 * - `XML`   - `\MvcCore\Interfaces\IView::DOCTYPE_XML`
+	 * Default value: `HTML5`.
+	 * @param string $doctype
+	 * @return void
+	 */
+	public static function SetDoctype ($doctype = \MvcCore\Interfaces\IView::DOCTYPE_HTML5);
+
+	/**
+	 * Get layout templates directory placed by default
+	 * inside `"/App/Views"` directory. Default value
+	 * is `"Layouts"`, so layouts app path
+	 * is `"/App/Views/Layouts"`.
+	 * @return string
+	 */
+	public static function GetLayoutsDir ();
+
+	/**
+	 * Set layout templates directory placed by default
+	 * inside `"/App/Views"` directory. Default value
+	 * is `"Layouts"`, so layouts app path
+	 * is `"/App/Views/Layouts"`.
+	 * @param string $layoutsDir
+	 * @return void
+	 */
+	public static function SetLayoutsDir ($layoutsDir = 'Layouts');
+
+	/**
+	 * Get controller/action templates directory
+	 * placed by default inside `"/App/Views"` directory.
+	 * Default value is `"Scripts"`, so scripts app path
+	 * is `"/App/Views/Scripts"`.
+	 * @return string
+	 */
+	public static function GetScriptsDir ();
+
+	/**
+	 * Get controller/action templates directory
+	 * placed by default inside `"/App/Views"` directory.
+	 * Default value is `"Scripts"`, so scripts app path
+	 * is `"/App/Views/Scripts"`.
+	 * @param string $scriptsDir
+	 * @return void
+	 */
+	public static function SetScriptsDir ($scriptsDir = 'Scripts');
+
+	/**
+	 * Get views helpers directory placed by default
+	 * inside `"/App/Views"` directory.
+	 * Default value is `"Helpers"`, so scripts app path
+	 * is `"/App/Views/Helpers"`.
+	 * @return string
+	 */
+	public static function GetHelpersDir ();
+
+	/**
+	 * Set views helpers directory placed by default
+	 * inside `"/App/Views"` directory.
+	 * Default value is `"Helpers"`, so scripts app path
+	 * is `"/App/Views/Helpers"`.
+	 * @param string $helpersDir
+	 * @return void
+	 */
+	public static function SetHelpersDir ($helpersDir = 'Helpers');
+
+	/**
+	 * Add view helpers classes namespace(s),
+	 * Example: `\MvcCore\View::AddHelpersNamespaces('Any\Other\ViewHelpers\Place', '...');`.
+	 * @param string $helperNamespace,... View helper classes namespace(s).
+	 * @return void
+	 */
+	public static function AddHelpersNamespaces (/*...$helperNamespace*/);
+
+	/**
+	 * Set view helpers classes namespace(s). This method replace all previously configured namespaces.
+	 * If you want only to add namespace, use `\Mvccore\View::AddHelpersNamespaces();` instead.
+	 * Example: `\MvcCore\View::SetHelpersClassNamespaces('Any\Other\ViewHelpers\Place', '...');`.
+	 * @param string $helperNamespace,... View helper classes namespace(s).
+	 * @return void
+	 */
+	public static function SetHelpersNamespaces (/*...$helperNamespace*/);
 
 	/**
 	 * Get view script full path by internal application configuration,

@@ -963,7 +963,7 @@ class Router implements Interfaces\IRouter
 
 	/**
 	 * Return XML query string separator `&amp;`, if response has any `Content-Type` header with `xml` substring inside
-	 * or return XML query string separator `&amp;` if `\MvcCore\View::$Doctype` is has any `XML` or any `XHTML` substring inside.
+	 * or return XML query string separator `&amp;` if `\MvcCore\View::GetDoctype()` is has any `XML` or any `XHTML` substring inside.
 	 * Otherwise return HTML query string separator `&`.
 	 * @return string
 	 */
@@ -973,9 +973,10 @@ class Router implements Interfaces\IRouter
 			if ($response->HasHeader('Content-Type')) {
 				$this->queryParamsSepatator = $response->IsXmlOutput() ? '&amp;' : '&';
 			} else {
+				$viewDocType = \MvcCore\View::GetDoctype();
 				$this->queryParamsSepatator = (
-					strpos(\MvcCore\View::$Doctype, \MvcCore\View::DOCTYPE_XML) !== FALSE ||
-					strpos(\MvcCore\View::$Doctype, \MvcCore\View::DOCTYPE_XHTML) !== FALSE
+					strpos($viewDocType, \MvcCore\View::DOCTYPE_XML) !== FALSE ||
+					strpos($viewDocType, \MvcCore\View::DOCTYPE_XHTML) !== FALSE
 				) ? '&amp;' : '&';
 			}
 		}

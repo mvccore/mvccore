@@ -197,15 +197,25 @@ class Request implements Interfaces\IRequest
 
 	/**
 	 * Server ip address string.
+	 * Example: `"127.0.0.1" | "111.222.111.222"`
 	 * @var string|NULL
 	 */
 	protected $serverIp			= NULL;
 
 	/**
 	 * Client ip address string.
+	 * Example: `"127.0.0.1" | "222.111.222.111"`
 	 * @var string|NULL
 	 */
 	protected $clientIp			= NULL;
+
+	/**
+	 * Integer value from global `$_SERVER['CONTENT_LENGTH']`,
+	 * `NULL` if no value presented in global `$_SERVER` array.
+	 * Example: `123456 | NULL`
+	 * @var int|NULL
+	 */
+	protected $contentLength	= NULL;
 
 	/**
 	 * Timestamp of the start of the request, with microsecond precision.
@@ -615,6 +625,7 @@ class Request implements Interfaces\IRequest
 		if ($this->params === NULL) $this->initParams();
 		$this->GetServerIp();
 		$this->GetClientIp();
+		$this->GetContentLength();
 		return $this;
 	}
 
@@ -1080,6 +1091,23 @@ class Request implements Interfaces\IRequest
 	}
 
 	/**
+	 * Get integer value from global `$_SERVER['CONTENT_LENGTH']`,
+	 * If no value, `NULL` is returned.
+	 * @return int|NULL
+	 */
+	public function GetContentLength () {
+		if ($this->contentLength === NULL) {
+			if (
+				isset($this->globalServer['CONTENT_LENGTH']) &&
+				is_int($this->globalServer['CONTENT_LENGTH'])
+			) {
+				$this->contentLength = intval($this->globalServer['CONTENT_LENGTH']);
+			}
+		}
+		return $this->contentLength;
+	}
+
+	/**
 	 * Parse list of comma separated language tags and sort it by the
 	 * quality value from `$this->globalServer['HTTP_ACCEPT_LANGUAGE']`.
 	 * @param string[] $languagesList
@@ -1334,6 +1362,10 @@ class Request implements Interfaces\IRequest
 		}
 	}
 
+	/**
+	 * Initialize language code and locale code from global `$_SERVER['HTTP_ACCEPT_LANGUAGE']`
+	 * if any, by `Intl` extension function `locale_accept_from_http()` or by custom parsing.
+	 */
 	protected function initLangAndLocale () {
 		$rawUaLanguages = $this->globalServer['HTTP_ACCEPT_LANGUAGE'];
 		if (extension_loaded('Intl')) {

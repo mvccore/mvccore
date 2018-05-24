@@ -560,4 +560,11 @@ interface IRequest
 	 * @return bool
 	 */
 	public function IsAjax ();
+
+	/**
+	 * Get integer value from global `$_SERVER['CONTENT_LENGTH']`,
+	 * If no value, `NULL` is returned.
+	 * @return int|NULL
+	 */
+	public function GetContentLength ();
 }

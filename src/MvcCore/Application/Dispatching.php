@@ -145,7 +145,7 @@ trait Dispatching
 		$actionName = $actionPc . 'Action';
 		$viewClass = $this->viewClass;
 		$viewScriptFullPath = $viewClass::GetViewScriptFullPath(
-			$viewClass::$ScriptsDir,
+			$viewClass::GetScriptsDir(),
 			$this->request->GetControllerName() . '/' . $this->request->GetActionName()
 		);
 		if ($ctrlPc == 'Controller') {
@@ -345,7 +345,7 @@ trait Dispatching
 				$defaultCtrlFullName,
 				$this->defaultControllerErrorActionName . "Action",
 				$viewClass::GetViewScriptFullPath(
-					$viewClass::$ScriptsDir,
+					$viewClass::GetScriptsDir(),
 					$this->request->GetControllerName() . '/' . $this->request->GetActionName()
 				),
 				function (\Exception & $e) use ($exceptionMessage, $debugClass) {
@@ -388,7 +388,7 @@ trait Dispatching
 				$defaultCtrlFullName,
 				$this->defaultControllerNotFoundActionName . "Action",
 				$viewClass::GetViewScriptFullPath(
-					$viewClass::$ScriptsDir,
+					$viewClass::GetScriptsDir(),
 					$this->request->GetControllerName() . '/' . $this->request->GetActionName()
 				),
 				function (\Exception & $e) use ($exceptionMessage, $debugClass) {

@@ -54,7 +54,16 @@ class Application implements \MvcCore\Interfaces\IApplication
 	 * @return \MvcCore\Application
 	 */
 	public static function & GetInstance () {
-		if (!static::$instance) static::$instance = new static();
-		return static::$instance;
+		if (self::$instance === NULL) self::$instance = new static();
+		return self::$instance;
+	}
+
+	/**
+	 * Its not possible to create application instance like:
+	 * `$app = new Application;`. Use: `Application::GetInstance();` instead.
+	 * @return \MvcCore\Application
+	 */
+	protected function __construct () {
+		self::$instance = $this;
 	}
 }

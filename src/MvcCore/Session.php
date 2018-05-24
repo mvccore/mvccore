@@ -223,7 +223,7 @@ class Session extends \ArrayObject implements Interfaces\ISession
 	 * Get new or existing MvcCore session namespace instance.
 	 * If session is not started, start session.
 	 * @param string $name Session namespace unique name.
-	 * @return \MvcCore\Interfaces\ISession
+	 * @return \MvcCore\Session
 	 */
 	public static function & GetNamespace (
 		$name = \MvcCore\Interfaces\ISession::DEFAULT_NAMESPACE_NAME
@@ -238,7 +238,7 @@ class Session extends \ArrayObject implements Interfaces\ISession
 	/**
 	 * Get new or existing MvcCore session namespace instance.
 	 * @param string $name
-	 * @return \MvcCore\Interfaces\ISession
+	 * @return \MvcCore\Session
 	 */
 	public function __construct ($name = \MvcCore\Interfaces\ISession::DEFAULT_NAMESPACE_NAME) {
 		if (!static::$started) static::Start();
@@ -251,7 +251,7 @@ class Session extends \ArrayObject implements Interfaces\ISession
 	/**
 	 * Set MvcCore session namespace expiration by page request(s) count.
 	 * @param int $hoops
-	 * @return \MvcCore\Interfaces\ISession
+	 * @return \MvcCore\Session
 	 */
 	public function & SetExpirationHoops ($hoops) {
 		static::$meta->hoops[$this->__name] = $hoops;
@@ -263,7 +263,7 @@ class Session extends \ArrayObject implements Interfaces\ISession
 	 * Zero (`0`) means "until the browser is closed" if there is no more
 	 * higher namespace expirations in whole session.
 	 * @param int $seconds
-	 * @return \MvcCore\Interfaces\ISession
+	 * @return \MvcCore\Session
 	 */
 	public function & SetExpirationSeconds ($seconds = 0) {
 		static::$meta->expirations[$this->__name] = static::$sessionStartTime + $seconds;

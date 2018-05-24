@@ -73,6 +73,18 @@ namespace MvcCore;
 class Controller implements Interfaces\IController
 {
 	/**
+	 * Path to all static files - css, js, imgs and fonts.
+	 * @var string
+	 */
+	protected static $staticPath = '/static';
+
+	/**
+	 * Path to temporary directory with generated css and js files.
+	 * @var string
+	 */
+	protected static $tmpPath = '/Var/Tmp';
+
+	/**
 	 * Reference to `\MvcCore\Application` singleton object.
 	 * @var \MvcCore\Application|\MvcCore\Interfaces\IApplication
 	 */
@@ -149,33 +161,10 @@ class Controller implements Interfaces\IController
 	 * - 2 => Controller has been pre-dispatched.
 	 * - 3 => controller has been action dispatched.
 	 * - 4 => Controller has been rendered.
+	 * - 5 => Controller has been redirected.
 	 * @var int
 	 */
 	protected $dispatchState = 0;
-
-	/**
-	 * Parent controller instance if any.
-	 * @var \MvcCore\Controller|NULL
-	 */
-	private $_parentController = NULL;
-
-	/**
-	 * Registered sub-controller(s) instances.
-	 * @var \MvcCore\Controller[]
-	 */
-	private $_childControllers = array();
-
-	/**
-	 * Path to all static files - css, js, imgs and fonts.
-	 * @var string
-	 */
-	protected static $staticPath = '/static';
-
-	/**
-	 * Path to temporary directory with generated css and js files.
-	 * @var string
-	 */
-	protected static $tmpPath = '/Var/Tmp';
 
 	/**
 	 * All asset mime types possibly called throught `\MvcCore\Controller::AssetAction();`.
@@ -196,6 +185,18 @@ class Controller implements Interfaces\IController
 		'otf'	=> 'font/opentype',
 		'woff'	=> 'application/x-font-woff',
 	);
+
+	/**
+	 * Parent controller instance if any.
+	 * @var \MvcCore\Controller|NULL
+	 */
+	private $_parentController = NULL;
+
+	/**
+	 * Registered sub-controller(s) instances.
+	 * @var \MvcCore\Controller[]
+	 */
+	private $_childControllers = array();
 
 	/**
 	 * Return always new instance of staticly called class, no singleton.
@@ -717,7 +718,7 @@ class Controller implements Interfaces\IController
 	public function HtmlResponse ($output = '', $terminate = FALSE) {
 		if (!$this->response->HasHeader('Content-Type')) {
 			$contentTypeHeaderValue = strpos(
-				\MvcCore\View::$Doctype, \MvcCore\View::DOCTYPE_XHTML
+				\MvcCore\View::GetDoctype(), \MvcCore\View::DOCTYPE_XHTML
 			) !== FALSE ? 'application/xhtml+xml' : 'text/html' ;
 			$this->response->SetHeader('Content-Type', $contentTypeHeaderValue);
 		}

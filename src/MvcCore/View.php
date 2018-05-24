@@ -43,93 +43,62 @@ include_once(__DIR__ . '/Application.php'); // because of static init
 class View implements Interfaces\IView
 {
 	/**
-	 * View script files extenion. Default value: `".phtml"`.
-	 * For read & write.
+	 * View scripts files extension with leading dot char.
+	 * Default value: `".phtml"`.
 	 * @var string
 	 */
-	public static $Extension = '.phtml';
+	protected static $extension = '.phtml';
 
 	/**
-	 * Document type to send proper optinal headers or anything else.
+	 * Output document type (to automaticly and optionaly send proper
+	 * HTTP header `Content-Type`, if there is no `Content-Type` HTTP
+	 * header in response object yet).
+	 * This value could be used also for any other custom purposses.
 	 * Possible values:
-	 * - `\MvcCore\Interfaces\IView::DOCTYPE_HTML4`
-	 * - `\MvcCore\Interfaces\IView::DOCTYPE_XHTML`
-	 * - `\MvcCore\Interfaces\IView::DOCTYPE_HTML5`
-	 * - `\MvcCore\Interfaces\IView::DOCTYPE_XML`
+	 * - `HTML4` - `\MvcCore\Interfaces\IView::DOCTYPE_HTML4`
+	 * - `XHTML` - `\MvcCore\Interfaces\IView::DOCTYPE_XHTML`
+	 * - `HTML5` - `\MvcCore\Interfaces\IView::DOCTYPE_HTML5`
+	 * - `XML`   - `\MvcCore\Interfaces\IView::DOCTYPE_XML`
+	 * Default value: `HTML5`.
 	 * @var string
 	 */
-	public static $Doctype = self::DOCTYPE_HTML5;
+	protected static $doctype = self::DOCTYPE_HTML5;
 
 	/**
-	 * Controller/action templates directory placed by default inside `"/App/Views"` directory.
-	 * Default value: `"Scripts"`. For read & write.
+	 * Layout templates directory placed by default
+	 * inside `"/App/Views"` directory. Default value
+	 * is `"Layouts"`, so layouts app path
+	 * is `"/App/Views/Layouts"`.
 	 * @var string
 	 */
-	public static $ScriptsDir = 'Scripts';
+	protected static $layoutsDir = 'Layouts';
 
 	/**
-	 * Views helpers directory placed by default inside `"/App/Views"` directory.
-	 * Default value: `"Helpers"`. For read & write.
+	 * Controller/action templates directory
+	 * placed by default inside `"/App/Views"` directory.
+	 * Default value is `"Scripts"`, so scripts app path
+	 * is `"/App/Views/Scripts"`.
 	 * @var string
 	 */
-	public static $HelpersDir = 'Helpers';
+	protected static $scriptsDir = 'Scripts';
 
 	/**
-	 * Layout templates directory placed by default inside `"/App/Views"` directory.
-	 * Default value: `"Layouts"`. For read & write.
+	 * Views helpers directory placed by default
+	 * inside `"/App/Views"` directory.
+	 * Default value is `"Helpers"`, so scripts app path
+	 * is `"/App/Views/Helpers"`.
 	 * @var string
 	 */
-	public static $LayoutsDir = 'Layouts';
-
-	/**
-	 * MvcCore extension class name for view helpers.
-	 * Helpers view implementing this interface could have better setup.
-	 * @var string
-	 */
-	public static $HelpersInterfaceClassName = 'MvcCore\Ext\Views\Helpers\IHelper';
+	protected static $helpersDir = 'Helpers';
 
 	/**
 	 * Helpers classes namespaces, where are all configured view helpers placed.
 	 * For read & write.
 	 * @var array
 	 */
-	public static $HelpersClassesNamespaces = array(
+	protected static $helpersNamespaces = array(
 		/*'\MvcCore\Ext\Views\Helpers\'*/
 	);
-
-	/**
-	 * Controller instance.
-	 * @var \MvcCore\Controller|\MvcCore\Interfaces\IController
-	 */
-	private $_controller = NULL;
-
-	/**
-	 * Rendered content.
-	 * @var string
-	 */
-	private $_content = '';
-
-	/**
-	 * Variables store, setted (always from controller)
-	 * throught `__set()` magic function.
-	 * @var array
-	 */
-	private $_store = array();
-
-	/**
-	 * Helpers instances storrage for current view instance.
-	 * Keys in array are helper method names.
-	 * Every view has it's own helpers storrage to recognize
-	 * if helper has been already used inside current view or not.
-	 * @var array
-	 */
-	private $_helpers = array();
-
-	/**
-	 * Currently rendered php/html file path(s).
-	 * @var array
-	 */
-	private $_renderedFullPaths = array();
 
 	/**
 	 * Originaly declared internal view properties to protect their
@@ -171,20 +140,54 @@ class View implements Interfaces\IView
 	private static $_toolClass = NULL;
 
 	/**
+	 * Controller instance.
+	 * @var \MvcCore\Controller|\MvcCore\Interfaces\IController
+	 */
+	private $_controller = NULL;
+
+	/**
+	 * Rendered content.
+	 * @var string
+	 */
+	private $_content = '';
+
+	/**
+	 * Variables store, setted (always from controller)
+	 * throught `__set()` magic function.
+	 * @var array
+	 */
+	private $_store = array();
+
+	/**
+	 * Helpers instances storrage for current view instance.
+	 * Keys in array are helper method names.
+	 * Every view has it's own helpers storrage to recognize
+	 * if helper has been already used inside current view or not.
+	 * @var array
+	 */
+	private $_helpers = array();
+
+	/**
+	 * Currently rendered php/html file path(s).
+	 * @var array
+	 */
+	private $_renderedFullPaths = array();
+
+	/**
 	 * Static initialization to complete
-	 * `static::$HelpersClassesNamespaces` by application configuration.
+	 * `static::$helpersNamespaces` by application configuration.
 	 * @return void
 	 */
 	public static function StaticInit () {
 		self::$_app = & \MvcCore\Application::GetInstance();
 		self::$_toolClass = self::$_app->GetToolClass();
-		static::$HelpersClassesNamespaces = array(
-			'\MvcCore\Ext\Views\Helpers\\',
+		static::$helpersNamespaces = array(
+			'\\MvcCore\\Ext\\Views\Helpers\\',
 			// and '\App\Views\Helpers\' by default:
 			'\\' . implode('\\', array(
 				self::$_app->GetAppDir(),
 				self::$_app->GetViewsDir(),
-				static::$HelpersDir
+				static::$helpersDir
 			)) . '\\',
 		);
 	}
@@ -202,16 +205,150 @@ class View implements Interfaces\IView
 	}
 
 	/**
-	 * Add view helpers classes namespace(s),
-	 * Example: `\MvcCore\View::AddHelpersClassNamespaces('\Any\Other\ViewHelpers\Place\', '...');`.
-	 * @param string $helperNamespace,... View helper classes namespace(s)
+	 * Get view scripts files extension with leading dot char.
+	 * Default value: `".phtml"`.
+	 * @return string
+	 */
+	public static function GetExtension () {
+		return static::$extension;
+	}
+
+	/**
+	 * Set view scripts files extension.
+	 * given value could be with or without leading dot char.
+	 * @param string $extension Extension with or without leading dot char.
 	 * @return void
 	 */
-	public static function AddHelpersClassNamespaces (/*...$helperNamespace*/) {
-		$args = func_get_args();
-		foreach ($args as $arg) {
-			static::$HelpersClassesNamespaces[] = '\\' . trim($arg, '\\') . '\\';
-		}
+	public static function SetExtension ($extension = '.phtml') {
+		static::$extension = $extension;
+	}
+
+	/**
+	 * Get output document type (to automaticly and optionaly send proper
+	 * HTTP header `Content-Type`, if there is no `Content-Type` HTTP
+	 * header in response object yet).
+	 * This value could be used also for any other custom purposses.
+	 * Possible values:
+	 * - `HTML4` - `\MvcCore\Interfaces\IView::DOCTYPE_HTML4`
+	 * - `XHTML` - `\MvcCore\Interfaces\IView::DOCTYPE_XHTML`
+	 * - `HTML5` - `\MvcCore\Interfaces\IView::DOCTYPE_HTML5`
+	 * - `XML`   - `\MvcCore\Interfaces\IView::DOCTYPE_XML`
+	 * Default value: `HTML5`.
+	 * @return string
+	 */
+	public static function GetDoctype () {
+		return static::$doctype;
+	}
+
+	/**
+	 * Set output document type (to automaticly and optionaly send proper
+	 * HTTP header `Content-Type`, if there is no `Content-Type` HTTP
+	 * header in response object yet).
+	 * This value could be used also for any other custom purposses.
+	 * Possible values:
+	 * - `HTML4` - `\MvcCore\Interfaces\IView::DOCTYPE_HTML4`
+	 * - `XHTML` - `\MvcCore\Interfaces\IView::DOCTYPE_XHTML`
+	 * - `HTML5` - `\MvcCore\Interfaces\IView::DOCTYPE_HTML5`
+	 * - `XML`   - `\MvcCore\Interfaces\IView::DOCTYPE_XML`
+	 * Default value: `HTML5`.
+	 * @param string $doctype
+	 * @return void
+	 */
+	public static function SetDoctype ($doctype = \MvcCore\Interfaces\IView::DOCTYPE_HTML5) {
+		static::$doctype = $doctype;
+	}
+
+	/**
+	 * Get layout templates directory placed by default
+	 * inside `"/App/Views"` directory. Default value
+	 * is `"Layouts"`, so layouts app path
+	 * is `"/App/Views/Layouts"`.
+	 * @return string
+	 */
+	public static function GetLayoutsDir () {
+		return static::$layoutsDir;
+	}
+
+	/**
+	 * Set layout templates directory placed by default
+	 * inside `"/App/Views"` directory. Default value
+	 * is `"Layouts"`, so layouts app path
+	 * is `"/App/Views/Layouts"`.
+	 * @param string $layoutsDir
+	 * @return void
+	 */
+	public static function SetLayoutsDir ($layoutsDir = 'Layouts') {
+		static::$layoutsDir = $layoutsDir;
+	}
+
+	/**
+	 * Get controller/action templates directory
+	 * placed by default inside `"/App/Views"` directory.
+	 * Default value is `"Scripts"`, so scripts app path
+	 * is `"/App/Views/Scripts"`.
+	 * @return string
+	 */
+	public static function GetScriptsDir () {
+		return static::$scriptsDir;
+	}
+
+	/**
+	 * Set controller/action templates directory
+	 * placed by default inside `"/App/Views"` directory.
+	 * Default value is `"Scripts"`, so scripts app path
+	 * is `"/App/Views/Scripts"`.
+	 * @param string $scriptsDir
+	 * @return void
+	 */
+	public static function SetScriptsDir ($scriptsDir = 'Scripts') {
+		static::$scriptsDir = $scriptsDir;
+	}
+
+	/**
+	 * Get views helpers directory placed by default
+	 * inside `"/App/Views"` directory.
+	 * Default value is `"Helpers"`, so scripts app path
+	 * is `"/App/Views/Helpers"`.
+	 * @return string
+	 */
+	public static function GetHelpersDir () {
+		return static::$helpersDir;
+	}
+
+	/**
+	 * Set views helpers directory placed by default
+	 * inside `"/App/Views"` directory.
+	 * Default value is `"Helpers"`, so scripts app path
+	 * is `"/App/Views/Helpers"`.
+	 * @param string $helpersDir
+	 * @return void
+	 */
+	public static function SetHelpersDir ($helpersDir = 'Helpers') {
+		static::$helpersDir = $helpersDir;
+	}
+
+	/**
+	 * Add view helpers classes namespace(s),
+	 * Example: `\MvcCore\View::AddHelpersNamespaces('Any\Other\ViewHelpers\Place', '...');`.
+	 * @param string $helperNamespace,... View helper classes namespace(s).
+	 * @return void
+	 */
+	public static function AddHelpersNamespaces (/*...$helperNamespace*/) {
+		foreach (func_get_args() as $arg)
+			static::$helpersNamespaces[] = '\\' . trim($arg, '\\') . '\\';
+	}
+
+	/**
+	 * Set view helpers classes namespace(s). This method replace all previously configured namespaces.
+	 * If you want only to add namespace, use `\Mvccore\View::AddHelpersNamespaces();` instead.
+	 * Example: `\MvcCore\View::SetHelpersClassNamespaces('Any\Other\ViewHelpers\Place', '...');`.
+	 * @param string $helperNamespace,... View helper classes namespace(s).
+	 * @return void
+	 */
+	public static function SetHelpersNamespaces (/*...$helperNamespace*/) {
+		static::$helpersNamespaces = array();
+		foreach (func_get_args() as $arg)
+			static::$helpersNamespaces[] = '\\' . trim($arg, '\\') . '\\';
 	}
 
 	/**
@@ -226,7 +363,7 @@ class View implements Interfaces\IView
 		return implode('/', array(
 			self::$_viewScriptsFullPathBase,
 			$typePath,
-			$corectedRelativePath . static::$Extension
+			$corectedRelativePath . static::$extension
 		));
 	}
 
@@ -323,8 +460,8 @@ class View implements Interfaces\IView
 				}
 			}
 			if ($result === NULL) {
-				$relativePath = $this->_correctRelativePath(static::$LayoutsDir, $controller->GetLayout());
-				return static::GetViewScriptFullPath(static::$LayoutsDir, $relativePath);
+				$relativePath = $this->_correctRelativePath(static::$layoutsDir, $controller->GetLayout());
+				return static::GetViewScriptFullPath(static::$layoutsDir, $relativePath);
 			}
 		}
 		return $result;
@@ -354,7 +491,7 @@ class View implements Interfaces\IView
 	 * @return string
 	 */
 	public function & RenderScript ($relativePath = '') {
-		return $this->Render(static::$ScriptsDir, $relativePath);
+		return $this->Render(static::$scriptsDir, $relativePath);
 	}
 
 	/**
@@ -363,7 +500,7 @@ class View implements Interfaces\IView
 	 * @return string
 	 */
 	public function & RenderLayout ($relativePath = '') {
-		return $this->Render(static::$LayoutsDir, $relativePath);
+		return $this->Render(static::$layoutsDir, $relativePath);
 	}
 
 	/**
@@ -375,7 +512,7 @@ class View implements Interfaces\IView
 	 */
 	public function & RenderLayoutAndContent ($relativePath = '', $content = '') {
 		$this->_content = $content;
-		return $this->Render(static::$LayoutsDir, $relativePath);
+		return $this->Render(static::$layoutsDir, $relativePath);
 	}
 
 	/**
@@ -387,7 +524,7 @@ class View implements Interfaces\IView
 	 * @return string
 	 */
 	public function & Render ($typePath = '', $relativePath = '') {
-		if (!$typePath) $typePath = static::$ScriptsDir;
+		if (!$typePath) $typePath = static::$scriptsDir;
 		$result = '';
 		$relativePath = $this->_correctRelativePath(
 			$typePath, $relativePath
@@ -475,8 +612,8 @@ class View implements Interfaces\IView
 		} else {
 			$helperFound = FALSE;
 			$toolClass = self::$_toolClass;
-			$helpersInterface = static::$HelpersInterfaceClassName;
-			foreach (static::$HelpersClassesNamespaces as $helperClassBase) {
+			$helpersInterface = self::HELPERS_INTERFACE_CLASS_NAME;
+			foreach (static::$helpersNamespaces as $helperClassBase) {
 				$className = $helperClassBase . ucfirst($helperName);
 				if (class_exists($className)) {
 					$helperFound = TRUE;
@@ -493,7 +630,7 @@ class View implements Interfaces\IView
 			}
 			if (!$helperFound) throw new \InvalidArgumentException(
 				"[".__CLASS__."] View helper method '$helperName' is not possible to handle by any configured view helper "
-				." (View helper namespaces: '".implode("', '", static::$HelpersClassesNamespaces)."')."
+				." (View helper namespaces: '".implode("', '", static::$helpersNamespaces)."')."
 			);
 		}
 		if ($setUpViewAgain) {
@@ -515,7 +652,7 @@ class View implements Interfaces\IView
 		$implementsIHelper = FALSE;
 		if ($forAllTemplates) {
 			$toolClass = self::$_toolClass;
-			$helpersInterface = static::$HelpersInterfaceClassName;
+			$helpersInterface = self::HELPERS_INTERFACE_CLASS_NAME;
 			$className = get_class($instance);
 			$implementsIHelper = $toolClass::CheckClassInterface($className, $helpersInterface, FALSE, FALSE);
 			self::$_globalHelpers[$helperName] = array(& $instance, $implementsIHelper);
