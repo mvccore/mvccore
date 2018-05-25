@@ -46,25 +46,25 @@ trait PropsGettersSetters
 
 	/**
 	 * Top most parent controller instance currently dispatched by application.
-	 * @var \MvcCore\Controller
+	 * @var \MvcCore\Controller|\MvcCore\Interfaces\IController
 	 */
 	protected $controller = NULL;
 
 	/**
 	 * Request object - parsed uri, query params, app paths...
-	 * @var \MvcCore\Request
+	 * @var \MvcCore\Request|\MvcCore\Interfaces\IRequest
 	 */
 	protected $request = NULL;
 
 	/**
 	 * Response object - storrage for response headers and rendered body.
-	 * @var \MvcCore\Response
+	 * @var \MvcCore\Response|\MvcCore\Interfaces\IResponse
 	 */
 	protected $response = NULL;
 
 	/**
 	 * Application http router to route request and build url addresses.
-	 * @var \MvcCore\Router
+	 * @var \MvcCore\Router|\MvcCore\Interfaces\IRouter
 	 */
 	protected $router = NULL;
 
@@ -380,28 +380,8 @@ trait PropsGettersSetters
 	}
 
 	/**
-	 * Returns currently used instance of protected `\MvcCore\Application::$router;`.
-	 * @return \MvcCore\Router
-	 */
-	public function & GetRouter () {
-		if ($this->router === NULL) {
-			$routerClass = $this->routerClass;
-			$this->router = $routerClass::GetInstance()->SetRequest($this->GetRequest());
-		}
-		return $this->router;
-	}
-
-	/**
-	 * Returns currently dispatched instance of protected `\MvcCore\Application::$controller;`.
-	 * @return \MvcCore\Controller
-	 */
-	public function & GetController () {
-		return $this->controller;
-	}
-
-	/**
 	 * Returns currently used instance of protected `\MvcCore\Application::$request;`.
-	 * @return \MvcCore\Request
+	 * @return \MvcCore\Request|\MvcCore\Interfaces\IRequest
 	 */
 	public function & GetRequest () {
 		if ($this->request === NULL) {
@@ -413,7 +393,7 @@ trait PropsGettersSetters
 
 	/**
 	 * Returns currently used instance of protected `\MvcCore\Application::response;`.
-	 * @return \MvcCore\Response
+	 * @return \MvcCore\Response|\MvcCore\Interfaces\IResponse
 	 */
 	public function & GetResponse () {
 		if ($this->response === NULL) {
@@ -421,6 +401,26 @@ trait PropsGettersSetters
 			$this->response = $responseClass::CreateInstance();
 		}
 		return $this->response;
+	}
+
+	/**
+	 * Returns currently used instance of protected `\MvcCore\Application::$router;`.
+	 * @return \MvcCore\Router|\MvcCore\Interfaces\IRouter
+	 */
+	public function & GetRouter () {
+		if ($this->router === NULL) {
+			$routerClass = $this->routerClass;
+			$this->router = $routerClass::GetInstance()->SetRequest($this->GetRequest());
+		}
+		return $this->router;
+	}
+
+	/**
+	 * Returns currently dispatched instance of protected `\MvcCore\Application::$controller;`.
+	 * @return \MvcCore\Controller|\MvcCore\Interfaces\IController
+	 */
+	public function & GetController () {
+		return $this->controller;
 	}
 
 	/**
@@ -616,6 +616,16 @@ trait PropsGettersSetters
 	 */
 	public function & SetAppDir ($appDir) {
 		$this->appDir = $appDir;
+		return $this;
+	}
+
+	/**
+	 * Set currently dispatched instance of protected `\MvcCore\Application::$controller;`.
+	 * @param \MvcCore\Controller|\MvcCore\Interfaces\IController $controllersDir
+	 * @return \MvcCore\Application
+	 */
+	public function & SetController (\MvcCore\Interfaces\IController & $controller = NULL) {
+		$this->controller = $controller;
 		return $this;
 	}
 

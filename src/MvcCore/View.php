@@ -400,7 +400,7 @@ class View implements Interfaces\IView
 		foreach ($props as $prop) {
 			if (!$overwriteExistingKeys && isset($this->_store[$prop->name])) continue;
 			if ($prop->isProtected()) $prop->setAccessible(TRUE);
-			$this->_store[$prop->name] = & $prop->getValue($controller);
+			$this->_store[$prop->name] = $prop->getValue($controller);
 		}
 		return $this;
 	}
