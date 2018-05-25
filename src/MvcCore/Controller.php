@@ -167,6 +167,18 @@ class Controller implements Interfaces\IController
 	protected $dispatchState = 0;
 
 	/**
+	 * Parent controller instance if any.
+	 * @var \MvcCore\Controller|\MvcCore\Interfaces\IController|NULL
+	 */
+	protected $parentController = NULL;
+
+	/**
+	 * Registered sub-controller(s) instances.
+	 * @var \MvcCore\Controller[]|\MvcCore\Interfaces\IController[]
+	 */
+	protected $childControllers = array();
+
+	/**
 	 * All asset mime types possibly called throught `\MvcCore\Controller::AssetAction();`.
 	 * @var string
 	 */
@@ -185,18 +197,6 @@ class Controller implements Interfaces\IController
 		'otf'	=> 'font/opentype',
 		'woff'	=> 'application/x-font-woff',
 	);
-
-	/**
-	 * Parent controller instance if any.
-	 * @var \MvcCore\Controller|\MvcCore\Interfaces\IController|NULL
-	 */
-	private $_parentController = NULL;
-
-	/**
-	 * Registered sub-controller(s) instances.
-	 * @var \MvcCore\Controller[]|\MvcCore\Interfaces\IController[]
-	 */
-	private $_childControllers = array();
 
 	/**
 	 * Return always new instance of staticly called class, no singleton.
@@ -266,7 +266,7 @@ class Controller implements Interfaces\IController
 		$responseContentType = $this->ajax ? 'text/javascript' : 'text/html';
 		$this->response->SetHeader('Content-Type', $responseContentType);
 		$this->autoInitProperties();
-		foreach ($this->_childControllers as $controller) {
+		foreach ($this->childControllers as $controller) {
 			$controller->Init();
 			$controller->dispatchState = 1;
 		}
@@ -318,7 +318,7 @@ class Controller implements Interfaces\IController
 			$viewClass = $this->application->GetViewClass();
 			$this->view = $viewClass::CreateInstance()->SetController($this);
 		}
-		foreach ($this->_childControllers as $controller) {
+		foreach ($this->childControllers as $controller) {
 			$controller->PreDispatch();
 			$controller->dispatchState = 2;
 		}
@@ -373,8 +373,6 @@ class Controller implements Interfaces\IController
 	 * Usually call this as soon as possible after controller creation
 	 * to set up following controller properties:
 	 * - `\MvcCore\Controller::$request`
-	 * - `\MvcCore\Controller::$response`
-	 * - `\MvcCore\Controller::$router`
 	 * - `\MvcCore\Controller::$controllerName`
 	 * - `\MvcCore\Controller::$actionName`
 	 * - `\MvcCore\Controller::$ajax`
@@ -454,7 +452,7 @@ class Controller implements Interfaces\IController
 	}
 
 	/**
-	 * Get user model instance. 
+	 * Get user model instance.
 	 * @return \MvcCore\Model|\MvcCore\Interfaces\IModel
 	 */
 	public function & GetUser () {
@@ -462,7 +460,7 @@ class Controller implements Interfaces\IController
 	}
 
 	/**
-	 * Set user model instance. 
+	 * Set user model instance.
 	 * @param \MvcCore\Model|\MvcCore\Interfaces\IModel $user
 	 * @return \MvcCore\Controller
 	 */
@@ -537,13 +535,13 @@ class Controller implements Interfaces\IController
 	 * @return \MvcCore\Controller
 	 */
 	public function AddChildController (\MvcCore\Interfaces\IController & $controller, $index = NULL) {
-		if (!in_array($controller, $this->_childControllers)) {
+		if (!in_array($controller, $this->childControllers)) {
 			if ($index === NULL) {
-				$this->_childControllers[] = & $controller;
+				$this->childControllers[] = & $controller;
 			} else {
-				$this->_childControllers[$index] = & $controller;
+				$this->childControllers[$index] = & $controller;
 			}
-			$controller->_parentController = & $this;
+			$controller->parentController = & $this;
 			$controller->layout = $this->layout;
 			$controller->viewEnabled = $this->IsViewEnabled();
 			$controller
@@ -563,7 +561,7 @@ class Controller implements Interfaces\IController
 	 * @return \MvcCore\Controller|NULL
 	 */
 	public function GetParentController () {
-		return $this->_parentController;
+		return $this->parentController;
 	}
 
 	/**
@@ -574,7 +572,7 @@ class Controller implements Interfaces\IController
 	 * @return \MvcCore\Controller
 	 */
 	public function & SetParentController (\MvcCore\Interfaces\IController & $parentController = NULL) {
-		$this->_parentController = $parentController;
+		$this->parentController = $parentController;
 		return $this;
 	}
 
@@ -585,7 +583,7 @@ class Controller implements Interfaces\IController
 	 * @return \MvcCore\Controller[]
 	 */
 	public function GetChildControllers () {
-		return $this->_childControllers;
+		return $this->childControllers;
 	}
 
 	/**
@@ -596,7 +594,7 @@ class Controller implements Interfaces\IController
 	 * @return \MvcCore\Controller
 	 */
 	public function GetChildController ($index = NULL) {
-		return $this->_childControllers[$index];
+		return $this->childControllers[$index];
 	}
 
 	/**
@@ -650,12 +648,12 @@ class Controller implements Interfaces\IController
 		if ($this->dispatchState == 0) $this->Init();
 		if ($this->dispatchState == 1) $this->PreDispatch();
 		if ($this->dispatchState < 4 && $this->viewEnabled) {
-			$currentCtrlIsTopMostParent = $this->_parentController === NULL;
+			$currentCtrlIsTopMostParent = $this->parentController === NULL;
 			// set up values
 			if (!$currentCtrlIsTopMostParent) {
-				$this->view->SetValues($this->_parentController->GetView());
+				$this->view->SetValues($this->parentController->GetView());
 			}
-			foreach ($this->_childControllers as $ctrlKey => $childCtrl) {
+			foreach ($this->childControllers as $ctrlKey => $childCtrl) {
 				if (!is_numeric($ctrlKey) && !isset($this->view->$ctrlKey))
 					$this->view->$ctrlKey = $childCtrl;
 			}
@@ -689,7 +687,7 @@ class Controller implements Interfaces\IController
 	 * @return string
 	 */
 	protected function renderGetViewScriptPath ($controllerOrActionNameDashed = NULL, $actionNameDashed = NULL) {
-		$currentCtrlIsTopMostParent = $this->_parentController === NULL;
+		$currentCtrlIsTopMostParent = $this->parentController === NULL;
 		if ($actionNameDashed !== NULL) { // if action defined - take first argument controller
 			$controllerNameDashed = $controllerOrActionNameDashed;
 		} else { // if no action defined - we need to complete controller dashed name

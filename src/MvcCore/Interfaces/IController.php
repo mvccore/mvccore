@@ -161,8 +161,6 @@ interface IController
 	 * Usually call this as soon as possible after controller creation
 	 * to set up following controller properties:
 	 * - `\MvcCore\Controller::$request`
-	 * - `\MvcCore\Controller::$response`
-	 * - `\MvcCore\Controller::$router`
 	 * - `\MvcCore\Controller::$controllerName`
 	 * - `\MvcCore\Controller::$actionName`
 	 * - `\MvcCore\Controller::$ajax`
