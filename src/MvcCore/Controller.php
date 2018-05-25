@@ -188,13 +188,13 @@ class Controller implements Interfaces\IController
 
 	/**
 	 * Parent controller instance if any.
-	 * @var \MvcCore\Controller|NULL
+	 * @var \MvcCore\Controller|\MvcCore\Interfaces\IController|NULL
 	 */
 	private $_parentController = NULL;
 
 	/**
 	 * Registered sub-controller(s) instances.
-	 * @var \MvcCore\Controller[]
+	 * @var \MvcCore\Controller[]|\MvcCore\Interfaces\IController[]
 	 */
 	private $_childControllers = array();
 
@@ -454,15 +454,16 @@ class Controller implements Interfaces\IController
 	}
 
 	/**
-	 * Get user model instance. Template method.
-	 * @return \MvcCore\Model
+	 * Get user model instance. 
+	 * @return \MvcCore\Model|\MvcCore\Interfaces\IModel
 	 */
 	public function & GetUser () {
 		return $this->user;
 	}
+
 	/**
-	 * Set user model instance. Template method.
-	 * @param \MvcCore\Model $user
+	 * Set user model instance. 
+	 * @param \MvcCore\Model|\MvcCore\Interfaces\IModel $user
 	 * @return \MvcCore\Controller
 	 */
 	public function & SetUser (& $user) {
@@ -563,6 +564,18 @@ class Controller implements Interfaces\IController
 	 */
 	public function GetParentController () {
 		return $this->_parentController;
+	}
+
+	/**
+	 * Set parent controller instance
+	 * or `NULL` for "top most parent" controller.
+	 * Method for child controllers.
+	 * @param \MvcCore\Controller|\MvcCore\Interfaces\IController|NULL $parentController
+	 * @return \MvcCore\Controller
+	 */
+	public function & SetParentController (\MvcCore\Interfaces\IController & $parentController = NULL) {
+		$this->_parentController = $parentController;
+		return $this;
 	}
 
 	/**

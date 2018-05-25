@@ -294,6 +294,15 @@ interface IController
 	public function GetParentController ();
 
 	/**
+	 * Set parent controller instance
+	 * or `NULL` for "top most parent" controller.
+	 * Method for child controllers.
+	 * @param \MvcCore\Interfaces\IController|NULL $parentController
+	 * @return \MvcCore\Interfaces\IController
+	 */
+	public function & SetParentController (\MvcCore\Interfaces\IController & $parentController = NULL);
+
+	/**
 	 * Get all child controllers array, indexed by
 	 * subcontroller property string name or by
 	 * custom string name or by custom numeric index.

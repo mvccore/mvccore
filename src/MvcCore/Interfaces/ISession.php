@@ -89,6 +89,8 @@ interface ISession
 
 	/**
 	 * Set MvcCore session namespace expiration by expiration seconds.
+	 * Zero (`0`) means "until the browser is closed" if there is no more
+	 * higher namespace expirations in whole session.
 	 * @param int $seconds
 	 * @return \MvcCore\Interfaces\ISession
 	 */
