@@ -384,15 +384,42 @@ class View implements Interfaces\IView
 	public function & GetController () {
 		return $this->_controller;
 	}
+	
+	/**
+	 * Set up all instance public and instance protected properties from given controller
+	 * instance into current store by reflection class. If there is any already existing 
+	 * key in current store - overwrite it.
+	 * @param \MvcCore\Controller|\MvcCore\Interfaces\IController $controller
+	 * @param bool $overwriteExistingKeys If any property name already exist in view store, overwrite it by given value by default.
+	 * @return \MvcCore\View
+	 */
+	public function & SetUpValuesFromController (\MvcCore\Interfaces\IController & $controller, $overwriteExistingKeys = TRUE) {
+		$type = new \ReflectionClass($controller);
+		/** @var $props \ReflectionProperty[] */
+		$props = $type->getProperties(\ReflectionProperty::IS_PUBLIC | \ReflectionProperty::IS_PROTECTED);
+		foreach ($props as $prop) {
+			if (!$overwriteExistingKeys && isset($this->_store[$prop->name])) continue;
+			if ($prop->isProtected()) $prop->setAccessible(TRUE);
+			$this->_store[$prop->name] = & $prop->getValue($controller);
+		}
+		return $this;
+	}
 
 	/**
 	 * Set up all from given view object variables store into current store,
 	 * if there is any already existing key - overwrite it.
 	 * @param \MvcCore\View $view
+	 * @param bool $overwriteExistingKeys If any property name already exist in view store, overwrite it by given value by default.
 	 * @return \MvcCore\View
 	 */
-	public function & SetValues (\MvcCore\Interfaces\IView & $view) {
-		$this->_store = array_merge($this->_store, $view->_store);
+	public function & SetUpValuesFromView (\MvcCore\Interfaces\IView & $view, $overwriteExistingKeys = TRUE) {
+		if ($overwriteExistingKeys) {
+			$this->_store = array_merge($this->_store, $view->_store);
+		} else {
+			foreach ($view->_store as $key => & $value)
+				if (!isset($view->_store))
+					$view->_store[$key] = & $value;
+		}
 		return $this;
 	}
 

@@ -309,6 +309,19 @@ interface IController
 	public function GetChildControllers ();
 
 	/**
+	 * Set all child controllers array, indexed by
+	 * subcontroller property string name or by
+	 * custom string name or by custom numeric index.
+	 * This method is dangerous, because it replace all
+	 * previous child controllers with given child controllers.
+	 * If you want only to add child controller, use method:
+	 * \MvcCore\Controller::Addchildcontroller();` instead.
+	 * @param \MvcCore\Interfaces\IController[] $childControllers
+	 * @return \MvcCore\Interfaces\IController
+	 */
+	public function & SetChildControllers (array & $childControllers = array());
+
+	/**
 	 * Get child controller at specific index.
 	 * Subcontroller index should be string by parent controller
 	 * property name or custom string name or numeric index.

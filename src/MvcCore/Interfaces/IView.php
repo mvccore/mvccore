@@ -238,12 +238,23 @@ interface IView
 	public function & GetController ();
 
 	/**
+	 * Set up all instance public and instance protected properties from given controller
+	 * instance into current store by reflection class. If there is any already existing 
+	 * key in current store - overwrite it.
+	 * @param \MvcCore\Interfaces\IController $controller
+	 * @param bool $overwriteExistingKeys If any property name already exist in view store, overwrite it by given value by default.
+	 * @return \MvcCore\Interfaces\IView
+	 */
+	public function & SetUpValuesFromController (\MvcCore\Interfaces\IController & $controller, $overwriteExistingKeys = TRUE);
+
+	/**
 	 * Set up all from given view object variables store into current store,
 	 * if there is any already existing key - overwrite it.
 	 * @param \MvcCore\Interfaces\IView $view
+	 * @param bool $overwriteExistingKeys If any property name already exist in view store, overwrite it by given value by default.
 	 * @return \MvcCore\Interfaces\IView
 	 */
-	public function & SetValues (\MvcCore\Interfaces\IView & $view);
+	public function & SetUpValuesFromView (\MvcCore\Interfaces\IView & $view, $overwriteExistingKeys = TRUE);
 
 	/**
 	 * Return rendered controller/action template content as reference.

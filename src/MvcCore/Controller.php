@@ -541,14 +541,14 @@ class Controller implements Interfaces\IController
 			} else {
 				$this->childControllers[$index] = & $controller;
 			}
-			$controller->parentController = & $this;
-			$controller->layout = $this->layout;
-			$controller->viewEnabled = $this->IsViewEnabled();
 			$controller
+				->SetParentController($this)
 				->SetApplication($this->application)
-				->SetRouter($this->router)
+				// Method `SetRequest()` also sets `ajax`, `viewEnabled`, `controllerName` and `actionName`.
 				->SetRequest($this->request)
 				->SetResponse($this->response)
+				->SetRouter($this->router)
+				->SetLayout($this->layout)
 				->SetUser($this->user);
 		}
 		return $this;
@@ -584,6 +584,22 @@ class Controller implements Interfaces\IController
 	 */
 	public function GetChildControllers () {
 		return $this->childControllers;
+	}
+
+	/**
+	 * Set all child controllers array, indexed by
+	 * subcontroller property string name or by
+	 * custom string name or by custom numeric index.
+	 * This method is dangerous, because it replace all
+	 * previous child controllers with given child controllers.
+	 * If you want only to add child controller, use method:
+	 * \MvcCore\Controller::Addchildcontroller();` instead.
+	 * @param \MvcCore\Controller[]|\MvcCore\Interfaces\IController[] $childControllers
+	 * @return \MvcCore\Controller
+	 */
+	public function & SetChildControllers (array & $childControllers = array()) {
+		$this->childControllers = & $childControllers;
+		return $this;
 	}
 
 	/**
@@ -650,8 +666,9 @@ class Controller implements Interfaces\IController
 		if ($this->dispatchState < 4 && $this->viewEnabled) {
 			$currentCtrlIsTopMostParent = $this->parentController === NULL;
 			// set up values
+			$this->view->SetUpValuesFromController($this, FALSE); // all isntance public and protected props
 			if (!$currentCtrlIsTopMostParent) {
-				$this->view->SetValues($this->parentController->GetView());
+				$this->view->SetUpValuesFromView($this->parentController->GetView(), FALSE);
 			}
 			foreach ($this->childControllers as $ctrlKey => $childCtrl) {
 				if (!is_numeric($ctrlKey) && !isset($this->view->$ctrlKey))
@@ -665,7 +682,9 @@ class Controller implements Interfaces\IController
 				// create top most parent layout view, set up and render to outputResult
 				$viewClass = $this->application->GetViewClass();
 				/** @var $layout \MvcCore\View */
-				$layout = $viewClass::CreateInstance()->SetController($this)->SetValues($this->view);
+				$layout = $viewClass::CreateInstance()
+					->SetController($this)
+					->SetUpValuesFromView($this->view, TRUE);
 				$outputResult = $layout->RenderLayoutAndContent($this->layout, $actionResult);
 				unset($layout, $this->view);
 				// set up response only
