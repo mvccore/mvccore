@@ -764,11 +764,11 @@ class Request implements Interfaces\IRequest
 
 
 	/**
-	 * Sets any custom property `"PropertyName"` by `\MvcCore\Request::SetPropertyName("value")`,
+	 * Sets any custom property `"propertyName"` by `\MvcCore\Request::SetPropertyName("value");`,
 	 * which is not necessary to define previously or gets previously defined
-	 * property `"PropertyName"` by `\MvcCore\Request::GetPropertyName();`.
+	 * property `"propertyName"` by `\MvcCore\Request::GetPropertyName();`.
 	 * Throws exception if no property defined by get call or if virtual call
-	 * begins with anything different from 'Set' or 'Get'.
+	 * begins with anything different from `Set` or `Get`.
 	 * This method returns custom value for get and `\MvcCore\Request` instance for set.
 	 * @param string $name
 	 * @param array  $arguments
@@ -777,7 +777,7 @@ class Request implements Interfaces\IRequest
 	 */
 	public function __call ($name, $arguments = array()) {
 		$nameBegin = strtolower(substr($name, 0, 3));
-		$prop = substr($name, 3);
+		$prop = lcfirst(substr($name, 3));
 		if ($nameBegin == 'get' && isset($this->$prop)) {
 			return $this->$prop;
 		} else if ($nameBegin == 'set') {
