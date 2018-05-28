@@ -441,11 +441,11 @@ namespace {
 		if ($development) {
 			/**
 			 * Dump variables and die. If no variable, throw stop exception.
-			 * @param  ...mixed  $args	Variables to dump.
+			 * @param mixed $args,... Variables to dump.
 			 * @throws \Exception
 			 * @return void
 			 */
-			function xxx (/*...$args*/) {
+			function xxx (/* ...$args */) {
 				$args = func_get_args();
 				if (count($args) === 0) {
 					throw new \ErrorException('Stopped.', 500);
@@ -464,11 +464,11 @@ namespace {
 		} else {
 			/**
 			 * Log variables and die. If no variable, throw stop exception.
-			 * @param  ...mixed  $args	Variables to dump.
+			 * @param mixed $args,... Variables to dump.
 			 * @throws \Exception
 			 * @return void
 			 */
-			function xxx (/*...$args*/) {
+			function xxx (/* ...$args */) {
 				$args = func_get_args();
 				if (count($args) > 0)
 					foreach ($args as $arg)

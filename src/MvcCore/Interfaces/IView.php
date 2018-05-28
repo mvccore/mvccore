@@ -204,7 +204,7 @@ interface IView
 	 * @param string $helperNamespace,... View helper classes namespace(s).
 	 * @return void
 	 */
-	public static function AddHelpersNamespaces (/*...$helperNamespace*/);
+	public static function AddHelpersNamespaces (/* ...$helperNamespace */);
 
 	/**
 	 * Set view helpers classes namespace(s). This method replace all previously configured namespaces.
@@ -213,7 +213,7 @@ interface IView
 	 * @param string $helperNamespace,... View helper classes namespace(s).
 	 * @return void
 	 */
-	public static function SetHelpersNamespaces (/*...$helperNamespace*/);
+	public static function SetHelpersNamespaces (/* ...$helperNamespace */);
 
 	/**
 	 * Get view script full path by internal application configuration,

@@ -333,7 +333,7 @@ class View implements Interfaces\IView
 	 * @param string $helperNamespace,... View helper classes namespace(s).
 	 * @return void
 	 */
-	public static function AddHelpersNamespaces (/*...$helperNamespace*/) {
+	public static function AddHelpersNamespaces (/* ...$helperNamespace */) {
 		foreach (func_get_args() as $arg)
 			static::$helpersNamespaces[] = '\\' . trim($arg, '\\') . '\\';
 	}
@@ -345,7 +345,7 @@ class View implements Interfaces\IView
 	 * @param string $helperNamespace,... View helper classes namespace(s).
 	 * @return void
 	 */
-	public static function SetHelpersNamespaces (/*...$helperNamespace*/) {
+	public static function SetHelpersNamespaces (/* ...$helperNamespace */) {
 		static::$helpersNamespaces = array();
 		foreach (func_get_args() as $arg)
 			static::$helpersNamespaces[] = '\\' . trim($arg, '\\') . '\\';

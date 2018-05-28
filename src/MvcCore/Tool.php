@@ -56,7 +56,7 @@ class Tool implements Interfaces\ITool
 	public static function GetPascalCaseFromDashed ($dashed = '') {
 		$a = explode('/', $dashed);
 		foreach ($a as & $b) $b = ucfirst(str_replace('-', '', ucwords($b, '-')));
-		return implode('/', $a);
+		return ucfirst(implode('/', $a));
 	}
 
 	/**
@@ -80,7 +80,7 @@ class Tool implements Interfaces\ITool
 	public static function GetPascalCaseFromUnderscored ($underscored = '') {
 		$a = explode('/', $underscored);
 		foreach ($a as & $b) $b = ucfirst(str_replace('_', '', ucwords($b, '_')));
-		return implode('/', $a);
+		return ucfirst(implode('/', $a));
 	}
 
 	/**

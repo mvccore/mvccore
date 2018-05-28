@@ -232,10 +232,10 @@ class Model implements Interfaces\IModel {
 
 	/**
 	 * Returns (or creates and holds) instance from local store.
-	 * @param mixed $arg,... unlimited OPTIONAL variables to pass into model `__construct()` method.
+	 * @param mixed $args,... unlimited OPTIONAL variables to pass into model `__construct()` method.
 	 * @return \MvcCore\Model|\MvcCore\Interfaces\IModel
 	 */
-	public static function GetInstance (/* $arg1, $arg2, $arg, ... */) {
+	public static function GetInstance (/* ...$args */) {
 		// get `"ClassName"` string from this call: `ClassName::GetInstance();`
 		$className = get_called_class();
 		$args = func_get_args();

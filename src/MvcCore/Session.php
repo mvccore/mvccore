@@ -191,8 +191,9 @@ class Session extends \ArrayObject implements Interfaces\ISession
 				$currentErrRepLevels = error_reporting();
 				error_reporting(0);
 				foreach ($unset as $unsetKey) {
-					if (isset(static::$meta->$unsetKey) && isset(static::$meta->$unsetKey[$name]))
-						unset(static::$meta->$unsetKey[$name]);
+					if (isset(static::$meta->{$unsetKey}) && isset(static::$meta->{$unsetKey}[$name])) {
+						unset(static::$meta->{$unsetKey}[$name]);
+					}
 				}
 				error_reporting($currentErrRepLevels);
 				unset($names[$name]);
@@ -266,7 +267,8 @@ class Session extends \ArrayObject implements Interfaces\ISession
 	 * @return \MvcCore\Session
 	 */
 	public function & SetExpirationSeconds ($seconds = 0) {
-		static::$meta->expirations[$this->__name] = static::$sessionStartTime + $seconds;
+		if ($seconds > 0) 
+			static::$meta->expirations[$this->__name] = static::$sessionStartTime + $seconds;
 		return $this;
 	}
 

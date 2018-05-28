@@ -59,10 +59,10 @@ interface IModel
 
 	/**
 	 * Returns (or creates and holds) instance from local store.
-	 * @param mixed $arg,... unlimited OPTIONAL variables to pass into model `__construct()` method.
+	 * @param mixed $args,... unlimited OPTIONAL variables to pass into model `__construct()` method.
 	 * @return \MvcCore\Interfaces\IModel
 	 */
-	public static function GetInstance (/* $arg1, $arg2, $arg, ... */);
+	public static function GetInstance (/* ...$args */);
 
 	/**
 	 * Returns (or creates if necessary) model resource instance.

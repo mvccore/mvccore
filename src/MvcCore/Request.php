@@ -1099,7 +1099,7 @@ class Request implements Interfaces\IRequest
 		if ($this->contentLength === NULL) {
 			if (
 				isset($this->globalServer['CONTENT_LENGTH']) &&
-				is_int($this->globalServer['CONTENT_LENGTH'])
+				is_numeric($this->globalServer['CONTENT_LENGTH'])
 			) {
 				$this->contentLength = intval($this->globalServer['CONTENT_LENGTH']);
 			}
