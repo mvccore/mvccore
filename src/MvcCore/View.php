@@ -128,12 +128,6 @@ class View implements Interfaces\IView
 	private static $_viewScriptsFullPathBase = NULL;
 
 	/**
-	 * Reference to singleton instance in `\MvcCore\Application::GetInstance();`.
-	 * @var \MvcCore\Application|NULL
-	 */
-	private static $_app = NULL;
-
-	/**
 	 * Reference to `\MvcCore\Application::GetInstance()->GetToolClass();`.
 	 * @var string|NULL
 	 */
@@ -172,25 +166,6 @@ class View implements Interfaces\IView
 	 * @var array
 	 */
 	private $_renderedFullPaths = array();
-
-	/**
-	 * Static initialization to complete
-	 * `static::$helpersNamespaces` by application configuration.
-	 * @return void
-	 */
-	public static function StaticInit () {
-		self::$_app = & \MvcCore\Application::GetInstance();
-		self::$_toolClass = self::$_app->GetToolClass();
-		static::$helpersNamespaces = array(
-			'\\MvcCore\\Ext\\Views\Helpers\\',
-			// and '\App\Views\Helpers\' by default:
-			'\\' . implode('\\', array(
-				self::$_app->GetAppDir(),
-				self::$_app->GetViewsDir(),
-				static::$helpersDir
-			)) . '\\',
-		);
-	}
 
 	/**
 	 * Return always new instance of staticly called class, no singleton.
@@ -334,6 +309,7 @@ class View implements Interfaces\IView
 	 * @return void
 	 */
 	public static function AddHelpersNamespaces (/* ...$helperNamespace */) {
+		if (!static::$helpersNamespaces) self::_initHelpersNamespaces();
 		foreach (func_get_args() as $arg)
 			static::$helpersNamespaces[] = '\\' . trim($arg, '\\') . '\\';
 	}
@@ -359,7 +335,8 @@ class View implements Interfaces\IView
 	 * @return string
 	 */
 	public static function GetViewScriptFullPath ($typePath = '', $corectedRelativePath = '') {
-		if (self::$_viewScriptsFullPathBase === NULL) self::_initViewScriptsFullPathBase();
+		if (self::$_viewScriptsFullPathBase === NULL) 
+			self::_initViewScriptsFullPathBase();
 		return implode('/', array(
 			self::$_viewScriptsFullPathBase,
 			$typePath,
@@ -638,8 +615,11 @@ class View implements Interfaces\IView
 			$setUpViewAgain = TRUE;
 		} else {
 			$helperFound = FALSE;
+			if (self::$_toolClass === NULL) 
+				self::$_toolClass = \MvcCore\Application::GetInstance()->GetToolClass();
 			$toolClass = self::$_toolClass;
 			$helpersInterface = self::HELPERS_INTERFACE_CLASS_NAME;
+			if (!static::$helpersNamespaces) self::_initHelpersNamespaces();
 			foreach (static::$helpersNamespaces as $helperClassBase) {
 				$className = $helperClassBase . ucfirst($helperName);
 				if (class_exists($className)) {
@@ -678,6 +658,8 @@ class View implements Interfaces\IView
 	public function & SetHelper ($helperName, & $instance, $forAllTemplates = TRUE) {
 		$implementsIHelper = FALSE;
 		if ($forAllTemplates) {
+			if (self::$_toolClass === NULL) 
+				self::$_toolClass = \MvcCore\Application::GetInstance()->GetToolClass();
 			$toolClass = self::$_toolClass;
 			$helpersInterface = self::HELPERS_INTERFACE_CLASS_NAME;
 			$className = get_class($instance);
@@ -783,7 +765,8 @@ class View implements Interfaces\IView
 	private function _correctRelativePath ($typePath, $relativePath) {
 		$result = str_replace('\\', '/', $relativePath);
 		if (substr($relativePath, 0, 2) == './') {
-			if (self::$_viewScriptsFullPathBase === NULL) self::_initViewScriptsFullPathBase();
+			if (self::$_viewScriptsFullPathBase === NULL) 
+				self::_initViewScriptsFullPathBase();
 			$typedViewDirFullPath = implode('/', array(
 				self::$_viewScriptsFullPathBase, $typePath
 			));
@@ -805,11 +788,30 @@ class View implements Interfaces\IView
 	 * @return void
 	 */
 	private static function _initViewScriptsFullPathBase () {
+		$app = & \MvcCore\Application::GetInstance();
 		self::$_viewScriptsFullPathBase = implode('/', array(
-			self::$_app->GetRequest()->GetAppRoot(),
-			self::$_app->GetAppDir(),
-			self::$_app->GetViewsDir()
+			$app->GetRequest()->GetAppRoot(),
+			$app->GetAppDir(),
+			$app->GetViewsDir()
 		));
 	}
+
+	/**
+	 * Static initialization to complete
+	 * `static::$helpersNamespaces` 
+	 * by application configuration once.
+	 * @return void
+	 */
+	private static function _initHelpersNamespaces () {
+		$app = & \MvcCore\Application::GetInstance();
+		static::$helpersNamespaces = array(
+			'\\MvcCore\\Ext\\Views\Helpers\\',
+			// and '\App\Views\Helpers\' by default:
+			'\\' . implode('\\', array(
+				$app->GetAppDir(),
+				$app->GetViewsDir(),
+				static::$helpersDir
+			)) . '\\',
+		);
+	}
 }
-View::StaticInit();

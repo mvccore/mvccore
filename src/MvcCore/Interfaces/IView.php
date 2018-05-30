@@ -79,13 +79,6 @@ interface IView
 	const HELPERS_INTERFACE_CLASS_NAME = 'MvcCore\\Ext\\Views\\Helpers\\IHelper';
 
 	/**
-	 * Static initialization to complete
-	 * `static::$helpersNamespaces` by application configuration.
-	 * @return void
-	 */
-	public static function StaticInit ();
-
-	/**
 	 * Return always new instance of staticly called class, no singleton.
 	 * Always called from `\MvcCore\Controller::PreDispatch()` and
 	 * `\MvcCore\Controller::Render()` to create layout view.
