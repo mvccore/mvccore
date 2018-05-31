@@ -317,7 +317,7 @@ interface IView
 	/**
 	 * Render controller template and all necessary layout
 	 * templates and return rendered result as reference.
-	 * @param string $typePath
+	 * @param string $typePath By default: `"Layouts" | "Scripts"`. It could be `"Forms" | "Forms/Fields"` etc...
 	 * @param string $relativePath
 	 * @throws \Exception
 	 * @return string
