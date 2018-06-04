@@ -23,7 +23,7 @@ namespace MvcCore\Application;
 trait Helpers
 {
 	/***********************************************************************************
-	 *                     `\MvcCore\Application` - Helper Methods                     *
+	 *					 `\MvcCore\Application` - Helper Methods					 *
 	 ***********************************************************************************/
 
 	/**
@@ -49,11 +49,11 @@ trait Helpers
 	public function CompleteControllerName ($controllerNamePascalCase) {
 		$firstChar = substr($controllerNamePascalCase, 0, 1);
 		if ($firstChar == '\\') return str_replace('/', '\\', $controllerNamePascalCase);
-		return '\\' . implode('\\', array(
+		return '\\' . implode('\\', [
 			$this->appDir,
 			$this->controllersDir,
 			str_replace('/', '\\', $controllerNamePascalCase)
-		));
+		]);
 	}
 
 	/**
@@ -91,7 +91,7 @@ trait Helpers
 	 */
 	protected function & setCoreClass ($newCoreClassName, $coreClassVar, $coreClassInterface) {
 		if (call_user_func(
-			array($this->toolClass, 'CheckClassInterface'), 
+			[$this->toolClass, 'CheckClassInterface'], 
 			$newCoreClassName, $coreClassInterface, TRUE, TRUE // check static methods and throw an exception if false
 		)) $this->$coreClassVar = $newCoreClassName;
 		return $this;
@@ -108,12 +108,12 @@ trait Helpers
 		$reflection = new \ReflectionFunction($handler);
 		$isClosure = $reflection->isClosure();
 		if ($priorityIndex === NULL) {
-			$handlers[] = array($handler, $isClosure);
+			$handlers[] = [$handler, $isClosure];
 		} else {
 			if (isset($handlers[$priorityIndex])) {
-				array_splice($handlers, $priorityIndex, 0, array($handler, $isClosure));
+				array_splice($handlers, $priorityIndex, 0, [$handler, $isClosure]);
 			} else {
-				$handlers[$priorityIndex] = array($handler, $isClosure);
+				$handlers[$priorityIndex] = [$handler, $isClosure];
 			}
 		}
 		return $this;

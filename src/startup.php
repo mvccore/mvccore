@@ -26,15 +26,15 @@ call_user_func(function () {
 	} else {
 		$appRootPath = substr($scriptFilename, 0, strrpos($scriptFilename, '/'));
 	}
-	$includePaths = array(
+	$includePaths = [
 		$appRootPath,
 		$appRootPath . '/App',
 		$appRootPath . '/Libs',
-	);
+	];
 	$currentDir = str_replace('\\', '/', __DIR__);
 	if (!in_array($currentDir, $includePaths)) array_unshift($includePaths, $currentDir);
 	$autoload = function ($className) use ($includePaths) {
-		$fileName = str_replace(array('_', '\\'), '/', $className) . '.php';
+		$fileName = str_replace(['_', '\\'], '/', $className) . '.php';
 		$includePath = '';
 		foreach ($includePaths as $path) {
 			$fullPath = $path . '/' . $fileName;

@@ -38,7 +38,7 @@ interface IResponse
 	 */
 	public static function CreateInstance (
 		$code = \MvcCore\Interfaces\IResponse::OK,
-		$headers = array(),
+		$headers = [],
 		$body = ''
 	);
 
@@ -70,7 +70,7 @@ interface IResponse
 	 *								 set by PHP `header()` or by this object will be removed.
 	 * @return \MvcCore\Interfaces\IResponse
 	 */
-	public function & SetHeaders (array $headers = array());
+	public function & SetHeaders (array $headers = []);
 
 	/**
 	 * Set HTTP response header.
@@ -185,15 +185,15 @@ interface IResponse
 
 	/**
 	 * Send a cookie.
-	 * @param string $name        Cookie name. Assuming the name is `cookiename`, this value is retrieved through `$_COOKIE['cookiename']`.
-	 * @param string $value       The value of the cookie. This value is stored on the clients computer; do not store sensitive information.
-	 * @param int    $lifetime    Life time in seconds to expire. 0 means "until the browser is closed".
-	 * @param string $path        The path on the server in which the cookie will be available on. If set to '/', the cookie will be available within the entire domain.
-	 * @param string $domain      If not set, value is completed by `\MvcCore\Application::GetInstance()->GetRequest()->GetServerName();` .
-	 * @param bool   $secure      If not set, value is completed by `\MvcCore\Application::GetInstance()->GetRequest()->IsSecure();`.
-	 * @param bool   $httpOnly    HTTP only cookie, `TRUE` by default.
+	 * @param string $name		Cookie name. Assuming the name is `cookiename`, this value is retrieved through `$_COOKIE['cookiename']`.
+	 * @param string $value	   The value of the cookie. This value is stored on the clients computer; do not store sensitive information.
+	 * @param int	$lifetime	Life time in seconds to expire. 0 means "until the browser is closed".
+	 * @param string $path		The path on the server in which the cookie will be available on. If set to '/', the cookie will be available within the entire domain.
+	 * @param string $domain	  If not set, value is completed by `\MvcCore\Application::GetInstance()->GetRequest()->GetServerName();` .
+	 * @param bool   $secure	  If not set, value is completed by `\MvcCore\Application::GetInstance()->GetRequest()->IsSecure();`.
+	 * @param bool   $httpOnly	HTTP only cookie, `TRUE` by default.
 	 * @throws \RuntimeException  If HTTP headers have been sent.
-	 * @return bool               True if cookie has been set.
+	 * @return bool			   True if cookie has been set.
 	 */
 	public function SetCookie (
 		$name, $value,
@@ -204,12 +204,12 @@ interface IResponse
 	/**
 	 * Delete cookie - set value to empty string and
 	 * set expiration to "until the browser is closed".
-	 * @param string $name        Cookie name. Assuming the name is `cookiename`, this value is retrieved through `$_COOKIE['cookiename']`.
-	 * @param string $path        The path on the server in which the cookie will be available on. If set to '/', the cookie will be available within the entire domain.
-	 * @param string $domain      If not set, value is completed by `\MvcCore\Application::GetInstance()->GetRequest()->GetServerName();` .
-	 * @param bool   $secure      If not set, value is completed by `\MvcCore\Application::GetInstance()->GetRequest()->IsSecure();`.
+	 * @param string $name		Cookie name. Assuming the name is `cookiename`, this value is retrieved through `$_COOKIE['cookiename']`.
+	 * @param string $path		The path on the server in which the cookie will be available on. If set to '/', the cookie will be available within the entire domain.
+	 * @param string $domain	  If not set, value is completed by `\MvcCore\Application::GetInstance()->GetRequest()->GetServerName();` .
+	 * @param bool   $secure	  If not set, value is completed by `\MvcCore\Application::GetInstance()->GetRequest()->IsSecure();`.
 	 * @throws \RuntimeException  If HTTP headers have been sent.
-	 * @return bool               True if cookie has been set.
+	 * @return bool			   True if cookie has been set.
 	 */
 	public function DeleteCookie ($name, $path = '/', $domain = NULL, $secure = NULL);
 }

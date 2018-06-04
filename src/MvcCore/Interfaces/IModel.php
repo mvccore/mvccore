@@ -17,7 +17,7 @@ namespace MvcCore\Interfaces;
 
 /**
  * Responsibility - static members for connections and by configuration,
- *                  instances members for active record pattern.
+ *				  instances members for active record pattern.
  * - Reading `db` section from system `config.ini` file.
  * - Database `\PDO` connecting by config settings and index.
  * - Instance loaded variables initializing.
@@ -30,7 +30,7 @@ interface IModel
 	 * Collect all model class public and inherit field values into array.
 	 * @param boolean $getNullValues			If `TRUE`, include also values with `NULL`s, by default - `FALSE`.
 	 * @param boolean $includeInheritProperties If `TRUE`, include only fields from current model class and from parent classes.
-	 * @param boolean $publicOnly               If `TRUE`, include only public model fields.
+	 * @param boolean $publicOnly			   If `TRUE`, include only public model fields.
 	 * @return array
 	 */
 	public function GetValues (
@@ -44,14 +44,14 @@ interface IModel
 	 * as typed properties by PHP doc comments, as properties
 	 * with the same names as `$data` array keys. Case sesitively by default.
 	 * Do not set any `$data` items, which are not declared in `$this` context.
-	 * @param array   $data                     Collection with data to set up
+	 * @param array   $data					 Collection with data to set up
 	 * @param boolean $keysInsensitive			If `TRUE`, set up properties from `$data` with case insensivity.
 	 * @param boolean $includeInheritProperties If `TRUE`, include only fields from current model class and from parent classes.
-	 * @param boolean $publicOnly               If `TRUE`, include only public model fields.
+	 * @param boolean $publicOnly			   If `TRUE`, include only public model fields.
 	 * @return \MvcCore\Interfaces\IModel
 	 */
 	public function & SetUp (
-		$data = array(),
+		$data = [],
 		$keysInsensitive = FALSE,
 		$includeInheritProperties = TRUE,
 		$publicOnly = TRUE
@@ -66,13 +66,13 @@ interface IModel
 
 	/**
 	 * Returns (or creates if necessary) model resource instance.
-	 * @param array  $args              Values array with variables to pass into resource `__construct()` method.
+	 * @param array  $args			  Values array with variables to pass into resource `__construct()` method.
 	 * @param string $modelClassPath
 	 * @param string $resourceClassPath
 	 * @return \MvcCore\Interfaces\IModel
 	 */
 	public static function GetResource (
-		$args = array(),
+		$args = [],
 		$modelClassName = '',
 		$resourceClassPath = '\Resource'
 	);
@@ -147,7 +147,7 @@ interface IModel
 	 * @param \stdClass[]|array[] $configs Configuration array with `\stdClass` objects or arrays with configuration data.
 	 * @return bool
 	 */
-	public static function SetConfigs (array $configs = array());
+	public static function SetConfigs (array $configs = []);
 
 	/**
 	 * Returns database connection config by connection index (integer)
@@ -187,7 +187,7 @@ interface IModel
 	 * @param string|int|NULL $connectionName
 	 * @return string|int
 	 */
-	public static function SetConfig (array $config = array(), $connectionName = NULL);
+	public static function SetConfig (array $config = [], $connectionName = NULL);
 
 	/**
 	 * Sets any custom property `"PropertyName"` by `\MvcCore\Interfaces\IModel::SetPropertyName("value")`,
@@ -201,7 +201,7 @@ interface IModel
 	 * @throws \Exception
 	 * @return mixed|\MvcCore\Interfaces\IModel
 	 */
-	public function __call ($rawName, $arguments = array());
+	public function __call ($rawName, $arguments = []);
 
 	/**
 	 * Set any custom property, not necessary to previously defined.

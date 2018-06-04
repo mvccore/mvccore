@@ -24,10 +24,10 @@ namespace MvcCore\Interfaces;
  * - Controller lifecycle dispatching:
  *   - Handling setup methods after creation from application core dispatching.
  *   - Calling lifecycle methods (`\MvcCore\Controller::Dispatch();`):
- *     - `\MvcCore\Controller::Init();`
- *     - `\MvcCore\Controller::PreDispatch();`
- *     - Calling routed controller action.
- *     - `\MvcCore\Controller::Render();`
+ *	 - `\MvcCore\Controller::Init();`
+ *	 - `\MvcCore\Controller::PreDispatch();`
+ *	 - Calling routed controller action.
+ *	 - `\MvcCore\Controller::Render();`
  * - Rendering or no-rendering customization.
  * - HTTP responses and redirects managing and customization.
  * - Basic error responses rendering.
@@ -55,15 +55,15 @@ namespace MvcCore\Interfaces;
  * Internal methods and actions:
  * - `Render()`
  *   - Called internally in lifecycle dispatching,
- *     but it's possible to use it for custom purposes.
+ *	 but it's possible to use it for custom purposes.
  * - `Terminate()`
  *   - Called internally after lifecycle dispatching,
- *     but it's possible to use it for custom purposes.
+ *	 but it's possible to use it for custom purposes.
  * - `Dispatch()`
  *   - Processing whole controller and subcontrollers lifecycle.
  * - `AssetAction()`
  *   - Handling internal MvcCore HTTP requests
- *     to get assets from packed application package.
+ *	 to get assets from packed application package.
  */
 interface IController
 {
@@ -319,7 +319,7 @@ interface IController
 	 * @param \MvcCore\Interfaces\IController[] $childControllers
 	 * @return \MvcCore\Interfaces\IController
 	 */
-	public function & SetChildControllers (array & $childControllers = array());
+	public function & SetChildControllers (array & $childControllers = []);
 
 	/**
 	 * Get child controller at specific index.
@@ -398,7 +398,7 @@ interface IController
 	 * @param array  $params						Optional, array with params, key is param name, value is param value.
 	 * @return string
 	 */
-	public function Url ($controllerActionOrRouteName = 'Index:Index', $params = array());
+	public function Url ($controllerActionOrRouteName = 'Index:Index', $params = []);
 
 	/**
 	 * Return asset path or single file mode url for small assets
@@ -450,7 +450,7 @@ interface IController
 	 * Redirect client browser to another place by `"Location: ..."`
 	 * header and call `\MvcCore\Application::GetInstance()->Terminate();`.
 	 * @param string $location
-	 * @param int    $code
+	 * @param int	$code
 	 * @return void
 	 */
 	public static function Redirect ($location = '', $code = \MvcCore\Interfaces\IResponse::SEE_OTHER);

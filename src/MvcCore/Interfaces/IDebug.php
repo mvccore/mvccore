@@ -38,7 +38,7 @@ interface IDebug
 	/**
 	 * Initialize debugging and logging, once only.
 	 * @param bool $forceDevelopmentMode If defined as `TRUE` or `FALSE`,
-	 *                                   debug mode will be set not by config but by this value.
+	 *								   debug mode will be set not by config but by this value.
 	 * @return void
 	 */
 	public static function Init ($forceDevelopmentMode = NULL);
@@ -46,7 +46,7 @@ interface IDebug
 	/**
 	 * Starts/stops stopwatch.
 	 * @param  string $name Time pointer name.
-	 * @return float        Elapsed seconds.
+	 * @return float		Elapsed seconds.
 	 */
 	public static function Timer ($name = NULL);
 
@@ -69,7 +69,7 @@ interface IDebug
 	 * @param  array	$options	Dumper options.
 	 * @return mixed				Variable itself.
 	 */
-	public static function BarDump ($value, $title = NULL, $options = array());
+	public static function BarDump ($value, $title = NULL, $options = []);
 
 	/**
 	 * Logs any message or exception with log datetime, in `*.log` file

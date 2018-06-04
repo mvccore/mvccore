@@ -166,8 +166,8 @@ class Route implements Interfaces\IRoute
 	 * by full controller class name.
 	 *
 	 * Example:
-	 *  `"Products"                             // placed in /App/Controllers/Products.php`
-	 *  `"Front\Business\Products"              // placed in /App/Controllers/Front/Business/Products.php`
+	 *  `"Products"							 // placed in /App/Controllers/Products.php`
+	 *  `"Front\Business\Products"			  // placed in /App/Controllers/Front/Business/Products.php`
 	 *  `"\Anywhere\Else\Controllers\Products"  // placed in /Anywhere/Else/Controllers/Products.php`
 	 * @var string
 	 */
@@ -194,7 +194,7 @@ class Route implements Interfaces\IRoute
 	 * Example: `array("name" => "default-name", "color" => "red",);`.
 	 * @var array|\array[]
 	 */
-	protected $defaults		= array();
+	protected $defaults		= [];
 
 	/**
 	 * Array with param names and their custom regular expression
@@ -210,7 +210,7 @@ class Route implements Interfaces\IRoute
 	 *	);`
 	 * @var array|\array[]
 	 */
-	protected $constraints		= array();
+	protected $constraints		= [];
 
 	/**
 	 * Http method to only match requests with this defined method.
@@ -291,8 +291,8 @@ class Route implements Interfaces\IRoute
 	public static function CreateInstance (
 		$patternOrConfig = NULL,
 		$controllerAction = NULL,
-		$defaults = array(),
-		$constraints = array(),
+		$defaults = [],
+		$constraints = [],
 		$method = NULL
 	) {
 		return (new \ReflectionClass(get_called_class()))
@@ -336,8 +336,8 @@ class Route implements Interfaces\IRoute
 	public function __construct (
 		$patternOrConfig = NULL,
 		$controllerAction = NULL,
-		$defaults = array(),
-		$constraints = array(),
+		$defaults = [],
+		$constraints = [],
 		$method = NULL
 	) {
 		$args = func_get_args();
@@ -356,8 +356,8 @@ class Route implements Interfaces\IRoute
 			$this->pattern = isset($data->pattern) ? $data->pattern : NULL;
 			$this->match = isset($data->match) ? $data->match : NULL;
 			$this->reverse = isset($data->reverse) ? $data->reverse : NULL;
-			$this->defaults = isset($data->defaults) ? $data->defaults : array();
-			$this->SetConstraints(isset($data->constraints) ? $data->constraints : array());
+			$this->defaults = isset($data->defaults) ? $data->defaults : [];
+			$this->SetConstraints(isset($data->constraints) ? $data->constraints : []);
 			$this->method = isset($data->method) ? $data->method : NULL ;
 		} else {
 			$this->pattern = $patternOrConfig;
@@ -580,8 +580,8 @@ class Route implements Interfaces\IRoute
 	 * by full controller class name.
 	 *
 	 * Example:
-	 *  `"Products"                             // placed in /App/Controllers/Products.php`
-	 *  `"Front\Business\Products"              // placed in /App/Controllers/Front/Business/Products.php`
+	 *  `"Products"							 // placed in /App/Controllers/Products.php`
+	 *  `"Front\Business\Products"			  // placed in /App/Controllers/Front/Business/Products.php`
 	 *  `"\Anywhere\Else\Controllers\Products"  // placed in /Anywhere/Else/Controllers/Products.php`
 	 * @return string
 	 */
@@ -600,8 +600,8 @@ class Route implements Interfaces\IRoute
 	 * by full controller class name.
 	 *
 	 * Example:
-	 *  `"Products"                             // placed in /App/Controllers/Products.php`
-	 *  `"Front\Business\Products"              // placed in /App/Controllers/Front/Business/Products.php`
+	 *  `"Products"							 // placed in /App/Controllers/Products.php`
+	 *  `"Front\Business\Products"			  // placed in /App/Controllers/Front/Business/Products.php`
 	 *  `"\Anywhere\Else\Controllers\Products"  // placed in /Anywhere/Else/Controllers/Products.php`
 	 * @param string $controller
 	 * @return \MvcCore\Route
@@ -678,8 +678,8 @@ class Route implements Interfaces\IRoute
 	 *
 	 * Example:
 	 *  `array(
-	 *      "name"  => "default-name",
-	 *      "color" => "red"
+	 *	  "name"  => "default-name",
+	 *	  "color" => "red"
 	 *  );`
 	 * @param string $lang Lowercase language code, `NULL` by default, not implemented in core.
 	 * @return array|\array[]
@@ -694,14 +694,14 @@ class Route implements Interfaces\IRoute
 	 *
 	 * Example:
 	 *  `array(
-	 *      "name"  => "default-name",
-	 *      "color" => "red"
+	 *	  "name"  => "default-name",
+	 *	  "color" => "red"
 	 *  );`.
 	 * @param array|\array[] $defaults
 	 * @param string $lang Lowercase language code, `NULL` by default, not implemented in core.
 	 * @return \MvcCore\Route
 	 */
-	public function & SetDefaults ($defaults = array(), $lang = NULL) {
+	public function & SetDefaults ($defaults = [], $lang = NULL) {
 		$this->defaults = $defaults;
 		return $this;
 	}
@@ -741,7 +741,7 @@ class Route implements Interfaces\IRoute
 	 * @param string $lang Lowercase language code, `NULL` by default, not implemented in core.
 	 * @return \MvcCore\Route
 	 */
-	public function & SetConstraints ($constraints = array(), $lang = NULL) {
+	public function & SetConstraints ($constraints = [], $lang = NULL) {
 		$this->constraints = $constraints;
 		foreach ($constraints as $key => $value)
 			if (!isset($this->defaults[$key]))
@@ -799,7 +799,7 @@ class Route implements Interfaces\IRoute
 	 *				 params or controller and action params.
 	 */
 	public function Matches ($requestPath, $requestMethod) {
-		$matchedParams = array();
+		$matchedParams = [];
 		if ($this->match === NULL) {
 			list($this->match, $reverse) = $this->initMatch();
 			if ($this->reverse === NULL) $this->reverse = $reverse;
@@ -809,10 +809,10 @@ class Route implements Interfaces\IRoute
 		if (isset($matchedValues[0]) && count($matchedValues[0])) {
 			$controllerName = $this->controller ?: '';
 			$toolClass = \MvcCore\Application::GetInstance()->GetToolClass();
-			$matchedParams = array(
-				'controller'	=>	$toolClass::GetDashedFromPascalCase(str_replace(array('_', '\\'), '/', $controllerName)),
+			$matchedParams = [
+				'controller'	=>	$toolClass::GetDashedFromPascalCase(str_replace(['_', '\\'], '/', $controllerName)),
 				'action'		=>	$toolClass::GetDashedFromPascalCase($this->action ?: ''),
-			);
+			];
 			array_shift($matchedValues); // first item is always matched whole `$request->GetPath()` string.
 			$index = 0;
 			$matchedKeys = array_keys($matchedValues);
@@ -864,10 +864,10 @@ class Route implements Interfaces\IRoute
 	 * @param string $queryStringParamsSepatator Query params separator, `&` by default. Always automaticly completed by router instance.
 	 * @return string
 	 */
-	public function Url (& $params = array(), & $cleanedGetRequestParams = array(), $queryStringParamsSepatator = '&') {
+	public function Url (& $params = [], & $cleanedGetRequestParams = [], $queryStringParamsSepatator = '&') {
 		if ($this->reverseParams === NULL) $this->reverse = $this->initReverse();
 		$result = $this->reverse;
-		$givenParamsKeys = array_merge(array(), $params);
+		$givenParamsKeys = array_merge([], $params);
 		foreach ($this->reverseParams as $paramName) {
 			$paramKeyReplacement = '<'.$paramName.'>';
 			$paramValue = (
@@ -899,7 +899,7 @@ class Route implements Interfaces\IRoute
 		$allProps = $type->getProperties(
 			\ReflectionProperty::IS_PUBLIC | \ReflectionProperty::IS_PROTECTED | \ReflectionProperty::IS_PRIVATE
 		);
-		$result = array();
+		$result = [];
 		/** @var $prop \ReflectionProperty */
 		foreach ($allProps as & $prop) {
 			if ($prop->isStatic()) continue;
@@ -967,7 +967,7 @@ class Route implements Interfaces\IRoute
 				$matchPattern, $matchPatternParams, FALSE, $lang
 			);
 		}
-		return array($match, $reverse);
+		return [$match, $reverse];
 	}
 
 	/**
@@ -1002,7 +1002,7 @@ class Route implements Interfaces\IRoute
 	 * @return \array[] Statistics about founded params occurances.
 	 */
 	protected function & parsePatternParams (& $match) {
-		$matched = array();
+		$matched = [];
 		$index = 0;
 		$matchLength = mb_strlen($match);
 		$greedyCatched = FALSE;
@@ -1024,7 +1024,7 @@ class Route implements Interfaces\IRoute
 				$greedyCatched = TRUE;
 				$paramName = str_replace('*', '', $paramName);
 			}
-			$matched[] = array($paramName, '<'.$paramName.'>', $openPos, $length, $greedy);
+			$matched[] = [$paramName, '<'.$paramName.'>', $openPos, $length, $greedy];
 		}
 		return $matched;
 	}
@@ -1075,8 +1075,8 @@ class Route implements Interfaces\IRoute
 	 *		);`
 	 *	Output:
 	 *		`array(
-	 *		    "#^/products\-list/(?<name>[^/]*)/(?<color>[a-z]*)(?=/$|$)#",
-	 *		    "/products-list/<name>/<color>"
+	 *			"#^/products\-list/(?<name>[^/]*)/(?<color>[a-z]*)(?=/$|$)#",
+	 *			"/products-list/<name>/<color>"
 	 *		)`
 	 * @param string $matchPattern
 	 * @param \array[] $matchPatternParams
@@ -1092,7 +1092,7 @@ class Route implements Interfaces\IRoute
 			$match = mb_substr($matchPattern, 0, $matchPatternParams[0][2]);
 			if ($compileReverse) {
 				$reverse = $match;
-				$this->reverseParams = array();
+				$this->reverseParams = [];
 			}
 			foreach ($matchPatternParams as $i => $matchPatternParam) {
 				list($paramName, $matchedParamName, $index, $length, $greedy) = $matchPatternParam;
@@ -1128,7 +1128,7 @@ class Route implements Interfaces\IRoute
 		} else {
 			if ($matchPattern == '/') {
 				$reverse = '/';
-				$this->reverseParams = array();
+				$this->reverseParams = [];
 			} else {
 				$lengthWithoutLastChar = mb_strlen($matchPattern) - 1;
 				if (mb_strrpos($matchPattern, '/') === $lengthWithoutLastChar) {
@@ -1137,20 +1137,20 @@ class Route implements Interfaces\IRoute
 				$trailingSlash = TRUE;
 				if ($compileReverse) {
 					$reverse = $this->GetPattern($lang);
-					$this->reverseParams = array();
+					$this->reverseParams = [];
 				} else {
 					$reverse = '';
 				}
 			}
 		}
-		return array(
+		return [
 			'#'
 			. (mb_strpos($matchPattern, '/') === 0 ? '^' : '')
 			. $matchPattern
 			. ($trailingSlash ? '(?=/$|$)' : '$')
 			. '#',
 			$reverse
-		);
+		];
 	}
 
 	/**
@@ -1168,7 +1168,7 @@ class Route implements Interfaces\IRoute
 			list(, $reverse) = $this->initMatch();
 			return $reverse;
 		}
-		$reverseParams = array();
+		$reverseParams = [];
 		$closePos = -1;
 		$paramName = '';
 		while (TRUE) {

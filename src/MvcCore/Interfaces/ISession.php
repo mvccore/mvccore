@@ -17,12 +17,12 @@ namespace MvcCore\Interfaces;
  * Responsibility - session data management - starting, writing and expirations.
  * - Safe start (only once)
  *   - By `\MvcCore\Interfaces\ISession::Start()`
- *     - Called by `\MvcCore\Application::GetInstance()->SessionStart();`
- *	     - Called by `\MvcCore\Controller::Init();`.
+ *	 - Called by `\MvcCore\Application::GetInstance()->SessionStart();`
+ *		 - Called by `\MvcCore\Controller::Init();`.
  * - Session writing and closing at request end:
  *   - In `\MvcCore\Interfaces\ISession::Close()`
- *     - Called over `register_shutdown_function()`
- *       from `\MvcCore::Terminate();`
+ *	 - Called over `register_shutdown_function()`
+ *	   from `\MvcCore::Terminate();`
  * - Session namespaces management:
  *   - Variables expiration by seconds.
  *   - Variables expiration by request hoops.

@@ -46,7 +46,7 @@ class Application implements \MvcCore\Interfaces\IApplication
 	use \MvcCore\Application\Helpers;
 
 	/***********************************************************************************
-	 *                      `\MvcCore\Application` - Static Calls                      *
+	 *					  `\MvcCore\Application` - Static Calls					  *
 	 ***********************************************************************************/
 
 	/**

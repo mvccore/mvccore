@@ -20,7 +20,7 @@ namespace MvcCore\Interfaces;
  * - Config file(s) reading:
  *   - Reading any `config.ini` file by relative path.
  *   - Parsing and typing ini data into `stdClass|array` by key types or typing
- *     ini values into `int|float|bool|string` for all other detected primitives.
+ *	 ini values into `int|float|bool|string` for all other detected primitives.
  * - Environment management:
  *   - Simple environment name detection by comparing server and client ip.
  *   - Environment name detection by config records about computer name or ip.

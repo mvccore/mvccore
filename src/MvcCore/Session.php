@@ -21,12 +21,12 @@ namespace MvcCore;
  * Responsibility - session data management - starting, writing and expirations.
  * - Safe start (only once)
  *   - By `\MvcCore\Interfaces\ISession::Start()`
- *     - Called by `\MvcCore\Application::GetInstance()->SessionStart();`
- *	     - Called by `\MvcCore\Controller::Init();`.
+ *	 - Called by `\MvcCore\Application::GetInstance()->SessionStart();`
+ *		 - Called by `\MvcCore\Controller::Init();`.
  * - Session writing and closing at request end:
  *   - In `\MvcCore\Interfaces\ISession::Close()`
- *     - Called over `register_shutdown_function()`
- *       from `\MvcCore::Terminate();`
+ *	 - Called over `register_shutdown_function()`
+ *	   from `\MvcCore::Terminate();`
  * - Session namespaces management:
  *   - Variables expiration by seconds.
  *   - Variables expiration by request hoops.
@@ -54,21 +54,21 @@ class Session extends \ArrayObject implements Interfaces\ISession
 	 * This metadata arrays are decoded from `$_SESSION` storrage only once at in session start.
 	 * @var array|\stdClass
 	 */
-	protected static $meta = array(
+	protected static $meta = [
 		/** @var \string[] Array with all namespace records names. */
-		'names'			=> array(),
+		'names'			=> [],
 		/** @var \int[] Array with all namespace records page requests count to expire. Keyed by namespace names. */
-		'hoops'			=> array(),
+		'hoops'			=> [],
 		/** @var \int[] Array with all records expiration times. Keyed by namespace names. */
-		'expirations'	=> array(),
-	);
+		'expirations'	=> [],
+	];
 
 	/**
 	 * Array of created `\MvcCore\Interfaces\ISession` instances,
 	 * keys in this array storrage are session namespaces names.
 	 * @var \MvcCore\Interfaces\ISession[]
 	 */
-	protected static $instances = array();
+	protected static $instances = [];
 
 	/**
 	 * Unix epoch for current request session start moment.
@@ -91,7 +91,7 @@ class Session extends \ArrayObject implements Interfaces\ISession
 	 * for example in `Bootstrap.php` by: `\MvcCore\Application::GetInstance()->SessionStart();`
 	 * @return void
 	 */
-	public static function Start (& $session = array()) {
+	public static function Start (& $session = []) {
 		if (static::$started) return;
 		if (\MvcCore\Application::GetInstance()->GetRequest()->IsInternalRequest() === TRUE) return;
 		$sessionNotStarted = function_exists('session_status')
@@ -147,15 +147,15 @@ class Session extends \ArrayObject implements Interfaces\ISession
 	 */
 	protected static function setUpMeta () {
 		$metaKey = static::SESSION_METADATA_KEY;
-		$meta = array();
+		$meta = [];
 		if (isset($_SESSION[$metaKey]))
 			$meta = @unserialize($_SESSION[$metaKey]);
 		if (!$meta)
-			$meta = array(
-				'names'			=> array(),
-				'hoops'			=> array(),
-				'expirations'	=> array(),
-			);
+			$meta = [
+				'names'			=> [],
+				'hoops'			=> [],
+				'expirations'	=> [],
+			];
 		$meta = (object) $meta;
 		static::$meta = & $meta;
 	}
@@ -175,7 +175,7 @@ class Session extends \ArrayObject implements Interfaces\ISession
 			$hoops[$name] -= 1;
 		}
 		foreach ($names as $name => $one) {
-			$unset = array();
+			$unset = [];
 			if (isset($hoops[$name])) {
 				if ($hoops[$name] < 0) $unset[] = 'hoops';
 			}
@@ -245,7 +245,7 @@ class Session extends \ArrayObject implements Interfaces\ISession
 		if (!static::$started) static::Start();
 		$this->__name = $name;
 		static::$meta->names[$name] = 1;
-		if (!isset($_SESSION[$name])) $_SESSION[$name] = array();
+		if (!isset($_SESSION[$name])) $_SESSION[$name] = [];
 		static::$instances[$name] = $this;
 	}
 
@@ -386,12 +386,12 @@ class Session extends \ArrayObject implements Interfaces\ISession
 		$expiration = isset(static::$meta->expirations[$this->__name])
 			? static::$meta->expirations[$this->__name]
 			: NULL;
-		return array(
+		return [
 			'name'					=> $this->__name,
 			'expirationSeconds'		=> date('D, d M Y H:i:s', $expiration),
 			'expirationHoops'		=> $hoops,
 			'values'				=> $_SESSION[$this->__name],
-		);
+		];
 	}
 
 	/**

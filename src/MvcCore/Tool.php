@@ -33,7 +33,7 @@ class Tool implements Interfaces\ITool
 	 * only static and also only public method names by the interface name.
 	 * @var array
 	 */
-	protected static $interfacesStaticMethodsCache = array();
+	protected static $interfacesStaticMethodsCache = [];
 
 	/**
 	 * Convert all strings `"from" => "to"`:
@@ -99,10 +99,10 @@ class Tool implements Interfaces\ITool
 			throw new \RuntimeException("[".__CLASS__."] ".json_last_error_msg(), $errorCode);
 		}
 		if (PHP_VERSION_ID < 70100) {
-			$json = strtr($json, array(
+			$json = strtr($json, [
 				"\xe2\x80\xa8" => '\u2028',
 				"\xe2\x80\xa9" => '\u2029',
-			));
+			]);
 		}
 		return $json;
 	}
@@ -117,18 +117,18 @@ class Tool implements Interfaces\ITool
 	 * @return object
 	 */
 	public static function DecodeJson (& $jsonStr) {
-		$result = (object) array(
+		$result = (object) [
 			'success'	=> TRUE,
 			'data'		=> null,
-			'errorData'	=> array(),
-		);
+			'errorData'	=> [],
+		];
 		$jsonData = @json_decode($jsonStr);
 		$errorCode = json_last_error();
 		if ($errorCode == JSON_ERROR_NONE) {
 			$result->data = $jsonData;
 		} else {
 			$result->success = FALSE;
-			$result->errorData = array(json_last_error_msg(), $errorCode);
+			$result->errorData = [json_last_error_msg(), $errorCode];
 		}
 		return $result;
 	}
@@ -186,7 +186,7 @@ class Tool implements Interfaces\ITool
 	 */
 	protected static function & checkClassInterfaceGetPublicStaticMethods ($interfaceName) {
 		if (!isset(static::$interfacesStaticMethodsCache[$interfaceName])) {
-			$methods = array();
+			$methods = [];
 			$interfaceType = new \ReflectionClass($interfaceName);
 			$publicOrStaticMethods = $interfaceType->getMethods(\ReflectionMethod::IS_PUBLIC | \ReflectionMethod::IS_STATIC);
 			/** @var $publicOrStaticMethod \ReflectionMethod */

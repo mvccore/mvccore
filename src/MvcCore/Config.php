@@ -23,7 +23,7 @@ include_once(__DIR__ . '/Tool.php'); // because of static init
  * - Config file(s) reading:
  *   - Reading any `config.ini` file by relative path.
  *   - Parsing and typing ini data into `stdClass|array` by key types or typing
- *     ini values into `int|float|bool|string` for all other detected primitives.
+ *	 ini values into `int|float|bool|string` for all other detected primitives.
  * - Environment management:
  *   - Simple environment name detection by comparing server and client ip.
  *   - Environment name detection by config records about computer name or ip.
@@ -57,12 +57,12 @@ class Config implements Interfaces\IConfig
 	 * Ini file values to convert into booleans.
 	 * @var mixed
 	 */
-	protected static $booleanValues = array(
+	protected static $booleanValues = [
 		'yes'	=> TRUE,
 		'no'	=> FALSE,
 		'true'	=> TRUE,
 		'false'	=> FALSE,
-	);
+	];
 
 	/**
 	 * Reference to singleton instance in `\MvcCore\Application::GetInstance();`.
@@ -92,7 +92,7 @@ class Config implements Interfaces\IConfig
 	 * link to object retyped at the end or not.
 	 * @var array
 	 */
-	protected $objectTypes = array();
+	protected $objectTypes = [];
 
 	/**
 	 * Return `TRUE` if environment is `"development"`.
@@ -202,7 +202,7 @@ class Config implements Interfaces\IConfig
 		if (!file_exists($cfgFullPath)) return $this->result;
 		$rawIniData = parse_ini_file($cfgFullPath, TRUE);
 		if ($rawIniData === FALSE) return $this->result;
-		$this->result = array();
+		$this->result = [];
 		$environment = $systemConfig
 			? $this->detectEnvironmentBySystemConfig($rawIniData)
 			: static::$environment;
@@ -240,14 +240,14 @@ class Config implements Interfaces\IConfig
 	 * @return array
 	 */
 	protected function & prepareIniDataToParse (array & $rawIniData, $environment) {
-		$iniData = array();
+		$iniData = [];
 		foreach ($rawIniData as $keyOrSectionName => $valueOrSectionValues) {
 			if (gettype($valueOrSectionValues) == 'array') {
 				if (strpos($keyOrSectionName, '>') !== FALSE) {
 					list($envNameLocal, $keyOrSectionName) = explode('>', str_replace(' ', '', $keyOrSectionName));
 					if ($envNameLocal !== $environment) continue;
 				}
-				$sectionValues = array();
+				$sectionValues = [];
 				foreach ($valueOrSectionValues as $key => $value) $sectionValues[$keyOrSectionName.'.'.$key] = $value;
 				$iniData = array_merge($iniData, $sectionValues);
 			} else {
@@ -263,7 +263,7 @@ class Config implements Interfaces\IConfig
 	 * @param array $rawIni
 	 * @return string|NULL
 	 */
-	protected function detectEnvironmentBySystemConfig (array & $rawIni = array()) {
+	protected function detectEnvironmentBySystemConfig (array & $rawIni = []) {
 		$environment = NULL;
 		if (isset($rawIni['environments'])) {
 			$environments = & $rawIni['environments'];
@@ -292,11 +292,11 @@ class Config implements Interfaces\IConfig
 	 * @return void
 	 */
 	protected function processIniData (array & $iniData) {
-		$this->objectTypes[''] = array(1, & $this->result);
+		$this->objectTypes[''] = [1, & $this->result];
 		foreach ($iniData as $rawKey => $rawValue) {
 			$current = & $this->result;
 			// prepare keys to build levels and configure stdClass/array types
-			$rawKeys = array();
+			$rawKeys = [];
 			$lastRawKey = $rawKey;
 			$lastDotPos = strrpos($rawKey, '.');
 			if ($lastDotPos !== FALSE) {
@@ -310,8 +310,8 @@ class Config implements Interfaces\IConfig
 				$prevLevelKey = $levelKey;
 				$levelKey .= ($levelKey ? '.' : '') . $key;
 				if (!isset($current[$key])) {
-					$current[$key] = array();
-					$this->objectTypes[$levelKey] = array(1, & $current[$key]); // object type switch -> object by default
+					$current[$key] = [];
+					$this->objectTypes[$levelKey] = [1, & $current[$key]]; // object type switch -> object by default
 					if ($this->isKeyNumeric($key) && isset($this->objectTypes[$prevLevelKey])) {
 						$this->objectTypes[$prevLevelKey][0] = 0; // object type switch -> set array of it was object
 					}
@@ -325,8 +325,8 @@ class Config implements Interfaces\IConfig
 				$this->objectTypes[$levelKey ? $levelKey : $lastRawKey][0] = 0; // object type switch -> set array
 			} else {
 				if (gettype($current) != 'array') {
-					$current = array($current);
-					$this->objectTypes[$levelKey] = array(0, & $current); // object type switch -> set array
+					$current = [$current];
+					$this->objectTypes[$levelKey] = [0, & $current]; // object type switch -> set array
 				}
 				$current[$lastRawKey] = $typedValue;
 				if ($this->isKeyNumeric($lastRawKey)) $this->objectTypes[$levelKey][0] = 0; // object type switch -> set array

@@ -33,16 +33,16 @@ namespace MvcCore\Application;
 trait Dispatching
 {
 	/***********************************************************************************
-	 *                   `\MvcCore\Application` - Normal Dispatching                   *
+	 *				   `\MvcCore\Application` - Normal Dispatching				   *
 	 ***********************************************************************************/
 
 	/**
 	 * Run application.
 	 * - 1. Complete and init:
-	 *      - `\MvcCore\Application::$compiled` flag.
-	 *      - Complete describing request object `\MvcCore\Request`.
-	 *      - Complete response storage object `\MvcCore\Response`.
-	 *      - Init debugging and logging by `\MvcCore\Debug::Init();`.
+	 *	  - `\MvcCore\Application::$compiled` flag.
+	 *	  - Complete describing request object `\MvcCore\Request`.
+	 *	  - Complete response storage object `\MvcCore\Response`.
+	 *	  - Init debugging and logging by `\MvcCore\Debug::Init();`.
 	 * - 2. (Process pre-route handlers queue.)
 	 * - 3. Route request by your router or with `\MvcCore\Router::Route()` by default.
 	 * - 4. (Process post-route handlers queue.)
@@ -50,14 +50,14 @@ trait Dispatching
 	 * - 6. (Process pre-dispatch handlers queue.)
 	 * - 7. Dispatch controller lifecycle.
 	 *  	- Call `\MvcCore\Controller::Init()` and `\MvcCore\Controller::PreDispatch()`.
-	 *      - Call routed action method.
-	 *      - Call `\MvcCore\Controller::Render()` to render all views.
+	 *	  - Call routed action method.
+	 *	  - Call `\MvcCore\Controller::Render()` to render all views.
 	 * - 6. Terminate request:
-	 *      - (Process post-dispatch handlers queue.)
-	 *      - Write session in `register_shutdown_function()` handler.
-	 *      - Send response headers if possible and echo response body.
+	 *	  - (Process post-dispatch handlers queue.)
+	 *	  - Write session in `register_shutdown_function()` handler.
+	 *	  - Send response headers if possible and echo response body.
 	 * @param bool $singleFileUrl Set 'Single File Url' mode to `TRUE` to compile and test
-	 *                            all assets and everything before compilation processing.
+	 *							all assets and everything before compilation processing.
 	 * @return \MvcCore\Application
 	 */
 	public function Run ($singleFileUrl = FALSE) {
@@ -112,7 +112,7 @@ trait Dispatching
 	 * @param callable[] $handlers
 	 * @return bool
 	 */
-	public function ProcessCustomHandlers (& $handlers = array()) {
+	public function ProcessCustomHandlers (& $handlers = []) {
 		if ($this->request->IsInternalRequest() === TRUE) return TRUE;
 		$result = TRUE;
 		foreach ($handlers as $handlersRecord) {
@@ -141,7 +141,7 @@ trait Dispatching
 	 */
 	public function DispatchRequestByRoute (\MvcCore\Interfaces\IRoute & $route = NULL) {
 		if ($route === NULL) return $this->DispatchException('No route for request', 404);
-		list ($ctrlPc, $actionPc) = array($route->GetController(), $route->GetAction());
+		list ($ctrlPc, $actionPc) = [$route->GetController(), $route->GetAction()];
 		$actionName = $actionPc . 'Action';
 		$viewClass = $this->viewClass;
 		$viewScriptFullPath = $viewClass::GetViewScriptFullPath(
@@ -244,7 +244,7 @@ trait Dispatching
 	 * @param array  $params						Optional, array with params, key is param name, value is param value.
 	 * @return string
 	 */
-	public function Url ($controllerActionOrRouteName = 'Index:Index', $params = array()) {
+	public function Url ($controllerActionOrRouteName = 'Index:Index', $params = []) {
 		return $this->router->Url($controllerActionOrRouteName, $params);
 	}
 
@@ -272,7 +272,7 @@ trait Dispatching
 
 
 	/***********************************************************************************
-	 *               `\MvcCore\Application` - Request Error Dispatching                *
+	 *			   `\MvcCore\Application` - Request Error Dispatching				*
 	 ***********************************************************************************/
 
 	/**
@@ -335,10 +335,10 @@ trait Dispatching
 				\MvcCore\Interfaces\IRouter::DEFAULT_ROUTE_NAME_ERROR,
 				$this->defaultControllerName, $this->defaultControllerErrorActionName
 			);
-			$newParams = array_merge($this->request->GetParams('.*'), array(
+			$newParams = array_merge($this->request->GetParams('.*'), [
 				'code'		=> 500,
 				'message'	=> $exceptionMessage,
-			));
+			]);
 			$this->request->SetParams($newParams);
 			$this->response->SetCode(500);
 			return $this->DispatchControllerAction(
@@ -378,10 +378,10 @@ trait Dispatching
 				\MvcCore\Interfaces\IRouter::DEFAULT_ROUTE_NAME_NOT_FOUND,
 				$this->defaultControllerName, $this->defaultControllerErrorActionName
 			);
-			$newParams = array_merge($this->request->GetParams('.*'), array(
+			$newParams = array_merge($this->request->GetParams('.*'), [
 				'code'		=> 404,
 				'message'	=> $exceptionMessage,
-			));
+			]);
 			$this->request->SetParams($newParams);
 			$this->response->SetCode(404);
 			return $this->DispatchControllerAction(
@@ -425,7 +425,7 @@ trait Dispatching
 		}
 		$this->response = $responseClass::CreateInstance(
 			\MvcCore\Interfaces\IResponse::INTERNAL_SERVER_ERROR,
-			array('Content-Type' => $htmlResponse ? 'text/html' : 'text/plain'),
+			['Content-Type' => $htmlResponse ? 'text/html' : 'text/plain'],
 			$text
 		);
 		return TRUE;
@@ -455,7 +455,7 @@ trait Dispatching
 		}
 		$this->response = $responseClass::CreateInstance(
 			\MvcCore\Interfaces\IResponse::NOT_FOUND,
-			array('Content-Type' => $htmlResponse ? 'text/html' : 'text/plain'),
+			['Content-Type' => $htmlResponse ? 'text/html' : 'text/plain'],
 			$text
 		);
 		return TRUE;

@@ -29,10 +29,10 @@ namespace MvcCore;
  * - Controller lifecycle dispatching:
  *   - Handling setup methods after creation from application core dispatching.
  *   - Calling lifecycle methods (`\MvcCore\Controller::Dispatch();`):
- *     - `\MvcCore\Controller::Init();`
- *     - `\MvcCore\Controller::PreDispatch();`
- *     - Calling routed controller action.
- *     - `\MvcCore\Controller::Render();`
+ *	 - `\MvcCore\Controller::Init();`
+ *	 - `\MvcCore\Controller::PreDispatch();`
+ *	 - Calling routed controller action.
+ *	 - `\MvcCore\Controller::Render();`
  * - Rendering or no-rendering customization.
  * - HTTP responses and redirects managing and customization.
  * - Basic error responses rendering.
@@ -60,15 +60,15 @@ namespace MvcCore;
  * Internal methods and actions:
  * - `Render()`
  *   - Called internally in lifecycle dispatching,
- *     but it's possible to use it for custom purposes.
+ *	 but it's possible to use it for custom purposes.
  * - `Terminate()`
  *   - Called internally after lifecycle dispatching,
- *     but it's possible to use it for custom purposes.
+ *	 but it's possible to use it for custom purposes.
  * - `Dispatch()`
  *   - Processing whole controller and subcontrollers lifecycle.
  * - `AssetAction()`
  *   - Handling internal MvcCore HTTP requests
- *     to get assets from packed application package.
+ *	 to get assets from packed application package.
  */
 class Controller implements Interfaces\IController
 {
@@ -176,13 +176,13 @@ class Controller implements Interfaces\IController
 	 * Registered sub-controller(s) instances.
 	 * @var \MvcCore\Controller[]|\MvcCore\Interfaces\IController[]
 	 */
-	protected $childControllers = array();
+	protected $childControllers = [];
 
 	/**
 	 * All asset mime types possibly called throught `\MvcCore\Controller::AssetAction();`.
 	 * @var string
 	 */
-	private static $_assetsMimeTypes = array(
+	private static $_assetsMimeTypes = [
 		'js'	=> 'text/javascript',
 		'css'	=> 'text/css',
 		'ico'	=> 'image/x-icon',
@@ -196,7 +196,7 @@ class Controller implements Interfaces\IController
 		'ttf'	=> 'font/truetype',
 		'otf'	=> 'font/opentype',
 		'woff'	=> 'application/x-font-woff',
-	);
+	];
 
 	/**
 	 * Return always new instance of staticly called class, no singleton.
@@ -293,7 +293,7 @@ class Controller implements Interfaces\IController
 			if (mb_strpos($docComment, '@autoinit') === FALSE) continue;
 			$pos = mb_strpos($docComment, '@var ');
 			if ($pos === FALSE) continue;
-			$docComment = str_replace(array("\r","\n","\t", "*/"), " ", mb_substr($docComment, $pos + 5));
+			$docComment = str_replace(["\r","\n","\t", "*/"], " ", mb_substr($docComment, $pos + 5));
 			$pos = mb_strpos($docComment, ' ');
 			if ($pos === FALSE) continue;
 			$className = trim(mb_substr($docComment, 0, $pos));
@@ -597,7 +597,7 @@ class Controller implements Interfaces\IController
 	 * @param \MvcCore\Controller[]|\MvcCore\Interfaces\IController[] $childControllers
 	 * @return \MvcCore\Controller
 	 */
-	public function & SetChildControllers (array & $childControllers = array()) {
+	public function & SetChildControllers (array & $childControllers = []) {
 		$this->childControllers = & $childControllers;
 		return $this;
 	}
@@ -734,8 +734,8 @@ class Controller implements Interfaces\IController
 				}
 			}
 		}
-		$controllerPath = str_replace(array('_', '\\'), '/', $controllerNameDashed);
-		return implode('/', array($controllerPath, $actionNameDashed));
+		$controllerPath = str_replace(['_', '\\'], '/', $controllerNameDashed);
+		return implode('/', [$controllerPath, $actionNameDashed]);
 	}
 
 	/**
@@ -812,7 +812,7 @@ class Controller implements Interfaces\IController
 	 * @param array  $params						Optional, array with params, key is param name, value is param value.
 	 * @return string
 	 */
-	public function Url ($controllerActionOrRouteName = 'Index:Index', $params = array()) {
+	public function Url ($controllerActionOrRouteName = 'Index:Index', $params = []) {
 		return $this->router->Url($controllerActionOrRouteName, $params);
 	}
 
@@ -823,7 +823,7 @@ class Controller implements Interfaces\IController
 	 * @return string
 	 */
 	public function AssetUrl ($path = '') {
-		return $this->router->Url('Controller:Asset', array('path' => $path));
+		return $this->router->Url('Controller:Asset', ['path' => $path]);
 	}
 
 	/**
@@ -886,7 +886,7 @@ class Controller implements Interfaces\IController
 	 * Redirect client browser to another place by `"Location: ..."`
 	 * header and call `\MvcCore\Application::GetInstance()->Terminate();`.
 	 * @param string $location
-	 * @param int    $code
+	 * @param int	$code
 	 * @return void
 	 */
 	public static function Redirect ($location = '', $code = \MvcCore\Interfaces\IResponse::SEE_OTHER) {

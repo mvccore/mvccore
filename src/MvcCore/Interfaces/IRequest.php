@@ -91,11 +91,11 @@ interface IRequest
 	 * @return \MvcCore\Interfaces\IRequest
 	 */
 	public static function CreateInstance (
-		array & $server = array(),
-		array & $get = array(),
-		array & $post = array(),
-		array & $cookie = array(),
-		array & $files = array()
+		array & $server = [],
+		array & $get = [],
+		array & $post = [],
+		array & $cookie = [],
+		array & $files = []
 	);
 
 
@@ -116,7 +116,7 @@ interface IRequest
 	 * @param array $headers
 	 * @return \MvcCore\Interfaces\IRequest
 	 */
-	public function & SetHeaders (array & $headers = array());
+	public function & SetHeaders (array & $headers = []);
 
 	/**
 	 * Get directly all raw http headers at once (with/without conversion).
@@ -163,7 +163,7 @@ interface IRequest
 	 * @param array $params
 	 * @return \MvcCore\Interfaces\IRequest
 	 */
-	public function & SetParams (array & $params = array());
+	public function & SetParams (array & $params = []);
 
 	/**
 	 * Get directly all raw parameters at once (with/without conversion).
@@ -173,7 +173,7 @@ interface IRequest
 	 * @param array $onlyKeys Array with keys to get only. If empty (by default), all possible params are returned.
 	 * @return array
 	 */
-	public function & GetParams ($pregReplaceAllowedChars = array('#[\<\>]#', ''), $onlyKeys = array());
+	public function & GetParams ($pregReplaceAllowedChars = ['#[\<\>]#', ''], $onlyKeys = []);
 
 	/**
 	 * Set directly raw parameter value without any conversion.
@@ -206,7 +206,7 @@ interface IRequest
 	 * @param array $files
 	 * @return \MvcCore\Interfaces\IRequest
 	 */
-	public function & SetFiles (array & $files = array());
+	public function & SetFiles (array & $files = []);
 
 	/**
 	 * Return reference to configured global `$_FILES`
@@ -221,7 +221,7 @@ interface IRequest
 	 * @param array $data
 	 * @return \MvcCore\Interfaces\IRequest
 	 */
-	public function & SetFile ($file = '', $data = array());
+	public function & SetFile ($file = '', $data = []);
 
 	/**
 	 * Return item by file name from referenced global `$_FILES`
@@ -236,7 +236,7 @@ interface IRequest
 	 * @param array $cookies
 	 * @return \MvcCore\Interfaces\IRequest
 	 */
-	public function & SetCookies (array & $cookies = array());
+	public function & SetCookies (array & $cookies = []);
 
 	/**
 	 * Return reference to configured global `$_COOKIE`
@@ -378,7 +378,7 @@ interface IRequest
 	 * @throws \InvalidArgumentException
 	 * @return \MvcCore\Interfaces\IRequest
 	 */
-	public function __call ($name, $arguments = array());
+	public function __call ($name, $arguments = []);
 
 	/**
 	 * Universal getter, if property not defined, `NULL` is returned.
@@ -486,10 +486,10 @@ interface IRequest
 	 * Get uri query string (without question mark character by default).
 	 * Example: `"param-1=value-1&param-2=value-2&param-3[]=value-3-a&param-3[]=value-3-b"`
 	 * @param bool $withQuestionMark If `FALSE` (by default), query string is returned always without question
-	 *                               mark character at the beginning.
-	 *                               If `TRUE`, and query string contains any character(s), query string is returned
-	 *                               with question mark character at the beginning. But if query string contains no
-	 *                               character(s), query string is returned as EMPTY STRING WITHOUT question mark character.
+	 *							   mark character at the beginning.
+	 *							   If `TRUE`, and query string contains any character(s), query string is returned
+	 *							   with question mark character at the beginning. But if query string contains no
+	 *							   character(s), query string is returned as EMPTY STRING WITHOUT question mark character.
 	 * @return string
 	 */
 	public function GetQuery ($withQuestionMark = FALSE);
@@ -533,10 +533,10 @@ interface IRequest
 	 * Get uri fragment parsed by `parse_url()` (without hash character by default).
 	 * Example: `"any-sublink-path"`
 	 * @param bool $withHash If `FALSE` (by default), fragment is returned always without hash character
-	 *                       at the beginning.
-	 *                       If `TRUE`, and fragment contains any character(s), fragment is returned
-	 *                       with hash character at the beginning. But if fragment contains no
-	 *                       character(s), fragment is returned as EMPTY STRING WITHOUT hash character.
+	 *					   at the beginning.
+	 *					   If `TRUE`, and fragment contains any character(s), fragment is returned
+	 *					   with hash character at the beginning. But if fragment contains no
+	 *					   character(s), fragment is returned as EMPTY STRING WITHOUT hash character.
 	 * @return string
 	 */
 	public function GetFragment ($withHash = FALSE);

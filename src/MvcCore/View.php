@@ -96,22 +96,22 @@ class View implements Interfaces\IView
 	 * For read & write.
 	 * @var array
 	 */
-	protected static $helpersNamespaces = array(
+	protected static $helpersNamespaces = [
 		/*'\MvcCore\Ext\Views\Helpers\'*/
-	);
+	];
 
 	/**
 	 * Originaly declared internal view properties to protect their
 	 * possible overwriting by `__set()` or `__get()` magic methods.
 	 * @var array
 	 */
-	protected static $protectedProperties = array(
+	protected static $protectedProperties = [
 		'_controller'		=> 1,
 		'_store'			=> 1,
 		'_helpers'			=> 1,
 		'_content'			=> 1,
 		'_renderedFullPaths'=> 1,
-	);
+	];
 
 	/**
 	 * Global helpers instances storrage.
@@ -119,7 +119,7 @@ class View implements Interfaces\IView
 	 * These helpers instances are used for all views.
 	 * @var array
 	 */
-	private static $_globalHelpers = array();
+	private static $_globalHelpers = [];
 
 	/**
 	 * Cached base full path for repeat method calls `\MvcCore\View::GetViewScriptFullPath();`.
@@ -150,7 +150,7 @@ class View implements Interfaces\IView
 	 * throught `__set()` magic function.
 	 * @var array
 	 */
-	private $_store = array();
+	private $_store = [];
 
 	/**
 	 * Helpers instances storrage for current view instance.
@@ -159,13 +159,13 @@ class View implements Interfaces\IView
 	 * if helper has been already used inside current view or not.
 	 * @var array
 	 */
-	private $_helpers = array();
+	private $_helpers = [];
 
 	/**
 	 * Currently rendered php/html file path(s).
 	 * @var array
 	 */
-	private $_renderedFullPaths = array();
+	private $_renderedFullPaths = [];
 
 	/**
 	 * Return always new instance of staticly called class, no singleton.
@@ -322,7 +322,7 @@ class View implements Interfaces\IView
 	 * @return void
 	 */
 	public static function SetHelpersNamespaces (/* ...$helperNamespace */) {
-		static::$helpersNamespaces = array();
+		static::$helpersNamespaces = [];
 		foreach (func_get_args() as $arg)
 			static::$helpersNamespaces[] = '\\' . trim($arg, '\\') . '\\';
 	}
@@ -337,11 +337,11 @@ class View implements Interfaces\IView
 	public static function GetViewScriptFullPath ($typePath = '', $corectedRelativePath = '') {
 		if (self::$_viewScriptsFullPathBase === NULL) 
 			self::_initViewScriptsFullPathBase();
-		return implode('/', array(
+		return implode('/', [
 			self::$_viewScriptsFullPathBase,
 			$typePath,
 			$corectedRelativePath . static::$extension
-		));
+		]);
 	}
 
 	/**
@@ -580,7 +580,7 @@ class View implements Interfaces\IView
 	 * @param array  $params						Optional, array with params, key is param name, value is param value.
 	 * @return string
 	 */
-	public function Url ($controllerActionOrRouteName = 'Index:Index', $params = array()) {
+	public function Url ($controllerActionOrRouteName = 'Index:Index', $params = []) {
 		return $this->_controller->GetRouter()->Url($controllerActionOrRouteName, $params);
 	}
 
@@ -631,7 +631,7 @@ class View implements Interfaces\IView
 					} else {
 						$instance = new $className();
 					}
-					self::$_globalHelpers[$helperName] = array(& $instance, $implementsIHelper);
+					self::$_globalHelpers[$helperName] = [& $instance, $implementsIHelper];
 					break;
 				}
 			}
@@ -664,7 +664,7 @@ class View implements Interfaces\IView
 			$helpersInterface = self::HELPERS_INTERFACE_CLASS_NAME;
 			$className = get_class($instance);
 			$implementsIHelper = $toolClass::CheckClassInterface($className, $helpersInterface, FALSE, FALSE);
-			self::$_globalHelpers[$helperName] = array(& $instance, $implementsIHelper);
+			self::$_globalHelpers[$helperName] = [& $instance, $implementsIHelper];
 		}
 		$this->_helpers[$helperName] = & $instance;
 		if ($implementsIHelper) $instance->SetView($this);
@@ -746,7 +746,7 @@ class View implements Interfaces\IView
 		$result = '';
 		$instance = & $this->GetHelper($method);
 		if (method_exists($instance, $method)) {
-			$result = call_user_func_array(array($instance, $method), $arguments);
+			$result = call_user_func_array([$instance, $method], $arguments);
 		} else {
 			throw new \InvalidArgumentException(
 				"[".__CLASS__."] View helper instance '".get_class($instance)."' has no method '$method'."
@@ -767,9 +767,9 @@ class View implements Interfaces\IView
 		if (substr($relativePath, 0, 2) == './') {
 			if (self::$_viewScriptsFullPathBase === NULL) 
 				self::_initViewScriptsFullPathBase();
-			$typedViewDirFullPath = implode('/', array(
+			$typedViewDirFullPath = implode('/', [
 				self::$_viewScriptsFullPathBase, $typePath
-			));
+			]);
 			$lastRenderedFullPath = $this->_renderedFullPaths[count($this->_renderedFullPaths) - 1];
 			$renderedRelPath = substr($lastRenderedFullPath, strlen($typedViewDirFullPath));
 			$renderedRelPathLastSlashPos = strrpos($renderedRelPath, '/');
@@ -789,11 +789,11 @@ class View implements Interfaces\IView
 	 */
 	private static function _initViewScriptsFullPathBase () {
 		$app = & \MvcCore\Application::GetInstance();
-		self::$_viewScriptsFullPathBase = implode('/', array(
+		self::$_viewScriptsFullPathBase = implode('/', [
 			$app->GetRequest()->GetAppRoot(),
 			$app->GetAppDir(),
 			$app->GetViewsDir()
-		));
+		]);
 	}
 
 	/**
@@ -804,14 +804,14 @@ class View implements Interfaces\IView
 	 */
 	private static function _initHelpersNamespaces () {
 		$app = & \MvcCore\Application::GetInstance();
-		static::$helpersNamespaces = array(
+		static::$helpersNamespaces = [
 			'\\MvcCore\\Ext\\Views\Helpers\\',
 			// and '\App\Views\Helpers\' by default:
-			'\\' . implode('\\', array(
+			'\\' . implode('\\', [
 				$app->GetAppDir(),
 				$app->GetViewsDir(),
 				static::$helpersDir
-			)) . '\\',
-		);
+			]) . '\\',
+		];
 	}
 }

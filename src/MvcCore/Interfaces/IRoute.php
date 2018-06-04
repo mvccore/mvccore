@@ -105,8 +105,8 @@ interface IRoute
 	public static function CreateInstance (
 		$patternOrConfig = NULL,
 		$controllerAction = NULL,
-		$defaults = array(),
-		$constraints = array(),
+		$defaults = [],
+		$constraints = [],
 		$method = NULL
 	);
 
@@ -295,8 +295,8 @@ interface IRoute
 	 * by full controller class name.
 	 *
 	 * Example:
-	 *  `"Products"                             // placed in /App/Controllers/Products.php`
-	 *  `"Front\Business\Products"              // placed in /App/Controllers/Front/Business/Products.php`
+	 *  `"Products"							 // placed in /App/Controllers/Products.php`
+	 *  `"Front\Business\Products"			  // placed in /App/Controllers/Front/Business/Products.php`
 	 *  `"\Anywhere\Else\Controllers\Products"  // placed in /Anywhere/Else/Controllers/Products.php`
 	 * @return string
 	 */
@@ -313,8 +313,8 @@ interface IRoute
 	 * by full controller class name.
 	 *
 	 * Example:
-	 *  `"Products"                             // placed in /App/Controllers/Products.php`
-	 *  `"Front\Business\Products"              // placed in /App/Controllers/Front/Business/Products.php`
+	 *  `"Products"							 // placed in /App/Controllers/Products.php`
+	 *  `"Front\Business\Products"			  // placed in /App/Controllers/Front/Business/Products.php`
 	 *  `"\Anywhere\Else\Controllers\Products"  // placed in /Anywhere/Else/Controllers/Products.php`
 	 * @param string $controller
 	 * @return \MvcCore\Interfaces\IRoute
@@ -378,8 +378,8 @@ interface IRoute
 	 *
 	 * Example:
 	 *  `array(
-	 *      "name"  => "default-name",
-	 *      "color" => "red"
+	 *	  "name"  => "default-name",
+	 *	  "color" => "red"
 	 *  );`.
 	 * @param string $lang Lowercase language code, `NULL` by default, not implemented in core.
 	 * @return array|\array[]
@@ -392,14 +392,14 @@ interface IRoute
 	 *
 	 * Example:
 	 *  `array(
-	 *      "name"  => "default-name",
-	 *      "color" => "red"
+	 *	  "name"  => "default-name",
+	 *	  "color" => "red"
 	 *  );`.
 	 * @param array|\array[] $defaults
 	 * @param string $lang Lowercase language code, `NULL` by default, not implemented in core.
 	 * @return \MvcCore\Interfaces\IRoute
 	 */
-	public function & SetDefaults ($defaults = array(), $lang = NULL);
+	public function & SetDefaults ($defaults = [], $lang = NULL);
 
 	/**
 	 * Get array with param names and their custom regular expression
@@ -434,7 +434,7 @@ interface IRoute
 	 * @param string $lang Lowercase language code, `NULL` by default, not implemented in core.
 	 * @return \MvcCore\Interfaces\IRoute
 	 */
-	public function & SetConstraints ($constraints = array(), $lang = NULL);
+	public function & SetConstraints ($constraints = [], $lang = NULL);
 
 	/**
 	 * Get http method to only match requests with this defined method.
@@ -500,7 +500,7 @@ interface IRoute
 	 * @param string $queryStringParamsSepatator Query params separator, `&` by default. Always automaticly completed by router instance.
 	 * @return string
 	 */
-	public function Url (& $params = array(), & $cleanedGetRequestParams = array(), $queryParamsSepatator = '&');
+	public function Url (& $params = [], & $cleanedGetRequestParams = [], $queryParamsSepatator = '&');
 
 	/**
 	 * Render all instance properties values into string.

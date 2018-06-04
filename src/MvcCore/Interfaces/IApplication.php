@@ -31,7 +31,7 @@ namespace MvcCore\Interfaces;
 interface IApplication
 {
 	/***********************************************************************************
-	 *                       `\MvcCore\Application` - Constants                        *
+	 *					   `\MvcCore\Application` - Constants						*
 	 ***********************************************************************************/
 
 	/**
@@ -94,7 +94,7 @@ interface IApplication
 
 
 	/***********************************************************************************
-	 *                      `\MvcCore\Application` - Static Calls                      *
+	 *					  `\MvcCore\Application` - Static Calls					  *
 	 ***********************************************************************************/
 
 	/**
@@ -105,7 +105,7 @@ interface IApplication
 
 
 	/***********************************************************************************
-	 *                        `\MvcCore\Application` - Getters                         *
+	 *						`\MvcCore\Application` - Getters						 *
 	 ***********************************************************************************/
 
 	/**
@@ -254,7 +254,7 @@ interface IApplication
 
 
 	/***********************************************************************************
-	 *                        `\MvcCore\Application` - Setters                         *
+	 *						`\MvcCore\Application` - Setters						 *
 	 ***********************************************************************************/
 
 	/**
@@ -515,16 +515,16 @@ interface IApplication
 
 
 	/***********************************************************************************
-	 *                   `\MvcCore\Application` - Normal Dispatching                   *
+	 *				   `\MvcCore\Application` - Normal Dispatching				   *
 	 ***********************************************************************************/
 
 	/**
 	 * Run application.
 	 * - 1. Complete and init:
-	 *      - `\MvcCore\Application::$compiled` flag.
-	 *      - Complete describing request object `\MvcCore\Request`.
-	 *      - Complete response storage object `\MvcCore\Response`.
-	 *      - Init debugging and logging by `\MvcCore\Debug::Init();`.
+	 *	  - `\MvcCore\Application::$compiled` flag.
+	 *	  - Complete describing request object `\MvcCore\Request`.
+	 *	  - Complete response storage object `\MvcCore\Response`.
+	 *	  - Init debugging and logging by `\MvcCore\Debug::Init();`.
 	 * - 2. (Process pre-route handlers queue.)
 	 * - 3. Route request by your router or with `\MvcCore\Router::Route()` by default.
 	 * - 4. (Process post-route handlers queue.)
@@ -532,14 +532,14 @@ interface IApplication
 	 * - 6. (Process pre-dispatch handlers queue.)
 	 * - 7. Dispatch controller lifecycle.
 	 *  	- Call `\MvcCore\Controller::Init()` and `\MvcCore\Controller::PreDispatch()`.
-	 *      - Call routed action method.
-	 *      - Call `\MvcCore\Controller::Render()` to render all views.
+	 *	  - Call routed action method.
+	 *	  - Call `\MvcCore\Controller::Render()` to render all views.
 	 * - 6. Terminate request:
-	 *      - (Process post-dispatch handlers queue.)
-	 *      - Write session in `register_shutdown_function()` handler.
-	 *      - Send response headers if possible and echo response body.
+	 *	  - (Process post-dispatch handlers queue.)
+	 *	  - Write session in `register_shutdown_function()` handler.
+	 *	  - Send response headers if possible and echo response body.
 	 * @param bool $singleFileUrl Set 'Single File Url' mode to `TRUE` to compile and test
-	 *                            all assets and everything before compilation processing.
+	 *							all assets and everything before compilation processing.
 	 * @return \MvcCore\Interfaces\IApplication
 	 */
 	public function Run ($singleFileUrl = FALSE);
@@ -570,7 +570,7 @@ interface IApplication
 	 * @param callable[] $handlers
 	 * @return bool
 	 */
-	public function ProcessCustomHandlers (& $handlers = array());
+	public function ProcessCustomHandlers (& $handlers = []);
 
 	/**
 	 * If controller class exists - try to dispatch controller,
@@ -619,7 +619,7 @@ interface IApplication
 	 * @param array  $params						Optional, array with params, key is param name, value is param value.
 	 * @return string
 	 */
-	public function Url ($controllerActionOrRouteName = 'Index:Index', $params = array());
+	public function Url ($controllerActionOrRouteName = 'Index:Index', $params = []);
 
 	/**
 	 * Terminate request.
@@ -637,7 +637,7 @@ interface IApplication
 
 
 	/***********************************************************************************
-	 *               `\MvcCore\Application` - Request Error Dispatching                *
+	 *			   `\MvcCore\Application` - Request Error Dispatching				*
 	 ***********************************************************************************/
 
 	/**
@@ -693,7 +693,7 @@ interface IApplication
 
 
 	/***********************************************************************************
-	 *                     `\MvcCore\Application` - Helper Methods                     *
+	 *					 `\MvcCore\Application` - Helper Methods					 *
 	 ***********************************************************************************/
 
 	/**

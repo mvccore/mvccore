@@ -18,7 +18,7 @@ namespace MvcCore;
 
 /**
  * Responsibility - static members for connections and by configuration,
- *                  instances members for active record pattern.
+ *				  instances members for active record pattern.
  * - Reading `db` section from system `config.ini` file.
  * - Database `\PDO` connecting by config settings and index.
  * - Instance loaded variables initializing.
@@ -49,60 +49,60 @@ class Model implements Interfaces\IModel {
 	 * - `options`	. any additional arguments array or empty array.
 	 * @var array
 	 */
-	protected static $connectionArguments = array(
-		'4D'			=> array(
+	protected static $connectionArguments = [
+		'4D'			=> [
 			'dsn'		=> '{driver}:host={host};charset=UTF-8',
 			'auth'		=> TRUE,
 			'fileDb'	=> FALSE,
-			'options'	=> array(),
-		),
-		'firebird'		=> array(
+			'options'	=> [],
+		],
+		'firebird'		=> [
 			'dsn'		=> '{driver}:host={host};dbname={database};charset=UTF8',
 			'auth'		=> TRUE,
 			'fileDb'	=> TRUE,
-			'options'	=> array()
-		),
-		'ibm'			=> array(
+			'options'	=> []
+		],
+		'ibm'			=> [
 			'dsn'		=> 'ibm:DRIVER={IBM DB2 ODBC DRIVER};DATABASE={database};HOSTNAME={host};PORT={port};PROTOCOL=TCPIP;',
 			'auth'		=> TRUE,
 			'fileDb'	=> FALSE,
-			'options'	=> array(),
-		),
-		'informix'		=> array(
+			'options'	=> [],
+		],
+		'informix'		=> [
 			'dsn'		=> '{driver}:host={host};service={service};database={database};server={server};protocol={protocol};EnableScrollableCursors=1',
 			'auth'		=> TRUE,
 			'fileDb'	=> FALSE,
-			'options'	=> array(),
-		),
-		'mysql'			=> array(
+			'options'	=> [],
+		],
+		'mysql'			=> [
 			'dsn'		=> '{driver}:host={host};dbname={database}',
 			'auth'		=> TRUE,
 			'fileDb'	=> FALSE,
-			'options'	=> array(
+			'options'	=> [
 				'\PDO::ATTR_EMULATE_PREPARES'		=> FALSE, // let params inserting on database
 				'\PDO::MYSQL_ATTR_MULTI_STATEMENTS'	=> TRUE,
 				'\PDO::MYSQL_ATTR_INIT_COMMAND'		=> "SET NAMES 'UTF8'",
-			),
-		),
-		'sqlite'		=> array(
+			],
+		],
+		'sqlite'		=> [
 			'dsn'		=> '{driver}:{database}',
 			'auth'		=> FALSE,
 			'fileDb'	=> TRUE,
-			'options'	=> array(),
-		),
-		'sqlsrv'		=> array(
+			'options'	=> [],
+		],
+		'sqlsrv'		=> [
 			'dsn'		=> '{driver}:Server={host};Database={database}',
 			'auth'		=> TRUE,
 			'fileDb'	=> FALSE,
-			'options'	=> array(),
-		),
-		'default'		=> array(
+			'options'	=> [],
+		],
+		'default'		=> [
 			'dsn'		=> '{driver}:host={host};dbname={database}',
 			'auth'		=> TRUE,
 			'fileDb'	=> FALSE,
-			'options'	=> array(),
-		),
-	);
+			'options'	=> [],
+		],
+	];
 
 	/**
 	 * Default database connection name/index, in config ini defined in section `db.default = name`.
@@ -115,13 +115,13 @@ class Model implements Interfaces\IModel {
 	 * `\PDO` connections array, keyed by connection indexes from system config.
 	 * @var \PDO[]
 	 */
-	protected static $connections = array();
+	protected static $connections = [];
 
 	/**
 	 * Instance of current class, if there is necessary to use it as singleton.
 	 * @var \MvcCore\Model[]|\MvcCore\Interfaces\IModel[]
 	 */
-	protected static $instances = array();
+	protected static $instances = [];
 
 	/**
 	 * System config sections array with `\stdClass` objects, keyed by connection indexes.
@@ -158,22 +158,22 @@ class Model implements Interfaces\IModel {
 	 * possible overwriting by `__set()` or `__get()` magic methods.
 	 * @var array
 	 */
-	protected static $protectedProperties = array(
+	protected static $protectedProperties = [
 		'autoInit'	=> 1,
 		'db'		=> 1,
 		'config'	=> 1,
 		'resource'	=> 1,
-	);
+	];
 
 	/**
 	 * Collect all model class public and inherit field values into array.
 	 * @param boolean $getNullValues			If `TRUE`, include also values with `NULL`s, by default - `FALSE`.
 	 * @param boolean $includeInheritProperties If `TRUE`, include only fields from current model class and from parent classes.
-	 * @param boolean $publicOnly               If `TRUE`, include only public model fields.
+	 * @param boolean $publicOnly			   If `TRUE`, include only public model fields.
 	 * @return array
 	 */
 	public function GetValues ($getNullValues = FALSE, $includeInheritProperties = TRUE, $publicOnly = TRUE) {
-		$data = array();
+		$data = [];
 		$modelClassName = get_class($this);
 		$classReflector = new \ReflectionClass($modelClassName);
 		$properties = $publicOnly ? $classReflector->getProperties(\ReflectionProperty::IS_PUBLIC) : $classReflector->getProperties();
@@ -192,13 +192,13 @@ class Model implements Interfaces\IModel {
 	 * as typed properties by PHP doc comments, as properties
 	 * with the same names as `$data` array keys. Case sesitively by default.
 	 * Do not set any `$data` items, which are not declared in `$this` context.
-	 * @param array   $data                     Collection with data to set up
+	 * @param array   $data					 Collection with data to set up
 	 * @param boolean $keysInsensitive			If `TRUE`, set up properties from `$data` with case insensivity.
 	 * @param boolean $includeInheritProperties If `TRUE`, include only fields from current model class and from parent classes.
-	 * @param boolean $publicOnly               If `TRUE`, include only public model fields.
+	 * @param boolean $publicOnly			   If `TRUE`, include only public model fields.
 	 * @return \MvcCore\Model|\MvcCore\Interfaces\IModel
 	 */
-	public function & SetUp ($data = array(), $keysInsensitive = FALSE, $includeInheritProperties = TRUE, $publicOnly = TRUE) {
+	public function & SetUp ($data = [], $keysInsensitive = FALSE, $includeInheritProperties = TRUE, $publicOnly = TRUE) {
 		$modelClassName = get_class($this);
 		$classReflector = new \ReflectionClass($modelClassName);
 		$properties = $publicOnly
@@ -250,12 +250,12 @@ class Model implements Interfaces\IModel {
 
 	/**
 	 * Returns (or creates if necessary) model resource instance.
-	 * @param array  $args              Values array with variables to pass into resource `__construct()` method.
+	 * @param array  $args			  Values array with variables to pass into resource `__construct()` method.
 	 * @param string $modelClassPath
 	 * @param string $resourceClassPath
 	 * @return \MvcCore\Model|\MvcCore\Interfaces\IModel
 	 */
-	public static function GetResource ($args = array(), $modelClassName = '', $resourceClassPath = '\Resource') {
+	public static function GetResource ($args = [], $modelClassName = '', $resourceClassPath = '\Resource') {
 		$result = NULL;
 		if (!$modelClassName) $modelClassName = get_called_class();
 		// do not create resource instance in resource class (if current class name doesn't end with '_Resource' substring):
@@ -263,7 +263,7 @@ class Model implements Interfaces\IModel {
 			$resourceClassName = $modelClassName . $resourceClassPath;
 			// do not create resource instance if resource class doesn't exist:
 			if (class_exists($resourceClassName)) {
-				$result = call_user_func_array(array($resourceClassName, 'GetInstance'), $args);
+				$result = call_user_func_array([$resourceClassName, 'GetInstance'], $args);
 			}
 		}
 		return $result;
@@ -293,7 +293,7 @@ class Model implements Interfaces\IModel {
 		if ($connectionName === NULL) $connectionName = self::$connectionName;
 		$this->db = static::GetDb($connectionName);
 		$this->config = static::GetConfig($connectionName);
-		$this->resource = static::GetResource(array(), get_class($this));
+		$this->resource = static::GetResource([], get_class($this));
 	}
 
 	/**
@@ -392,8 +392,8 @@ class Model implements Interfaces\IModel {
 	 * @param \stdClass[]|array[] $configs Configuration array with `\stdClass` objects or arrays with configuration data.
 	 * @return bool
 	 */
-	public static function SetConfigs (array $configs = array(), $defaultConnectionName = NULL) {
-		static::$configs = array();
+	public static function SetConfigs (array $configs = [], $defaultConnectionName = NULL) {
+		static::$configs = [];
 		foreach ($configs as $key => $value) static::$configs[$key] = (object) $value;
 		static::$configs = & $configs;
 		if ($defaultConnectionName !== NULL) self::$defaultConnectionName = $defaultConnectionName;
@@ -441,7 +441,7 @@ class Model implements Interfaces\IModel {
 	 * @param string|int|NULL $connectionName
 	 * @return string|int
 	 */
-	public static function SetConfig (array $config = array(), $connectionName = NULL) {
+	public static function SetConfig (array $config = [], $connectionName = NULL) {
 		if (static::$configs === NULL) static::loadConfigs(FALSE);
 		if ($connectionName === NULL) {
 			if (isset($config['name'])) {
@@ -480,7 +480,7 @@ class Model implements Interfaces\IModel {
 		);
 		$systemCfgDb = & $systemCfg->db;
 		$cfgType = gettype($systemCfgDb);
-		$configs = array();
+		$configs = [];
 		$defaultConnectionName = NULL;
 		// db.default - default connection index for models, where is no connection name/index defined inside class.
 		if ($cfgType == 'array') {
@@ -529,7 +529,7 @@ class Model implements Interfaces\IModel {
 	 * @throws \InvalidArgumentException If `strtolower($rawName)` doesn't begin with `"get"` or with `"set"`.
 	 * @return mixed|\MvcCore\Model|\MvcCore\Interfaces\IModel
 	 */
-	public function __call ($rawName, $arguments = array()) {
+	public function __call ($rawName, $arguments = []) {
 		$nameBegin = strtolower(substr($rawName, 0, 3));
 		$name = substr($rawName, 3);
 		if ($nameBegin == 'get' && isset($this->$name)) {

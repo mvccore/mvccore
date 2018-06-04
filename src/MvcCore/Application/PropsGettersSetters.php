@@ -23,7 +23,7 @@ namespace MvcCore\Application;
 trait PropsGettersSetters
 {
 	/***********************************************************************************
-	 *                       `\MvcCore\Application` - Properties                       *
+	 *					   `\MvcCore\Application` - Properties					   *
 	 ***********************************************************************************/
 
 	/**
@@ -85,7 +85,7 @@ trait PropsGettersSetters
 	 * });`
 	 * @var \array[]
 	 */
-	protected $preRouteHandlers = array();
+	protected $preRouteHandlers = [];
 
 
 	/**
@@ -104,7 +104,7 @@ trait PropsGettersSetters
 	 * });`
 	 * @var \array[]
 	 */
-	protected $postRouteHandlers = array();
+	protected $postRouteHandlers = [];
 
 	/**
 	 * Pre dispatch custom calls storrage.
@@ -122,7 +122,7 @@ trait PropsGettersSetters
 	 * });`
 	 * @var \array[]
 	 */
-	protected $preDispatchHandlers = array();
+	protected $preDispatchHandlers = [];
 
 	/**
 	 * Post dispatch custom calls storrage.
@@ -140,7 +140,7 @@ trait PropsGettersSetters
 	 * });`
 	 * @var \array[]
 	 */
-	protected $postDispatchHandlers = array();
+	protected $postDispatchHandlers = [];
 
 
 	/**
@@ -260,7 +260,7 @@ trait PropsGettersSetters
 
 
 	/***********************************************************************************
-	 *                        `\MvcCore\Application` - Getters                         *
+	 *						`\MvcCore\Application` - Getters						 *
 	 ***********************************************************************************/
 
 	/**
@@ -463,12 +463,12 @@ trait PropsGettersSetters
 	 * @return string[]
 	 */
 	public function GetDefaultControllerAndActionNames () {
-		return array($this->defaultControllerName, $this->defaultControllerDefaultActionName);
+		return [$this->defaultControllerName, $this->defaultControllerDefaultActionName];
 	}
 
 
 	/***********************************************************************************
-	 *                        `\MvcCore\Application` - Setters                         *
+	 *						`\MvcCore\Application` - Setters						 *
 	 ***********************************************************************************/
 
 	/**

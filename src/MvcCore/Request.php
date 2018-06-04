@@ -274,31 +274,31 @@ class Request implements Interfaces\IRequest
 	 * Content of referenced `$_SERVER` global variable.
 	 * @var array
 	 */
-	protected $globalServer	= array();
+	protected $globalServer	= [];
 
 	/**
 	 * Content of referenced `$_GET` global variable.
 	 * @var array
 	 */
-	protected $globalGet		= array();
+	protected $globalGet		= [];
 
 	/**
 	 * Content of referenced `$_POST` global variable.
 	 * @var array
 	 */
-	protected $globalPost		= array();
+	protected $globalPost		= [];
 
 	/**
 	 * Content of referenced `$_COOKIE` global variable.
 	 * @var array
 	 */
-	protected $globalCookies	= array();
+	protected $globalCookies	= [];
 
 	/**
 	 * Content of referenced `$_FILES` global variable.
 	 * @var array
 	 */
-	protected $globalFiles		= array();
+	protected $globalFiles		= [];
 
 	/**
 	 * Static factory to get everytime new instance of http request object.
@@ -315,11 +315,11 @@ class Request implements Interfaces\IRequest
 	 * @return \MvcCore\Request
 	 */
 	public static function CreateInstance (
-		array & $server = array(),
-		array & $get = array(),
-		array & $post = array(),
-		array & $cookie = array(),
-		array & $files = array()
+		array & $server = [],
+		array & $get = [],
+		array & $post = [],
+		array & $cookie = [],
+		array & $files = []
 	) {
 		$requestClass = \MvcCore\Application::GetInstance()->GetRequestClass();
 		return new $requestClass($server, $get, $post, $cookie, $files);
@@ -341,11 +341,11 @@ class Request implements Interfaces\IRequest
 	 * @return \MvcCore\Request
 	 */
 	public function __construct (
-		array & $server = array(),
-		array & $get = array(),
-		array & $post = array(),
-		array & $cookie = array(),
-		array & $files = array()
+		array & $server = [],
+		array & $get = [],
+		array & $post = [],
+		array & $cookie = [],
+		array & $files = []
 	) {
 		$this->globalServer = & $server;
 		$this->globalGet = & $get;
@@ -374,7 +374,7 @@ class Request implements Interfaces\IRequest
 	 * @param array $headers
 	 * @return \MvcCore\Request
 	 */
-	public function & SetHeaders (array & $headers = array()) {
+	public function & SetHeaders (array & $headers = []) {
 		$this->headers = & $headers;
 		return $this;
 	}
@@ -388,10 +388,10 @@ class Request implements Interfaces\IRequest
 	 * @param string|array $pregReplaceAllowedChars If String - list of regular expression characters to only keep, if array - `preg_replace()` pattern and reverse.
 	 * @return array
 	 */
-	public function & GetHeaders ($pregReplaceAllowedChars = array('#[\<\>]#', '')) {
+	public function & GetHeaders ($pregReplaceAllowedChars = ['#[\<\>]#', '']) {
 		if ($this->headers === NULL) $this->initHeaders();
 		if ($pregReplaceAllowedChars === '' || $pregReplaceAllowedChars === '.*') return $this->headers;
-		$cleanedHeaders = array();
+		$cleanedHeaders = [];
 		foreach ($this->headers as $key => & $value) {
 			$cleanedKey = $this->cleanParamValue($key, $pregReplaceAllowedChars);
 			$cleanedHeaders[$cleanedKey] = $this->GetHeader($key, $pregReplaceAllowedChars);
@@ -442,7 +442,7 @@ class Request implements Interfaces\IRequest
 	 * @param array $params
 	 * @return \MvcCore\Request
 	 */
-	public function & SetParams (array & $params = array()) {
+	public function & SetParams (array & $params = []) {
 		$this->params = & $params;
 		return $this;
 	}
@@ -455,13 +455,13 @@ class Request implements Interfaces\IRequest
 	 * @param array $onlyKeys Array with keys to get only. If empty (by default), all possible params are returned.
 	 * @return array
 	 */
-	public function & GetParams ($pregReplaceAllowedChars = array('#[\<\>]#', ''), $onlyKeys = array()) {
+	public function & GetParams ($pregReplaceAllowedChars = ['#[\<\>]#', ''], $onlyKeys = []) {
 		if ($this->params === NULL) $this->initParams();
 		if ($pregReplaceAllowedChars === '' || $pregReplaceAllowedChars === '.*') {
 			$result = $onlyKeys ? array_intersect_key($this->params, array_flip($onlyKeys)) : $this->params;
 			return $result;
 		}
-		$cleanedParams = array();
+		$cleanedParams = [];
 		foreach ($this->params as $key => & $value) {
 			if ($onlyKeys && !in_array($key, $onlyKeys)) continue;
 			$cleanedKey = $this->cleanParamValue($key, $pregReplaceAllowedChars);
@@ -510,7 +510,7 @@ class Request implements Interfaces\IRequest
 	 * @param array $files
 	 * @return \MvcCore\Request
 	 */
-	public function & SetFiles (array & $files = array()) {
+	public function & SetFiles (array & $files = []) {
 		$this->globalFiles = & $files;
 		return $this;
 	}
@@ -530,7 +530,7 @@ class Request implements Interfaces\IRequest
 	 * @param array $data
 	 * @return \MvcCore\Request
 	 */
-	public function & SetFile ($file = '', $data = array()) {
+	public function & SetFile ($file = '', $data = []) {
 		$this->globalFiles[$file] = $data;
 		return $this;
 	}
@@ -542,7 +542,7 @@ class Request implements Interfaces\IRequest
 	 */
 	public function GetFile ($file = '') {
 		if (isset($this->globalFiles[$file])) return $this->globalFiles[$file];
-		return array();
+		return [];
 	}
 
 
@@ -551,7 +551,7 @@ class Request implements Interfaces\IRequest
 	 * @param array $cookies
 	 * @return \MvcCore\Request
 	 */
-	public function & SetCookies (array & $cookies = array()) {
+	public function & SetCookies (array & $cookies = []) {
 		$this->globalCookies = & $cookies;
 		return $this;
 	}
@@ -775,7 +775,7 @@ class Request implements Interfaces\IRequest
 	 * @throws \InvalidArgumentException
 	 * @return mixed|\MvcCore\Request
 	 */
-	public function __call ($name, $arguments = array()) {
+	public function __call ($name, $arguments = []) {
 		$nameBegin = strtolower(substr($name, 0, 3));
 		$prop = lcfirst(substr($name, 3));
 		if ($nameBegin == 'get' && isset($this->$prop)) {
@@ -827,7 +827,7 @@ class Request implements Interfaces\IRequest
 	public function GetAppRoot () {
 		if ($this->appRoot === NULL) {
 			// ucfirst - cause IIS has lower case drive name here - different from __DIR__ value
-			$indexFilePath = ucfirst(str_replace(array('\\', '//'), '/', $this->globalServer['SCRIPT_FILENAME']));
+			$indexFilePath = ucfirst(str_replace(['\\', '//'], '/', $this->globalServer['SCRIPT_FILENAME']));
 			if (strpos(__FILE__, 'phar://') === 0) {
 				$this->appRoot = 'phar://' . $indexFilePath;
 			} else {
@@ -960,10 +960,10 @@ class Request implements Interfaces\IRequest
 	 * Get uri query string (without question mark character by default).
 	 * Example: `"param-1=value-1&param-2=value-2&param-3[]=value-3-a&param-3[]=value-3-b"`
 	 * @param bool $withQuestionMark If `FALSE` (by default), query string is returned always without question
-	 *                               mark character at the beginning.
-	 *                               If `TRUE`, and query string contains any character(s), query string is returned
-	 *                               with question mark character at the beginning. But if query string contains no
-	 *                               character(s), query string is returned as EMPTY STRING WITHOUT question mark character.
+	 *							   mark character at the beginning.
+	 *							   If `TRUE`, and query string contains any character(s), query string is returned
+	 *							   with question mark character at the beginning. But if query string contains no
+	 *							   character(s), query string is returned as EMPTY STRING WITHOUT question mark character.
 	 * @return string
 	 */
 	public function GetQuery ($withQuestionMark = FALSE) {
@@ -1031,10 +1031,10 @@ class Request implements Interfaces\IRequest
 	 * Get uri fragment parsed by `parse_url()` (without hash character by default).
 	 * Example: `"any-sublink-path"`
 	 * @param bool $withHash If `FALSE` (by default), fragment is returned always without hash character
-	 *                       at the beginning.
-	 *                       If `TRUE`, and fragment contains any character(s), fragment is returned
-	 *                       with hash character at the beginning. But if fragment contains no
-	 *                       character(s), fragment is returned as EMPTY STRING WITHOUT hash character.
+	 *					   at the beginning.
+	 *					   If `TRUE`, and fragment contains any character(s), fragment is returned
+	 *					   with hash character at the beginning. But if fragment contains no
+	 *					   character(s), fragment is returned as EMPTY STRING WITHOUT hash character.
 	 * @return string
 	 */
 	public function GetFragment ($withHash = FALSE) {
@@ -1114,7 +1114,7 @@ class Request implements Interfaces\IRequest
 	 * @return array
 	 */
 	public static function ParseHttpAcceptLang ($languagesList) {
-		$languages = array();
+		$languages = [];
 		$languageRanges = explode(',', trim($languagesList));
 		foreach ($languageRanges as $languageRange) {
 			$regExpResult = preg_match(
@@ -1126,19 +1126,19 @@ class Request implements Interfaces\IRequest
 				$priority = isset($match[2])
 					? (string) floatval($match[2])
 					: '1.0';
-				if (!isset($languages[$priority])) $languages[$priority] = array();
+				if (!isset($languages[$priority])) $languages[$priority] = [];
 				$langOrLangWithLocale = str_replace('-', '_', $match[1]);
 				$delimiterPos = strpos($langOrLangWithLocale, '_');
 				if ($delimiterPos !== FALSE) {
-					$languages[$priority][] = array(
+					$languages[$priority][] = [
 						strtolower(substr($langOrLangWithLocale, 0, $delimiterPos)),
 						strtoupper(substr($langOrLangWithLocale, $delimiterPos + 1))
-					);
+					];
 				} else {
-					$languages[$priority][] = array(
+					$languages[$priority][] = [
 						strtolower($langOrLangWithLocale),
 						NULL
-					);
+					];
 				}
 			}
 		}
@@ -1175,7 +1175,7 @@ class Request implements Interfaces\IRequest
 		if (function_exists('getallheaders')) {
 			$headers = getallheaders();
 		} else {
-			$headers = array();
+			$headers = [];
 			foreach ($this->globalServer as $name => $value) {
 				if (substr($name, 0, 5) == 'HTTP_') {
 					$headers[str_replace(' ', '-', ucwords(strtolower(str_replace('_', ' ', substr($name, 5)))))] = $value;
@@ -1196,7 +1196,7 @@ class Request implements Interfaces\IRequest
 	protected function initParams () {
 		$params = array_merge($this->globalGet);
 		if ($this->GetMethod() == self::METHOD_POST) {
-			$postValues = array();
+			$postValues = [];
 			if (count($this->globalPost) > 0) {
 				$postValues = $this->globalPost;
 			} else {
@@ -1212,7 +1212,7 @@ class Request implements Interfaces\IRequest
 	 * @return array
 	 */
 	protected function initParamsCompletePostData () {
-		$result = array();
+		$result = [];
 		$rawPhpInput = file_get_contents('php://input');
 		$decodedJsonResult = \MvcCore\Tool::DecodeJson($rawPhpInput);
 		if ($decodedJsonResult->success) {
@@ -1239,7 +1239,7 @@ class Request implements Interfaces\IRequest
 	 * @return string|string[]|mixed
 	 */
 	protected function getParamFromCollection (
-		& $paramsCollection = array(),
+		& $paramsCollection = [],
 		$name = "",
 		$pregReplaceAllowedChars = "a-zA-Z0-9_;, /\-\@\:",
 		$ifNullValue = NULL,
@@ -1247,7 +1247,7 @@ class Request implements Interfaces\IRequest
 	) {
 		if (!isset($paramsCollection[$name])) return NULL;
 		if (gettype($paramsCollection[$name]) == 'array') {
-			$result = array();
+			$result = [];
 			$paramsCollection = $paramsCollection[$name];
 			foreach ($paramsCollection as $key => & $value) {
 				$cleanedKey = $this->cleanParamValue($key, $pregReplaceAllowedChars);
@@ -1300,7 +1300,7 @@ class Request implements Interfaces\IRequest
 				return $result;
 			} else if (gettype($rawValue) == 'array') {
 				// if there is something in target collection and it's an array
-				$result = array();
+				$result = [];
 				foreach ((array) $rawValue as $key => & $value) {
 					$cleanedKey = $this->cleanParamValue($key, $pregReplaceAllowedChars);
 					$result[$cleanedKey] = $this->getParamItem(
@@ -1372,7 +1372,7 @@ class Request implements Interfaces\IRequest
 			$langAndLocaleStr = \locale_accept_from_http($rawUaLanguages);
 			$langAndLocaleArr = $langAndLocaleStr !== NULL
 				? explode('_', $langAndLocaleStr)
-				: array(NULL, NULL);
+				: [NULL, NULL];
 		} else {
 			$languagesAndLocales = static::ParseHttpAcceptLang($rawUaLanguages);
 			$langAndLocaleArr = current($languagesAndLocales);

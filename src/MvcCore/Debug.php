@@ -45,7 +45,7 @@ namespace MvcCore {
 		 * Initialize global development shorthands.
 		 * @var callable
 		 */
-		public static $InitGlobalShortHands = array();
+		public static $InitGlobalShortHands = [];
 
 		/**
 		 * Semaphore to execute `\MvcCore\Debug::Init();` method only once.
@@ -58,7 +58,7 @@ namespace MvcCore {
 		 * Debuging and loging handlers, this should be customized in extended class.
 		 * @var array
 		 */
-		protected static $handlers = array(
+		protected static $handlers = [
 			'timer'				=> 'timerHandler',
 			'dump'				=> 'dumpHandler',
 			'barDump'			=> 'dumpHandler',
@@ -66,19 +66,19 @@ namespace MvcCore {
 			'fireLog'			=> 'dumpHandler',
 			'exceptionHandler'	=> 'exceptionHandler',
 			'shutdownHandler'	=> 'ShutdownHandler',
-		);
+		];
 
 		/**
 		 * Store for printed dumps by output buffering to send it at response end.
 		 * @var array
 		 */
-		protected static $dumps = array();
+		protected static $dumps = [];
 
 		/**
 		 * Store timers start points.
 		 * @var array
 		 */
-		protected static $timers = array();
+		protected static $timers = [];
 
 		/**
 		 * `TRUE` for cofigured debug class as `\MvcCore\Debug`,
@@ -109,7 +109,7 @@ namespace MvcCore {
 		/**
 		 * Initialize debugging and logging, once only.
 		 * @param bool $forceDevelopmentMode If defined as `TRUE` or `FALSE`,
-		 *                                   debug mode will be set not by config but by this value.
+		 *								   debug mode will be set not by config but by this value.
 		 * @return void
 		 */
 		public static function Init ($forceDevelopmentMode = NULL) {
@@ -137,13 +137,13 @@ namespace MvcCore {
 		/**
 		 * Starts/stops stopwatch.
 		 * @param  string $name Time pointer name.
-		 * @return float        Elapsed seconds.
+		 * @return float		Elapsed seconds.
 		 */
 		public static function Timer ($name = NULL) {
 			return static::BarDump(
 				call_user_func(static::$handlers['timer'], $name),
 				$name,
-				array('backtraceIndex' => 3)
+				['backtraceIndex' => 3]
 			);
 		}
 
@@ -157,7 +157,7 @@ namespace MvcCore {
 		 */
 		public static function Dump ($value, $return = FALSE, $exit = FALSE) {
 			if (static::$originalDebugClass) {
-				$options = array('store' => FALSE, 'backtraceIndex' => 1);
+				$options = ['store' => FALSE, 'backtraceIndex' => 1];
 				if ($exit) $options['lastDump'] = TRUE;
 				$dumpedValue = static::dumpHandler($value, NULL, $options);
 			} else {
@@ -181,7 +181,7 @@ namespace MvcCore {
 		 * @param  array	$options	Dumper options.
 		 * @return mixed				Variable itself.
 		 */
-		public static function BarDump ($value, $title = NULL, $options = array()) {
+		public static function BarDump ($value, $title = NULL, $options = []) {
 			if (static::$originalDebugClass) {
 				if (!isset($options['backtraceIndex'])) $options['backtraceIndex'] = 1;
 				$options['store'] = static::$development;
@@ -205,7 +205,7 @@ namespace MvcCore {
 		public static function Log ($value, $priority = \MvcCore\Interfaces\IDebug::INFO) {
 			if (static::$originalDebugClass) {
 				$dumpedValue = static::dumpHandler(
-					$value, NULL, array('store' => FALSE, 'backtraceIndex' => 1)
+					$value, NULL, ['store' => FALSE, 'backtraceIndex' => 1]
 				);
 				return static::storeLogRecord($dumpedValue, $priority);
 			} else {
@@ -223,7 +223,7 @@ namespace MvcCore {
 			// TODO: implement simple firelog
 			$args = func_get_args();
 			if (static::$originalDebugClass) {
-				$args = array($value, NULL, array('priority' => $priority));
+				$args = [$value, NULL, ['priority' => $priority]];
 			}
 			return call_user_func_array(static::$handlers['fireLog'], $args);
 		}
@@ -238,7 +238,7 @@ namespace MvcCore {
 		public static function Exception ($exception, $exit = TRUE) {
 			if (static::$originalDebugClass) {
 				$dumpedValue = static::dumpHandler(
-					$exception, NULL, array('store' => !$exit, 'backtraceIndex' => 1)
+					$exception, NULL, ['store' => !$exit, 'backtraceIndex' => 1]
 				);
 				if (static::$development) {
 					echo $dumpedValue;
@@ -292,8 +292,8 @@ namespace MvcCore {
 			}
 			$template = file_get_contents(__DIR__.'/debug.html');
 			echo str_replace(
-				array('%mvccoreDumps%', '%mvccoreDumpsCount%', '%mvccoreDumpsClose%'),
-				array($dumps, count(self::$dumps), $lastDump ? 'q(!0);' : 'q();'),
+				['%mvccoreDumps%', '%mvccoreDumpsCount%', '%mvccoreDumpsClose%'],
+				[$dumps, count(self::$dumps), $lastDump ? 'q(!0);' : 'q();'],
 				$template
 			);
 		}
@@ -319,7 +319,7 @@ namespace MvcCore {
 		 * @param  array	$options	Dumper options.
 		 * @return string
 		 */
-		protected static function dumpHandler ($value, $title = NULL, $options = array()) {
+		protected static function dumpHandler ($value, $title = NULL, $options = []) {
 			ob_start();
 			var_dump($value);
 			// format xdebug first small element with file:
@@ -330,7 +330,7 @@ namespace MvcCore {
 			$originalPlace = (object) $backtrace[$backtraceIndex];
 			$options['file'] = $originalPlace->file;
 			$options['line'] = $originalPlace->line;
-			if ($options['store']) self::$dumps[] = array($content, $title, $options);
+			if ($options['store']) self::$dumps[] = [$content, $title, $options];
 			return $content;
 		}
 
@@ -368,7 +368,7 @@ namespace MvcCore {
 		protected static function initHandlers () {
 			$className = get_called_class();
 			foreach (static::$handlers as $key => $value) {
-				static::$handlers[$key] = array($className, $value);
+				static::$handlers[$key] = [$className, $value];
 			}
 			register_shutdown_function(static::$handlers['shutdownHandler']);
 		}
@@ -424,7 +424,7 @@ namespace {
 		 * @param  array	$options	Dumper options.
 		 * @return mixed				Variable itself.
 		 */
-		function x ($value, $title = NULL, $options = array()) {
+		function x ($value, $title = NULL, $options = []) {
 			$options['backtraceIndex'] = 2;
 			return \MvcCore\Debug::BarDump($value, $title, $options);
 		}
@@ -436,7 +436,7 @@ namespace {
 		 */
 		function xx () {
 			$args = func_get_args();
-			foreach ($args as $arg) \MvcCore\Debug::BarDump($arg, NULL, array('backtraceIndex' => 2));
+			foreach ($args as $arg) \MvcCore\Debug::BarDump($arg, NULL, ['backtraceIndex' => 2]);
 		}
 		if ($development) {
 			/**
