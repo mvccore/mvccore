@@ -876,11 +876,11 @@ class Route implements Interfaces\IRoute
 	 *	Output:
 	 *		`"/products-list/cool-product-name/blue?variant[]=L&amp;variant[]=XL"`
 	 * @param array $params
-	 * @param array $cleanedGetRequestParams Request query params with escaped chars: `<` and `>`.;
+	 * @param array $requestedUrlParams Requested url route prams nad query string params without escaped HTML special chars: `< > & " ' &`.
 	 * @param string $queryStringParamsSepatator Query params separator, `&` by default. Always automaticly completed by router instance.
 	 * @return string
 	 */
-	public function Url (& $params = [], & $cleanedGetRequestParams = [], $queryStringParamsSepatator = '&') {
+	public function Url (& $params = [], & $requestedUrlParams = [], $queryStringParamsSepatator = '&') {
 		if ($this->reverseParams === NULL) 
 			$this->reverse = $this->initReverse();
 		$result = $this->reverse;
@@ -890,18 +890,21 @@ class Route implements Interfaces\IRoute
 			$paramValue = (
 				isset($params[$paramName])
 					? $params[$paramName]
-					: (isset($cleanedGetRequestParams[$paramName])
-						? $cleanedGetRequestParams[$paramName]
+					: (isset($requestedUrlParams[$paramName])
+						? $requestedUrlParams[$paramName]
 						: (isset($this->defaults[$paramName])
 							? $this->defaults[$paramName]
 							: ''))
 			);
+			// convert possible XSS chars to entities (`< > & " ' &`):
+			$paramValue = htmlspecialchars($paramValue, ENT_QUOTES);
 			$result = str_replace($paramKeyReplacement, $paramValue, $result);
 			unset($givenParamsKeys[$paramName]);
 		}
 		if ($givenParamsKeys) {
+			// `http_build_query()` automaticly converts all XSS chars to entities (`< > & " ' &`):
 			$result .= (mb_strpos($result, '?') !== FALSE ? $queryStringParamsSepatator : '?')
-				. http_build_query($givenParamsKeys, NULL, $queryStringParamsSepatator);
+				. http_build_query($givenParamsKeys, '', $queryStringParamsSepatator);
 		}
 		return $result;
 	}

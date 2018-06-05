@@ -464,12 +464,11 @@ interface IRouter
 	public function UrlByRoute (\MvcCore\Interfaces\IRoute & $route, & $params = []);
 
 	/**
-	 * Go throught all query string params and prepare, escape all chars (`<` and `>`)
-	 * to prevent any XSS attacks, when there is used request params to automaticly complete
-	 * remaining param values in url address building process.
+	 * Get all request params - params parsed by route and query string params.
+	 * Be carefull, it could contain XSS chars. Use always `htmlspecialchars()`.
 	 * @return array
 	 */
-	public function & GetCleanedRequestParams ();
+	public function & GetRequestedUrlParams ();
 
 	/**
 	 * Try to found any existing route by `$routeName` argument

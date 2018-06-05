@@ -502,11 +502,11 @@ interface IRoute
 	 *	Output:
 	 *		`"/products-list/cool-product-name/blue?variant[]=L&amp;variant[]=XL"`
 	 * @param array $params
-	 * @param array $cleanedGetRequestParams Request query params with escaped chars: `<` and `>`.;
+	 * @param array $requestedUrlParams Requested url route prams nad query string params without escaped HTML special chars: `< > & " ' &`.
 	 * @param string $queryStringParamsSepatator Query params separator, `&` by default. Always automaticly completed by router instance.
 	 * @return string
 	 */
-	public function Url (& $params = [], & $cleanedGetRequestParams = [], $queryParamsSepatator = '&');
+	public function Url (& $params = [], & $requestedUrlParams = [], $queryParamsSepatator = '&');
 
 	/**
 	 * Render all instance properties values into string.

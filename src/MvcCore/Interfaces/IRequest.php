@@ -127,7 +127,7 @@ interface IRequest
 	 * @param string|array $pregReplaceAllowedChars If String - list of regular expression characters to only keep, if array - `preg_replace()` pattern and reverse.
 	 * @return array
 	 */
-	public function & GetHeaders ();
+	public function & GetHeaders ($pregReplaceAllowedChars = ['#[\<\>\'"]#', '']);
 
 	/**
 	 * Set directly raw http header value without any conversion.
@@ -137,7 +137,7 @@ interface IRequest
 	 * @param string|string[] $value
 	 * @return \MvcCore\Interfaces\IRequest
 	 */
-	public function & SetHeader ($name = "", $value = "");
+	public function & SetHeader ($name = '', $value = '');
 
 	/**
 	 * Get http header value filtered by "rule to keep defined characters only",
@@ -151,11 +151,18 @@ interface IRequest
 	 * @return string|string[]|mixed
 	 */
 	public function GetHeader (
-		$name = "",
+		$name = '',
 		$pregReplaceAllowedChars = "a-zA-Z0-9_;, /\-\.\@\=\+\?\!",
 		$ifNullValue = NULL,
 		$targetType = NULL
 	);
+
+	/**
+	 * Return if reqest has any http header by given name.
+	 * @param string $name Http header string name.
+	 * @return bool
+	 */
+	public function HasHeader ($name = '');
 
 
 	/**
@@ -173,7 +180,7 @@ interface IRequest
 	 * @param array $onlyKeys Array with keys to get only. If empty (by default), all possible params are returned.
 	 * @return array
 	 */
-	public function & GetParams ($pregReplaceAllowedChars = ['#[\<\>]#', ''], $onlyKeys = []);
+	public function & GetParams ($pregReplaceAllowedChars = ['#[\<\>\'"]#', ''], $onlyKeys = []);
 
 	/**
 	 * Set directly raw parameter value without any conversion.
@@ -181,7 +188,7 @@ interface IRequest
 	 * @param string|string[] $value
 	 * @return \MvcCore\Interfaces\IRequest
 	 */
-	public function & SetParam ($name = "", $value = "");
+	public function & SetParam ($name = '', $value = '');
 
 	/**
 	 * Get param value from `$_GET`, `$_POST` or `php://input`, filtered by
@@ -194,11 +201,18 @@ interface IRequest
 	 * @return string|string[]|mixed
 	 */
 	public function GetParam (
-		$name = "",
+		$name = '',
 		$pregReplaceAllowedChars = "a-zA-Z0-9_;, /\-\@\:",
 		$ifNullValue = NULL,
 		$targetType = NULL
 	);
+
+	/**
+	 * Get if any param value exists in `$_GET`, `$_POST` or `php://input`
+	 * @param string $name Parametter string name.
+	 * @return bool
+	 */
+	public function HasParam ($name = '');
 
 
 	/**
@@ -217,7 +231,7 @@ interface IRequest
 
 	/**
 	 * Set file item into global `$_FILES` without any conversion at once.
-	 * @param string $file
+	 * @param string $file Uploaded file string name.
 	 * @param array $data
 	 * @return \MvcCore\Interfaces\IRequest
 	 */
@@ -226,9 +240,17 @@ interface IRequest
 	/**
 	 * Return item by file name from referenced global `$_FILES`
 	 * or reference to any other testing array item representing it.
+	 * @param string $file Uploaded file string name.
 	 * @return array
 	 */
 	public function GetFile ($file = '');
+
+	/**
+	 * Return if any item by file name exists or not in referenced global `$_FILES`.
+	 * @param string $file Uploaded file string name.
+	 * @return bool
+	 */
+	public function HasFile ($file = '');
 
 
 	/**
@@ -251,7 +273,7 @@ interface IRequest
 	 * @param string|string[] $value
 	 * @return \MvcCore\Interfaces\IRequest
 	 */
-	public function & SetCookie ($name = "", $value = "");
+	public function & SetCookie ($name = '', $value = '');
 
 	/**
 	 * Get request cookie value from referenced global `$_COOKIE` variable,
@@ -264,11 +286,18 @@ interface IRequest
 	 * @return string|string[]|mixed
 	 */
 	public function GetCookie (
-		$name = "",
+		$name = '',
 		$pregReplaceAllowedChars = "a-zA-Z0-9_;, /\-\.\@\=\+\?\!",
 		$ifNullValue = NULL,
 		$targetType = NULL
 	);
+
+	/**
+	 * Return if any item by cookie name exists or not in referenced global `$_COOKIE`.
+	 * @param string $name Cookie string name.
+	 * @return bool
+	 */
+	public function HasCookie ($name = '');
 
 
 	/**
@@ -350,21 +379,21 @@ interface IRequest
 	public function GetLocale ();
 
 	/**
-	 * Set media site key - `"full" | "tablet" | "mobile"`.
-	 * Use this media site key storage by your own decision.
+	 * Set media site version - `"full" | "tablet" | "mobile"`.
+	 * Use this media site version storage by your own decision.
 	 * Example: `"full" | "tablet" | "mobile"`
 	 * @var string|NULL
 	 */
-	public function & SetMediaSiteKey ($mediaSiteKey);
+	public function & SetMediaSiteVersion ($mediaSiteVersion);
 
 	/**
-	 * Get media site key - `"full" | "tablet" | "mobile"`.
+	 * Get media site version - `"full" | "tablet" | "mobile"`.
 	 * To use this variable - install `\MvcCore\Router` extension `\MvcCoreExt\Router\Media`
 	 * Or use this variable by your own decision.
 	 * Example: `"full" | "tablet" | "mobile"`
 	 * @var string|NULL
 	 */
-	public function GetMediaSiteKey ();
+	public function GetMediaSiteVersion ();
 
 	/**
 	 * Sets any custom property `"propertyName"` by `\MvcCore\Request::SetPropertyName("value");`,
@@ -444,9 +473,10 @@ interface IRequest
 	 * Get referer url if any, safely readed by:
 	 * `filter_var($_SERVER['HTTP_REFERER'], FILTER_SANITIZE_URL);`
 	 * Example: `"http://foreing.domain.com/path/where/is/link/to/?my=app"`
+	 * @param bool $rawInput Get raw input if `TRUE`. `FALSE` by default to get value throught `htmlspecialchars($result);` without amersand `&` escaping.
 	 * @return string
 	 */
-	public function GetReferer ();
+	public function GetReferer ($rawInput = FALSE);
 
 	/**
 	 * Get timestamp of the start of the request, with microsecond precision.
@@ -478,9 +508,10 @@ interface IRequest
 	/**
 	 * Get requested path in from application root (if `mod_rewrite` enabled), never with query string.
 	 * Example: `"/products/page/2"`
+	 * @param bool $rawInput Get raw input if `TRUE`. `FALSE` by default to get value throught `htmlspecialchars($result);` without amersand `&` escaping.
 	 * @return string
 	 */
-	public function GetPath ();
+	public function GetPath ($rawInput = FALSE);
 
 	/**
 	 * Get uri query string (without question mark character by default).
@@ -490,16 +521,18 @@ interface IRequest
 	 *							   If `TRUE`, and query string contains any character(s), query string is returned
 	 *							   with question mark character at the beginning. But if query string contains no
 	 *							   character(s), query string is returned as EMPTY STRING WITHOUT question mark character.
+	 * @param bool $rawInput Get raw input if `TRUE`. `FALSE` by default to get value throught `htmlspecialchars($result);` without amersand `&` escaping.
 	 * @return string
 	 */
-	public function GetQuery ($withQuestionMark = FALSE);
+	public function GetQuery ($withQuestionMark = FALSE, $rawInput = FALSE);
 
 	/**
 	 * Get request path after domain with possible query string
 	 * Example: `"/requested/path/after/app/root?with=possible&query=string"`
+	 * @param bool $rawInput Get raw input if `TRUE`. `FALSE` by default to get value throught `htmlspecialchars($result);` without amersand `&` escaping.
 	 * @return string
 	 */
-	public function GetRequestPath ();
+	public function GetRequestPath ($rawInput = FALSE);
 
 	/**
 	 * Get url to requested domain and possible port.
@@ -518,16 +551,18 @@ interface IRequest
 	/**
 	 * Get request url including scheme, domain, port, path, without any query string
 	 * Example: "`http://localhost:88/my/development/direcotry/www/requested/path/after/domain"`
+	 * @param bool $rawInput Get raw input if `TRUE`. `FALSE` by default to get value throught `htmlspecialchars($result);` without amersand `&` escaping.
 	 * @return string
 	 */
-	public function GetRequestUrl ();
+	public function GetRequestUrl ($rawInput = FALSE);
 
 	/**
 	 * Get request url including scheme, domain, port, path and with query string
 	 * Example: `"http://localhost:88/my/development/direcotry/www/requested/path/after/domain?with=possible&query=string"`
+	 * @param bool $rawInput Get raw input if `TRUE`. `FALSE` by default to get value throught `htmlspecialchars($result);` without amersand `&` escaping.
 	 * @return string
 	 */
-	public function GetFullUrl ();
+	public function GetFullUrl ($rawInput = FALSE);
 
 	/**
 	 * Get uri fragment parsed by `parse_url()` (without hash character by default).
@@ -537,9 +572,10 @@ interface IRequest
 	 *					   If `TRUE`, and fragment contains any character(s), fragment is returned
 	 *					   with hash character at the beginning. But if fragment contains no
 	 *					   character(s), fragment is returned as EMPTY STRING WITHOUT hash character.
+	 * @param bool $rawInput Get raw input if `TRUE`. `FALSE` by default to get value throught `htmlspecialchars($result);` without amersand `&` escaping.
 	 * @return string
 	 */
-	public function GetFragment ($withHash = FALSE);
+	public function GetFragment ($withHash = FALSE, $rawInput = FALSE);
 
 	/**
 	 * Get server IP from `$_SERVER` global variable.

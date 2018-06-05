@@ -117,11 +117,16 @@ trait Dispatching
 		$result = TRUE;
 		foreach ($handlers as $handlersRecord) {
 			list ($handler, $isClosure) = $handlersRecord;
+			$subResult = NULL;
 			try {
 				if ($isClosure) {
-					$handler($this->request, $this->response);
+					$subResult = $handler($this->request, $this->response);
 				} else {
-					call_user_func($handler, $this->request, $this->response);
+					$subResult = call_user_func($handler, $this->request, $this->response);
+				}
+				if ($subResult === FALSE) {
+					$result = FALSE;
+					break;
 				}
 			} catch (\Exception $e) {
 				$this->DispatchException($e);
@@ -261,12 +266,15 @@ trait Dispatching
 	 * @return \MvcCore\Application
 	 */
 	public function Terminate () {
+		if ($this->terminated) return $this;
+		/** @var $this->response \MvcCore\Response */
 		$this->processCustomHandlers($this->postDispatchHandlers);
 		$sessionClass = $this->sessionClass;
 		$sessionClass::SendCookie();
 		$sessionClass::Close();
 		$this->response->Send(); // headers (if still possible) and echo
 		// exit; // Why to force exit? What if we want to do something more?
+		$this->terminated = TRUE;
 		return $this;
 	}
 
@@ -382,7 +390,7 @@ trait Dispatching
 			$viewClass = $this->viewClass;
 			$this->router->SetOrCreateDefaultRouteAsCurrent(
 				\MvcCore\Interfaces\IRouter::DEFAULT_ROUTE_NAME_NOT_FOUND,
-				$this->defaultControllerName, $this->defaultControllerErrorActionName
+				$this->defaultControllerName, $this->defaultControllerNotFoundActionName
 			);
 			$newParams = array_merge($this->request->GetParams('.*'), [
 				'code'		=> 404,

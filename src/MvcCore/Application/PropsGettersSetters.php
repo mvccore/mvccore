@@ -258,6 +258,14 @@ trait PropsGettersSetters
 	 */
 	protected $defaultControllerNotFoundActionName = 'NotFound';
 
+	/**
+	 * Boolean flag if request has been already terminated or not
+	 * to process `\MvcCore\Application::Terminate();` only once.
+	 * Default value is `FALSE`.
+	 * @var bool
+	 */
+	protected $terminated = FALSE;
+
 
 	/***********************************************************************************
 	 *						`\MvcCore\Application` - Getters						 *

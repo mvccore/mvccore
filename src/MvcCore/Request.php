@@ -52,12 +52,12 @@ class Request implements Interfaces\IRequest
 
 	/**
 	 * Media site key - `"full" | "tablet" | "mobile"`.
-	 * To use this variable - install `\MvcCore\Router` extension `\MvcCoreExt\Router\Media`
+	 * To use this variable - install `\MvcCore\Router` extension `\MvcCore\Ext\Routers\Media`
 	 * Or use this variable by your own decision.
 	 * Example: `"full" | "tablet" | "mobile"`
 	 * @var string|NULL
 	 */
-	protected $mediaSiteKey = '';
+	protected $mediaSiteVersion = NULL;
 
 	/**
 	 * Http protocol: `"http:" | "https:"`
@@ -388,7 +388,7 @@ class Request implements Interfaces\IRequest
 	 * @param string|array $pregReplaceAllowedChars If String - list of regular expression characters to only keep, if array - `preg_replace()` pattern and reverse.
 	 * @return array
 	 */
-	public function & GetHeaders ($pregReplaceAllowedChars = ['#[\<\>]#', '']) {
+	public function & GetHeaders ($pregReplaceAllowedChars = ['#[\<\>\'"]#', '']) {
 		if ($this->headers === NULL) $this->initHeaders();
 		if ($pregReplaceAllowedChars === '' || $pregReplaceAllowedChars === '.*') return $this->headers;
 		$cleanedHeaders = [];
@@ -407,7 +407,7 @@ class Request implements Interfaces\IRequest
 	 * @param string|string[] $value
 	 * @return \MvcCore\Request
 	 */
-	public function & SetHeader ($name = "", $value = "") {
+	public function & SetHeader ($name = '', $value = '') {
 		if ($this->headers === NULL) $this->initHeaders();
 		$this->headers[$name] = $value;
 		return $this;
@@ -425,7 +425,7 @@ class Request implements Interfaces\IRequest
 	 * @return string|string[]|mixed
 	 */
 	public function GetHeader (
-		$name = "",
+		$name = '',
 		$pregReplaceAllowedChars = "a-zA-Z0-9_;, /\-\.\@\=\+\?\!",
 		$ifNullValue = NULL,
 		$targetType = NULL
@@ -434,6 +434,16 @@ class Request implements Interfaces\IRequest
 		return $this->getParamFromCollection(
 			$this->headers, $name, $pregReplaceAllowedChars, $ifNullValue, $targetType
 		);
+	}
+
+	/**
+	 * Return if reqest has any http header by given name.
+	 * @param string $name Http header string name.
+	 * @return bool
+	 */
+	public function HasHeader ($name = '') {
+		if ($this->headers === NULL) $this->initHeaders();
+		return isset($this->headers[$name]);
 	}
 
 
@@ -455,7 +465,7 @@ class Request implements Interfaces\IRequest
 	 * @param array $onlyKeys Array with keys to get only. If empty (by default), all possible params are returned.
 	 * @return array
 	 */
-	public function & GetParams ($pregReplaceAllowedChars = ['#[\<\>]#', ''], $onlyKeys = []) {
+	public function & GetParams ($pregReplaceAllowedChars = ['#[\<\>\'"]#', ''], $onlyKeys = []) {
 		if ($this->params === NULL) $this->initParams();
 		if ($pregReplaceAllowedChars === '' || $pregReplaceAllowedChars === '.*') {
 			$result = $onlyKeys ? array_intersect_key($this->params, array_flip($onlyKeys)) : $this->params;
@@ -493,7 +503,7 @@ class Request implements Interfaces\IRequest
 	 * @return string|string[]|mixed
 	 */
 	public function GetParam (
-		$name = "",
+		$name = '',
 		$pregReplaceAllowedChars = "a-zA-Z0-9_;, /\-\@\:",
 		$ifNullValue = NULL,
 		$targetType = NULL
@@ -502,6 +512,16 @@ class Request implements Interfaces\IRequest
 		return $this->getParamFromCollection(
 			$this->params, $name, $pregReplaceAllowedChars, $ifNullValue, $targetType
 		);
+	}
+
+	/**
+	 * Get if any param value exists in `$_GET`, `$_POST` or `php://input`
+	 * @param string $name Parametter string name.
+	 * @return bool
+	 */
+	public function HasParam ($name = '') {
+		if ($this->params === NULL) $this->initParams();
+		return isset($this->params[$name]);
 	}
 
 
@@ -526,7 +546,7 @@ class Request implements Interfaces\IRequest
 
 	/**
 	 * Set file item into global `$_FILES` without any conversion at once.
-	 * @param string $file
+	 * @param string $file Uploaded file string name.
 	 * @param array $data
 	 * @return \MvcCore\Request
 	 */
@@ -538,11 +558,21 @@ class Request implements Interfaces\IRequest
 	/**
 	 * Return item by file name from referenced global `$_FILES`
 	 * or reference to any other testing array item representing it.
+	 * @param string $file Uploaded file string name.
 	 * @return array
 	 */
 	public function GetFile ($file = '') {
 		if (isset($this->globalFiles[$file])) return $this->globalFiles[$file];
 		return [];
+	}
+
+	/**
+	 * Return if any item by file name exists or not in referenced global `$_FILES`.
+	 * @param string $file Uploaded file string name.
+	 * @return bool
+	 */
+	public function HasFile ($file = '') {
+		return isset($this->globalFiles[$file]);
 	}
 
 
@@ -587,7 +617,7 @@ class Request implements Interfaces\IRequest
 	 * @return string|string[]|mixed
 	 */
 	public function GetCookie (
-		$name = "",
+		$name = '',
 		$pregReplaceAllowedChars = "a-zA-Z0-9_;, /\-\.\@\=\+\?\!",
 		$ifNullValue = NULL,
 		$targetType = NULL
@@ -595,6 +625,15 @@ class Request implements Interfaces\IRequest
 		return $this->getParamFromCollection(
 			$this->globalCookies, $name, $pregReplaceAllowedChars, $ifNullValue, $targetType
 		);
+	}
+
+	/**
+	 * Return if any item by cookie name exists or not in referenced global `$_COOKIE`.
+	 * @param string $name Cookie string name.
+	 * @return bool
+	 */
+	public function HasCookie ($name = '') {
+		return isset($this->globalCookies[$name]);
 	}
 
 
@@ -741,25 +780,25 @@ class Request implements Interfaces\IRequest
 	}
 
 	/**
-	 * Set media site key - `"full" | "tablet" | "mobile"`.
-	 * Use this media site key storage by your own decision.
+	 * Set media site version - `"full" | "tablet" | "mobile"`.
+	 * Use this media site version storage by your own decision.
 	 * Example: `"full" | "tablet" | "mobile"`
 	 * @var string|NULL
 	 */
-	public function & SetMediaSiteKey ($mediaSiteKey) {
-		$this->mediaSiteKey = $mediaSiteKey;
+	public function & SetMediaSiteVersion ($mediaSiteVersion) {
+		$this->mediaSiteVersion = $mediaSiteVersion;
 		return $this;
 	}
 
 	/**
-	 * Get media site key - `"full" | "tablet" | "mobile"`.
-	 * To use this variable - install `\MvcCore\Router` extension `\MvcCoreExt\Router\Media`
+	 * Get media site version - `"full" | "tablet" | "mobile"`.
+	 * To use this variable - install `\MvcCore\Router` extension `\MvcCore\Ext\Routers\Media`
 	 * Or use this variable by your own decision.
 	 * Example: `"full" | "tablet" | "mobile"`
 	 * @var string|NULL
 	 */
-	public function GetMediaSiteKey () {
-		return $this->mediaSiteKey;
+	public function GetMediaSiteVersion () {
+		return $this->mediaSiteVersion;
 	}
 
 
@@ -893,17 +932,22 @@ class Request implements Interfaces\IRequest
 	 * Get referer url if any, safely readed by:
 	 * `filter_var($_SERVER['HTTP_REFERER'], FILTER_SANITIZE_URL);`
 	 * Example: `"http://foreing.domain.com/path/where/is/link/to/?my=app"`
+	 * @param bool $rawInput Get raw input if `TRUE`. `FALSE` by default to get value throught `htmlspecialchars($result);` without amersand `&` escaping.
 	 * @return string
 	 */
-	public function GetReferer () {
+	public function GetReferer ($rawInput = FALSE) {
 		if ($this->referer === NULL) {
 			$referer = isset($this->globalServer['HTTP_REFERER'])
 				? $this->globalServer['HTTP_REFERER']
 				: '';
-			if ($referer) $referer = filter_var($referer, FILTER_SANITIZE_URL) ?: '';
+			if ($referer) {
+				while (mb_strpos($referer, '%') !== FALSE)
+					$referer = rawurldecode($referer);
+				$referer = filter_var($referer, FILTER_SANITIZE_URL) ?: '';
+			}
 			$this->referer = $referer;
 		}
-		return $this->referer;
+		return $rawInput ? $this->referer : static::htmlSpecialChars($rawInput);
 	}
 
 	/**
@@ -949,11 +993,13 @@ class Request implements Interfaces\IRequest
 	/**
 	 * Get requested path in from application root (if `mod_rewrite` enabled), never with query string.
 	 * Example: `"/products/page/2"`
+	 * @param bool $rawInput Get raw input if `TRUE`. `FALSE` by default to get value throught `htmlspecialchars($result);` without amersand `&` escaping.
 	 * @return string
 	 */
-	public function GetPath () {
-		if ($this->path === NULL) $this->initUrlSegments();
-		return $this->path;
+	public function GetPath ($rawInput = FALSE) {
+		if ($this->path === NULL) 
+			$this->initUrlSegments();
+		return $rawInput ? $this->path : static::htmlSpecialChars($this->path);
 	}
 
 	/**
@@ -964,25 +1010,29 @@ class Request implements Interfaces\IRequest
 	 *							   If `TRUE`, and query string contains any character(s), query string is returned
 	 *							   with question mark character at the beginning. But if query string contains no
 	 *							   character(s), query string is returned as EMPTY STRING WITHOUT question mark character.
+	 * @param bool $rawInput Get raw input if `TRUE`. `FALSE` by default to get value throught `htmlspecialchars($result);` without amersand `&` escaping.
 	 * @return string
 	 */
-	public function GetQuery ($withQuestionMark = FALSE) {
-		if ($this->query === NULL) $this->initUrlSegments();
-		return ($withQuestionMark && mb_strlen($this->query) > 0)
+	public function GetQuery ($withQuestionMark = FALSE, $rawInput = FALSE) {
+		if ($this->query === NULL) 
+			$this->initUrlSegments();
+		$result = ($withQuestionMark && mb_strlen($this->query) > 0)
 			? '?' . $this->query
 			: $this->query;
+		return $rawInput ? $result : static::htmlSpecialChars($result);
 	}
 
 	/**
 	 * Get request path after domain with possible query string
 	 * Example: `"/requested/path/after/app/root?with=possible&query=string"`
+	 * @param bool $rawInput Get raw input if `TRUE`. `FALSE` by default to get value throught `htmlspecialchars($result);` without amersand `&` escaping.
 	 * @return string
 	 */
-	public function GetRequestPath () {
+	public function GetRequestPath ($rawInput = FALSE) {
 		if ($this->requestPath === NULL) {
-			$this->requestPath = $this->GetPath() . $this->GetQuery(TRUE) . $this->GetFragment(TRUE);
+			$this->requestPath = $this->GetPath(TRUE) . $this->GetQuery(TRUE, TRUE) . $this->GetFragment(TRUE, TRUE);
 		}
-		return $this->requestPath;
+		return $rawInput ? $this->requestPath : static::htmlSpecialChars($this->requestPath);
 	}
 
 	/**
@@ -991,7 +1041,8 @@ class Request implements Interfaces\IRequest
 	 * @return string
 	 */
 	public function GetDomainUrl () {
-		if ($this->domainUrl === NULL) $this->domainUrl = $this->GetProtocol() . '//' . $this->GetHost();
+		if ($this->domainUrl === NULL) 
+			$this->domainUrl = $this->GetProtocol() . '//' . $this->GetHost();
 		return $this->domainUrl;
 	}
 
@@ -1001,30 +1052,33 @@ class Request implements Interfaces\IRequest
 	 * @return string
 	 */
 	public function GetBaseUrl () {
-		if ($this->baseUrl === NULL) $this->baseUrl = $this->GetDomainUrl() . $this->GetBasePath();
+		if ($this->baseUrl === NULL) 
+			$this->baseUrl = $this->GetDomainUrl() . $this->GetBasePath();
 		return $this->baseUrl;
 	}
 
 	/**
 	 * Get request url including scheme, domain, port, path, without any query string
 	 * Example: "`http://localhost:88/my/development/direcotry/www/requested/path/after/domain"`
+	 * @param bool $rawInput Get raw input if `TRUE`. `FALSE` by default to get value throught `htmlspecialchars($result);` without amersand `&` escaping.
 	 * @return string
 	 */
-	public function GetRequestUrl () {
-		if ($this->requestUrl === NULL) $this->requestUrl = $this->GetBaseUrl() . $this->GetPath();
-		return $this->requestUrl;
+	public function GetRequestUrl ($rawInput = FALSE) {
+		if ($this->requestUrl === NULL) 
+			$this->requestUrl = $this->GetBaseUrl() . $this->GetPath(TRUE);
+		return $rawInput ? $this->requestUrl : $this->htmlSpecialChars($this->requestUrl);
 	}
 
 	/**
 	 * Get request url including scheme, domain, port, path and with query string
 	 * Example: `"http://localhost:88/my/development/direcotry/www/requested/path/after/domain?with=possible&query=string"`
+	 * @param bool $rawInput Get raw input if `TRUE`. `FALSE` by default to get value throught `htmlspecialchars($result);` without amersand `&` escaping.
 	 * @return string
 	 */
-	public function GetFullUrl () {
-		if ($this->fullUrl === NULL) {
-			$this->fullUrl = $this->GetRequestUrl() . $this->GetQuery(TRUE) . $this->GetFragment(TRUE);
-		}
-		return $this->fullUrl;
+	public function GetFullUrl ($rawInput = FALSE) {
+		if ($this->fullUrl === NULL) 
+			$this->fullUrl = $this->GetRequestUrl(TRUE) . $this->GetQuery(TRUE, TRUE) . $this->GetFragment(TRUE, TRUE);
+		return $rawInput ? $this->fullUrl : static::htmlSpecialChars($this->fullUrl);
 	}
 
 	/**
@@ -1035,13 +1089,16 @@ class Request implements Interfaces\IRequest
 	 *					   If `TRUE`, and fragment contains any character(s), fragment is returned
 	 *					   with hash character at the beginning. But if fragment contains no
 	 *					   character(s), fragment is returned as EMPTY STRING WITHOUT hash character.
+	 * @param bool $rawInput Get raw input if `TRUE`. `FALSE` by default to get value throught `htmlspecialchars($result);` without amersand `&` escaping.
 	 * @return string
 	 */
-	public function GetFragment ($withHash = FALSE) {
-		if ($this->fragment === NULL) $this->initUrlSegments();
-		return ($withHash && mb_strlen($this->fragment) > 0)
+	public function GetFragment ($withHash = FALSE, $rawInput = FALSE) {
+		if ($this->fragment === NULL) 
+			$this->initUrlSegments();
+		$result = ($withHash && mb_strlen($this->fragment) > 0)
 			? '?' . $this->fragment
 			: $this->fragment;
+		return $rawInput ? $result : static::htmlSpecialChars($result);
 	}
 
 	/**
@@ -1099,10 +1156,8 @@ class Request implements Interfaces\IRequest
 		if ($this->contentLength === NULL) {
 			if (
 				isset($this->globalServer['CONTENT_LENGTH']) &&
-				is_numeric($this->globalServer['CONTENT_LENGTH'])
-			) {
-				$this->contentLength = intval($this->globalServer['CONTENT_LENGTH']);
-			}
+				ctype_digit($this->globalServer['CONTENT_LENGTH'])
+			) $this->contentLength = intval($this->globalServer['CONTENT_LENGTH']);
 		}
 		return $this->contentLength;
 	}
@@ -1156,13 +1211,13 @@ class Request implements Interfaces\IRequest
 	protected function initUrlSegments () {
 		$absoluteUrl = $this->GetProtocol() . '//'
 			. $this->globalServer['HTTP_HOST']
-			. $this->globalServer['REQUEST_URI'];
+			. rawurldecode($this->globalServer['REQUEST_URI']);
 		$parsedUrl = parse_url($absoluteUrl);
 		$this->port = isset($parsedUrl['port']) ? $parsedUrl['port'] : '';
 		$this->path = isset($parsedUrl['path']) ? $parsedUrl['path'] : '';
-		$this->path = mb_substr($this->path, mb_strlen($this->GetBasePath()));
-		$this->query = isset($parsedUrl['query']) ? $parsedUrl['query'] : '';
-		$this->fragment = isset($parsedUrl['fragment']) ? $parsedUrl['fragment'] : '';
+		$this->path = trim(mb_substr($this->path, mb_strlen($this->GetBasePath())), '?&');
+		$this->query = trim(isset($parsedUrl['query']) ? $parsedUrl['query'] : '', '?&');
+		$this->fragment = trim(isset($parsedUrl['fragment']) ? $parsedUrl['fragment'] : '', '#');
 	}
 
 	/**
@@ -1379,5 +1434,16 @@ class Request implements Interfaces\IRequest
 			if (gettype($langAndLocaleArr) == 'array') $langAndLocaleArr = current($langAndLocaleArr);
 		}
 		list($this->lang, $this->locale) = $langAndLocaleArr;
+	}
+
+	/**
+	 * Convert special characters to HTML entities except ampersand `&`.
+	 * @see http://php.net/manual/en/function.htmlspecialchars.php
+	 * @param string $str 
+	 * @return string
+	 */
+	protected static function htmlSpecialChars ($str) {
+		static $chars = ['"'=>'&quot;',"'"=>'&apos;','<'=>'&lt;','>'=>'&gt;',/*'&' => '&amp;',*/];
+		return strtr($str, $chars);
 	}
 }
