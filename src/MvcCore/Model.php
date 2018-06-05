@@ -482,24 +482,26 @@ class Model implements Interfaces\IModel {
 		$cfgType = gettype($systemCfgDb);
 		$configs = [];
 		$defaultConnectionName = NULL;
-		// db.default - default connection index for models, where is no connection name/index defined inside class.
+		// db.defaultName - default connection index for models, where is no connection name/index defined inside class.
 		if ($cfgType == 'array') {
 			// multiple connections defined, indexed by some numbers, maybe default connection specified.
-			if (isset($systemCfgDb['defaultName'])) $defaultConnectionName = $systemCfgDb['defaultName'];
+			if (isset($systemCfgDb['defaultName'])) 
+				$defaultConnectionName = $systemCfgDb['defaultName'];
 			foreach ($systemCfgDb as $key => $value) {
-				if ($key == 'defaultName') continue;
+				if ($key === 'defaultName') continue;
 				$configs[$key] = (object) $value;
 			}
 		} else if ($cfgType == 'object') {
 			// Multiple connections defined or single connection defined:
 			// - Single connection defined - `$systemCfg->db` contains directly record for `driver`.
 			// - Multiple connections defined - indexed by strings, maybe default connection specified.
-			if (isset($systemCfgDb->defaultName)) $defaultConnectionName = $systemCfgDb->defaultName;
+			if (isset($systemCfgDb->defaultName)) 
+				$defaultConnectionName = $systemCfgDb->defaultName;
 			if (isset($systemCfgDb->driver)) {
 				$configs[0] = $systemCfgDb;
 			} else {
 				foreach ($systemCfgDb as $key => $value) {
-					if ($key == 'defaultName') continue;
+					if ($key === 'defaultName') continue;
 					$configs[$key] = (object) $value;
 				}
 			}

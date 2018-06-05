@@ -463,6 +463,12 @@ interface IRoute
 	public function & GetReverseParams ();
 
 	/**
+	 * Return request matched params by current route.
+	 * @return array|NULL
+	 */
+	public function & GetMatchedParams ();
+
+	/**
 	 * Return array of matched params, with matched controller and action names,
 	 * if route matches request `\MvcCore\Request::$Path` property by `preg_match_all()`.
 	 *

@@ -559,7 +559,8 @@ class View implements Interfaces\IView
 		} catch (\Exception $e) {
 			throw $e;
 		}
-		return ob_get_clean();
+		$content = ob_get_clean();
+		return $content;
 	}
 
 	/**

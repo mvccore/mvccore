@@ -364,7 +364,7 @@ class Request implements Interfaces\IRequest
 	 */
 	public function & GetGlobalCollection ($type) {
 		$collection = 'global'.ucfirst(strtolower($type));
-		return $this->$collection;
+		return $this->{$collection};
 	}
 
 	/**

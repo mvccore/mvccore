@@ -247,6 +247,13 @@ class Route implements Interfaces\IRoute
 	 */
 	protected $reverseParams = NULL;
 
+	/**
+	 * Request matched params by current route.
+	 * Filled only in current route object.
+	 * @var array|NULL
+	 */
+	protected $matchedParams = NULL;
+
 
 	/**
 	 * Create every time new route instance, no singleton managing!
@@ -787,6 +794,14 @@ class Route implements Interfaces\IRoute
 	}
 
 	/**
+	 * Return request matched params by current route.
+	 * @return array|NULL
+	 */
+	public function & GetMatchedParams () {
+		return $this->matchedParams;
+	}
+
+	/**
 	 * Return array of matched params, with matched controller and action names,
 	 * if route matches request `\MvcCore\Request::$Path` property by `preg_match_all()`.
 	 *
@@ -837,6 +852,7 @@ class Route implements Interfaces\IRoute
 				$matchedParams[$this->lastPatternParam] = rtrim($matchedParams[$this->lastPatternParam], '/');
 			}
 		}
+		$this->matchedParams = $matchedParams;
 		return $matchedParams;
 	}
 
@@ -865,7 +881,8 @@ class Route implements Interfaces\IRoute
 	 * @return string
 	 */
 	public function Url (& $params = [], & $cleanedGetRequestParams = [], $queryStringParamsSepatator = '&') {
-		if ($this->reverseParams === NULL) $this->reverse = $this->initReverse();
+		if ($this->reverseParams === NULL) 
+			$this->reverse = $this->initReverse();
 		$result = $this->reverse;
 		$givenParamsKeys = array_merge([], $params);
 		foreach ($this->reverseParams as $paramName) {
@@ -883,7 +900,7 @@ class Route implements Interfaces\IRoute
 			unset($givenParamsKeys[$paramName]);
 		}
 		if ($givenParamsKeys) {
-			$result .= ($this->reverseParams ? $queryStringParamsSepatator : '?')
+			$result .= (mb_strpos($result, '?') !== FALSE ? $queryStringParamsSepatator : '?')
 				. http_build_query($givenParamsKeys, NULL, $queryStringParamsSepatator);
 		}
 		return $result;

@@ -349,8 +349,14 @@ trait Dispatching
 					$this->request->GetControllerName() . '/' . $this->request->GetActionName()
 				),
 				function (\Exception & $e) use ($exceptionMessage, $debugClass) {
-					$debugClass::Log($e, \MvcCore\Interfaces\IDebug::EXCEPTION);
-					$this->RenderError500PlainText($exceptionMessage . PHP_EOL . PHP_EOL . $e->getMessage());
+					$this->router->RemoveRoute(\MvcCore\Interfaces\IRouter::DEFAULT_ROUTE_NAME_NOT_FOUND);
+					$configClass = $this->configClass;
+					if ($configClass::IsDevelopment(TRUE)) {
+						$debugClass::Exception($e);
+					} else {
+						$debugClass::Log($e, \MvcCore\Interfaces\IDebug::EXCEPTION);
+						$this->RenderError500PlainText($exceptionMessage . PHP_EOL . PHP_EOL . $e->getMessage());
+					}
 				}
 			);
 		} else {
@@ -392,8 +398,14 @@ trait Dispatching
 					$this->request->GetControllerName() . '/' . $this->request->GetActionName()
 				),
 				function (\Exception & $e) use ($exceptionMessage, $debugClass) {
-					$debugClass::Log($e, \MvcCore\Interfaces\IDebug::EXCEPTION);
-					$this->RenderError404PlainText($exceptionMessage);
+					$this->router->RemoveRoute(\MvcCore\Interfaces\IRouter::DEFAULT_ROUTE_NAME_NOT_FOUND);
+					$configClass = $this->configClass;
+					if ($configClass::IsDevelopment(TRUE)) {
+						$debugClass::Exception($e);
+					} else {
+						$debugClass::Log($e, \MvcCore\Interfaces\IDebug::EXCEPTION);
+						$this->RenderError404PlainText($exceptionMessage);
+					}
 				}
 			);
 		} else {

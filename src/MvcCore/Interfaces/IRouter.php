@@ -464,6 +464,14 @@ interface IRouter
 	public function UrlByRoute (\MvcCore\Interfaces\IRoute & $route, & $params = []);
 
 	/**
+	 * Go throught all query string params and prepare, escape all chars (`<` and `>`)
+	 * to prevent any XSS attacks, when there is used request params to automaticly complete
+	 * remaining param values in url address building process.
+	 * @return array
+	 */
+	public function & GetCleanedRequestParams ();
+
+	/**
 	 * Try to found any existing route by `$routeName` argument
 	 * or try to find any existing route by `$controllerPc:$actionPc` arguments
 	 * combination and set this founded route instance as current route object.

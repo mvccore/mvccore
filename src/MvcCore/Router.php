@@ -441,7 +441,11 @@ class Router implements Interfaces\IRouter
 				throw new \InvalidArgumentException('['.__CLASS__.'] '.implode(' ',$errorMsgs));
 		}
 		if ($prepend) {
-			$this->routes = array_merge([$routeName => $instance], $this->routes);
+			$newRoutes = [];
+			$newRoutes[$routeName] = & $instance; 
+			foreach ($this->routes as $routeName => & $route)
+				$newRoutes[$routeName] = $route;
+			$this->routes = $newRoutes;
 		} else {
 			$this->routes[$routeName] = & $instance;
 		}
@@ -478,6 +482,8 @@ class Router implements Interfaces\IRouter
 			$controllerAction = $result->GetControllerAction();
 			if (isset($this->urlRoutes[$routeName])) unset($this->urlRoutes[$routeName]);
 			if (isset($this->urlRoutes[$controllerAction])) unset($this->urlRoutes[$controllerAction]);
+			if ($this->currentRoute->GetName() === $result->GetName())
+				$this->currentRoute = NULL;
 		}
 		return $result;
 	}
@@ -696,7 +702,7 @@ class Router implements Interfaces\IRouter
 			$controllerActionOrRouteName = $this->currentRoute
 				? $this->currentRoute->GetName()
 				: ':';
-			$params = array_merge($this->getCleanedRequestParams(), $params);
+			$params = array_merge($this->GetCleanedRequestParams(), $params);
 			unset($params['controller'], $params['action']);
 		}
 		$absolute = FALSE;
@@ -816,8 +822,29 @@ class Router implements Interfaces\IRouter
 	 */
 	public function UrlByRoute (\MvcCore\Interfaces\IRoute & $route, & $params = []) {
 		return $this->request->GetBasePath() . $route->Url(
-			$params, $this->getCleanedRequestParams(), $this->getQueryStringParamsSepatator()
+			$params, $this->GetCleanedRequestParams(), $this->getQueryStringParamsSepatator()
 		);
+	}
+
+	/**
+	 * Go throught all query string params and prepare, escape all chars (`<` and `>`)
+	 * to prevent any XSS attacks, when there is used request params to automaticly complete
+	 * remaining param values in url address building process.
+	 * @return array
+	 */
+	public function & GetCleanedRequestParams () {
+		if ($this->cleanedRequestParams === NULL) {
+			$cleanedRequestParams = [];
+			$request = & $this->request;
+			$charsToReplace = ['<' => '&lt;', '>' => '&gt;'];
+			$globalGet = & $request->GetGlobalCollection('get');
+			foreach ($globalGet as $rawName => $rawValue) {
+				$paramName = strtr($rawName, $charsToReplace);
+				$cleanedRequestParams[$paramName] = strtr($rawValue, $charsToReplace);
+			}
+			$this->cleanedRequestParams = $cleanedRequestParams;
+		}
+		return $this->cleanedRequestParams;
 	}
 
 	/**
@@ -859,6 +886,10 @@ class Router implements Interfaces\IRouter
 				$routeDefaultParams = $route->GetDefaults() ?: [];
 				$newParams = array_merge($routeDefaultParams, $request->GetParams(''), $matchedParams);
 				$request->SetParams($newParams);
+				$this->cleanedRequestParams = array_merge(
+					$this->cleanedRequestParams ? $this->cleanedRequestParams : [],
+					$matchedParams
+				);
 				break;
 			}
 		}
@@ -885,27 +916,6 @@ class Router implements Interfaces\IRouter
 				->SetControllerName($toolClass::GetDashedFromPascalCase($route->GetController()))
 				->SetActionName($toolClass::GetDashedFromPascalCase($route->GetAction()));
 		}
-	}
-
-	/**
-	 * Go throught all query string params and prepare, escape all chars (`<` and `>`)
-	 * to prevent any XSS attacks, when there is used request params to automaticly complete
-	 * remaining param values in url address building process.
-	 * @return array
-	 */
-	protected function & getCleanedRequestParams () {
-		if ($this->cleanedRequestParams === NULL) {
-			$cleanedRequestParams = [];
-			$request = & $this->request;
-			$charsToReplace = ['<' => '&lt;', '>' => '&gt;'];
-			$globalGet = & $request->GetGlobalCollection('get');
-			foreach ($globalGet as $rawName => $rawValue) {
-				$paramName = strtr($rawName, $charsToReplace);
-				$cleanedRequestParams[$paramName] = strtr($rawValue, $charsToReplace);
-			}
-			$this->cleanedRequestParams = $cleanedRequestParams;
-		}
-		return $this->cleanedRequestParams;
 	}
 
 	/**

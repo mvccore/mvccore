@@ -325,16 +325,25 @@ class Controller implements Interfaces\IController
 	}
 
 	/**
-	 * Get param value from `$_GET` or `$_POST` or `php://input`,
-	 * filtered by characters defined in second argument throught `preg_replace()`.
+	 * Get param value from `$_GET`, `$_POST` or `php://input`, filtered by
+	 * "rule to keep defined characters only", defined in second argument (by `preg_replace()`).
 	 * Place into second argument only char groups you want to keep.
 	 * Shortcut for: `\MvcCore\Request::GetParam();`
-	 * @param string $name
-	 * @param string $pregReplaceAllowedChars
-	 * @return string
+	 * @param string $name Parametter string name.
+	 * @param string|array $pregReplaceAllowedChars If String - list of regular expression characters to only keep, if array - `preg_replace()` pattern and reverse.
+	 * @param mixed $ifNullValue Default value returned if given param name is null.
+	 * @param string $targetType Target type to retype param value or default if-null value. If param is an array, every param item will be retyped into given target type.
+	 * @return string|string[]|mixed
 	 */
-	public function GetParam ($name = "", $pregReplaceAllowedChars = "a-zA-Z0-9_/\-\.\@") {
-		return $this->request->GetParam($name, $pregReplaceAllowedChars);
+	public function GetParam (
+		$name = "",
+		$pregReplaceAllowedChars = "a-zA-Z0-9_;, /\-\@\:",
+		$ifNullValue = NULL,
+		$targetType = NULL
+	) {
+		return $this->request->GetParam(
+			$name, $pregReplaceAllowedChars, $ifNullValue, $targetType
+		);
 	}
 
 	/**
@@ -848,7 +857,7 @@ class Controller implements Interfaces\IController
 		if ($this->application->IsErrorDispatched()) return;
 		throw new \ErrorException(
 			$exceptionMessage ? $exceptionMessage :
-			"Server error: \n'" . $this->request->FullUrl . "'",
+			"Server error: `" . htmlspecialchars($this->request->GetFullUrl()) . "`.",
 			500
 		);
 	}
@@ -862,7 +871,7 @@ class Controller implements Interfaces\IController
 	public function RenderNotFound () {
 		if ($this->application->IsNotFoundDispatched()) return;
 		throw new \ErrorException(
-			"Page not found: \n'" . $this->request->FullUrl . "'", 404
+			"Page not found: `" . htmlspecialchars($this->request->GetFullUrl()) . "`.", 404
 		);
 	}
 
