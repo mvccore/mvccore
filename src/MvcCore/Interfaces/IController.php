@@ -210,12 +210,6 @@ interface IController
 	public function IsAjax ();
 
 	/**
-	 * Boolean about disabled or enabled rendering wrapper layout view around at last.
-	 * @return bool
-	 */
-	public function IsViewEnabled ();
-
-	/**
 	 * Get user model instance. Template method.
 	 * @return \MvcCore\Interfaces\IModel
 	 */
@@ -259,12 +253,45 @@ interface IController
 	public function & SetLayout ($layout = '');
 
 	/**
-	 * Disable layout view rendering (rendering html wrapper around rendered action view).
-	 * This method is always called internally before
-	 * `\MvcCore\Controller::Init();` for all AJAX requests.
-	 * @return void
+	 * Get `TRUE` if view is automaticly created in base controler `PreDispatch()` 
+	 * method and if view is automaticly rendered with wrapping layout view 
+	 * around after controller action is called. Or get `FALSE` if no view 
+	 * automaticly rendered. Default value is `TRUE` for all non-ajax requests.
+	 * @return bool
 	 */
-	public function DisableView ();
+	public function GetViewEnabled ();
+
+	/**
+	 * Set `TRUE` if view object will be automaticly created in base controler
+	 * `PreDispatch()` method and if view will be automaticly rendered with wrapping
+	 * layout view around after controller action is called. Or set `FALSE` 
+	 * otherwise to not render any view. Default value is `TRUE` for all non-ajax requests.
+	 * @return \MvcCore\Interfaces\IController
+	 */
+	public function & SetViewEnabled ($viewEnabled = TRUE);
+	
+	/**
+	 * Get PHP reflection properties flags integer value if all defined properties types 
+	 * and it's values from controller `$this` context are automaticly initialized 
+	 * into view object before rendering. Or get `0` if only explicitly defined properties 
+	 * are initialized in view. Default value is `0` to not automaticly set anything to 
+	 * optimize execution speed. Defined flags could be like: 
+	 * `\ReflectionProperty::IS_PUBLIC | \ReflectionProperty::IS_PROTECTED` etc...
+	 * @return int
+	 */
+	public function GetAutoInitPropsInView ();
+	
+	/**
+	 * Set PHP reflection properties flags to initialize automaticly defined properties types 
+	 * and it's values from controller `$this` context into view object before rendering.
+	 * Or set `0` if you don't want to set up anything automaticly and if you want to initialize 
+	 * into view only explicitly defined properties. Default value is `0` to not automaticly 
+	 * set anything to optimize execution speed. Defined flags could be like: 
+	 * `\ReflectionProperty::IS_PUBLIC | \ReflectionProperty::IS_PROTECTED` etc...
+	 * @param int $autoInitPropsInView Default value is `768` for `\ReflectionProperty::IS_PUBLIC | \ReflectionProperty::IS_PROTECTED`.
+	 * @return \MvcCore\Controller
+	 */
+	public function & SetAutoInitPropsInView ($autoInitPropsInView = 768/*\ReflectionProperty::IS_PUBLIC | \ReflectionProperty::IS_PROTECTED*/);
 
 	/**
 	 * - Register child controller to process dispatching on it later.

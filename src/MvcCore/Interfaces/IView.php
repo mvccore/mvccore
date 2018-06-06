@@ -216,6 +216,23 @@ interface IView
 	 * @return string
 	 */
 	public static function GetViewScriptFullPath ($typePath = '', $corectedRelativePath = '');
+	
+	/**
+	 * Get originaly declared internal view properties to protect their
+	 * possible overwriting by `__set()` or `__get()` magic methods.
+	 * Keys are names for protected properties names, values could be anything.
+	 * @return array
+	 */
+	public static function GetProtectedProperties ();
+	
+	/**
+	 * Set originaly declared internal view properties to protect their
+	 * possible overwriting by `__set()` or `__get()` magic methods.
+	 * Keys must be names for protected properties names, values could be anything.
+	 * @param array $protectedProperties Keys must be names for protected properties names, values could be anything.
+	 * @return array
+	 */
+	public static function SetProtectedProperties (array $protectedProperties = []);
 
 	/**
 	 * Set controller instance.
@@ -236,9 +253,14 @@ interface IView
 	 * key in current store - overwrite it.
 	 * @param \MvcCore\Interfaces\IController $controller
 	 * @param bool $overwriteExistingKeys If any property name already exist in view store, overwrite it by given value by default.
+	 * @param int $reflectionPropertiesFlags Default value is `768` for `\ReflectionProperty::IS_PUBLIC | \ReflectionProperty::IS_PROTECTED`.
 	 * @return \MvcCore\Interfaces\IView
 	 */
-	public function & SetUpValuesFromController (\MvcCore\Interfaces\IController & $controller, $overwriteExistingKeys = TRUE);
+	public function & SetUpValuesFromController (
+		\MvcCore\Interfaces\IController & $controller, 
+		$overwriteExistingKeys = TRUE, 
+		$reflectionPropertiesFlags = 768/*\ReflectionProperty::IS_PUBLIC | \ReflectionProperty::IS_PROTECTED*/
+	);
 
 	/**
 	 * Set up all from given view object variables store into current store,

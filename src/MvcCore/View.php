@@ -343,6 +343,27 @@ class View implements Interfaces\IView
 			$corectedRelativePath . static::$extension
 		]);
 	}
+	
+	/**
+	 * Get originaly declared internal view properties to protect their
+	 * possible overwriting by `__set()` or `__get()` magic methods.
+	 * Keys are names for protected properties names, values could be anything.
+	 * @return array
+	 */
+	public static function GetProtectedProperties () {
+		return static::$protectedProperties;
+	}
+	
+	/**
+	 * Set originaly declared internal view properties to protect their
+	 * possible overwriting by `__set()` or `__get()` magic methods.
+	 * Keys must be names for protected properties names, values could be anything.
+	 * @param array $protectedProperties Keys must be names for protected properties names, values could be anything.
+	 * @return array
+	 */
+	public static function SetProtectedProperties (array $protectedProperties = []) {
+		return static::$protectedProperties = $protectedProperties;
+	}
 
 	/**
 	 * Set controller instance.
@@ -368,15 +389,21 @@ class View implements Interfaces\IView
 	 * key in current store - overwrite it.
 	 * @param \MvcCore\Controller|\MvcCore\Interfaces\IController $controller
 	 * @param bool $overwriteExistingKeys If any property name already exist in view store, overwrite it by given value by default.
+	 * @param int $reflectionPropertiesFlags Default value is `768` for `\ReflectionProperty::IS_PUBLIC | \ReflectionProperty::IS_PROTECTED`.
 	 * @return \MvcCore\View
 	 */
-	public function & SetUpValuesFromController (\MvcCore\Interfaces\IController & $controller, $overwriteExistingKeys = TRUE) {
+	public function & SetUpValuesFromController (
+		\MvcCore\Interfaces\IController & $controller, 
+		$overwriteExistingKeys = TRUE,
+		$reflectionPropertiesFlags = 768/*\ReflectionProperty::IS_PUBLIC | \ReflectionProperty::IS_PROTECTED*/
+	) {
 		$type = new \ReflectionClass($controller);
 		/** @var $props \ReflectionProperty[] */
-		$props = $type->getProperties(\ReflectionProperty::IS_PUBLIC | \ReflectionProperty::IS_PROTECTED);
+		$props = $type->getProperties($reflectionPropertiesFlags);
 		foreach ($props as $prop) {
+			if (isset(static::$protectedProperties[$prop->name])) continue;
 			if (!$overwriteExistingKeys && isset($this->_store[$prop->name])) continue;
-			if ($prop->isProtected()) $prop->setAccessible(TRUE);
+			if ($prop->isProtected() || $prop->isPrivate()) $prop->setAccessible(TRUE);
 			$this->_store[$prop->name] = $prop->getValue($controller);
 		}
 		return $this;

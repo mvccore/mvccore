@@ -143,7 +143,10 @@ class Controller implements Interfaces\IController
 	protected $layout = 'layout';
 
 	/**
-	 * Boolean about disabled or enabled rendering wrapper layout view around at last.
+	 * If `TRUE`, view object is automaticly created in base controler
+	 * `PreDispatch()` method and view is automaticly rendered with wrapping
+	 * layout view around after controller action is called. Default value is
+	 * `TRUE` for all non-ajax requests.
 	 * @var boolean
 	 */
 	protected $viewEnabled = TRUE;
@@ -177,6 +180,16 @@ class Controller implements Interfaces\IController
 	 * @var \MvcCore\Controller[]|\MvcCore\Interfaces\IController[]
 	 */
 	protected $childControllers = [];
+	
+	/**
+	 * PHP reflection properties flags to initialize automaticly defined properties types 
+	 * and it's values from controller `$this` context into view object before rendering.
+	 * Default value is `0` to not set up anything automaticly if you want to initialize 
+	 * into view only explicitly defined properties. Defined flags could be like: 
+	 * `\ReflectionProperty::IS_PUBLIC | \ReflectionProperty::IS_PROTECTED` etc...
+	 * @var int
+	 */
+	protected $autoInitPropsInView = 0;
 
 	/**
 	 * All asset mime types possibly called throught `\MvcCore\Controller::AssetAction();`.
@@ -298,7 +311,7 @@ class Controller implements Interfaces\IController
 			if ($pos === FALSE) continue;
 			$className = trim(mb_substr($docComment, 0, $pos));
 			if (!@class_exists($className)) continue;
-			if (!$toolsClass::CheckClassInterface($className, \MvcCore\Interfaces\IController::class, FALSE, TRUE)) continue;
+			if (!$toolsClass::CheckClassInterface($className, '\\MvcCore\\Interfaces\\IController', FALSE, TRUE)) continue;
 			$instance = $className::CreateInstance();
 			$this->AddChildController($instance, $prop->getName());
 			$prop->setValue($this, $instance);
@@ -396,7 +409,7 @@ class Controller implements Interfaces\IController
 		$this->ajax = $request->IsAjax();
 		if ($this->ajax || (
 			$this->controllerName == 'controller' && $this->actionName == 'asset'
-		)) $this->DisableView();
+		)) $this->SetViewEnabled(FALSE);
 		return $this;
 	}
 
@@ -450,14 +463,6 @@ class Controller implements Interfaces\IController
 	 */
 	public function IsAjax () {
 		return $this->ajax;
-	}
-
-	/**
-	 * Boolean about disabled or enabled rendering wrapper layout view around at last.
-	 * @return bool
-	 */
-	public function IsViewEnabled () {
-		return $this->viewEnabled;
 	}
 
 	/**
@@ -519,13 +524,54 @@ class Controller implements Interfaces\IController
 	}
 
 	/**
-	 * Disable layout view rendering (rendering html wrapper around rendered action view).
-	 * This method is always called internally before
-	 * `\MvcCore\Controller::Init();` for all AJAX requests.
-	 * @return void
+	 * Get `TRUE` if view is automaticly created in base controler `PreDispatch()` 
+	 * method and if view is automaticly rendered with wrapping layout view 
+	 * around after controller action is called. Or get `FALSE` if no view 
+	 * automaticly rendered. Default value is `TRUE` for all non-ajax requests.
+	 * @return bool
 	 */
-	public function DisableView () {
-		$this->viewEnabled = FALSE;
+	public function GetViewEnabled () {
+		return $this->viewEnabled;
+	}
+
+	/**
+	 * Set `TRUE` if view object will be automaticly created in base controler
+	 * `PreDispatch()` method and if view will be automaticly rendered with wrapping
+	 * layout view around after controller action is called. Or set `FALSE` 
+	 * otherwise to not render any view. Default value is `TRUE` for all non-ajax requests.
+	 * @return \MvcCore\Controller
+	 */
+	public function & SetViewEnabled ($viewEnabled = TRUE) {
+		$this->viewEnabled = $viewEnabled;
+		return $this;
+	}
+	
+	/**
+	 * Get PHP reflection properties flags integer value if all defined properties types 
+	 * and it's values from controller `$this` context are automaticly initialized 
+	 * into view object before rendering. Or get `0` if only explicitly defined properties 
+	 * are initialized in view. Default value is `0` to not automaticly set anything to 
+	 * optimize execution speed. Defined flags could be like: 
+	 * `\ReflectionProperty::IS_PUBLIC | \ReflectionProperty::IS_PROTECTED` etc...
+	 * @return int
+	 */
+	public function GetAutoInitPropsInView () {
+		return $this->autoInitPropsInView;
+	}
+	
+	/**
+	 * Set PHP reflection properties flags to initialize automaticly defined properties types 
+	 * and it's values from controller `$this` context into view object before rendering.
+	 * Or set `0` if you don't want to set up anything automaticly and if you want to initialize 
+	 * into view only explicitly defined properties. Default value is `0` to not automaticly 
+	 * set anything to optimize execution speed. Defined flags could be like: 
+	 * `\ReflectionProperty::IS_PUBLIC | \ReflectionProperty::IS_PROTECTED` etc...
+	 * @param int $autoInitPropsInView Default value is `768` for `\ReflectionProperty::IS_PUBLIC | \ReflectionProperty::IS_PROTECTED`.
+	 * @return \MvcCore\Controller
+	 */
+	public function & SetAutoInitPropsInView ($autoInitPropsInView = 768/*\ReflectionProperty::IS_PUBLIC | \ReflectionProperty::IS_PROTECTED*/) {
+		$this->autoInitPropsInView = $autoInitPropsInView;
+		return $this;
 	}
 
 	/**
@@ -558,6 +604,7 @@ class Controller implements Interfaces\IController
 				->SetResponse($this->response)
 				->SetRouter($this->router)
 				->SetLayout($this->layout)
+				->SetAutoInitPropsInView($this->autoInitPropsInView)
 				->SetUser($this->user);
 		}
 		return $this;
@@ -675,7 +722,8 @@ class Controller implements Interfaces\IController
 		if ($this->dispatchState < 4 && $this->viewEnabled) {
 			$currentCtrlIsTopMostParent = $this->parentController === NULL;
 			// set up values
-			$this->view->SetUpValuesFromController($this, FALSE); // all isntance public and protected props
+			if ($this->autoInitPropsInView > 0) 
+				$this->view->SetUpValuesFromController($this, FALSE, $this->autoInitPropsInView);
 			if (!$currentCtrlIsTopMostParent) {
 				$this->view->SetUpValuesFromView($this->parentController->GetView(), FALSE);
 			}
