@@ -190,7 +190,7 @@ class Router implements Interfaces\IRouter
 	 *										`Controller::Action` definitions.
 	 * @return \MvcCore\Router
 	 */
-	public static function & GetInstance ($routes = []) {
+	public static function & GetInstance (array $routes = []) {
 		if (!static::$instance) {
 			/** @var $app \MvcCore\Application */
 			$app = & \MvcCore\Application::GetInstance();
@@ -250,7 +250,7 @@ class Router implements Interfaces\IRouter
 	 *										`Controller::Action` definitions.
 	 * @return \MvcCore\Router
 	 */
-	public function __construct ($routes = []) {
+	public function __construct (array $routes = []) {
 		if ($routes) $this->SetRoutes($routes);
 	}
 

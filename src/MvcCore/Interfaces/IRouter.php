@@ -118,7 +118,7 @@ interface IRouter
 	 *													 `Controller::Action` definitions.
 	 * @return \MvcCore\Interfaces\IRouter
 	 */
-	public static function & GetInstance ($routes = []);
+	public static function & GetInstance (array $routes = []);
 
 	/**
 	 * Clear all possible previously configured routes
