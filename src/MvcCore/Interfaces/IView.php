@@ -28,7 +28,7 @@ namespace MvcCore\Interfaces;
  *   - Creating by predefined class namespaces.
  *   - global static helpers instances storage and repeatable calling.
  * - Views sub scripts relative path solving in:
- *   `<?php $this->renderScript('./any-subdirectory/script-to-render.php'); ?>`
+ *   `<?php $this->RenderScript('./any-subdirectory/script-to-render.php'); ?>`
  * - `Url()` - proxy method from `\MvcCore\Router` targeting to configured router.
  * - `AssetUrl()` - proxy method from `\MvcCore\Controller`.
  * - Magic calls:
@@ -99,7 +99,7 @@ interface IView
 	 * Set view scripts files extension.
 	 * given value could be with or without leading dot char.
 	 * @param string $extension Extension with or without leading dot char.
-	 * @return void
+	 * @return string
 	 */
 	public static function SetExtension ($extension = '.phtml');
 
@@ -130,7 +130,7 @@ interface IView
 	 * - `XML`   - `\MvcCore\Interfaces\IView::DOCTYPE_XML`
 	 * Default value: `HTML5`.
 	 * @param string $doctype
-	 * @return void
+	 * @return string
 	 */
 	public static function SetDoctype ($doctype = \MvcCore\Interfaces\IView::DOCTYPE_HTML5);
 
@@ -149,7 +149,7 @@ interface IView
 	 * is `"Layouts"`, so layouts app path
 	 * is `"/App/Views/Layouts"`.
 	 * @param string $layoutsDir
-	 * @return void
+	 * @return string
 	 */
 	public static function SetLayoutsDir ($layoutsDir = 'Layouts');
 
@@ -168,7 +168,7 @@ interface IView
 	 * Default value is `"Scripts"`, so scripts app path
 	 * is `"/App/Views/Scripts"`.
 	 * @param string $scriptsDir
-	 * @return void
+	 * @return string
 	 */
 	public static function SetScriptsDir ($scriptsDir = 'Scripts');
 
@@ -187,7 +187,7 @@ interface IView
 	 * Default value is `"Helpers"`, so scripts app path
 	 * is `"/App/Views/Helpers"`.
 	 * @param string $helpersDir
-	 * @return void
+	 * @return string
 	 */
 	public static function SetHelpersDir ($helpersDir = 'Helpers');
 
@@ -218,23 +218,6 @@ interface IView
 	public static function GetViewScriptFullPath ($typePath = '', $corectedRelativePath = '');
 	
 	/**
-	 * Get originaly declared internal view properties to protect their
-	 * possible overwriting by `__set()` or `__get()` magic methods.
-	 * Keys are names for protected properties names, values could be anything.
-	 * @return array
-	 */
-	public static function GetProtectedProperties ();
-	
-	/**
-	 * Set originaly declared internal view properties to protect their
-	 * possible overwriting by `__set()` or `__get()` magic methods.
-	 * Keys must be names for protected properties names, values could be anything.
-	 * @param array $protectedProperties Keys must be names for protected properties names, values could be anything.
-	 * @return array
-	 */
-	public static function SetProtectedProperties (array $protectedProperties = []);
-
-	/**
 	 * Set controller instance.
 	 * @param \MvcCore\Interfaces\IController $controller
 	 * @return \MvcCore\Interfaces\IView
@@ -248,28 +231,13 @@ interface IView
 	public function & GetController ();
 
 	/**
-	 * Set up all instance public and instance protected properties from given controller
-	 * instance into current store by reflection class. If there is any already existing 
-	 * key in current store - overwrite it.
-	 * @param \MvcCore\Interfaces\IController $controller
-	 * @param bool $overwriteExistingKeys If any property name already exist in view store, overwrite it by given value by default.
-	 * @param int $reflectionPropertiesFlags Default value is `768` for `\ReflectionProperty::IS_PUBLIC | \ReflectionProperty::IS_PROTECTED`.
-	 * @return \MvcCore\Interfaces\IView
-	 */
-	public function & SetUpValuesFromController (
-		\MvcCore\Interfaces\IController & $controller, 
-		$overwriteExistingKeys = TRUE, 
-		$reflectionPropertiesFlags = 768/*\ReflectionProperty::IS_PUBLIC | \ReflectionProperty::IS_PROTECTED*/
-	);
-
-	/**
 	 * Set up all from given view object variables store into current store,
 	 * if there is any already existing key - overwrite it.
 	 * @param \MvcCore\Interfaces\IView $view
 	 * @param bool $overwriteExistingKeys If any property name already exist in view store, overwrite it by given value by default.
 	 * @return \MvcCore\Interfaces\IView
 	 */
-	public function & SetUpValuesFromView (\MvcCore\Interfaces\IView & $view, $overwriteExistingKeys = TRUE);
+	public function & SetUpStore (\MvcCore\Interfaces\IView & $view, $overwriteExistingKeys = TRUE);
 
 	/**
 	 * Return rendered controller/action template content as reference.
@@ -334,14 +302,14 @@ interface IView
 	 * @param string $content
 	 * @return string
 	 */
-	public function & RenderLayoutAndContent ($relativePath = '', $content = '');
+	public function & RenderLayoutAndContent ($relativePath = '', & $content = '');
 
 	/**
 	 * Render controller template and all necessary layout
 	 * templates and return rendered result as reference.
 	 * @param string $typePath By default: `"Layouts" | "Scripts"`. It could be `"Forms" | "Forms/Fields"` etc...
 	 * @param string $relativePath
-	 * @throws \Exception
+	 * @throws \InvalidArgumentException Template not found in path: `$viewScriptFullPath`.
 	 * @return string
 	 */
 	public function & Render ($typePath = '', $relativePath = '');
@@ -404,35 +372,32 @@ interface IView
 	public function & SetHelper ($helperName, & $instance, $forAllTemplates = TRUE);
 
 	/**
-	 * Set any value into view context internal store
-	 * except system keys declared in `static::$originalyDeclaredProperties`.
+	 * Set any value into view context internal store.
 	 * @param string $name
 	 * @param mixed $value
-	 * @throws \Exception
 	 * @return bool
 	 */
 	public function __set ($name, $value);
 
 	/**
-	 * Get any value from view context internal store
-	 * except system keys declared in `static::$originalyDeclaredProperties`.
+	 * Get any value by given name existing in local store. If there is no value
+	 * in local store by given name, try to get result value into store by 
+	 * controller reflection class from controller instance property.
 	 * @param string $name
-	 * @throws \Exception
 	 * @return mixed
 	 */
 	public function __get ($name);
 
 	/**
-	 * Get if any value from view context internal store exists
-	 * except system keys declared in `static::$protectedProperties`.
+	 * Get `TRUE` if any value by given name exists in 
+	 * local view store or in local controller instance.
 	 * @param string $name
 	 * @return bool
 	 */
 	public function __isset ($name);
 
 	/**
-	 * Unset any value from view context internal store
-	 * except system keys declared in `static::$protectedProperties`.
+	 * Unset any value from view context internal store.
 	 * @param string $name
 	 * @return void
 	 */

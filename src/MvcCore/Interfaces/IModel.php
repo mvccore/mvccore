@@ -118,7 +118,7 @@ interface IModel
 	 *		),
 	 *		// connection name: 'mssql-tests':
 	 *		'mssql-tests' => array(
-	 *			'driver'	=> 'mssql',
+	 *			'driver'	=> 'sqlsrv',
 	 *			'host'		=> '.\SQLEXPRESS',
 	 *			'user'		=> 'sa',
 	 *			'password'	=> '1234',
@@ -137,7 +137,7 @@ interface IModel
 	 *		),
 	 *		// connection index: 1:
 	 *		array(
-	 *			'driver'	=> 'mssql',
+	 *			'driver'	=> 'sqlsrv',
 	 *			'host'		=> '.\SQLEXPRESS',
 	 *			'user'		=> 'sa',
 	 *			'password'	=> '1234',

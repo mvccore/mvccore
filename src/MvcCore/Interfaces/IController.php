@@ -269,29 +269,6 @@ interface IController
 	 * @return \MvcCore\Interfaces\IController
 	 */
 	public function & SetViewEnabled ($viewEnabled = TRUE);
-	
-	/**
-	 * Get PHP reflection properties flags integer value if all defined properties types 
-	 * and it's values from controller `$this` context are automaticly initialized 
-	 * into view object before rendering. Or get `0` if only explicitly defined properties 
-	 * are initialized in view. Default value is `0` to not automaticly set anything to 
-	 * optimize execution speed. Defined flags could be like: 
-	 * `\ReflectionProperty::IS_PUBLIC | \ReflectionProperty::IS_PROTECTED` etc...
-	 * @return int
-	 */
-	public function GetAutoInitPropsInView ();
-	
-	/**
-	 * Set PHP reflection properties flags to initialize automaticly defined properties types 
-	 * and it's values from controller `$this` context into view object before rendering.
-	 * Or set `0` if you don't want to set up anything automaticly and if you want to initialize 
-	 * into view only explicitly defined properties. Default value is `0` to not automaticly 
-	 * set anything to optimize execution speed. Defined flags could be like: 
-	 * `\ReflectionProperty::IS_PUBLIC | \ReflectionProperty::IS_PROTECTED` etc...
-	 * @param int $autoInitPropsInView Default value is `768` for `\ReflectionProperty::IS_PUBLIC | \ReflectionProperty::IS_PROTECTED`.
-	 * @return \MvcCore\Controller
-	 */
-	public function & SetAutoInitPropsInView ($autoInitPropsInView = 768/*\ReflectionProperty::IS_PUBLIC | \ReflectionProperty::IS_PROTECTED*/);
 
 	/**
 	 * - Register child controller to process dispatching on it later.

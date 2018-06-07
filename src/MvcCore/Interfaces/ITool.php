@@ -92,4 +92,14 @@ interface ITool
 	 * @return boolean
 	 */
 	public static function CheckClassInterface ($testClassName, $interfaceName, $checkStaticMethods = FALSE, $throwException = TRUE);
+
+	/**
+	 * Check if given class implements given trait, else throw an exception.
+	 * @param string $testClassName Full test class name.
+	 * @param string $traitName Full trait class name.
+	 * @param bool $throwException If `TRUE`, throw an exception if trait is not implemented or if `FALSE` return `FALSE` only.
+	 * @throws \InvalidArgumentException
+	 * @return boolean
+	 */
+	public static function CheckClassTrait ($testClassName, $traitName, $throwException = TRUE);
 }

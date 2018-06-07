@@ -168,10 +168,48 @@ class Tool implements Interfaces\ITool
 					$errorMsg = "Class `$testClassName` doesn't implement static method `$methodName` from interface `$interfaceName`, method is not static.";
 					break;
 				}
-				// arguments compatibility in presented static method are automaticly checked by PHP
+				// arguments compatibility in presented static method are automatically checked by PHP
 			}
 			if (!$allStaticsImplemented) $result = FALSE;
 		}
+		// return result or thrown an exception
+		if ($result) return TRUE;
+		if (!$throwException) return FALSE;
+		throw new \InvalidArgumentException("[".__CLASS__."] " . $errorMsg);
+	}
+
+	/**
+	 * Check if given class implements given trait, else throw an exception.
+	 * @param string $testClassName Full test class name.
+	 * @param string $traitName Full trait class name.
+	 * @param bool $checkParentClasses If `TRUE`, trait implementation will be checked on all parent classes until success. Default is `FALSE`.
+	 * @param bool $throwException If `TRUE`, throw an exception if trait is not implemented or if `FALSE` return `FALSE` only.
+	 * @throws \InvalidArgumentException
+	 * @return boolean
+	 */
+	public static function CheckClassTrait ($testClassName, $traitName, $checkParentClasses = FALSE, $throwException = TRUE) {
+		$result = FALSE;
+		$errorMsg = '';
+		// check given test class for all implemented instance methods by given interface
+		$testClassType = new \ReflectionClass($testClassName);
+		if (in_array($traitName, $testClassType->getTraitNames())) {
+			$result = TRUE;
+		} else if ($checkParentClasses) {
+			$currentClassType = $testClassType;
+			while (TRUE) {
+				$parentClass = $currentClassType->getParentClass();
+				if ($parentClass === FALSE) break;
+				$parentClassType = new \ReflectionClass($parentClass->getName());
+				if (in_array($traitName, $parentClassType->getTraitNames())) {
+					$result = TRUE;
+					break;
+				} else {
+					$currentClassType = $parentClassType;
+				}
+			}
+		}
+		if (!$result) 
+			$errorMsg = "Class `$testClassName` doesn't implement trait `$traitName`.";
 		// return result or thrown an exception
 		if ($result) return TRUE;
 		if (!$throwException) return FALSE;

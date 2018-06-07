@@ -13,23 +13,23 @@
 
 namespace MvcCore;
 
-include_once(__DIR__ . '/Application.php'); // because of static init
+//include_once(__DIR__ . '/Application.php');
 //include_once(__DIR__ . '/Interfaces/IView.php');
 
 /**
  * Core view:
  * - Static storage for
- *   - commonly used doctype
+ *   - commonly used document type
  *   - common views extension
  *   - common directories names containing view scripts
  *   - common views helpers namespaces
- * - It's possible to use this class for any controller, subcontroller or form.
- * - View prerender preparing and rendering.
+ * - It's possible to use this class for any controller, sub controller or form.
+ * - View pre render preparing and rendering.
  * - View helpers management on demand:
  *   - Creating by predefined class namespaces.
  *   - global static helpers instances storage and repeatable calling.
  * - Views sub scripts relative path solving in:
- *   `<?php $this->renderScript('./any-subdirectory/script-to-render.php'); ?>`
+ *   `<?php $this->RenderScript('./any-subdirectory/script-to-render.php'); ?>`
  * - `Url()` - proxy method from `\MvcCore\Router` targeting to configured router.
  * - `AssetUrl()` - proxy method from `\MvcCore\Controller`.
  * - Magic calls:
@@ -42,6 +42,55 @@ include_once(__DIR__ . '/Application.php'); // because of static init
  */
 class View implements Interfaces\IView
 {
+	/**
+	 * Controller instance.
+	 * @var \MvcCore\Controller|\MvcCore\Interfaces\IController
+	 */
+	protected $controller = NULL;
+
+	/**
+	 * All other private properties.
+	 * @var array
+	 */
+	protected $__protected = [
+		/**
+		  * Rendered content.
+		  * @var string
+		  */
+		'content'			=> '',
+		/**
+		  * Variables store, setted (always from controller)
+		  * throught `__set()` magic function.
+		  * @var array
+		  */
+		'store'				=> [],
+		/**
+		  * Helpers instances storage for current view instance.
+		  * Keys in array are helper method names.
+		  * Every view has it's own helpers storage to recognize
+		  * if helper has been already used inside current view or not.
+		  * @var array
+		  */
+		'helpers'			=> [],
+		/**
+		  * Currently rendered php/phtml file path(s).
+		  * @var array
+		  */
+		'renderedFullPaths'	=> [],
+		/**
+		  * `\ReflectionClass` instances to get additional values
+		  * from controller or form or any other parent instance
+		  * by `__get()` method.
+		  * @var array
+		  */
+		'reflectionTypes'	=> [],
+		/**
+		  * Currently searched reflection class property name.
+		  * @var string|NULL
+		  */
+		'reflectionName'	=> NULL,
+	];
+
 	/**
 	 * View scripts files extension with leading dot char.
 	 * Default value: `".phtml"`.
@@ -101,19 +150,6 @@ class View implements Interfaces\IView
 	];
 
 	/**
-	 * Originaly declared internal view properties to protect their
-	 * possible overwriting by `__set()` or `__get()` magic methods.
-	 * @var array
-	 */
-	protected static $protectedProperties = [
-		'_controller'		=> 1,
-		'_store'			=> 1,
-		'_helpers'			=> 1,
-		'_content'			=> 1,
-		'_renderedFullPaths'=> 1,
-	];
-
-	/**
 	 * Global helpers instances storrage.
 	 * Keys in array are helper method names.
 	 * These helpers instances are used for all views.
@@ -132,40 +168,6 @@ class View implements Interfaces\IView
 	 * @var string|NULL
 	 */
 	private static $_toolClass = NULL;
-
-	/**
-	 * Controller instance.
-	 * @var \MvcCore\Controller|\MvcCore\Interfaces\IController
-	 */
-	private $_controller = NULL;
-
-	/**
-	 * Rendered content.
-	 * @var string
-	 */
-	private $_content = '';
-
-	/**
-	 * Variables store, setted (always from controller)
-	 * throught `__set()` magic function.
-	 * @var array
-	 */
-	private $_store = [];
-
-	/**
-	 * Helpers instances storrage for current view instance.
-	 * Keys in array are helper method names.
-	 * Every view has it's own helpers storrage to recognize
-	 * if helper has been already used inside current view or not.
-	 * @var array
-	 */
-	private $_helpers = [];
-
-	/**
-	 * Currently rendered php/html file path(s).
-	 * @var array
-	 */
-	private $_renderedFullPaths = [];
 
 	/**
 	 * Return always new instance of staticly called class, no singleton.
@@ -192,10 +194,10 @@ class View implements Interfaces\IView
 	 * Set view scripts files extension.
 	 * given value could be with or without leading dot char.
 	 * @param string $extension Extension with or without leading dot char.
-	 * @return void
+	 * @return string
 	 */
 	public static function SetExtension ($extension = '.phtml') {
-		static::$extension = $extension;
+		return static::$extension = $extension;
 	}
 
 	/**
@@ -227,10 +229,10 @@ class View implements Interfaces\IView
 	 * - `XML`   - `\MvcCore\Interfaces\IView::DOCTYPE_XML`
 	 * Default value: `HTML5`.
 	 * @param string $doctype
-	 * @return void
+	 * @return string
 	 */
 	public static function SetDoctype ($doctype = \MvcCore\Interfaces\IView::DOCTYPE_HTML5) {
-		static::$doctype = $doctype;
+		return static::$doctype = $doctype;
 	}
 
 	/**
@@ -250,10 +252,10 @@ class View implements Interfaces\IView
 	 * is `"Layouts"`, so layouts app path
 	 * is `"/App/Views/Layouts"`.
 	 * @param string $layoutsDir
-	 * @return void
+	 * @return string
 	 */
 	public static function SetLayoutsDir ($layoutsDir = 'Layouts') {
-		static::$layoutsDir = $layoutsDir;
+		return static::$layoutsDir = $layoutsDir;
 	}
 
 	/**
@@ -273,10 +275,10 @@ class View implements Interfaces\IView
 	 * Default value is `"Scripts"`, so scripts app path
 	 * is `"/App/Views/Scripts"`.
 	 * @param string $scriptsDir
-	 * @return void
+	 * @return string
 	 */
 	public static function SetScriptsDir ($scriptsDir = 'Scripts') {
-		static::$scriptsDir = $scriptsDir;
+		return static::$scriptsDir = $scriptsDir;
 	}
 
 	/**
@@ -296,10 +298,10 @@ class View implements Interfaces\IView
 	 * Default value is `"Helpers"`, so scripts app path
 	 * is `"/App/Views/Helpers"`.
 	 * @param string $helpersDir
-	 * @return void
+	 * @return string
 	 */
 	public static function SetHelpersDir ($helpersDir = 'Helpers') {
-		static::$helpersDir = $helpersDir;
+		return static::$helpersDir = $helpersDir;
 	}
 
 	/**
@@ -335,34 +337,13 @@ class View implements Interfaces\IView
 	 * @return string
 	 */
 	public static function GetViewScriptFullPath ($typePath = '', $corectedRelativePath = '') {
-		if (self::$_viewScriptsFullPathBase === NULL) 
+		if (self::$_viewScriptsFullPathBase === NULL)
 			self::_initViewScriptsFullPathBase();
 		return implode('/', [
 			self::$_viewScriptsFullPathBase,
 			$typePath,
 			$corectedRelativePath . static::$extension
 		]);
-	}
-	
-	/**
-	 * Get originaly declared internal view properties to protect their
-	 * possible overwriting by `__set()` or `__get()` magic methods.
-	 * Keys are names for protected properties names, values could be anything.
-	 * @return array
-	 */
-	public static function GetProtectedProperties () {
-		return static::$protectedProperties;
-	}
-	
-	/**
-	 * Set originaly declared internal view properties to protect their
-	 * possible overwriting by `__set()` or `__get()` magic methods.
-	 * Keys must be names for protected properties names, values could be anything.
-	 * @param array $protectedProperties Keys must be names for protected properties names, values could be anything.
-	 * @return array
-	 */
-	public static function SetProtectedProperties (array $protectedProperties = []) {
-		return static::$protectedProperties = $protectedProperties;
 	}
 
 	/**
@@ -371,7 +352,7 @@ class View implements Interfaces\IView
 	 * @return \MvcCore\View
 	 */
 	public function & SetController (\MvcCore\Interfaces\IController & $controller) {
-		$this->_controller = $controller;
+		$this->controller = $controller;
 		return $this;
 	}
 
@@ -380,33 +361,7 @@ class View implements Interfaces\IView
 	 * @return \MvcCore\Controller
 	 */
 	public function & GetController () {
-		return $this->_controller;
-	}
-	
-	/**
-	 * Set up all instance public and instance protected properties from given controller
-	 * instance into current store by reflection class. If there is any already existing 
-	 * key in current store - overwrite it.
-	 * @param \MvcCore\Controller|\MvcCore\Interfaces\IController $controller
-	 * @param bool $overwriteExistingKeys If any property name already exist in view store, overwrite it by given value by default.
-	 * @param int $reflectionPropertiesFlags Default value is `768` for `\ReflectionProperty::IS_PUBLIC | \ReflectionProperty::IS_PROTECTED`.
-	 * @return \MvcCore\View
-	 */
-	public function & SetUpValuesFromController (
-		\MvcCore\Interfaces\IController & $controller, 
-		$overwriteExistingKeys = TRUE,
-		$reflectionPropertiesFlags = 768/*\ReflectionProperty::IS_PUBLIC | \ReflectionProperty::IS_PROTECTED*/
-	) {
-		$type = new \ReflectionClass($controller);
-		/** @var $props \ReflectionProperty[] */
-		$props = $type->getProperties($reflectionPropertiesFlags);
-		foreach ($props as $prop) {
-			if (isset(static::$protectedProperties[$prop->name])) continue;
-			if (!$overwriteExistingKeys && isset($this->_store[$prop->name])) continue;
-			if ($prop->isProtected() || $prop->isPrivate()) $prop->setAccessible(TRUE);
-			$this->_store[$prop->name] = $prop->getValue($controller);
-		}
-		return $this;
+		return $this->controller;
 	}
 
 	/**
@@ -416,13 +371,15 @@ class View implements Interfaces\IView
 	 * @param bool $overwriteExistingKeys If any property name already exist in view store, overwrite it by given value by default.
 	 * @return \MvcCore\View
 	 */
-	public function & SetUpValuesFromView (\MvcCore\Interfaces\IView & $view, $overwriteExistingKeys = TRUE) {
+	public function & SetUpStore (\MvcCore\Interfaces\IView & $view, $overwriteExistingKeys = TRUE) {
+		$currentStore = & $this->__protected['store'];
+		$viewStore = & $view->__protected['store'];
 		if ($overwriteExistingKeys) {
-			$this->_store = array_merge($this->_store, $view->_store);
+			$this->__protected['store'] = array_merge($currentStore, $viewStore);
 		} else {
-			foreach ($view->_store as $key => & $value)
-				if (!isset($view->_store))
-					$view->_store[$key] = & $value;
+			foreach ($viewStore as $key => & $value)
+				if (!array_key_exists($key, $currentStore))
+					$currentStore[$key] = & $value;
 		}
 		return $this;
 	}
@@ -432,7 +389,7 @@ class View implements Interfaces\IView
 	 * @return string
 	 */
 	public function & GetContent () {
-		return $this->_content;
+		return $this->__protected['content'];
 	}
 
 	/**
@@ -442,9 +399,10 @@ class View implements Interfaces\IView
 	 */
 	public function GetCurrentViewFullPath () {
 		$result = NULL;
-		$count = count($this->_renderedFullPaths);
+		$renderedFullPaths = & $this->__protected['renderedFullPaths'];
+		$count = count($renderedFullPaths);
 		if ($count > 0)
-			$result = $this->_renderedFullPaths[$count - 1];
+			$result = $renderedFullPaths[$count - 1];
 		return $result;
 	}
 
@@ -473,11 +431,12 @@ class View implements Interfaces\IView
 	 */
 	public function GetParentViewFullPath () {
 		$result = NULL;
-		$count = count($this->_renderedFullPaths);
+		$renderedFullPaths = & $this->__protected['renderedFullPaths'];
+		$count = count($renderedFullPaths);
 		if ($count > 1) {
-			$result = $this->_renderedFullPaths[$count - 2];
+			$result = $renderedFullPaths[$count - 2];
 		} else {
-			$controller = $this->_controller;
+			$controller = $this->controller;
 			$parentCtrl = $controller->GetParentController();
 			if ($parentCtrl !== NULL) {
 				while (TRUE) {
@@ -541,8 +500,8 @@ class View implements Interfaces\IView
 	 * @param string $content
 	 * @return string
 	 */
-	public function & RenderLayoutAndContent ($relativePath = '', $content = '') {
-		$this->_content = $content;
+	public function & RenderLayoutAndContent ($relativePath = '', & $content = '') {
+		$this->__protected['content'] = & $content;
 		return $this->Render(static::$layoutsDir, $relativePath);
 	}
 
@@ -550,8 +509,8 @@ class View implements Interfaces\IView
 	 * Render controller template and all necessary layout
 	 * templates and return rendered result as reference.
 	 * @param string $typePath By default: `"Layouts" | "Scripts"`. It could be `"Forms" | "Forms/Fields"` etc...
-	 * @param string $relativePath 
-	 * @throws \Exception
+	 * @param string $relativePath
+	 * @throws \InvalidArgumentException Template not found in path: `$viewScriptFullPath`.
 	 * @return string
 	 */
 	public function & Render ($typePath = '', $relativePath = '') {
@@ -562,13 +521,14 @@ class View implements Interfaces\IView
 		);
 		$viewScriptFullPath = static::GetViewScriptFullPath($typePath, $relativePath);
 		if (!file_exists($viewScriptFullPath)) {
-			throw new \InvalidArgumentException('['.__CLASS__."] Template not found in path: '$viewScriptFullPath'.");
+			throw new \InvalidArgumentException('['.__CLASS__."] Template not found in path: `$viewScriptFullPath`.");
 		}
-		$this->_renderedFullPaths[] = $viewScriptFullPath;
+		$renderedFullPaths = & $this->__protected['renderedFullPaths'];
+		$renderedFullPaths[] = $viewScriptFullPath;
 		ob_start();
 		include($viewScriptFullPath);
 		$result = ob_get_clean();
-		array_pop($this->_renderedFullPaths); // unset last
+		array_pop($renderedFullPaths); // unset last
 		return $result;
 	}
 
@@ -583,7 +543,8 @@ class View implements Interfaces\IView
 		ob_start();
 		try {
 			eval(' ?'.'>'.$content.'<'.'?php ');
-		} catch (\Exception $e) {
+		}
+		catch (\Exception $e) {
 			throw $e;
 		}
 		$content = ob_get_clean();
@@ -609,7 +570,7 @@ class View implements Interfaces\IView
 	 * @return string
 	 */
 	public function Url ($controllerActionOrRouteName = 'Index:Index', $params = []) {
-		return $this->_controller->GetRouter()->Url($controllerActionOrRouteName, $params);
+		return $this->controller->GetRouter()->Url($controllerActionOrRouteName, $params);
 	}
 
 	/**
@@ -619,7 +580,7 @@ class View implements Interfaces\IView
 	 * @return string
 	 */
 	public function AssetUrl ($path = '') {
-		return $this->_controller->AssetUrl($path);
+		return $this->controller->AssetUrl($path);
 	}
 
 	/**
@@ -634,8 +595,9 @@ class View implements Interfaces\IView
 		$setUpViewAgain = FALSE;
 		$implementsIHelper = FALSE;
 		$instance = NULL;
-		if (isset($this->_helpers[$helperName])) {
-			$instance = & $this->_helpers[$helperName];
+		$helpers = & $this->__protected['helpers'];
+		if (isset($helpers[$helperName])) {
+			$instance = & $helpers[$helperName];
 		} else if (isset(self::$_globalHelpers[$helperName])) {
 			$globalHelpersRecord = & self::$_globalHelpers[$helperName];
 			$instance = & $globalHelpersRecord[0];
@@ -643,7 +605,7 @@ class View implements Interfaces\IView
 			$setUpViewAgain = TRUE;
 		} else {
 			$helperFound = FALSE;
-			if (self::$_toolClass === NULL) 
+			if (self::$_toolClass === NULL)
 				self::$_toolClass = \MvcCore\Application::GetInstance()->GetToolClass();
 			$toolClass = self::$_toolClass;
 			$helpersInterface = self::HELPERS_INTERFACE_CLASS_NAME;
@@ -670,7 +632,7 @@ class View implements Interfaces\IView
 		}
 		if ($setUpViewAgain) {
 			if ($implementsIHelper) $instance->SetView($this);
-			$this->_helpers[$helperName] = & $instance;
+			$helpers[$helperName] = & $instance;
 		}
 		return $instance;
 	}
@@ -686,7 +648,7 @@ class View implements Interfaces\IView
 	public function & SetHelper ($helperName, & $instance, $forAllTemplates = TRUE) {
 		$implementsIHelper = FALSE;
 		if ($forAllTemplates) {
-			if (self::$_toolClass === NULL) 
+			if (self::$_toolClass === NULL)
 				self::$_toolClass = \MvcCore\Application::GetInstance()->GetToolClass();
 			$toolClass = self::$_toolClass;
 			$helpersInterface = self::HELPERS_INTERFACE_CLASS_NAME;
@@ -694,69 +656,86 @@ class View implements Interfaces\IView
 			$implementsIHelper = $toolClass::CheckClassInterface($className, $helpersInterface, FALSE, FALSE);
 			self::$_globalHelpers[$helperName] = [& $instance, $implementsIHelper];
 		}
-		$this->_helpers[$helperName] = & $instance;
+		$this->__protected['helpers'][$helperName] = & $instance;
 		if ($implementsIHelper) $instance->SetView($this);
 		return $this;
 	}
 
 	/**
-	 * Set any value into view context internal store
-	 * except system keys declared in `static::$protectedProperties`.
+	 * Set any value into view context internal store.
 	 * @param string $name
 	 * @param mixed $value
-	 * @throws \Exception
 	 * @return bool
 	 */
 	public function __set ($name, $value) {
-		if (isset(static::$protectedProperties[$name])) {
-			throw new \InvalidArgumentException(
-				'['.__CLASS__."] It's not possible to change property: '$name' originaly declared in class ".__CLASS__.'.'
-			);
-		}
-		return $this->_store[$name] = & $value;
+		return $this->__protected['store'][$name] = & $value;
 	}
 
 	/**
-	 * Get any value from view context internal store
-	 * except system keys declared in `static::$protectedProperties`.
+	 * Get any value by given name existing in local store. If there is no value
+	 * in local store by given name, try to get result value into store by
+	 * controller reflection class from controller instance property.
 	 * @param string $name
-	 * @throws \Exception
 	 * @return mixed
 	 */
 	public function __get ($name) {
-		if (isset(static::$protectedProperties[$name])) {
-			throw new \InvalidArgumentException(
-				'['.__CLASS__."] It's not possible to get internal private property: '$name' in class ".__CLASS__.'.'
-			);
+		$store = & $this->__protected['store'];
+		// if property is in view store - return it
+		if (array_key_exists($name, $store))
+			return $store[$name];
+		// if property is not in view store - try to get it from controller and set it into local view store
+		if ($controllerType = $this->getReflectionClass('controller')) {
+			if ($controllerType->hasProperty($name)) {
+				/** @var $property \ReflectionProperty */
+				$property = $controllerType->getProperty($name);
+				if (!$property->isStatic()) {
+					if (!$property->isPublic()) $property->setAccessible (TRUE); // protected or private
+					$value = $property->getValue($this->controller);
+					$store[$name] = & $value;
+					return $value;
+				}
+			}
 		}
-		return isset($this->_store[$name]) ? $this->_store[$name] : NULL;
+		// return null, if property is not in local store an even not in controller
+		return NULL;
 	}
 
 	/**
-	 * Get if any value from view context internal store exists
-	 * except system keys declared in `static::$protectedProperties`.
+	 * Get `TRUE` if any value by given name exists in
+	 * local view store or in local controller instance.
 	 * @param string $name
 	 * @return bool
 	 */
 	public function __isset ($name) {
-		if (isset(static::$protectedProperties[$name])) return TRUE;
-		return isset($this->_store[$name]);
+		$store = & $this->__protected['store'];
+		// if property is in view store - return it
+		if (array_key_exists($name, $store)) return TRUE;
+		// if property is not in view store - try to get it from controller and set it into local view store
+		if ($controllerType = $this->getReflectionClass('controller')) {
+			if ($controllerType->hasProperty($name)) {
+				/** @var $property \ReflectionProperty */
+				$property = $controllerType->getProperty($name);
+				if (!$property->isStatic()) {
+					if (!$property->isPublic()) $property->setAccessible (TRUE); // protected or private
+					$value = $property->getValue($this->controller);
+					$store[$name] = & $value;
+					return TRUE;
+				}
+			}
+		}
+		// property is not in local store and even in controller instance, return `FALSE`
+		return FALSE;
 	}
 
 	/**
-	 * Unset any value from view context internal store
-	 * except system keys declared in `static::$protectedProperties`.
+	 * Unset any value from view context internal store.
 	 * @param string $name
 	 * @return void
 	 */
 	public function __unset ($name) {
-		if (isset(static::$protectedProperties[$name])) {
-			throw new \InvalidArgumentException(
-				'['.__CLASS__."] It's not possible to unset internal private property: '$name' in class ".__CLASS__.'.'
-			);
-		}
-		if (isset($this->_store[$name]))
-			unset($this->_store[$name]);
+		$store = & $this->__protected['store'];
+		if (isset($store[$name]))
+			unset($store[$name]);
 	}
 
 	/**
@@ -784,6 +763,35 @@ class View implements Interfaces\IView
 	}
 
 	/**
+	 * Get cached reflection class instance about given name from current `$this` context.
+	 * If given name doesn't exists in local context, return `NULL`.
+	 * @param string $currentContextObjectName Local context property name to get reflection class about.
+	 * @return \ReflectionClass|NULL
+	 */
+	protected function & getReflectionClass ($currentContextObjectName) {
+		$privates = & $this->__protected;
+
+		$reflectionTypes = & $privates['reflectionTypes'];
+		if (isset($reflectionTypes[$currentContextObjectName])) {
+			return $reflectionTypes[$currentContextObjectName];
+		}
+		// prevent inifinite loop
+		if ($privates['reflectionName'] === $currentContextObjectName) {
+			$privates['reflectionName'] = NULL;
+			return NULL;
+		}
+		$privates['reflectionName'] = $currentContextObjectName;
+		$currentContextObject = $this->{$currentContextObjectName};
+		if ($currentContextObject !== NULL) {
+			$reflectionType = new \ReflectionClass($currentContextObject);
+			$reflectionTypes[$currentContextObjectName] = & $reflectionType;
+			return $reflectionType;
+		}
+		$privates['reflectionName'] = NULL;
+		return NULL;
+	}
+
+	/**
 	 * If relative path declared in view starts with `"./anything/else.phtml"`,
 	 * then change relative path to correct `"./"` context and return full path.
 	 * @param string $typePath
@@ -793,12 +801,13 @@ class View implements Interfaces\IView
 	private function _correctRelativePath ($typePath, $relativePath) {
 		$result = str_replace('\\', '/', $relativePath);
 		if (substr($relativePath, 0, 2) == './') {
-			if (self::$_viewScriptsFullPathBase === NULL) 
+			if (self::$_viewScriptsFullPathBase === NULL)
 				self::_initViewScriptsFullPathBase();
 			$typedViewDirFullPath = implode('/', [
 				self::$_viewScriptsFullPathBase, $typePath
 			]);
-			$lastRenderedFullPath = $this->_renderedFullPaths[count($this->_renderedFullPaths) - 1];
+			$renderedFullPaths = & $this->__protected['renderedFullPaths'];
+			$lastRenderedFullPath = $renderedFullPaths[count($renderedFullPaths) - 1];
 			$renderedRelPath = substr($lastRenderedFullPath, strlen($typedViewDirFullPath));
 			$renderedRelPathLastSlashPos = strrpos($renderedRelPath, '/');
 			if ($renderedRelPathLastSlashPos !== FALSE) {
@@ -826,7 +835,7 @@ class View implements Interfaces\IView
 
 	/**
 	 * Static initialization to complete
-	 * `static::$helpersNamespaces` 
+	 * `static::$helpersNamespaces`
 	 * by application configuration once.
 	 * @return void
 	 */

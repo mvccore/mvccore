@@ -180,16 +180,6 @@ class Controller implements Interfaces\IController
 	 * @var \MvcCore\Controller[]|\MvcCore\Interfaces\IController[]
 	 */
 	protected $childControllers = [];
-	
-	/**
-	 * PHP reflection properties flags to initialize automaticly defined properties types 
-	 * and it's values from controller `$this` context into view object before rendering.
-	 * Default value is `0` to not set up anything automaticly if you want to initialize 
-	 * into view only explicitly defined properties. Defined flags could be like: 
-	 * `\ReflectionProperty::IS_PUBLIC | \ReflectionProperty::IS_PROTECTED` etc...
-	 * @var int
-	 */
-	protected $autoInitPropsInView = 0;
 
 	/**
 	 * All asset mime types possibly called throught `\MvcCore\Controller::AssetAction();`.
@@ -545,34 +535,6 @@ class Controller implements Interfaces\IController
 		$this->viewEnabled = $viewEnabled;
 		return $this;
 	}
-	
-	/**
-	 * Get PHP reflection properties flags integer value if all defined properties types 
-	 * and it's values from controller `$this` context are automaticly initialized 
-	 * into view object before rendering. Or get `0` if only explicitly defined properties 
-	 * are initialized in view. Default value is `0` to not automaticly set anything to 
-	 * optimize execution speed. Defined flags could be like: 
-	 * `\ReflectionProperty::IS_PUBLIC | \ReflectionProperty::IS_PROTECTED` etc...
-	 * @return int
-	 */
-	public function GetAutoInitPropsInView () {
-		return $this->autoInitPropsInView;
-	}
-	
-	/**
-	 * Set PHP reflection properties flags to initialize automaticly defined properties types 
-	 * and it's values from controller `$this` context into view object before rendering.
-	 * Or set `0` if you don't want to set up anything automaticly and if you want to initialize 
-	 * into view only explicitly defined properties. Default value is `0` to not automaticly 
-	 * set anything to optimize execution speed. Defined flags could be like: 
-	 * `\ReflectionProperty::IS_PUBLIC | \ReflectionProperty::IS_PROTECTED` etc...
-	 * @param int $autoInitPropsInView Default value is `768` for `\ReflectionProperty::IS_PUBLIC | \ReflectionProperty::IS_PROTECTED`.
-	 * @return \MvcCore\Controller
-	 */
-	public function & SetAutoInitPropsInView ($autoInitPropsInView = 768/*\ReflectionProperty::IS_PUBLIC | \ReflectionProperty::IS_PROTECTED*/) {
-		$this->autoInitPropsInView = $autoInitPropsInView;
-		return $this;
-	}
 
 	/**
 	 * - Register child controller to process dispatching on it later.
@@ -604,7 +566,6 @@ class Controller implements Interfaces\IController
 				->SetResponse($this->response)
 				->SetRouter($this->router)
 				->SetLayout($this->layout)
-				->SetAutoInitPropsInView($this->autoInitPropsInView)
 				->SetUser($this->user);
 		}
 		return $this;
@@ -721,11 +682,8 @@ class Controller implements Interfaces\IController
 		if ($this->dispatchState == 1) $this->PreDispatch();
 		if ($this->dispatchState < 4 && $this->viewEnabled) {
 			$currentCtrlIsTopMostParent = $this->parentController === NULL;
-			// set up values
-			if ($this->autoInitPropsInView > 0) 
-				$this->view->SetUpValuesFromController($this, FALSE, $this->autoInitPropsInView);
 			if (!$currentCtrlIsTopMostParent) {
-				$this->view->SetUpValuesFromView($this->parentController->GetView(), FALSE);
+				$this->view->SetUpStore($this->parentController->GetView(), FALSE);
 			}
 			foreach ($this->childControllers as $ctrlKey => $childCtrl) {
 				if (!is_numeric($ctrlKey) && !isset($this->view->$ctrlKey))
@@ -741,7 +699,7 @@ class Controller implements Interfaces\IController
 				/** @var $layout \MvcCore\View */
 				$layout = $viewClass::CreateInstance()
 					->SetController($this)
-					->SetUpValuesFromView($this->view, TRUE);
+					->SetUpStore($this->view, TRUE);
 				$outputResult = $layout->RenderLayoutAndContent($this->layout, $actionResult);
 				unset($layout, $this->view);
 				// set up response only

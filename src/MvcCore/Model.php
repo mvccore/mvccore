@@ -325,7 +325,7 @@ class Model implements Interfaces\IModel {
 			$conArgs = (object) self::$connectionArguments[isset(self::$connectionArguments[$cfg->driver]) ? $cfg->driver : 'default'];
 			$connection = NULL;
 			// If database is filesystem based, complete app root and extend
-			// relative path in $cfg->dbname to absolute path
+			// relative path in $cfg->database to absolute path
 			if ($conArgs->fileDb) {
 				$appRoot = \MvcCore\Application::GetInstance()->GetRequest()->GetAppRoot();
 				if (strpos($appRoot, 'phar://') !== FALSE) {
@@ -372,7 +372,7 @@ class Model implements Interfaces\IModel {
 	 *		),
 	 *		// connection name: 'mssql-tests':
 	 *		'mssql-tests' => array(
-	 *			'driver'	=> 'mssql',	'host' => '.\SQLEXPRESS',
+	 *			'driver'	=> 'sqlsrv',	'host' => '.\SQLEXPRESS',
 	 *			'user'		=> 'sa',	'password' => '1234', 'database' => 'tests',
 	 *		)
 	 *	);`
@@ -385,7 +385,7 @@ class Model implements Interfaces\IModel {
 	 *		),
 	 *		// connection index: 1:
 	 *		array(
-	 *			'driver'	=> 'mssql',	'host' => '.\SQLEXPRESS',
+	 *			'driver'	=> 'sqlsrv',	'host' => '.\SQLEXPRESS',
 	 *			'user'		=> 'sa',	'password' => '1234', 'database' => 'tests',
 	 *		)
 	 *	);`
@@ -408,6 +408,8 @@ class Model implements Interfaces\IModel {
 	 */
 	public static function & GetConfig ($connectionName = NULL) {
 		if (static::$configs === NULL) static::loadConfigs(TRUE);
+		if ($connectionName == NULL) $connectionName = static::$connectionName;
+		if ($connectionName == NULL) $connectionName = self::$connectionName;
 		return static::$configs[$connectionName];
 	}
 
