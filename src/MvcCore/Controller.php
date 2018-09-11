@@ -301,7 +301,7 @@ class Controller implements Interfaces\IController
 			if ($pos === FALSE) continue;
 			$className = trim(mb_substr($docComment, 0, $pos));
 			if (!@class_exists($className)) continue;
-			if (!$toolsClass::CheckClassInterface($className, '\\MvcCore\\Interfaces\\IController', FALSE, TRUE)) continue;
+			if (!$toolsClass::CheckClassInterface($className, 'MvcCore\\Interfaces\\IController', FALSE, TRUE)) continue;
 			$instance = $className::CreateInstance();
 			$this->AddChildController($instance, $prop->getName());
 			$prop->setValue($this, $instance);

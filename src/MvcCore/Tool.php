@@ -191,6 +191,7 @@ class Tool implements Interfaces\ITool
 		$result = FALSE;
 		$errorMsg = '';
 		// check given test class for all implemented instance methods by given interface
+		$interfaceName = trim($interfaceName, '\\');
 		$testClassType = new \ReflectionClass($testClassName);
 		if (in_array($interfaceName, $testClassType->getInterfaceNames())) {
 			$result = TRUE;
