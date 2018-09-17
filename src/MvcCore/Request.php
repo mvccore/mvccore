@@ -947,7 +947,7 @@ class Request implements Interfaces\IRequest
 			}
 			$this->referer = $referer;
 		}
-		return $rawInput ? $this->referer : static::htmlSpecialChars($rawInput);
+		return $rawInput ? $this->referer : static::htmlSpecialChars($this->referer);
 	}
 
 	/**

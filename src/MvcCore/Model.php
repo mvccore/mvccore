@@ -219,11 +219,10 @@ class Model implements Interfaces\IModel {
 			} else {
 				continue;
 			}
-			if (preg_match('/@var\s+([^\s]+)/', $property->getDocComment(), $matches)) {
-				list(, $type) = $matches;
-				$pipePos = strpos($type, '|');
-				if ($pipePos !== FALSE) $type = substr($type, 0, $pipePos);
-				settype($value, $type);
+			if ($value !== NULL && preg_match('/@var\s+([^\s]+)/', $property->getDocComment(), $matches)) {
+				list(, $rawType) = $matches;
+				$types = explode('|', $rawType);
+				foreach ($types as $type) if (settype($value, $type)) break;
 			}
 			$this->$propertyName = $value;
 		}

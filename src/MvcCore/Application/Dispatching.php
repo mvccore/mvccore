@@ -275,6 +275,12 @@ trait Dispatching
 		$this->response->Send(); // headers (if still possible) and echo
 		// exit; // Why to force exit? What if we want to do something more?
 		$this->terminated = TRUE;
+		if ($this->controller) {
+			$ctrlType = new \ReflectionClass($this->controller);
+			$dispatchStateProperty = $ctrlType->getProperty('dispatchState');
+			$dispatchStateProperty->setAccessible(TRUE);
+			$dispatchStateProperty->setValue($this->controller, 5);
+		}
 		return $this;
 	}
 
