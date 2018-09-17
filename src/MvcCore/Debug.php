@@ -150,10 +150,10 @@ namespace MvcCore {
 		/**
 		 * Dumps information about any variable in readable format and return it.
 		 * In non-development mode - store dumped variable in `debug.log`.
-		 * @param  mixed  $value	Variable to dump.
-		 * @param  bool   $return	Return output instead of printing it.
-		 * @param  bool   $exit		`TRUE` for last dump call by `xxx();` method to dump and `exit;`.
-		 * @return mixed			Variable itself or dumped variable string.
+		 * @param  mixed  $value		Variable to dump.
+		 * @param  bool   $return		Return output instead of printing it.
+		 * @param  bool   $exit			`TRUE` for last dump call by `xxx();` method to dump and `exit;`.
+		 * @return mixed				Variable itself or dumped variable string.
 		 */
 		public static function Dump ($value, $return = FALSE, $exit = FALSE) {
 			if (static::$originalDebugClass) {
@@ -346,17 +346,6 @@ namespace MvcCore {
 			$content = preg_replace("#\n(\s)#", "\n\t$1", $content) . "\n";
 			if (!static::$logDirectoryInitialized) static::initLogDirectory();
 			$fullPath = static::$LogDirectory . '/' . $priority . '.log';
-			if (!is_dir(static::$LogDirectory)) {
-				if (!mkdir(static::$LogDirectory))
-					throw new \RuntimeException(
-						'['.__CLASS__."] It was not possible to create log directory: `".static::$LogDirectory."`."
-					);
-				if (!is_writable(static::$LogDirectory))
-					if (!chmod(static::$LogDirectory, 0777))
-						throw new \RuntimeException(
-							'['.__CLASS__."] It was not possible to set log directory: `".static::$LogDirectory."` to writeable mode 0777."
-						);
-			}
 			file_put_contents($fullPath, $content, FILE_APPEND);
 			return $fullPath;
 		}
@@ -399,16 +388,21 @@ namespace MvcCore {
 			$appRoot = substr($scriptPath, 0, $lastSlashPos !== FALSE ? $lastSlashPos : strlen($scriptPath));
 			$logDirAbsPath = $appRoot . $logDirRelPath;
 			static::$LogDirectory = $logDirAbsPath;
-
-			if (!is_dir($logDirAbsPath)) mkdir($logDirAbsPath, 0777, TRUE);
-			if (!is_writable($logDirAbsPath)) {
-				try {
-					chmod($logDirAbsPath, 0777);
-				} catch (\Exception $e) {
-					die('['.__CLASS__.'] ' . $e->getMessage());
+			try {
+				if (!is_dir($logDirAbsPath)) {
+					if (!mkdir($logDirAbsPath, 0777, TRUE))
+						throw new \RuntimeException(
+							'['.__CLASS__."] It was not possible to create log directory: `".$logDirAbsPath."`."
+						);
+					if (!is_writable($logDirAbsPath))
+						if (!chmod($logDirAbsPath, 0777))
+							throw new \RuntimeException(
+								'['.__CLASS__."] It was not possible to setup privileges to log directory: `".$logDirAbsPath."` to writeable mode 0777."
+							);
 				}
+			} catch (\Exception $e) {
+				die('['.__CLASS__.'] ' . $e->getMessage());
 			}
-
 			static::$logDirectoryInitialized = TRUE;
 		}
 	}

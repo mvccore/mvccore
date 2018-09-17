@@ -904,7 +904,7 @@ class Route implements Interfaces\IRoute
 		if ($givenParamsKeys) {
 			// `http_build_query()` automaticly converts all XSS chars to entities (`< > & " ' &`):
 			$result .= (mb_strpos($result, '?') !== FALSE ? $queryStringParamsSepatator : '?')
-				. http_build_query($givenParamsKeys, '', $queryStringParamsSepatator);
+				. str_replace('%2F', '/', http_build_query($givenParamsKeys, '', $queryStringParamsSepatator));
 		}
 		return $result;
 	}

@@ -824,12 +824,12 @@ class Router implements Interfaces\IRouter
 		list($dfltCtrl, $dftlAction) = self::$_app->GetDefaultControllerAndActionNames();
 		$result = $this->request->GetBasePath();
 		if ($params || $ctrlPc !== $dfltCtrl || $actionPc !== $dftlAction) {
-			$result .= $this->request->GetScriptName()
+			$result .= ltrim($this->request->GetScriptName(), '/')
 				. '?controller=' . $toolClass::GetDashedFromPascalCase($ctrlPc)
 				. $amp . 'action=' . $toolClass::GetDashedFromPascalCase($actionPc);
 			if ($params) 
 				// `http_build_query()` automaticly converts all XSS chars to entities (`< > & " ' &`):
-				$result .= $amp . http_build_query($params, '', $amp);
+				$result .= $amp . str_replace('%2F', '/', http_build_query($params, '', $amp));
 		}
 		return $result;
 	}

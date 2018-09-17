@@ -33,7 +33,6 @@ namespace MvcCore;
  */
 class Session extends \ArrayObject implements Interfaces\ISession
 {
-
 	/**
 	 * Default session namespace name.
 	 * @var string
@@ -123,7 +122,7 @@ class Session extends \ArrayObject implements Interfaces\ISession
 	 */
 	public static function GetSessionMaxTime () {
 		static::$sessionMaxTime = static::$sessionStartTime;
-		foreach (static::$meta->expirations as $expiration) {
+		foreach (static::$meta->expirations as $sessionNamespaceName => $expiration) {
 			if ($expiration > static::$sessionMaxTime)
 				static::$sessionMaxTime = $expiration;
 		}
