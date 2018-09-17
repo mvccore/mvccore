@@ -824,7 +824,7 @@ class Router implements Interfaces\IRouter
 		list($dfltCtrl, $dftlAction) = self::$_app->GetDefaultControllerAndActionNames();
 		$result = $this->request->GetBasePath();
 		if ($params || $ctrlPc !== $dfltCtrl || $actionPc !== $dftlAction) {
-			$result .= ltrim($this->request->GetScriptName(), '/')
+			$result .= $this->request->GetScriptName()
 				. '?controller=' . $toolClass::GetDashedFromPascalCase($ctrlPc)
 				. $amp . 'action=' . $toolClass::GetDashedFromPascalCase($actionPc);
 			if ($params) 
