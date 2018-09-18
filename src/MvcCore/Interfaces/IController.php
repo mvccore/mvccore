@@ -78,6 +78,23 @@ interface IController
 	public static function CreateInstance ();
 
 	/**
+	 * Try to determinate `\MvcCore\Controller` instance from `debug_bactrace()`,
+	 * where was form created, if no form instance given into form constructor.
+	 * If no previous controller instance founded, `NULL` is returned.
+	 * @return \MvcCore\Interfaces\IController|NULL
+	 */
+	public static function & GetCallerControllerInstance ();
+
+	/**
+	 * Redirect client browser to another place by `"Location: ..."`
+	 * header and call `\MvcCore\Application::GetInstance()->Terminate();`.
+	 * @param string $location
+	 * @param int	$code
+	 * @return void
+	 */
+	public static function Redirect ($location = '', $code = \MvcCore\Interfaces\IResponse::SEE_OTHER);
+
+	/**
 	 * Dispatching controller life cycle by given action.
 	 * This is INTERNAL, not TEMPLATE method, internally
 	 * called in `\MvcCore::DispatchControllerAction();`.
@@ -449,13 +466,4 @@ interface IController
 	 * @return void
 	 */
 	public function Terminate ();
-
-	/**
-	 * Redirect client browser to another place by `"Location: ..."`
-	 * header and call `\MvcCore\Application::GetInstance()->Terminate();`.
-	 * @param string $location
-	 * @param int	$code
-	 * @return void
-	 */
-	public static function Redirect ($location = '', $code = \MvcCore\Interfaces\IResponse::SEE_OTHER);
 }

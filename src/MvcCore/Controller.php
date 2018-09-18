@@ -176,10 +176,16 @@ class Controller implements Interfaces\IController
 	protected $parentController = NULL;
 
 	/**
-	 * Registered sub-controller(s) instances.
+	 * Registered sub-controllers instances.
 	 * @var \MvcCore\Controller[]|\MvcCore\Interfaces\IController[]
 	 */
 	protected $childControllers = [];
+
+	/**
+	 * All registered controllers instances.
+	 * @var \MvcCore\Controller[]|\MvcCore\Interfaces\IController[]
+	 */
+	protected static $allControllers = [];
 
 	/**
 	 * All asset mime types possibly called throught `\MvcCore\Controller::AssetAction();`.
@@ -209,8 +215,54 @@ class Controller implements Interfaces\IController
 	 * before it's created by MvcCore framework to dispatch it.
 	 * @return \MvcCore\Controller
 	 */
-	public static function CreateInstance () {
-		return new static();
+	public static function & CreateInstance () {
+		$instance = new static();
+		self::$allControllers[spl_object_hash($instance)] = & $instance;
+		return $instance;
+	}
+
+	/**
+	 * Try to determinate `\MvcCore\Controller` instance from `debug_bactrace()`,
+	 * where was form created, if no form instance given into form constructor.
+	 * If no previous controller instance founded, `NULL` is returned.
+	 * @return \MvcCore\Controller|\MvcCore\Interfaces\IController|NULL
+	 */
+	public static function & GetCallerControllerInstance () {
+		$result = NULL;
+		$backtraceItems = debug_backtrace(DEBUG_BACKTRACE_PROVIDE_OBJECT);
+		if (count($backtraceItems) < 3) return $result;
+		$calledClass = get_called_class();
+		foreach ($backtraceItems as $backtraceItem) {
+			if (!isset($backtraceItem['object']) || !$backtraceItem['object']) continue;
+			$object = & $backtraceItem['object'];
+			$class = & $backtraceItem['class'];
+			if (
+				$object instanceof \MvcCore\Interfaces\IController &&
+				$class !== $calledClass
+			) {
+				$result = & $object;
+				break;
+			}
+		}
+		return $result;
+	}
+
+	/**
+	 * Redirect client browser to another place by `"Location: ..."`
+	 * header and call `\MvcCore\Application::GetInstance()->Terminate();`.
+	 * @param string $location
+	 * @param int	$code
+	 * @return void
+	 */
+	public static function Redirect ($location = '', $code = \MvcCore\Interfaces\IResponse::SEE_OTHER) {
+		$app = & \MvcCore\Application::GetInstance();
+		$app->GetResponse()
+			->SetCode($code)
+			//->SetHeader('Refresh', '0;url='.$location);
+			->SetHeader('Location', $location);
+		foreach (self::$allControllers as & $controller)
+			$controller->dispatchState = 5;
+		$app->Terminate();
 	}
 
 	/**
@@ -237,11 +289,11 @@ class Controller implements Interfaces\IController
 		// \MvcCore\Debug::Timer('dispatch');
 		$this->Init();
 		if ($this->dispatchState == 5) return; // terminated or redirected
-		if ($this->dispatchState < 1) $this->dispatchState = 1;
+		if ($this->dispatchState < 1) $this->dispatchState = 1;// for cases somebody forget to call parent init
 		// \MvcCore\Debug::Timer('dispatch');
 		$this->PreDispatch();
 		if ($this->dispatchState == 5) return; // terminated or redirected
-		if ($this->dispatchState < 2) $this->dispatchState = 2;
+		if ($this->dispatchState < 2) $this->dispatchState = 2;// for cases somebody forget to call parent predispatch
 		// \MvcCore\Debug::Timer('dispatch');
 		if (method_exists($this, $actionName)) $this->$actionName();
 		if ($this->dispatchState == 5) return; // terminated or redirected
@@ -265,14 +317,20 @@ class Controller implements Interfaces\IController
 	 * @return void
 	 */
 	public function Init () {
-		$this->application->SessionStart();
-		$responseContentType = $this->ajax ? 'text/javascript' : 'text/html';
-		$this->response->SetHeader('Content-Type', $responseContentType);
+		if ($this->dispatchState > 0) return;
+		self::$allControllers[spl_object_hash($this)] = & $this;
+		if ($this->parentController === NULL) {
+			$this->application->SessionStart();
+			$responseContentType = $this->ajax ? 'text/javascript' : 'text/html';
+			$this->response->SetHeader('Content-Type', $responseContentType);
+		}
 		$this->autoInitProperties();
 		foreach ($this->childControllers as $controller) {
 			$controller->Init();
-			$controller->dispatchState = 1;
+			if ($controller->dispatchState == 5) break;
 		}
+		if ($this->dispatchState === 0) 
+			$this->dispatchState = 1;
 	}
 
 	/**
@@ -316,6 +374,7 @@ class Controller implements Interfaces\IController
 	 * @return void
 	 */
 	public function PreDispatch () {
+		if ($this->dispatchState > 1) return;
 		if ($this->dispatchState == 0) $this->Init();
 		if ($this->viewEnabled) {
 			$viewClass = $this->application->GetViewClass();
@@ -323,8 +382,10 @@ class Controller implements Interfaces\IController
 		}
 		foreach ($this->childControllers as $controller) {
 			$controller->PreDispatch();
-			$controller->dispatchState = 2;
+			if ($controller->dispatchState == 5) break;
 		}
+		if ($this->dispatchState == 1) 
+			$this->dispatchState = 2;
 	}
 
 	/**
@@ -552,6 +613,7 @@ class Controller implements Interfaces\IController
 	 * @return \MvcCore\Controller
 	 */
 	public function AddChildController (\MvcCore\Interfaces\IController & $controller, $index = NULL) {
+		self::$allControllers[spl_object_hash($controller)] = & $controller;
 		if (!in_array($controller, $this->childControllers)) {
 			if ($index === NULL) {
 				$this->childControllers[] = & $controller;
@@ -895,22 +957,5 @@ class Controller implements Interfaces\IController
 	public function Terminate () {
 		$this->dispatchState = 5;
 		$this->application->Terminate();
-	}
-
-	/**
-	 * Redirect client browser to another place by `"Location: ..."`
-	 * header and call `\MvcCore\Application::GetInstance()->Terminate();`.
-	 * @param string $location
-	 * @param int	$code
-	 * @return void
-	 */
-	public static function Redirect ($location = '', $code = \MvcCore\Interfaces\IResponse::SEE_OTHER) {
-		$app = \MvcCore\Application::GetInstance();
-		$app->GetResponse()
-			->SetCode($code)
-			//->SetHeader('Refresh', '0;url='.$location);
-			->SetHeader('Location', $location);
-		$app->GetController()->dispatchState = 5;
-		$app->Terminate();
 	}
 }
