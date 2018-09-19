@@ -418,7 +418,7 @@ trait PropsGettersSetters
 	public function & GetRouter () {
 		if ($this->router === NULL) {
 			$routerClass = $this->routerClass;
-			$this->router = $routerClass::GetInstance()->SetRequest($this->GetRequest());
+			$this->router = & $routerClass::GetInstance();
 		}
 		return $this->router;
 	}

@@ -407,11 +407,11 @@ interface IRouter
 	 *   founded, complete `\MvcCore\Router::$currentRoute` with new empty automaticly created route
 	 *   targeting default controller and action by configuration in application instance (`Index:Index`)
 	 *   and route type create by configured `\MvcCore\Application::$routeClass` class name.
-	 * - Return completed `\MvcCore\Router::$currentRoute` or NULL.
+	 * - Return completed `\MvcCore\Router::$currentRoute` or `FALSE` for redirection or `NULL` for not matched.
 	 *
 	 * This method is always called from core routing by:
 	 * - `\MvcCore\Application::Run();` => `\MvcCore\Application::routeRequest();`.
-	 * @return \MvcCore\Interfaces\IRoute
+	 * @return \MvcCore\Interfaces\IRoute|bool|NULL
 	 */
 	public function & Route ();
 

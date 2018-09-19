@@ -143,6 +143,19 @@ class Controller implements Interfaces\IController
 	protected $layout = 'layout';
 
 	/**
+	 * This property is to customize subcontrols template path. `NULL` by default.
+	 * You need to set into this property any custom string as relative path to 
+	 * your template file placed somewhere in `/App/Views/Scripts/`. 
+	 * For example if you want to render template file placed in:
+	 * `/App/Views/Scripts/something/completely/custom.phtml`, you need to set
+	 * up this property to value `something/completely` and then there is 
+	 * necessary to render your template only by calling controller rendering by:
+	 * `$subcontrollerInstance->Render('custom');`
+	 * @var string|NULL
+	 */
+	protected $viewScriptsPath = NULL;
+
+	/**
 	 * If `TRUE`, view object is automaticly created in base controler
 	 * `PreDispatch()` method and view is automaticly rendered with wrapping
 	 * layout view around after controller action is called. Default value is
@@ -362,6 +375,7 @@ class Controller implements Interfaces\IController
 			if (!$toolsClass::CheckClassInterface($className, 'MvcCore\\Interfaces\\IController', FALSE, TRUE)) continue;
 			$instance = $className::CreateInstance();
 			$this->AddChildController($instance, $prop->getName());
+			if (!$prop->isPublic()) $prop->setAccessible(TRUE);
 			$prop->setValue($this, $instance);
 		}
 	}
@@ -575,6 +589,38 @@ class Controller implements Interfaces\IController
 	}
 
 	/**
+	 * Get customized subcontrols template path value. `NULL` by default.
+	 * You need to set into this property any custom string as relative path to 
+	 * your template file placed somewhere in `/App/Views/Scripts/`. 
+	 * For example if you want to render template file placed in:
+	 * `/App/Views/Scripts/something/completely/custom.phtml`, you need to set
+	 * up this property to value `something/completely` and then there is 
+	 * necessary to render your template only by calling controller rendering by:
+	 * `$subcontrollerInstance->Render('custom');`
+	 * @return string|NULL
+	 */
+	public function GetViewScriptsPath () {
+		return $this->viewScriptsPath;
+	}
+
+	/**
+	 * Get customized subcontrols template path value. `NULL` by default.
+	 * You need to set into this property any custom string as relative path to 
+	 * your template file placed somewhere in `/App/Views/Scripts/`. 
+	 * For example if you want to render template file placed in:
+	 * `/App/Views/Scripts/something/completely/custom.phtml`, you need to set
+	 * up this property to value `something/completely` and then there is 
+	 * necessary to render your template only by calling controller rendering by:
+	 * `$subcontrollerInstance->Render('custom');`
+	 * @param string|NULL $viewScriptsPath
+	 * @return \MvcCore\Controller
+	 */
+	public function & SetViewScriptsPath ($viewScriptsPath = NULL) {
+		$this->viewScriptsPath = $viewScriptsPath;
+		return $this;
+	}
+
+	/**
 	 * Get `TRUE` if view is automaticly created in base controler `PreDispatch()` 
 	 * method and if view is automaticly rendered with wrapping layout view 
 	 * around after controller action is called. Or get `FALSE` if no view 
@@ -784,6 +830,12 @@ class Controller implements Interfaces\IController
 	 */
 	protected function renderGetViewScriptPath ($controllerOrActionNameDashed = NULL, $actionNameDashed = NULL) {
 		$currentCtrlIsTopMostParent = $this->parentController === NULL;
+		if ($this->viewScriptsPath !== NULL) {
+			$resultPathItems = [$this->viewScriptsPath];
+			if ($controllerOrActionNameDashed !== NULL) $resultPathItems[] = $controllerOrActionNameDashed;
+			if ($actionNameDashed !== NULL) $resultPathItems[] = $actionNameDashed;
+			return str_replace(['_', '\\'], '/', implode('/', $resultPathItems));
+		}
 		if ($actionNameDashed !== NULL) { // if action defined - take first argument controller
 			$controllerNameDashed = $controllerOrActionNameDashed;
 		} else { // if no action defined - we need to complete controller dashed name
@@ -792,7 +844,8 @@ class Controller implements Interfaces\IController
 			} else {
 				// if controller is child controller - translate classs name
 				// without default controllers directory into dashed name
-				$ctrlsDefaultNamespace = $this->application->GetAppDir() . '\\' . $this->application->GetControllersDir();
+				$ctrlsDefaultNamespace = $this->application->GetAppDir() . '\\' 
+					. $this->application->GetControllersDir();
 				$currentCtrlClassName = get_class($this);
 				if (mb_strpos($currentCtrlClassName, $ctrlsDefaultNamespace) === 0)
 					$currentCtrlClassName = mb_substr($currentCtrlClassName, mb_strlen($ctrlsDefaultNamespace) + 1);
@@ -807,7 +860,7 @@ class Controller implements Interfaces\IController
 					$actionNameDashed = $this->actionName;
 				} else {// if no action name defined - use default action name from core - usually `index`
 					$defaultCtrlAction = $this->application->GetDefaultControllerAndActionNames();
-					$actionNameDashed = $defaultCtrlAction[1];
+					$actionNameDashed = $toolClass::GetDashedFromPascalCase($defaultCtrlAction[1]);
 				}
 			}
 		}

@@ -43,6 +43,13 @@ class Router implements Interfaces\IRouter
 	protected static $instance;
 
 	/**
+	 * Reference to `\MvcCore\Application::GetInstance();` 
+	 * to not call this very time we need app instance.
+	 * @var \MvcCore\Application|\MvcCore\Interfaces\IApplication|NULL
+	 */
+	protected $application = NULL;
+
+	/**
 	 * Internally used `\MvcCore\Request` request object reference for:
 	 * - Routing process in `\MvcCore\Router::Route();` and it's protected submethods.
 	 * - URL addresses completing in `\MvcCore\Router::Url()` and it's protected submethods.
@@ -121,12 +128,6 @@ class Router implements Interfaces\IRouter
 	protected $anyRoutesConfigured = FALSE;
 
 	/**
-	 * Reference to singleton instance in `\MvcCore\Application::GetInstance();`.
-	 * @var \MvcCore\Application|NULL
-	 */
-	private static $_app = NULL;
-
-	/**
 	 * Reference to `\MvcCore\Application::GetInstance()->GetRouterClass();`.
 	 * @var string|NULL
 	 */
@@ -191,17 +192,18 @@ class Router implements Interfaces\IRouter
 	 * @return \MvcCore\Router
 	 */
 	public static function & GetInstance (array $routes = []) {
-		if (!static::$instance) {
+		if (!self::$instance) {
 			/** @var $app \MvcCore\Application */
 			$app = & \MvcCore\Application::GetInstance();
 			self::$_routeClass = $app->GetRouteClass();
 			self::$_toolClass = $app->GetToolClass();
 			$routerClass = $app->GetRouterClass();
 			self::$_routerClass = & $routerClass;
-			self::$_app = & $app;
-			static::$instance = new $routerClass($routes);
+			$instance = new $routerClass($routes);
+			$instance->application = & $app;
+			self::$instance = & $instance;
 		}
-		return static::$instance;
+		return self::$instance;
 	}
 
 	/**
@@ -649,14 +651,14 @@ class Router implements Interfaces\IRouter
 	 *   founded, complete `\MvcCore\Router::$currentRoute` with new empty automaticly created route
 	 *   targeting default controller and action by configuration in application instance (`Index:Index`)
 	 *   and route type create by configured `\MvcCore\Application::$routeClass` class name.
-	 * - Return completed `\MvcCore\Router::$currentRoute` or NULL.
+	 * - Return completed `\MvcCore\Router::$currentRoute` or `FALSE` for redirection or `NULL` for not matched.
 	 *
 	 * This method is always called from core routing by:
 	 * - `\MvcCore\Application::Run();` => `\MvcCore\Application::routeRequest();`.
-	 * @return \MvcCore\Route
+	 * @return \MvcCore\Route|bool|NULL
 	 */
 	public function & Route () {
-		$this->redirectToProperTrailingSlashIfNecessary();
+		if (!$this->redirectToProperTrailingSlashIfNecessary()) return FALSE;
 		$request = & $this->request;
 		$requestCtrlName = $request->GetControllerName();
 		$requestActionName = $request->GetActionName();
@@ -670,7 +672,7 @@ class Router implements Interfaces\IRouter
 			($request->GetPath() == '/' || $request->GetPath() == $request->GetScriptName()) ||
 			$this->routeToDefaultIfNotMatch
 		)) {
-			list($dfltCtrl, $dftlAction) = self::$_app->GetDefaultControllerAndActionNames();
+			list($dfltCtrl, $dftlAction) = $this->application->GetDefaultControllerAndActionNames();
 			$this->SetOrCreateDefaultRouteAsCurrent(
 				\MvcCore\Interfaces\IRouter::DEFAULT_ROUTE_NAME, $dfltCtrl, $dftlAction
 			);
@@ -821,7 +823,7 @@ class Router implements Interfaces\IRouter
 		$toolClass = self::$_toolClass;
 		list($ctrlPc, $actionPc) = explode(':', $controllerActionOrRouteName);
 		$amp = $this->getQueryStringParamsSepatator();
-		list($dfltCtrl, $dftlAction) = self::$_app->GetDefaultControllerAndActionNames();
+		list($dfltCtrl, $dftlAction) = $this->application->GetDefaultControllerAndActionNames();
 		$result = $this->request->GetBasePath();
 		if ($params || $ctrlPc !== $dfltCtrl || $actionPc !== $dftlAction) {
 			$result .= $this->request->GetScriptName()
@@ -880,7 +882,7 @@ class Router implements Interfaces\IRouter
 	 */
 	protected function routeByControllerAndActionQueryString ($requestCtrlName, $requestActionName) {
 		$toolClass = self::$_toolClass;
-		list($ctrlDfltName, $actionDfltName) = self::$_app->GetDefaultControllerAndActionNames();
+		list($ctrlDfltName, $actionDfltName) = $this->application->GetDefaultControllerAndActionNames();
 		$this->SetOrCreateDefaultRouteAsCurrent(
 			\MvcCore\Interfaces\IRouter::DEFAULT_ROUTE_NAME,
 			$toolClass::GetPascalCaseFromDashed($requestCtrlName ?: $ctrlDfltName),
@@ -924,7 +926,7 @@ class Router implements Interfaces\IRouter
 			$routeCtrl = $route->GetController();
 			$routeAction = $route->GetAction();
 			if (!$routeCtrl || !$routeAction) {
-				list($ctrlDfltName, $actionDfltName) = self::$_app->GetDefaultControllerAndActionNames();
+				list($ctrlDfltName, $actionDfltName) = $this->application->GetDefaultControllerAndActionNames();
 				if (!$routeCtrl)
 					$route->SetController(
 						$requestCtrlName
@@ -948,13 +950,13 @@ class Router implements Interfaces\IRouter
 	 * Redirect to proper trailing slash url version only
 	 * if it is necessary by `\MvcCore\Router::$trailingSlashBehaviour`
 	 * and if it is necessary by last character in request path.
-	 * @return void
+	 * @return bool
 	 */
 	protected function redirectToProperTrailingSlashIfNecessary () {
-		if (!$this->trailingSlashBehaviour) return;
+		if (!$this->trailingSlashBehaviour) return TRUE;
 		$path = $this->request->GetPath();
 		if ($path == '/')
-			return; // do not redirect for homepage with trailing slash
+			return TRUE; // do not redirect for homepage with trailing slash
 		if ($path == '') {
 			// add homepage trailing slash and redirect
 			$this->redirect(
@@ -973,6 +975,7 @@ class Router implements Interfaces\IRouter
 				. $this->request->GetQuery(TRUE)
 				. $this->request->GetFragment(TRUE)
 			);
+			return FALSE;
 		} else if ($lastPathChar != '/' && $this->trailingSlashBehaviour == \MvcCore\Interfaces\IRouter::TRAILING_SLASH_ALWAYS) {
 			// add trailing slash and redirect
 			$this->redirect(
@@ -981,7 +984,9 @@ class Router implements Interfaces\IRouter
 				. $this->request->GetQuery(TRUE)
 				. $this->request->GetFragment(TRUE)
 			);
+			return FALSE;
 		}
+		return TRUE;
 	}
 
 	/**

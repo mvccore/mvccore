@@ -268,6 +268,33 @@ interface IController
 	 * @return \MvcCore\Interfaces\IController
 	 */
 	public function & SetLayout ($layout = '');
+	
+	/**
+	 * Get customized subcontrols template path value. `NULL` by default.
+	 * You need to set into this property any custom string as relative path to 
+	 * your template file placed somewhere in `/App/Views/Scripts/`. 
+	 * For example if you want to render template file placed in:
+	 * `/App/Views/Scripts/something/completely/custom.phtml`, you need to set
+	 * up this property to value `something/completely` and then there is 
+	 * necessary to render your template only by calling controller rendering by:
+	 * `$subcontrollerInstance->Render('custom');`
+	 * @return string|NULL
+	 */
+	public function GetViewScriptsPath ();
+
+	/**
+	 * Get customized subcontrols template path value. `NULL` by default.
+	 * You need to set into this property any custom string as relative path to 
+	 * your template file placed somewhere in `/App/Views/Scripts/`. 
+	 * For example if you want to render template file placed in:
+	 * `/App/Views/Scripts/something/completely/custom.phtml`, you need to set
+	 * up this property to value `something/completely` and then there is 
+	 * necessary to render your template only by calling controller rendering by:
+	 * `$subcontrollerInstance->Render('custom');`
+	 * @param string|NULL $viewScriptsPath
+	 * @return \MvcCore\Interfaces\IController
+	 */
+	public function & SetViewScriptsPath ($viewScriptsPath = NULL);
 
 	/**
 	 * Get `TRUE` if view is automaticly created in base controler `PreDispatch()` 

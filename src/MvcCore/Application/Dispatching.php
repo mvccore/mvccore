@@ -97,8 +97,10 @@ trait Dispatching
 	public function RouteRequest () {
 		try {
 			// `GetRouter()` method triggers creating
-			$this->GetRouter()->Route();
-			return TRUE;
+			return $this
+				->GetRouter()
+				->SetRequest($this->GetRequest())
+				->Route() !== FALSE;
 		} catch (\Exception $e) {
 			return $this->DispatchException($e);
 		}
