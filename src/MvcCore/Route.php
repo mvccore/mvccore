@@ -349,7 +349,7 @@ class Route implements Interfaces\IRoute
 	) {
 		$args = func_get_args();
 		$argsCount = count($args);
-		if ($argsCount === 0) return $this;
+		if ($argsCount === 0) return;
 		if (gettype($patternOrConfig) == 'array') {
 			$data = (object) $patternOrConfig;
 			if (isset($data->controllerAction)) {
@@ -709,7 +709,7 @@ class Route implements Interfaces\IRoute
 	 * @return \MvcCore\Route
 	 */
 	public function & SetDefaults ($defaults = [], $lang = NULL) {
-		$this->defaults = $defaults;
+		$this->defaults = & $defaults;
 		return $this;
 	}
 
@@ -749,7 +749,7 @@ class Route implements Interfaces\IRoute
 	 * @return \MvcCore\Route
 	 */
 	public function & SetConstraints ($constraints = [], $lang = NULL) {
-		$this->constraints = $constraints;
+		$this->constraints = & $constraints;
 		foreach ($constraints as $key => $value)
 			if (!isset($this->defaults[$key]))
 				$this->defaults[$key] = NULL;
@@ -819,7 +819,8 @@ class Route implements Interfaces\IRoute
 			list($this->match, $reverse) = $this->initMatch();
 			if ($this->reverse === NULL) $this->reverse = $reverse;
 		}
-		if ($this->method !== NULL && $this->method !== $requestMethod) return $matchedParams;
+		if ($this->method !== NULL && $this->method !== $requestMethod) 
+			return $matchedParams;
 		preg_match_all($this->match, $requestPath, $matchedValues, PREG_OFFSET_CAPTURE);
 		if (isset($matchedValues[0]) && count($matchedValues[0])) {
 			$controllerName = $this->controller ?: '';
