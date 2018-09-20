@@ -384,7 +384,7 @@ interface IRoute
 	 * @param string $lang Lowercase language code, `NULL` by default, not implemented in core.
 	 * @return array|\array[]
 	 */
-	public function & GetDefaults ($lang = NULL);
+	public function GetDefaults ($lang = NULL);
 
 	/**
 	 * Set route rewrited params default values and also any other params default values.
@@ -416,7 +416,7 @@ interface IRoute
 	 * @param string $lang Lowercase language code, `NULL` by default, not implemented in core.
 	 * @return array|\array[]
 	 */
-	public function & GetConstraints ($lang = NULL);
+	public function GetConstraints ($lang = NULL);
 
 	/**
 	 * Set array with param names and their custom regular expression

@@ -354,11 +354,17 @@ class Route implements Interfaces\IRoute
 			$data = (object) $patternOrConfig;
 			if (isset($data->controllerAction)) {
 				list($this->controller, $this->action) = explode(':', $data->controllerAction);
-				$this->name = isset($data->name) ? $data->name : $data->controllerAction;
+				$this->name = isset($data->name) 
+					? $data->name 
+					: $data->controllerAction;
 			} else {
 				$this->controller = isset($data->controller) ? $data->controller : '';
 				$this->action = isset($data->action) ? $data->action : '';
-				$this->name = isset($data->name) ? $data->name : $this->controller . ':' . $this->action ;
+				$this->name = isset($data->name) 
+					? $data->name 
+					: ($this->controller !== '' && $this->action !== ''
+						? $this->controller . ':' . $this->action
+						: NULL);
 			}
 			$this->pattern = isset($data->pattern) ? $data->pattern : NULL;
 			$this->match = isset($data->match) ? $data->match : NULL;
@@ -377,7 +383,7 @@ class Route implements Interfaces\IRoute
 			$this->method = $method;
 		}
 		$this->method = $this->method === NULL ? NULL : strtoupper($this->method);
-		if (!$this->controller && !$this->action && strpos($this->name, ':') !== FALSE) {
+		if (!$this->controller && !$this->action && strpos($this->name, ':') !== FALSE && strlen($this->name) > 1) {
 			list($this->controller, $this->action) = explode(':', $this->name);
 		}
 	}
@@ -691,7 +697,7 @@ class Route implements Interfaces\IRoute
 	 * @param string $lang Lowercase language code, `NULL` by default, not implemented in core.
 	 * @return array|\array[]
 	 */
-	public function & GetDefaults ($lang = NULL) {
+	public function GetDefaults ($lang = NULL) {
 		return $this->defaults;
 	}
 
@@ -728,7 +734,7 @@ class Route implements Interfaces\IRoute
 	 * @param string $lang Lowercase language code, `NULL` by default, not implemented in core.
 	 * @return array|\array[]
 	 */
-	public function & GetConstraints ($lang = NULL) {
+	public function GetConstraints ($lang = NULL) {
 		return $this->constraints;
 	}
 

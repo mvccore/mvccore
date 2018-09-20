@@ -255,8 +255,8 @@ interface IRouter
 	 *		"action"		=> "List",
 	 *		"defaults"		=> array("name" => "default-name",	"color" => "red"),
 	 *	));`
-	 * @param \MvcCore\Interfaces\IRoute|array $route Route instance or
-	 *												  route config array.
+	 * @param \MvcCore\Interfaces\IRoute|array $routeCfgOrRoute Route instance or
+	 *															route config array.
 	 * @param bool $prepend
 	 * @param bool $throwExceptionForDuplication `TRUE` by default. Throw an exception,
 	 *											 if route `name` or route `Controller:Action`
@@ -264,7 +264,7 @@ interface IRouter
 	 *											 is overwriten by new one.
 	 * @return \MvcCore\Interfaces\IRouter
 	 */
-	public function & AddRoute ($route, $prepend = FALSE, $throwExceptionForDuplication = TRUE);
+	public function & AddRoute ($routeCfgOrRoute, $prepend = FALSE, $throwExceptionForDuplication = TRUE);
 
 	/**
 	 * Return `TRUE` if router has any route by given route name, `FALSE` otherwise.

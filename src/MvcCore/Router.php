@@ -40,7 +40,19 @@ class Router implements Interfaces\IRouter
 	 * Current `\MvcCore\Router` singleton instance storage.
 	 * @var \MvcCore\Router
 	 */
-	protected static $instance;
+	protected static $instance = NULL;
+
+	/**
+	 * Reference to `\MvcCore\Application::GetInstance()->GetRouteClass();`.
+	 * @var string|NULL
+	 */
+	protected static $routeClass = NULL;
+
+	/**
+	 * Reference to `\MvcCore\Application::GetInstance()->GetToolClass();`.
+	 * @var string|NULL
+	 */
+	protected static $toolClass = NULL;
 
 	/**
 	 * Reference to `\MvcCore\Application::GetInstance();` 
@@ -127,24 +139,6 @@ class Router implements Interfaces\IRouter
 	 */
 	protected $anyRoutesConfigured = FALSE;
 
-	/**
-	 * Reference to `\MvcCore\Application::GetInstance()->GetRouterClass();`.
-	 * @var string|NULL
-	 */
-	private static $_routerClass = NULL;
-
-	/**
-	 * Reference to `\MvcCore\Application::GetInstance()->GetRouteClass();`.
-	 * @var string|NULL
-	 */
-	private static $_routeClass = NULL;
-
-	/**
-	 * Reference to `\MvcCore\Application::GetInstance()->GetToolClass();`.
-	 * @var string|NULL
-	 */
-	private static $_toolClass = NULL;
-
 
 	/**
 	 * Get singleton instance of `\MvcCore\Router` stored always here.
@@ -195,10 +189,9 @@ class Router implements Interfaces\IRouter
 		if (!self::$instance) {
 			/** @var $app \MvcCore\Application */
 			$app = & \MvcCore\Application::GetInstance();
-			self::$_routeClass = $app->GetRouteClass();
-			self::$_toolClass = $app->GetToolClass();
+			self::$routeClass = $app->GetRouteClass();
+			self::$toolClass = $app->GetToolClass();
 			$routerClass = $app->GetRouterClass();
-			self::$_routerClass = & $routerClass;
 			$instance = new $routerClass($routes);
 			$instance->application = & $app;
 			self::$instance = & $instance;
@@ -360,22 +353,36 @@ class Router implements Interfaces\IRouter
 	 */
 	public function & AddRoutes (array $routes = [], $prepend = FALSE, $throwExceptionForDuplication = TRUE) {
 		if ($prepend) $routes = array_reverse($routes);
-		$routeClass = self::$_routeClass;
+		$routeClass = self::$routeClass;
 		foreach ($routes as $routeName => & $route) {
 			$routeType = gettype($route);
+			$ctrlActionName = mb_strpos($routeName, ':') !== FALSE;
 			$numericKey = is_numeric($routeName);
 			if ($route instanceof \MvcCore\Interfaces\IRoute) {
-				if (!$numericKey) $route->SetName($routeName);
-				$this->AddRoute($route, $prepend, $throwExceptionForDuplication);
+				if (!$numericKey) {
+					if ($ctrlActionName)
+						$route->SetControllerAction($routeName);
+					if ($route->GetName() === NULL) 
+						$route->SetName($routeName);
+				}
+				$this->AddRoute(
+					$route, $prepend, $throwExceptionForDuplication
+				);
 			} else if ($routeType == 'array') {
-				if (!$numericKey) $route['name'] = $routeName;
-				$this->AddRoute($routeClass::CreateInstance($route), $prepend, $throwExceptionForDuplication);
+				if (!$numericKey) 
+					$route[$ctrlActionName ? 'controllerAction'  : 'name'] = $routeName;
+				$this->AddRoute(
+					$this->getRouteInstance($route), 
+					$prepend, $throwExceptionForDuplication
+				);
 			} else if ($routeType == 'string') {
 				// route name is always Controller:Action
-				$this->AddRoute($routeClass::CreateInstance([
-					'name'		=> $routeName,
-					'pattern'	=> $route
-				]), $prepend, $throwExceptionForDuplication);
+				$routeCfgData = ['pattern' => $route];
+				$routeCfgData[$ctrlActionName ? 'controllerAction'  : 'name'] = $routeName;
+				$this->AddRoute(
+					$routeClass::CreateInstance($routeCfgData), 
+					$prepend, $throwExceptionForDuplication
+				);
 			} else {
 				throw new \InvalidArgumentException (
 					"[".__CLASS__."] Route is not possible to assign (key: \"$routeName\", value: " . json_encode($route) . ")."
@@ -423,8 +430,8 @@ class Router implements Interfaces\IRouter
 	 *		"action"		=> "List",
 	 *		"defaults"		=> array("name" => "default-name",	"color" => "red"),
 	 *	));`
-	 * @param \MvcCore\Route|\MvcCore\Interfaces\IRoute|array $route Route instance or
-	 *																 route config array.
+	 * @param \MvcCore\Route|\MvcCore\Interfaces\IRoute|array $routeCfgOrRoute Route instance or
+	 *																		   route config array.
 	 * @param bool $prepend	Optional, if `TRUE`, given route will
 	 *						be prepended, not appended.
 	 * @param bool $throwExceptionForDuplication `TRUE` by default. Throw an exception,
@@ -433,13 +440,8 @@ class Router implements Interfaces\IRouter
 	 *											 is overwriten by new one.
 	 * @return \MvcCore\Router
 	 */
-	public function & AddRoute ($route, $prepend = FALSE, $throwExceptionForDuplication = TRUE) {
-		if ($route instanceof \MvcCore\Interfaces\IRoute) {
-			$instance = & $route;
-		} else {
-			$routeClass = self::$_routeClass;
-			$instance = $routeClass::CreateInstance($route);
-		}
+	public function & AddRoute ($routeCfgOrRoute, $prepend = FALSE, $throwExceptionForDuplication = TRUE) {
+		$instance = & $this->getRouteInstance($routeCfgOrRoute);
 		$routeName = $instance->GetName();
 		$controllerAction = $instance->GetControllerAction();
 		if ($throwExceptionForDuplication) {
@@ -448,8 +450,10 @@ class Router implements Interfaces\IRouter
 				$errorMsgs[] = 'Route with name `'.$routeName.'` has already been defined between router routes.';
 			if (isset($this->urlRoutes[$controllerAction]))
 				$errorMsgs[] = 'Route with `Controller:Action` combination: `'.$controllerAction.'` has already been defined between router routes.';
-			if ($errorMsgs)
+			if ($errorMsgs) {
+				var_dump($this->routes);
 				throw new \InvalidArgumentException('['.__CLASS__.'] '.implode(' ',$errorMsgs));
+			}
 		}
 		if ($prepend) {
 			$newRoutes = [];
@@ -475,7 +479,10 @@ class Router implements Interfaces\IRouter
 		if (is_string($routeOrRouteName)) {
 			return isset($this->routes[$routeOrRouteName]);
 		} else /*if ($routeOrRouteName instanceof \MvcCore\Interfaces\IRoute)*/ {
-			return isset($this->routes[$routeOrRouteName->GetName()]) || isset($this->routes[$routeOrRouteName->GetControllerAction()]);
+			return (
+				isset($this->routes[$routeOrRouteName->GetName()]) || 
+				isset($this->routes[$routeOrRouteName->GetControllerAction()])
+			);
 		}
 		//return FALSE;
 	}
@@ -705,11 +712,11 @@ class Router implements Interfaces\IRouter
 		if (strpos($controllerActionOrRouteName, ':') !== FALSE) {
 			list($ctrlPc, $actionPc) = explode(':', $controllerActionOrRouteName);
 			if (!$ctrlPc) {
-				$toolClass = self::$_toolClass;
+				$toolClass = self::$toolClass;
 				$ctrlPc = $toolClass::GetPascalCaseFromDashed($request->GetControllerName());
 			}
 			if (!$actionPc) {
-				$toolClass = self::$_toolClass;
+				$toolClass = self::$toolClass;
 				$actionPc = $toolClass::GetPascalCaseFromDashed($request->GetActionName());
 			}
 			$controllerActionOrRouteName = "$ctrlPc:$actionPc";
@@ -783,7 +790,7 @@ class Router implements Interfaces\IRouter
 		} else if (isset($this->routes[$routeName])) {
 			$defaultRoute = $this->routes[$routeName];
 		} else {
-			$routeClass = self::$_routeClass;
+			$routeClass = self::$routeClass;
 			$defaultRoute = $routeClass::CreateInstance()
 				->SetMatch('#/(?<path>.*)#')
 				->SetReverse('/<path>')
@@ -804,7 +811,7 @@ class Router implements Interfaces\IRouter
 					: $request->GetPath()
 				);
 		}
-		$toolClass = self::$_toolClass;
+		$toolClass = self::$toolClass;
 		$request
 			->SetControllerName($toolClass::GetDashedFromPascalCase($defaultRoute->GetController()))
 			->SetActionName($toolClass::GetDashedFromPascalCase($defaultRoute->GetAction()));
@@ -820,7 +827,7 @@ class Router implements Interfaces\IRouter
 	 * @return string
 	 */
 	public function UrlByQueryString ($controllerActionOrRouteName = 'Index:Index', & $params = []) {
-		$toolClass = self::$_toolClass;
+		$toolClass = self::$toolClass;
 		list($ctrlPc, $actionPc) = explode(':', $controllerActionOrRouteName);
 		$amp = $this->getQueryStringParamsSepatator();
 		list($dfltCtrl, $dftlAction) = $this->application->GetDefaultControllerAndActionNames();
@@ -873,6 +880,21 @@ class Router implements Interfaces\IRouter
 	}
 
 	/**
+	 * Get always route instance from given route configuration data or return
+	 * already created given instance.
+	 * @param \MvcCore\Route|\MvcCore\Interfaces\IRoute|array $routeCfgOrRoute Route instance or
+	 *																		   route config array.
+	 * @return \MvcCore\Route|\MvcCore\Interfaces\IRoute
+	 */
+	protected function & getRouteInstance (& $routeCfgOrRoute) {
+		if ($routeCfgOrRoute instanceof \MvcCore\Interfaces\IRoute) 
+			return $routeCfgOrRoute;
+		$routeClass = self::$routeClass;
+		$instance = $routeClass::CreateInstance($routeCfgOrRoute);
+		return $instance;
+	}
+
+	/**
 	 * Complete current route in `\MvcCore\Router::$currentRoute`
 	 * and it's params by query string data. If missing `controller`
 	 * or if missing `action` param, use configured default controller and default action name.
@@ -881,7 +903,7 @@ class Router implements Interfaces\IRouter
 	 * @return void
 	 */
 	protected function routeByControllerAndActionQueryString ($requestCtrlName, $requestActionName) {
-		$toolClass = self::$_toolClass;
+		$toolClass = self::$toolClass;
 		list($ctrlDfltName, $actionDfltName) = $this->application->GetDefaultControllerAndActionNames();
 		$this->SetOrCreateDefaultRouteAsCurrent(
 			\MvcCore\Interfaces\IRouter::DEFAULT_ROUTE_NAME,
@@ -922,7 +944,7 @@ class Router implements Interfaces\IRouter
 			}
 		}
 		if ($this->currentRoute !== NULL) {
-			$toolClass = self::$_toolClass;
+			$toolClass = self::$toolClass;
 			$routeCtrl = $route->GetController();
 			$routeAction = $route->GetAction();
 			if (!$routeCtrl || !$routeAction) {
