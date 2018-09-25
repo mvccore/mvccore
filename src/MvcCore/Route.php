@@ -153,7 +153,7 @@ class Route implements Interfaces\IRoute
 	 * Example: `"products_list" | "Products:Gallery"`
 	 * @var string
 	 */
-	protected $name		= '';
+	protected $name			= '';
 
 	/**
 	 * Controller name to dispatch, in pascal case. Required only if
@@ -219,7 +219,7 @@ class Route implements Interfaces\IRoute
 	 * Example: `"POST" | \MvcCore\Interfaces\IRequest::METHOD_POST`
 	 * @var string|NULL
 	 */
-	protected $method = NULL;
+	protected $method			= NULL;
 
 	/**
 	 * Optional, param name, which has to be also inside `\MvcCore\Route::$pattern` or
@@ -236,7 +236,7 @@ class Route implements Interfaces\IRoute
 	 *
 	 * @var \string|NULL
 	 */
-	protected $lastPatternParam = NULL;
+	protected $lastPatternParam	= NULL;
 
 	/**
 	 * Array with strings, containing all reverse pattern params, parsed automaticly
@@ -245,14 +245,14 @@ class Route implements Interfaces\IRoute
 	 * to complete url address string in method `\MvcCore\Route::Url();`.
 	 * @var \string[]|NULL
 	 */
-	protected $reverseParams = NULL;
+	protected $reverseParams	= NULL;
 
 	/**
 	 * Request matched params by current route.
 	 * Filled only in current route object.
 	 * @var array|NULL
 	 */
-	protected $matchedParams = NULL;
+	protected $matchedParams	= NULL;
 
 
 	/**
@@ -350,7 +350,7 @@ class Route implements Interfaces\IRoute
 		$args = func_get_args();
 		$argsCount = count($args);
 		if ($argsCount === 0) return;
-		if (gettype($patternOrConfig) == 'array') {
+		if (is_array($patternOrConfig)) {
 			$data = (object) $patternOrConfig;
 			if (isset($data->controllerAction)) {
 				list($this->controller, $this->action) = explode(':', $data->controllerAction);
@@ -410,10 +410,10 @@ class Route implements Interfaces\IRoute
 	 *   matching all to the end of address. It has to be the last one.
 	 *
 	 * Example: `"/products-list/<name>/<color*>"`.
-	 * @param string $lang Lowercase language code, `NULL` by default, not implemented in core.
+	 * @param string $localization Lowercase language code, optionally with dash and uppercase locale code, `NULL` by default, not implemented in core.
 	 * @return string|\string[]|NULL
 	 */
-	public function GetPattern ($lang = NULL) {
+	public function GetPattern ($localization = NULL) {
 		return $this->pattern;
 	}
 
@@ -440,10 +440,10 @@ class Route implements Interfaces\IRoute
 	 *
 	 * Example: `"/products-list/<name>/<color*>"`.
 	 * @param string|\string[] $pattern
-	 * @param string $lang Lowercase language code, `NULL` by default, not implemented in core.
+	 * @param string $localization Lowercase language code, optionally with dash and uppercase locale code, `NULL` by default, not implemented in core.
 	 * @return \MvcCore\Route
 	 */
-	public function & SetPattern ($pattern, $lang = NULL) {
+	public function & SetPattern ($pattern, $localization = NULL) {
 		$this->pattern = $pattern;
 		return $this;
 	}
@@ -463,10 +463,10 @@ class Route implements Interfaces\IRoute
 	 * conversion into `\MvcCore\Route::$match` and `\MvcCore\Route::$reverse` properties.
 	 *
 	 * Example: `"#^/products\-list/(?<name>[^/]*)/(?<color>[a-z]*)#"`
-	 * @param string $lang Lowercase language code, `NULL` by default, not implemented in core.
+	 * @param string $localization Lowercase language code, optionally with dash and uppercase locale code, `NULL` by default, not implemented in core.
 	 * @return string|\string[]|NULL
 	 */
-	public function GetMatch ($lang = NULL) {
+	public function GetMatch ($localization = NULL) {
 		return $this->match;
 	}
 
@@ -486,10 +486,10 @@ class Route implements Interfaces\IRoute
 	 *
 	 * Example: `"#^/products\-list/(?<name>[^/]*)/(?<color>[a-z]*)#"`
 	 * @param string|\string[] $match
-	 * @param string $lang Lowercase language code, `NULL` by default, not implemented in core.
+	 * @param string $localization Lowercase language code, optionally with dash and uppercase locale code, `NULL` by default, not implemented in core.
 	 * @return \MvcCore\Route
 	 */
-	public function & SetMatch ($match, $lang = NULL) {
+	public function & SetMatch ($match, $localization = NULL) {
 		$this->match = $match;
 		return $this;
 	}
@@ -513,10 +513,10 @@ class Route implements Interfaces\IRoute
 	 * conversion into `\MvcCore\Route::$match` and `\MvcCore\Route::$reverse` properties.
 	 *
 	 * Example: `"/products-list/<name>/<color>"`
-	 * @param string $lang Lowercase language code, `NULL` by default, not implemented in core.
+	 * @param string $localization Lowercase language code, optionally with dash and uppercase locale code, `NULL` by default, not implemented in core.
 	 * @return string|\string[]|NULL
 	 */
-	public function GetReverse ($lang = NULL) {
+	public function GetReverse ($localization = NULL) {
 		return $this->reverse;
 	}
 
@@ -540,10 +540,10 @@ class Route implements Interfaces\IRoute
 	 *
 	 * Example: `"/products-list/<name>/<color>"`
 	 * @param string|\string[] $reverse
-	 * @param string $lang Lowercase language code, `NULL` by default, not implemented in core.
+	 * @param string $localization Lowercase language code, optionally with dash and uppercase locale code, `NULL` by default, not implemented in core.
 	 * @return \MvcCore\Route
 	 */
-	public function & SetReverse ($reverse, $lang = NULL) {
+	public function & SetReverse ($reverse, $localization = NULL) {
 		$this->reverse = $reverse;
 		return $this;
 	}
@@ -694,10 +694,10 @@ class Route implements Interfaces\IRoute
 	 *	  "name"  => "default-name",
 	 *	  "color" => "red"
 	 *  );`
-	 * @param string $lang Lowercase language code, `NULL` by default, not implemented in core.
+	 * @param string $localization Lowercase language code, optionally with dash and uppercase locale code, `NULL` by default, not implemented in core.
 	 * @return array|\array[]
 	 */
-	public function GetDefaults ($lang = NULL) {
+	public function GetDefaults ($localization = NULL) {
 		return $this->defaults;
 	}
 
@@ -711,10 +711,10 @@ class Route implements Interfaces\IRoute
 	 *	  "color" => "red"
 	 *  );`.
 	 * @param array|\array[] $defaults
-	 * @param string $lang Lowercase language code, `NULL` by default, not implemented in core.
+	 * @param string $localization Lowercase language code, optionally with dash and uppercase locale code, `NULL` by default, not implemented in core.
 	 * @return \MvcCore\Route
 	 */
-	public function & SetDefaults ($defaults = [], $lang = NULL) {
+	public function & SetDefaults ($defaults = [], $localization = NULL) {
 		$this->defaults = & $defaults;
 		return $this;
 	}
@@ -731,10 +731,10 @@ class Route implements Interfaces\IRoute
 	 *		"name"	=> "[^/]*",
 	 *		"color"	=> "[a-z]*",
 	 *	);`
-	 * @param string $lang Lowercase language code, `NULL` by default, not implemented in core.
+	 * @param string $localization Lowercase language code, optionally with dash and uppercase locale code, `NULL` by default, not implemented in core.
 	 * @return array|\array[]
 	 */
-	public function GetConstraints ($lang = NULL) {
+	public function GetConstraints ($localization = NULL) {
 		return $this->constraints;
 	}
 
@@ -751,10 +751,10 @@ class Route implements Interfaces\IRoute
 	 *		"color"	=> "[a-z]*",
 	 *	);`
 	 * @param array|\array[] $constraints
-	 * @param string $lang Lowercase language code, `NULL` by default, not implemented in core.
+	 * @param string $localization Lowercase language code, optionally with dash and uppercase locale code, `NULL` by default, not implemented in core.
 	 * @return \MvcCore\Route
 	 */
-	public function & SetConstraints ($constraints = [], $lang = NULL) {
+	public function & SetConstraints ($constraints = [], $localization = NULL) {
 		$this->constraints = & $constraints;
 		foreach ($constraints as $key => $value)
 			if (!isset($this->defaults[$key]))
@@ -814,12 +814,13 @@ class Route implements Interfaces\IRoute
 	 * This method is usually called in core request routing process
 	 * from `\MvcCore\Router::Route();` method and it's submethods.
 	 *
-	 * @param string $requestPath
-	 * @param string $requestMethod
+	 * @param string $requestPath Requested application path, never with any query string.
+	 * @param string $requestMethod Uppercase request http method.
+	 * @param string $localization Lowercase language code, optionally with dash and uppercase locale code, `NULL` by default, not implemented in core.
 	 * @return array Matched and params array, keys are matched
 	 *				 params or controller and action params.
 	 */
-	public function Matches ($requestPath, $requestMethod) {
+	public function Matches ($requestPath, $requestMethod, $localization = NULL) {
 		$matchedParams = [];
 		if ($this->match === NULL) {
 			list($this->match, $reverse) = $this->initMatch();
@@ -854,7 +855,8 @@ class Route implements Interfaces\IRoute
 				$matchedParams[$matchedKey] = $matchedValue[0][0];
 				$index += 1;
 			}
-			if ($this->lastPatternParam === NULL) $this->reverse = $this->initReverse();
+			if ($this->lastPatternParam === NULL) 
+				$this->reverse = $this->initReverse();
 			if (isset($matchedParams[$this->lastPatternParam])) {
 				$matchedParams[$this->lastPatternParam] = rtrim($matchedParams[$this->lastPatternParam], '/');
 			}
@@ -951,8 +953,8 @@ class Route implements Interfaces\IRoute
 			list($this->match, $reverse) = $this->initMatch();
 			if ($this->reverse === NULL) $this->reverse = $reverse;
 		}
-		if ($this->lastPatternParam === NULL) $this->reverse = $this->initReverse();
-		if ($this->reverseParams === NULL) $this->reverse = $this->initReverse();
+		if ($this->lastPatternParam === NULL || $this->reverseParams === NULL) 
+			$this->reverse = $this->initReverse();
 		return $this;
 	}
 
@@ -966,32 +968,31 @@ class Route implements Interfaces\IRoute
 	 *   complete also reverse property.
 	 * This method is usually called in core request routing process from
 	 * `\MvcCore\Router::Matches();` method.
-	 * @param string $lang Lowercase language code, `NULL` by default, not implemented in core.
-	 * @return \string[]
+	 * @param string $localization Lowercase language code, optionally with dash and uppercase locale code, `NULL` by default, not implemented in core.
+	 * @return \string[]|array
 	 */
-	protected function initMatch ($lang = NULL) {
+	protected function initMatch ($localization = NULL) {
 		$match = NULL;
 		$reverse = NULL;
 		// if there is no match regular expression - parse `\MvcCore\Route::\$Pattern`
 		// and compile `\MvcCore\Route::\$Match` regular expression property.
-		$pattern = $this->GetPattern($lang);
-		if (mb_strlen($pattern) === 0) throw new \LogicException(
+		if ($this->pattern === NULL) throw new \LogicException(
 			"[".__CLASS__."] Route configuration property `\MvcCore\Route::\$pattern` is missing "
 			."to parse it and complete property(ies) `\MvcCore\Route::\$match` "
 			."(and `\MvcCore\Route::\$reverse`) correctly ($this)."
 		);
 		// escape all regular expression special characters before parsing except `<` and `>`:
-		$matchPattern = addcslashes($pattern, "#[](){}-?!=^$.+|:\\");
+		$matchPattern = addcslashes($this->pattern, "#[](){}-?!=^$.+|:\\");
 		// parse all presented `<param>` occurances in `$pattern` argument:
 		$matchPatternParams = $this->parsePatternParams($matchPattern);
 		// compile match regular expression from parsed params and custom constraints:
 		if ($this->reverse === NULL) {
 			list($match, $reverse) = $this->compileMatchAndReversePattern(
-				$matchPattern, $matchPatternParams, TRUE, $lang
+				$matchPattern, $matchPatternParams, TRUE, $localization
 			);
 		} else {
 			list($match, $reverse) = $this->compileMatchAndReversePattern(
-				$matchPattern, $matchPatternParams, FALSE, $lang
+				$matchPattern, $matchPatternParams, FALSE, $localization
 			);
 		}
 		return [$match, $reverse];
@@ -1107,11 +1108,11 @@ class Route implements Interfaces\IRoute
 	 *		)`
 	 * @param string $matchPattern
 	 * @param \array[] $matchPatternParams
-	 * @param string $lang Lowercase language code, `NULL` by default, not implemented in core.
+	 * @param string $localization Lowercase language code, optionally with dash and uppercase locale code, `NULL` by default, not implemented in core.
 	 * @return \string[]
 	 */
-	protected function compileMatchAndReversePattern (& $matchPattern, & $matchPatternParams, $compileReverse, $lang = NULL) {
-		$constraints = $this->GetConstraints($lang);
+	protected function compileMatchAndReversePattern (& $matchPattern, & $matchPatternParams, $compileReverse, $localization = NULL) {
+		$constraints = $this->GetConstraints($localization);
 		$defaultConstraint = static::$DefaultConstraint;
 		$trailingSlash = FALSE;
 		$reverse = '';
@@ -1163,7 +1164,7 @@ class Route implements Interfaces\IRoute
 				}
 				$trailingSlash = TRUE;
 				if ($compileReverse) {
-					$reverse = $this->GetPattern($lang);
+					$reverse = $this->GetPattern($localization);
 					$this->reverseParams = [];
 				} else {
 					$reverse = '';
@@ -1185,14 +1186,14 @@ class Route implements Interfaces\IRoute
 	 * when route has been matched and when there is still no `\MvcCore\Route::$reverseParams`
 	 * defined (`NULL`). It means that matched route has been defined by match and reverse
 	 * patterns, because there was no pattern property parsing to prepare values bellow before.
-	 * @param string $lang Lowercase language code, `NULL` by default, not implemented in core.
-	 * @return string
+	 * @param string $localization Lowercase language code, optionally with dash and uppercase locale code, `NULL` by default, not implemented in core.
+	 * @return string|array
 	 */
-	protected function initReverse ($lang = NULL) {
+	protected function initReverse ($localization = NULL) {
 		$index = 0;
-		$reverse = $this->GetReverse($lang);
-		if ($reverse === NULL && $this->GetPattern($lang) !== NULL) {
-			list(, $reverse) = $this->initMatch();
+		$reverse = $this->GetReverse($localization);
+		if ($reverse === NULL && $this->GetPattern($localization) !== NULL) {
+			list(, $reverse) = $this->initMatch($localization);
 			return $reverse;
 		}
 		$reverseParams = [];

@@ -355,7 +355,6 @@ class Router implements Interfaces\IRouter
 		if ($prepend) $routes = array_reverse($routes);
 		$routeClass = self::$routeClass;
 		foreach ($routes as $routeName => & $route) {
-			$routeType = gettype($route);
 			$ctrlActionName = mb_strpos($routeName, ':') !== FALSE;
 			$numericKey = is_numeric($routeName);
 			if ($route instanceof \MvcCore\Interfaces\IRoute) {
@@ -368,14 +367,14 @@ class Router implements Interfaces\IRouter
 				$this->AddRoute(
 					$route, $prepend, $throwExceptionForDuplication
 				);
-			} else if ($routeType == 'array') {
+			} else if (is_array($route)) {
 				if (!$numericKey) 
 					$route[$ctrlActionName ? 'controllerAction'  : 'name'] = $routeName;
 				$this->AddRoute(
 					$this->getRouteInstance($route), 
 					$prepend, $throwExceptionForDuplication
 				);
-			} else if ($routeType == 'string') {
+			} else if (is_string($route)) {
 				// route name is always Controller:Action
 				$routeCfgData = ['pattern' => $route];
 				$routeCfgData[$ctrlActionName ? 'controllerAction'  : 'name'] = $routeName;
@@ -733,7 +732,7 @@ class Router implements Interfaces\IRouter
 			$absolute = (bool) $params['absolute'];
 			unset($params['absolute']);
 		}
-
+		
 		if ($this->anyRoutesConfigured && isset($this->urlRoutes[$controllerActionOrRouteName])) {
 			$result = $this->UrlByRoute($this->urlRoutes[$controllerActionOrRouteName], $params);
 		} else if ($this->anyRoutesConfigured && isset($this->routes[$controllerActionOrRouteName])) {
@@ -783,6 +782,7 @@ class Router implements Interfaces\IRouter
 	 * @return \MvcCore\Route|\MvcCore\Interfaces\IRoute
 	 */
 	public function & SetOrCreateDefaultRouteAsCurrent ($routeName, $controllerPc, $actionPc) {
+		$controllerPc = strtr($controllerPc, '/', '\\');
 		$ctrlActionRouteName = $controllerPc.':'. $actionPc;
 		$request = & $this->request;
 		if (isset($this->routes[$ctrlActionRouteName])) {
@@ -928,7 +928,7 @@ class Router implements Interfaces\IRouter
 		/** @var $route \MvcCore\Route */
 		reset($this->routes);
 		foreach ($this->routes as & $route) {
-			if ($matchedParams = $route->Matches($requestPath, $requestMethod)) {
+			if ($matchedParams = $route->Matches($requestPath, $requestMethod, NULL)) {
 				$this->currentRoute = & $route;
 				$routeDefaultParams = $route->GetDefaults() ?: [];
 				$newParams = array_merge($routeDefaultParams, $request->GetParams('.*'), $matchedParams);
@@ -943,29 +943,46 @@ class Router implements Interfaces\IRouter
 				break;
 			}
 		}
-		if ($this->currentRoute !== NULL) {
-			$toolClass = self::$toolClass;
-			$routeCtrl = $route->GetController();
-			$routeAction = $route->GetAction();
-			if (!$routeCtrl || !$routeAction) {
-				list($ctrlDfltName, $actionDfltName) = $this->application->GetDefaultControllerAndActionNames();
-				if (!$routeCtrl)
-					$route->SetController(
-						$requestCtrlName
-							? $toolClass::GetPascalCaseFromDashed($requestCtrlName)
-							: $ctrlDfltName
+		if ($this->currentRoute !== NULL) 
+			$this->routeByRewriteRoutesSetUpRequestByCurrentRoute(
+				$requestCtrlName, $requestActionName
+			);
+	}
+
+	/**
+	 * Set up request object controller and action by current route (routing 
+	 * result) routed by method `$this->routeByRewriteRoutes();`. If there is no
+	 * controller name and only action name or if there is no action name and only 
+	 * controller name, complete those missing record by default core values for 
+	 * controller name and action name.
+	 * @param string $controllerName
+	 * @param string $actionName
+	 * @return void
+	 */
+	protected function routeByRewriteRoutesSetUpRequestByCurrentRoute ($requestCtrlName, $requestActionName) {
+		$route = $this->currentRoute;
+		$request = & $this->request;
+		$toolClass = self::$toolClass;
+		$routeCtrl = $route->GetController();
+		$routeAction = $route->GetAction();
+		if (!$routeCtrl || !$routeAction) {
+			list($ctrlDfltName, $actionDfltName) = $this->application->GetDefaultControllerAndActionNames();
+			if (!$routeCtrl)
+				$route->SetController(
+					$requestCtrlName
+						? $toolClass::GetPascalCaseFromDashed($requestCtrlName)
+						: $ctrlDfltName
+				);
+			if (!$routeAction)
+				$route->SetAction(
+					$requestActionName
+						? $toolClass::GetPascalCaseFromDashed($requestActionName)
+						: $actionDfltName
 					);
-				if (!$routeAction)
-					$route->SetAction(
-						$requestActionName
-							? $toolClass::GetPascalCaseFromDashed($requestActionName)
-							: $actionDfltName
-						);
-			}
-			$request
-				->SetControllerName($toolClass::GetDashedFromPascalCase($route->GetController()))
-				->SetActionName($toolClass::GetDashedFromPascalCase($route->GetAction()));
 		}
+		$request
+			->SetControllerName($toolClass::GetDashedFromPascalCase($route->GetController()))
+			->SetActionName($toolClass::GetDashedFromPascalCase($route->GetAction()));
 	}
 
 	/**

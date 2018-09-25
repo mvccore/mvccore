@@ -242,7 +242,7 @@ class Config implements Interfaces\IConfig
 	protected function & prepareIniDataToParse (array & $rawIniData, $environment) {
 		$iniData = [];
 		foreach ($rawIniData as $keyOrSectionName => $valueOrSectionValues) {
-			if (gettype($valueOrSectionValues) == 'array') {
+			if (is_array($valueOrSectionValues)) {
 				if (strpos($keyOrSectionName, '>') !== FALSE) {
 					list($envNameLocal, $keyOrSectionName) = explode('>', str_replace(' ', '', $keyOrSectionName));
 					if ($envNameLocal !== $environment) continue;
@@ -324,7 +324,7 @@ class Config implements Interfaces\IConfig
 				$current[$lastRawKey][] = $typedValue;
 				$this->objectTypes[$levelKey ? $levelKey : $lastRawKey][0] = 0; // object type switch -> set array
 			} else {
-				if (gettype($current) != 'array') {
+				if (!is_array($current)) {
 					$current = [$current];
 					$this->objectTypes[$levelKey] = [0, & $current]; // object type switch -> set array
 				}

@@ -1301,7 +1301,7 @@ class Request implements Interfaces\IRequest
 		$targetType = NULL
 	) {
 		if (!isset($paramsCollection[$name])) return NULL;
-		if (gettype($paramsCollection[$name]) == 'array') {
+		if (is_array($paramsCollection[$name])) {
 			$result = [];
 			$paramsCollection = $paramsCollection[$name];
 			foreach ($paramsCollection as $key => & $value) {
@@ -1353,7 +1353,7 @@ class Request implements Interfaces\IRequest
 				if ($targetType === NULL) return $result;
 				settype($result, $targetType);
 				return $result;
-			} else if (gettype($rawValue) == 'array') {
+			} else if (is_array($rawValue)) {
 				// if there is something in target collection and it's an array
 				$result = [];
 				foreach ((array) $rawValue as $key => & $value) {
@@ -1431,8 +1431,11 @@ class Request implements Interfaces\IRequest
 		} else {
 			$languagesAndLocales = static::ParseHttpAcceptLang($rawUaLanguages);
 			$langAndLocaleArr = current($languagesAndLocales);
-			if (gettype($langAndLocaleArr) == 'array') $langAndLocaleArr = current($langAndLocaleArr);
+			if (is_array($langAndLocaleArr)) 
+				$langAndLocaleArr = current($langAndLocaleArr);
 		}
+		if ($langAndLocaleArr[0] === NULL) $langAndLocaleArr[0] = '';
+		if (count($langAndLocaleArr) > 1 && $langAndLocaleArr[1] === NULL) $langAndLocaleArr[1] = '';
 		list($this->lang, $this->locale) = $langAndLocaleArr;
 	}
 

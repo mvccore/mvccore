@@ -303,7 +303,7 @@ class Model implements Interfaces\IModel {
 	 * @return \PDO
 	 */
 	public static function GetDb ($connectionNameOrConfig = NULL) {
-		if (gettype($connectionNameOrConfig) == 'array') {
+		if (is_array($connectionNameOrConfig)) {
 			// if first argument is database connection configuration - set it up and return new connection name
 			if (static::$configs === NULL) static::loadConfigs(FALSE);
 			$connectionName = static::SetConfig($connectionNameOrConfig);
