@@ -32,7 +32,7 @@ call_user_func(function () {
 		$appRootPath . '/Libs',
 	];
 	$currentDir = str_replace('\\', '/', __DIR__);
-	if (!in_array($currentDir, $includePaths)) array_unshift($includePaths, $currentDir);
+	if (!in_array($currentDir, $includePaths, TRUE)) array_unshift($includePaths, $currentDir);
 	$autoload = function ($className) use ($includePaths) {
 		$fileName = str_replace(['_', '\\'], '/', $className) . '.php';
 		$includePath = '';

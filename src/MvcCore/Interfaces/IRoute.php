@@ -89,7 +89,7 @@ interface IRoute
 	 * or:
 	 * `new Route(array(
 	 *		"name"			=> "products_list",
-	 *		"pattern"		=> "#^/products\-list/(?<name>[^/]*)/(?<color>[a-z]*)(?=/$|$)#",
+	 *		"match"			=> "#^/products\-list/(?<name>[^/]*)/(?<color>[a-z]*)(?=/$|$)#",
 	 *		"reverse"		=> "/products-list/<name>/<color>",
 	 *		"controller"	=> "Products",
 	 *		"action"		=> "List",
@@ -481,7 +481,7 @@ interface IRoute
 	 * @return array Matched and params array, keys are matched
 	 *				 params or controller and action params.
 	 */
-	public function Matches ($requestPath, $requestMethod, $localization = NULL);
+	public function & Matches ($requestPath, $requestMethod, $localization = NULL);
 
 	/**
 	 * Complete route url by given params array and route

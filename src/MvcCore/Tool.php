@@ -193,7 +193,7 @@ class Tool implements Interfaces\ITool
 		// check given test class for all implemented instance methods by given interface
 		$interfaceName = trim($interfaceName, '\\');
 		$testClassType = new \ReflectionClass($testClassName);
-		if (in_array($interfaceName, $testClassType->getInterfaceNames())) {
+		if (in_array($interfaceName, $testClassType->getInterfaceNames(), TRUE)) {
 			$result = TRUE;
 		} else {
 			$errorMsg = "Class `$testClassName` doesn't implement interface `$interfaceName`.";
@@ -238,7 +238,7 @@ class Tool implements Interfaces\ITool
 		$errorMsg = '';
 		// check given test class for all implemented instance methods by given interface
 		$testClassType = new \ReflectionClass($testClassName);
-		if (in_array($traitName, $testClassType->getTraitNames())) {
+		if (in_array($traitName, $testClassType->getTraitNames(), TRUE)) {
 			$result = TRUE;
 		} else if ($checkParentClasses) {
 			$currentClassType = $testClassType;
@@ -246,7 +246,7 @@ class Tool implements Interfaces\ITool
 				$parentClass = $currentClassType->getParentClass();
 				if ($parentClass === FALSE) break;
 				$parentClassType = new \ReflectionClass($parentClass->getName());
-				if (in_array($traitName, $parentClassType->getTraitNames())) {
+				if (in_array($traitName, $parentClassType->getTraitNames(), TRUE)) {
 					$result = TRUE;
 					break;
 				} else {

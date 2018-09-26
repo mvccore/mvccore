@@ -282,7 +282,7 @@ class Route implements Interfaces\IRoute
 	 * or:
 	 * `new Route(array(
 	 *		"name"			=> "products_list",
-	 *		"pattern"		=> "#^/products\-list/(?<name>[^/]*)/(?<color>[a-z]*)(?=/$|$)#",
+	 *		"match"			=> "#^/products\-list/(?<name>[^/]*)/(?<color>[a-z]*)(?=/$|$)#",
 	 *		"reverse"		=> "/products-list/<name>/<color>",
 	 *		"controller"	=> "Products",
 	 *		"action"		=> "List",
@@ -327,7 +327,7 @@ class Route implements Interfaces\IRoute
 	 * or:
 	 * `new Route(array(
 	 *		"name"			=> "products_list",
-	 *		"pattern"		=> "#^/products\-list/(?<name>[^/]*)/(?<color>[a-z]*)(?=/$|$)#",
+	 *		"match"			=> "#^/products\-list/(?<name>[^/]*)/(?<color>[a-z]*)(?=/$|$)#",
 	 *		"reverse"		=> "/products-list/<name>/<color>",
 	 *		"controller"	=> "Products",
 	 *		"action"		=> "List",
@@ -376,8 +376,6 @@ class Route implements Interfaces\IRoute
 			$this->pattern = $patternOrConfig;
 			list($this->controller, $this->action) = explode(':', $controllerAction);
 			$this->name = '';
-			$this->match = NULL;
-			$this->reverse = NULL;
 			$this->defaults = $defaults;
 			$this->SetConstraints($constraints);
 			$this->method = $method;
@@ -820,14 +818,14 @@ class Route implements Interfaces\IRoute
 	 * @return array Matched and params array, keys are matched
 	 *				 params or controller and action params.
 	 */
-	public function Matches ($requestPath, $requestMethod, $localization = NULL) {
+	public function & Matches ($requestPath, $requestMethod, $localization = NULL) {
 		$matchedParams = [];
+		if ($this->method !== NULL && $this->method !== $requestMethod) 
+			return $matchedParams;
 		if ($this->match === NULL) {
 			list($this->match, $reverse) = $this->initMatch();
 			if ($this->reverse === NULL) $this->reverse = $reverse;
 		}
-		if ($this->method !== NULL && $this->method !== $requestMethod) 
-			return $matchedParams;
 		preg_match_all($this->match, $requestPath, $matchedValues, PREG_OFFSET_CAPTURE);
 		if (isset($matchedValues[0]) && count($matchedValues[0])) {
 			$controllerName = $this->controller ?: '';
@@ -1187,7 +1185,7 @@ class Route implements Interfaces\IRoute
 	 * defined (`NULL`). It means that matched route has been defined by match and reverse
 	 * patterns, because there was no pattern property parsing to prepare values bellow before.
 	 * @param string $localization Lowercase language code, optionally with dash and uppercase locale code, `NULL` by default, not implemented in core.
-	 * @return string|array
+	 * @return string
 	 */
 	protected function initReverse ($localization = NULL) {
 		$index = 0;

@@ -473,7 +473,7 @@ class Request implements Interfaces\IRequest
 		}
 		$cleanedParams = [];
 		foreach ($this->params as $key => & $value) {
-			if ($onlyKeys && !in_array($key, $onlyKeys)) continue;
+			if ($onlyKeys && !in_array($key, $onlyKeys, TRUE)) continue;
 			$cleanedKey = $this->cleanParamValue($key, $pregReplaceAllowedChars);
 			$cleanedParams[$cleanedKey] = $this->GetParam($key, $pregReplaceAllowedChars);
 		}

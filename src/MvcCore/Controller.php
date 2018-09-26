@@ -660,7 +660,7 @@ class Controller implements Interfaces\IController
 	 */
 	public function AddChildController (\MvcCore\Interfaces\IController & $controller, $index = NULL) {
 		self::$allControllers[spl_object_hash($controller)] = & $controller;
-		if (!in_array($controller, $this->childControllers)) {
+		if (!in_array($controller, $this->childControllers, TRUE)) {
 			if ($index === NULL) {
 				$this->childControllers[] = & $controller;
 			} else {
