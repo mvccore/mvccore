@@ -576,10 +576,9 @@ interface IApplication
 	 * If controller class exists - try to dispatch controller,
 	 * if only view file exists - try to render targeted view file
 	 * with configured core controller instance (`\MvcCore\Controller` by default).
-	 * @param \MvcCore\Interfaces\IRoute &$route
 	 * @return bool
 	 */
-	public function DispatchRequestByRoute (\MvcCore\Interfaces\IRoute & $route = NULL);
+	public function DispatchRequest ();
 
 	/**
 	 * Dispatch controller by:

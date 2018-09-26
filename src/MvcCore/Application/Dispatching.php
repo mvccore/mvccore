@@ -66,10 +66,10 @@ trait Dispatching
 		$this->GetResponse();// triggers creation
 		$debugClass = $this->debugClass;
 		$debugClass::Init();
-		if (!$this->ProcessCustomHandlers($this->preRouteHandlers))			return $this->Terminate();
-		if (!$this->RouteRequest())											return $this->Terminate();
-		if (!$this->ProcessCustomHandlers($this->postRouteHandlers))		return $this->Terminate();
-		if (!$this->DispatchRequestByRoute($this->router->GetCurrentRoute()))	return $this->Terminate();
+		if (!$this->ProcessCustomHandlers($this->preRouteHandlers))		return $this->Terminate();
+		if (!$this->RouteRequest())										return $this->Terminate();
+		if (!$this->ProcessCustomHandlers($this->postRouteHandlers))	return $this->Terminate();
+		if (!$this->DispatchRequest())									return $this->Terminate();
 		// Post-dispatch handlers processing moved to: `$this->Terminate();` to process them every time.
 		// if (!$this->processCustomHandlers($this->postDispatchHandlers))	return $this->Terminate();
 		return $this->Terminate();
@@ -100,7 +100,7 @@ trait Dispatching
 			return $this
 				->GetRouter()
 				->SetRequest($this->GetRequest())
-				->Route() !== FALSE;
+				->Route();
 		} catch (\Exception $e) {
 			return $this->DispatchException($e);
 		}
@@ -143,10 +143,11 @@ trait Dispatching
 	 * If controller class exists - try to dispatch controller,
 	 * if only view file exists - try to render targeted view file
 	 * with configured core controller instance (`\MvcCore\Controller` by default).
-	 * @param \MvcCore\Route $route
 	 * @return bool
 	 */
-	public function DispatchRequestByRoute (\MvcCore\Interfaces\IRoute & $route = NULL) {
+	public function DispatchRequest () {
+		/** @var \MvcCore\Interfaces\IRoute */
+		$route = & $this->router->GetCurrentRoute();
 		if ($route === NULL) return $this->DispatchException('No route for request', 404);
 		list ($ctrlPc, $actionPc) = [$route->GetController(), $route->GetAction()];
 		$actionName = $actionPc . 'Action';
