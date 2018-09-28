@@ -11,16 +11,16 @@
  * @license  https://mvccore.github.io/docs/mvccore/5.0.0/LICENCE.md
  */
 
-namespace MvcCore\Interfaces;
+namespace MvcCore;
 
 /**
  * Responsibility - session data management - starting, writing and expirations.
  * - Safe start (only once)
- *   - By `\MvcCore\Interfaces\ISession::Start()`
+ *   - By `\MvcCore\ISession::Start()`
  *	 - Called by `\MvcCore\Application::GetInstance()->SessionStart();`
  *		 - Called by `\MvcCore\Controller::Init();`.
  * - Session writing and closing at request end:
- *   - In `\MvcCore\Interfaces\ISession::Close()`
+ *   - In `\MvcCore\ISession::Close()`
  *	 - Called over `register_shutdown_function()`
  *	   from `\MvcCore::Terminate();`
  * - Session namespaces management:
@@ -76,14 +76,14 @@ interface ISession
 	 * Get new or existing MvcCore session namespace instance.
 	 * If session is not started, start session.
 	 * @param string $name Session namespace unique name.
-	 * @return \MvcCore\Interfaces\ISession
+	 * @return \MvcCore\ISession
 	 */
-	public static function & GetNamespace ($name = \MvcCore\Interfaces\ISession::DEFAULT_NAMESPACE_NAME);
+	public static function & GetNamespace ($name = \MvcCore\ISession::DEFAULT_NAMESPACE_NAME);
 
 	/**
 	 * Set MvcCore session namespace expiration by page request(s) count.
 	 * @param int $hoops
-	 * @return \MvcCore\Interfaces\ISession
+	 * @return \MvcCore\ISession
 	 */
 	public function & SetExpirationHoops ($hoops);
 
@@ -92,7 +92,7 @@ interface ISession
 	 * Zero (`0`) means "until the browser is closed" if there is no more
 	 * higher namespace expirations in whole session.
 	 * @param int $seconds
-	 * @return \MvcCore\Interfaces\ISession
+	 * @return \MvcCore\ISession
 	 */
 	public function & SetExpirationSeconds ($seconds);
 
@@ -118,28 +118,28 @@ interface ISession
 	public static function DestroyAll ();
 
 	/**
-	 * Magic function triggered by: `isset(\MvcCore\Interfaces\ISession->key);`.
+	 * Magic function triggered by: `isset(\MvcCore\ISession->key);`.
 	 * @param string $key
 	 * @return bool
 	 */
 	public function __isset ($key);
 
 	/**
-	 * Magic function triggered by: `unset(\MvcCore\Interfaces\ISession->key);`.
+	 * Magic function triggered by: `unset(\MvcCore\ISession->key);`.
 	 * @param string $key
 	 * @return void
 	 */
 	public function __unset ($key);
 
 	/**
-	 * Magic function triggered by: `$value = \MvcCore\Interfaces\ISession->key;`.
+	 * Magic function triggered by: `$value = \MvcCore\ISession->key;`.
 	 * @param string $key
 	 * @return mixed
 	 */
 	public function __get ($key);
 
 	/**
-	 * Magic function triggered by: `\MvcCore\Interfaces\ISession->key = "value";`.
+	 * Magic function triggered by: `\MvcCore\ISession->key = "value";`.
 	 * @param string $key
 	 * @param mixed $value
 	 * @return void
@@ -153,7 +153,7 @@ interface ISession
 	public function __debugInfo ();
 
 	/**
-	 * Magic `\ArrayObject` function triggered by: `count(\MvcCore\Interfaces\ISession);`.
+	 * Magic `\ArrayObject` function triggered by: `count(\MvcCore\ISession);`.
 	 * @return int
 	 */
 	public function count ();

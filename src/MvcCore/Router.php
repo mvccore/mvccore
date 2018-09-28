@@ -13,7 +13,7 @@
 
 namespace MvcCore;
 
-//include_once(__DIR__.'/Interfaces/IRouter.php');
+//include_once(__DIR__.'/IRouter.php');
 //include_once(__DIR__.'/Application.php');
 //include_once('Request.php');
 //include_once('Route.php');
@@ -34,7 +34,7 @@ namespace MvcCore;
  *   - Into `index.php?` + query string form, containing
  *	 `controller`, `action` and all other params.
  */
-class Router implements Interfaces\IRouter
+class Router implements IRouter
 {
 	/**
 	 * Current `\MvcCore\Router` singleton instance storage.
@@ -57,7 +57,7 @@ class Router implements Interfaces\IRouter
 	/**
 	 * Reference to `\MvcCore\Application::GetInstance();` 
 	 * to not call this very time we need app instance.
-	 * @var \MvcCore\Application|\MvcCore\Interfaces\IApplication|NULL
+	 * @var \MvcCore\Application|\MvcCore\IApplication|NULL
 	 */
 	protected $application = NULL;
 
@@ -65,14 +65,14 @@ class Router implements Interfaces\IRouter
 	 * Internally used `\MvcCore\Request` request object reference for:
 	 * - Routing process in `\MvcCore\Router::Route();` and it's protected submethods.
 	 * - URL addresses completing in `\MvcCore\Router::Url()` and it's protected submethods.
-	 * @var \MvcCore\Request|\MvcCore\Interfaces\IRequest|NULL
+	 * @var \MvcCore\Request|\MvcCore\IRequest|NULL
 	 */
 	protected $request = NULL;
 
 	/**
 	 * Global application route instances store to match request.
 	 * Keys are route(s) names, values are `\MvcCore\Route` instances.
-	 * @var \MvcCore\Route[]|\MvcCore\Interfaces\IRoute[]
+	 * @var \MvcCore\Route[]|\MvcCore\IRoute[]
 	 */
 	protected $routes = [];
 
@@ -87,7 +87,7 @@ class Router implements Interfaces\IRouter
 	/**
 	 * Matched route by `\MvcCore\Router::Match();` processing or NULL if no match.
 	 * By this route, there is created and dispatched controller lifecycle by core.
-	 * @var \MvcCore\Route|\MvcCore\Interfaces\IRoute
+	 * @var \MvcCore\Route|\MvcCore\IRoute
 	 */
 	protected $currentRoute = NULL;
 
@@ -110,15 +110,15 @@ class Router implements Interfaces\IRouter
 	/**
 	 * Trrailing slash behaviour - integer state about what to do with trailing
 	 * slash in all requested url except homepage. Possible states are:
-	 * - `-1` (`\MvcCore\Interfaces\IRouter::TRAILING_SLASH_REMOVE`)
+	 * - `-1` (`\MvcCore\IRouter::TRAILING_SLASH_REMOVE`)
 	 *		Always remove trailing slash from requested url if there
 	 *		is any and redirect to it, except homepage.
-	 * -  `0` (`\MvcCore\Interfaces\IRouter::TRAILING_SLASH_BENEVOLENT`)
+	 * -  `0` (`\MvcCore\IRouter::TRAILING_SLASH_BENEVOLENT`)
 	 *		Be absolutely benevolent for trailing slash in requested url.
-	 * -  `1` (`\MvcCore\Interfaces\IRouter::TRAILING_SLASH_ALWAYS`)
+	 * -  `1` (`\MvcCore\IRouter::TRAILING_SLASH_ALWAYS`)
 	 *		Always keep trailing slash in requested url or always add trailing
 	 *		slash into url and redirect to it.
-	 * Default value is `-1` - `\MvcCore\Interfaces\IRouter::TRAILING_SLASH_REMOVE`
+	 * Default value is `-1` - `\MvcCore\IRouter::TRAILING_SLASH_REMOVE`
 	 * @var int
 	 */
 	protected $trailingSlashBehaviour = -1;
@@ -357,7 +357,7 @@ class Router implements Interfaces\IRouter
 		foreach ($routes as $routeName => & $route) {
 			$ctrlActionName = mb_strpos($routeName, ':') !== FALSE;
 			$numericKey = is_numeric($routeName);
-			if ($route instanceof \MvcCore\Interfaces\IRoute) {
+			if ($route instanceof \MvcCore\IRoute) {
 				if (!$numericKey) {
 					if ($ctrlActionName)
 						$route->SetControllerAction($routeName);
@@ -429,7 +429,7 @@ class Router implements Interfaces\IRouter
 	 *		"action"		=> "List",
 	 *		"defaults"		=> array("name" => "default-name",	"color" => "red"),
 	 *	));`
-	 * @param \MvcCore\Route|\MvcCore\Interfaces\IRoute|array $routeCfgOrRoute Route instance or
+	 * @param \MvcCore\Route|\MvcCore\IRoute|array $routeCfgOrRoute Route instance or
 	 *																		   route config array.
 	 * @param bool $prepend	Optional, if `TRUE`, given route will
 	 *						be prepended, not appended.
@@ -471,13 +471,13 @@ class Router implements Interfaces\IRouter
 
 	/**
 	 * Return `TRUE` if router has any route by given route name, `FALSE` otherwise.
-	 * @param string|\MvcCore\Interfaces\IRoute $routeOrRouteName
+	 * @param string|\MvcCore\IRoute $routeOrRouteName
 	 * @return boolean
 	 */
 	public function HasRoute ($routeOrRouteName) {
 		if (is_string($routeOrRouteName)) {
 			return isset($this->routes[$routeOrRouteName]);
-		} else /*if ($routeOrRouteName instanceof \MvcCore\Interfaces\IRoute)*/ {
+		} else /*if ($routeOrRouteName instanceof \MvcCore\IRoute)*/ {
 			return (
 				isset($this->routes[$routeOrRouteName->GetName()]) || 
 				isset($this->routes[$routeOrRouteName->GetControllerAction()])
@@ -490,7 +490,7 @@ class Router implements Interfaces\IRouter
 	 * Remove route from router by given name and return removed route instance.
 	 * If router has no route by given name, `NULL` is returned.
 	 * @param string $routeName
-	 * @return \MvcCore\Route|\MvcCore\Interfaces\IRoute|NULL
+	 * @return \MvcCore\Route|\MvcCore\IRoute|NULL
 	 */
 	public function RemoveRoute ($routeName) {
 		$result = NULL;
@@ -545,7 +545,7 @@ class Router implements Interfaces\IRouter
 	 * @param \MvcCore\Request $request
 	 * @return \MvcCore\Router
 	 */
-	public function & SetRequest (\MvcCore\Interfaces\IRequest & $request) {
+	public function & SetRequest (\MvcCore\IRequest & $request) {
 		$this->request = & $request;
 		return $this;
 	}
@@ -557,7 +557,7 @@ class Router implements Interfaces\IRouter
 	 * @param \MvcCore\Route $currentRoute
 	 * @return \MvcCore\Router
 	 */
-	public function & SetCurrentRoute (\MvcCore\Interfaces\IRoute $currentRoute) {
+	public function & SetCurrentRoute (\MvcCore\IRoute $currentRoute) {
 		$this->currentRoute = $currentRoute;
 		return $this;
 	}
@@ -598,15 +598,15 @@ class Router implements Interfaces\IRouter
 	/**
 	 * Get trrailing slash behaviour - integer state about what to do with trailing
 	 * slash in all requested url except homepage. Possible states are:
-	 * - `-1` (`\MvcCore\Interfaces\IRouter::TRAILING_SLASH_REMOVE`)
+	 * - `-1` (`\MvcCore\IRouter::TRAILING_SLASH_REMOVE`)
 	 *		Always remove trailing slash from requested url if there
 	 *		is any and redirect to it, except homepage.
-	 * -  `0` (`\MvcCore\Interfaces\IRouter::TRAILING_SLASH_BENEVOLENT`)
+	 * -  `0` (`\MvcCore\IRouter::TRAILING_SLASH_BENEVOLENT`)
 	 *		Be absolutely benevolent for trailing slash in requested url.
-	 * -  `1` (`\MvcCore\Interfaces\IRouter::TRAILING_SLASH_ALWAYS`)
+	 * -  `1` (`\MvcCore\IRouter::TRAILING_SLASH_ALWAYS`)
 	 *		Always keep trailing slash in requested url or always add trailing
 	 *		slash into url and redirect to it.
-	 * Default value is `-1` - `\MvcCore\Interfaces\IRouter::TRAILING_SLASH_REMOVE`
+	 * Default value is `-1` - `\MvcCore\IRouter::TRAILING_SLASH_REMOVE`
 	 * @return int
 	 */
 	public function GetTrailingSlashBehaviour () {
@@ -616,24 +616,24 @@ class Router implements Interfaces\IRouter
 	/**
 	 * Set trrailing slash behaviour - integer state about what to do with trailing
 	 * slash in all requested url except homepage. Possible states are:
-	 * - `-1` (`\MvcCore\Interfaces\IRouter::TRAILING_SLASH_REMOVE`)
+	 * - `-1` (`\MvcCore\IRouter::TRAILING_SLASH_REMOVE`)
 	 *		Always remove trailing slash from requested url if there
 	 *		is any and redirect to it, except homepage.
-	 * -  `0` (`\MvcCore\Interfaces\IRouter::TRAILING_SLASH_BENEVOLENT`)
+	 * -  `0` (`\MvcCore\IRouter::TRAILING_SLASH_BENEVOLENT`)
 	 *		Be absolutely benevolent for trailing slash in requested url.
-	 * -  `1` (`\MvcCore\Interfaces\IRouter::TRAILING_SLASH_ALWAYS`)
+	 * -  `1` (`\MvcCore\IRouter::TRAILING_SLASH_ALWAYS`)
 	 *		Always keep trailing slash in requested url or always add trailing
 	 *		slash into url and redirect to it.
-	 * Default value is `-1` - `\MvcCore\Interfaces\IRouter::TRAILING_SLASH_REMOVE`
-	 * @param int $trailingSlashBehaviour `-1` (`\MvcCore\Interfaces\IRouter::TRAILING_SLASH_REMOVE`)
+	 * Default value is `-1` - `\MvcCore\IRouter::TRAILING_SLASH_REMOVE`
+	 * @param int $trailingSlashBehaviour `-1` (`\MvcCore\IRouter::TRAILING_SLASH_REMOVE`)
 	 *										 Always remove trailing slash from requested url if there
 	 *										 is any and redirect to it, except homepage.
-	 *									 `0` (`\MvcCore\Interfaces\IRouter::TRAILING_SLASH_BENEVOLENT`)
+	 *									 `0` (`\MvcCore\IRouter::TRAILING_SLASH_BENEVOLENT`)
 	 *										 Be absolutely benevolent for trailing slash in requested url.
-	 *									 `1` (`\MvcCore\Interfaces\IRouter::TRAILING_SLASH_ALWAYS`)
+	 *									 `1` (`\MvcCore\IRouter::TRAILING_SLASH_ALWAYS`)
 	 *										 Always keep trailing slash in requested url or always add trailing
 	 *										 slash into url and redirect to it.
-	 * @return \MvcCore\Router|\MvcCore\Interfaces\IRouter
+	 * @return \MvcCore\Router|\MvcCore\IRouter
 	 */
 	public function & SetTrailingSlashBehaviour ($trailingSlashBehaviour = -1) {
 		$this->trailingSlashBehaviour = $trailingSlashBehaviour;
@@ -680,10 +680,10 @@ class Router implements Interfaces\IRouter
 		)) {
 			list($dfltCtrl, $dftlAction) = $this->application->GetDefaultControllerAndActionNames();
 			$this->SetOrCreateDefaultRouteAsCurrent(
-				\MvcCore\Interfaces\IRouter::DEFAULT_ROUTE_NAME, $dfltCtrl, $dftlAction
+				\MvcCore\IRouter::DEFAULT_ROUTE_NAME, $dfltCtrl, $dftlAction
 			);
 		}
-		return $this->currentRoute instanceof \MvcCore\Interfaces\IRoute;
+		return $this->currentRoute instanceof \MvcCore\IRoute;
 	}
 
 	/**
@@ -742,7 +742,7 @@ class Router implements Interfaces\IRouter
 		}
 
 		if ($absolute) $result = $request->GetDomainUrl() . $result;
-
+		
 		return $result;
 	}
 
@@ -774,12 +774,12 @@ class Router implements Interfaces\IRouter
 	 *   catched later by application.
 	 *
 	 * @param string $routeName Always as `default`, `error` or `not_found`, by constants:
-	 *						 `\MvcCore\Interfaces\IRouter::DEFAULT_ROUTE_NAME`
-	 *						 `\MvcCore\Interfaces\IRouter::DEFAULT_ROUTE_NAME_ERROR`
-	 *						 `\MvcCore\Interfaces\IRouter::DEFAULT_ROUTE_NAME_NOT_FOUND`
+	 *						 `\MvcCore\IRouter::DEFAULT_ROUTE_NAME`
+	 *						 `\MvcCore\IRouter::DEFAULT_ROUTE_NAME_ERROR`
+	 *						 `\MvcCore\IRouter::DEFAULT_ROUTE_NAME_NOT_FOUND`
 	 * @param string $controllerPc Controller name in pascal case.
 	 * @param string $actionPc Action name with pascal case without ending `Action` substring.
-	 * @return \MvcCore\Route|\MvcCore\Interfaces\IRoute
+	 * @return \MvcCore\Route|\MvcCore\IRoute
 	 */
 	public function & SetOrCreateDefaultRouteAsCurrent ($routeName, $controllerPc, $actionPc) {
 		$controllerPc = strtr($controllerPc, '/', '\\');
@@ -860,7 +860,7 @@ class Router implements Interfaces\IRouter
 	 * @param array $params
 	 * @return string
 	 */
-	public function UrlByRoute (\MvcCore\Interfaces\IRoute & $route, & $params = []) {
+	public function UrlByRoute (\MvcCore\IRoute & $route, & $params = []) {
 		return $this->request->GetBasePath() . $route->Url(
 			$params, $this->GetRequestedUrlParams(), $this->getQueryStringParamsSepatator()
 		);
@@ -882,12 +882,12 @@ class Router implements Interfaces\IRouter
 	/**
 	 * Get always route instance from given route configuration data or return
 	 * already created given instance.
-	 * @param \MvcCore\Route|\MvcCore\Interfaces\IRoute|array $routeCfgOrRoute Route instance or
+	 * @param \MvcCore\Route|\MvcCore\IRoute|array $routeCfgOrRoute Route instance or
 	 *																		   route config array.
-	 * @return \MvcCore\Route|\MvcCore\Interfaces\IRoute
+	 * @return \MvcCore\Route|\MvcCore\IRoute
 	 */
 	protected function & getRouteInstance (& $routeCfgOrRoute) {
-		if ($routeCfgOrRoute instanceof \MvcCore\Interfaces\IRoute) 
+		if ($routeCfgOrRoute instanceof \MvcCore\IRoute) 
 			return $routeCfgOrRoute;
 		$routeClass = self::$routeClass;
 		$instance = $routeClass::CreateInstance($routeCfgOrRoute);
@@ -906,7 +906,7 @@ class Router implements Interfaces\IRouter
 		$toolClass = self::$toolClass;
 		list($ctrlDfltName, $actionDfltName) = $this->application->GetDefaultControllerAndActionNames();
 		$this->SetOrCreateDefaultRouteAsCurrent(
-			\MvcCore\Interfaces\IRouter::DEFAULT_ROUTE_NAME,
+			\MvcCore\IRouter::DEFAULT_ROUTE_NAME,
 			$toolClass::GetPascalCaseFromDashed($requestCtrlName ?: $ctrlDfltName),
 			$toolClass::GetPascalCaseFromDashed($requestActionName ?: $actionDfltName)
 		);
@@ -935,11 +935,16 @@ class Router implements Interfaces\IRouter
 				$request->SetParams($newParams);
 				$matchedParamsClone = array_merge([], $matchedParams);
 				unset($matchedParamsClone['controller'], $matchedParamsClone['action']);
-				if ($matchedParamsClone) 
+				if ($matchedParamsClone) {
+					if ($this->requestedUrlParams) {
+						$requestedUrlParamsToMerge = $this->requestedUrlParams;
+					} else {
+						$requestedUrlParamsToMerge = [];
+					}
 					$this->requestedUrlParams = array_merge(
-						$this->requestedUrlParams ? $this->requestedUrlParams : [],
-						$matchedParamsClone
+						$requestedUrlParamsToMerge, $matchedParamsClone
 					);
+				}
 				break;
 			}
 		}
@@ -1006,7 +1011,7 @@ class Router implements Interfaces\IRouter
 			);
 		}
 		$lastPathChar = mb_substr($path, mb_strlen($path) - 1);
-		if ($lastPathChar == '/' && $this->trailingSlashBehaviour == \MvcCore\Interfaces\IRouter::TRAILING_SLASH_REMOVE) {
+		if ($lastPathChar == '/' && $this->trailingSlashBehaviour == \MvcCore\IRouter::TRAILING_SLASH_REMOVE) {
 			// remove trailing slash and redirect
 			$this->redirect(
 				$this->request->GetBaseUrl()
@@ -1015,7 +1020,7 @@ class Router implements Interfaces\IRouter
 				. $this->request->GetFragment(TRUE)
 			);
 			return FALSE;
-		} else if ($lastPathChar != '/' && $this->trailingSlashBehaviour == \MvcCore\Interfaces\IRouter::TRAILING_SLASH_ALWAYS) {
+		} else if ($lastPathChar != '/' && $this->trailingSlashBehaviour == \MvcCore\IRouter::TRAILING_SLASH_ALWAYS) {
 			// add trailing slash and redirect
 			$this->redirect(
 				$this->request->GetBaseUrl()

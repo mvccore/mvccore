@@ -14,7 +14,7 @@
 namespace MvcCore;
 
 //include_once(__DIR__ . '/Application.php');
-//include_once(__DIR__ . '/Interfaces/IView.php');
+//include_once(__DIR__ . '/IView.php');
 
 /**
  * Core view:
@@ -40,11 +40,11 @@ namespace MvcCore;
  * - No special view language implemented.
  *   - Why to use such stupid things, if we have configured `short_open_tags` by default? `<?=...?>`
  */
-class View implements Interfaces\IView
+class View implements IView
 {
 	/**
 	 * Controller instance.
-	 * @var \MvcCore\Controller|\MvcCore\Interfaces\IController
+	 * @var \MvcCore\Controller|\MvcCore\IController
 	 */
 	protected $controller = NULL;
 
@@ -104,10 +104,10 @@ class View implements Interfaces\IView
 	 * header in response object yet).
 	 * This value could be used also for any other custom purposses.
 	 * Possible values:
-	 * - `HTML4` - `\MvcCore\Interfaces\IView::DOCTYPE_HTML4`
-	 * - `XHTML` - `\MvcCore\Interfaces\IView::DOCTYPE_XHTML`
-	 * - `HTML5` - `\MvcCore\Interfaces\IView::DOCTYPE_HTML5`
-	 * - `XML`   - `\MvcCore\Interfaces\IView::DOCTYPE_XML`
+	 * - `HTML4` - `\MvcCore\IView::DOCTYPE_HTML4`
+	 * - `XHTML` - `\MvcCore\IView::DOCTYPE_XHTML`
+	 * - `HTML5` - `\MvcCore\IView::DOCTYPE_HTML5`
+	 * - `XML`   - `\MvcCore\IView::DOCTYPE_XML`
 	 * Default value: `HTML5`.
 	 * @var string
 	 */
@@ -206,10 +206,10 @@ class View implements Interfaces\IView
 	 * header in response object yet).
 	 * This value could be used also for any other custom purposses.
 	 * Possible values:
-	 * - `HTML4` - `\MvcCore\Interfaces\IView::DOCTYPE_HTML4`
-	 * - `XHTML` - `\MvcCore\Interfaces\IView::DOCTYPE_XHTML`
-	 * - `HTML5` - `\MvcCore\Interfaces\IView::DOCTYPE_HTML5`
-	 * - `XML`   - `\MvcCore\Interfaces\IView::DOCTYPE_XML`
+	 * - `HTML4` - `\MvcCore\IView::DOCTYPE_HTML4`
+	 * - `XHTML` - `\MvcCore\IView::DOCTYPE_XHTML`
+	 * - `HTML5` - `\MvcCore\IView::DOCTYPE_HTML5`
+	 * - `XML`   - `\MvcCore\IView::DOCTYPE_XML`
 	 * Default value: `HTML5`.
 	 * @return string
 	 */
@@ -223,15 +223,15 @@ class View implements Interfaces\IView
 	 * header in response object yet).
 	 * This value could be used also for any other custom purposses.
 	 * Possible values:
-	 * - `HTML4` - `\MvcCore\Interfaces\IView::DOCTYPE_HTML4`
-	 * - `XHTML` - `\MvcCore\Interfaces\IView::DOCTYPE_XHTML`
-	 * - `HTML5` - `\MvcCore\Interfaces\IView::DOCTYPE_HTML5`
-	 * - `XML`   - `\MvcCore\Interfaces\IView::DOCTYPE_XML`
+	 * - `HTML4` - `\MvcCore\IView::DOCTYPE_HTML4`
+	 * - `XHTML` - `\MvcCore\IView::DOCTYPE_XHTML`
+	 * - `HTML5` - `\MvcCore\IView::DOCTYPE_HTML5`
+	 * - `XML`   - `\MvcCore\IView::DOCTYPE_XML`
 	 * Default value: `HTML5`.
 	 * @param string $doctype
 	 * @return string
 	 */
-	public static function SetDoctype ($doctype = \MvcCore\Interfaces\IView::DOCTYPE_HTML5) {
+	public static function SetDoctype ($doctype = \MvcCore\IView::DOCTYPE_HTML5) {
 		return static::$doctype = $doctype;
 	}
 
@@ -351,7 +351,7 @@ class View implements Interfaces\IView
 	 * @param \MvcCore\Controller $controller
 	 * @return \MvcCore\View
 	 */
-	public function & SetController (\MvcCore\Interfaces\IController & $controller) {
+	public function & SetController (\MvcCore\IController & $controller) {
 		$this->controller = $controller;
 		return $this;
 	}
@@ -371,7 +371,7 @@ class View implements Interfaces\IView
 	 * @param bool $overwriteExistingKeys If any property name already exist in view store, overwrite it by given value by default.
 	 * @return \MvcCore\View
 	 */
-	public function & SetUpStore (\MvcCore\Interfaces\IView & $view, $overwriteExistingKeys = TRUE) {
+	public function & SetUpStore (\MvcCore\IView & $view, $overwriteExistingKeys = TRUE) {
 		$currentStore = & $this->__protected['store'];
 		$viewStore = & $view->__protected['store'];
 		if ($overwriteExistingKeys) {
@@ -643,7 +643,7 @@ class View implements Interfaces\IView
 	 * @param string $helperName View helper method name in pascal case.
 	 * @param \MvcCore\Ext\Views\Helpers\AbstractHelper|\MvcCore\Ext\Views\Helpers\IHelper|mixed $instance View helper instance.
 	 * @param bool $forAllTemplates register this helper instance for all rendered views in the future.
-	 * @return \MvcCore\View|\MvcCore\Interfaces\IView
+	 * @return \MvcCore\View|\MvcCore\IView
 	 */
 	public function & SetHelper ($helperName, & $instance, $forAllTemplates = TRUE) {
 		$implementsIHelper = FALSE;

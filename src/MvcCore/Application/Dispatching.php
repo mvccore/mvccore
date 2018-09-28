@@ -146,7 +146,7 @@ trait Dispatching
 	 * @return bool
 	 */
 	public function DispatchRequest () {
-		/** @var \MvcCore\Interfaces\IRoute */
+		/** @var \MvcCore\IRoute */
 		$route = & $this->router->GetCurrentRoute();
 		if ($route === NULL) return $this->DispatchException('No route for request', 404);
 		list ($ctrlPc, $actionPc) = [$route->GetController(), $route->GetAction()];
@@ -321,13 +321,13 @@ trait Dispatching
 		$debugClass = $this->debugClass;
 		$configClass = $this->configClass;
 		if ($exception->getCode() == 404) {
-			$debugClass::Log($exception->getMessage().": ".$this->request->GetFullUrl(), \MvcCore\Interfaces\IDebug::INFO);
+			$debugClass::Log($exception->getMessage().": ".$this->request->GetFullUrl(), \MvcCore\IDebug::INFO);
 			return $this->RenderNotFound($exception->getMessage());
 		} else if ($configClass::IsDevelopment(TRUE)) {
 			$debugClass::Exception($exception);
 			return FALSE;
 		} else {
-			$debugClass::Log($exception, \MvcCore\Interfaces\IDebug::EXCEPTION);
+			$debugClass::Log($exception, \MvcCore\IDebug::EXCEPTION);
 			return $this->RenderError($exception);
 		}
 	}
@@ -349,7 +349,7 @@ trait Dispatching
 			$debugClass = $this->debugClass;
 			$viewClass = $this->viewClass;
 			$this->router->SetOrCreateDefaultRouteAsCurrent(
-				\MvcCore\Interfaces\IRouter::DEFAULT_ROUTE_NAME_ERROR,
+				\MvcCore\IRouter::DEFAULT_ROUTE_NAME_ERROR,
 				$this->defaultControllerName, $this->defaultControllerErrorActionName
 			);
 			$newParams = array_merge($this->request->GetParams('.*'), [
@@ -366,12 +366,12 @@ trait Dispatching
 					$this->request->GetControllerName() . '/' . $this->request->GetActionName()
 				),
 				function (\Exception & $e) use ($exceptionMessage, $debugClass) {
-					$this->router->RemoveRoute(\MvcCore\Interfaces\IRouter::DEFAULT_ROUTE_NAME_NOT_FOUND);
+					$this->router->RemoveRoute(\MvcCore\IRouter::DEFAULT_ROUTE_NAME_NOT_FOUND);
 					$configClass = $this->configClass;
 					if ($configClass::IsDevelopment(TRUE)) {
 						$debugClass::Exception($e);
 					} else {
-						$debugClass::Log($e, \MvcCore\Interfaces\IDebug::EXCEPTION);
+						$debugClass::Log($e, \MvcCore\IDebug::EXCEPTION);
 						$this->RenderError500PlainText($exceptionMessage . PHP_EOL . PHP_EOL . $e->getMessage());
 					}
 				}
@@ -398,7 +398,7 @@ trait Dispatching
 			$debugClass = $this->debugClass;
 			$viewClass = $this->viewClass;
 			$this->router->SetOrCreateDefaultRouteAsCurrent(
-				\MvcCore\Interfaces\IRouter::DEFAULT_ROUTE_NAME_NOT_FOUND,
+				\MvcCore\IRouter::DEFAULT_ROUTE_NAME_NOT_FOUND,
 				$this->defaultControllerName, $this->defaultControllerNotFoundActionName
 			);
 			$newParams = array_merge($this->request->GetParams('.*'), [
@@ -415,12 +415,12 @@ trait Dispatching
 					$this->request->GetControllerName() . '/' . $this->request->GetActionName()
 				),
 				function (\Exception & $e) use ($exceptionMessage, $debugClass) {
-					$this->router->RemoveRoute(\MvcCore\Interfaces\IRouter::DEFAULT_ROUTE_NAME_NOT_FOUND);
+					$this->router->RemoveRoute(\MvcCore\IRouter::DEFAULT_ROUTE_NAME_NOT_FOUND);
 					$configClass = $this->configClass;
 					if ($configClass::IsDevelopment(TRUE)) {
 						$debugClass::Exception($e);
 					} else {
-						$debugClass::Log($e, \MvcCore\Interfaces\IDebug::EXCEPTION);
+						$debugClass::Log($e, \MvcCore\IDebug::EXCEPTION);
 						$this->RenderError404PlainText($exceptionMessage);
 					}
 				}
@@ -453,7 +453,7 @@ trait Dispatching
 			}
 		}
 		$this->response = $responseClass::CreateInstance(
-			\MvcCore\Interfaces\IResponse::INTERNAL_SERVER_ERROR,
+			\MvcCore\IResponse::INTERNAL_SERVER_ERROR,
 			['Content-Type' => $htmlResponse ? 'text/html' : 'text/plain'],
 			$text
 		);
@@ -483,7 +483,7 @@ trait Dispatching
 			}
 		}
 		$this->response = $responseClass::CreateInstance(
-			\MvcCore\Interfaces\IResponse::NOT_FOUND,
+			\MvcCore\IResponse::NOT_FOUND,
 			['Content-Type' => $htmlResponse ? 'text/html' : 'text/plain'],
 			$text
 		);

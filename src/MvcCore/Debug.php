@@ -13,7 +13,7 @@
 
 namespace MvcCore {
 
-	//include_once(__DIR__ . '/Interfaces/IDebug.php');
+	//include_once(__DIR__ . '/IDebug.php');
 	//include_once('Application.php');
 	//include_once('Config.php');
 
@@ -25,7 +25,7 @@ namespace MvcCore {
 	 * - Any variables and catched exceptions file logging.
 	 * - Time printing.
 	 */
-	class Debug implements Interfaces\IDebug
+	class Debug implements IDebug
 	{
 		/**
 		 * Email recepient to send information about exceptions or errors,
@@ -167,7 +167,7 @@ namespace MvcCore {
 			if (static::$development) {
 				echo $dumpedValue;
 			} else {
-				static::storeLogRecord($dumpedValue, \MvcCore\Interfaces\IDebug::DEBUG);
+				static::storeLogRecord($dumpedValue, \MvcCore\IDebug::DEBUG);
 			}
 			return $value;
 		}
@@ -190,7 +190,7 @@ namespace MvcCore {
 				$dumpedValue = @call_user_func_array(static::$handlers['barDump'], func_get_args());
 			}
 			if (!static::$development) {
-				static::storeLogRecord($dumpedValue, \MvcCore\Interfaces\IDebug::DEBUG);
+				static::storeLogRecord($dumpedValue, \MvcCore\IDebug::DEBUG);
 			}
 			return $value;
 		}
@@ -202,7 +202,7 @@ namespace MvcCore {
 		 * @param  string						$priority
 		 * @return string						Logging filename fullpath.
 		 */
-		public static function Log ($value, $priority = \MvcCore\Interfaces\IDebug::INFO) {
+		public static function Log ($value, $priority = \MvcCore\IDebug::INFO) {
 			if (static::$originalDebugClass) {
 				$dumpedValue = static::dumpHandler(
 					$value, NULL, ['store' => FALSE, 'backtraceIndex' => 1]
@@ -219,7 +219,7 @@ namespace MvcCore {
 		 * @param	string	$priority	Priority.
 		 * @return	bool				Was successful?
 		 */
-		public static function FireLog ($value, $priority = \MvcCore\Interfaces\IDebug::DEBUG) {
+		public static function FireLog ($value, $priority = \MvcCore\IDebug::DEBUG) {
 			// TODO: implement simple firelog
 			$args = func_get_args();
 			if (static::$originalDebugClass) {
@@ -243,7 +243,7 @@ namespace MvcCore {
 				if (static::$development) {
 					echo $dumpedValue;
 				} else {
-					static::storeLogRecord($dumpedValue, \MvcCore\Interfaces\IDebug::EXCEPTION);
+					static::storeLogRecord($dumpedValue, \MvcCore\IDebug::EXCEPTION);
 				}
 			} else {
 				@call_user_func_array(static::$handlers['exceptionHandler'], func_get_args());
@@ -466,7 +466,7 @@ namespace {
 				$args = func_get_args();
 				if (count($args) > 0)
 					foreach ($args as $arg)
-						\MvcCore\Debug::Log($arg, \MvcCore\Interfaces\IDebug::DEBUG);
+						\MvcCore\Debug::Log($arg, \MvcCore\IDebug::DEBUG);
 				echo 'Error 500 - Stopped.';
 				exit;
 			}

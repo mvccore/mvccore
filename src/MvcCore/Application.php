@@ -13,7 +13,7 @@
 
 namespace MvcCore;
 
-//include_once(__DIR__.'/Interfaces/IApplication.php');
+//include_once(__DIR__.'/IApplication.php');
 //include_once(__DIR__.'/Application/GettersSetters.php');
 //include_once(__DIR__.'/Application/Dispatching.php');
 //include_once(__DIR__.'/Application/Helpers.php');
@@ -31,7 +31,7 @@ namespace MvcCore;
  *   - Controller/action dispatching.
  *   - Error handling and error responses.
  */
-class Application implements \MvcCore\Interfaces\IApplication
+class Application implements \MvcCore\IApplication
 {
 	/**
 	 * Include traits with

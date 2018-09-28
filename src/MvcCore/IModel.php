@@ -11,7 +11,7 @@
  * @license  https://mvccore.github.io/docs/mvccore/5.0.0/LICENCE.md
  */
 
-namespace MvcCore\Interfaces;
+namespace MvcCore;
 
 //include_once(__DIR__.'/../Config.php');
 
@@ -48,7 +48,7 @@ interface IModel
 	 * @param boolean $keysInsensitive			If `TRUE`, set up properties from `$data` with case insensivity.
 	 * @param boolean $includeInheritProperties If `TRUE`, include only fields from current model class and from parent classes.
 	 * @param boolean $publicOnly			   If `TRUE`, include only public model fields.
-	 * @return \MvcCore\Interfaces\IModel
+	 * @return \MvcCore\IModel
 	 */
 	public function & SetUp (
 		$data = [],
@@ -60,7 +60,7 @@ interface IModel
 	/**
 	 * Returns (or creates and holds) instance from local store.
 	 * @param mixed $args,... unlimited OPTIONAL variables to pass into model `__construct()` method.
-	 * @return \MvcCore\Interfaces\IModel
+	 * @return \MvcCore\IModel
 	 */
 	public static function & GetInstance (/* ...$args */);
 
@@ -69,7 +69,7 @@ interface IModel
 	 * @param array  $args			  Values array with variables to pass into resource `__construct()` method.
 	 * @param string $modelClassPath
 	 * @param string $resourceClassPath
-	 * @return \MvcCore\Interfaces\IModel
+	 * @return \MvcCore\IModel
 	 */
 	public static function GetResource (
 		$args = [],
@@ -190,16 +190,16 @@ interface IModel
 	public static function SetConfig (array $config = [], $connectionName = NULL);
 
 	/**
-	 * Sets any custom property `"PropertyName"` by `\MvcCore\Interfaces\IModel::SetPropertyName("value")`,
+	 * Sets any custom property `"PropertyName"` by `\MvcCore\IModel::SetPropertyName("value")`,
 	 * which is not necessary to define previously or gets previously defined
-	 * property `"PropertyName"` by `\MvcCore\Interfaces\IModel::GetPropertyName();`.
+	 * property `"PropertyName"` by `\MvcCore\IModel::GetPropertyName();`.
 	 * Throws exception if no property defined by get call
 	 * or if virtual call begins with anything different from `Set` or `Get`.
-	 * This method returns custom value for get and `\MvcCore\Interfaces\IModel` instance for set.
+	 * This method returns custom value for get and `\MvcCore\IModel` instance for set.
 	 * @param string $rawName
 	 * @param array  $arguments
 	 * @throws \Exception
-	 * @return mixed|\MvcCore\Interfaces\IModel
+	 * @return mixed|\MvcCore\IModel
 	 */
 	public function __call ($rawName, $arguments = []);
 

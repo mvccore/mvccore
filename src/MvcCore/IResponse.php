@@ -11,13 +11,13 @@
  * @license  https://mvccore.github.io/docs/mvccore/5.0.0/LICENCE.md
  */
 
-namespace MvcCore\Interfaces;
+namespace MvcCore;
 
 /**
  * Responsibility - completing all information for response - headers (cookies) and content.
  * - HTTP response wrapper carrying response headers and response body.
  * - PHP `setcookie` function wrapper to complete default values such domain or http only etc.
- * - Sending response at application terminate process by `\MvcCore\Interfaces\IResponse::Send();`.
+ * - Sending response at application terminate process by `\MvcCore\IResponse::Send();`.
  * - Completing MvcCore performance header at response end.
  */
 interface IResponse
@@ -34,10 +34,10 @@ interface IResponse
 	 * @param int		$code
 	 * @param array		$headers
 	 * @param string	$body
-	 * @return \MvcCore\Interfaces\IResponse
+	 * @return \MvcCore\IResponse
 	 */
 	public static function CreateInstance (
-		$code = \MvcCore\Interfaces\IResponse::OK,
+		$code = \MvcCore\IResponse::OK,
 		$headers = [],
 		$body = ''
 	);
@@ -45,7 +45,7 @@ interface IResponse
 	/**
 	 * Set HTTP response code.
 	 * @param int $code `200 | 301 | 404`
-	 * @return \MvcCore\Interfaces\IResponse
+	 * @return \MvcCore\IResponse
 	 */
 	public function & SetCode ($code);
 
@@ -68,7 +68,7 @@ interface IResponse
 	 * @param array $headers
 	 * @param bool $cleanAllPrevious `FALSE` by default. If `TRUE`, all previous headers
 	 *								 set by PHP `header()` or by this object will be removed.
-	 * @return \MvcCore\Interfaces\IResponse
+	 * @return \MvcCore\IResponse
 	 */
 	public function & SetHeaders (array $headers = []);
 
@@ -81,7 +81,7 @@ interface IResponse
 	 * Example: `$request->SetHeader('Content-Type', 'text/plain; charset=utf-8');`
 	 * @param string $name
 	 * @param string $value
-	 * @return \MvcCore\Interfaces\IResponse
+	 * @return \MvcCore\IResponse
 	 */
 	public function & SetHeader ($name, $value);
 
@@ -107,7 +107,7 @@ interface IResponse
 	 * Set HTTP response content encoding.
 	 * Example: `$response->SetEncoding('utf-8');`
 	 * @param string $encoding
-	 * @return \MvcCore\Interfaces\IResponse
+	 * @return \MvcCore\IResponse
 	 */
 	public function & SetEncoding ($encoding = 'utf-8');
 
@@ -121,21 +121,21 @@ interface IResponse
 	/**
 	 * Set HTTP response body.
 	 * @param string $body
-	 * @return \MvcCore\Interfaces\IResponse
+	 * @return \MvcCore\IResponse
 	 */
 	public function & SetBody ($body);
 
 	/**
 	 * Prepend HTTP response body.
 	 * @param string $body
-	 * @return \MvcCore\Interfaces\IResponse
+	 * @return \MvcCore\IResponse
 	 */
 	public function & PrependBody ($body);
 
 	/**
 	 * Append HTTP response body.
 	 * @param string $body
-	 * @return \MvcCore\Interfaces\IResponse
+	 * @return \MvcCore\IResponse
 	 */
 	public function & AppendBody ($body);
 

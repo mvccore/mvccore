@@ -35,36 +35,36 @@ trait PropsGettersSetters
 	/**
 	 * Describes if application is running as standard php project or as single file application.
 	 * It shoud has values from:
-	 * - `\MvcCore\Interfaces\IApplication::COMPILED_PHP`
-	 * - `\MvcCore\Interfaces\IApplication::COMPILED_PHAR`
-	 * - `\MvcCore\Interfaces\IApplication::COMPILED_SFU`
-	 * - `\MvcCore\Interfaces\IApplication::NOT_COMPILED`
-	 * Read more about every mode in interface: `\MvcCore\Interfaces\IApplication`.
+	 * - `\MvcCore\IApplication::COMPILED_PHP`
+	 * - `\MvcCore\IApplication::COMPILED_PHAR`
+	 * - `\MvcCore\IApplication::COMPILED_SFU`
+	 * - `\MvcCore\IApplication::NOT_COMPILED`
+	 * Read more about every mode in interface: `\MvcCore\IApplication`.
 	 * @var string
 	 */
 	protected $compiled = NULL;
 
 	/**
 	 * Top most parent controller instance currently dispatched by application.
-	 * @var \MvcCore\Controller|\MvcCore\Interfaces\IController
+	 * @var \MvcCore\Controller|\MvcCore\IController
 	 */
 	protected $controller = NULL;
 
 	/**
 	 * Request object - parsed uri, query params, app paths...
-	 * @var \MvcCore\Request|\MvcCore\Interfaces\IRequest
+	 * @var \MvcCore\Request|\MvcCore\IRequest
 	 */
 	protected $request = NULL;
 
 	/**
 	 * Response object - storrage for response headers and rendered body.
-	 * @var \MvcCore\Response|\MvcCore\Interfaces\IResponse
+	 * @var \MvcCore\Response|\MvcCore\IResponse
 	 */
 	protected $response = NULL;
 
 	/**
 	 * Application http router to route request and build url addresses.
-	 * @var \MvcCore\Router|\MvcCore\Interfaces\IRouter
+	 * @var \MvcCore\Router|\MvcCore\IRouter
 	 */
 	protected $router = NULL;
 
@@ -274,11 +274,11 @@ trait PropsGettersSetters
 	/**
 	 * Get if application is running as standard php project or as single file application.
 	 * It shoud has values from:
-	 * - `\MvcCore\Interfaces\IApplication::COMPILED_PHP`
-	 * - `\MvcCore\Interfaces\IApplication::COMPILED_PHAR`
-	 * - `\MvcCore\Interfaces\IApplication::COMPILED_SFU`
-	 * - `\MvcCore\Interfaces\IApplication::NOT_COMPILED`
-	 * Read more about every mode in interface: `\MvcCore\Interfaces\IApplication`.
+	 * - `\MvcCore\IApplication::COMPILED_PHP`
+	 * - `\MvcCore\IApplication::COMPILED_PHAR`
+	 * - `\MvcCore\IApplication::COMPILED_SFU`
+	 * - `\MvcCore\IApplication::NOT_COMPILED`
+	 * Read more about every mode in interface: `\MvcCore\IApplication`.
 	 * @return string
 	 */
 	public function GetCompiled () {
@@ -296,7 +296,7 @@ trait PropsGettersSetters
 
 
 	/**
-	 * Get application config class implementing `\MvcCore\Interfaces\IConfig`.
+	 * Get application config class implementing `\MvcCore\IConfig`.
 	 * Class to load and parse (system) config(s) and manage environment string.
 	 * @return string
 	 */
@@ -305,7 +305,7 @@ trait PropsGettersSetters
 	}
 
 	/**
-	 * Get application controller class implementing `\MvcCore\Interfaces\IController`.
+	 * Get application controller class implementing `\MvcCore\IController`.
 	 * Class to create default controller for request targeting views only
 	 * and to handle small assets inside packed application.
 	 * @return string
@@ -315,7 +315,7 @@ trait PropsGettersSetters
 	}
 
 	/**
-	 * Get application debug class implementing `\MvcCore\Interfaces\IDebug`.
+	 * Get application debug class implementing `\MvcCore\IDebug`.
 	 * Class to handle any application error to render the error in browser or log in HDD.
 	 * @return string
 	 */
@@ -324,7 +324,7 @@ trait PropsGettersSetters
 	}
 
 	/**
-	 * Get application request class implementing `\MvcCore\Interfaces\IRequest`.
+	 * Get application request class implementing `\MvcCore\IRequest`.
 	 * Class to create describing HTTP request object.
 	 * @return string
 	 */
@@ -333,7 +333,7 @@ trait PropsGettersSetters
 	}
 
 	/**
-	 * Get application response class implementing `\MvcCore\Interfaces\IResponse`.
+	 * Get application response class implementing `\MvcCore\IResponse`.
 	 * Class to create HTTP response object to store response headers and response content.
 	 * @return string
 	 */
@@ -342,7 +342,7 @@ trait PropsGettersSetters
 	}
 
 	/**
-	 * Get application route class implementing `\MvcCore\Interfaces\IRoute`.
+	 * Get application route class implementing `\MvcCore\IRoute`.
 	 * Class to describe single route with match and replace pattern,
 	 * controller, action, params default values and params constraints.
 	 * @return string
@@ -352,7 +352,7 @@ trait PropsGettersSetters
 	}
 
 	/**
-	 * Get application router class implementing `\MvcCore\Interfaces\IRouter`.
+	 * Get application router class implementing `\MvcCore\IRouter`.
 	 * Class to store all routes, dispatch request by routes and generate url addresses by routes.
 	 * @return string
 	 */
@@ -361,7 +361,7 @@ trait PropsGettersSetters
 	}
 
 	/**
-	 * Get application session class implementing `\MvcCore\Interfaces\ISession`.
+	 * Get application session class implementing `\MvcCore\ISession`.
 	 * Class to configure session namespaces, session opening, writing and expirations.
 	 * @return string
 	 */
@@ -370,7 +370,7 @@ trait PropsGettersSetters
 	}
 
 	/**
-	 * Get application tool class implementing `\MvcCore\Interfaces\ITool`.
+	 * Get application tool class implementing `\MvcCore\ITool`.
 	 * Class to handle helper calls from MvcCore core modules.
 	 * @return string
 	 */
@@ -379,7 +379,7 @@ trait PropsGettersSetters
 	}
 
 	/**
-	 * Get application view class implementing `\MvcCore\Interfaces\IView`.
+	 * Get application view class implementing `\MvcCore\IView`.
 	 * Class to prepare and render controller view, subviews and wrapper layout.
 	 * @return string
 	 */
@@ -389,7 +389,7 @@ trait PropsGettersSetters
 
 	/**
 	 * Returns currently used instance of protected `\MvcCore\Application::$request;`.
-	 * @return \MvcCore\Request|\MvcCore\Interfaces\IRequest
+	 * @return \MvcCore\Request|\MvcCore\IRequest
 	 */
 	public function & GetRequest () {
 		if ($this->request === NULL) {
@@ -401,7 +401,7 @@ trait PropsGettersSetters
 
 	/**
 	 * Returns currently used instance of protected `\MvcCore\Application::response;`.
-	 * @return \MvcCore\Response|\MvcCore\Interfaces\IResponse
+	 * @return \MvcCore\Response|\MvcCore\IResponse
 	 */
 	public function & GetResponse () {
 		if ($this->response === NULL) {
@@ -413,7 +413,7 @@ trait PropsGettersSetters
 
 	/**
 	 * Returns currently used instance of protected `\MvcCore\Application::$router;`.
-	 * @return \MvcCore\Router|\MvcCore\Interfaces\IRouter
+	 * @return \MvcCore\Router|\MvcCore\IRouter
 	 */
 	public function & GetRouter () {
 		if ($this->router === NULL) {
@@ -425,7 +425,7 @@ trait PropsGettersSetters
 
 	/**
 	 * Returns currently dispatched instance of protected `\MvcCore\Application::$controller;`.
-	 * @return \MvcCore\Controller|\MvcCore\Interfaces\IController
+	 * @return \MvcCore\Controller|\MvcCore\IController
 	 */
 	public function & GetController () {
 		return $this->controller;
@@ -482,11 +482,11 @@ trait PropsGettersSetters
 	/**
 	 * Set if application is running as standard php project or as single file application.
 	 * First param `$compiled` shoud has values from:
-	 * - `\MvcCore\Interfaces\IApplication::COMPILED_PHP`
-	 * - `\MvcCore\Interfaces\IApplication::COMPILED_PHAR`
-	 * - `\MvcCore\Interfaces\IApplication::COMPILED_SFU`
-	 * - `\MvcCore\Interfaces\IApplication::NOT_COMPILED`
-	 * Read more about every mode in interface: `\MvcCore\Interfaces\IApplication`.
+	 * - `\MvcCore\IApplication::COMPILED_PHP`
+	 * - `\MvcCore\IApplication::COMPILED_PHAR`
+	 * - `\MvcCore\IApplication::COMPILED_SFU`
+	 * - `\MvcCore\IApplication::NOT_COMPILED`
+	 * Read more about every mode in interface: `\MvcCore\IApplication`.
 	 * Core configuration method.
 	 * @param string $compiled
 	 * @return \MvcCore\Application
@@ -498,7 +498,7 @@ trait PropsGettersSetters
 
 
 	/**
-	 * Set application config class implementing `\MvcCore\Interfaces\IConfig`.
+	 * Set application config class implementing `\MvcCore\IConfig`.
 	 * Class to create default controller for request targeting views only
 	 * and to handle small assets inside packed application.
 	 * Core configuration method.
@@ -506,11 +506,11 @@ trait PropsGettersSetters
 	 * @return \MvcCore\Application
 	 */
 	public function & SetConfigClass ($configClass) {
-		return $this->setCoreClass($configClass, 'configClass', \MvcCore\Interfaces\IConfig::class);
+		return $this->setCoreClass($configClass, 'configClass', '\\MvcCore\\IConfig');
 	}
 
 	/**
-	 * Set application controller class implementing `\MvcCore\Interfaces\IController`.
+	 * Set application controller class implementing `\MvcCore\IController`.
 	 * Class to create default controller for request targeting views only
 	 * and to handle small assets inside packed application.
 	 * Core configuration method.
@@ -518,44 +518,44 @@ trait PropsGettersSetters
 	 * @return \MvcCore\Application
 	 */
 	public function & SetControllerClass ($controllerClass) {
-		return $this->setCoreClass($controllerClass, 'configClass', \MvcCore\Interfaces\IController::class);
+		return $this->setCoreClass($controllerClass, 'configClass', '\\MvcCore\\IController');
 	}
 
 	/**
-	 * Set application debug class implementing `\MvcCore\Interfaces\IDebug`.
+	 * Set application debug class implementing `\MvcCore\IDebug`.
 	 * Class to handle any application error to render the error in browser or log in HDD.
 	 * Core configuration method.
 	 * @param string $debugClass
 	 * @return \MvcCore\Application
 	 */
 	public function & SetDebugClass ($debugClass) {
-		return $this->setCoreClass($debugClass, 'debugClass', \MvcCore\Interfaces\IDebug::class);
+		return $this->setCoreClass($debugClass, 'debugClass', '\\MvcCore\\IDebug');
 	}
 
 	/**
-	 * Set application request class implementing `\MvcCore\Interfaces\IRequest`.
+	 * Set application request class implementing `\MvcCore\IRequest`.
 	 * Class to create describing HTTP request object.
 	 * Core configuration method.
 	 * @param string $requestClass
 	 * @return \MvcCore\Application
 	 */
 	public function & SetRequestClass ($requestClass) {
-		return $this->setCoreClass($requestClass, 'requestClass', \MvcCore\Interfaces\IRequest::class);
+		return $this->setCoreClass($requestClass, 'requestClass', '\\MvcCore\\IRequest');
 	}
 
 	/**
-	 * Set application response class implementing `\MvcCore\Interfaces\IResponse`.
+	 * Set application response class implementing `\MvcCore\IResponse`.
 	 * Class to create HTTP response object to store response headers and response content.
 	 * Core configuration method.
 	 * @param string $responseClass
 	 * @return \MvcCore\Application
 	 */
 	public function & SetResponseClass ($responseClass) {
-		return $this->setCoreClass($responseClass, 'responseClass', \MvcCore\Interfaces\IResponse::class);
+		return $this->setCoreClass($responseClass, 'responseClass', '\\MvcCore\\IResponse');
 	}
 
 	/**
-	 * Set application route class implementing `\MvcCore\Interfaces\IRoute`.
+	 * Set application route class implementing `\MvcCore\IRoute`.
 	 * Class to describe single route with match and replace pattern,
 	 * controller, action, params default values and params constraints.
 	 * Core configuration method.
@@ -563,51 +563,51 @@ trait PropsGettersSetters
 	 * @return \MvcCore\Application
 	 */
 	public function & SetRouteClass ($routeClass) {
-		return $this->setCoreClass($routeClass, 'routerClass', \MvcCore\Interfaces\IRoute::class);
+		return $this->setCoreClass($routeClass, 'routerClass', '\\MvcCore\\IRoute');
 	}
 
 	/**
-	 * Set application router class implementing `\MvcCore\Interfaces\IRouter`.
+	 * Set application router class implementing `\MvcCore\IRouter`.
 	 * Class to store all routes, dispatch request by routes and generate url addresses by routes.
 	 * Core configuration method.
 	 * @param string $routerClass
 	 * @return \MvcCore\Application
 	 */
 	public function & SetRouterClass ($routerClass) {
-		return $this->setCoreClass($routerClass, 'routerClass', \MvcCore\Interfaces\IRouter::class);
+		return $this->setCoreClass($routerClass, 'routerClass', '\\MvcCore\\IRouter');
 	}
 
 	/**
-	 * Set application session class implementing `\MvcCore\Interfaces\ISession`.
+	 * Set application session class implementing `\MvcCore\ISession`.
 	 * Class to configure session namespaces, session opening, writing and expirations.
 	 * Core configuration method.
 	 * @param string $sessionClass
 	 * @return \MvcCore\Application
 	 */
 	public function & SetSessionClass ($sessionClass) {
-		return $this->setCoreClass($sessionClass, 'sessionClass', \MvcCore\Interfaces\ISession::class);
+		return $this->setCoreClass($sessionClass, 'sessionClass', '\\MvcCore\\ISession');
 	}
 
 	/**
-	 * Set application tool class implementing `\MvcCore\Interfaces\ITool`.
+	 * Set application tool class implementing `\MvcCore\ITool`.
 	 * Class to handle helper calls from MvcCore core modules.
 	 * Core configuration method.
 	 * @param string $toolClass
 	 * @return \MvcCore\Application
 	 */
 	public function & SetToolClass ($toolClass) {
-		return $this->setCoreClass($toolClass, 'toolClass', \MvcCore\Interfaces\ITool::class);
+		return $this->setCoreClass($toolClass, 'toolClass', '\\MvcCore\\ITool');
 	}
 
 	/**
-	 * Set application view class implementing `\MvcCore\Interfaces\IView`.
+	 * Set application view class implementing `\MvcCore\IView`.
 	 * Class to prepare and render controller view, subviews and wrapper layout.
 	 * Core configuration method.
 	 * @param string $viewClass
 	 * @return \MvcCore\Application
 	 */
 	public function & SetViewClass ($viewClass) {
-		return $this->setCoreClass($viewClass, 'viewClass', \MvcCore\Interfaces\IView::class);
+		return $this->setCoreClass($viewClass, 'viewClass', '\\MvcCore\\IView');
 	}
 
 
@@ -629,10 +629,10 @@ trait PropsGettersSetters
 
 	/**
 	 * Set currently dispatched instance of protected `\MvcCore\Application::$controller;`.
-	 * @param \MvcCore\Controller|\MvcCore\Interfaces\IController $controllersDir
+	 * @param \MvcCore\Controller|\MvcCore\IController $controllersDir
 	 * @return \MvcCore\Application
 	 */
-	public function & SetController (\MvcCore\Interfaces\IController & $controller = NULL) {
+	public function & SetController (\MvcCore\IController & $controller = NULL) {
 		$this->controller = $controller;
 		return $this;
 	}

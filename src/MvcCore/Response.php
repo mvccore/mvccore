@@ -13,18 +13,18 @@
 
 namespace MvcCore;
 
-//include_once(__DIR__ . '/Interfaces/IResponse.php');
+//include_once(__DIR__ . '/IResponse.php');
 
-use \MvcCore\Interfaces\IResponse;
+use \MvcCore\IResponse;
 
 /**
  * Responsibility - completing all information for response - headers (cookies) and content.
  * - HTTP response wrapper carrying response headers and response body.
  * - PHP `setcookie` function wrapper to complete default values such domain or http only etc.
- * - Sending response at application terminate process by `\MvcCore\Interfaces\IResponse::Send();`.
+ * - Sending response at application terminate process by `\MvcCore\IResponse::Send();`.
  * - Completing MvcCore performance header at response end.
  */
-class Response implements Interfaces\IResponse
+class Response implements IResponse
 {
 	public static $CodeMessages = [
 		IResponse::OK						=> 'OK',
@@ -82,7 +82,7 @@ class Response implements Interfaces\IResponse
 	 * @return \MvcCore\Response
 	 */
 	public static function CreateInstance (
-		$code = \MvcCore\Interfaces\IResponse::OK,
+		$code = \MvcCore\IResponse::OK,
 		$headers = [],
 		$body = ''
 	) {
@@ -98,7 +98,7 @@ class Response implements Interfaces\IResponse
 	 * @return \MvcCore\Response
 	 */
 	public function __construct (
-		$code = \MvcCore\Interfaces\IResponse::OK,
+		$code = \MvcCore\IResponse::OK,
 		$headers = [],
 		$body = ''
 	) {

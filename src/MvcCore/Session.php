@@ -13,31 +13,31 @@
 
 namespace MvcCore;
 
-//include_once(__DIR__ . '/Interfaces/ISession.php');
+//include_once(__DIR__ . '/ISession.php');
 //include_once('Application.php');
 //include_once('Request.php');
 
 /**
  * Responsibility - session data management - starting, writing and expirations.
  * - Safe start (only once)
- *   - By `\MvcCore\Interfaces\ISession::Start()`
+ *   - By `\MvcCore\ISession::Start()`
  *	 - Called by `\MvcCore\Application::GetInstance()->SessionStart();`
  *		 - Called by `\MvcCore\Controller::Init();`.
  * - Session writing and closing at request end:
- *   - In `\MvcCore\Interfaces\ISession::Close()`
+ *   - In `\MvcCore\ISession::Close()`
  *	 - Called over `register_shutdown_function()`
  *	   from `\MvcCore::Terminate();`
  * - Session namespaces management:
  *   - Variables expiration by seconds.
  *   - Variables expiration by request hoops.
  */
-class Session extends \ArrayObject implements Interfaces\ISession
+class Session extends \ArrayObject implements ISession
 {
 	/**
 	 * Default session namespace name.
 	 * @var string
 	 */
-	protected $__name = \MvcCore\Interfaces\ISession::DEFAULT_NAMESPACE_NAME;
+	protected $__name = \MvcCore\ISession::DEFAULT_NAMESPACE_NAME;
 
 	/**
 	 * Static boolean about if session has been allready started or not.
@@ -63,9 +63,9 @@ class Session extends \ArrayObject implements Interfaces\ISession
 	];
 
 	/**
-	 * Array of created `\MvcCore\Interfaces\ISession` instances,
+	 * Array of created `\MvcCore\ISession` instances,
 	 * keys in this array storrage are session namespaces names.
-	 * @var \MvcCore\Interfaces\ISession[]
+	 * @var \MvcCore\ISession[]
 	 */
 	protected static $instances = [];
 
@@ -141,7 +141,7 @@ class Session extends \ArrayObject implements Interfaces\ISession
 	/**
 	 * Set up MvcCore session namespaces metadata
 	 * about namespaces names, hoops and expirations.
-	 * Called only once at session start by `\MvcCore\Interfaces\ISession::Start();`.
+	 * Called only once at session start by `\MvcCore\ISession::Start();`.
 	 * @return void
 	 */
 	protected static function setUpMeta () {
@@ -162,8 +162,8 @@ class Session extends \ArrayObject implements Interfaces\ISession
 	/**
 	 * Set up namespaces data - only if data has not been expired yet,
 	 * if data has been expired, unset data from
-	 * `\MvcCore\Interfaces\ISession::$meta` and `$_SESSION` storrage.
-	 * Called only once at session start by `\MvcCore\Interfaces\ISession::Start();`.
+	 * `\MvcCore\ISession::$meta` and `$_SESSION` storrage.
+	 * Called only once at session start by `\MvcCore\ISession::Start();`.
 	 * @return void
 	 */
 	protected static function setUpData () {
@@ -226,7 +226,7 @@ class Session extends \ArrayObject implements Interfaces\ISession
 	 * @return \MvcCore\Session
 	 */
 	public static function & GetNamespace (
-		$name = \MvcCore\Interfaces\ISession::DEFAULT_NAMESPACE_NAME
+		$name = \MvcCore\ISession::DEFAULT_NAMESPACE_NAME
 	) {
 		if (!static::$started) static::Start();
 		if (!isset(static::$instances[$name])) {
@@ -240,7 +240,7 @@ class Session extends \ArrayObject implements Interfaces\ISession
 	 * @param string $name
 	 * @return \MvcCore\Session
 	 */
-	public function __construct ($name = \MvcCore\Interfaces\ISession::DEFAULT_NAMESPACE_NAME) {
+	public function __construct ($name = \MvcCore\ISession::DEFAULT_NAMESPACE_NAME) {
 		if (!static::$started) static::Start();
 		$this->__name = $name;
 		static::$meta->names[$name] = 1;
@@ -335,7 +335,7 @@ class Session extends \ArrayObject implements Interfaces\ISession
 	}
 
 	/**
-	 * Magic function triggered by: `isset(\MvcCore\Interfaces\ISession->key);`.
+	 * Magic function triggered by: `isset(\MvcCore\ISession->key);`.
 	 * @param string $key
 	 * @return bool
 	 */
@@ -344,7 +344,7 @@ class Session extends \ArrayObject implements Interfaces\ISession
 	}
 
 	/**
-	 * Magic function triggered by: `unset(\MvcCore\Interfaces\ISession->key);`.
+	 * Magic function triggered by: `unset(\MvcCore\ISession->key);`.
 	 * @param string $key
 	 * @return void
 	 */
@@ -354,7 +354,7 @@ class Session extends \ArrayObject implements Interfaces\ISession
 	}
 
 	/**
-	 * Magic function triggered by: `$value = \MvcCore\Interfaces\ISession->key;`.
+	 * Magic function triggered by: `$value = \MvcCore\ISession->key;`.
 	 * @param string $key
 	 * @return mixed
 	 */
@@ -365,7 +365,7 @@ class Session extends \ArrayObject implements Interfaces\ISession
 	}
 
 	/**
-	 * Magic function triggered by: `\MvcCore\Interfaces\ISession->key = "value";`.
+	 * Magic function triggered by: `\MvcCore\ISession->key = "value";`.
 	 * @param string $key
 	 * @param mixed $value
 	 * @return void
@@ -394,7 +394,7 @@ class Session extends \ArrayObject implements Interfaces\ISession
 	}
 
 	/**
-	 * Magic `\ArrayObject` function triggered by: `count(\MvcCore\Interfaces\ISession);`.
+	 * Magic `\ArrayObject` function triggered by: `count(\MvcCore\ISession);`.
 	 * @return int
 	 */
 	public function count () {

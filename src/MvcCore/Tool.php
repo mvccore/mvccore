@@ -13,7 +13,7 @@
 
 namespace MvcCore;
 
-//include_once(__DIR__ . '/Interfaces/ITool.php');
+//include_once(__DIR__ . '/ITool.php');
 
 /**
  * Responsibility - static helpers for core classes inheritance, string conversions and JSON.
@@ -26,7 +26,7 @@ namespace MvcCore;
  * - Static functions to get client/server IPs.
  * - Static function to check core classes inheritance.
  */
-class Tool implements Interfaces\ITool
+class Tool implements ITool
 {
 	/**
 	 * Cache with keys by full interface class names and with values with

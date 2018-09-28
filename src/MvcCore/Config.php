@@ -16,7 +16,7 @@ namespace MvcCore;
 
 include_once(__DIR__ . '/Application.php');
 include_once(__DIR__ . '/Tool.php'); // because of static init
-//include_once(__DIR__ . '/Interfaces/IConfig.php');
+//include_once(__DIR__ . '/IConfig.php');
 
 /**
  * Responsibility - reading config file(s), detecting environment in system config.
@@ -28,7 +28,7 @@ include_once(__DIR__ . '/Tool.php'); // because of static init
  *   - Simple environment name detection by comparing server and client ip.
  *   - Environment name detection by config records about computer name or ip.
  */
-class Config implements Interfaces\IConfig
+class Config implements IConfig
 {
 	/**
 	 * System config relative path from app root.
@@ -132,7 +132,7 @@ class Config implements Interfaces\IConfig
 
 	/**
 	 * Get environment name as string,
-	 * defined by constants: `\MvcCore\Interfaces\IConfig::ENVIRONMENT_<environment>`.
+	 * defined by constants: `\MvcCore\IConfig::ENVIRONMENT_<environment>`.
 	 * @return string
 	 */
 	public static function GetEnvironment ($autoloadSystemConfig = FALSE) {
@@ -145,11 +145,11 @@ class Config implements Interfaces\IConfig
 
 	/**
 	 * Set environment name as string,
-	 * defined by constants: `\MvcCore\Interfaces\IConfig::ENVIRONMENT_<environment>`.
+	 * defined by constants: `\MvcCore\IConfig::ENVIRONMENT_<environment>`.
 	 * @param string $environment
 	 * @return string
 	 */
-	public static function SetEnvironment ($environment = \MvcCore\Interfaces\IConfig::ENVIRONMENT_PRODUCTION) {
+	public static function SetEnvironment ($environment = \MvcCore\IConfig::ENVIRONMENT_PRODUCTION) {
 		static::$environment = $environment;
 	}
 

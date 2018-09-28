@@ -11,7 +11,7 @@
  * @license  https://mvccore.github.io/docs/mvccore/5.0.0/LICENCE.md
  */
 
-namespace MvcCore\Interfaces;
+namespace MvcCore;
 
 /**
  * Responsibility - static helpers for core classes inheritance, string conversions and JSON.

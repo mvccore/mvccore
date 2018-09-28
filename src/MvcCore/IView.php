@@ -11,7 +11,7 @@
  * @license  https://mvccore.github.io/docs/mvccore/5.0.0/LICENCE.md
  */
 
-namespace MvcCore\Interfaces;
+namespace MvcCore;
 
 //include_once('IController.php');
 
@@ -84,7 +84,7 @@ interface IView
 	 * `\MvcCore\Controller::Render()` to create layout view.
 	 * This is place where to customize any view creation process,
 	 * before it's created by MvcCore framework to fill and render it.
-	 * @return \MvcCore\Interfaces\IView
+	 * @return \MvcCore\IView
 	 */
 	public static function CreateInstance ();
 
@@ -109,10 +109,10 @@ interface IView
 	 * header in response object yet).
 	 * This value could be used also for any other custom purposses.
 	 * Possible values:
-	 * - `HTML4` - `\MvcCore\Interfaces\IView::DOCTYPE_HTML4`
-	 * - `XHTML` - `\MvcCore\Interfaces\IView::DOCTYPE_XHTML`
-	 * - `HTML5` - `\MvcCore\Interfaces\IView::DOCTYPE_HTML5`
-	 * - `XML`   - `\MvcCore\Interfaces\IView::DOCTYPE_XML`
+	 * - `HTML4` - `\MvcCore\IView::DOCTYPE_HTML4`
+	 * - `XHTML` - `\MvcCore\IView::DOCTYPE_XHTML`
+	 * - `HTML5` - `\MvcCore\IView::DOCTYPE_HTML5`
+	 * - `XML`   - `\MvcCore\IView::DOCTYPE_XML`
 	 * Default value: `HTML5`.
 	 * @return string
 	 */
@@ -124,15 +124,15 @@ interface IView
 	 * header in response object yet).
 	 * This value could be used also for any other custom purposses.
 	 * Possible values:
-	 * - `HTML4` - `\MvcCore\Interfaces\IView::DOCTYPE_HTML4`
-	 * - `XHTML` - `\MvcCore\Interfaces\IView::DOCTYPE_XHTML`
-	 * - `HTML5` - `\MvcCore\Interfaces\IView::DOCTYPE_HTML5`
-	 * - `XML`   - `\MvcCore\Interfaces\IView::DOCTYPE_XML`
+	 * - `HTML4` - `\MvcCore\IView::DOCTYPE_HTML4`
+	 * - `XHTML` - `\MvcCore\IView::DOCTYPE_XHTML`
+	 * - `HTML5` - `\MvcCore\IView::DOCTYPE_HTML5`
+	 * - `XML`   - `\MvcCore\IView::DOCTYPE_XML`
 	 * Default value: `HTML5`.
 	 * @param string $doctype
 	 * @return string
 	 */
-	public static function SetDoctype ($doctype = \MvcCore\Interfaces\IView::DOCTYPE_HTML5);
+	public static function SetDoctype ($doctype = \MvcCore\IView::DOCTYPE_HTML5);
 
 	/**
 	 * Get layout templates directory placed by default
@@ -219,25 +219,25 @@ interface IView
 	
 	/**
 	 * Set controller instance.
-	 * @param \MvcCore\Interfaces\IController $controller
-	 * @return \MvcCore\Interfaces\IView
+	 * @param \MvcCore\IController $controller
+	 * @return \MvcCore\IView
 	 */
-	public function & SetController (\MvcCore\Interfaces\IController & $controller);
+	public function & SetController (\MvcCore\IController & $controller);
 
 	/**
 	 * Get controller instance as reference.
-	 * @return \MvcCore\Interfaces\IController
+	 * @return \MvcCore\IController
 	 */
 	public function & GetController ();
 
 	/**
 	 * Set up all from given view object variables store into current store,
 	 * if there is any already existing key - overwrite it.
-	 * @param \MvcCore\Interfaces\IView $view
+	 * @param \MvcCore\IView $view
 	 * @param bool $overwriteExistingKeys If any property name already exist in view store, overwrite it by given value by default.
-	 * @return \MvcCore\Interfaces\IView
+	 * @return \MvcCore\IView
 	 */
-	public function & SetUpStore (\MvcCore\Interfaces\IView & $view, $overwriteExistingKeys = TRUE);
+	public function & SetUpStore (\MvcCore\IView & $view, $overwriteExistingKeys = TRUE);
 
 	/**
 	 * Return rendered controller/action template content as reference.
@@ -367,7 +367,7 @@ interface IView
 	 * @param string $helperName View helper method name in pascal case.
 	 * @param \MvcCore\Ext\Views\Helpers\AbstractHelper|\MvcCore\Ext\Views\Helpers\IHelper|mixed $instance View helper instance.
 	 * @param bool $forAllTemplates register this helper instance for all rendered views in the future.
-	 * @return \MvcCore\Interfaces\IView
+	 * @return \MvcCore\IView
 	 */
 	public function & SetHelper ($helperName, & $instance, $forAllTemplates = TRUE);
 

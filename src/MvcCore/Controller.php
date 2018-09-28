@@ -13,9 +13,9 @@
 
 namespace MvcCore;
 
-//include_once(__DIR__.'/Interfaces/IController.php');
-//include_once(__DIR__.'/Interfaces/ISession.php');
-//include_once(__DIR__.'/Interfaces/IResponse.php');
+//include_once(__DIR__.'/IController.php');
+//include_once(__DIR__.'/ISession.php');
+//include_once(__DIR__.'/IResponse.php');
 //include_once('Application.php');
 //include_once('Tool.php');
 //include_once('View.php');
@@ -70,7 +70,7 @@ namespace MvcCore;
  *   - Handling internal MvcCore HTTP requests
  *	 to get assets from packed application package.
  */
-class Controller implements Interfaces\IController
+class Controller implements IController
 {
 	/**
 	 * Path to all static files - css, js, imgs and fonts.
@@ -86,25 +86,25 @@ class Controller implements Interfaces\IController
 
 	/**
 	 * Reference to `\MvcCore\Application` singleton object.
-	 * @var \MvcCore\Application|\MvcCore\Interfaces\IApplication
+	 * @var \MvcCore\Application|\MvcCore\IApplication
 	 */
 	protected $application;
 
 	/**
 	 * Request object - parsed uri, query params, app paths...
-	 * @var \MvcCore\Request|\MvcCore\Interfaces\IRequest
+	 * @var \MvcCore\Request|\MvcCore\IRequest
 	 */
 	protected $request;
 
 	/**
 	 * Response object - storrage for response headers and rendered body.
-	 * @var \MvcCore\Response|\MvcCore\Interfaces\IResponse
+	 * @var \MvcCore\Response|\MvcCore\IResponse
 	 */
 	protected $response;
 
 	/**
 	 * Application router object - reference storrage for application router to crate url addresses.
-	 * @var \MvcCore\Router|\MvcCore\Interfaces\IRouter
+	 * @var \MvcCore\Router|\MvcCore\IRouter
 	 */
 	protected $router;
 
@@ -132,7 +132,7 @@ class Controller implements Interfaces\IController
 	 * Class store object for view properties.
 	 * Before `\MvcCore\Controller::PreDispatch();` is called
 	 * in controller lifecycle, this property will be still `NULL`.
-	 * @var \MvcCore\View|\MvcCore\Interfaces\IView
+	 * @var \MvcCore\View|\MvcCore\IView
 	 */
 	protected $view = NULL;
 
@@ -184,19 +184,19 @@ class Controller implements Interfaces\IController
 
 	/**
 	 * Parent controller instance if any.
-	 * @var \MvcCore\Controller|\MvcCore\Interfaces\IController|NULL
+	 * @var \MvcCore\Controller|\MvcCore\IController|NULL
 	 */
 	protected $parentController = NULL;
 
 	/**
 	 * Registered sub-controllers instances.
-	 * @var \MvcCore\Controller[]|\MvcCore\Interfaces\IController[]
+	 * @var \MvcCore\Controller[]|\MvcCore\IController[]
 	 */
 	protected $childControllers = [];
 
 	/**
 	 * All registered controllers instances.
-	 * @var \MvcCore\Controller[]|\MvcCore\Interfaces\IController[]
+	 * @var \MvcCore\Controller[]|\MvcCore\IController[]
 	 */
 	protected static $allControllers = [];
 
@@ -238,7 +238,7 @@ class Controller implements Interfaces\IController
 	 * Try to determinate `\MvcCore\Controller` instance from `debug_bactrace()`,
 	 * where was form created, if no form instance given into form constructor.
 	 * If no previous controller instance founded, `NULL` is returned.
-	 * @return \MvcCore\Controller|\MvcCore\Interfaces\IController|NULL
+	 * @return \MvcCore\Controller|\MvcCore\IController|NULL
 	 */
 	public static function & GetCallerControllerInstance () {
 		$result = NULL;
@@ -250,7 +250,7 @@ class Controller implements Interfaces\IController
 			$object = & $backtraceItem['object'];
 			$class = & $backtraceItem['class'];
 			if (
-				$object instanceof \MvcCore\Interfaces\IController &&
+				$object instanceof \MvcCore\IController &&
 				$class !== $calledClass
 			) {
 				$result = & $object;
@@ -267,7 +267,7 @@ class Controller implements Interfaces\IController
 	 * @param int	$code
 	 * @return void
 	 */
-	public static function Redirect ($location = '', $code = \MvcCore\Interfaces\IResponse::SEE_OTHER) {
+	public static function Redirect ($location = '', $code = \MvcCore\IResponse::SEE_OTHER) {
 		$app = & \MvcCore\Application::GetInstance();
 		$app->GetResponse()
 			->SetCode($code)
@@ -323,7 +323,7 @@ class Controller implements Interfaces\IController
 	 * Application controllers initialization.
 	 * This is best time to initialize language, locale, session etc.
 	 * There is also called auto initialization processing - instance creation
-	 * on each controller class member imlementing `\MvcCore\Interfaces\IController`
+	 * on each controller class member imlementing `\MvcCore\IController`
 	 * and marked in doc comments as `@autoinit`.
 	 * then there is of course called `\MvcCore\Controller::Init();` method on each
 	 * automaticly created subcontroller.
@@ -347,7 +347,7 @@ class Controller implements Interfaces\IController
 	}
 
 	/**
-	 * Initialize all members implementing `\MvcCore\Interfaces\IController` marked
+	 * Initialize all members implementing `\MvcCore\IController` marked
 	 * in doc comments as `@autoinit` into `\MvcCore\Controller::$controllers` array
 	 * and into member property itself. This method is always called inside
 	 * `\MvcCore\Controller::Init();` method, after session has been started.
@@ -372,7 +372,7 @@ class Controller implements Interfaces\IController
 			if ($pos === FALSE) continue;
 			$className = trim(mb_substr($docComment, 0, $pos));
 			if (!@class_exists($className)) continue;
-			if (!$toolsClass::CheckClassInterface($className, 'MvcCore\\Interfaces\\IController', FALSE, TRUE)) continue;
+			if (!$toolsClass::CheckClassInterface($className, 'MvcCore\\IController', FALSE, TRUE)) continue;
 			$instance = $className::CreateInstance();
 			$this->AddChildController($instance, $prop->getName());
 			if (!$prop->isPublic()) $prop->setAccessible(TRUE);
@@ -440,7 +440,7 @@ class Controller implements Interfaces\IController
 	 * @param \MvcCore\Application $application
 	 * @return \MvcCore\Controller
 	 */
-	public function & SetApplication (\MvcCore\Interfaces\IApplication & $application) {
+	public function & SetApplication (\MvcCore\IApplication & $application) {
 		$this->application = & $application;
 		return $this;
 	}
@@ -463,10 +463,10 @@ class Controller implements Interfaces\IController
 	 * - `\MvcCore\Controller::$controllerName`
 	 * - `\MvcCore\Controller::$actionName`
 	 * - `\MvcCore\Controller::$ajax`
-	 * @param \MvcCore\Request|\MvcCore\Interfaces\IRequest $request
+	 * @param \MvcCore\Request|\MvcCore\IRequest $request
 	 * @return \MvcCore\Controller
 	 */
-	public function & SetRequest (\MvcCore\Interfaces\IRequest & $request) {
+	public function & SetRequest (\MvcCore\IRequest & $request) {
 		/** @var $request \MvcCore\Request */
 		$this->request = & $request;
 		$this->controllerName = $request->GetControllerName();
@@ -494,7 +494,7 @@ class Controller implements Interfaces\IController
 	 * @param \MvcCore\Response $response
 	 * @return \MvcCore\Controller
 	 */
-	public function & SetResponse (\MvcCore\Interfaces\IResponse & $response) {
+	public function & SetResponse (\MvcCore\IResponse & $response) {
 		$this->response = & $response;
 		return $this;
 	}
@@ -515,7 +515,7 @@ class Controller implements Interfaces\IController
 	 * @param \MvcCore\Router $router
 	 * @return \MvcCore\Controller
 	 */
-	public function & SetRouter (\MvcCore\Interfaces\IRouter & $router) {
+	public function & SetRouter (\MvcCore\IRouter & $router) {
 		$this->router = & $router;
 		return $this;
 	}
@@ -532,7 +532,7 @@ class Controller implements Interfaces\IController
 
 	/**
 	 * Get user model instance.
-	 * @return \MvcCore\Model|\MvcCore\Interfaces\IModel
+	 * @return \MvcCore\Model|\MvcCore\IModel
 	 */
 	public function & GetUser () {
 		return $this->user;
@@ -540,7 +540,7 @@ class Controller implements Interfaces\IController
 
 	/**
 	 * Set user model instance.
-	 * @param \MvcCore\Model|\MvcCore\Interfaces\IModel $user
+	 * @param \MvcCore\Model|\MvcCore\IModel $user
 	 * @return \MvcCore\Controller
 	 */
 	public function & SetUser (& $user) {
@@ -563,7 +563,7 @@ class Controller implements Interfaces\IController
 	 * @param \MvcCore\View $view
 	 * @return \MvcCore\Controller
 	 */
-	public function & SetView (\MvcCore\Interfaces\IView & $view) {
+	public function & SetView (\MvcCore\IView & $view) {
 		$this->view = $view;
 		return $this;
 	}
@@ -658,7 +658,7 @@ class Controller implements Interfaces\IController
 	 * @param string|int $index
 	 * @return \MvcCore\Controller
 	 */
-	public function AddChildController (\MvcCore\Interfaces\IController & $controller, $index = NULL) {
+	public function AddChildController (\MvcCore\IController & $controller, $index = NULL) {
 		self::$allControllers[spl_object_hash($controller)] = & $controller;
 		if (!in_array($controller, $this->childControllers, TRUE)) {
 			if ($index === NULL) {
@@ -693,10 +693,10 @@ class Controller implements Interfaces\IController
 	 * Set parent controller instance
 	 * or `NULL` for "top most parent" controller.
 	 * Method for child controllers.
-	 * @param \MvcCore\Controller|\MvcCore\Interfaces\IController|NULL $parentController
+	 * @param \MvcCore\Controller|\MvcCore\IController|NULL $parentController
 	 * @return \MvcCore\Controller
 	 */
-	public function & SetParentController (\MvcCore\Interfaces\IController & $parentController = NULL) {
+	public function & SetParentController (\MvcCore\IController & $parentController = NULL) {
 		$this->parentController = $parentController;
 		return $this;
 	}
@@ -719,7 +719,7 @@ class Controller implements Interfaces\IController
 	 * previous child controllers with given child controllers.
 	 * If you want only to add child controller, use method:
 	 * \MvcCore\Controller::Addchildcontroller();` instead.
-	 * @param \MvcCore\Controller[]|\MvcCore\Interfaces\IController[] $childControllers
+	 * @param \MvcCore\Controller[]|\MvcCore\IController[] $childControllers
 	 * @return \MvcCore\Controller
 	 */
 	public function & SetChildControllers (array & $childControllers = []) {
@@ -883,7 +883,7 @@ class Controller implements Interfaces\IController
 			$this->response->SetHeader('Content-Type', $contentTypeHeaderValue);
 		}
 		$this->response
-			->SetCode(\MvcCore\Interfaces\IResponse::OK)
+			->SetCode(\MvcCore\IResponse::OK)
 			->SetBody($output);
 		if ($terminate) $this->Terminate();
 	}
@@ -899,7 +899,7 @@ class Controller implements Interfaces\IController
 		if (!$this->response->HasHeader('Content-Type'))
 			$this->response->SetHeader('Content-Type', 'application/xml');
 		$this->response
-			->SetCode(\MvcCore\Interfaces\IResponse::OK)
+			->SetCode(\MvcCore\IResponse::OK)
 			->SetBody($output);
 		if ($terminate) $this->Terminate();
 	}
@@ -918,7 +918,7 @@ class Controller implements Interfaces\IController
 		if (!$this->response->HasHeader('Content-Type'))
 			$this->response->SetHeader('Content-Type', 'text/javascript');
 		$this->response
-			->SetCode(\MvcCore\Interfaces\IResponse::OK)
+			->SetCode(\MvcCore\IResponse::OK)
 			->SetHeader('Content-Length', strlen($output))
 			->SetBody($output);
 		if ($terminate) $this->Terminate();
@@ -960,9 +960,9 @@ class Controller implements Interfaces\IController
 	 * Alias for `\MvcCore\Session::GetNamespace($name);`
 	 * but called with configured session core class name.
 	 * @param mixed $name
-	 * @return \MvcCore\Interfaces\ISession
+	 * @return \MvcCore\ISession
 	 */
-	public function GetSessionNamespace ($name = \MvcCore\Interfaces\ISession::DEFAULT_NAMESPACE_NAME) {
+	public function GetSessionNamespace ($name = \MvcCore\ISession::DEFAULT_NAMESPACE_NAME) {
 		$sessionClass = $this->application->GetSessionClass();
 		return $sessionClass::GetNamespace($name);
 	}

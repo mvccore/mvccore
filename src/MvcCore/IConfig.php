@@ -11,7 +11,7 @@
  * @license  https://mvccore.github.io/docs/mvccore/5.0.0/LICENCE.md
  */
 
-namespace MvcCore\Interfaces;
+namespace MvcCore;
 
 //include_once(__DIR__.'/../Application.php');
 
@@ -62,18 +62,18 @@ interface IConfig
 
 	/**
 	 * Get environment name as string,
-	 * defined by constants: `\MvcCore\Interfaces\IConfig::ENVIRONMENT_<environment>`.
+	 * defined by constants: `\MvcCore\IConfig::ENVIRONMENT_<environment>`.
 	 * @return string
 	 */
 	public static function GetEnvironment ();
 
 	/**
 	 * Set environment name as string,
-	 * defined by constants: `\MvcCore\Interfaces\IConfig::ENVIRONMENT_<environment>`.
+	 * defined by constants: `\MvcCore\IConfig::ENVIRONMENT_<environment>`.
 	 * @param string $environment
 	 * @return string
 	 */
-	public static function SetEnvironment ($environment = \MvcCore\Interfaces\IConfig::ENVIRONMENT_PRODUCTION);
+	public static function SetEnvironment ($environment = \MvcCore\IConfig::ENVIRONMENT_PRODUCTION);
 
 	/**
 	 * This is INTERNAL method.

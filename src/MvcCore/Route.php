@@ -13,7 +13,7 @@
 
 namespace MvcCore;
 
-//include_once(__DIR__ . '/Interfaces/IRoute.php');
+//include_once(__DIR__ . '/IRoute.php');
 
 /**
  * Responsibility - describing request(s) to match and reversely build url addresses.
@@ -62,7 +62,7 @@ namespace MvcCore;
  *   Default static property for matching rule shoud be changed here:
  *   - by default: `\MvcCore\Route::$DefaultConstraint = '[^/]*';`
  */
-class Route implements Interfaces\IRoute
+class Route implements IRoute
 {
 	/**
 	 * Default constraint used for all rewrited params, if no
@@ -216,7 +216,7 @@ class Route implements Interfaces\IRoute
 	 * Http method to only match requests with this defined method.
 	 * If `NULL`, request with any http method could be matched by this route.
 	 * Value has to be upper case.
-	 * Example: `"POST" | \MvcCore\Interfaces\IRequest::METHOD_POST`
+	 * Example: `"POST" | \MvcCore\IRequest::METHOD_POST`
 	 * @var string|NULL
 	 */
 	protected $method			= NULL;
@@ -253,6 +253,13 @@ class Route implements Interfaces\IRoute
 	 * @var array|NULL
 	 */
 	protected $matchedParams	= NULL;
+
+	/**
+	 * Copied and cached value from router configuration property:
+	 * `\MvcCore\Router::$trailingSlashBehaviour`.
+	 * @var int|NULL
+	 */
+	private $_trailingSlashBehaviour = NULL;
 
 
 	/**
@@ -354,33 +361,36 @@ class Route implements Interfaces\IRoute
 			$data = (object) $patternOrConfig;
 			if (isset($data->controllerAction)) {
 				list($this->controller, $this->action) = explode(':', $data->controllerAction);
-				$this->name = isset($data->name) 
-					? $data->name 
-					: $data->controllerAction;
+				if (isset($data->name)) {
+					$this->name = $data->name;
+				} else {
+					$this->name = $data->controllerAction;
+				}
 			} else {
 				$this->controller = isset($data->controller) ? $data->controller : '';
 				$this->action = isset($data->action) ? $data->action : '';
-				$this->name = isset($data->name) 
-					? $data->name 
-					: ($this->controller !== '' && $this->action !== ''
-						? $this->controller . ':' . $this->action
-						: NULL);
+				if (isset($data->name)) {
+					$this->name = $data->name;
+				} else if ($this->controller !== '' && $this->action !== '') {
+					$this->name = $this->controller . ':' . $this->action;
+				} else {
+					$this->name = NULL;
+				}
 			}
-			$this->pattern = isset($data->pattern) ? $data->pattern : NULL;
-			$this->match = isset($data->match) ? $data->match : NULL;
-			$this->reverse = isset($data->reverse) ? $data->reverse : NULL;
-			$this->defaults = isset($data->defaults) ? $data->defaults : [];
+			if (isset($data->pattern)) $this->pattern = $data->pattern;
+			if (isset($data->match)) $this->match = $data->match;
+			if (isset($data->reverse)) $this->reverse = $data->reverse;
+			if (isset($data->defaults)) $this->defaults = $data->defaults;
 			$this->SetConstraints(isset($data->constraints) ? $data->constraints : []);
-			$this->method = isset($data->method) ? $data->method : NULL ;
+			if (isset($data->method)) $this->method = strtoupper($data->method);
 		} else {
 			$this->pattern = $patternOrConfig;
 			list($this->controller, $this->action) = explode(':', $controllerAction);
 			$this->name = '';
 			$this->defaults = $defaults;
 			$this->SetConstraints($constraints);
-			$this->method = $method;
+			$this->method = strtoupper($method);
 		}
-		$this->method = $this->method === NULL ? NULL : strtoupper($this->method);
 		if (!$this->controller && !$this->action && strpos($this->name, ':') !== FALSE && strlen($this->name) > 1) {
 			list($this->controller, $this->action) = explode(':', $this->name);
 		}
@@ -764,7 +774,7 @@ class Route implements Interfaces\IRoute
 	 * Get http method to only match requests with this defined method.
 	 * If `NULL` (by default), request with any http method could be matched by this route.
 	 * Value is automaticly in upper case.
-	 * Example: `"POST" | \MvcCore\Interfaces\IRequest::METHOD_POST`
+	 * Example: `"POST" | \MvcCore\IRequest::METHOD_POST`
 	 * @return string|NULL
 	 */
 	public function GetMethod () {
@@ -775,7 +785,7 @@ class Route implements Interfaces\IRoute
 	 * Set http method to only match requests with this defined method.
 	 * If `NULL` (by default), request with any http method could be matched by this route.
 	 * Given value is automaticly converted to upper case.
-	 * Example: `"POST" | \MvcCore\Interfaces\IRequest::METHOD_POST`
+	 * Example: `"POST" | \MvcCore\IRequest::METHOD_POST`
 	 * @param string|NULL $method
 	 * @return \MvcCore\Route
 	 */
@@ -894,20 +904,21 @@ class Route implements Interfaces\IRoute
 		$givenParamsKeys = array_merge([], $params);
 		foreach ($this->reverseParams as $paramName) {
 			$paramKeyReplacement = '<'.$paramName.'>';
-			$paramValue = (
-				isset($params[$paramName])
-					? $params[$paramName]
-					: (isset($requestedUrlParams[$paramName])
-						? $requestedUrlParams[$paramName]
-						: (isset($this->defaults[$paramName])
-							? $this->defaults[$paramName]
-							: ''))
-			);
+			if (isset($params[$paramName])) {
+				$paramValue = $params[$paramName];
+			} else if (isset($requestedUrlParams[$paramName])) {
+				$paramValue = $requestedUrlParams[$paramName];
+			} else if (isset($this->defaults[$paramName])) {
+				$paramValue = $this->defaults[$paramName];
+			} else {
+				$paramValue = '';
+			}
 			// convert possible XSS chars to entities (`< > & " ' &`):
 			$paramValue = htmlspecialchars($paramValue, ENT_QUOTES);
 			$result = str_replace($paramKeyReplacement, $paramValue, $result);
 			unset($givenParamsKeys[$paramName]);
 		}
+		$result = & $this->correctTrailingSlashBehaviour($result);
 		if ($givenParamsKeys) {
 			// `http_build_query()` automaticly converts all XSS chars to entities (`< > & " ' &`):
 			$result .= (mb_strpos($result, '?') !== FALSE ? $queryStringParamsSepatator : '?')
@@ -944,7 +955,7 @@ class Route implements Interfaces\IRoute
 	 * Initialize all possible protected values (`match`, `reverse` etc...)
 	 * This method is not recomanded to use in production mode, it's
 	 * designed mostly for development purposes, to see what could be inside route.
-	 * @return \MvcCore\Route|\MvcCore\Interfaces\IRoute
+	 * @return \MvcCore\Route|\MvcCore\IRoute
 	 */
 	public function & InitAll () {
 		if ($this->match === NULL) {
@@ -1141,9 +1152,11 @@ class Route implements Interfaces\IRoute
 						$urlPartBeforeNext = '';
 					};
 				}
-				$constraint = $customConstraint
-					? $constraints[$paramName]
-					: $defaultConstraint;
+				if ($customConstraint) {
+					$constraint = $constraints[$paramName];
+				} else {
+					$constraint = $defaultConstraint;
+				}
 				$match .= '(?' . $matchedParamName . $constraint . ')' . $urlPartBeforeNext;
 				if ($compileReverse) {
 					$reverse .= $matchedParamName . $urlPartBeforeNextReverse;
@@ -1223,4 +1236,27 @@ class Route implements Interfaces\IRoute
 		}
 		return $reverse;
 	}
+
+	/**
+	 * Correct last character in path element completed in `Url()` method by 
+	 * cached router configuration property `\MvcCore\Router::$trailingSlashBehaviour;`.
+	 * @param string $urlPath
+	 * @return string
+	 */
+	protected function & correctTrailingSlashBehaviour (& $urlPath) {
+		if ($this->_trailingSlashBehaviour === NULL)
+			$this->_trailingSlashBehaviour = \MvcCore\Application::GetInstance()->GetRouter()->GetTrailingSlashBehaviour();
+		$urlPathLength = mb_strlen($urlPath);
+		$lastCharIsSlash = $urlPathLength > 0 && mb_substr($urlPath, $urlPathLength - 1) === '/';
+		if (!$lastCharIsSlash && $this->_trailingSlashBehaviour === \MvcCore\IRouter::TRAILING_SLASH_ALWAYS) {
+			$urlPath .= '/';
+		} else if ($lastCharIsSlash && $this->_trailingSlashBehaviour === \MvcCore\IRouter::TRAILING_SLASH_REMOVE) {
+			$urlPath = mb_substr($urlPath, 0, $urlPathLength - 1);
+		}
+		if ($urlPath === '') 
+			$urlPath = '/';
+		return $urlPath;
+	}
+
+		
 }

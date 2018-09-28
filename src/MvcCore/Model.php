@@ -13,7 +13,7 @@
 
 namespace MvcCore;
 
-//include_once(__DIR__ . '/Interfaces/IModel.php');
+//include_once(__DIR__ . '/IModel.php');
 //include_once('Config.php');
 
 /**
@@ -25,7 +25,7 @@ namespace MvcCore;
  * - Instance initialized values reading.
  * - Virtual calls/sets and gets handling.
  */
-class Model implements Interfaces\IModel {
+class Model implements IModel {
 	/**
 	 * `\PDO` connection arguments.
 	 *
@@ -119,7 +119,7 @@ class Model implements Interfaces\IModel {
 
 	/**
 	 * Instance of current class, if there is necessary to use it as singleton.
-	 * @var \MvcCore\Model[]|\MvcCore\Interfaces\IModel[]
+	 * @var \MvcCore\Model[]|\MvcCore\IModel[]
 	 */
 	protected static $instances = [];
 
@@ -149,7 +149,7 @@ class Model implements Interfaces\IModel {
 
 	/**
 	 * Resource model class with SQL statements.
-	 * @var \MvcCore\Model|\MvcCore\Interfaces\IModel
+	 * @var \MvcCore\Model|\MvcCore\IModel
 	 */
 	protected $resource;
 
@@ -196,7 +196,7 @@ class Model implements Interfaces\IModel {
 	 * @param boolean $keysInsensitive			If `TRUE`, set up properties from `$data` with case insensivity.
 	 * @param boolean $includeInheritProperties If `TRUE`, include only fields from current model class and from parent classes.
 	 * @param boolean $publicOnly			   If `TRUE`, include only public model fields.
-	 * @return \MvcCore\Model|\MvcCore\Interfaces\IModel
+	 * @return \MvcCore\Model|\MvcCore\IModel
 	 */
 	public function & SetUp ($data = [], $keysInsensitive = FALSE, $includeInheritProperties = TRUE, $publicOnly = TRUE) {
 		$modelClassName = get_class($this);
@@ -232,7 +232,7 @@ class Model implements Interfaces\IModel {
 	/**
 	 * Returns (or creates and holds) instance from local store.
 	 * @param mixed $args,... unlimited OPTIONAL variables to pass into model `__construct()` method.
-	 * @return \MvcCore\Model|\MvcCore\Interfaces\IModel
+	 * @return \MvcCore\Model|\MvcCore\IModel
 	 */
 	public static function & GetInstance (/* ...$args */) {
 		// get `"ClassName"` string from this call: `ClassName::GetInstance();`
@@ -252,7 +252,7 @@ class Model implements Interfaces\IModel {
 	 * @param array  $args			  Values array with variables to pass into resource `__construct()` method.
 	 * @param string $modelClassPath
 	 * @param string $resourceClassPath
-	 * @return \MvcCore\Model|\MvcCore\Interfaces\IModel
+	 * @return \MvcCore\Model|\MvcCore\IModel
 	 */
 	public static function GetResource ($args = [], $modelClassName = '', $resourceClassPath = '\Resource') {
 		$result = NULL;
@@ -521,16 +521,16 @@ class Model implements Interfaces\IModel {
 	}
 
 	/**
-	 * Sets any custom property `"PropertyName"` by `\MvcCore\Interfaces\IModel::SetPropertyName("value")`,
+	 * Sets any custom property `"PropertyName"` by `\MvcCore\IModel::SetPropertyName("value")`,
 	 * which is not necessary to define previously or gets previously defined
-	 * property `"PropertyName"` by `\MvcCore\Interfaces\IModel::GetPropertyName();`.
+	 * property `"PropertyName"` by `\MvcCore\IModel::GetPropertyName();`.
 	 * Throws exception if no property defined by get call
 	 * or if virtual call begins with anything different from `Set` or `Get`.
-	 * This method returns custom value for get and `\MvcCore\Interfaces\IModel` instance for set.
+	 * This method returns custom value for get and `\MvcCore\IModel` instance for set.
 	 * @param string $rawName
 	 * @param array  $arguments
 	 * @throws \InvalidArgumentException If `strtolower($rawName)` doesn't begin with `"get"` or with `"set"`.
-	 * @return mixed|\MvcCore\Model|\MvcCore\Interfaces\IModel
+	 * @return mixed|\MvcCore\Model|\MvcCore\IModel
 	 */
 	public function __call ($rawName, $arguments = []) {
 		$nameBegin = strtolower(substr($rawName, 0, 3));

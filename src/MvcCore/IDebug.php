@@ -11,7 +11,7 @@
  * @license  https://mvccore.github.io/docs/mvccore/5.0.0/LICENCE.md
  */
 
-namespace MvcCore\Interfaces;
+namespace MvcCore;
 
 /**
  * Responsibility - any devel and logging messages and exceptions printing and logging.
@@ -78,7 +78,7 @@ interface IDebug
 	 * @param  string						$priority
 	 * @return string						Logging filename fullpath.
 	 */
-	public static function Log ($value, $priority = \MvcCore\Interfaces\IDebug::INFO);
+	public static function Log ($value, $priority = \MvcCore\IDebug::INFO);
 
 	/**
 	 * Sends given `$value` into FireLogger console.
@@ -86,7 +86,7 @@ interface IDebug
 	 * @param	string	$priority	Priority.
 	 * @return	bool				Was successful?
 	 */
-	public static function FireLog ($value, $priority = \MvcCore\Interfaces\IDebug::DEBUG);
+	public static function FireLog ($value, $priority = \MvcCore\IDebug::DEBUG);
 
 	/**
 	 * Print catched exception in browser.

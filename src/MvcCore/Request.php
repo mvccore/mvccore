@@ -13,7 +13,7 @@
 
 namespace MvcCore;
 
-//include_once(__DIR__ . '/Interfaces/IRequest.php');
+//include_once(__DIR__ . '/IRequest.php');
 //include_once('Tool.php');
 //include_once('Application.php');
 
@@ -30,7 +30,7 @@ namespace MvcCore;
  * - Primitive values cleaning or array recursive cleaning by called
  *	 developer rules from params array, headers array and cookies array.
  */
-class Request implements Interfaces\IRequest
+class Request implements IRequest
 {
 	/**
 	 * Language international code, lowercase, not used by default.
@@ -877,6 +877,17 @@ class Request implements Interfaces\IRequest
 	}
 
 	/**
+	 * Set uppercased http method from global `$_SERVER['REQUEST_METHOD']`.
+	 * Example: `$request->SetMethod("GET" | "POST" | "PUT" | "HEAD"...);`
+	 * @param string $rawMethod
+	 * @return \MvcCore\Request
+	 */
+	public function & SetMethod ($rawMethod) {
+		$this->method = $rawMethod;
+		return $this;
+	}
+
+	/**
 	 * Get uppercased http method from global `$_SERVER['REQUEST_METHOD']`.
 	 * Example: `"GET" | "POST" | "PUT" | "HEAD"...`
 	 * @return string
@@ -886,6 +897,20 @@ class Request implements Interfaces\IRequest
 			$this->method = strtoupper($this->globalServer['REQUEST_METHOD']);
 		}
 		return $this->method;
+	}
+
+	/**
+	 * Set base app directory path after domain,
+	 * if application is placed in domain subdirectory.
+	 * Example:
+	 * - for full url:  `"http://localhost:88/my/development/direcotry/www/requested/path/after/domain?with=possible&query=string"`
+	 * - set base path: `$request->SetBasePath("/my/development/direcotry/www");`
+	 * @param string $rawBasePath
+	 * @return \MvcCore\Request
+	 */
+	public function & SetBasePath ($rawBasePath) {
+		$this->basePath = $rawBasePath;
+		return $this;
 	}
 
 	/**
@@ -899,6 +924,17 @@ class Request implements Interfaces\IRequest
 	public function GetBasePath () {
 		if ($this->basePath === NULL) $this->initScriptNameAndBasePath();
 		return $this->basePath;
+	}
+
+	/**
+	 * Set http protocol string.
+	 * Example: `$request->SetProtocol("https:");`
+	 * @param string $rawProtocol
+	 * @return \MvcCore\Request
+	 */
+	public function & SetProtocol ($rawProtocol) {
+		$this->protocol = $rawProtocol;
+		return $this;
 	}
 
 	/**
@@ -960,6 +996,17 @@ class Request implements Interfaces\IRequest
 	}
 
 	/**
+	 * Set application server name - domain without any port.
+	 * Example: `$request->SetServerName("localhost");`
+	 * @param string $rawServerName
+	 * @return \MvcCore\Request
+	 */
+	public function & SetServerName ($rawServerName) {
+		$this->serverName = $rawServerName;
+		return $this;
+	}
+
+	/**
 	 * Get application server name - domain without any port.
 	 * Example: `"localhost"`
 	 * @return string
@@ -967,6 +1014,17 @@ class Request implements Interfaces\IRequest
 	public function GetServerName () {
 		if ($this->serverName === NULL) $this->serverName = $this->globalServer['SERVER_NAME'];
 		return $this->serverName;
+	}
+
+	/**
+	 * Set application host with port if there is any.
+	 * Example: `$request->SetHost("localhost:88");`
+	 * @param string $rawHost
+	 * @return \MvcCore\Request
+	 */
+	public function & SetHost ($rawHost) {
+		$this->host = $rawHost;
+		return $this->host;
 	}
 
 	/**
@@ -980,7 +1038,19 @@ class Request implements Interfaces\IRequest
 	}
 
 	/**
-	 * Http port defined in requested url if any, parsed by `parse_url().
+	 * Set http port defined in requested url if any, parsed by `parse_url().
+	 * Empty string if there is no port number in requested address.`.
+	 * Example: `$request->SetPort("88")`
+	 * @param string $rawPort
+	 * @return \MvcCore\Request
+	 */
+	public function & SetPort ($rawPort) {
+		$this->port = $rawPort;
+		return $this;
+	}
+
+	/**
+	 * Get http port defined in requested url if any, parsed by `parse_url().
 	 * Empty string if there is no port number in requested address.`.
 	 * Example: `"88" | ""`
 	 * @return string
@@ -988,6 +1058,17 @@ class Request implements Interfaces\IRequest
 	public function GetPort () {
 		if ($this->port === NULL) $this->initUrlSegments();
 		return $this->port;
+	}
+
+	/**
+	 * Set requested path in from application root (if `mod_rewrite` enabled), never with query string.
+	 * Example: `$request->SetPort("/products/page/2");`
+	 * @param string $rawPathValue
+	 * @return \MvcCore\Request
+	 */
+	public function & SetPath ($rawPathValue) {
+		$this->path = $rawPathValue;
+		return $this;
 	}
 
 	/**
@@ -1000,6 +1081,17 @@ class Request implements Interfaces\IRequest
 		if ($this->path === NULL) 
 			$this->initUrlSegments();
 		return $rawInput ? $this->path : static::htmlSpecialChars($this->path);
+	}
+
+	/**
+	 * Set uri query string, with or without question mark character, doesn't matter.
+	 * Example: `$request->SetQuery("param-1=value-1&param-2=value-2&param-3[]=value-3-a&param-3[]=value-3-b");`
+	 * @param string $rawQuery
+	 * @return \MvcCore\Request
+	 */
+	public function & SetQuery ($rawQuery) {
+		$this->query = ltrim($rawQuery, '?');
+		return $this;
 	}
 
 	/**

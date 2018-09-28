@@ -11,7 +11,7 @@
  * @license  https://mvccore.github.io/docs/mvccore/5.0.0/LICENCE.md
  */
 
-namespace MvcCore\Interfaces;
+namespace MvcCore;
 
 //include_once('IRoute.php');
 
@@ -99,7 +99,7 @@ interface IApplication
 
 	/**
 	 * Returns singleton `\MvcCore\Application` instance as reference.
-	 * @return \MvcCore\Interfaces\IApplication
+	 * @return \MvcCore\IApplication
 	 */
 	public static function & GetInstance ();
 
@@ -111,25 +111,25 @@ interface IApplication
 	/**
 	 * Get if application is running as standard php project or as single file application.
 	 * It shoud has values from:
-	 * - `\MvcCore\Interfaces\IApplication::COMPILED_PHP`
-	 * - `\MvcCore\Interfaces\IApplication::COMPILED_PHAR`
-	 * - `\MvcCore\Interfaces\IApplication::COMPILED_SFU`
-	 * - `\MvcCore\Interfaces\IApplication::NOT_COMPILED`
-	 * Read more about every mode in interface: `\MvcCore\Interfaces\IApplication`.
+	 * - `\MvcCore\IApplication::COMPILED_PHP`
+	 * - `\MvcCore\IApplication::COMPILED_PHAR`
+	 * - `\MvcCore\IApplication::COMPILED_SFU`
+	 * - `\MvcCore\IApplication::NOT_COMPILED`
+	 * Read more about every mode in interface: `\MvcCore\IApplication`.
 	 * @var string
 	 */
 	public function GetCompiled ();
 
 
 	/**
-	 * Get application config class implementing `\MvcCore\Interfaces\IConfig`.
+	 * Get application config class implementing `\MvcCore\IConfig`.
 	 * Class to load and parse (system) config(s) and manage environment string.
 	 * @return string
 	 */
 	public function GetConfigClass ();
 
 	/**
-	 * Get application config class implementing `\MvcCore\Interfaces\IController`.
+	 * Get application config class implementing `\MvcCore\IController`.
 	 * Class to create default controller for request targeting views only
 	 * and to handle small assets inside packed application.
 	 * @return string
@@ -137,28 +137,28 @@ interface IApplication
 	public function GetControllerClass ();
 
 	/**
-	 * Get application debug class implementing `\MvcCore\Interfaces\IDebug`.
+	 * Get application debug class implementing `\MvcCore\IDebug`.
 	 * Class to handle any application error to render the error in browser or log in HDD.
 	 * @return string
 	 */
 	public function GetDebugClass ();
 
 	/**
-	 * Get application request class implementing `\MvcCore\Interfaces\IRequest`.
+	 * Get application request class implementing `\MvcCore\IRequest`.
 	 * Class to create describing HTTP request object.
 	 * @return string
 	 */
 	public function GetRequestClass ();
 
 	/**
-	 * Get application response class implementing `\MvcCore\Interfaces\IResponse`.
+	 * Get application response class implementing `\MvcCore\IResponse`.
 	 * Class to create HTTP response object to store response headers and response content.
 	 * @return string
 	 */
 	public function GetResponseClass ();
 
 	/**
-	 * Get application route class implementing `\MvcCore\Interfaces\IRoute`.
+	 * Get application route class implementing `\MvcCore\IRoute`.
 	 * Class to describe single route with match and replace pattern,
 	 * controller, action, params default values and params constraints.
 	 * @return string
@@ -166,28 +166,28 @@ interface IApplication
 	public function GetRouteClass ();
 
 	/**
-	 * Get application router class implementing `\MvcCore\Interfaces\IRouter`.
+	 * Get application router class implementing `\MvcCore\IRouter`.
 	 * Class to store all routes, dispatch request by routes and generate url addresses by routes.
 	 * @return string
 	 */
 	public function GetRouterClass ();
 
 	/**
-	 * Get application session class implementing `\MvcCore\Interfaces\ISession`.
+	 * Get application session class implementing `\MvcCore\ISession`.
 	 * Class to configure session namespaces, session opening, writing and expirations.
 	 * @return string
 	 */
 	public function GetSessionClass ();
 
 	/**
-	 * Get application tool class implementing `\MvcCore\Interfaces\ITool`.
+	 * Get application tool class implementing `\MvcCore\ITool`.
 	 * Class to handle helper calls from MvcCore core modules.
 	 * @return string
 	 */
 	public function GetToolClass ();
 
 	/**
-	 * Get application view class implementing `\MvcCore\Interfaces\IView`.
+	 * Get application view class implementing `\MvcCore\IView`.
 	 * Class to prepare and render controller view, subviews and wrapper layout.
 	 * @return string
 	 */
@@ -195,25 +195,25 @@ interface IApplication
 
 	/**
 	 * Returns currently used instance of protected `\MvcCore\Application::$router;`.
-	 * @return \MvcCore\Interfaces\IRouter
+	 * @return \MvcCore\IRouter
 	 */
 	public function & GetRouter ();
 
 	/**
 	 * Returns currently dispatched instance of protected `\MvcCore\Application::$controller;`.
-	 * @return \MvcCore\Interfaces\IController
+	 * @return \MvcCore\IController
 	 */
 	public function & GetController ();
 
 	/**
 	 * Returns currently used instance of protected `\MvcCore\Application::$request;`.
-	 * @return \MvcCore\Interfaces\IRequest
+	 * @return \MvcCore\IRequest
 	 */
 	public function & GetRequest ();
 
 	/**
 	 * Returns currently used instance of protected `\MvcCore\Application::response;`.
-	 * @return \MvcCore\Interfaces\IResponse
+	 * @return \MvcCore\IResponse
 	 */
 	public function & GetResponse ();
 
@@ -260,108 +260,108 @@ interface IApplication
 	/**
 	 * Set if application is running as standard php project or as single file application.
 	 * First param `$compiled` shoud has values from:
-	 * - `\MvcCore\Interfaces\IApplication::COMPILED_PHP`
-	 * - `\MvcCore\Interfaces\IApplication::COMPILED_PHAR`
-	 * - `\MvcCore\Interfaces\IApplication::COMPILED_SFU`
-	 * - `\MvcCore\Interfaces\IApplication::NOT_COMPILED`
-	 * Read more about every mode in interface: `\MvcCore\Interfaces\IApplication`.
+	 * - `\MvcCore\IApplication::COMPILED_PHP`
+	 * - `\MvcCore\IApplication::COMPILED_PHAR`
+	 * - `\MvcCore\IApplication::COMPILED_SFU`
+	 * - `\MvcCore\IApplication::NOT_COMPILED`
+	 * Read more about every mode in interface: `\MvcCore\IApplication`.
 	 * Core configuration method.
 	 * @param string $compiled
-	 * @return \MvcCore\Interfaces\IApplication
+	 * @return \MvcCore\IApplication
 	 */
 	public function & SetCompiled ($compiled = '');
 
 
 	/**
-	 * Set application config class implementing `\MvcCore\Interfaces\IConfig`.
+	 * Set application config class implementing `\MvcCore\IConfig`.
 	 * Class to create default controller for request targeting views only
 	 * and to handle small assets inside packed application.
 	 * Core configuration method.
 	 * @param string $configClass
-	 * @return \MvcCore\Interfaces\IApplication
+	 * @return \MvcCore\IApplication
 	 */
 	public function & SetConfigClass ($configClass);
 
 	/**
-	 * Set application controller class implementing `\MvcCore\Interfaces\IController`.
+	 * Set application controller class implementing `\MvcCore\IController`.
 	 * Class to create default controller for request targeting views only
 	 * and to handle small assets inside packed application.
 	 * Core configuration method.
 	 * @param string $controllerClass
-	 * @return \MvcCore\Interfaces\IApplication
+	 * @return \MvcCore\IApplication
 	 */
 	public function & SetControllerClass ($controllerClass);
 
 	/**
-	 * Set application debug class implementing `\MvcCore\Interfaces\IDebug`.
+	 * Set application debug class implementing `\MvcCore\IDebug`.
 	 * Class to handle any application error to render the error in browser or log in HDD.
 	 * Core configuration method.
 	 * @param string $debugClass
-	 * @return \MvcCore\Interfaces\IApplication
+	 * @return \MvcCore\IApplication
 	 */
 	public function & SetDebugClass ($debugClass);
 
 	/**
-	 * Set application request class implementing `\MvcCore\Interfaces\IRequest`.
+	 * Set application request class implementing `\MvcCore\IRequest`.
 	 * Class to create describing HTTP request object.
 	 * Core configuration method.
 	 * @param string $requestClass
-	 * @return \MvcCore\Interfaces\IApplication
+	 * @return \MvcCore\IApplication
 	 */
 	public function & SetRequestClass ($requestClass);
 
 	/**
-	 * Set application response class implementing `\MvcCore\Interfaces\IResponse`.
+	 * Set application response class implementing `\MvcCore\IResponse`.
 	 * Class to create HTTP response object to store response headers and response content.
 	 * Core configuration method.
 	 * @param string $responseClass
-	 * @return \MvcCore\Interfaces\IApplication
+	 * @return \MvcCore\IApplication
 	 */
 	public function & SetResponseClass ($responseClass);
 
 	/**
-	 * Set application route class implementing `\MvcCore\Interfaces\IRoute`.
+	 * Set application route class implementing `\MvcCore\IRoute`.
 	 * Class to describe single route with match and replace pattern,
 	 * controller, action, params default values and params constraints.
 	 * Core configuration method.
 	 * @param string $routerClass
-	 * @return \MvcCore\Interfaces\IApplication
+	 * @return \MvcCore\IApplication
 	 */
 	public function & SetRouteClass ($routerClass);
 
 	/**
-	 * Set application router class implementing `\MvcCore\Interfaces\IRouter`.
+	 * Set application router class implementing `\MvcCore\IRouter`.
 	 * Class to store all routes, dispatch request by routes and generate url addresses by routes.
 	 * Core configuration method.
 	 * @param string $routerClass
-	 * @return \MvcCore\Interfaces\IApplication
+	 * @return \MvcCore\IApplication
 	 */
 	public function & SetRouterClass ($routerClass);
 
 	/**
-	 * Set application session class implementing `\MvcCore\Interfaces\ISession`.
+	 * Set application session class implementing `\MvcCore\ISession`.
 	 * Class to configure session namespaces, session opening, writing and expirations.
 	 * Core configuration method.
 	 * @param string $sessionClass
-	 * @return \MvcCore\Interfaces\IApplication
+	 * @return \MvcCore\IApplication
 	 */
 	public function & SetSessionClass ($sessionClass);
 
 	/**
-	 * Set application tool class implementing `\MvcCore\Interfaces\ITool`.
+	 * Set application tool class implementing `\MvcCore\ITool`.
 	 * Class to handle helper calls from MvcCore core modules.
 	 * Core configuration method.
 	 * @param string $toolClass
-	 * @return \MvcCore\Interfaces\IApplication
+	 * @return \MvcCore\IApplication
 	 */
 	public function & SetToolClass ($toolClass);
 
 	/**
-	 * Set application view class implementing `\MvcCore\Interfaces\IView`.
+	 * Set application view class implementing `\MvcCore\IView`.
 	 * Class to prepare and render controller view, subviews and wrapper layout.
 	 * Core configuration method.
 	 * @param string $viewClass
-	 * @return \MvcCore\Interfaces\IApplication
+	 * @return \MvcCore\IApplication
 	 */
 	public function & SetViewClass ($viewClass);
 
@@ -375,7 +375,7 @@ interface IApplication
 	 * It should by refonfigured to custom value in the very application beginning.
 	 * Core configuration method.
 	 * @param string $appDir
-	 * @return \MvcCore\Interfaces\IApplication
+	 * @return \MvcCore\IApplication
 	 */
 	public function & SetAppDir ($appDir);
 
@@ -385,7 +385,7 @@ interface IApplication
 	 * It should by reconfigured to custom value in the very application beginning.
 	 * Core configuration method.
 	 * @param string $controllersDir
-	 * @return \MvcCore\Interfaces\IApplication
+	 * @return \MvcCore\IApplication
 	 */
 	public function & SetControllersDir ($controllersDir);
 
@@ -395,7 +395,7 @@ interface IApplication
 	 * It should by reconfigured to custom value in the very application beginning.
 	 * Core configuration method.
 	 * @param string $viewsDir
-	 * @return \MvcCore\Interfaces\IApplication
+	 * @return \MvcCore\IApplication
 	 */
 	public function & SetViewsDir ($viewsDir);
 
@@ -403,7 +403,7 @@ interface IApplication
 	 * Set default controller name. `"Index"` value by default.
 	 * Core configuration method.
 	 * @param string $defaultControllerName
-	 * @return \MvcCore\Interfaces\IApplication
+	 * @return \MvcCore\IApplication
 	 */
 	public function & SetDefaultControllerName ($defaultControllerName);
 
@@ -411,7 +411,7 @@ interface IApplication
 	 * Set default controller default action name. `"Index"` value by default.
 	 * Core configuration method.
 	 * @param string $defaultActionName
-	 * @return \MvcCore\Interfaces\IApplication
+	 * @return \MvcCore\IApplication
 	 */
 	public function & SetDefaultControllerDefaultActionName ($defaultActionName);
 
@@ -419,7 +419,7 @@ interface IApplication
 	 * Set default controller common error action name. `"Error"` value by default.
 	 * Core configuration method.
 	 * @param string $defaultControllerErrorActionName
-	 * @return \MvcCore\Interfaces\IApplication
+	 * @return \MvcCore\IApplication
 	 */
 	public function & SetDefaultControllerErrorActionName ($defaultControllerErrorActionName);
 
@@ -427,7 +427,7 @@ interface IApplication
 	 * Set default controller not found error action name. `"Not Found"` value by default.
 	 * Core configuration method.
 	 * @param string $defaultControllerNotFoundActionName
-	 * @return \MvcCore\Interfaces\IApplication
+	 * @return \MvcCore\IApplication
 	 */
 	public function & SetDefaultControllerNotFoundActionName ($defaultControllerNotFoundActionName);
 
@@ -447,7 +447,7 @@ interface IApplication
 	 * });`
 	 * @param callable $handler
 	 * @param int|NULL $priorityIndex
-	 * @return \MvcCore\Interfaces\IApplication
+	 * @return \MvcCore\IApplication
 	 */
 	public function & AddPreRouteHandler (callable $handler, $priorityIndex = NULL);
 
@@ -468,7 +468,7 @@ interface IApplication
 	 * });`
 	 * @param callable $handler
 	 * @param int|NULL $priorityIndex
-	 * @return \MvcCore\Interfaces\IApplication
+	 * @return \MvcCore\IApplication
 	 */
 	public function & AddPostRouteHandler (callable $handler, $priorityIndex = NULL);
 
@@ -489,7 +489,7 @@ interface IApplication
 	 * });`
 	 * @param callable $handler
 	 * @param int|NULL $priorityIndex
-	 * @return \MvcCore\Interfaces\IApplication
+	 * @return \MvcCore\IApplication
 	 */
 	public function & AddPreDispatchHandler (callable $handler, $priorityIndex = NULL);
 
@@ -509,7 +509,7 @@ interface IApplication
 	 * });`
 	 * @param callable $handler
 	 * @param int|NULL $priorityIndex
-	 * @return \MvcCore\Interfaces\IApplication
+	 * @return \MvcCore\IApplication
 	 */
 	public function & AddPostDispatchHandler (callable $handler, $priorityIndex = NULL);
 
@@ -540,7 +540,7 @@ interface IApplication
 	 *	  - Send response headers if possible and echo response body.
 	 * @param bool $singleFileUrl Set 'Single File Url' mode to `TRUE` to compile and test
 	 *							all assets and everything before compilation processing.
-	 * @return \MvcCore\Interfaces\IApplication
+	 * @return \MvcCore\IApplication
 	 */
 	public function Run ($singleFileUrl = FALSE);
 
@@ -630,7 +630,7 @@ interface IApplication
 	 * This method is always called INTERNALLY after controller
 	 * lifecycle has been dispatched. But you can use it any
 	 * time sooner for custom purposes.
-	 * @return \MvcCore\Interfaces\IApplication
+	 * @return \MvcCore\IApplication
 	 */
 	public function Terminate ();
 

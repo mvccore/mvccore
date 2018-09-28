@@ -11,7 +11,7 @@
  * @license  https://mvccore.github.io/docs/mvccore/5.0.0/LICENCE.md
  */
 
-namespace MvcCore\Interfaces;
+namespace MvcCore;
 
 /**
  * Responsibility - describing request(s) to match and reversely build url addresses.
@@ -100,7 +100,7 @@ interface IRoute
 	 * @param string		$defaults			Optional, default param values like: `array("name" => "default-name", "page" => 1)`.
 	 * @param array			$constraints		Optional, params regex constraints for regular expression match fn no `"match"` record in configuration array as first argument defined.
 	 * @param array			$method				Optional, http method to only match requests by this method. If `NULL` (by default), request with any http method could be matched by this route. Given value is automaticly converted to upper case.
-	 * @return \MvcCore\Interfaces\IRoute
+	 * @return \MvcCore\IRoute
 	 */
 	public static function CreateInstance (
 		$patternOrConfig = NULL,
@@ -161,7 +161,7 @@ interface IRoute
 	 * Example: `"/products-list/<name>/<color*>"`.
 	 * @param string|\string[] $pattern
 	 * @param string $localization Lowercase language code, optionally with dash and uppercase locale code, `NULL` by default, not implemented in core.
-	 * @return \MvcCore\Interfaces\IRoute
+	 * @return \MvcCore\IRoute
 	 */
 	public function & SetPattern ($pattern, $localization = NULL);
 
@@ -202,7 +202,7 @@ interface IRoute
 	 * Example: `"#^/products\-list/(?<name>[^/]*)/(?<color>[a-z]*)#"`
 	 * @param string|\string[] $match
 	 * @param string $localization Lowercase language code, optionally with dash and uppercase locale code, `NULL` by default, not implemented in core.
-	 * @return \MvcCore\Interfaces\IRoute
+	 * @return \MvcCore\IRoute
 	 */
 	public function & SetMatch ($match, $localization = NULL);
 
@@ -251,7 +251,7 @@ interface IRoute
 	 * Example: `"/products-list/<name>/<color>"`
 	 * @param string|\string[] $reverse
 	 * @param string $localization Lowercase language code, optionally with dash and uppercase locale code, `NULL` by default, not implemented in core.
-	 * @return \MvcCore\Interfaces\IRoute
+	 * @return \MvcCore\IRoute
 	 */
 	public function & SetReverse ($reverse, $localization = NULL);
 
@@ -280,7 +280,7 @@ interface IRoute
 	 *
 	 * Example: `"products_list" | "Products:Gallery"`
 	 * @param string $name
-	 * @return \MvcCore\Interfaces\IRoute
+	 * @return \MvcCore\IRoute
 	 */
 	public function & SetName ($name);
 
@@ -317,7 +317,7 @@ interface IRoute
 	 *  `"Front\Business\Products"			  // placed in /App/Controllers/Front/Business/Products.php`
 	 *  `"\Anywhere\Else\Controllers\Products"  // placed in /Anywhere/Else/Controllers/Products.php`
 	 * @param string $controller
-	 * @return \MvcCore\Interfaces\IRoute
+	 * @return \MvcCore\IRoute
 	 */
 	public function & SetController ($controller);
 
@@ -346,7 +346,7 @@ interface IRoute
 	 *
 	 * Example: `"List"`
 	 * @param string $action
-	 * @return \MvcCore\Interfaces\IRoute
+	 * @return \MvcCore\IRoute
 	 */
 	public function & SetAction ($action);
 
@@ -368,7 +368,7 @@ interface IRoute
 	 * in `\MvcCore\Route::SetController();` setter method.
 	 *
 	 * Example: `"Products:List"`
-	 * @return \MvcCore\Interfaces\IRoute
+	 * @return \MvcCore\IRoute
 	 */
 	public function & SetControllerAction ($controllerAction);
 
@@ -397,7 +397,7 @@ interface IRoute
 	 *  );`.
 	 * @param array|\array[] $defaults
 	 * @param string $localization Lowercase language code, optionally with dash and uppercase locale code, `NULL` by default, not implemented in core.
-	 * @return \MvcCore\Interfaces\IRoute
+	 * @return \MvcCore\IRoute
 	 */
 	public function & SetDefaults ($defaults = [], $localization = NULL);
 
@@ -432,7 +432,7 @@ interface IRoute
 	 *	);`
 	 * @param array|\array[] $constraints
 	 * @param string $localization Lowercase language code, optionally with dash and uppercase locale code, `NULL` by default, not implemented in core.
-	 * @return \MvcCore\Interfaces\IRoute
+	 * @return \MvcCore\IRoute
 	 */
 	public function & SetConstraints ($constraints = [], $localization = NULL);
 
@@ -440,7 +440,7 @@ interface IRoute
 	 * Get http method to only match requests with this defined method.
 	 * If `NULL` (by default), request with any http method could be matched by this route.
 	 * Value is automaticly in upper case.
-	 * Example: `"POST" | \MvcCore\Interfaces\IRequest::METHOD_POST`
+	 * Example: `"POST" | \MvcCore\IRequest::METHOD_POST`
 	 * @return string|NULL
 	 */
 	public function GetMethod ();
@@ -449,9 +449,9 @@ interface IRoute
 	 * Set http method to only match requests with this defined method.
 	 * If `NULL` (by default), request with any http method could be matched by this route.
 	 * Given value is automaticly converted to upper case.
-	 * Example: `"POST" | \MvcCore\Interfaces\IRequest::METHOD_POST`
+	 * Example: `"POST" | \MvcCore\IRequest::METHOD_POST`
 	 * @param string|NULL $method
-	 * @return \MvcCore\Interfaces\IRoute
+	 * @return \MvcCore\IRoute
 	 */
 	public function & SetMethod ($method = NULL);
 
@@ -519,7 +519,7 @@ interface IRoute
 	 * Initialize all possible protected values (`match`, `reverse` etc...)
 	 * This method is not recomanded to use in production mode, it's
 	 * designed mostly for development purposes, to see what could be inside route.
-	 * @return \MvcCore\Interfaces\IRequest
+	 * @return \MvcCore\IRequest
 	 */
 	public function & InitAll ();
 }

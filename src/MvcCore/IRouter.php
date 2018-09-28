@@ -11,7 +11,7 @@
  * @license  https://mvccore.github.io/docs/mvccore/5.0.0/LICENCE.md
  */
 
-namespace MvcCore\Interfaces;
+namespace MvcCore;
 
 //include_once('IRequest.php');
 //include_once('IRoute.php');
@@ -113,10 +113,10 @@ interface IRouter
 	 *			"defaults"		=> array("name" => "default-name",	"color" => "red"),
 	 *		)
 	 *	);`
-	 * @param \MvcCore\Interfaces\IRoute[]|array $routes Keyed array with routes,
+	 * @param \MvcCore\IRoute[]|array $routes Keyed array with routes,
 	 *													 keys are route names or route
 	 *													 `Controller::Action` definitions.
-	 * @return \MvcCore\Interfaces\IRouter
+	 * @return \MvcCore\IRouter
 	 */
 	public static function & GetInstance (array $routes = []);
 
@@ -158,10 +158,10 @@ interface IRouter
 	 *			"defaults"		=> array("name" => "default-name",	"color" => "red"),
 	 *		)
 	 *	);`
-	 * @param \MvcCore\Interfaces\IRoute[]|array $routes Keyed array with routes,
+	 * @param \MvcCore\IRoute[]|array $routes Keyed array with routes,
 	 *													 keys are route names or route
 	 *													 `Controller::Action` definitions.
-	 * @return \MvcCore\Interfaces\IRouter
+	 * @return \MvcCore\IRouter
 	 */
 	public function & SetRoutes ($routes = []);
 
@@ -204,7 +204,7 @@ interface IRouter
 	 *			"defaults"		=> array("name" => "default-name",	"color" => "red"),
 	 *		)
 	 *	);`
-	 * @param \MvcCore\Interfaces\IRoute[]|array $routes Keyed array with routes,
+	 * @param \MvcCore\IRoute[]|array $routes Keyed array with routes,
 	 *											 keys are route names or route
 	 *											 `Controller::Action` definitions.
 	 * @param bool $prepend Optional, if `TRUE`, all given routes will
@@ -214,7 +214,7 @@ interface IRouter
 	 *											 if route `name` or route `Controller:Action`
 	 *											 has been defined already. If `FALSE` old route
 	 *											 is overwriten by new one.
-	 * @return \MvcCore\Interfaces\IRouter
+	 * @return \MvcCore\IRouter
 	 */
 	public function & AddRoutes (array $routes = [], $prepend = FALSE, $throwExceptionForDuplication = TRUE);
 
@@ -255,20 +255,20 @@ interface IRouter
 	 *		"action"		=> "List",
 	 *		"defaults"		=> array("name" => "default-name",	"color" => "red"),
 	 *	));`
-	 * @param \MvcCore\Interfaces\IRoute|array $routeCfgOrRoute Route instance or
+	 * @param \MvcCore\IRoute|array $routeCfgOrRoute Route instance or
 	 *															route config array.
 	 * @param bool $prepend
 	 * @param bool $throwExceptionForDuplication `TRUE` by default. Throw an exception,
 	 *											 if route `name` or route `Controller:Action`
 	 *											 has been defined already. If `FALSE` old route
 	 *											 is overwriten by new one.
-	 * @return \MvcCore\Interfaces\IRouter
+	 * @return \MvcCore\IRouter
 	 */
 	public function & AddRoute ($routeCfgOrRoute, $prepend = FALSE, $throwExceptionForDuplication = TRUE);
 
 	/**
 	 * Return `TRUE` if router has any route by given route name, `FALSE` otherwise.
-	 * @param string|\MvcCore\Interfaces\IRoute $routeOrRouteName
+	 * @param string|\MvcCore\IRoute $routeOrRouteName
 	 * @return boolean
 	 */
 	public function HasRoute ($routeOrRouteName);
@@ -277,20 +277,20 @@ interface IRouter
 	 * Remove route from router by given name and return removed route instance.
 	 * If router has no route by given name, `NULL` is returned.
 	 * @param string $routeName
-	 * @return \MvcCore\Interfaces\IRoute|NULL
+	 * @return \MvcCore\IRoute|NULL
 	 */
 	public function RemoveRoute ($routeName);
 
 	/**
 	 * Get configured `\MvcCore\Route` route instances by route name, `NULL` if no route presented.
-	 * @return \MvcCore\Interfaces\IRoute|NULL
+	 * @return \MvcCore\IRoute|NULL
 	 */
 	public function & GetRoute ($routeName);
 
 	/**
 	 * Get all configured route(s) as `\MvcCore\Route` instances.
 	 * Keys in returned array are route names, values are route objects.
-	 * @return \MvcCore\Interfaces\IRoute[]
+	 * @return \MvcCore\IRoute[]
 	 */
 	public function & GetRoutes ();
 
@@ -298,7 +298,7 @@ interface IRouter
 	 * Get `\MvcCore\Request` object as reference, used internally for:
 	 * - Routing process in `\MvcCore\Router::Route();` and it's protected submethods.
 	 * - URL addresses completing in `\MvcCore\Router::Url()` and it's protected submethods.
-	 * @return \MvcCore\Interfaces\IRequest
+	 * @return \MvcCore\IRequest
 	 */
 	public function & GetRequest ();
 
@@ -308,25 +308,25 @@ interface IRouter
 	 * - URL addresses completing in `\MvcCore\Router::Url()` and it's protected submethods.
 	 * This is INTERNAL, not TEMPLATE method, internally called in
 	 * `\MvcCore\Application::Run();` => `\MvcCore\Application::routeRequest();`.
-	 * @param \MvcCore\Interfaces\IRequest $request
-	 * @return \MvcCore\Interfaces\IRouter
+	 * @param \MvcCore\IRequest $request
+	 * @return \MvcCore\IRouter
 	 */
-	public function & SetRequest (\MvcCore\Interfaces\IRequest & $request);
+	public function & SetRequest (\MvcCore\IRequest & $request);
 
 	/**
 	 * Set matched route instance for given request object
 	 * into `\MvcCore\Route::Route($request);` method. Currently
 	 * matched route is always assigned internally in that method.
-	 * @param \MvcCore\Interfaces\IRoute $currentRoute
-	 * @return \MvcCore\Interfaces\IRouter
+	 * @param \MvcCore\IRoute $currentRoute
+	 * @return \MvcCore\IRouter
 	 */
-	public function & SetCurrentRoute (\MvcCore\Interfaces\IRoute $currentRoute);
+	public function & SetCurrentRoute (\MvcCore\IRoute $currentRoute);
 
 	/**
 	 * Get matched route instance reference for given request object
 	 * into `\MvcCore\Route::Route($request);` method. Currently
 	 * matched route is always assigned internally in that method.
-	 * @return \MvcCore\Interfaces\IRoute
+	 * @return \MvcCore\IRoute
 	 */
 	public function & GetCurrentRoute ();
 
@@ -335,7 +335,7 @@ interface IRouter
 	 * `Index:Index` route, if there was no route matching current request.
 	 * Default protected property value: `FALSE`.
 	 * @param bool $enable
-	 * @return \MvcCore\Interfaces\IRoute
+	 * @return \MvcCore\IRoute
 	 */
 	public function GetRouteToDefaultIfNotMatch ();
 
@@ -344,7 +344,7 @@ interface IRouter
 	 * `Index:Index` route, if there was no route matching current request.
 	 * Default protected property value: `FALSE`.
 	 * @param bool $enable
-	 * @return \MvcCore\Interfaces\IRoute
+	 * @return \MvcCore\IRoute
 	 */
 	public function & SetRouteToDefaultIfNotMatch ($enable = TRUE);
 
@@ -353,15 +353,15 @@ interface IRouter
 	/**
 	 * Get trrailing slash behaviour - integer state about what to do with trailing
 	 * slash in all requested url except homepage. Possible states are:
-	 * - `-1` (`\MvcCore\Interfaces\IRouter::TRAILING_SLASH_REMOVE`)
+	 * - `-1` (`\MvcCore\IRouter::TRAILING_SLASH_REMOVE`)
 	 *		Always remove trailing slash from requested url if there
 	 *		is any and redirect to it, except homepage.
-	 * -  `0` (`\MvcCore\Interfaces\IRouter::TRAILING_SLASH_BENEVOLENT`)
+	 * -  `0` (`\MvcCore\IRouter::TRAILING_SLASH_BENEVOLENT`)
 	 *		Be absolutely benevolent for trailing slash in requested url.
-	 * -  `1` (`\MvcCore\Interfaces\IRouter::TRAILING_SLASH_ALWAYS`)
+	 * -  `1` (`\MvcCore\IRouter::TRAILING_SLASH_ALWAYS`)
 	 *		Always keep trailing slash in requested url or always add trailing
 	 *		slash into url and redirect to it.
-	 * Default value is `-1` - `\MvcCore\Interfaces\IRouter::TRAILING_SLASH_REMOVE`
+	 * Default value is `-1` - `\MvcCore\IRouter::TRAILING_SLASH_REMOVE`
 	 * @return int
 	 */
 	public function GetTrailingSlashBehaviour ();
@@ -369,24 +369,24 @@ interface IRouter
 	/**
 	 * Set trrailing slash behaviour - integer state about what to do with trailing
 	 * slash in all requested url except homepage. Possible states are:
-	 * - `-1` (`\MvcCore\Interfaces\IRouter::TRAILING_SLASH_REMOVE`)
+	 * - `-1` (`\MvcCore\IRouter::TRAILING_SLASH_REMOVE`)
 	 *		Always remove trailing slash from requested url if there
 	 *		is any and redirect to it, except homepage.
-	 * -  `0` (`\MvcCore\Interfaces\IRouter::TRAILING_SLASH_BENEVOLENT`)
+	 * -  `0` (`\MvcCore\IRouter::TRAILING_SLASH_BENEVOLENT`)
 	 *		Be absolutely benevolent for trailing slash in requested url.
-	 * -  `1` (`\MvcCore\Interfaces\IRouter::TRAILING_SLASH_ALWAYS`)
+	 * -  `1` (`\MvcCore\IRouter::TRAILING_SLASH_ALWAYS`)
 	 *		Always keep trailing slash in requested url or always add trailing
 	 *		slash into url and redirect to it.
-	 * Default value is `-1` - `\MvcCore\Interfaces\IRouter::TRAILING_SLASH_REMOVE`
-	 * @param int $trailingSlashBehaviour `-1` (`\MvcCore\Interfaces\IRouter::TRAILING_SLASH_REMOVE`)
+	 * Default value is `-1` - `\MvcCore\IRouter::TRAILING_SLASH_REMOVE`
+	 * @param int $trailingSlashBehaviour `-1` (`\MvcCore\IRouter::TRAILING_SLASH_REMOVE`)
 	 *										 Always remove trailing slash from requested url if there
 	 *										 is any and redirect to it, except homepage.
-	 *									 `0` (`\MvcCore\Interfaces\IRouter::TRAILING_SLASH_BENEVOLENT`)
+	 *									 `0` (`\MvcCore\IRouter::TRAILING_SLASH_BENEVOLENT`)
 	 *										 Be absolutely benevolent for trailing slash in requested url.
-	 *									 `1` (`\MvcCore\Interfaces\IRouter::TRAILING_SLASH_ALWAYS`)
+	 *									 `1` (`\MvcCore\IRouter::TRAILING_SLASH_ALWAYS`)
 	 *										 Always keep trailing slash in requested url or always add trailing
 	 *										 slash into url and redirect to it.
-	 * @return \MvcCore\Interfaces\IRouter
+	 * @return \MvcCore\IRouter
 	 */
 	public function & SetTrailingSlashBehaviour ($trailingSlashBehaviour = -1);
 
@@ -457,11 +457,11 @@ interface IRouter
 	 *		);`
 	 *	Output:
 	 *		`/application/base-bath/products-list/cool-product-name/blue?variant[]=L&amp;variant[]=XL"`
-	 * @param \MvcCore\Interfaces\IRoute &$route
+	 * @param \MvcCore\IRoute &$route
 	 * @param array $params
 	 * @return string
 	 */
-	public function UrlByRoute (\MvcCore\Interfaces\IRoute & $route, & $params = []);
+	public function UrlByRoute (\MvcCore\IRoute & $route, & $params = []);
 
 	/**
 	 * Get all request params - params parsed by route and query string params.
@@ -498,12 +498,12 @@ interface IRouter
 	 *   catched later by application.
 	 *
 	 * @param string $routeName Always as `default`, `error` or `not_found`, by constants:
-	 *						 `\MvcCore\Interfaces\IRouter::DEFAULT_ROUTE_NAME`
-	 *						 `\MvcCore\Interfaces\IRouter::DEFAULT_ROUTE_NAME_ERROR`
-	 *						 `\MvcCore\Interfaces\IRouter::DEFAULT_ROUTE_NAME_NOT_FOUND`
+	 *						 `\MvcCore\IRouter::DEFAULT_ROUTE_NAME`
+	 *						 `\MvcCore\IRouter::DEFAULT_ROUTE_NAME_ERROR`
+	 *						 `\MvcCore\IRouter::DEFAULT_ROUTE_NAME_NOT_FOUND`
 	 * @param string $controllerPc Controller name in pascal case.
 	 * @param string $actionPc Action name with pascal case without ending `Action` substring.
-	 * @return \MvcCore\Interfaces\IRoute
+	 * @return \MvcCore\IRoute
 	 */
 	public function & SetOrCreateDefaultRouteAsCurrent ($routeName, $controllerPc, $actionPc);
 }
