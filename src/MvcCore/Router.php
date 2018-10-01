@@ -702,6 +702,7 @@ class Router implements IRouter
 	 *	 (when first param is not founded in routes configuration array).
 	 * @param string $controllerActionOrRouteName	Should be `"Controller:Action"` combination or just any route name as custom specific string.
 	 * @param array  $params						Optional, array with params, key is param name, value is param value.
+	 * @throws \InvalidArgumentException
 	 * @return string
 	 */
 	public function Url ($controllerActionOrRouteName = 'Index:Index', $params = []) {
