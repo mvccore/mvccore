@@ -807,9 +807,9 @@ class Router implements IRouter
 			$this->AddRoute($defaultRoute, TRUE, FALSE);
 			$this->anyRoutesConfigured = $anyRoutesConfigured;
 			if (!$request->IsInternalRequest()) 
-				$request->SetParam('path', $request->HasParam('path')
+				$request->SetParam('path', ($request->HasParam('path')
 					? $request->GetParam('path', '.*')
-					: $request->GetPath()
+					: $request->GetPath())
 				);
 		}
 		$toolClass = self::$toolClass;
@@ -932,7 +932,7 @@ class Router implements IRouter
 			if ($matchedParams = $route->Matches($requestPath, $requestMethod, NULL)) {
 				$this->currentRoute = & $route;
 				$routeDefaultParams = $route->GetDefaults() ?: [];
-				$newParams = array_merge($routeDefaultParams, $request->GetParams('.*'), $matchedParams);
+				$newParams = array_merge($routeDefaultParams, $matchedParams, $request->GetParams('.*'));
 				$request->SetParams($newParams);
 				$matchedParamsClone = array_merge([], $matchedParams);
 				unset($matchedParamsClone['controller'], $matchedParamsClone['action']);

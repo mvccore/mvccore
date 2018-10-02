@@ -185,7 +185,7 @@ class Tool implements ITool
 	 * @param bool $checkStaticMethods Check implementation of all static methods by interface static methods.
 	 * @param bool $throwException If `TRUE`, throw an exception if something is not implemented or if `FALSE` return `FALSE` only.
 	 * @throws \InvalidArgumentException
-	 * @return boolean
+	 * @return bool
 	 */
 	public static function CheckClassInterface ($testClassName, $interfaceName, $checkStaticMethods = FALSE, $throwException = TRUE) {
 		$result = FALSE;
