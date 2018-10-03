@@ -39,11 +39,23 @@ namespace MvcCore;
  * - Optional direct code evaluation.
  * - No special view language implemented.
  *   - Why to use such stupid things, if we have configured `short_open_tags` by default? `<?=...?>`
+ *
+ * MvcCore view properties and helpers:
+ * @property-read \MvcCore\Controller $controller Currently dispatched controller instance.
+ * @method \MvcCore\Ext\Views\Helpers\Css Css(string $groupName = self::GROUP_NAME_DEFAULT asdfa) Get css helper instance by group name. To use this method, you need to instal extension `mvccore/ext-view-helper-assets`.
+ * @method \MvcCore\Ext\Views\Helpers\Js Js(string $groupName = self::GROUP_NAME_DEFAULT) Get js helper instance by group name. To use this method, you need to instal extension `mvccore/ext-view-helper-assets`.
+ * @method string FormatDateTime(\DateTime|\IntlCalendar|int $dateTimeOrTimestamp = NULL, int|string $dateTypeOrFormatMask = NULL, int $timeType = NULL, string|\IntlTimeZone|\DateTimeZone $timeZone = NULL, int $calendar = NULL) Format given datetime by `Intl` extension or by `strftime()` as fallback. To use this method, you need to instal extension `mvccore/ext-view-helper-formatdatetime`.
+ * @method string FormatNumber(float|int $number = 0.0, int $decimals = 0, string $dec_point = NULL , string $thousands_sep = NULL) To use this method, you need to instal extension `mvccore/ext-view-helper-formatnumber`.
+ * @method string FormatMoney(float|int$number = 0.0, int $decimals = 0, string $dec_point = NULL , string $thousands_sep = NULL) To use this method, you need to instal extension `mvccore/ext-view-helper-formatmoney`.
+ * @method string LineBreaks(string $text, string $lang = '') Prevent breaking line inside numbers, after week words, shortcuts, numbers and units and much more, very configurable. To use this method, you need to instal extension `mvccore/ext-view-helper-linebreaks`.
+ * @method string DataUrl(string $relativeOrAbsolutePath) Return any file content by given relative or absolute path in data url like `data:image/png;base64,iVBOR..`. Path could be relative from currently rendered view, relative from application root or absolute path to file. To use this method, you need to instal extension `mvccore/ext-view-helper-dataurl`.
+ * @method string WriteByJS(string $string) Return any given HTML code as code rendered in javascript: `<script>document.write(String.fromCharCode(...));</script>`. To use this method, you need to instal extension `mvccore/ext-view-helper-writebyjs`.
+ * @method string Truncate(string $text, int $maxChars = 200, bool $isHtml = NULL) Truncate plain text or text with html tags by given max. characters number and add three dots at the end. To use this method, you need to instal extension `mvccore/ext-view-helper-truncate`.
  */
 class View implements IView
 {
 	/**
-	 * Controller instance.
+	 * Currently dispatched controller instance.
 	 * @var \MvcCore\Controller|\MvcCore\IController
 	 */
 	protected $controller = NULL;
@@ -347,7 +359,10 @@ class View implements IView
 	}
 
 	/**
-	 * Set controller instance.
+	 * This is INTERNAL method, do not use it in templates.
+	 * Method is always called in the most parent controller 
+	 * `\MvcCore\Controller:PreDispatch()` moment when view instance is created.
+	 * Method sets controller instance into view.
 	 * @param \MvcCore\Controller $controller
 	 * @return \MvcCore\View
 	 */
@@ -365,6 +380,9 @@ class View implements IView
 	}
 
 	/**
+	 * This is INTERNAL method, do not use it in templates.
+	 * Method is always called in the most parent controller 
+	 * `\MvcCore\Controller:Render()` moment when view is rendered.
 	 * Set up all from given view object variables store into current store,
 	 * if there is any already existing key - overwrite it.
 	 * @param \MvcCore\View $view
@@ -385,7 +403,9 @@ class View implements IView
 	}
 
 	/**
-	 * Return rendered controller/action template content as reference.
+	 * Return rendered action template content as string reference.
+	 * You need to use this method always somewhere in layout template to
+	 * render rendered action result content.
 	 * @return string
 	 */
 	public function & GetContent () {
@@ -476,7 +496,8 @@ class View implements IView
 	}
 
 	/**
-	 * Render controller/action template script and return it's result as reference.
+	 * Render action template script or any include script and return it's result as reference.
+	 * Do not use this method in layout subtemplates, use method `RenderLayout()` instead.
 	 * @param string $relativePath
 	 * @return string
 	 */
@@ -485,7 +506,8 @@ class View implements IView
 	}
 
 	/**
-	 * Render layout template script and return it's result as reference.
+	 * Render layout template script or any include script and return it's result as reference.
+	 * Do not use this method in action subtemplates, use method `RenderScript()` instead.
 	 * @param string $relativePath
 	 * @return string
 	 */
@@ -494,8 +516,10 @@ class View implements IView
 	}
 
 	/**
-	 * Render layout template script and return it's result
-	 * as reference with inner rendered content.
+	 * This method is INTERNAL, always called from `\MvcCore\Controller::Render();`.
+	 * Do not use this method in templates!
+	 * Method renders whole configured layout template and return it's result
+	 * as string reference with inner rendered action template content.
 	 * @param string $relativePatht.
 	 * @param string $content
 	 * @return string
@@ -507,7 +531,7 @@ class View implements IView
 
 	/**
 	 * Render controller template and all necessary layout
-	 * templates and return rendered result as reference.
+	 * templates and return rendered result as string reference.
 	 * @param string $typePath By default: `"Layouts" | "Scripts"`. It could be `"Forms" | "Forms/Fields"` etc...
 	 * @param string $relativePath
 	 * @throws \InvalidArgumentException Template not found in path: `$viewScriptFullPath`.
@@ -535,7 +559,8 @@ class View implements IView
 	/**
 	 * Evaluate given code as PHP code by `eval()` in current view context,
 	 * any `$this` keyword will be used as current view context.
-	 * Returned result is content from output buffer as reference.
+	 * Returned result is content from output buffer as string reference.
+	 * Evaluated code is wrapped into `try/catch` automaticly.
 	 * @param string $content
 	 * @return string
 	 */
@@ -543,8 +568,7 @@ class View implements IView
 		ob_start();
 		try {
 			eval(' ?'.'>'.$content.'<'.'?php ');
-		}
-		catch (\Exception $e) {
+		} catch (\Exception $e) {
 			throw $e;
 		}
 		$content = ob_get_clean();
@@ -576,6 +600,7 @@ class View implements IView
 	/**
 	 * Return asset path or single file mode url for small assets
 	 * handled by internal controller action `"Controller:Asset"`.
+	 * Example: `echo $this->AssetUrl('/static/img/favicon.ico');`
 	 * @param string $path
 	 * @return string
 	 */
@@ -587,6 +612,7 @@ class View implements IView
 	 * Try to get view helper.
 	 * If view helper doesn't exist in global helpers store - create new helper instance.
 	 * If helper already exists in global helpers store - do not create it again - use instance from the store.
+	 * Example: `echo $this->GetHelper('Facebook')->RenderSomeSpecialWidgetMethod();`
 	 * @param string $helperName View helper method name in pascal case.
 	 * @throws \InvalidArgumentException If view doesn't exist in configured namespaces.
 	 * @return \MvcCore\Ext\Views\Helpers\AbstractHelper|\MvcCore\Ext\Views\Helpers\IHelper|mixed View helper instance.

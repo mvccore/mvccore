@@ -504,7 +504,8 @@ interface IRouter
 	 *						 `\MvcCore\IRouter::DEFAULT_ROUTE_NAME_NOT_FOUND`
 	 * @param string $controllerPc Controller name in pascal case.
 	 * @param string $actionPc Action name with pascal case without ending `Action` substring.
+	 * @param bool $fallbackCall `FALSE` by default. If `TRUE`, this function is called from error rendering fallback, self route name is not changed.
 	 * @return \MvcCore\IRoute
 	 */
-	public function & SetOrCreateDefaultRouteAsCurrent ($routeName, $controllerPc, $actionPc);
+	public function & SetOrCreateDefaultRouteAsCurrent ($routeName, $controllerPc, $actionPc, $fallbackCall = FALSE);
 }

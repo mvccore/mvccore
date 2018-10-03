@@ -92,6 +92,17 @@ class Router implements IRouter
 	protected $currentRoute = NULL;
 
 	/**
+	 * Route name or route `Controller:Action` name, matched route by 
+	 * `\MvcCore\Router::Match();` processing or NULL if no match.
+	 * By this route name, there is completed every 'self' URL address string.
+	 * This route name record is not changed by any error rendering,
+	 * so in error pages, you could render 'self' links to desired page, but 
+	 * not to error page itself.
+	 * @var string
+	 */
+	protected $selfRouteName = NULL;
+
+	/**
 	 * `TRUE` if request has to be automaticly dispatched as default
 	 * `Index:Index` route, if there was no route matching current request
 	 * and if request was not `/` (homepage) but `/something-more`.
@@ -454,17 +465,17 @@ class Router implements IRouter
 				throw new \InvalidArgumentException('['.__CLASS__.'] '.implode(' ',$errorMsgs));
 			}
 		}
+		$this->urlRoutes[$routeName] = $instance;
+		$this->urlRoutes[$controllerAction] = $instance;
 		if ($prepend) {
 			$newRoutes = [];
-			$newRoutes[$routeName] = & $instance; 
-			foreach ($this->routes as $routeName => & $route)
+			$newRoutes[$routeName] = $instance; 
+			foreach ($this->routes as $routeName => $route)
 				$newRoutes[$routeName] = $route;
-			$this->routes = $newRoutes;
+			$this->routes = & $newRoutes;
 		} else {
-			$this->routes[$routeName] = & $instance;
+			$this->routes[$routeName] = $instance;
 		}
-		$this->urlRoutes[$routeName] = & $instance;
-		$this->urlRoutes[$controllerAction] = & $instance;
 		$this->anyRoutesConfigured = TRUE;
 		return $this;
 	}
@@ -674,16 +685,46 @@ class Router implements IRouter
 		} else {
 			$this->routeByRewriteRoutes($requestCtrlName, $requestActionName);
 		}
-		if ($this->currentRoute === NULL && (
-			($request->GetPath() == '/' || $request->GetPath() == $request->GetScriptName()) ||
-			$this->routeToDefaultIfNotMatch
-		)) {
-			list($dfltCtrl, $dftlAction) = $this->application->GetDefaultControllerAndActionNames();
-			$this->SetOrCreateDefaultRouteAsCurrent(
-				\MvcCore\IRouter::DEFAULT_ROUTE_NAME, $dfltCtrl, $dftlAction
+		$this->routeSetUpDefaultForHomeIfNoMatch();
+		return $this->routeSetUpSelfRouteName();
+	}
+
+	/**
+	 * After routing is done, check if there is any current route and if not,
+	 * check if request is homepage or if router is configured to route
+	 * request to default controller and action if no match and set up new 
+	 * route as current route for default controller and action if necessary.
+	 * @return void
+	 */
+	protected function routeSetUpDefaultForHomeIfNoMatch () {
+		if ($this->currentRoute === NULL) {
+			$request = & $this->request;
+			$requestIsHome = (
+				trim($request->GetPath(), '/') == '' || 
+				$request->GetPath() == $request->GetScriptName()
 			);
+			if ($requestIsHome || $this->routeToDefaultIfNotMatch) {
+				list($dfltCtrl, $dftlAction) = $this->application->GetDefaultControllerAndActionNames();
+				$this->SetOrCreateDefaultRouteAsCurrent(
+					\MvcCore\IRouter::DEFAULT_ROUTE_NAME, $dfltCtrl, $dftlAction
+				);
+			}
 		}
-		return $this->currentRoute instanceof \MvcCore\IRoute;
+	}
+
+	/**
+	 * After routing is done, check if there is any current route and set up
+	 * property `$this->selfRouteName` with currently matched route name.
+	 * Return `TRUE` if current route is route instance or `FALSE` otherwise.
+	 * @return bool
+	 */
+	protected function routeSetUpSelfRouteName () {
+		$result = $this->currentRoute instanceof \MvcCore\IRoute;
+		if ($result) 
+			$this->selfRouteName = $this->anyRoutesConfigured
+				? $this->currentRoute->GetName()
+				: $this->currentRoute->GetControllerAction();
+		return $result;
 	}
 
 	/**
@@ -721,9 +762,7 @@ class Router implements IRouter
 			}
 			$controllerActionOrRouteName = "$ctrlPc:$actionPc";
 		} else if ($controllerActionOrRouteName == 'self') {
-			$controllerActionOrRouteName = $this->anyRoutesConfigured
-				? $this->currentRoute->GetName()
-				: $this->currentRoute->GetControllerAction();
+			$controllerActionOrRouteName = $this->selfRouteName;
 			$params = array_merge($this->GetRequestedUrlParams(), $params);
 			unset($params['controller'], $params['action']);
 		}
@@ -780,9 +819,10 @@ class Router implements IRouter
 	 *						 `\MvcCore\IRouter::DEFAULT_ROUTE_NAME_NOT_FOUND`
 	 * @param string $controllerPc Controller name in pascal case.
 	 * @param string $actionPc Action name with pascal case without ending `Action` substring.
+	 * @param bool $fallbackCall `FALSE` by default. If `TRUE`, this function is called from error rendering fallback, self route name is not changed.
 	 * @return \MvcCore\Route|\MvcCore\IRoute
 	 */
-	public function & SetOrCreateDefaultRouteAsCurrent ($routeName, $controllerPc, $actionPc) {
+	public function & SetOrCreateDefaultRouteAsCurrent ($routeName, $controllerPc, $actionPc, $fallbackCall = FALSE) {
 		$controllerPc = strtr($controllerPc, '/', '\\');
 		$ctrlActionRouteName = $controllerPc.':'. $actionPc;
 		$request = & $this->request;
@@ -817,6 +857,7 @@ class Router implements IRouter
 			->SetControllerName($toolClass::GetDashedFromPascalCase($defaultRoute->GetController()))
 			->SetActionName($toolClass::GetDashedFromPascalCase($defaultRoute->GetAction()));
 		$this->currentRoute = $defaultRoute;
+		if (!$fallbackCall) $this->selfRouteName = $routeName;
 		return $defaultRoute;
 	}
 

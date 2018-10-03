@@ -350,7 +350,9 @@ trait Dispatching
 			$viewClass = $this->viewClass;
 			$this->router->SetOrCreateDefaultRouteAsCurrent(
 				\MvcCore\IRouter::DEFAULT_ROUTE_NAME_ERROR,
-				$this->defaultControllerName, $this->defaultControllerErrorActionName
+				$this->defaultControllerName, 
+				$this->defaultControllerErrorActionName,
+				TRUE
 			);
 			$newParams = array_merge($this->request->GetParams('.*'), [
 				'code'		=> 500,
@@ -399,7 +401,9 @@ trait Dispatching
 			$viewClass = $this->viewClass;
 			$this->router->SetOrCreateDefaultRouteAsCurrent(
 				\MvcCore\IRouter::DEFAULT_ROUTE_NAME_NOT_FOUND,
-				$this->defaultControllerName, $this->defaultControllerNotFoundActionName
+				$this->defaultControllerName, 
+				$this->defaultControllerNotFoundActionName,
+				TRUE
 			);
 			$newParams = array_merge($this->request->GetParams('.*'), [
 				'code'		=> 404,
