@@ -159,29 +159,29 @@ class Router implements IRouter
 	 *
 	 * Routes could be defined in various forms:
 	 * Example:
-	 *	`\MvcCore\Router::GetInstance(array(
+	 *	`\MvcCore\Router::GetInstance([
 	 *		"Products:List"	=> "/products-list/<name>/<color>",
-	 *	));`
+	 *	]);`
 	 * or:
-	 *	`\MvcCore\Router::GetInstance(array(
-	 *		'products_list'	=> array(
+	 *	`\MvcCore\Router::GetInstance([
+	 *		'products_list'	=> [
 	 *			"pattern"			=> "/products-list/<name>/<color>",
 	 *			"controllerAction"	=> "Products:List",
 	 *			"defaults"			=> array("name" => "default-name",	"color" => "red"),
 	 *			"constraints"		=> array("name" => "[^/]*",			"color" => "[a-z]*")
-	 *		)
-	 *	));`
+	 *		]
+	 *	]);`
 	 * or:
-	 *	`\MvcCore\Router::GetInstance(array(
+	 *	`\MvcCore\Router::GetInstance([
 	 *		new Route(
 	 *			"/products-list/<name>/<color>",
 	 *			"Products:List",
 	 *			array("name" => "default-name",	"color" => "red"),
 	 *			array("name" => "[^/]*",		"color" => "[a-z]*")
 	 *		)
-	 *	);`
+	 *	]);`
 	 * or:
-	 *	`\MvcCore\Router::GetInstance(array(
+	 *	`\MvcCore\Router::GetInstance([
 	 *		new Route(
 	 *			"name"			=> "products_list",
 	 *			"pattern"		=> "#^/products\-list/(?<name>[^/]*)/(?<color>[a-z]*)(?=/$|$)#",
@@ -190,7 +190,7 @@ class Router implements IRouter
 	 *			"action"		=> "List",
 	 *			"defaults"		=> array("name" => "default-name",	"color" => "red"),
 	 *		)
-	 *	);`
+	 *	]);`
 	 * @param \MvcCore\Route[]|array $routes Keyed array with routes,
 	 *										 keys are route names or route
 	 *										`Controller::Action` definitions.
@@ -219,38 +219,38 @@ class Router implements IRouter
 	 *
 	 * Routes could be defined in various forms:
 	 * Example:
-	 *	`new \MvcCore\Router(array(
+	 *	`new \MvcCore\Router([
 	 *		"Products:List"	=> "/products-list/<name>/<color>",
-	 *	));`
+	 *	]);`
 	 * or:
-	 *	`new \MvcCore\Router(array(
-	 *		'products_list'	=> array(
+	 *	`new \MvcCore\Router([
+	 *		'products_list'	=> [
 	 *			"pattern"			=> "/products-list/<name>/<color>",
 	 *			"controllerAction"	=> "Products:List",
-	 *			"defaults"			=> array("name" => "default-name",	"color" => "red"),
-	 *			"constraints"		=> array("name" => "[^/]*",			"color" => "[a-z]*")
-	 *		)
-	 *	));`
+	 *			"defaults"			=> ["name" => "default-name",	"color" => "red"],
+	 *			"constraints"		=> ["name" => "[^/]*",			"color" => "[a-z]*"]
+	 *		]
+	 *	]);`
 	 * or:
 	 *	`new \MvcCore\Router(array(
 	 *		new Route(
 	 *			"/products-list/<name>/<color>",
 	 *			"Products:List",
-	 *			array("name" => "default-name",	"color" => "red"),
-	 *			array("name" => "[^/]*",		"color" => "[a-z]*")
+	 *			["name" => "default-name",	"color" => "red"],
+	 *			["name" => "[^/]*",		"color" => "[a-z]*"]
 	 *		)
 	 *	);`
 	 * or:
-	 *	`new \MvcCore\Router(array(
+	 *	`new \MvcCore\Router([
 	 *		new Route(
 	 *			"name"			=> "products_list",
 	 *			"pattern"		=> "#^/products\-list/(?<name>[^/]*)/(?<color>[a-z]*)(?=/$|$)#",
 	 *			"reverse"		=> "/products-list/<name>/<color>",
 	 *			"controller"	=> "Products",
 	 *			"action"		=> "List",
-	 *			"defaults"		=> array("name" => "default-name",	"color" => "red"),
+	 *			"defaults"		=> ["name" => "default-name",	"color" => "red"],
 	 *		)
-	 *	);`
+	 *	]);`
 	 * @param \MvcCore\Route[]|array $routes Keyed array with routes,
 	 *										 keys are route names or route
 	 *										`Controller::Action` definitions.
@@ -272,34 +272,34 @@ class Router implements IRouter
 	 *		"Products:List"	=> "/products-list/<name>/<color>",
 	 *	));`
 	 * or:
-	 *	`\MvcCore\Router::GetInstance()->SetRoutes(array(
+	 *	`\MvcCore\Router::GetInstance()->SetRoutes([
 	 *		'products_list'	=> array(
 	 *			"pattern"			=> "/products-list/<name>/<color>",
 	 *			"controllerAction"	=> "Products:List",
-	 *			"defaults"			=> array("name" => "default-name",	"color" => "red"),
-	 *			"constraints"		=> array("name" => "[^/]*",			"color" => "[a-z]*")
+	 *			"defaults"			=> ["name" => "default-name",	"color" => "red"],
+	 *			"constraints"		=> ["name" => "[^/]*",			"color" => "[a-z]*"]
 	 *		)
-	 *	));`
+	 *	]);`
 	 * or:
-	 *	`\MvcCore\Router::GetInstance()->SetRoutes(array(
+	 *	`\MvcCore\Router::GetInstance()->SetRoutes([
 	 *		new Route(
 	 *			"/products-list/<name>/<color>",
 	 *			"Products:List",
-	 *			array("name" => "default-name",	"color" => "red"),
-	 *			array("name" => "[^/]*",		"color" => "[a-z]*")
+	 *			["name" => "default-name",	"color" => "red"],
+	 *			["name" => "[^/]*",		"color" => "[a-z]*"]
 	 *		)
-	 *	);`
+	 *	]);`
 	 * or:
-	 *	`\MvcCore\Router::GetInstance()->SetRoutes(array(
+	 *	`\MvcCore\Router::GetInstance()->SetRoutes([
 	 *		new Route(
 	 *			"name"			=> "products_list",
 	 *			"pattern"		=> "#^/products\-list/(?<name>[^/]*)/(?<color>[a-z]*)(?=/$|$)#",
 	 *			"reverse"		=> "/products-list/<name>/<color>",
 	 *			"controller"	=> "Products",
 	 *			"action"		=> "List",
-	 *			"defaults"		=> array("name" => "default-name",	"color" => "red"),
+	 *			"defaults"		=> ["name" => "default-name",	"color" => "red"],
 	 *		)
-	 *	);`
+	 *	]);`
 	 * @param \MvcCore\Route[]|array $routes Keyed array with routes,
 	 *										 keys are route names or route
 	 *										`Controller::Action` definitions.
@@ -318,38 +318,38 @@ class Router implements IRouter
 	 *
 	 * Routes could be defined in various forms:
 	 * Example:
-	 *	`\MvcCore\Router::GetInstance()->AddRoutes(array(
+	 *	`\MvcCore\Router::GetInstance()->AddRoutes([
 	 *		"Products:List"	=> "/products-list/<name>/<color>",
-	 *	));`
+	 *	]);`
 	 * or:
-	 *	`\MvcCore\Router::GetInstance()->AddRoutes(array(
-	 *		'products_list'	=> array(
+	 *	`\MvcCore\Router::GetInstance()->AddRoutes([
+	 *		'products_list'	=> [
 	 *			"pattern"			=> "/products-list/<name>/<color>",
 	 *			"controllerAction"	=> "Products:List",
-	 *			"defaults"			=> array("name" => "default-name",	"color" => "red"),
-	 *			"constraints"		=> array("name" => "[^/]*",			"color" => "[a-z]*")
-	 *		)
-	 *	));`
+	 *			"defaults"			=> ["name" => "default-name",	"color" => "red"],
+	 *			"constraints"		=> ["name" => "[^/]*",			"color" => "[a-z]*"]
+	 *		]
+	 *	]);`
 	 * or:
-	 *	`\MvcCore\Router::GetInstance()->AddRoutes(array(
+	 *	`\MvcCore\Router::GetInstance()->AddRoutes([
 	 *		new Route(
 	 *			"/products-list/<name>/<color>",
 	 *			"Products:List",
-	 *			array("name" => "default-name",	"color" => "red"),
-	 *			array("name" => "[^/]*",		"color" => "[a-z]*")
+	 *			["name" => "default-name",	"color" => "red"],
+	 *			["name" => "[^/]*",		"color" => "[a-z]*"]
 	 *		)
-	 *	);`
+	 *	]);`
 	 * or:
-	 *	`\MvcCore\Router::GetInstance()->AddRoutes(array(
+	 *	`\MvcCore\Router::GetInstance()->AddRoutes([
 	 *		new Route(
 	 *			"name"			=> "products_list",
 	 *			"pattern"		=> "#^/products\-list/(?<name>[^/]*)/(?<color>[a-z]*)(?=/$|$)#",
 	 *			"reverse"		=> "/products-list/<name>/<color>",
 	 *			"controller"	=> "Products",
 	 *			"action"		=> "List",
-	 *			"defaults"		=> array("name" => "default-name",	"color" => "red"),
+	 *			"defaults"		=> ["name" => "default-name",	"color" => "red"],
 	 *		)
-	 *	);`
+	 *	]);`
 	 * @param \MvcCore\Route[]|array $routes Keyed array with routes,
 	 *										 keys are route names or route
 	 *										 `Controller::Action` definitions.
@@ -412,24 +412,24 @@ class Router implements IRouter
 	 *
 	 * Route could be defined in various forms:
 	 * Example:
-	 *	`\MvcCore\Router::GetInstance()->AddRoute(array(
+	 *	`\MvcCore\Router::GetInstance()->AddRoute([
 	 *		"name"		=> "Products:List",
 	 *		"pattern"	=> "/products-list/<name>/<color>",
-	 *	));`
+	 *	]);`
 	 * or:
-	 *	`\MvcCore\Router::GetInstance()->AddRoute(array(
+	 *	`\MvcCore\Router::GetInstance()->AddRoute([
 	 *		"name"				=> "products_list",
 	 *		"pattern"			=> "/products-list/<name>/<color>",
 	 *		"controllerAction"	=> "Products:List",
-	 *		"defaults"			=> array("name" => "default-name",	"color" => "red"),
-	 *		"constraints"		=> array("name" => "[^/]*",			"color" => "[a-z]*")
-	 *	));`
+	 *		"defaults"			=> ["name" => "default-name",	"color" => "red"],
+	 *		"constraints"		=> ["name" => "[^/]*",			"color" => "[a-z]*"]
+	 *	]);`
 	 * or:
 	 *	`\MvcCore\Router::GetInstance()->AddRoute(new Route(
 	 *		"/products-list/<name>/<color>",
 	 *		"Products:List",
-	 *		array("name" => "default-name",	"color" => "red"),
-	 *		array("name" => "[^/]*",		"color" => "[a-z]*")
+	 *		["name" => "default-name",	"color" => "red"],
+	 *		["name" => "[^/]*",		"color" => "[a-z]*"]
 	 *	));`
 	 * or:
 	 *	`\MvcCore\Router::GetInstance()->AddRoute(new Route(
@@ -438,7 +438,7 @@ class Router implements IRouter
 	 *		"reverse"		=> "/products-list/<name>/<color>",
 	 *		"controller"	=> "Products",
 	 *		"action"		=> "List",
-	 *		"defaults"		=> array("name" => "default-name",	"color" => "red"),
+	 *		"defaults"		=> ["name" => "default-name",	"color" => "red"],
 	 *	));`
 	 * @param \MvcCore\Route|\MvcCore\IRoute|array $routeCfgOrRoute Route instance or
 	 *																		   route config array.
