@@ -757,14 +757,16 @@ class Router implements IRouter
 	 * action checking!
 	 * @param string $controllerNamePc Pascal case clasic controller name definition.
 	 * @param string $actionNamePc Pascal case action name without `Action` suffix.
+	 * @param bool $changeSelfRoute \FALSE` by default to change self route to generate self urls.
 	 * @return bool
 	 */
-	public function RedefineRoutedTarget ($controllerNamePc = NULL, $actionNamePc = NULL) {
+	public function RedefineRoutedTarget ($controllerNamePc = NULL, $actionNamePc = NULL, $changeSelfRoute = FALSE) {
 		$toolClass = self::$toolClass;
 		$ctrlNameDc = NULL;
 		$actionNameDc = NULL;
 		$currentRoute = & $this->currentRoute;
-		$matchedParams = $currentRoute->GetMatchedParams();
+		$currentRouteMatched = $currentRoute instanceof \MvcCore\IRoute;
+		$matchedParams = $currentRouteMatched ? $currentRoute->GetMatchedParams() : [];
 		if ($controllerNamePc !== NULL) {
 			$ctrlNameDc = str_replace(['\\', '_'], '/', $toolClass::GetDashedFromPascalCase($controllerNamePc));
 			$matchedParams['controller'] = $ctrlNameDc;
@@ -776,13 +778,17 @@ class Router implements IRouter
 			$this->request->SetActionName($actionNameDc)->SetParam('action', $ctrlNameDc);
 
 		}
-		$currentRoute->SetMatchedParams($matchedParams);
-		if (strpos($currentRoute->GetName(), ':') !== FALSE && $controllerNamePc !== NULL && $actionNamePc !== NULL) {
-			$currentRoute->SetName($controllerNamePc . ':' . $actionNamePc);
+		if ($currentRouteMatched) {
+			$currentRoute->SetMatchedParams($matchedParams);
+			if (strpos($currentRoute->GetName(), ':') !== FALSE && $controllerNamePc !== NULL && $actionNamePc !== NULL) {
+				$currentRoute->SetName($controllerNamePc . ':' . $actionNamePc);
+			}
 		}
-		$this->selfRouteName = $this->anyRoutesConfigured
-			? $currentRoute->GetName()
-			: $currentRoute->GetControllerAction();
+		if ($currentRouteMatched && $changeSelfRoute) {
+			$this->selfRouteName = $this->anyRoutesConfigured
+				? $currentRoute->GetName()
+				: $currentRoute->GetControllerAction();
+		}
 		return TRUE;
 	}
 
