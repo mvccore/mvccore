@@ -384,7 +384,7 @@ interface IRoute
 	 * @param string $localization Lowercase language code, optionally with dash and uppercase locale code, `NULL` by default, not implemented in core.
 	 * @return array|\array[]
 	 */
-	public function GetDefaults ($localization = NULL);
+	public function & GetDefaults ($localization = NULL);
 
 	/**
 	 * Set route rewrited params default values and also any other params default values.
@@ -461,6 +461,14 @@ interface IRoute
 	 * @return \string[]|NULL
 	 */
 	public function & GetReverseParams ();
+	
+	/**
+	 * Set manualy matched params from rewrite route for current route.
+	 * Use this method only on currently matched route!
+	 * @param array $matchedParams
+	 * @return \MvcCore\Route
+	 */
+	public function & SetMatchedParams ($matchedParams = []);
 
 	/**
 	 * Return request matched params by current route.

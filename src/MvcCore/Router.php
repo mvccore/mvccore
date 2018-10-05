@@ -676,17 +676,37 @@ class Router implements IRouter
 	 */
 	public function Route () {
 		if (!$this->redirectToProperTrailingSlashIfNecessary()) return FALSE;
-		$request = & $this->request;
-		$requestCtrlName = $request->GetControllerName();
-		$requestActionName = $request->GetActionName();
+		list($routeByQueryString, $requestCtrlName, $requestActionName) = $this->routeDetectStrategy();
 		$this->anyRoutesConfigured = count($this->routes) > 0;
-		if ($requestCtrlName && $requestActionName) {
+		if ($routeByQueryString) {
 			$this->routeByControllerAndActionQueryString($requestCtrlName, $requestActionName);
 		} else {
 			$this->routeByRewriteRoutes($requestCtrlName, $requestActionName);
 		}
 		$this->routeSetUpDefaultForHomeIfNoMatch();
 		return $this->routeSetUpSelfRouteName();
+	}
+
+	/**
+	 * Detect routing strategy - if first returned item is `TRUE`,
+	 * route by query string params, if `FALSE` route by reqrite routes.
+	 * @return array
+	 */
+	protected function routeDetectStrategy () {
+		$request = & $this->request;
+		$requestCtrlName = $request->GetControllerName();
+		$requestActionName = $request->GetActionName();
+		list($reqScriptName, $reqPath) = [$request->GetScriptName(), $request->GetPath(TRUE)];
+		$requestCtrlAndAlsoAction = $requestCtrlName !== NULL || $requestActionName !== NULL;
+		$requestCtrlOrAction = $requestCtrlName !== NULL || $requestActionName !== NULL;
+		$routeByQueryString = (
+			$requestCtrlAndAlsoAction ||
+			($requestCtrlOrAction && (
+				$reqScriptName === $reqPath || 
+				trim($reqPath, '/') === '' && $requestCtrlAndAlsoAction
+			))
+		);
+		return [$routeByQueryString, $requestCtrlName, $requestActionName];
 	}
 
 	/**
@@ -725,6 +745,45 @@ class Router implements IRouter
 				? $this->currentRoute->GetName()
 				: $this->currentRoute->GetControllerAction();
 		return $result;
+	}
+
+	/**
+	 * Here you can redefine target controller and action and it doesn't matter,
+	 * what has been routed before. This method is only possible to use and it 
+	 * make sence to use it only in any application post route handler, after 
+	 * `Route()` method has been called and before controller is created by 
+	 * application and dispatched. This method is very advanced. you have to 
+	 * know what you are doing. There is no missing template or controller or 
+	 * action checking!
+	 * @param string $controllerNamePc Pascal case clasic controller name definition.
+	 * @param string $actionNamePc Pascal case action name without `Action` suffix.
+	 * @return bool
+	 */
+	public function RedefineRoutedTarget ($controllerNamePc = NULL, $actionNamePc = NULL) {
+		$toolClass = self::$toolClass;
+		$ctrlNameDc = NULL;
+		$actionNameDc = NULL;
+		$currentRoute = & $this->currentRoute;
+		$matchedParams = $currentRoute->GetMatchedParams();
+		if ($controllerNamePc !== NULL) {
+			$ctrlNameDc = str_replace(['\\', '_'], '/', $toolClass::GetDashedFromPascalCase($controllerNamePc));
+			$matchedParams['controller'] = $ctrlNameDc;
+			$this->request->SetControllerName($ctrlNameDc)->SetParam('controller', $ctrlNameDc);
+		}
+		if ($actionNamePc !== NULL) {
+			$actionNameDc = $toolClass::GetDashedFromPascalCase($actionNamePc);
+			$matchedParams['action'] = $actionNameDc;
+			$this->request->SetActionName($actionNameDc)->SetParam('action', $ctrlNameDc);
+
+		}
+		$currentRoute->SetMatchedParams($matchedParams);
+		if (strpos($currentRoute->GetName(), ':') !== FALSE && $controllerNamePc !== NULL && $actionNamePc !== NULL) {
+			$currentRoute->SetName($controllerNamePc . ':' . $actionNamePc);
+		}
+		$this->selfRouteName = $this->anyRoutesConfigured
+			? $currentRoute->GetName()
+			: $currentRoute->GetControllerAction();
+		return TRUE;
 	}
 
 	/**
@@ -971,8 +1030,11 @@ class Router implements IRouter
 		reset($this->routes);
 		foreach ($this->routes as & $route) {
 			if ($matchedParams = $route->Matches($requestPath, $requestMethod, NULL)) {
-				$this->currentRoute = & $route;
-				$routeDefaultParams = $route->GetDefaults() ?: [];
+				$routeClone = clone $route;
+				$requestCtrlName = $matchedParams['controller'];
+				$requestActionName = $matchedParams['action'];
+				$this->currentRoute = & $routeClone;
+				$routeDefaultParams = $routeClone->GetDefaults() ?: [];
 				$newParams = array_merge($routeDefaultParams, $matchedParams, $request->GetParams('.*'));
 				$request->SetParams($newParams);
 				$matchedParamsClone = array_merge([], $matchedParams);

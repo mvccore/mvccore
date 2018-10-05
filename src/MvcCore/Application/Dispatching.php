@@ -158,6 +158,8 @@ trait Dispatching
 		);
 		if ($ctrlPc == 'Controller') {
 			$controllerName = $this->controllerClass;
+		} else if ($this->controller !== NULL) {
+			$controllerName = '\\'.get_class($this->controller);
 		} else {
 			// `App_Controllers_<$ctrlPc>`
 			$controllerName = $this->CompleteControllerName($ctrlPc);
@@ -200,18 +202,22 @@ trait Dispatching
 		$viewScriptFullPath,
 		callable $exceptionCallback
 	) {
-		/** @var $controller \MvcCore\Controller */
-		$controller = NULL;
-		try {
-			$controller = $ctrlClassFullName::CreateInstance()
-				->SetApplication($this)
-				->SetRequest($this->request)
-				->SetResponse($this->response)
-				->SetRouter($this->router);
-		} catch (\Exception $e) {
-			return $this->DispatchException($e->getMessage(), 404);
+		if ($this->controller === NULL) {
+			$controller = NULL;
+			try {
+				$controller = $ctrlClassFullName::CreateInstance();
+			} catch (\Exception $e) {
+				return $this->DispatchException($e->getMessage(), 404);
+			}
+			$this->controller = & $controller;
 		}
-		if (!method_exists($controller, $actionName) && $ctrlClassFullName !== $this->controllerClass) {
+		/** @var $this->controller \MvcCore\Controller */
+		$this->controller
+			->SetApplication($this)
+			->SetRequest($this->request)
+			->SetResponse($this->response)
+			->SetRouter($this->router);
+		if (!method_exists($this->controller, $actionName) && $ctrlClassFullName !== $this->controllerClass) {
 			if (!file_exists($viewScriptFullPath)) {
 				$appRoot = $this->request->GetAppRoot();
 				$viewScriptPath = mb_strpos($viewScriptFullPath, $appRoot) === FALSE
@@ -224,10 +230,9 @@ trait Dispatching
 				);
 			}
 		}
-		$this->controller = & $controller;
 		if (!$this->ProcessCustomHandlers($this->preDispatchHandlers)) return FALSE;
 		try {
-			$controller->Dispatch($actionName);
+			$this->controller->Dispatch($actionName);
 		} catch (\Exception $e) {
 			return $exceptionCallback($e);
 		}

@@ -360,18 +360,20 @@ class Route implements IRoute
 		if (is_array($patternOrConfig)) {
 			$data = (object) $patternOrConfig;
 			if (isset($data->controllerAction)) {
-				list($this->controller, $this->action) = explode(':', $data->controllerAction);
+				list($ctrl, $action) = explode(':', $data->controllerAction);
+				if ($ctrl) $this->controller = $ctrl;
+				if ($action) $this->action = $action;
 				if (isset($data->name)) {
 					$this->name = $data->name;
 				} else {
 					$this->name = $data->controllerAction;
 				}
 			} else {
-				$this->controller = isset($data->controller) ? $data->controller : '';
-				$this->action = isset($data->action) ? $data->action : '';
+				$this->controller = isset($data->controller) ? $data->controller : NULL;
+				$this->action = isset($data->action) ? $data->action : NULL;
 				if (isset($data->name)) {
 					$this->name = $data->name;
-				} else if ($this->controller !== '' && $this->action !== '') {
+				} else if ($this->controller !== NULL && $this->action !== NULL) {
 					$this->name = $this->controller . ':' . $this->action;
 				} else {
 					$this->name = NULL;
@@ -384,15 +386,24 @@ class Route implements IRoute
 			$this->SetConstraints(isset($data->constraints) ? $data->constraints : []);
 			if (isset($data->method)) $this->method = strtoupper($data->method);
 		} else {
-			$this->pattern = $patternOrConfig;
-			list($this->controller, $this->action) = explode(':', $controllerAction);
-			$this->name = '';
-			$this->defaults = $defaults;
-			$this->SetConstraints($constraints);
-			$this->method = strtoupper($method);
+			if ($patternOrConfig !== NULL)
+				$this->pattern = $patternOrConfig;
+			if ($controllerAction !== NULL) {
+				list($ctrl, $action) = explode(':', $controllerAction);
+				if ($ctrl) $this->controller = $ctrl;
+				if ($action) $this->action = $action;
+			}
+			if ($defaults !== NULL)
+				$this->defaults = $defaults;
+			if ($constraints !== NULL)
+				$this->SetConstraints($constraints);
+			if ($method !== NULL)
+				$this->method = strtoupper($method);
 		}
 		if (!$this->controller && !$this->action && strpos($this->name, ':') !== FALSE && strlen($this->name) > 1) {
-			list($this->controller, $this->action) = explode(':', $this->name);
+			list($ctrl, $action) = explode(':', $this->name);
+			if ($ctrl) $this->controller = $ctrl;
+			if ($action) $this->action = $action;
 		}
 	}
 
@@ -689,7 +700,9 @@ class Route implements IRoute
 	 * @return \MvcCore\Route
 	 */
 	public function & SetControllerAction ($controllerAction) {
-		list($this->controller, $this->action) = explode(':', $controllerAction);
+		list($ctrl, $action) = explode(':', $controllerAction);
+		if ($ctrl) $this->controller = $ctrl;
+		if ($action) $this->action = $action;
 		return $this;
 	}
 
@@ -705,7 +718,7 @@ class Route implements IRoute
 	 * @param string $localization Lowercase language code, optionally with dash and uppercase locale code, `NULL` by default, not implemented in core.
 	 * @return array|\array[]
 	 */
-	public function GetDefaults ($localization = NULL) {
+	public function & GetDefaults ($localization = NULL) {
 		return $this->defaults;
 	}
 
@@ -805,6 +818,17 @@ class Route implements IRoute
 			if ($this->reverse === NULL) $this->reverse = $reverse;
 		}
 		return $this->reverseParams;
+	}
+
+	/**
+	 * Set manualy matched params from rewrite route for current route.
+	 * Use this method only on currently matched route!
+	 * @param array $matchedParams
+	 * @return \MvcCore\Route
+	 */
+	public function & SetMatchedParams ($matchedParams = []) {
+		$this->matchedParams = & $matchedParams;
+		return $this;
 	}
 
 	/**

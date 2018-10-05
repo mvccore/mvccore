@@ -416,6 +416,20 @@ interface IRouter
 	public function Route ();
 
 	/**
+	 * Here you can redefine target controller and action and it doesn't matter,
+	 * what has been routed before. This method is only possible to use and it 
+	 * make sence to use it only in any application post route handler, after 
+	 * `Route()` method has been called and before controller is created by 
+	 * application and dispatched. This method is very advanced. you have to 
+	 * know what you are doing. There is no missing template or controller or 
+	 * action checking!
+	 * @param string $controllerNamePc Pascal case clasic controller name definition.
+	 * @param string $actionNamePc Pascal case action name without `Action` suffix.
+	 * @return bool
+	 */
+	public function RedefineRoutedTarget ($controllerNamePc = NULL, $actionNamePc = NULL);
+
+	/**
 	 * Generates url:
 	 * - By `"Controller:Action"` name and params array
 	 *   (for routes configuration when routes array has keys with `"Controller:Action"` strings
