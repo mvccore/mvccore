@@ -71,8 +71,7 @@ trait PropsGettersSetters
 
 	/**
 	 * Pre route custom closure calls storrage.
-	 * Every item in this array has to be array with `callable`
-	 * and `boolean` if `callable` is closure instance.
+	 * Every item in this array has to be `callable`.
 	 * Params in callable should be two with following types:
 	 *	- `\MvcCore\Request`
 	 *	- `\MvcCore\Response`
@@ -90,8 +89,7 @@ trait PropsGettersSetters
 
 	/**
 	 * Post route custom closure calls storrage.
-	 * Every item in this array has to be array with `callable`
-	 * and `boolean` if `callable` is closure instance.
+	 * Every item in this array has to be `callable`.
 	 * Params in callable should be two with following types:
 	 *	- `\MvcCore\Request`
 	 *	- `\MvcCore\Response`
@@ -108,8 +106,7 @@ trait PropsGettersSetters
 
 	/**
 	 * Pre dispatch custom calls storrage.
-	 * Every item in this array has to be array with `callable`
-	 * and `boolean` if `callable` is closure instance.
+	 * Every item in this array has to be `callable`.
 	 * Params in `callable` should be two with following types:
 	 *	- `\MvcCore\Request`
 	 *	- `\MvcCore\Response`
@@ -126,8 +123,7 @@ trait PropsGettersSetters
 
 	/**
 	 * Post dispatch custom calls storrage.
-	 * Every item in this array has to be array with `callable`
-	 * and `boolean` if `callable` is closure instance.
+	 * Every item in this array has to be `callable`.
 	 * Params in `callable` should be two with following types:
 	 *	- `\MvcCore\Request`
 	 *	- `\MvcCore\Response`

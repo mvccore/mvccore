@@ -95,15 +95,15 @@ trait Dispatching
 	 * @return bool
 	 */
 	public function RouteRequest () {
-		try {
+		//try {
 			// `GetRouter()` method triggers creating
 			return $this
 				->GetRouter()
 				->SetRequest($this->GetRequest())
 				->Route();
-		} catch (\Exception $e) {
+		/*} catch (\Exception $e) {
 			return $this->DispatchException($e);
-		}
+		}*/
 	}
 
 	/**
@@ -117,11 +117,11 @@ trait Dispatching
 	public function ProcessCustomHandlers (& $handlers = []) {
 		if ($this->request->IsInternalRequest() === TRUE) return TRUE;
 		$result = TRUE;
-		foreach ($handlers as $handlersRecord) {
-			list ($handler, $isClosure) = $handlersRecord;
+		foreach ($handlers as $handlerRecord) {
+			list ($closureCalling, $handler) = $handlerRecord;
 			$subResult = NULL;
 			try {
-				if ($isClosure) {
+				if ($closureCalling) {
 					$subResult = $handler($this->request, $this->response);
 				} else {
 					$subResult = call_user_func($handler, $this->request, $this->response);

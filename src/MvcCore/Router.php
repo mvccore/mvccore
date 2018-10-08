@@ -116,7 +116,7 @@ class Router implements IRouter
 	 * Be carefull, it could contain XSS chars. Use always `htmlspecialchars()`.
 	 * @var array|NULL
 	 */
-	protected $requestedUrlParams = NULL;
+	protected $defaultParams = NULL;
 
 	/**
 	 * Trrailing slash behaviour - integer state about what to do with trailing
@@ -815,6 +815,7 @@ class Router implements IRouter
 		$result = '';
 		$request = & $this->request;
 		
+		$controllerActionOrRouteNameKey = $controllerActionOrRouteName;
 		if (strpos($controllerActionOrRouteName, ':') !== FALSE) {
 			list($ctrlPc, $actionPc) = explode(':', $controllerActionOrRouteName);
 			if (!$ctrlPc) {
@@ -825,25 +826,37 @@ class Router implements IRouter
 				$toolClass = self::$toolClass;
 				$actionPc = $toolClass::GetPascalCaseFromDashed($request->GetActionName());
 			}
-			$controllerActionOrRouteName = "$ctrlPc:$actionPc";
+			$controllerActionOrRouteNameKey = "$ctrlPc:$actionPc";
 		} else if ($controllerActionOrRouteName == 'self') {
-			$controllerActionOrRouteName = $this->selfRouteName;
-			$params = array_merge($this->GetRequestedUrlParams(), $params);
-			unset($params['controller'], $params['action']);
+			$controllerActionOrRouteNameKey = $this->selfRouteName;
+			/*$defaultParams = $this->GetDefaultParams();
+			$newParams = [];
+			foreach ($this->reverseParams as $paramName) {
+				$newParams[$paramName] = isset($params[$paramName])
+					? $params[$paramName]
+					: $defaultParams[$paramName];
+			}
+			$params = $newParams;*/
+			//$params = array_merge($this->GetDefaultParams(), $params);
+			//unset($params['controller'], $params['action']);
 		}
-
+		
 		$absolute = FALSE;
 		if ($params && isset($params['absolute'])) {
 			$absolute = (bool) $params['absolute'];
 			unset($params['absolute']);
 		}
 		
-		if ($this->anyRoutesConfigured && isset($this->urlRoutes[$controllerActionOrRouteName])) {
-			$result = $this->UrlByRoute($this->urlRoutes[$controllerActionOrRouteName], $params);
-		} else if ($this->anyRoutesConfigured && isset($this->routes[$controllerActionOrRouteName])) {
-			$result = $this->UrlByRoute($this->routes[$controllerActionOrRouteName], $params);
+		if ($this->anyRoutesConfigured && isset($this->urlRoutes[$controllerActionOrRouteNameKey])) {
+			$result = $this->UrlByRoute($this->urlRoutes[$controllerActionOrRouteNameKey], $params, $controllerActionOrRouteName);
+		} else if ($this->anyRoutesConfigured && isset($this->routes[$controllerActionOrRouteNameKey])) {
+			$result = $this->UrlByRoute($this->routes[$controllerActionOrRouteNameKey], $params, $controllerActionOrRouteName);
 		} else {
-			$result = $this->UrlByQueryString($controllerActionOrRouteName, $params);
+			if ($controllerActionOrRouteName == 'self') {
+				$params = array_merge($this->GetDefaultParams(), $params);
+				unset($params['controller'], $params['action']);
+			}
+			$result = $this->UrlByQueryString($controllerActionOrRouteNameKey, $params);
 		}
 
 		if ($absolute) $result = $request->GetDomainUrl() . $result;
@@ -963,13 +976,25 @@ class Router implements IRouter
 	 *		);`
 	 *	Output:
 	 *		`/application/base-bath/products-list/cool-product-name/blue?variant[]=L&amp;variant[]=XL"`
-	 * @param \MvcCore\Route &$route
+	 * @param \MvcCore\Route $route
 	 * @param array $params
+	 * @param string $givenRouteName
 	 * @return string
 	 */
-	public function UrlByRoute (\MvcCore\IRoute & $route, & $params = []) {
+	public function UrlByRoute (\MvcCore\IRoute & $route, & $params = [], $givenRouteName = 'self') {
+		$defaultParams = $this->GetDefaultParams();
+		if ($givenRouteName == 'self') {
+			$newParams = [];
+			foreach ($route->GetReverseParams() as $paramName) {
+				$newParams[$paramName] = isset($params[$paramName])
+					? $params[$paramName]
+					: $defaultParams[$paramName];
+			}
+			$params = $newParams;
+			unset($params['controller'], $params['action']);
+		}
 		return $this->request->GetBasePath() . $route->Url(
-			$params, $this->GetRequestedUrlParams(), $this->getQueryStringParamsSepatator()
+			$params, $defaultParams, $this->getQueryStringParamsSepatator()
 		);
 	}
 
@@ -978,12 +1003,12 @@ class Router implements IRouter
 	 * Be carefull, it could contain XSS chars. Use always `htmlspecialchars()`.
 	 * @return array
 	 */
-	public function & GetRequestedUrlParams () {
-		if ($this->requestedUrlParams === NULL) {
+	public function & GetDefaultParams () {
+		if ($this->defaultParams === NULL) {
 			// create global `$_GET` array clone:
-			$this->requestedUrlParams = array_merge([], $this->request->GetGlobalCollection('get'));
+			$this->defaultParams = array_merge([], $this->request->GetGlobalCollection('get'));
 		}
-		return $this->requestedUrlParams;
+		return $this->defaultParams;
 	}
 
 	/**
@@ -1030,37 +1055,40 @@ class Router implements IRouter
 	 */
 	protected function routeByRewriteRoutes ($requestCtrlName, $requestActionName) {
 		$request = & $this->request;
-		$requestPath = $request->GetPath();
-		$requestMethod = $request->GetMethod();
 		/** @var $route \MvcCore\Route */
 		reset($this->routes);
+		$matchedParams = [];
 		foreach ($this->routes as & $route) {
-			if ($matchedParams = $route->Matches($requestPath, $requestMethod, NULL)) {
-				$routeClone = clone $route;
-				$requestCtrlName = $matchedParams['controller'];
-				$requestActionName = $matchedParams['action'];
-				$this->currentRoute = & $routeClone;
-				$routeDefaultParams = $routeClone->GetDefaults() ?: [];
-				$newParams = array_merge($routeDefaultParams, $matchedParams, $request->GetParams('.*'));
-				$request->SetParams($newParams);
+			if ($matchedParams = $route->Matches($request, NULL)) {
+				$this->currentRoute = clone $route;
+				// finalize matched params and requested url params
 				$matchedParamsClone = array_merge([], $matchedParams);
 				unset($matchedParamsClone['controller'], $matchedParamsClone['action']);
-				if ($matchedParamsClone) {
-					if ($this->requestedUrlParams) {
-						$requestedUrlParamsToMerge = $this->requestedUrlParams;
-					} else {
-						$requestedUrlParamsToMerge = [];
-					}
-					$this->requestedUrlParams = array_merge(
-						$requestedUrlParamsToMerge, $matchedParamsClone
+				if ($matchedParamsClone) 
+					$this->defaultParams = array_merge(
+						$this->defaultParams ?: [], $matchedParamsClone
 					);
+				// finalize request params
+				$newParams = array_merge(
+					$this->currentRoute->GetDefaults(), 
+					$matchedParams, $request->GetParams(FALSE)
+				);
+				list($success, $filteredParams) = $route->Filter(
+					$newParams, $this->defaultParams, \MvcCore\IRoute::FILTER_IN
+				);
+				if ($success === FALSE) {
+					$this->currentRoute = NULL;
+					$matchedParams = [];
+					continue;
 				}
+				$request->SetParams($filteredParams);
+				// breakt to stop routing
 				break;
 			}
 		}
 		if ($this->currentRoute !== NULL) 
 			$this->routeByRewriteRoutesSetUpRequestByCurrentRoute(
-				$requestCtrlName, $requestActionName
+				$matchedParams['controller'], $matchedParams['action']
 			);
 	}
 

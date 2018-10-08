@@ -63,6 +63,16 @@ namespace MvcCore;
 interface IRoute
 {
 	/**
+	 * TODO
+	 */
+	const FILTER_IN = 'in';
+
+	/**
+	 * TODO
+	 */
+	const FILTER_OUT = 'out';
+
+	/**
 	 * Create every time new route instance, no singleton managing!
 	 * Called usually from core methods:
 	 * - `\MvcCore\Router::AddRoutes();`
@@ -437,6 +447,19 @@ interface IRoute
 	public function & SetConstraints ($constraints = [], $localization = NULL);
 
 	/**
+	 * TODO
+	 * @return array
+	 */
+	public function & GetFilters ();
+
+	/**
+	 * TODO
+	 * @param array $filters 
+	 * @return \MvcCore\IRoute
+	 */
+	public function & SetFilters (array $filters = []);
+
+	/**
 	 * Get http method to only match requests with this defined method.
 	 * If `NULL` (by default), request with any http method could be matched by this route.
 	 * Value is automaticly in upper case.
@@ -478,18 +501,26 @@ interface IRoute
 
 	/**
 	 * Return array of matched params, with matched controller and action names,
-	 * if route matches request `\MvcCore\Request::$Path` property by `preg_match_all()`.
+	 * if route matches request always `\MvcCore\Request::$path` property by `preg_match_all()`.
 	 *
 	 * This method is usually called in core request routing process
 	 * from `\MvcCore\Router::Route();` method and it's submethods.
 	 *
-	 * @param string $requestPath Requested application path, never with any query string.
-	 * @param string $requestMethod Uppercase request http method.
+	 * @param \MvcCore\Request $request Request object instance.
 	 * @param string $localization Lowercase language code, optionally with dash and uppercase locale code, `NULL` by default, not implemented in core.
 	 * @return array Matched and params array, keys are matched
 	 *				 params or controller and action params.
 	 */
-	public function & Matches ($requestPath, $requestMethod, $localization = NULL);
+	public function & Matches (\MvcCore\IRequest & $request, $localization = NULL);
+
+	/**
+	 * TODO
+	 * @param array $reqParams 
+	 * @param array $urlParams
+	 * @param string $direction 
+	 * @return array
+	 */
+	public function Filter (array & $reqParams = [], array & $urlParams = [], $direction = \MvcCore\IRoute::FILTER_IN);
 
 	/**
 	 * Complete route url by given params array and route

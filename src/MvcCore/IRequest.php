@@ -183,7 +183,7 @@ interface IRequest
 	 * `getallheaders()` or from `$_SERVER['HTTP_...']`.
 	 * Headers are returned as `key => value` array, headers keys are
 	 * in standard format like: `"Content-Type" | "Content-Length" | "X-Requested-With" ...`.
-	 * @param string|array $pregReplaceAllowedChars If String - list of regular expression characters to only keep, if array - `preg_replace()` pattern and reverse.
+	 * @param string|array|bool $pregReplaceAllowedChars If String - list of regular expression characters to only keep, if array - `preg_replace()` pattern and reverse, if `FALSE`, raw value is returned.
 	 * @return array
 	 */
 	public function & GetHeaders ($pregReplaceAllowedChars = ['#[\<\>\'"]#', '']);
@@ -204,7 +204,7 @@ interface IRequest
 	 * only char groups you want to keep. Header has to be in format like:
 	 * `"Content-Type" | "Content-Length" | "X-Requested-With" ...`.
 	 * @param string $name Http header string name.
-	 * @param string|array $pregReplaceAllowedChars If String - list of regular expression characters to only keep, if array - `preg_replace()` pattern and reverse.
+	 * @param string|array|bool $pregReplaceAllowedChars If String - list of regular expression characters to only keep, if array - `preg_replace()` pattern and reverse, if `FALSE`, raw value is returned.
 	 * @param mixed $ifNullValue Default value returned if given param name is null.
 	 * @param string $targetType Target type to retype param value or default if-null value. If param is an array, every param item will be retyped into given target type.
 	 * @return string|string[]|mixed
@@ -235,7 +235,7 @@ interface IRequest
 	 * Get directly all raw parameters at once (with/without conversion).
 	 * If any defined char groups in `$pregReplaceAllowedChars`, there will be returned
 	 * all params filtered by given rule in `preg_replace()`.
-	 * @param string|array $pregReplaceAllowedChars If String - list of regular expression characters to only keep, if array - `preg_replace()` pattern and reverse.
+	 * @param string|array|bool $pregReplaceAllowedChars If String - list of regular expression characters to only keep, if array - `preg_replace()` pattern and reverse, if `FALSE`, raw value is returned.
 	 * @param array $onlyKeys Array with keys to get only. If empty (by default), all possible params are returned.
 	 * @return array
 	 */
@@ -250,11 +250,18 @@ interface IRequest
 	public function & SetParam ($name = '', $value = '');
 
 	/**
+	 * Remove parameter by name.
+	 * @param string $name
+	 * @return \MvcCore\IRequest
+	 */
+	public function & RemoveParam ($name = '');
+
+	/**
 	 * Get param value from `$_GET`, `$_POST` or `php://input`, filtered by
 	 * "rule to keep defined characters only", defined in second argument (by `preg_replace()`).
 	 * Place into second argument only char groups you want to keep.
 	 * @param string $name Parametter string name.
-	 * @param string|array $pregReplaceAllowedChars If String - list of regular expression characters to only keep, if array - `preg_replace()` pattern and reverse.
+	 * @param string|array|bool $pregReplaceAllowedChars If String - list of regular expression characters to only keep, if array - `preg_replace()` pattern and reverse, if `FALSE`, raw value is returned.
 	 * @param mixed $ifNullValue Default value returned if given param name is null.
 	 * @param string $targetType Target type to retype param value or default if-null value. If param is an array, every param item will be retyped into given target type.
 	 * @return string|string[]|mixed
@@ -320,11 +327,13 @@ interface IRequest
 	public function & SetCookies (array & $cookies = []);
 
 	/**
-	 * Return reference to configured global `$_COOKIE`
-	 * or reference to any other testing array representing it.
+	 * Get directly all raw global `$_COOKIE`s at once (with/without conversion).
+	 * Cookies are returned as `key => value` array.
+	 * @param string|array|bool $pregReplaceAllowedChars If String - list of regular expression characters to only keep, if array - `preg_replace()` pattern and reverse, if `FALSE`, raw value is returned.
+	 * @return array
 	 * @return array
 	 */
-	public function & GetCookies ();
+	public function & GetCookies ($pregReplaceAllowedChars = ['#[\<\>\'"]#', ''], $onlyKeys = []);
 
 	/**
 	 * Set raw request cookie into referenced global `$_COOKIE` without any conversion.
@@ -339,7 +348,7 @@ interface IRequest
 	 * filtered by characters defined in second argument throught `preg_replace()`.
 	 * Place into second argument only char groups you want to keep.
 	 * @param string $name Cookie string name.
-	 * @param string|array $pregReplaceAllowedChars If String - list of regular expression characters to only keep, if array - `preg_replace()` pattern and reverse.
+	 * @param string|array|bool $pregReplaceAllowedChars If String - list of regular expression characters to only keep, if array - `preg_replace()` pattern and reverse, if `FALSE`, raw value is returned.
 	 * @param mixed $ifNullValue Default value returned if given param name is null.
 	 * @param string $targetType Target type to retype param value or default if-null value. If param is an array, every param item will be retyped into given target type.
 	 * @return string|string[]|mixed

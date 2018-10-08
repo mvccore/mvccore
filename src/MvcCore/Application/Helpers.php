@@ -105,15 +105,20 @@ trait Helpers
 	 * @return \MvcCore\Application
 	 */
 	protected function & setHandler (array & $handlers, callable $handler, $priorityIndex = NULL) {
-		$reflection = new \ReflectionFunction($handler);
-		$isClosure = $reflection->isClosure();
+		// there is possible to call any `callable` as closure function in variable
+		// except forms like `'ClassName::methodName'` and `['childClassName', 'parent::methodName']`
+		// and `[$childInstance, 'parent::methodName']`.
+		$closureCalling = (
+			(is_string($handler) && strpos($handler, '::') !== FALSE) ||
+			(is_array($handler) && strpos($handler[1], '::') !== FALSE)
+		) ? FALSE : TRUE;
 		if ($priorityIndex === NULL) {
-			$handlers[] = [$handler, $isClosure];
+			$handlers[] = [$closureCalling, $handler];
 		} else {
 			if (isset($handlers[$priorityIndex])) {
-				array_splice($handlers, $priorityIndex, 0, [$handler, $isClosure]);
+				array_splice($handlers, $priorityIndex, 0, [$closureCalling, $handler]);
 			} else {
-				$handlers[$priorityIndex] = [$handler, $isClosure];
+				$handlers[$priorityIndex] = [$closureCalling, $handler];
 			}
 		}
 		return $this;

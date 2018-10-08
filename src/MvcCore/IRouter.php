@@ -477,14 +477,14 @@ interface IRouter
 	 * @param array $params
 	 * @return string
 	 */
-	public function UrlByRoute (\MvcCore\IRoute & $route, & $params = []);
+	public function UrlByRoute (\MvcCore\IRoute & $route, & $params = [], $givenRouteName = 'self');
 
 	/**
 	 * Get all request params - params parsed by route and query string params.
 	 * Be carefull, it could contain XSS chars. Use always `htmlspecialchars()`.
 	 * @return array
 	 */
-	public function & GetRequestedUrlParams ();
+	public function & GetDefaultParams ();
 
 	/**
 	 * Try to found any existing route by `$routeName` argument
