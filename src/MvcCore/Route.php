@@ -913,7 +913,7 @@ class Route implements IRoute
 		return $matchedParams;
 	}
 
-	protected function & matchesParseRewriteParams (& $matchedParams, & $matchedValues, & $defaults) {
+	protected function matchesParseRewriteParams (& $matchedParams, & $matchedValues, & $defaults) {
 		$controllerName = $this->controller ?: '';
 		$toolClass = \MvcCore\Application::GetInstance()->GetToolClass();
 		$matchedParams = [
