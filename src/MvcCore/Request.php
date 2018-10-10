@@ -33,6 +33,14 @@ namespace MvcCore;
 class Request implements IRequest
 {
 	/**
+	 * List of exceptional two-segment top-level domain like
+	 * `'co.jp', 'co.uk', 'co.kr', 'co.nf' ...` to parse
+	 * domain string correctly.
+	 * @var \string[]
+	 */
+	protected static $twoSegmentTlds = ['co.jp'=>1,'ac.uk'=>1,'co.uk'=>1,'co.kr'=>1,'co.nl'=>1,'in.ua'=>1,'co.nf'=>1,'ny.us'=>1,'co.us'=>1];
+
+	/**
 	 * Language international code, lowercase, not used by default.
 	 * To use this variable - install  `\MvcCore\Router` extension `\MvcCore\Ext\Router\Lang`
 	 * Or use this variable by your own decision.
@@ -87,12 +95,25 @@ class Request implements IRequest
 	protected $host				= NULL;
 
 	/**
-	 * Http port defined in requested url if any, parsed by `parse_url().
+	 * Http port defined in requested url if any, parsed by `parse_url()`.
 	 * Empty string if there is no port number in requested address.`.
 	 * Example: `"88" | ""`
 	 * @var string|NULL
 	 */
 	protected $port				= NULL;
+
+	/**
+	 * Parsed server name (domain without port) parts.
+	 * Example: `['any.content', 'example', 'co.uk'] | [NULL, NULL, 'localhost']`
+	 * @var \string[]|NULL
+	 */
+	protected $domainParts		= NULL;
+
+	/**
+	 * `TRUE` if http port defined in requested url (parsed by `parse_url()`).
+	 * @var bool
+	 */
+	protected $portDefined		= FALSE;
 
 	/**
 	 * Requested path in from application root (if `mod_rewrite` enabled), never with query string.
@@ -299,6 +320,23 @@ class Request implements IRequest
 	 * @var array
 	 */
 	protected $globalFiles		= [];
+
+
+	/**
+	 * Add exceptional two-segment top-level domain like
+	 * `'co.jp', 'co.uk', 'co.kr', 'co.nf' ...` to parse
+	 * domain string correctly.
+	 * Example: 
+	 * `\MvcCore\Request::AddTwoSegmentTlds('co.uk', 'co.jp');`
+	 * `\MvcCore\Request::AddTwoSegmentTlds(['co.uk', 'co.jp']);`
+	 * @param \string[] $twoSegmentTlds,... List of two-segment top-level domains without leading dot.
+	 * @return void
+	 */
+	public static function AddTwoSegmentTlds (/* ...$twoSegmentTlds */) {
+		$tlds = func_get_args();
+		if (count($tlds) === 1 && is_array($tlds[0])) $tlds = $tlds[0];
+		foreach ($tlds as $tld) self::$twoSegmentTlds[$tld] = TRUE;
+	}
 
 	/**
 	 * Static factory to get everytime new instance of http request object.
@@ -1028,13 +1066,89 @@ class Request implements IRequest
 	}
 
 	/**
+	 * Set TOP level domain like `com` or `co.uk`.
+	 * Method also change server name and host record automaticly.
+	 * @param string|NULL $topLevelDomain 
+	 * @return \MvcCore\Request
+	 */
+	public function & SetTopLevelDomain ($topLevelDomain) {
+		if ($this->domainParts === NULL) $this->initDomainSegments();
+		$this->domainParts[2] = $topLevelDomain;
+		$this->serverName = trim(implode('.', $this->domainParts), '.');
+		if ($this->serverName && $this->portDefined) 
+			$this->host = $this->serverName . ':' . $this->port;
+		return $this;
+	}
+	
+	/**
+	 * Set top level domain like `com` from `www.example.com`.
+	 * @return string|NULL
+	 */
+	public function GetTopLevelDomain () {
+		if ($this->domainParts === NULL) $this->initDomainSegments();
+		return $this->domainParts[2];
+	}
+	
+	/**
+	 * Set second level domain like `example` in `www.example.com`.
+	 * Method also change server name and host record automaticly.
+	 * @param string|NULL $secondLevelDomain 
+	 * @return \MvcCore\Request
+	 */
+	public function & SetSecondLevelDomain ($secondLevelDomain) {
+		if ($this->domainParts === NULL) $this->initDomainSegments();
+		$this->domainParts[1] = $secondLevelDomain;
+		$this->serverName = trim(implode('.', $this->domainParts), '.');
+		if ($this->serverName && $this->portDefined) 
+			$this->host = $this->serverName . ':' . $this->port;
+		return $this;
+	}
+	
+	/**
+	 * Get third level domain like `www` in `www.example.com`.
+	 * @return string|NULL
+	 */
+	public function GetSecondLevelDomain () {
+		if ($this->domainParts === NULL) $this->initDomainSegments();
+		return isset($this->domainParts[1]) ? $this->domainParts[1] : NULL;
+	}
+	
+	/**
+	 * Set second level domain like `example` from `www.example.com`.
+	 * Method also change server name and host record automaticly.
+	 * @param string|NULL $thirdLevelDomain 
+	 * @return \MvcCore\Request
+	 */
+	public function & SetThirdLevelDomain ($thirdLevelDomain) {
+		if ($this->domainParts === NULL) $this->initDomainSegments();
+		$this->domainParts[0] = $thirdLevelDomain;
+		$this->serverName = trim(implode('.', $this->domainParts), '.');
+		if ($this->serverName && $this->portDefined) 
+			$this->host = $this->serverName . ':' . $this->port;
+		return $this;
+	}
+	
+	/**
+	 * Get third level domain like `www` from `www.example.com`.
+	 * @return string|NULL
+	 */
+	public function GetThirdLevelDomain () {
+		if ($this->domainParts === NULL) $this->initDomainSegments();
+		return isset($this->domainParts[0]) ? $this->domainParts[0] : NULL;
+	}
+
+	/**
 	 * Set application server name - domain without any port.
+	 * Method also change host record and domain records automaticly.
 	 * Example: `$request->SetServerName("localhost");`
 	 * @param string $rawServerName
 	 * @return \MvcCore\Request
 	 */
 	public function & SetServerName ($rawServerName) {
+		if ($this->serverName !== $rawServerName) $this->domainParts = NULL;
 		$this->serverName = $rawServerName;
+		if ($rawServerName && $this->portDefined) 
+			$this->host = $rawServerName . ':' . $this->port;
 		return $this;
 	}
 
@@ -1044,19 +1158,30 @@ class Request implements IRequest
 	 * @return string
 	 */
 	public function GetServerName () {
-		if ($this->serverName === NULL) $this->serverName = $this->globalServer['SERVER_NAME'];
+		if ($this->serverName === NULL) 
+			$this->serverName = $this->globalServer['SERVER_NAME'];
 		return $this->serverName;
 	}
 
 	/**
 	 * Set application host with port if there is any.
+	 * Method also change server name record and domain records automaticly.
 	 * Example: `$request->SetHost("localhost:88");`
 	 * @param string $rawHost
 	 * @return \MvcCore\Request
 	 */
 	public function & SetHost ($rawHost) {
 		$this->host = $rawHost;
-		return $this->host;
+		$doubleDotPos = mb_strpos($rawHost, ':');
+		if ($doubleDotPos !== FALSE) {
+			$serverName = mb_substr($rawHost, 0, $doubleDotPos);
+			$this->SetPort(mb_substr($rawHost, $doubleDotPos + 1));
+		} else {
+			$serverName = $rawHost;
+			$this->port = '';
+			$this->portDefined = FALSE;
+		}
+		return $this->SetServerName($serverName);
 	}
 
 	/**
@@ -1078,6 +1203,7 @@ class Request implements IRequest
 	 */
 	public function & SetPort ($rawPort) {
 		$this->port = $rawPort;
+		$this->portDefined = strlen($rawPort) > 0;
 		return $this;
 	}
 
@@ -1337,7 +1463,10 @@ class Request implements IRequest
 			. $this->globalServer['HTTP_HOST']
 			. rawurldecode($this->globalServer['REQUEST_URI']);
 		$parsedUrl = parse_url($absoluteUrl);
-		$this->port = isset($parsedUrl['port']) ? $parsedUrl['port'] : '';
+		if (isset($parsedUrl['port'])) {
+			$this->port = $parsedUrl['port'];
+			$this->portDefined = TRUE;
+		}
 		$this->path = isset($parsedUrl['path']) ? $parsedUrl['path'] : '';
 		$this->path = trim(mb_substr($this->path, mb_strlen($this->GetBasePath())), '?&');
 		$this->query = trim(isset($parsedUrl['query']) ? $parsedUrl['query'] : '', '?&');
@@ -1566,6 +1695,45 @@ class Request implements IRequest
 		if ($langAndLocaleArr[0] === NULL) $langAndLocaleArr[0] = '';
 		if (count($langAndLocaleArr) > 1 && $langAndLocaleArr[1] === NULL) $langAndLocaleArr[1] = '';
 		list($this->lang, $this->locale) = $langAndLocaleArr;
+	}
+
+	/**
+	 * Initialize domain parts from server name property.
+	 * If you need to add exceptional top-level domain names, use method
+	 * `\MvcCore\Request::AddTwoSegmentTlds('co.uk');`
+	 * Example: 
+	 * `'any.content.example.co.uk' => ['any.content', 'example', 'co.uk']`
+	 * @return void
+	 */
+	protected function initDomainSegments () {
+		$serverName = $this->GetServerName();
+		$this->domainParts = [];
+		$lastDotPos = mb_strrpos($serverName, '.');
+		if ($lastDotPos === FALSE) {
+			$this->domainParts = [NULL, NULL, $serverName];
+		} else {
+			$first = mb_substr($serverName, $lastDotPos + 1);
+			$second = mb_substr($serverName, 0, $lastDotPos);
+			// check co.uk and other...
+			if (self::$twoSegmentTlds) {
+				$lastDotPos = mb_strrpos($second, '.');
+				if ($lastDotPos !== FALSE) {
+					$firstTmp = mb_substr($second, $lastDotPos + 1) . '.' . $first;
+					if (isset(self::$twoSegmentTlds[$firstTmp])) {
+						$first = $firstTmp;
+						$second = $firstTmp = mb_substr($second, 0, $lastDotPos);
+					}
+				}
+			}
+			$lastDotPos = mb_strrpos($second, '.');
+			if ($lastDotPos === FALSE) {
+				$this->domainParts = [NULL, $second, $first];
+			} else {
+				$third = mb_substr($second, 0, $lastDotPos);
+				$second = mb_substr($second, $lastDotPos + 1);
+				$this->domainParts = [$third, $second, $first];
+			}
+		}
 	}
 
 	/**

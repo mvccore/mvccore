@@ -136,6 +136,18 @@ interface IRequest
 
 
 	/**
+	 * Add exceptional two-segment top-level domain like
+	 * `'co.jp', 'co.uk', 'co.kr', 'co.nf' ...` to parse
+	 * domain string correctly.
+	 * Example: 
+	 * `\MvcCore\Request::AddTwoSegmentTlds('co.uk', 'co.jp');`
+	 * `\MvcCore\Request::AddTwoSegmentTlds(['co.uk', 'co.jp']);`
+	 * @param \string[] $twoSegmentTlds,... List of two-segment top-level domains without leading dot.
+	 * @return void
+	 */
+	public static function AddTwoSegmentTlds (/* ...$twoSegmentTlds */);
+
+	/**
 	 * Static factory to get everytime new instance of http request object.
 	 * Global variables for constructor arguments (`$_SERVER`, `$_GET`, `$_POST`...)
 	 * should be changed to any arrays with any values and injected here to get
@@ -580,7 +592,50 @@ interface IRequest
 	public function GetMicrotime ();
 
 	/**
+	 * Set TOP level domain like `com` or `co.uk`.
+	 * Method also change server name and host record automaticly.
+	 * @param string|NULL $topLevelDomain 
+	 * @return \MvcCore\IRequest
+	 */
+	public function & SetTopLevelDomain ($topLevelDomain);
+	
+	/**
+	 * Set top level domain like `com` from `www.example.com`.
+	 * @return string|NULL
+	 */
+	public function GetTopLevelDomain ();
+	
+	/**
+	 * Set second level domain like `example` in `www.example.com`.
+	 * Method also change server name and host record automaticly.
+	 * @param string|NULL $secondLevelDomain 
+	 * @return \MvcCore\IRequest
+	 */
+	public function & SetSecondLevelDomain ($secondLevelDomain);
+	
+	/**
+	 * Get third level domain like `www` in `www.example.com`.
+	 * @return string|NULL
+	 */
+	public function GetSecondLevelDomain ();
+	
+	/**
+	 * Set second level domain like `example` from `www.example.com`.
+	 * Method also change server name and host record automaticly.
+	 * @param string|NULL $thirdLevelDomain 
+	 * @return \MvcCore\IRequest
+	 */
+	public function & SetThirdLevelDomain ($thirdLevelDomain);
+	
+	/**
+	 * Get third level domain like `www` from `www.example.com`.
+	 * @return string|NULL
+	 */
+	public function GetThirdLevelDomain ();
+
+	/**
 	 * Set application server name - domain without any port.
+	 * Method also change host record and domain records automaticly.
 	 * Example: `$request->SetServerName("localhost");`
 	 * @param string $rawServerName
 	 * @return \MvcCore\IRequest
@@ -596,6 +651,7 @@ interface IRequest
 
 	/**
 	 * Set application host with port if there is any.
+	 * Method also change server name record and domain records automaticly.
 	 * Example: `$request->SetHost("localhost:88");`
 	 * @param string $rawHost
 	 * @return \MvcCore\IRequest
