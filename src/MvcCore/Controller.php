@@ -351,6 +351,9 @@ class Controller implements IController
 	 * in doc comments as `@autoinit` into `\MvcCore\Controller::$controllers` array
 	 * and into member property itself. This method is always called inside
 	 * `\MvcCore\Controller::Init();` method, after session has been started.
+	 * Create every new instance by calling existing method named as 
+	 * `[_]create<PascalCasePropertyName>` and returning new instance or by doc 
+	 * comment type defined by `@var` over static method `$ClassName::CreateInstance()`.
 	 * @return void
 	 */
 	protected function autoInitProperties () {
@@ -365,16 +368,40 @@ class Controller implements IController
 		foreach ($props as $prop) {
 			$docComment = $prop->getDocComment();
 			if (mb_strpos($docComment, '@autoinit') === FALSE) continue;
-			$pos = mb_strpos($docComment, '@var ');
-			if ($pos === FALSE) continue;
-			$docComment = str_replace(["\r","\n","\t", "*/"], " ", mb_substr($docComment, $pos + 5));
-			$pos = mb_strpos($docComment, ' ');
-			if ($pos === FALSE) continue;
-			$className = trim(mb_substr($docComment, 0, $pos));
-			if (!@class_exists($className)) continue;
-			if (!$toolsClass::CheckClassInterface($className, 'MvcCore\\IController', FALSE, TRUE)) continue;
-			$instance = $className::CreateInstance();
-			$this->AddChildController($instance, $prop->getName());
+			$propName = $prop->getName();
+			$methodName = 'create' . ucfirst($propName);
+			$hasMethod = $type->hasMethod($methodName);
+			if (!$hasMethod) {
+				$methodName = '_'.$methodName;
+				$hasMethod = $type->hasMethod($methodName);
+			}
+			if ($hasMethod) {
+				$method = $type->getMethod($methodName);
+				if (!$method->isPublic()) $method->setAccessible(TRUE);
+				$instance = $method->invoke($this);
+				$implementsController = $instance instanceof \MvcCore\IController;
+			} else {
+				$pos = mb_strpos($docComment, '@var ');
+				if ($pos === FALSE) continue;
+				$docComment = str_replace(["\r","\n","\t", "*/"], " ", mb_substr($docComment, $pos + 5));
+				$pos = mb_strpos($docComment, ' ');
+				if ($pos === FALSE) continue;
+				$className = trim(mb_substr($docComment, 0, $pos));
+				if (!@class_exists($className)) {
+					$className = $prop->getDeclaringClass()->getNamespaceName() . '\\' . $className;
+					if (!@class_exists($className)) continue;
+				}
+				$implementsController = $toolsClass::CheckClassInterface(
+					$className, 'MvcCore\IController', FALSE, FALSE
+				);
+				if ($implementsController) {
+					$instance = $className::CreateInstance();
+				} else {
+					$instance = new $className();
+				}
+			}
+			if ($implementsController)
+				$this->AddChildController($instance, $propName);
 			if (!$prop->isPublic()) $prop->setAccessible(TRUE);
 			$prop->setValue($this, $instance);
 		}
@@ -942,7 +969,7 @@ class Controller implements IController
 	 * @param array  $params						Optional, array with params, key is param name, value is param value.
 	 * @return string
 	 */
-	public function Url ($controllerActionOrRouteName = 'Index:Index', $params = []) {
+	public function Url ($controllerActionOrRouteName = 'Index:Index', array $params = []) {
 		return $this->router->Url($controllerActionOrRouteName, $params);
 	}
 

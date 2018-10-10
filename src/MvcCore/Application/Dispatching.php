@@ -95,15 +95,10 @@ trait Dispatching
 	 * @return bool
 	 */
 	public function RouteRequest () {
-		//try {
-			// `GetRouter()` method triggers creating
-			return $this
-				->GetRouter()
-				->SetRequest($this->GetRequest())
-				->Route();
-		/*} catch (\Exception $e) {
-			return $this->DispatchException($e);
-		}*/
+		$routingResult = $this->GetRouter()->SetRequest($this->GetRequest())->Route();
+		if (!$routingResult) 
+			return $this->DispatchException('No route for request', 404);
+		return TRUE;
 	}
 
 	/**
@@ -365,7 +360,7 @@ trait Dispatching
 			]);
 			$this->request->SetParams($newParams);
 			$this->response->SetCode(500);
-			return $this->DispatchControllerAction(
+			$this->DispatchControllerAction(
 				$defaultCtrlFullName,
 				$this->defaultControllerErrorActionName . "Action",
 				$viewClass::GetViewScriptFullPath(
@@ -383,6 +378,7 @@ trait Dispatching
 					}
 				}
 			);
+			return FALSE;
 		} else {
 			return $this->RenderError500PlainText($exceptionMessage);
 		}
@@ -416,7 +412,7 @@ trait Dispatching
 			]);
 			$this->request->SetParams($newParams);
 			$this->response->SetCode(404);
-			return $this->DispatchControllerAction(
+			$this->DispatchControllerAction(
 				$defaultCtrlFullName,
 				$this->defaultControllerNotFoundActionName . "Action",
 				$viewClass::GetViewScriptFullPath(
@@ -434,6 +430,7 @@ trait Dispatching
 					}
 				}
 			);
+			return FALSE;
 		} else {
 			return $this->RenderError404PlainText($exceptionMessage);
 		}
@@ -466,7 +463,7 @@ trait Dispatching
 			['Content-Type' => $htmlResponse ? 'text/html' : 'text/plain'],
 			$text
 		);
-		return TRUE;
+		return FALSE;
 	}
 
 	/**
@@ -496,6 +493,6 @@ trait Dispatching
 			['Content-Type' => $htmlResponse ? 'text/html' : 'text/plain'],
 			$text
 		);
-		return TRUE;
+		return FALSE;
 	}
 }

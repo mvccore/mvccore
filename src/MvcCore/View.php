@@ -593,7 +593,7 @@ class View implements IView
 	 * @param array  $params						Optional, array with params, key is param name, value is param value.
 	 * @return string
 	 */
-	public function Url ($controllerActionOrRouteName = 'Index:Index', $params = []) {
+	public function Url ($controllerActionOrRouteName = 'Index:Index', array $params = []) {
 		return $this->controller->GetRouter()->Url($controllerActionOrRouteName, $params);
 	}
 

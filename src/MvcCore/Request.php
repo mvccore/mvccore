@@ -609,7 +609,7 @@ class Request implements IRequest
 	 * @return array
 	 * @return array
 	 */
-	public function & GetCookies ($pregReplaceAllowedChars = ['#[\<\>\'"]#', ''], $onlyKeys = []) {
+	public function & GetCookies ($pregReplaceAllowedChars = ['#[\<\>\'"]#' => ''], $onlyKeys = []) {
 		if ($pregReplaceAllowedChars === FALSE || $pregReplaceAllowedChars === '' || $pregReplaceAllowedChars === '.*') {
 			if ($onlyKeys) {
 				$result = array_intersect_key($this->paglobalCookiesrams, array_flip($onlyKeys));
@@ -1506,7 +1506,11 @@ class Request implements IRequest
 		if ($pregReplaceAllowedChars === FALSE) {
 			return $rawValue;
 		} else if (is_array($pregReplaceAllowedChars)) {
-			return preg_replace($pregReplaceAllowedChars[0], $pregReplaceAllowedChars[1], $rawValue);
+			foreach ($pregReplaceAllowedChars as $pattern => $replace) {
+				$replaceFn = mb_substr($pattern, 0, 1) === '#' ? 'preg_replace' : 'str_replace';
+				$rawValue = $replaceFn($pattern, $replace, $rawValue);
+			}
+			return $rawValue;
 		} else {
 			return preg_replace("#[^" . $pregReplaceAllowedChars . "]#", "", (string) $rawValue);
 		}

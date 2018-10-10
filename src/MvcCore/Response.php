@@ -26,7 +26,7 @@ use \MvcCore\IResponse;
  */
 class Response implements IResponse
 {
-	public static $CodeMessages = [
+	protected static $codeMessages = [
 		IResponse::OK						=> 'OK',
 		IResponse::MOVED_PERMANENTLY		=> 'Moved Permanently',
 		IResponse::SEE_OTHER				=> 'See Other',
@@ -72,7 +72,14 @@ class Response implements IResponse
 	 */
 	protected $sent = FALSE;
 
+	/**
+	 * Disabled headers, never sended except if there is 
+	 * rendered exception in development environment.
+	 * @var array
+	 */
+	protected $disabledHeaders = [];
 
+	
 	/**
 	 * No singleton, get everytime new instance of configured HTTP response
 	 * class in `\MvcCore\Application::GetInstance()->GetResponseClass();`.
@@ -147,8 +154,7 @@ class Response implements IResponse
 	 */
 	public function & SetHeaders (array $headers = [], $cleanAllPrevious = FALSE) {
 		if ($cleanAllPrevious) {
-			$this->UpdateHeaders();
-			foreach ($this->headers as $name => $value) header_remove($name);
+			header_remove();
 			$this->headers = [];
 		}
 		foreach ($headers as $name => $value) {
@@ -169,6 +175,8 @@ class Response implements IResponse
 	 * @return \MvcCore\Response
 	 */
 	public function & SetHeader ($name, $value) {
+		if (isset($this->disabledHeaders[$name])) 
+			return $this;
 		header($name . ": " . $value);
 		$this->headers[$name] = $value;
 		if ($name === 'Content-Type') {
@@ -191,7 +199,9 @@ class Response implements IResponse
 	 * @return string|NULL
 	 */
 	public function GetHeader ($name) {
-		return isset($this->headers[$name]) ? $this->headers[$name] : NULL;
+		return isset($this->headers[$name]) 
+			? $this->headers[$name] 
+			: NULL;
 	}
 
 	/**
@@ -283,7 +293,8 @@ class Response implements IResponse
 				$name = $rawHeader;
 				$value = '';
 			}
-  			$this->headers[$name] = $value;
+			if (!isset($this->disabledHeaders[$name]))
+  				$this->headers[$name] = $value;
 		}
 	}
 
@@ -335,11 +346,12 @@ class Response implements IResponse
 	public function Send () {
 		if ($this->IsSent()) return;
 		$code = $this->GetCode();
-		$status = isset(static::$CodeMessages[$code]) ? ' ' . static::$CodeMessages[$code] : '';
+		$status = isset(static::$codeMessages[$code]) ? ' ' . static::$codeMessages[$code] : '';
 		if (!isset($this->headers['Content-Encoding'])) {
 			if (!$this->encoding) $this->encoding = 'utf-8';
 			$this->headers['Content-Encoding'] = $this->encoding;
 		}
+		$this->UpdateHeaders();
 		header("HTTP/1.0 $code $status");
 		foreach ($this->headers as $name => $value) {
 			if ($name == 'Content-Type') {
@@ -351,8 +363,14 @@ class Response implements IResponse
 				}
 				if (!$charsetMatched) $value .= ';charset=' . $this->encoding;
 			}
-			header($name . ": " . $value);
+			if (isset($this->disabledHeaders[$name])) {
+				header_remove($name);
+			} else {
+				header($name . ": " . $value);
+			}
 		}
+		foreach ($this->disabledHeaders as $name => $b)
+			header_remove($name);
 		$this->addTimeAndMemoryHeader();
 		echo $this->body;
 		if (ob_get_level()) echo ob_get_clean();
@@ -405,13 +423,39 @@ class Response implements IResponse
 	}
 
 	/**
+	 * Set disabled headers, never sended except if there is 
+	 * rendered exception in development environment.
+	 * @param \string[] $disabledHeaders,...
+	 * @return \MvcCore\Response
+	 */
+	public function & SetDisabledHeaders (/* ...$disabledHeaders */) {
+		$this->disabledHeaders = [];
+		$args = func_get_args();
+		if (count($args) === 1 && is_array($args[0])) $args = $args[0];
+		foreach ($args as $arg)
+			$this->disabledHeaders[$arg] = TRUE;
+		return $this;
+	}
+	
+	/**
+	 * Get disabled headers, never sended except if there is 
+	 * rendered exception in development environment.
+	 * @return \string[]
+	 */
+	public function GetDisabledHeaders () {
+		return array_keys($this->disabledHeaders);
+	}
+
+	/**
 	 * Add CPU and RAM usage header at HTML/JSON response end.
 	 * @return void
 	 */
 	protected function addTimeAndMemoryHeader () {
+		$headerName = static::HEADER_X_MVCCORE_CPU_RAM;
+		if (isset($this->disabledHeaders[$headerName])) return;
 		$mtBegin = \MvcCore\Application::GetInstance()->GetRequest()->GetMicrotime();
 		$time = number_format((microtime(TRUE) - $mtBegin) * 1000, 1, '.', ' ');
 		$ram = function_exists('memory_get_peak_usage') ? number_format(memory_get_peak_usage() / 1000000, 2, '.', ' ') : 'n/a';
-		header("X-MvcCore-Cpu-Ram: $time ms, $ram MB");
+		header("$headerName: $time ms, $ram MB");
 	}
 }

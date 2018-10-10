@@ -114,9 +114,17 @@ class Router implements IRouter
 	/**
 	 * All request params - params parsed by route and query string params.
 	 * Be carefull, it could contain XSS chars. Use always `htmlspecialchars()`.
+	 * Those params could contain additional user params from filter function.
 	 * @var array|NULL
 	 */
 	protected $defaultParams = NULL;
+
+	/**
+	 * All request params - params parsed by route and query string params.
+	 * Be carefull, it could contain XSS chars. Use always `htmlspecialchars()`.
+	 * @var array|NULL
+	 */
+	protected $requestedParams = NULL;
 
 	/**
 	 * Trrailing slash behaviour - integer state about what to do with trailing
@@ -369,7 +377,10 @@ class Router implements IRouter
 			$ctrlActionName = mb_strpos($routeName, ':') !== FALSE;
 			$numericKey = is_numeric($routeName);
 			if ($route instanceof \MvcCore\IRoute) {
-				if (!$numericKey) {
+				if ($numericKey) {
+					if (!$route->GetName()) 
+						$route->SetName($route->GetControllerAction());
+				} else {
 					if ($ctrlActionName)
 						$route->SetControllerAction($routeName);
 					if ($route->GetName() === NULL) 
@@ -607,6 +618,25 @@ class Router implements IRouter
 	}
 
 	/**
+	 * Get default request params - default params to build url with possibility
+	 * to define custom records for filter functions.
+	 * Be carefull, it could contain XSS chars. Use always `htmlspecialchars()`.
+	 * @return array
+	 */
+	public function & GetDefaultParams () {
+		return $this->defaultParams;
+	}
+
+	/**
+	 * Get all request params - params parsed by route and query string params.
+	 * Be carefull, it could contain XSS chars. Use always `htmlspecialchars()`.
+	 * @return array
+	 */
+	public function & GetRequestedParams () {
+		return $this->requestedParams;
+	}
+
+	/**
 	 * Get trrailing slash behaviour - integer state about what to do with trailing
 	 * slash in all requested url except homepage. Possible states are:
 	 * - `-1` (`\MvcCore\IRouter::TRAILING_SLASH_REMOVE`)
@@ -650,6 +680,7 @@ class Router implements IRouter
 		$this->trailingSlashBehaviour = $trailingSlashBehaviour;
 		return $this;
 	}
+
 
 	/**
 	 * Route current application request by configured routes list or by query string data.
@@ -697,13 +728,13 @@ class Router implements IRouter
 		$requestCtrlName = $request->GetControllerName();
 		$requestActionName = $request->GetActionName();
 		list($reqScriptName, $reqPath) = [$request->GetScriptName(), $request->GetPath(TRUE)];
-		$requestCtrlAndAlsoAction = $requestCtrlName !== NULL || $requestActionName !== NULL;
+		$requestCtrlAndAlsoAction = $requestCtrlName !== NULL && $requestActionName !== NULL;
 		$requestCtrlOrAction = $requestCtrlName !== NULL || $requestActionName !== NULL;
 		$routeByQueryString = (
 			$requestCtrlAndAlsoAction ||
 			($requestCtrlOrAction && (
 				$reqScriptName === $reqPath || 
-				trim($reqPath, '/') === '' && $requestCtrlAndAlsoAction
+				trim($reqPath, '/') === ''
 			))
 		);
 		return [$routeByQueryString, $requestCtrlName, $requestActionName];
@@ -776,7 +807,7 @@ class Router implements IRouter
 			$actionNameDc = $toolClass::GetDashedFromPascalCase($actionNamePc);
 			$matchedParams['action'] = $actionNameDc;
 			$this->request->SetActionName($actionNameDc)->SetParam('action', $ctrlNameDc);
-
+			if (isset($this->requestedParams['action'])) $this->requestedParams['action'] = $actionNameDc;
 		}
 		if ($currentRouteMatched) {
 			$currentRoute->SetMatchedParams($matchedParams);
@@ -788,6 +819,12 @@ class Router implements IRouter
 			$this->selfRouteName = $this->anyRoutesConfigured
 				? $currentRoute->GetName()
 				: $currentRoute->GetControllerAction();
+			if ($controllerNamePc !== NULL) 
+				if (isset($this->requestedParams['controller'])) 
+					$this->requestedParams['controller'] = $ctrlNameDc;
+			if ($actionNamePc !== NULL)
+				if (isset($this->requestedParams['action'])) 
+					$this->requestedParams['action'] = $actionNameDc;
 		}
 		return TRUE;
 	}
@@ -811,7 +848,7 @@ class Router implements IRouter
 	 * @throws \InvalidArgumentException
 	 * @return string
 	 */
-	public function Url ($controllerActionOrRouteName = 'Index:Index', $params = []) {
+	public function Url ($controllerActionOrRouteName = 'Index:Index', array $params = []) {
 		$result = '';
 		$request = & $this->request;
 		
@@ -829,22 +866,6 @@ class Router implements IRouter
 			$controllerActionOrRouteNameKey = "$ctrlPc:$actionPc";
 		} else if ($controllerActionOrRouteName == 'self') {
 			$controllerActionOrRouteNameKey = $this->selfRouteName;
-			/*$defaultParams = $this->GetDefaultParams();
-			$newParams = [];
-			foreach ($this->reverseParams as $paramName) {
-				$newParams[$paramName] = isset($params[$paramName])
-					? $params[$paramName]
-					: $defaultParams[$paramName];
-			}
-			$params = $newParams;*/
-			//$params = array_merge($this->GetDefaultParams(), $params);
-			//unset($params['controller'], $params['action']);
-		}
-		
-		$absolute = FALSE;
-		if ($params && isset($params['absolute'])) {
-			$absolute = (bool) $params['absolute'];
-			unset($params['absolute']);
 		}
 		
 		if ($this->anyRoutesConfigured && isset($this->urlRoutes[$controllerActionOrRouteNameKey])) {
@@ -852,15 +873,9 @@ class Router implements IRouter
 		} else if ($this->anyRoutesConfigured && isset($this->routes[$controllerActionOrRouteNameKey])) {
 			$result = $this->UrlByRoute($this->routes[$controllerActionOrRouteNameKey], $params, $controllerActionOrRouteName);
 		} else {
-			if ($controllerActionOrRouteName == 'self') {
-				$params = array_merge($this->GetDefaultParams(), $params);
-				unset($params['controller'], $params['action']);
-			}
-			$result = $this->UrlByQueryString($controllerActionOrRouteNameKey, $params);
+			$result = $this->UrlByQueryString($controllerActionOrRouteNameKey, $params, $controllerActionOrRouteName);
 		}
 
-		if ($absolute) $result = $request->GetDomainUrl() . $result;
-		
 		return $result;
 	}
 
@@ -940,31 +955,57 @@ class Router implements IRouter
 	}
 
 	/**
-	 * Complete non-absolute, non-localized url with all params in query string.
+	 * Complete optionally absolute, non-localized url with all params in query string.
 	 * Example: `"/application/base-bath/index.php?controller=ctrlName&amp;action=actionName&amp;name=cool-product-name&amp;color=blue"`
 	 * @param string $controllerActionOrRouteName
 	 * @param array  $params
+	 * @param string $givenRouteName
 	 * @return string
 	 */
-	public function UrlByQueryString ($controllerActionOrRouteName = 'Index:Index', & $params = []) {
+	public function UrlByQueryString ($controllerActionOrRouteName = 'Index:Index', array & $params = [], $givenRouteName = NULL) {
+		if ($givenRouteName == 'self') 
+			$params = array_merge($this->requestedParams ?: [], $params);
 		$toolClass = self::$toolClass;
 		list($ctrlPc, $actionPc) = explode(':', $controllerActionOrRouteName);
+		if (isset($params['controller'])) {
+			$ctrlPc = $params['controller'];
+			unset($params['controller']);
+		}
+		if (isset($params['action'])) {
+			$actionPc = $params['action'];
+			unset($params['action']);
+		}
 		$amp = $this->getQueryStringParamsSepatator();
 		list($dfltCtrl, $dftlAction) = $this->application->GetDefaultControllerAndActionNames();
-		$result = $this->request->GetBasePath();
-		if ($params || $ctrlPc !== $dfltCtrl || $actionPc !== $dftlAction) {
-			$result .= $this->request->GetScriptName()
-				. '?controller=' . $toolClass::GetDashedFromPascalCase($ctrlPc)
-				. $amp . 'action=' . $toolClass::GetDashedFromPascalCase($actionPc);
-			if ($params) 
-				// `http_build_query()` automaticly converts all XSS chars to entities (`< > & " ' &`):
-				$result .= $amp . str_replace('%2F', '/', http_build_query($params, '', $amp));
+		$absolute = $this->urlGetAbsoluteParam($params);
+		$result = '';
+		$ctrlIsNotDefault = $ctrlPc !== $dfltCtrl;
+		$actionIsNotDefault = $actionPc !== $dftlAction;
+		$sep = '?';
+		if ($params || $ctrlIsNotDefault || $actionIsNotDefault) {
+			$result .= $this->request->GetScriptName();
 		}
+		if ($ctrlIsNotDefault) {
+			$result .= $sep . 'controller=' . $toolClass::GetDashedFromPascalCase($ctrlPc);
+			$sep = $amp;
+		}
+		if ($actionIsNotDefault) {
+			$result .= $sep . 'action=' . $toolClass::GetDashedFromPascalCase($actionPc);
+			$sep = $amp;
+		}
+		if ($params) {
+			// `http_build_query()` automaticly converts all XSS chars to entities (`< > & " ' &`):
+			$result .= $sep . str_replace('%2F', '/', http_build_query($params, '', $amp));
+		}
+		if ($result == '') $result = '/';
+		$result = $this->request->GetBasePath() . $result;
+		if ($absolute) 
+			$result = $this->request->GetDomainUrl() . $result;
 		return $result;
 	}
 
 	/**
-	 * Complete non-absolute, non-localized url by route instance reverse info.
+	 * Complete optionally absolute, non-localized url by route instance reverse info.
 	 * Example:
 	 *	Input (`\MvcCore\Route::$reverse`):
 	 *		`"/products-list/<name>/<color>"`
@@ -981,34 +1022,30 @@ class Router implements IRouter
 	 * @param string $givenRouteName
 	 * @return string
 	 */
-	public function UrlByRoute (\MvcCore\IRoute & $route, & $params = [], $givenRouteName = 'self') {
-		$defaultParams = $this->GetDefaultParams();
-		if ($givenRouteName == 'self') {
-			$newParams = [];
-			foreach ($route->GetReverseParams() as $paramName) {
-				$newParams[$paramName] = isset($params[$paramName])
-					? $params[$paramName]
-					: $defaultParams[$paramName];
-			}
-			$params = $newParams;
-			unset($params['controller'], $params['action']);
-		}
-		return $this->request->GetBasePath() . $route->Url(
-			$params, $defaultParams, $this->getQueryStringParamsSepatator()
-		);
+	public function UrlByRoute (\MvcCore\IRoute & $route, array & $params = [], $givenRouteName = NULL) {
+		if ($givenRouteName == 'self') 
+			$params = array_merge($this->requestedParams ?: [], $params);
+		$defaultParams = $this->GetDefaultParams() ?: [];
+		return implode('', $route->Url(
+			$this->request, $params, $defaultParams, $this->getQueryStringParamsSepatator()
+		));
 	}
 
 	/**
-	 * Get all request params - params parsed by route and query string params.
-	 * Be carefull, it could contain XSS chars. Use always `htmlspecialchars()`.
-	 * @return array
+	 * Get `TRUE` if given `array $params` contains `boolean` record under 
+	 * `"absolute"` array key and if the record is `TRUE`. Unset the absolute 
+	 * flag from `$params` in any case.
+	 * @param array $params 
+	 * @return boolean
 	 */
-	public function & GetDefaultParams () {
-		if ($this->defaultParams === NULL) {
-			// create global `$_GET` array clone:
-			$this->defaultParams = array_merge([], $this->request->GetGlobalCollection('get'));
+	protected function urlGetAbsoluteParam (array & $params = []) {
+		$absolute = FALSE;
+		$absoluteParamName = static::ABSOLUTE_URL_PARAM;
+		if ($params && isset($params[$absoluteParamName])) {
+			$absolute = (bool) $params[$absoluteParamName];
+			unset($params[$absoluteParamName]);
 		}
-		return $this->defaultParams;
+		return $absolute;
 	}
 
 	/**
@@ -1042,6 +1079,8 @@ class Router implements IRouter
 			$toolClass::GetPascalCaseFromDashed($requestCtrlName ?: $ctrlDfltName),
 			$toolClass::GetPascalCaseFromDashed($requestActionName ?: $actionDfltName)
 		);
+		$this->requestedParams = array_merge([], $this->request->GetParams(FALSE));
+		$this->defaultParams = array_merge([], $this->requestedParams);
 	}
 
 	/**
@@ -1057,39 +1096,74 @@ class Router implements IRouter
 		$request = & $this->request;
 		/** @var $route \MvcCore\Route */
 		reset($this->routes);
-		$matchedParams = [];
+		$allMatchedParams = [];
+		$requestMethod = $request->GetMethod();
 		foreach ($this->routes as & $route) {
-			if ($matchedParams = $route->Matches($request, NULL)) {
+			$routeMethod = $route->GetMethod();
+			if ($routeMethod !== NULL && $routeMethod !== $requestMethod) continue;
+			if ($allMatchedParams = $route->Matches($request, NULL)) {
 				$this->currentRoute = clone $route;
-				// finalize matched params and requested url params
-				$matchedParamsClone = array_merge([], $matchedParams);
-				unset($matchedParamsClone['controller'], $matchedParamsClone['action']);
-				if ($matchedParamsClone) 
-					$this->defaultParams = array_merge(
-						$this->defaultParams ?: [], $matchedParamsClone
-					);
-				// finalize request params
-				$newParams = array_merge(
-					$this->currentRoute->GetDefaults(), 
-					$matchedParams, $request->GetParams(FALSE)
+				
+
+				$requestParams = $this->routeByRewriteRoutesSetRequestedAndDefaultParams(
+					$allMatchedParams
 				);
-				list($success, $filteredParams) = $route->Filter(
-					$newParams, $this->defaultParams, \MvcCore\IRoute::FILTER_IN
-				);
-				if ($success === FALSE) {
-					$this->currentRoute = NULL;
-					$matchedParams = [];
-					continue;
-				}
-				$request->SetParams($filteredParams);
-				// breakt to stop routing
-				break;
+
+
+				$break = $this->routeByRewriteRoutesSetRequestParams($allMatchedParams, $requestParams);
+				if ($break) break;
 			}
 		}
 		if ($this->currentRoute !== NULL) 
 			$this->routeByRewriteRoutesSetUpRequestByCurrentRoute(
-				$matchedParams['controller'], $matchedParams['action']
+				$allMatchedParams['controller'], $allMatchedParams['action']
 			);
+	}
+
+	protected function & routeByRewriteRoutesSetRequestedAndDefaultParams (& $allMatchedParams) {
+		$request = & $this->request;
+		$routeDefaults = & $this->currentRoute->GetDefaults();
+		$rawQueryParams = $request->GetParams(FALSE);
+		$routeReverseParams = $this->currentRoute->GetReverseParams();
+		// complete realy matched params from path
+		$pathMatchedParams = array_merge([], $allMatchedParams);
+		$controllerInReverse	= in_array('controller', $routeReverseParams);
+		$actionInReverse		= in_array('action', $routeReverseParams);
+		if (!$controllerInReverse)	unset($pathMatchedParams['controller']);
+		if (!$actionInReverse)		unset($pathMatchedParams['action']);
+		// complete params for request object
+		$requestParams = array_merge(
+			$routeDefaults, $pathMatchedParams, $rawQueryParams
+		);
+		// complete default params - default params to build url with user 
+		// defined records possibility from filtering functions
+		$this->defaultParams = array_merge(
+			$routeDefaults, $allMatchedParams, $rawQueryParams
+		);
+		// requested params - all realy requested params for self URL addresses
+		// parsed from path and merged with query params
+		$this->requestedParams = array_merge([], $allMatchedParams);
+		if (!$controllerInReverse)	unset($this->requestedParams['controller']);
+		if (!$actionInReverse)		unset($this->requestedParams['action']);
+		$this->requestedParams = array_merge($this->requestedParams, $rawQueryParams);
+		return $requestParams;
+	}
+
+	protected function routeByRewriteRoutesSetRequestParams (& $allMatchedParams, & $requestParams) {
+		$request = & $this->request;
+		// filter request params
+		list($success, $requestParamsFiltered) = $this->currentRoute->Filter(
+			$requestParams, $this->defaultParams, \MvcCore\IRoute::FILTER_IN
+		);
+		if ($success === FALSE) {
+			$this->currentRoute = NULL;
+			$allMatchedParams = [];
+			return FALSE;
+		}
+		$requestParamsFiltered['controller'] = $allMatchedParams['controller'];
+		$requestParamsFiltered['action'] = $allMatchedParams['action'];
+		$request->SetParams($requestParamsFiltered);
+		return TRUE;
 	}
 
 	/**

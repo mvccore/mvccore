@@ -74,6 +74,12 @@ interface IRouter
 	const TRAILING_SLASH_REMOVE = -1;
 
 	/**
+	 * URL completion param name to build absolute URL address.
+	 */
+	const ABSOLUTE_URL_PARAM = 'absolute';
+
+
+	/**
 	 * Get singleton instance of `\MvcCore\Router` stored always here.
 	 * Optionaly set routes as first argument.
 	 * Create proper router instance type at first time by
@@ -348,7 +354,20 @@ interface IRouter
 	 */
 	public function & SetRouteToDefaultIfNotMatch ($enable = TRUE);
 
+	/**
+	 * Get default request params - default params to build url with possibility
+	 * to define custom records for filter functions.
+	 * Be carefull, it could contain XSS chars. Use always `htmlspecialchars()`.
+	 * @return array
+	 */
+	public function & GetDefaultParams ();
 
+	/**
+	 * Get all request params - params parsed by route and query string params.
+	 * Be carefull, it could contain XSS chars. Use always `htmlspecialchars()`.
+	 * @return array
+	 */
+	public function & GetRequestedParams ();
 
 	/**
 	 * Get trrailing slash behaviour - integer state about what to do with trailing
@@ -449,19 +468,20 @@ interface IRouter
 	 * @throws \InvalidArgumentException
 	 * @return string
 	 */
-	public function Url ($controllerActionOrRouteName = 'Index:Index', $params = []);
+	public function Url ($controllerActionOrRouteName = 'Index:Index', array $params = []);
 
 	/**
-	 * Complete non-absolute, non-localized url with all params in query string.
+	 * Complete optionally absolute, non-localized url with all params in query string.
 	 * Example: `"/application/base-bath/index.php?controller=ctrlName&amp;action=actionName&amp;name=cool-product-name&amp;color=blue"`
 	 * @param string $controllerActionOrRouteName
 	 * @param array  $params
+	 * @param string $givenRouteName
 	 * @return string
 	 */
-	public function UrlByQueryString ($controllerActionOrRouteName = 'Index:Index', & $params = []);
+	public function UrlByQueryString ($controllerActionOrRouteName = 'Index:Index', array & $params = [], $givenRouteName = NULL);
 
 	/**
-	 * Complete non-absolute, non-localized url by route instance reverse info.
+	 * Complete optionally absolute, non-localized url by route instance reverse info.
 	 * Example:
 	 *	Input (`\MvcCore\Route::$Reverse`):
 	 *		`"/products-list/<name>/<color>"`
@@ -475,16 +495,10 @@ interface IRouter
 	 *		`/application/base-bath/products-list/cool-product-name/blue?variant[]=L&amp;variant[]=XL"`
 	 * @param \MvcCore\IRoute &$route
 	 * @param array $params
+	 * @param string $givenRouteName
 	 * @return string
 	 */
-	public function UrlByRoute (\MvcCore\IRoute & $route, & $params = [], $givenRouteName = 'self');
-
-	/**
-	 * Get all request params - params parsed by route and query string params.
-	 * Be carefull, it could contain XSS chars. Use always `htmlspecialchars()`.
-	 * @return array
-	 */
-	public function & GetDefaultParams ();
+	public function UrlByRoute (\MvcCore\IRoute & $route, array & $params = [], $givenRouteName = NULL);
 
 	/**
 	 * Try to found any existing route by `$routeName` argument

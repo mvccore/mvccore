@@ -63,14 +63,44 @@ namespace MvcCore;
 interface IRoute
 {
 	/**
-	 * TODO
+	 * Route configuration key for filtering params in - `"in"`.
 	 */
 	const FILTER_IN = 'in';
 
 	/**
-	 * TODO
+	 * Route configuration key for filtering params out - `"out"`.
 	 */
 	const FILTER_OUT = 'out';
+
+	/**
+	 * Route INTERNAL flag if route `match` & `pattern` is relative with requested path only.
+	 */
+	const FLAG_RELATIVE = 0;
+
+	/**
+	 * Route INTERNAL flag if route `match` & `pattern` contains `//` at the beginning.
+	 */
+	const FLAG_ABSOLUTE_ANY = 1;
+
+	/**
+	 * Route INTERNAL flag if route `match` & `pattern` contains `http://` at the beginning.
+	 */
+	const FLAG_ABSOLUTE_HTTP = 2;
+
+	/**
+	 * Route INTERNAL flag if route `match` & `pattern` contains `https://` at the beginning.
+	 */
+	const FLAG_ABSOLUTE_HTTPS = 3;
+
+	/**
+	 * Route INTERNAL flag if route `match` & `pattern` doesn't contain query string.
+	 */
+	const FLAG_NO_QUERY = 0;
+
+	/**
+	 * Route INTERNAL flag if route `match` & `pattern` contains query string.
+	 */
+	const FLAG_QUERY_INSIDE = 1;
 
 	/**
 	 * Create every time new route instance, no singleton managing!
@@ -447,13 +477,27 @@ interface IRoute
 	public function & SetConstraints ($constraints = [], $localization = NULL);
 
 	/**
-	 * TODO
+	 * Get URL address params filters fo filter URL aprams in and out. Filters are 
+	 * `callable`s always and only under keys `"in" | "out"`, accepting arguments: 
+	 * `array $params, array $defaultParams, \MvcCore\IRequest $request`. 
+	 * First argument is associative array with params from requested URL address 
+	 * for `"in"` filter and associative array with params to build URL address 
+	 * for `"out"` filter. Second param is always associative `array` with default 
+	 * params and third argument is current request instance.
+	 * `Callable` filter function must return `array` with filtered params.
 	 * @return array
 	 */
 	public function & GetFilters ();
 
 	/**
-	 * TODO
+	 * Set URL address params filters fo filter URL aprams in and out. Filters are 
+	 * `callable`s always and only under keys `"in" | "out"`, accepting arguments: 
+	 * `array $params, array $defaultParams, \MvcCore\IRequest $request`. 
+	 * First argument is associative array with params from requested URL address 
+	 * for `"in"` filter and associative array with params to build URL address 
+	 * for `"out"` filter. Second param is always associative` array` with default 
+	 * params and third argument is current request instance.
+	 * `Callable` filter function must return `array` with filtered params.
 	 * @param array $filters 
 	 * @return \MvcCore\IRoute
 	 */
@@ -479,11 +523,11 @@ interface IRoute
 	public function & SetMethod ($method = NULL);
 
 	/**
-	 * Return parsed reverse params as array with param names from reverse pattern string.
-	 * Example: `array("name", "color");`
+	 * Return only reverse params names as `string`s array.
+	 * Example: `["name", "color"];`
 	 * @return \string[]|NULL
 	 */
-	public function & GetReverseParams ();
+	public function GetReverseParams ();
 	
 	/**
 	 * Set manualy matched params from rewrite route for current route.
@@ -514,13 +558,15 @@ interface IRoute
 	public function & Matches (\MvcCore\IRequest & $request, $localization = NULL);
 
 	/**
-	 * TODO
-	 * @param array $reqParams 
-	 * @param array $urlParams
+	 * Filter given `array $params` by configured `"in" | "out"` filter `callable`.
+	 * This function return `array` with first item as `bool` about successfull
+	 * filter processing in `try/catch` and second item as filtered params `array`.
+	 * @param array $params 
+	 * @param array $defaultParams
 	 * @param string $direction 
 	 * @return array
 	 */
-	public function Filter (array & $reqParams = [], array & $urlParams = [], $direction = \MvcCore\IRoute::FILTER_IN);
+	public function Filter (array & $params = [], array & $defaultParams = [], $direction = \MvcCore\IRoute::FILTER_IN);
 
 	/**
 	 * Complete route url by given params array and route
@@ -541,12 +587,13 @@ interface IRoute
 	 *		`"/products-list/<name>/<color*>"`
 	 *	Output:
 	 *		`"/products-list/cool-product-name/blue?variant[]=L&amp;variant[]=XL"`
-	 * @param array $params
+	 * @param \MvcCore\IRequest $request Currently requested request object.
+	 * @param array $params URL params from application point completed by developer.
 	 * @param array $requestedUrlParams Requested url route prams nad query string params without escaped HTML special chars: `< > & " ' &`.
 	 * @param string $queryStringParamsSepatator Query params separator, `&` by default. Always automaticly completed by router instance.
-	 * @return string
+	 * @return \string[] Result URL addres in two parts - domain part with base path and path part with query string.
 	 */
-	public function Url (& $params = [], & $requestedUrlParams = [], $queryParamsSepatator = '&');
+	public function Url (\MvcCore\IRequest & $request, array & $params = [], array & $requestedUrlParams = [], $queryParamsSepatator = '&');
 
 	/**
 	 * Render all instance properties values into string.
