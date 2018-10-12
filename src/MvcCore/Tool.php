@@ -38,17 +38,45 @@ class Tool implements ITool
 	/**
 	 * Convert all strings `"from" => "to"`:
 	 * - `"MyCustomValue"				=> "my-custom-value"`
+	 * - `"MyWTFValue"					=> "my-w-t-f-value"`
+	 * - `"MyWtfValue"					=> "my-wtf-value"`
 	 * - `"MyCustom/Value/InsideFolder"	=> "my-custom/value/inside-folder"`
 	 * @param string $pascalCase
 	 * @return string
 	 */
 	public static function GetDashedFromPascalCase ($pascalCase = '') {
-		return strtolower(preg_replace("#([a-z])([A-Z])#", "$1-$2", lcfirst($pascalCase)));
+		/*
+		// This cmmented version converts `MyWFTValue` to `my-wtf-value`, which 
+		// is cool, but inputs `MyWFTValue` and `MyWtfValue` have the same 
+		// inconsistent output `my-wtf-value`, which is wrong.
+		$result = preg_replace_callback("#[A-Z]{2,}#", function ($match) {
+			$str = $match[0];
+			$length = strlen($str);
+			$result = substr($str, 0, 1);
+			if ($length > 2)
+				$result .= strtolower(substr($str, 1, $length - 2));
+			return $result . '-' . strtolower(substr($str, $length - 1));
+		}, $pascalCase);
+		return strtolower(preg_replace("#([a-zA-Z])([A-Z])#", "$1-$2", lcfirst($result)));
+		*/
+		return strtolower(preg_replace(
+			"#([a-z])([A-Z])#", 
+			"$1-$2", 
+			lcfirst(preg_replace_callback(
+				"#[A-Z]{2,}#", 
+				function ($match) {
+					$str = $match[0];
+					return substr($str, 0, 1) . '-' . strtolower(implode('-', str_split(substr($str, 1))));
+				}, $pascalCase)
+			)
+		));
 	}
 
 	/**
 	 * Convert all string `"from" => "to"`:
 	 * - `"my-custom-value"					=> "MyCustomValue"`
+	 * - `"my-wtf-value"					=> "MyWtfValue"`
+	 * - `"my-w-t-f-value"					=> "MyWTFValue"`
 	 * - `"my-custom/value/inside-folder"	=> "MyCustom/Value/InsideFolder"`
 	 * @param string $dashed
 	 * @return string
@@ -62,17 +90,44 @@ class Tool implements ITool
 	/**
 	 * Convert all string `"from" => "to"`:
 	 * - `"MyCutomValue"				=> "my_custom_value"`
+	 * - `"MyWTFValue"					=> "my_w_t_f_value"`
+	 * - `"MyWtfValue"					=> "my_wtf_value"`
 	 * - `"MyCutom/Value/InsideFolder"	=> "my_custom/value/inside_folder"`
 	 * @param string $pascalCase
 	 * @return string
 	 */
 	public static function GetUnderscoredFromPascalCase ($pascalCase = '') {
-		return strtolower(preg_replace("#([a-z])([A-Z])#", "$1_$2", lcfirst($pascalCase)));
+		/*
+		// This cmmented version converts `MyWFTValue` to `my_wtf_value`, which 
+		// is cool, but inputs `MyWFTValue` and `MyWtfValue` have the same 
+		// inconsistent output `my_wtf_value`, which is wrong.
+		$result = preg_replace_callback("#[A-Z]{2,}#", function ($match) {
+			$str = $match[0];
+			$length = strlen($str);
+			$result = substr($str, 0, 1);
+			if ($length > 2) $result .= strtolower(substr($str, 1, $length - 2));
+			return $result . '_' . strtolower(substr($str, $length - 1));
+		}, $pascalCase);
+		return strtolower(preg_replace("#([a-zA-Z])([A-Z])#", "$1_$2", lcfirst($result)));
+		*/
+		return strtolower(preg_replace(
+			"#([a-z])([A-Z])#", 
+			"$1_$2", 
+			lcfirst(preg_replace_callback(
+				"#[A-Z]{2,}#", 
+				function ($match) {
+					$str = $match[0];
+					return substr($str, 0, 1) . '_' . strtolower(implode('_', str_split(substr($str, 1))));
+				}, $pascalCase)
+			)
+		));
 	}
 
 	/**
 	 * Convert all string `"from" => "to"`:
 	 * - `"my_custom_value"					=> "MyCutomValue"`
+	 * - `"my_wtf_value"					=> "MyWtfValue"`
+	 * - `"my_w_t_f_value"					=> "MyWTFValue"`
 	 * - `"my_custom/value/inside_folder"	=> "MyCutom/Value/InsideFolder"`
 	 * @param string $underscored
 	 * @return string
@@ -147,7 +202,7 @@ class Tool implements ITool
 	 *							  Warning: This parameter has been DEPRECATED as of PHP 7.2.0. 
 	 *							  Relying on it is highly discouraged.
 	 * If the custom error handler returns `FALSE`, normal internal error handler continues.
-	 * This function is very PHP specific. It's proudly used from Nette Framework, optimized for PHP 5.4+:
+	 * This function is very PHP specific. It's proudly used from Nette Framework, optimized for PHP 5.4+ incl.:
 	 * https://github.com/nette/utils/blob/b623b2deec8729c8285d269ad991a97504f76bd4/src/Utils/Callback.php#L63-L84
 	 * @param string $internalFuncName 
 	 * @param array $args 

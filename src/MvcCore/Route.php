@@ -278,7 +278,11 @@ class Route implements IRoute
 	 * inside reverse string.
 	 * @var \int[]
 	 */
-	protected $flags			= [\MvcCore\IRoute::FLAG_RELATIVE, \MvcCore\IRoute::FLAG_NO_QUERY];
+	protected $flags			= [
+		\MvcCore\IRoute::FLAG_SHEME_NO, 
+		\MvcCore\IRoute::FLAG_HOST_NO,
+		\MvcCore\IRoute::FLAG_QUERY_NO,
+	];
 
 	/**
 	 * Copied and cached value from router configuration property:
@@ -963,19 +967,19 @@ class Route implements IRoute
 
 	protected function matchesGetSubject (\MvcCore\IRequest & $request) {
 		static $prefixes = [
-			\MvcCore\IRoute::FLAG_RELATIVE		=> '',
-			\MvcCore\IRoute::FLAG_ABSOLUTE_ANY	=> '//',
-			\MvcCore\IRoute::FLAG_ABSOLUTE_HTTP	=> 'http://',
-			\MvcCore\IRoute::FLAG_ABSOLUTE_HTTPS=> 'https://',
+			static::FLAG_SCHEME_NO		=> '',
+			static::FLAG_SCHEME_ANY		=> '//',
+			static::FLAG_SCHEME_HTTP	=> 'http://',
+			static::FLAG_SCHEME_HTTPS	=> 'https://',
 		];
-		$relOrAbsFlag = $this->flags[0];
-		if ($relOrAbsFlag) {
-			$prefix = $prefixes[$relOrAbsFlag];
+		$schemeFlag = $this->flags[0];
+		if ($schemeFlag) {
+			$prefix = $prefixes[$schemeFlag];
 			$subject = $prefix . $request->GetHost() . $request->GetBasePath() . $request->GetPath(TRUE);
 		} else {
 			$subject = $request->GetPath(TRUE);
 		}
-		if ($this->flags[1]) {
+		if ($this->flags[2]) {
 			$subject .= $request->GetQuery(TRUE, TRUE);
 		}
 		return $subject;
@@ -1074,28 +1078,14 @@ class Route implements IRoute
 	public function Url (\MvcCore\IRequest & $request, array & $params = [], array & $requestedUrlParams = [], $queryStringParamsSepatator = '&') {
 		$absolute = $this->urlGetAbsoluteParam($params);
 		// complete params for necessary values to build reverse pattern
-		if ($this->reverseParams === NULL) 
-			$this->reverse = $this->initReverse();
+		if ($this->reverseParams === NULL) $this->reverse = $this->initReverse();
 		$reverseParams = & $this->reverseParams;
 		$reverseParamsKeys = [];
 		$reverseParamsCount = count($reverseParams);
 		$noReverseParamsCount = $reverseParamsCount === 0;
 		if ($noReverseParamsCount) {
 			$allParamsClone = array_merge([], $params);
-		} else {
-			// complete params with necessary values to build reverse pattern
-			/*$allParamsClone = array_merge([], $params);
-			foreach ($reverseParams as $paramName => $paramStartAndLength) {
-				$paramValue = '';
-				if (isset($params[$paramName])) {
-					$paramValue = $params[$paramName];
-				} else if (isset($requestedUrlParams[$paramName])) {
-					$paramValue = $requestedUrlParams[$paramName];
-				} else if (isset($this->defaults[$paramName])) {
-					$paramValue = $this->defaults[$paramName];
-				}
-				$allParamsClone[$paramName] = $paramValue;
-			}*/
+		} else {// complete params with necessary values to build reverse pattern (and than query string)
 			$reverseParamsKeys = array_keys($reverseParams);
 			$emptyReverseParams = array_fill_keys($reverseParamsKeys, '');
 			$allMergedParams = array_merge($this->defaults, $requestedUrlParams, $params);
@@ -1116,8 +1106,7 @@ class Route implements IRoute
 				// convert possible XSS chars to entities (`< > & " ' &`):
 				$result .= htmlspecialchars($filteredParams[$paramName], ENT_QUOTES);
 				unset($filteredParams[$paramName]);
-				// try to get next record and shift
-				$next = $current + 1;
+				$next = $current + 1;// try to get next record and shift
 				if ($next < $reverseParamsCount) {
 					$nextParamName = $reverseParamsKeys[$next];
 					$nextStart = $reverseParams[$nextParamName][0];
@@ -1125,9 +1114,7 @@ class Route implements IRoute
 				} else {
 					$result .= mb_substr($resultPattern, $currentEnd);
 					break;
-				}
-			}
-		}
+				}}}
 		$result = & $this->correctTrailingSlashBehaviour($result);
 		if ($filteredParams) {
 			// `http_build_query()` automaticly converts all XSS chars to entities (`< > & " ' &`):
@@ -1148,8 +1135,8 @@ class Route implements IRoute
 	 */
 	protected function urlSplitResultToBaseAndPathWithQuery (\MvcCore\IRequest & $request, $resultUrl, $absolute = FALSE) {
 		$basePath = $request->GetBasePath();
-		$absFlag = $this->flags[0];
-		if ($absFlag) {
+		$schemeFlag = $this->flags[0];
+		if ($schemeFlag) {
 			$doubleSlashPos = mb_strpos($resultUrl, '//');
 			$doubleSlashPos = $doubleSlashPos === FALSE
 				? 0
@@ -1170,7 +1157,7 @@ class Route implements IRoute
 					$baseUrlPartEndPos += $basePathLength;
 			}
 			$basePart = mb_substr($resultUrl, 0, $baseUrlPartEndPos);
-			if ($absFlag === \MvcCore\IRoute::FLAG_ABSOLUTE_ANY)
+			if ($schemeFlag === static::FLAG_SCHEME_ANY)
 				$basePart = $request->GetProtocol() . $basePart;
 			return [
 				$basePart,
@@ -1196,7 +1183,7 @@ class Route implements IRoute
 		static $absoluteParamName = NULL;
 		if ($absoluteParamName === NULL) {
 			$router = & \MvcCore\Application::GetInstance()->GetRouter();
-			$absoluteParamName = $router::ABSOLUTE_URL_PARAM;
+			$absoluteParamName = $router::URL_PARAM_ABSOLUTE;
 		}
 		if ($params && isset($params[$absoluteParamName])) {
 			$absolute = (bool) $params[$absoluteParamName];
@@ -1453,7 +1440,8 @@ class Route implements IRoute
 			$this->setReverseParams($reverseParams, $localization);
 		}
 		return [
-			'#' . (mb_strpos($matchPattern, '/') === 0 ? '^' : '') . $matchPattern . ($trailingSlash ? '(?=/$|$)' : '$') . '#',
+			'#' . (mb_strpos($matchPattern, '/') === 0 ? '^' : '') . $matchPattern
+				. ($trailingSlash ? '(?=/$|$)' : '$') . '#',
 			$reverse
 		];
 	}
@@ -1579,19 +1567,32 @@ class Route implements IRoute
 			$urlPath = '/';
 		return $urlPath;
 	}
-
-	protected function initFlagsByReverse ($reverse) {
-		$absolute = \MvcCore\IRoute::FLAG_RELATIVE;
-		if (mb_strpos($reverse, 'https://') === 0) {
-			$absolute = \MvcCore\IRoute::FLAG_ABSOLUTE_HTTPS;
-		} else if (mb_strpos($reverse, 'http://') === 0) {
-			$absolute = \MvcCore\IRoute::FLAG_ABSOLUTE_HTTP;
-		} else if (mb_strpos($reverse, '//') === 0) {
-			$absolute = \MvcCore\IRoute::FLAG_ABSOLUTE_ANY;
+	
+	protected function initFlagsByReverse ($pattern) {
+		$scheme = static::FLAG_SCHEME_NO;
+		if (mb_strpos($pattern, '//') === 0) {
+			$scheme = static::FLAG_SCHEME_ANY;
+		} else if (mb_strpos($pattern, 'http://') === 0) {
+			$scheme = static::FLAG_SCHEME_HTTP;
+		} else if (mb_strpos($pattern, 'https://') === 0) {
+			$scheme = static::FLAG_SCHEME_HTTPS;
 		}
-		$queryString = mb_strpos($reverse, '?') !== FALSE 
-			? \MvcCore\IRoute::FLAG_QUERY_INSIDE 
-			: \MvcCore\IRoute::FLAG_NO_QUERY;
-		$this->flags = [$absolute, $queryString];
+		$host = static::FLAG_HOST_NO;
+		if ($scheme) {
+			if (mb_strpos($reserve, static::HOST_PLACEHOLDER_SERVER_NAME) !== FALSE) {
+				$host = static::FLAG_HOST_SERVER_NAME;
+			} else if (mb_strpos($reserve, static::HOST_PLACEHOLDER_DOMAIN) !== FALSE) {
+				$host = static::FLAG_HOST_DOMAIN;
+			} else {
+				if (mb_strpos($reserve, static::HOST_PLACEHOLDER_TLD) !== FALSE) 
+					$host += static::FLAG_HOST_TLD;
+				if (mb_strpos($reserve, static::HOST_PLACEHOLDER_SLD) !== FALSE) 
+					$host += static::FLAG_HOST_SLD;
+			}
+		}
+		$queryString = mb_strpos($pattern, '?') !== FALSE 
+			? static::FLAG_QUERY_INCL 
+			: static::FLAG_QUERY_NO;
+		$this->flags = [$scheme, $host, $queryString];
 	}
 }

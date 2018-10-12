@@ -74,9 +74,19 @@ interface IRouter
 	const TRAILING_SLASH_REMOVE = -1;
 
 	/**
-	 * URL completion param name to build absolute URL address.
+	 * URL param name to define target controller.
 	 */
-	const ABSOLUTE_URL_PARAM = 'absolute';
+	const URL_PARAM_CONTROLLER = 'controller';
+
+	/**
+	 * URL param name to define target controller action.
+	 */
+	const URL_PARAM_ACTION = 'action';
+
+	/**
+	 * URL param name to build absolute URL address.
+	 */
+	const URL_PARAM_ABSOLUTE = 'absolute';
 
 
 	/**

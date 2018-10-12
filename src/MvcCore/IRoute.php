@@ -75,32 +75,32 @@ interface IRoute
 	/**
 	 * Route INTERNAL flag if route `match` & `pattern` is relative with requested path only.
 	 */
-	const FLAG_RELATIVE = 0;
+	const FLAG_SHEME_NO = 0;
 
 	/**
 	 * Route INTERNAL flag if route `match` & `pattern` contains `//` at the beginning.
 	 */
-	const FLAG_ABSOLUTE_ANY = 1;
+	const FLAG_SHEME_ANY = 1;
 
 	/**
 	 * Route INTERNAL flag if route `match` & `pattern` contains `http://` at the beginning.
 	 */
-	const FLAG_ABSOLUTE_HTTP = 2;
+	const FLAG_SHEME_HTTP = 6;
 
 	/**
 	 * Route INTERNAL flag if route `match` & `pattern` contains `https://` at the beginning.
 	 */
-	const FLAG_ABSOLUTE_HTTPS = 3;
+	const FLAG_SHEME_HTTPS = 7;
 
 	/**
 	 * Route INTERNAL flag if route `match` & `pattern` doesn't contain query string.
 	 */
-	const FLAG_NO_QUERY = 0;
+	const FLAG_QUERY_NO = 0;
 
 	/**
 	 * Route INTERNAL flag if route `match` & `pattern` contains query string.
 	 */
-	const FLAG_QUERY_INSIDE = 1;
+	const FLAG_QUERY_INCL = 1;
 
 	/**
 	 * Create every time new route instance, no singleton managing!

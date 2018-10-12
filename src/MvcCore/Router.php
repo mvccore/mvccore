@@ -1040,7 +1040,7 @@ class Router implements IRouter
 	 */
 	protected function urlGetAbsoluteParam (array & $params = []) {
 		$absolute = FALSE;
-		$absoluteParamName = static::ABSOLUTE_URL_PARAM;
+		$absoluteParamName = static::URL_PARAM_ABSOLUTE;
 		if ($params && isset($params[$absoluteParamName])) {
 			$absolute = (bool) $params[$absoluteParamName];
 			unset($params[$absoluteParamName]);
