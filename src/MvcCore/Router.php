@@ -220,16 +220,25 @@ class Router implements IRouter
 	 * @param \MvcCore\Route[]|array $routes Keyed array with routes,
 	 *										 keys are route names or route
 	 *										`Controller::Action` definitions.
+	 * @param bool $autoInitialize If `TRUE`, locale routes array is cleaned and 
+	 *							   then all routes (or configuration arrays) are 
+	 *							   sended into method `$router->AddRoutes();`, 
+	 *							   where are routes auto initialized for missing 
+	 *							   route names or route controller or route action
+	 *							   record, completed always from array keys.
+	 *							   You can you `FALSE` to set routes without any 
+	 *							   change or autoinitialization, it could be usefull 
+	 *							   to restore cached routes etc.
 	 * @return \MvcCore\Router
 	 */
-	public static function & GetInstance (array $routes = []) {
+	public static function & GetInstance (array $routes = [], $autoInitialize = TRUE) {
 		if (!self::$instance) {
 			/** @var $app \MvcCore\Application */
 			$app = & \MvcCore\Application::GetInstance();
 			self::$routeClass = $app->GetRouteClass();
 			self::$toolClass = $app->GetToolClass();
 			$routerClass = $app->GetRouterClass();
-			$instance = new $routerClass($routes);
+			$instance = new $routerClass($routes, $autoInitialize);
 			$instance->application = & $app;
 			self::$instance = & $instance;
 		}
@@ -280,10 +289,19 @@ class Router implements IRouter
 	 * @param \MvcCore\Route[]|array $routes Keyed array with routes,
 	 *										 keys are route names or route
 	 *										`Controller::Action` definitions.
+	 * @param bool $autoInitialize If `TRUE`, locale routes array is cleaned and 
+	 *							   then all routes (or configuration arrays) are 
+	 *							   sended into method `$router->AddRoutes();`, 
+	 *							   where are routes auto initialized for missing 
+	 *							   route names or route controller or route action
+	 *							   record, completed always from array keys.
+	 *							   You can you `FALSE` to set routes without any 
+	 *							   change or autoinitialization, it could be usefull 
+	 *							   to restore cached routes etc.
 	 * @return \MvcCore\Router
 	 */
-	public function __construct (array $routes = []) {
-		if ($routes) $this->SetRoutes($routes);
+	public function __construct (array $routes = [], $autoInitialize = TRUE) {
+		if ($routes) $this->SetRoutes($routes, $autoInitialize);
 	}
 
 	/**
@@ -329,11 +347,32 @@ class Router implements IRouter
 	 * @param \MvcCore\Route[]|array $routes Keyed array with routes,
 	 *										 keys are route names or route
 	 *										`Controller::Action` definitions.
+	 * @param bool $autoInitialize If `TRUE`, locale routes array is cleaned and 
+	 *							   then all routes (or configuration arrays) are 
+	 *							   sended into method `$router->AddRoutes();`, 
+	 *							   where are routes auto initialized for missing 
+	 *							   route names or route controller or route action
+	 *							   record, completed always from array keys.
+	 *							   You can you `FALSE` to set routes without any 
+	 *							   change or autoinitialization, it could be usefull 
+	 *							   to restore cached routes etc.
 	 * @return \MvcCore\Router
 	 */
-	public function & SetRoutes ($routes = []) {
-		$this->routes = [];
-		$this->AddRoutes($routes);
+	public function & SetRoutes ($routes = [], $autoInitialize = TRUE) {
+		if ($autoInitialize) {
+			$this->routes = [];
+			$this->AddRoutes($routes);
+		} else {
+			$this->routes = $routes;
+			$this->urlRoutes = [];
+			foreach ($routes as $route) {
+				$this->urlRoutes[$route->GetName()] = $route;
+				$controllerAction = $route->GetControllerAction();
+				if ($controllerAction !== ':') 
+					$this->urlRoutes[$controllerAction] = $route;
+			}
+			$this->anyRoutesConfigured = count($routes) > 0;
+		}
 		return $this;
 	}
 
@@ -1180,11 +1219,11 @@ class Router implements IRouter
 	 *		`/application/base-bath/products-list/cool-product-name/blue?variant[]=L&amp;variant[]=XL"`
 	 * @param \MvcCore\Route $route
 	 * @param array $params
-	 * @param string $givenRouteName
+	 * @param string $urlParamRouteName
 	 * @return string
 	 */
-	public function UrlByRoute (\MvcCore\IRoute & $route, array & $params = [], $givenRouteName = NULL) {
-		if ($givenRouteName == 'self') 
+	public function UrlByRoute (\MvcCore\IRoute & $route, array & $params = [], $urlParamRouteName = NULL) {
+		if ($urlParamRouteName == 'self') 
 			$params = array_merge($this->requestedParams ?: [], $params);
 		$defaultParams = $this->GetDefaultParams() ?: [];
 		return implode('', $route->Url(

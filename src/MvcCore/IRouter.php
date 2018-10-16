@@ -159,9 +159,18 @@ interface IRouter
 	 * @param \MvcCore\IRoute[]|array $routes Keyed array with routes,
 	 *													 keys are route names or route
 	 *													 `Controller::Action` definitions.
+	 * @param bool $autoInitialize If `TRUE`, locale routes array is cleaned and 
+	 *							   then all routes (or configuration arrays) are 
+	 *							   sended into method `$router->AddRoutes();`, 
+	 *							   where are routes auto initialized for missing 
+	 *							   route names or route controller or route action
+	 *							   record, completed always from array keys.
+	 *							   You can you `FALSE` to set routes without any 
+	 *							   change or autoinitialization, it could be usefull 
+	 *							   to restore cached routes etc.
 	 * @return \MvcCore\IRouter
 	 */
-	public static function & GetInstance (array $routes = []);
+	public static function & GetInstance (array $routes = [], $autoInitialize = TRUE);
 
 	/**
 	 * Clear all possible previously configured routes
@@ -204,9 +213,18 @@ interface IRouter
 	 * @param \MvcCore\IRoute[]|array $routes Keyed array with routes,
 	 *													 keys are route names or route
 	 *													 `Controller::Action` definitions.
+	 * @param bool $autoInitialize If `TRUE`, locale routes array is cleaned and 
+	 *							   then all routes (or configuration arrays) are 
+	 *							   sended into method `$router->AddRoutes();`, 
+	 *							   where are routes auto initialized for missing 
+	 *							   route names or route controller or route action
+	 *							   record, completed always from array keys.
+	 *							   You can you `FALSE` to set routes without any 
+	 *							   change or autoinitialization, it could be usefull 
+	 *							   to restore cached routes etc.
 	 * @return \MvcCore\IRouter
 	 */
-	public function & SetRoutes ($routes = []);
+	public function & SetRoutes ($routes = [], $autoInitialize = TRUE);
 
 	/**
 	 * Append or prepend new request routes.
@@ -558,10 +576,10 @@ interface IRouter
 	 *		`/application/base-bath/products-list/cool-product-name/blue?variant[]=L&amp;variant[]=XL"`
 	 * @param \MvcCore\IRoute &$route
 	 * @param array $params
-	 * @param string $givenRouteName
+	 * @param string $urlParamRouteName
 	 * @return string
 	 */
-	public function UrlByRoute (\MvcCore\IRoute & $route, array & $params = [], $givenRouteName = NULL);
+	public function UrlByRoute (\MvcCore\IRoute & $route, array & $params = [], $urlParamRouteName = NULL);
 
 	/**
 	 * Try to found any existing route by `$routeName` argument
