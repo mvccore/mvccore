@@ -85,7 +85,7 @@ class Request implements IRequest
 	 * Example: `"localhost"`
 	 * @var string|NULL
 	 */
-	protected $serverName		= NULL;
+	protected $hostName		= NULL;
 
 	/**
 	 * Application host with port if there is any.
@@ -426,7 +426,7 @@ class Request implements IRequest
 	 * @param string|array|bool $pregReplaceAllowedChars If String - list of regular expression characters to only keep, if array - `preg_replace()` pattern and reverse, if `FALSE`, raw value is returned.
 	 * @return array
 	 */
-	public function & GetHeaders ($pregReplaceAllowedChars = ['#[\<\>\'"]#', '']) {
+	public function & GetHeaders ($pregReplaceAllowedChars = ['#[\<\>\'"]#' => '']) {
 		if ($this->headers === NULL) $this->initHeaders();
 		if ($pregReplaceAllowedChars === FALSE || $pregReplaceAllowedChars === '' || $pregReplaceAllowedChars === '.*') 
 			return $this->headers;
@@ -504,7 +504,7 @@ class Request implements IRequest
 	 * @param array $onlyKeys Array with keys to get only. If empty (by default), all possible params are returned.
 	 * @return array
 	 */
-	public function & GetParams ($pregReplaceAllowedChars = ['#[\<\>\'"]#', ''], $onlyKeys = []) {
+	public function & GetParams ($pregReplaceAllowedChars = ['#[\<\>\'"]#' => ''], $onlyKeys = []) {
 		if ($this->params === NULL) $this->initParams();
 		if ($pregReplaceAllowedChars === FALSE || $pregReplaceAllowedChars === '' || $pregReplaceAllowedChars === '.*') {
 			if ($onlyKeys) {
@@ -722,7 +722,7 @@ class Request implements IRequest
 		$this->GetBasePath();
 		$this->GetProtocol();
 		$this->IsSecure();
-		$this->GetServerName();
+		$this->GetHostName();
 		$this->GetHost();
 		$this->GetRequestPath();
 		$this->GetFullUrl();
@@ -1074,9 +1074,9 @@ class Request implements IRequest
 	public function & SetTopLevelDomain ($topLevelDomain) {
 		if ($this->domainParts === NULL) $this->initDomainSegments();
 		$this->domainParts[2] = $topLevelDomain;
-		$this->serverName = trim(implode('.', $this->domainParts), '.');
-		if ($this->serverName && $this->portDefined) 
-			$this->host = $this->serverName . ':' . $this->port;
+		$this->hostName = trim(implode('.', $this->domainParts), '.');
+		if ($this->hostName && $this->portDefined) 
+			$this->host = $this->hostName . ':' . $this->port;
 		return $this;
 	}
 	
@@ -1098,9 +1098,9 @@ class Request implements IRequest
 	public function & SetSecondLevelDomain ($secondLevelDomain) {
 		if ($this->domainParts === NULL) $this->initDomainSegments();
 		$this->domainParts[1] = $secondLevelDomain;
-		$this->serverName = trim(implode('.', $this->domainParts), '.');
-		if ($this->serverName && $this->portDefined) 
-			$this->host = $this->serverName . ':' . $this->port;
+		$this->hostName = trim(implode('.', $this->domainParts), '.');
+		if ($this->hostName && $this->portDefined) 
+			$this->host = $this->hostName . ':' . $this->port;
 		return $this;
 	}
 	
@@ -1122,9 +1122,9 @@ class Request implements IRequest
 	public function & SetThirdLevelDomain ($thirdLevelDomain) {
 		if ($this->domainParts === NULL) $this->initDomainSegments();
 		$this->domainParts[0] = $thirdLevelDomain;
-		$this->serverName = trim(implode('.', $this->domainParts), '.');
-		if ($this->serverName && $this->portDefined) 
-			$this->host = $this->serverName . ':' . $this->port;
+		$this->hostName = trim(implode('.', $this->domainParts), '.');
+		if ($this->hostName && $this->portDefined) 
+			$this->host = $this->hostName . ':' . $this->port;
 		return $this;
 	}
 	
@@ -1140,15 +1140,15 @@ class Request implements IRequest
 	/**
 	 * Set application server name - domain without any port.
 	 * Method also change host record and domain records automaticly.
-	 * Example: `$request->SetServerName("localhost");`
-	 * @param string $rawServerName
+	 * Example: `$request->SetHostName("localhost");`
+	 * @param string $rawHostName
 	 * @return \MvcCore\Request
 	 */
-	public function & SetServerName ($rawServerName) {
-		if ($this->serverName !== $rawServerName) $this->domainParts = NULL;
-		$this->serverName = $rawServerName;
-		if ($rawServerName && $this->portDefined) 
-			$this->host = $rawServerName . ':' . $this->port;
+	public function & SetHostName ($rawHostName) {
+		if ($this->hostName !== $rawHostName) $this->domainParts = NULL;
+		$this->hostName = $rawHostName;
+		if ($rawHostName && $this->portDefined) 
+			$this->host = $rawHostName . ':' . $this->port;
 		return $this;
 	}
 
@@ -1157,10 +1157,10 @@ class Request implements IRequest
 	 * Example: `"localhost"`
 	 * @return string
 	 */
-	public function GetServerName () {
-		if ($this->serverName === NULL) 
-			$this->serverName = $this->globalServer['SERVER_NAME'];
-		return $this->serverName;
+	public function GetHostName () {
+		if ($this->hostName === NULL) 
+			$this->hostName = $this->globalServer['SERVER_NAME'];
+		return $this->hostName;
 	}
 
 	/**
@@ -1174,14 +1174,14 @@ class Request implements IRequest
 		$this->host = $rawHost;
 		$doubleDotPos = mb_strpos($rawHost, ':');
 		if ($doubleDotPos !== FALSE) {
-			$serverName = mb_substr($rawHost, 0, $doubleDotPos);
+			$hostName = mb_substr($rawHost, 0, $doubleDotPos);
 			$this->SetPort(mb_substr($rawHost, $doubleDotPos + 1));
 		} else {
-			$serverName = $rawHost;
+			$hostName = $rawHost;
 			$this->port = '';
 			$this->portDefined = FALSE;
 		}
-		return $this->SetServerName($serverName);
+		return $this->SetHostName($hostName);
 	}
 
 	/**
@@ -1597,6 +1597,7 @@ class Request implements IRequest
 				// if value after trim is empty string, return empty string (retyped if necessary)
 				$result = "";
 				if ($targetType === NULL) return $result;
+				$result = is_scalar($ifNullValue) ? $ifNullValue : clone $ifNullValue;
 				settype($result, $targetType);
 				return $result;
 			} else if ($pregReplaceAllowedChars === FALSE || $pregReplaceAllowedChars === '.*') {
@@ -1706,14 +1707,14 @@ class Request implements IRequest
 	 * @return void
 	 */
 	protected function initDomainSegments () {
-		$serverName = $this->GetServerName();
+		$hostName = $this->GetHostName();
 		$this->domainParts = [];
-		$lastDotPos = mb_strrpos($serverName, '.');
+		$lastDotPos = mb_strrpos($hostName, '.');
 		if ($lastDotPos === FALSE) {
-			$this->domainParts = [NULL, NULL, $serverName];
+			$this->domainParts = [NULL, NULL, $hostName];
 		} else {
-			$first = mb_substr($serverName, $lastDotPos + 1);
-			$second = mb_substr($serverName, 0, $lastDotPos);
+			$first = mb_substr($hostName, $lastDotPos + 1);
+			$second = mb_substr($hostName, 0, $lastDotPos);
 			// check co.uk and other...
 			if (self::$twoSegmentTlds) {
 				$lastDotPos = mb_strrpos($second, '.');

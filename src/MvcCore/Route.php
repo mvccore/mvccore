@@ -65,13 +65,16 @@ namespace MvcCore;
 class Route implements IRoute
 {
 	/**
+	 * TODO: neaktualni?
 	 * Default constraint used for all rewrited params, if no
 	 * constraint for rewrited param has been specified.
 	 * configured as `"[^/]*"` by default. This value means:
 	 * - "Any character(s) in any length, except next slash."
 	 * @var string
 	 */
-	public static $DefaultConstraint = '[^/]*';
+	protected static $defaultPathConstraint = '[^/]+';
+
+	protected static $defaultDomainConstraint = '[^\.]+';
 
 	/**
 	 * Route pattern to match request url and to build url address.
@@ -197,9 +200,10 @@ class Route implements IRoute
 	protected $defaults		= [];
 
 	/**
+	 * TODO: neaktualni
 	 * Array with param names and their custom regular expression
 	 * matching rules. Not required, for all rewrited params there is used
-	 * default matching rule from `\MvcCore\Route::$DefaultConstraint`.
+	 * default matching rule from `\MvcCore\Route::$defaultPathConstraint`.
 	 * It shoud be changed to any value. The value is `"[^/]*"` by default.
 	 * It means "Any character(s) in any length, except next slash".
 	 *
@@ -234,7 +238,32 @@ class Route implements IRoute
 	 */
 	protected $method			= NULL;
 
+	protected $redirect			= NULL;
+
+	protected $absolute			= FALSE;
+
 	/**
+	 * TODO: neaktuální
+	 * Array with `string` keys by all reverse pattern params and with values by 
+	 * every param occurance start, length and required in reverse pattern string.
+	 * This array is parsed automaticly by method `\MvcCore\Route::initMatch();` 
+	 * if necessary or by method `\MvcCore\Route::initReverse();` after it's 
+	 * necessary, to be able to complete URL address string in method and sub
+	 * methods of `\MvcCore\Route::Url();`.
+	 * Example: 
+	 * // For pattern `/products-list/<name>/<color>`
+	 * `["name" => [15, 6, TRUE], "color" => [22, 7, TRUE]];`
+	 * @var array|NULL
+	 */
+	protected $reverseParams	= NULL;
+
+	protected $matchedParams	= [];
+
+	// TODO: napsat komentář
+	protected $reverseSections	= NULL;
+	
+	/**
+	 * // TODO: přepsat - asi nektuální
 	 * Optional, param name, which has to be also inside `\MvcCore\Route::$pattern` or
 	 * inside `\MvcCore\Route::$match` or inside `\MvcCore\Route::$reverse` pattern property
 	 * as the last one. And after it's value, there could be only trailing slash or nothing
@@ -252,37 +281,20 @@ class Route implements IRoute
 	protected $lastPatternParam	= NULL;
 
 	/**
-	 * Array with `string` keys by all reverse pattern params and with values by 
-	 * every param occurance start, length and required in reverse pattern string.
-	 * This array is parsed automaticly by method `\MvcCore\Route::initMatch();` 
-	 * if necessary or by method `\MvcCore\Route::initReverse();` after it's 
-	 * necessary, to be able to complete URL address string in method and sub
-	 * methods of `\MvcCore\Route::Url();`.
-	 * Example: 
-	 * // For pattern `/products-list/<name>/<color>`
-	 * `["name" => [15, 6, TRUE], "color" => [22, 7, TRUE]];`
-	 * @var array|NULL
-	 */
-	protected $reverseParams	= NULL;
-
-	/**
-	 * Request matched params by current route.
-	 * Filled only in current route object.
-	 * @var array|NULL
-	 */
-	protected $matchedParams	= NULL;
-
-	/**
 	 * Array with route reverse pattern flags. First item is integer flag about
 	 * absolute or relative reverse form and second item is about query string
 	 * inside reverse string.
 	 * @var \int[]
 	 */
 	protected $flags			= [
+		/*
 		\MvcCore\IRoute::FLAG_SHEME_NO, 
 		\MvcCore\IRoute::FLAG_HOST_NO,
 		\MvcCore\IRoute::FLAG_QUERY_NO,
+		*/
 	];
+
+	protected $router			= NULL;
 
 	/**
 	 * Copied and cached value from router configuration property:
@@ -293,6 +305,7 @@ class Route implements IRoute
 
 
 	/**
+	 * TODO: neaktuální
 	 * Create every time new route instance, no singleton managing!
 	 * Called usually from core methods:
 	 * - `\MvcCore\Router::AddRoutes();`
@@ -338,8 +351,7 @@ class Route implements IRoute
 		$controllerAction = NULL,
 		$defaults = [],
 		$constraints = [],
-		$filters = [],
-		$method = NULL
+		$advancedConfiguration = []
 	) {
 		return (new \ReflectionClass(get_called_class()))
 			->newInstanceArgs(func_get_args());
@@ -385,61 +397,96 @@ class Route implements IRoute
 		$controllerAction = NULL,
 		$defaults = [],
 		$constraints = [],
-		$filters = [],
-		$method = NULL
+		$advancedConfiguration = []
 	) {
-		$args = func_get_args();
-		$argsCount = count($args);
-		if ($argsCount === 0) return;
+		if (count(func_get_args()) === 0) return;
 		if (is_array($patternOrConfig)) {
 			$data = (object) $patternOrConfig;
-			if (isset($data->controllerAction)) {
-				list($ctrl, $action) = explode(':', $data->controllerAction);
-				if ($ctrl) $this->controller = $ctrl;
-				if ($action) $this->action = $action;
-				if (isset($data->name)) {
-					$this->name = $data->name;
-				} else {
-					$this->name = $data->controllerAction;
-				}
-			} else {
-				$this->controller = isset($data->controller) ? $data->controller : NULL;
-				$this->action = isset($data->action) ? $data->action : NULL;
-				if (isset($data->name)) {
-					$this->name = $data->name;
-				} else if ($this->controller !== NULL && $this->action !== NULL) {
-					$this->name = $this->controller . ':' . $this->action;
-				} else {
-					$this->name = NULL;
-				}
-			}
-			if (isset($data->pattern)) $this->pattern = $data->pattern;
-			if (isset($data->match)) $this->match = $data->match;
-			if (isset($data->reverse)) {
+			if (isset($data->pattern)) 
+				$this->pattern = $data->pattern;
+			if (isset($data->match)) 
+				$this->match = $data->match;
+			if (isset($data->reverse)) 
 				$this->reverse = $data->reverse;
-				$this->initFlagsByReverse($this->reverse);
-			}
-			if (isset($data->defaults)) $this->defaults = $data->defaults;
-			$this->SetConstraints(isset($data->constraints) ? $data->constraints : []);
-			if (isset($data->filters) && is_array($data->filters)) $this->SetFilters($data->filters);
-			if (isset($data->method) && is_string($data->method)) $this->method = strtoupper($data->method);
+			$this->constructCtrlActionNameDefConstrAndAdvCfg($data);
 		} else {
-			if ($patternOrConfig !== NULL)
+			if ($patternOrConfig !== NULL) 
 				$this->pattern = $patternOrConfig;
-			if ($controllerAction !== NULL) {
-				list($ctrl, $action) = explode(':', $controllerAction);
-				if ($ctrl) $this->controller = $ctrl;
-				if ($action) $this->action = $action;
-			}
-			if ($defaults !== NULL)
-				$this->defaults = $defaults;
-			if ($constraints !== NULL)
-				$this->SetConstraints($constraints);
-			if (is_array($filters))
-				$this->SetFilters($filters);
-			if (is_string($method))
-				$this->method = strtoupper($method);
+			$this->constructCtrlActionDefConstrAndAdvCfg(
+				$controllerAction, $defaults, $constraints, $advancedConfiguration
+			);
 		}
+		$this->constructCtrlOrActionByName();
+	}
+
+	protected function constructCtrlActionNameDefConstrAndAdvCfg (& $data) {
+		if (isset($data->controllerAction)) {
+			list($ctrl, $action) = explode(':', $data->controllerAction);
+			if ($ctrl) $this->controller = $ctrl;
+			if ($action) $this->action = $action;
+			if (isset($data->name)) {
+				$this->name = $data->name;
+			} else {
+				$this->name = $data->controllerAction;
+			}
+		} else {
+			$this->controller = isset($data->controller) ? $data->controller : NULL;
+			$this->action = isset($data->action) ? $data->action : NULL;
+			if (isset($data->name)) {
+				$this->name = $data->name;
+			} else if ($this->controller !== NULL && $this->action !== NULL) {
+				$this->name = $this->controller . ':' . $this->action;
+			} else {
+				$this->name = NULL;
+			}
+		}
+		if (isset($data->defaults)) 
+			$this->SetDefaults($data->defaults);
+		if (isset($data->constraints)) 
+			$this->SetConstraints($data->constraints);
+		if (isset($data->filters) && is_array($data->filters)) 
+			$this->SetFilters($data->filters);
+		$methodParam = static::CONFIG_METHOD;
+		if (isset($data->{$methodParam})) 
+			$this->method = strtoupper((string) $data->{$methodParam});
+		$redirectParam = static::CONFIG_REDIRECT;
+		if (isset($data->{$redirectParam})) 
+			$this->redirect = (string) $data->{$redirectParam};
+		$absoluteParam = static::CONFIG_ABSOLUTE;
+		if (isset($data->{$absoluteParam}))
+			$this->absolute = (bool) $data->{$absoluteParam};
+	}
+
+	protected function constructCtrlActionDefConstrAndAdvCfg (& $ctrlAction, & $defaults, & $constraints, & $advCfg) {
+		// Controller:Action, defaults and constraints
+		if ($ctrlAction !== NULL) {
+			list($ctrl, $action) = explode(':', $ctrlAction);
+			if ($ctrl) $this->controller = $ctrl;
+			if ($action) $this->action = $action;
+		}
+		if ($defaults !== NULL)
+			$this->defaults = $defaults;
+		if ($constraints !== NULL)
+			$this->SetConstraints($constraints);
+		// filters, method, redirect and absolute
+		$filterInParam = static::CONFIG_FILTER_IN;
+		if (isset($advCfg[$filterInParam]))
+			$this->SetFilter($advCfg[$filterInParam]);
+		$filterOutParam = static::CONFIG_FILTER_OUT;
+		if (isset($advCfg[$filterOutParam]))
+			$this->SetFilter($advCfg[$filterOutParam]);
+		$methodParam = static::CONFIG_METHOD;
+		if (isset($advCfg[$methodParam]))
+			$this->method = strtoupper((string) $advCfg[$methodParam]);
+		$redirectParam = static::CONFIG_REDIRECT;
+		if (isset($advCfg[$redirectParam]))
+			$this->redirect = (string) $advCfg[$redirectParam];
+		$absoluteParam = static::CONFIG_ABSOLUTE;
+		if (isset($advCfg[$absoluteParam]))
+			$this->absolute = (bool) $advCfg[$absoluteParam];
+	}
+
+	protected function constructCtrlOrActionByName () {
 		if (!$this->controller && !$this->action && strpos($this->name, ':') !== FALSE && strlen($this->name) > 1) {
 			list($ctrl, $action) = explode(':', $this->name);
 			if ($ctrl) $this->controller = $ctrl;
@@ -469,10 +516,9 @@ class Route implements IRoute
 	 *   matching all to the end of address. It has to be the last one.
 	 *
 	 * Example: `"/products-list/<name>/<color*>"`.
-	 * @param string $localization Lowercase language code, optionally with dash and uppercase locale code, `NULL` by default, not implemented in core.
 	 * @return string|\string[]|NULL
 	 */
-	public function GetPattern ($localization = NULL) {
+	public function GetPattern () {
 		return $this->pattern;
 	}
 
@@ -499,10 +545,9 @@ class Route implements IRoute
 	 *
 	 * Example: `"/products-list/<name>/<color*>"`.
 	 * @param string|\string[] $pattern
-	 * @param string $localization Lowercase language code, optionally with dash and uppercase locale code, `NULL` by default, not implemented in core.
 	 * @return \MvcCore\Route
 	 */
-	public function & SetPattern ($pattern, $localization = NULL) {
+	public function & SetPattern ($pattern) {
 		$this->pattern = $pattern;
 		return $this;
 	}
@@ -522,10 +567,9 @@ class Route implements IRoute
 	 * conversion into `\MvcCore\Route::$match` and `\MvcCore\Route::$reverse` properties.
 	 *
 	 * Example: `"#^/products\-list/(?<name>[^/]*)/(?<color>[a-z]*)#"`
-	 * @param string $localization Lowercase language code, optionally with dash and uppercase locale code, `NULL` by default, not implemented in core.
 	 * @return string|\string[]|NULL
 	 */
-	public function GetMatch ($localization = NULL) {
+	public function GetMatch () {
 		return $this->match;
 	}
 
@@ -545,10 +589,9 @@ class Route implements IRoute
 	 *
 	 * Example: `"#^/products\-list/(?<name>[^/]*)/(?<color>[a-z]*)#"`
 	 * @param string|\string[] $match
-	 * @param string $localization Lowercase language code, optionally with dash and uppercase locale code, `NULL` by default, not implemented in core.
 	 * @return \MvcCore\Route
 	 */
-	public function & SetMatch ($match, $localization = NULL) {
+	public function & SetMatch ($match) {
 		$this->match = $match;
 		return $this;
 	}
@@ -572,10 +615,9 @@ class Route implements IRoute
 	 * conversion into `\MvcCore\Route::$match` and `\MvcCore\Route::$reverse` properties.
 	 *
 	 * Example: `"/products-list/<name>/<color>"`
-	 * @param string $localization Lowercase language code, optionally with dash and uppercase locale code, `NULL` by default, not implemented in core.
 	 * @return string|\string[]|NULL
 	 */
-	public function GetReverse ($localization = NULL) {
+	public function GetReverse () {
 		return $this->reverse;
 	}
 
@@ -599,12 +641,10 @@ class Route implements IRoute
 	 *
 	 * Example: `"/products-list/<name>/<color>"`
 	 * @param string|\string[] $reverse
-	 * @param string $localization Lowercase language code, optionally with dash and uppercase locale code, `NULL` by default, not implemented in core.
 	 * @return \MvcCore\Route
 	 */
-	public function & SetReverse ($reverse, $localization = NULL) {
+	public function & SetReverse ($reverse) {
 		$this->reverse = $reverse;
-		$this->initFlagsByReverse($reverse);
 		return $this;
 	}
 
@@ -756,10 +796,9 @@ class Route implements IRoute
 	 *	  "name"  => "default-name",
 	 *	  "color" => "red"
 	 *  );`
-	 * @param string $localization Lowercase language code, optionally with dash and uppercase locale code, `NULL` by default, not implemented in core.
 	 * @return array|\array[]
 	 */
-	public function & GetDefaults ($localization = NULL) {
+	public function & GetDefaults () {
 		return $this->defaults;
 	}
 
@@ -773,18 +812,18 @@ class Route implements IRoute
 	 *	  "color" => "red"
 	 *  );`.
 	 * @param array|\array[] $defaults
-	 * @param string $localization Lowercase language code, optionally with dash and uppercase locale code, `NULL` by default, not implemented in core.
 	 * @return \MvcCore\Route
 	 */
-	public function & SetDefaults ($defaults = [], $localization = NULL) {
+	public function & SetDefaults ($defaults = []) {
 		$this->defaults = & $defaults;
 		return $this;
 	}
 
 	/**
+	 * TODO: neaktualni
 	 * Get array with param names and their custom regular expression
 	 * matching rules. Not required, for all rewrited params there is used
-	 * default matching rule from `\MvcCore\Route::$DefaultConstraint`.
+	 * default matching rule from `\MvcCore\Route::$defaultPathConstraint`.
 	 * It shoud be changed to any value. The value is `"[^/]*"` by default.
 	 * It means "Any character(s) in any length, except next slash".
 	 *
@@ -793,17 +832,17 @@ class Route implements IRoute
 	 *		"name"	=> "[^/]*",
 	 *		"color"	=> "[a-z]*",
 	 *	);`
-	 * @param string $localization Lowercase language code, optionally with dash and uppercase locale code, `NULL` by default, not implemented in core.
 	 * @return array|\array[]
 	 */
-	public function GetConstraints ($localization = NULL) {
+	public function GetConstraints () {
 		return $this->constraints;
 	}
 
 	/**
+	 * TODO: neaktualni
 	 * Set array with param names and their custom regular expression
 	 * matching rules. Not required, for all rewrited params there is used
-	 * default matching rule from `\MvcCore\Route::$DefaultConstraint`.
+	 * default matching rule from `\MvcCore\Route::$defaultPathConstraint`.
 	 * It shoud be changed to any value. The value is `"[^/]*"` by default.
 	 * It means "Any character(s) in any length, except next slash".
 	 *
@@ -813,10 +852,9 @@ class Route implements IRoute
 	 *		"color"	=> "[a-z]*",
 	 *	);`
 	 * @param array|\array[] $constraints
-	 * @param string $localization Lowercase language code, optionally with dash and uppercase locale code, `NULL` by default, not implemented in core.
 	 * @return \MvcCore\Route
 	 */
-	public function & SetConstraints ($constraints = [], $localization = NULL) {
+	public function & SetConstraints ($constraints = []) {
 		$this->constraints = & $constraints;
 		foreach ($constraints as $key => $value)
 			if (!isset($this->defaults[$key]))
@@ -825,7 +863,7 @@ class Route implements IRoute
 	}
 
 	/**
-	 * Get URL address params filters fo filter URL aprams in and out. Filters are 
+	 * Get URL address params filters to filter URL params in and out. Filters are 
 	 * `callable`s always and only under keys `"in" | "out"`, accepting arguments: 
 	 * `array $params, array $defaultParams, \MvcCore\IRequest $request`. 
 	 * First argument is associative array with params from requested URL address 
@@ -843,7 +881,7 @@ class Route implements IRoute
 	}
 
 	/**
-	 * Set URL address params filters fo filter URL aprams in and out. Filters are 
+	 * Set URL address params filters to filter URL params in and out. Filters are 
 	 * `callable`s always and only under keys `"in" | "out"`, accepting arguments: 
 	 * `array $params, array $defaultParams, \MvcCore\IRequest $request`. 
 	 * First argument is associative array with params from requested URL address 
@@ -858,13 +896,51 @@ class Route implements IRoute
 		// there is possible to call any `callable` as closure function in variable
 		// except forms like `'ClassName::methodName'` and `['childClassName', 'parent::methodName']`
 		// and `[$childInstance, 'parent::methodName']`.
-		foreach ($filters as $direction => $handler) {
-			$closureCalling = (
-				(is_string($handler) && strpos($handler, '::') !== FALSE) ||
-				(is_array($handler) && strpos($handler[1], '::') !== FALSE)
-			) ? FALSE : TRUE;
-			$this->filters[$direction] = [$closureCalling, $handler];
-		}
+		foreach ($filters as $direction => $handler) 
+			$this->SetFilter($handler, $direction);
+		return $this;
+	}
+
+	/**
+	 * Get URL address params filter to filter URL params in and out. Filter is 
+	 * `callable` always and only under `$direction` keys `"in" | "out"`, accepting arguments: 
+	 * `array $params, array $defaultParams, \MvcCore\IRequest $request`. 
+	 * First argument is associative array with params from requested URL address 
+	 * for `"in"` filter and associative array with params to build URL address 
+	 * for `"out"` filter. Second param is always associative `array` with default 
+	 * params and third argument is current request instance.
+	 * `Callable` filter function must return `array` with filtered params.
+	 * @param string $direction
+	 * @return array
+	 */
+	public function GetFilter ($direction = \MvcCore\IRoute::CONFIG_FILTER_IN) {
+		return isset($this->filters[$direction])
+			? $this->filters[$direction]
+			: NULL;
+	}
+
+	/**
+	 * Set URL address params filter to filter URL params in and out. 
+	 * Filter is `callable` accepting arguments: 
+	 * `array $params, array $defaultParams, \MvcCore\IRequest $request`. 
+	 * First argument is associative array with params from requested URL address 
+	 * for `"in"` filter and associative array with params to build URL address 
+	 * for `"out"` filter. Second param is always associative` array` with default 
+	 * params and third argument is current request instance.
+	 * `Callable` filter function must return `array` with filtered params.
+	 * @param callable $handler 
+	 * @param string $direction
+	 * @return \MvcCore\Route
+	 */
+	public function & SetFilter ($handler, $direction = \MvcCore\IRoute::CONFIG_FILTER_IN) {
+		// there is possible to call any `callable` as closure function in variable
+		// except forms like `'ClassName::methodName'` and `['childClassName', 'parent::methodName']`
+		// and `[$childInstance, 'parent::methodName']`.
+		$closureCalling = (
+			(is_string($handler) && strpos($handler, '::') !== FALSE) ||
+			(is_array($handler) && strpos($handler[1], '::') !== FALSE)
+		) ? FALSE : TRUE;
+		$this->filters[$direction] = [$closureCalling, $handler];
 		return $this;
 	}
 
@@ -891,6 +967,24 @@ class Route implements IRoute
 		$this->method = strtoupper($method);
 		return $this;
 	}
+	
+	/**
+	 * TODO: dopsat
+	 * @return string|NULL
+	 */
+	public function GetRedirect () {
+		return $this->redirect;
+	}
+
+	/**
+	 * TODO: dopsat
+	 * @param string|NULL $redirectRouteName 
+	 * @return \MvcCore\Route
+	 */
+	public function & SetRedirect ($redirectRouteName = NULL) {
+		$this->redirect = $redirectRouteName;
+		return $this;
+	}
 
 	/**
 	 * Return only reverse params names as `string`s array.
@@ -898,18 +992,9 @@ class Route implements IRoute
 	 * @return \string[]|NULL
 	 */
 	public function GetReverseParams () {
-		return array_keys($this->reverseParams);
-	}
-
-	/**
-	 * Set up internal reverse params info.
-	 * @param array $reverseParams
-	 * @param string|NULL $localization
-	 * @return \MvcCore\Route
-	 */
-	protected function setReverseParams (array & $reverseParams = [], $localization = NULL) {
-		$this->reverseParams = & $reverseParams;
-		return $this;
+		return $this->reverseParams !== NULL 
+			? array_keys($this->reverseParams)
+			: [];
 	}
 
 	/**
@@ -930,7 +1015,32 @@ class Route implements IRoute
 	public function & GetMatchedParams () {
 		return $this->matchedParams;
 	}
+	
+	/**
+	 * TODO:
+	 * @param \MvcCore\Router|\MvcCore\IRouter $router 
+	 * @return \MvcCore\Route|\MvcCore\IRoute
+	 */
+	public function & SetRouter (\MvcCore\IRouter & $router) {
+		$this->router = & $router;
+		return $this;
+	}
 
+	/**
+	 * Return `TRUE` if route reverse pattern contains 
+	 * domain part with two slases at the beginning
+	 * or if route is defined with `absolute` boolean flag 
+	 * by advanced configuration in constructor.
+	 * @return bool
+	 */
+	public function GetAbsolute () {
+		return boolval($this->flags[0]) || $this->absolute;
+	}
+
+	public function & SetAbsolute ($absolute = TRUE) {
+		$this->absolute = $absolute;
+		return $this;
+	}
 
 	/**
 	 * Return array of matched params, with matched controller and action names,
@@ -944,82 +1054,95 @@ class Route implements IRoute
 	 * @return array Matched and params array, keys are matched
 	 *				 params or controller and action params.
 	 */
-	public function & Matches (\MvcCore\IRequest & $request, $localization = NULL) {
-		/** @var $request \MvcCore\Request */
-		$this->matchedParams = [];
-		$pattern = $this->matchesGetPattern($request, $localization);
+	public function & Matches (\MvcCore\IRequest & $request) {
+		$matchedParams = [];
+		$pattern = & $this->matchesGetPattern();
 		$subject = $this->matchesGetSubject($request);
-		preg_match_all($pattern, $subject, $matchedValues, PREG_OFFSET_CAPTURE);
+		preg_match_all($pattern, $subject, $matchedValues);
 		if (isset($matchedValues[0]) && count($matchedValues[0]) > 0) {
-			$this->matchesParseRewriteParams($matchedValues, $this->defaults);
-			$this->matchesTrimLastParamTrailingSlash($localization);
+			$matchedParams = $this->matchesParseRewriteParams($matchedValues, $this->GetDefaults());
+			if (isset($matchedParams[$this->lastPatternParam])) 
+				$matchedParams[$this->lastPatternParam] = rtrim(
+				$matchedParams[$this->lastPatternParam], '/'
+			);
 		}
-		return $this->matchedParams;
+		return $matchedParams;
 	}
 
-	protected function matchesGetPattern (\MvcCore\IRequest & $request, $localization = NULL) {
+	protected function & matchesGetPattern () {
 		if ($this->match === NULL) {
-			list($this->match, $reverse) = $this->initMatch();
-			if ($this->reverse === NULL) $this->reverse = $reverse;
+			$this->initMatchAndReverse();
+		} else {
+			$this->initReverse();
 		}
 		return $this->match;
 	}
 
 	protected function matchesGetSubject (\MvcCore\IRequest & $request) {
-		static $prefixes = [
+		static $prefixes = NULL;
+		if ($prefixes === NULL) $prefixes = [
 			static::FLAG_SCHEME_NO		=> '',
 			static::FLAG_SCHEME_ANY		=> '//',
 			static::FLAG_SCHEME_HTTP	=> 'http://',
 			static::FLAG_SCHEME_HTTPS	=> 'https://',
 		];
 		$schemeFlag = $this->flags[0];
+		$hostFlag = $this->flags[1];
+		$basePathDefined = FALSE;
+		$basePath = '';
+		if ($hostFlag >= static::FLAG_HOST_BASEPATH /* 10 */) {
+			$hostFlag -= static::FLAG_HOST_BASEPATH;
+			$basePath = static::PLACEHOLDER_BASEPATH;
+			$basePathDefined = TRUE;
+		}
 		if ($schemeFlag) {
-			$prefix = $prefixes[$schemeFlag];
-			$subject = $prefix . $request->GetHost() . $request->GetBasePath() . $request->GetPath(TRUE);
+			$hostPart = '';
+			if ($hostFlag == static::FLAG_HOST_HOST /* 1 */) {
+				$hostPart = static::PLACEHOLDER_HOST;
+			} else if ($hostFlag == static::FLAG_HOST_DOMAIN /* 2 */) {
+				$hostPart = $request->GetThirdLevelDomain() . '.' . static::PLACEHOLDER_DOMAIN;
+			} else if ($hostFlag == static::FLAG_HOST_TLD /* 3 */) {
+				$hostPart = $request->GetThirdLevelDomain() 
+					. '.' . $request->GetSecondLevelDomain()
+					. '.' . static::PLACEHOLDER_TLD;
+			} else if ($hostFlag == static::FLAG_HOST_SLD /* 4 */) {
+				$hostPart = $request->GetThirdLevelDomain() 
+					. '.' . static::PLACEHOLDER_SLD
+					. '.' . $request->GetTopLevelDomain();
+			} else if ($hostFlag == static::FLAG_HOST_TLD + static::FLAG_HOST_SLD /* 7 */) {
+				$hostPart = $request->GetThirdLevelDomain() 
+					. '.' . static::PLACEHOLDER_SLD
+					. '.' . static::PLACEHOLDER_TLD;
+			}
+			if (!$basePathDefined)
+				$basePath = $request->GetBasePath();
+			$subject = $prefixes[$schemeFlag] . $hostPart . $basePath . $request->GetPath(TRUE);
 		} else {
-			$subject = $request->GetPath(TRUE);
+			$subject = ($basePathDefined ? $basePath : '') . $request->GetPath(TRUE);
 		}
-		if ($this->flags[2]) {
+		if ($this->flags[2]) 
 			$subject .= $request->GetQuery(TRUE, TRUE);
-		}
 		return $subject;
 	}
 
-	protected function matchesParseRewriteParams (& $matchedValues, & $defaults) {
+	protected function & matchesParseRewriteParams (& $matchedValues, & $defaults) {
 		$controllerName = $this->controller ?: '';
 		$toolClass = \MvcCore\Application::GetInstance()->GetToolClass();
-		$this->matchedParams = [
+		$matchedParams = [
 			'controller'	=>	$toolClass::GetDashedFromPascalCase(str_replace(['_', '\\'], '/', $controllerName)),
 			'action'		=>	$toolClass::GetDashedFromPascalCase($this->action ?: ''),
 		];
 		array_shift($matchedValues); // first item is always matched whole `$request->GetPath()` string.
-		$index = 0;
-		$matchedKeys = array_keys($matchedValues);
-		$matchedKeysCount = count($matchedKeys) - 1;
-		while ($index < $matchedKeysCount) {
-			$matchedKey = $matchedKeys[$index];
-			list($matchedValue, $matchedPosition) = $matchedValues[$matchedKey][0];
-			// if captured offset value is the same like in next matched record - skip next matched record:
-			if ($matchedPosition !== NULL && isset($matchedKeys[$index + 1])) {
-				$nextKey = $matchedKeys[$index + 1];
-				$nextValue = $matchedValues[$nextKey];
-				if ($matchedPosition === $nextValue[0][1]) $index += 1;
-			}
-			// 1 line bellow is only for route debug panel, only for cases when you
-			// forget to define current rewrite param, this defines null value by default
-			if (!isset($defaults[$matchedKey])) $defaults[$matchedKey] = NULL;
-			if ($matchedValue === NULL && $defaults[$matchedKey] !== NULL) $matchedValue = $defaults[$matchedKey];
-			$this->matchedParams[$matchedKey] = $matchedValue;
-			$index += 1;
+		foreach ($matchedValues as $key => $matchedValueArr) {
+			if (is_numeric($key)) continue;
+			$matchedValue = (string) current($matchedValueArr);
+			if (!isset($defaults[$key])) 
+				$defaults[$key] = NULL;
+			if (mb_strlen($matchedValue) === 0)
+				$matchedValue = $defaults[$key];
+			$matchedParams[$key] = $matchedValue;
 		}
-	}
-
-	protected function matchesTrimLastParamTrailingSlash ($localization = NULL) {
-		if ($this->lastPatternParam === NULL) 
-			$this->reverse = $this->initReverse();
-		if (isset($this->matchedParams[$this->lastPatternParam])) {
-			$this->matchedParams[$this->lastPatternParam] = rtrim($this->matchedParams[$this->lastPatternParam], '/');
-		}
+		return $matchedParams;
 	}
 
 	/**
@@ -1031,8 +1154,9 @@ class Route implements IRoute
 	 * @param string $direction 
 	 * @return array
 	 */
-	public function Filter (array & $params = [], array & $defaultParams = [], $direction = \MvcCore\IRoute::FILTER_IN) {
-		if (!$this->filters || !isset($this->filters[$direction])) return [TRUE, $params];
+	public function Filter (array & $params = [], array & $defaultParams = [], $direction = \MvcCore\IRoute::CONFIG_FILTER_IN) {
+		if (!$this->filters || !isset($this->filters[$direction])) 
+			return [TRUE, $params];
 		list($closureCalling, $handler) = $this->filters[$direction];
 		try {
 			$req = & \MvcCore\Application::GetInstance()->GetRequest();
@@ -1076,52 +1200,83 @@ class Route implements IRoute
 	 * @return \string[] Result URL addres in two parts - domain part with base path and path part with query string.
 	 */
 	public function Url (\MvcCore\IRequest & $request, array & $params = [], array & $requestedUrlParams = [], $queryStringParamsSepatator = '&') {
-		$absolute = $this->urlGetAbsoluteParam($params);
-		// complete params for necessary values to build reverse pattern
-		if ($this->reverseParams === NULL) $this->reverse = $this->initReverse();
-		$reverseParams = & $this->reverseParams;
-		$reverseParamsKeys = [];
-		$reverseParamsCount = count($reverseParams);
-		$noReverseParamsCount = $reverseParamsCount === 0;
-		if ($noReverseParamsCount) {
+		// check reverse initialization
+		if ($this->reverseParams === NULL) $this->initReverse();
+		// complete and filter all params to build reverse pattern
+		if (count($this->reverseParams) === 0) {
 			$allParamsClone = array_merge([], $params);
 		} else {// complete params with necessary values to build reverse pattern (and than query string)
-			$reverseParamsKeys = array_keys($reverseParams);
-			$emptyReverseParams = array_fill_keys($reverseParamsKeys, '');
+			$emptyReverseParams = array_fill_keys(array_keys($this->reverseParams), '');
 			$allMergedParams = array_merge($this->defaults, $requestedUrlParams, $params);
-			$allParamsClone = array_merge($emptyReverseParams, array_intersect_key($allMergedParams, $emptyReverseParams), $params);
+			$allParamsClone = array_merge(
+				$emptyReverseParams, array_intersect_key($allMergedParams, $emptyReverseParams), $params
+			);
 		}
-		// filter params out
-		list(,$filteredParams) = $this->Filter($allParamsClone, $requestedUrlParams, \MvcCore\IRoute::FILTER_OUT);
+		// filter params
+		list(,$filteredParams) = $this->Filter($allParamsClone, $requestedUrlParams, \MvcCore\IRoute::CONFIG_FILTER_OUT);
+		// split params into domain params array and into path and query params array
+		$domainParams = $this->urlGetAndRemoveDomainParams($filteredParams);
 		// build reverse pattern
-		$resultPattern = $this->reverse;
-		if ($noReverseParamsCount) {
-			$result = $resultPattern;
-		} else {
-			$result = mb_substr($resultPattern, 0, $reverseParams[$reverseParamsKeys[0]][0]);
-			$current = 0;
-			while (TRUE) {
-				$paramName = $reverseParamsKeys[$current];
-				$currentEnd = $reverseParams[$paramName][1];
-				// convert possible XSS chars to entities (`< > & " ' &`):
-				$result .= htmlspecialchars($filteredParams[$paramName], ENT_QUOTES);
-				unset($filteredParams[$paramName]);
-				$next = $current + 1;// try to get next record and shift
-				if ($next < $reverseParamsCount) {
-					$nextParamName = $reverseParamsKeys[$next];
-					$nextStart = $reverseParams[$nextParamName][0];
-					$result .= mb_substr($resultPattern, $currentEnd, $nextStart - $currentEnd);
-				} else {
-					$result .= mb_substr($resultPattern, $currentEnd);
-					break;
-				}}}
-		$result = & $this->correctTrailingSlashBehaviour($result);
+		$result = $this->urlComposeByReverseSectionsAndParams(
+			$this->reverse, 
+			$this->reverseSections, 
+			$this->reverseParams, 
+			$filteredParams, 
+			$this->defaults
+		);
+		// add all remaining params to query string
 		if ($filteredParams) {
 			// `http_build_query()` automaticly converts all XSS chars to entities (`< > & " ' &`):
 			$result .= (mb_strpos($result, '?') !== FALSE ? $queryStringParamsSepatator : '?')
-				. str_replace('%2F', '/', http_build_query($filteredParams, '', $queryStringParamsSepatator));
+				. str_replace('%2F', '/', http_build_query($filteredParams, '', $queryStringParamsSepatator, PHP_QUERY_RFC3986));
 		}
-		return $this->urlSplitResultToBaseAndPathWithQuery($request, $result, $absolute);
+		return $this->urlSplitResultToBaseAndPathWithQuery($request, $result, $domainParams);
+	}
+
+	protected function urlComposeByReverseSectionsAndParams (& $reverse, & $reverseSections, & $reverseParams, & $params, & $defaults) {
+		$sections = [];
+		$paramIndex = 0;
+		$reverseParamsKeys = array_keys($reverseParams);
+		$paramsCount = count($reverseParamsKeys);
+		$anyParams = $paramsCount > 0;
+		foreach ($reverseSections as $sectionIndex => & $section) {
+			$fixed = $section->fixed;
+			$sectionResult = '';
+			if ($anyParams) {
+				$sectionOffset = $section->start;
+				$sectionParamsCount = 0;
+				$defaultValuesCount = 0;
+				while ($paramIndex < $paramsCount) {
+					$paramKey = $reverseParamsKeys[$paramIndex];
+					$param = $reverseParams[$paramKey];
+					if ($param->sectionIndex !== $sectionIndex) break;
+					$sectionParamsCount++;
+					$paramStart = $param->reverseStart;
+					if ($sectionOffset < $paramStart)
+						$sectionResult .= mb_substr($reverse, $sectionOffset, $paramStart - $sectionOffset);
+					$paramName = $param->name;
+					$paramValue = (string) $params[$paramName];
+					if (isset($defaults[$paramName]) && $paramValue == (string) $defaults[$paramName]) 
+						$defaultValuesCount++;
+					$sectionResult .= htmlspecialchars($paramValue, ENT_QUOTES);
+					unset($params[$paramName]);
+					$paramIndex += 1;
+					$sectionOffset = $param->reverseEnd;
+				}
+				$sectionEnd = $section->end;
+				if (!$fixed && $sectionParamsCount === $defaultValuesCount) {
+					$sectionResult = '';
+				} else if ($sectionOffset < $sectionEnd) {
+					$sectionResult .= mb_substr($reverse, $sectionOffset, $sectionEnd - $sectionOffset);
+				}
+			} else if ($fixed) {
+				$sectionResult = mb_substr($reverse, $section->start, $section->length);
+			}
+			$sections[] = $sectionResult;
+		}
+		$result = implode('', $sections);
+		$result = & $this->urlCorrectTrailingSlashBehaviour($result);
+		return $result;
 	}
 
 	/**
@@ -1133,42 +1288,153 @@ class Route implements IRoute
 	 * @param string $resultUrl 
 	 * @return \string[]
 	 */
-	protected function urlSplitResultToBaseAndPathWithQuery (\MvcCore\IRequest & $request, $resultUrl, $absolute = FALSE) {
-		$basePath = $request->GetBasePath();
-		$schemeFlag = $this->flags[0];
-		if ($schemeFlag) {
-			$doubleSlashPos = mb_strpos($resultUrl, '//');
-			$doubleSlashPos = $doubleSlashPos === FALSE
-				? 0
-				: $doubleSlashPos + 2;
-			$nextSlashPos = mb_strpos($resultUrl, '/', $doubleSlashPos);
-			if ($nextSlashPos === FALSE) {
-				$queryStringPos = mb_strpos($resultUrl, '?', $doubleSlashPos);
-				$baseUrlPartEndPos = $queryStringPos === FALSE 
-					? mb_strlen($resultUrl) 
-					: $queryStringPos;
-			} else {
-				$baseUrlPartEndPos = $nextSlashPos;
-			}
-			$basePathLength = mb_strlen($basePath);
-			if ($basePathLength > 0) {
-				$basePathPos = mb_strpos($resultUrl, $basePath, $baseUrlPartEndPos);
-				if ($basePathPos === $baseUrlPartEndPos) 
-					$baseUrlPartEndPos += $basePathLength;
-			}
-			$basePart = mb_substr($resultUrl, 0, $baseUrlPartEndPos);
-			if ($schemeFlag === static::FLAG_SCHEME_ANY)
-				$basePart = $request->GetProtocol() . $basePart;
-			return [
-				$basePart,
-				mb_substr($resultUrl, $baseUrlPartEndPos)
-			];
-		} else {
-			$basePart = $basePath;
-			if ($absolute) 
-				$basePart = $request->GetDomainUrl() . $basePart;
-			return [$basePart, $resultUrl];
+	protected function urlSplitResultToBaseAndPathWithQuery (\MvcCore\IRequest & $request, $resultUrl, & $domainParams) {
+		$domainParamsFlag = $this->flags[1];
+		$basePathInReverse = FALSE;
+		if ($domainParamsFlag >= static::FLAG_HOST_BASEPATH) {
+			$basePathInReverse = TRUE;
+			$domainParamsFlag -= static::FLAG_HOST_BASEPATH;
 		}
+		if ($this->flags[0]) {
+			// route is defined as absolute with possible `%domain%` and other params
+			// process possible replacements in reverse result - `%host%`, `%domain%`, `%tld%` and `%sld%`
+			$this->urlReplaceDomainReverseParams($request, $resultUrl, $domainParams, $domainParamsFlag);
+			// try to find url position after domain part and after base path part
+			if ($basePathInReverse) {
+				return $this->urlSplitResultByReverseBasePath($request, $resultUrl, $domainParams);
+			} else {
+				return $this->urlSplitResultByRequestedBasePath($request, $resultUrl);
+			}
+		} else {
+			// route is not defined as absolute, there could be only flag 
+			// in domain params array to complete absolute url by developer
+			// and there could be also `basePath` param defined.
+			return $this->urlSplitResultByAbsoluteAndBasePath($request, $resultUrl, $domainParams, $domainParamsFlag);
+		}
+	}
+
+	protected function urlReplaceDomainReverseParams (\MvcCore\IRequest & $request, & $resultUrl, & $domainParams, $domainParamsFlag) {
+		$replacements = [];
+		$values = [];
+		$router = & $this->router;
+		if ($domainParamsFlag == static::FLAG_HOST_HOST) {
+			$hostParamName = $router::URL_PARAM_HOST;
+			$replacements[] = static::PLACEHOLDER_HOST;
+			$values[] = isset($domainParams[$hostParamName])
+				? $domainParams[$hostParamName]
+				: $request->GetHost();
+		} else if ($domainParamsFlag == static::FLAG_HOST_DOMAIN) {
+			$domainParamName = $router::URL_PARAM_DOMAIN;
+			$replacements[] = static::PLACEHOLDER_DOMAIN;
+			$values[] = isset($domainParams[$domainParamName])
+				? $domainParams[$domainParamName]
+				: $request->GetSecondLevelDomain() . '.' . $request->GetTopLevelDomain();
+		} else {
+			if ($domainParamsFlag == static::FLAG_HOST_TLD) {
+				$tldParamName = $router::URL_PARAM_TLD;
+				$replacements[] = static::PLACEHOLDER_TLD;
+				$values[] = isset($domainParams[$tldParamName])
+					? $domainParams[$tldParamName]
+					: $request->GetTopLevelDomain();
+			} else if ($domainParamsFlag == static::FLAG_HOST_SLD) {
+				$sldParamName = $router::URL_PARAM_SLD;
+				$replacements[] = static::PLACEHOLDER_SLD;
+				$values[] = isset($domainParams[$sldParamName])
+					? $domainParams[$sldParamName]
+					: $request->GetSecondLevelDomain();
+			} else if ($domainParamsFlag == static::FLAG_HOST_TLD + static::FLAG_HOST_SLD) {
+				$tldParamName = $router::URL_PARAM_TLD;
+				$sldParamName = $router::URL_PARAM_SLD;
+				$replacements[] = static::PLACEHOLDER_TLD;
+				$replacements[] = static::PLACEHOLDER_SLD;
+				$values[] = isset($domainParams[$tldParamName])
+					? $domainParams[$tldParamName]
+					: $request->GetTopLevelDomain();
+				$values[] = isset($domainParams[$sldParamName])
+					? $domainParams[$sldParamName]
+					: $request->GetSecondLevelDomain();
+			}
+		}
+		$resultUrl = str_replace($replacements, $values, $resultUrl);
+	}
+
+	protected function urlSplitResultByReverseBasePath (\MvcCore\IRequest & $request, $resultUrl, & $domainParams) {
+		$doubleSlashPos = mb_strpos($resultUrl, '//');
+		$doubleSlashPos = $doubleSlashPos === FALSE
+			? 0
+			: $doubleSlashPos + 2;
+		$router = & $this->router;
+		$basePathPlaceHolderPos = mb_strpos($resultUrl, static::PLACEHOLDER_BASEPATH, $doubleSlashPos);
+		if ($basePathPlaceHolderPos === FALSE) {
+			return $this->urlSplitResultByRequestedBasePath ($request, $resultUrl);
+		} else {
+			$pathPart = mb_substr($resultUrl, $basePathPlaceHolderPos + mb_strlen(static::PLACEHOLDER_BASEPATH));
+			$basePart = mb_substr($resultUrl, 0, $basePathPlaceHolderPos);
+			$basePathParamName = $router::URL_PARAM_BASEPATH;
+			$basePart .= isset($domainParams[$basePathParamName])
+				? $domainParams[$basePathParamName]
+				: $request->GetBasePath();
+		}
+		if ($this->flags[0] === static::FLAG_SCHEME_ANY)
+			$basePart = $request->GetProtocol() . $basePart;
+		return [$basePart, $pathPart];
+	}
+
+	protected function urlSplitResultByRequestedBasePath (\MvcCore\IRequest & $request, $resultUrl) {
+		$doubleSlashPos = mb_strpos($resultUrl, '//');
+		$doubleSlashPos = $doubleSlashPos === FALSE
+			? 0
+			: $doubleSlashPos + 2;
+		$nextSlashPos = mb_strpos($resultUrl, '/', $doubleSlashPos);
+		if ($nextSlashPos === FALSE) {
+			$queryStringPos = mb_strpos($resultUrl, '?', $doubleSlashPos);
+			$baseUrlPartEndPos = $queryStringPos === FALSE 
+				? mb_strlen($resultUrl) 
+				: $queryStringPos;
+		} else {
+			$baseUrlPartEndPos = $nextSlashPos;
+		}
+		$requestedBasePath = $request->GetBasePath();
+		$basePathLength = mb_strlen($requestedBasePath);
+		if ($basePathLength > 0) {
+			$basePathPos = mb_strpos($resultUrl, $requestedBasePath, $baseUrlPartEndPos);
+			if ($basePathPos === $baseUrlPartEndPos) 
+				$baseUrlPartEndPos += $basePathLength;
+		}
+		$basePart = mb_substr($resultUrl, 0, $baseUrlPartEndPos);
+		if ($this->flags[0] === static::FLAG_SCHEME_ANY)
+			$basePart = $request->GetProtocol() . $basePart;
+		return [
+			$basePart,
+			mb_substr($resultUrl, $baseUrlPartEndPos)
+		];
+	}
+
+	protected function urlSplitResultByAbsoluteAndBasePath (\MvcCore\IRequest & $request, $resultUrl, & $domainParams, $basePathInReverse) {
+		$router = & $this->router;
+		$basePathParamName = $router::URL_PARAM_BASEPATH;
+		$basePart = isset($domainParams[$basePathParamName])
+			? isset($domainParams[$basePathParamName])
+			: $request->GetBasePath();
+		// if there is `%basePath%` placeholder in reverse, put before `$basePart`
+		// what is before matched `%basePath%` placeholder and edit `$resultUrl`
+		// to use only part after `%basePath%` placeholder:
+		if ($basePathInReverse) {
+			$placeHolderBasePath = static::PLACEHOLDER_BASEPATH;
+			$basePathPlaceHolderPos = mb_strpos($resultUrl, $placeHolderBasePath);
+			if ($basePathPlaceHolderPos !== FALSE) {
+				$basePart = mb_substr($resultUrl, 0, $basePathPlaceHolderPos) . $basePart;
+				$resultUrl = mb_substr($resultUrl, $basePathPlaceHolderPos + mb_strlen($placeHolderBasePath));
+			}
+		}
+		$absoluteParamName = $router::URL_PARAM_ABSOLUTE;
+		if (
+			$this->absolute || (
+				isset($domainParams[$absoluteParamName]) && $domainParams[$absoluteParamName]
+			) 
+		)
+			$basePart = $request->GetDomainUrl() . $basePart;
+		return [$basePart, $resultUrl];
 	}
 
 	/**
@@ -1178,18 +1444,35 @@ class Route implements IRoute
 	 * @param array $params 
 	 * @return boolean
 	 */
-	protected function urlGetAbsoluteParam (array & $params = []) {
+	protected function urlGetAndRemoveDomainParams (array & $params = []) {
+		static $domainParams = [];
 		$absolute = FALSE;
-		static $absoluteParamName = NULL;
-		if ($absoluteParamName === NULL) {
-			$router = & \MvcCore\Application::GetInstance()->GetRouter();
-			$absoluteParamName = $router::URL_PARAM_ABSOLUTE;
+		$router = & $this->router;
+		$absoluteParamName = $router::URL_PARAM_ABSOLUTE;
+		$result = [];
+		if (!$domainParams) {
+			$domainParams = [
+				$router::URL_PARAM_HOST,
+				$router::URL_PARAM_DOMAIN,
+				$router::URL_PARAM_TLD,
+				$router::URL_PARAM_SLD,
+				$router::URL_PARAM_BASEPATH,
+			];
 		}
-		if ($params && isset($params[$absoluteParamName])) {
-			$absolute = (bool) $params[$absoluteParamName];
+		foreach ($domainParams as $domainParam) {
+			if (isset($params[$domainParam])) {
+				$absolute = TRUE;
+				$result[$domainParam] = $params[$domainParam];
+				unset($params[$domainParam]);
+			}
+		}
+		if ($absolute) {
+			$result[$absoluteParamName] = TRUE;
+		} else if (isset($params[$absoluteParamName])) {
+			$result[$absoluteParamName] = (bool) $params[$absoluteParamName];
 			unset($params[$absoluteParamName]);
 		}
-		return $absolute;
+		return $result;
 	}
 
 	/**
@@ -1217,22 +1500,23 @@ class Route implements IRoute
 	}
 
 	/**
+	 * TODO:
 	 * Initialize all possible protected values (`match`, `reverse` etc...)
 	 * This method is not recomanded to use in production mode, it's
 	 * designed mostly for development purposes, to see what could be inside route.
 	 * @return \MvcCore\Route|\MvcCore\IRoute
 	 */
 	public function & InitAll () {
-		if ($this->match === NULL) {
-			list($this->match, $reverse) = $this->initMatch();
-			if ($this->reverse === NULL) $this->reverse = $reverse;
+		if ($this->match === NULL && $this->reverse === NULL) {
+			$this->initMatchAndReverse();
+		} else if ($this->match !== NULL && ($this->reverseParams === NULL || $this->lastPatternParam === NULL)) {
+			$this->initReverse();
 		}
-		if ($this->lastPatternParam === NULL || $this->reverseParams === NULL) 
-			$this->reverse = $this->initReverse();
 		return $this;
 	}
 
 	/**
+	 * TODO: asi neaktuální
 	 * Initialize `\MvcCore\Router::$Match` property (and `\MvcCore\Router::$lastPatternParam`
 	 * property) from `\MvcCore\Router::$Pattern`, optionaly initialize
 	 * `\MvcCore\Router::$Reverse` property if there is nothing inside.
@@ -1242,34 +1526,385 @@ class Route implements IRoute
 	 *   complete also reverse property.
 	 * This method is usually called in core request routing process from
 	 * `\MvcCore\Router::Matches();` method.
-	 * @param string $localization Lowercase language code, optionally with dash and uppercase locale code, `NULL` by default, not implemented in core.
-	 * @return \string[]|array
+	 * @return void
 	 */
-	protected function initMatch ($localization = NULL) {
-		$match = NULL;
+	protected function initMatchAndReverse () {
+		if ($this->pattern === NULL)
+			$this->throwExceptionIfNoPattern();
+
+		$this->lastPatternParam = NULL;
+		$match = addcslashes($this->pattern, "#(){}-?!=^$.+|:*\\");
+		$reverse = $this->reverse !== NULL
+			? $this->reverse
+			: $this->pattern;
+
+		list($this->reverseSections, $matchSections) = $this->initSectionsInfoForMatchAndReverse(
+			$reverse, $match
+		);
+		$this->reverse = & $reverse;
+		$this->reverseParams = $this->initReverseParams(
+			$reverse, $this->reverseSections, $this->constraints, $match
+		);
+		//$this->initFlagsByPatternOrReverse($reverse);
+		$this->match = $this->initMatchComposeRegex(
+			$match, $matchSections, $this->reverseParams, $this->constraints
+		);
+	}
+
+	protected function initSectionsInfoForMatchAndReverse (& $match, & $reverse) {
+		$matchInfo = [];
+		$reverseInfo = [];
+		$reverseIndex = 0;
+		$matchIndex = 0;
+		$reverseLength = mb_strlen($reverse);
+		$matchLength = mb_strlen($match);
+		$matchOpenPos = FALSE;
+		$matchClosePos = FALSE;
+		while ($reverseIndex < $reverseLength ) {
+			$reverseOpenPos = mb_strpos($reverse, '[', $reverseIndex);
+			$reverseClosePos = FALSE;
+			if ($reverseOpenPos !== FALSE) {
+				$reverseClosePos = mb_strpos($reverse, ']', $reverseOpenPos);
+				$matchOpenPos = mb_strpos($match, '[', $matchIndex);
+				$matchClosePos = mb_strpos($match, ']', $matchOpenPos);
+			}
+			if ($reverseClosePos === FALSE) {
+				$reverseInfo[] = (object) ['fixed' => TRUE, 'start' => $reverseIndex, 'end' => $reverseLength, 'length' => $reverseLength - $reverseIndex];
+				$matchInfo[] = (object) ['fixed' => TRUE, 'start' => $matchIndex, 'end' => $matchLength, 'length' => $matchLength - $matchIndex];
+				break;
+			} else {
+				if ($reverseIndex < $reverseOpenPos) {
+					$reverseInfo[] = (object) ['fixed' => TRUE, 'start' => $reverseIndex, 'end' => $reverseOpenPos, 'length' => $reverseOpenPos - $reverseIndex];
+					$matchInfo[] = (object) ['fixed' => TRUE, 'start' => $matchIndex, 'end' => $matchOpenPos, 'length' => $matchOpenPos - $matchIndex];
+				}
+				$reverseOpenPosPlusOne = $reverseOpenPos + 1;
+				$reverseLocalLength = $reverseClosePos - $reverseOpenPosPlusOne;
+				$reverse = mb_substr($reverse, 0, $reverseOpenPos) 
+					. mb_substr($reverse, $reverseOpenPosPlusOne, $reverseLocalLength) 
+					. mb_substr($reverse, $reverseClosePos + 1);
+				$reverseLength -= 2;
+				$reverseClosePos -= 1;
+				$reverseInfo[] = (object) ['fixed' => FALSE, 'start' => $reverseOpenPos, 'end' => $reverseClosePos, 'length' => $reverseLocalLength];
+				$matchOpenPosPlusOne = $matchOpenPos + 1;
+				$matchLocalLength = $matchClosePos - $matchOpenPosPlusOne;
+				$match = mb_substr($match, 0, $matchOpenPos) 
+					. mb_substr($match, $matchOpenPosPlusOne, $matchLocalLength) 
+					. mb_substr($match, $matchClosePos + 1);
+				$matchLength -= 2;
+				$matchClosePos -= 1;
+				$matchInfo[] = (object) ['fixed' => FALSE, 'start' => $matchOpenPos, 'end' => $matchClosePos, 'length' => $matchLocalLength];
+			}
+			$reverseIndex = $reverseClosePos;
+			$matchIndex = $matchClosePos;
+		}
+		return [$matchInfo, $reverseInfo];
+	}
+
+	protected function initReverse () {
 		$reverse = NULL;
-		// if there is no match regular expression - parse `\MvcCore\Route::\$Pattern`
-		// and compile `\MvcCore\Route::\$Match` regular expression property.
-		if ($this->pattern === NULL) throw new \LogicException(
+		if ($this->reverse !== NULL) {
+			$reverse = $this->reverse;
+		} else if ($this->pattern !== NULL) {
+			$reverse = $this->pattern;
+		} else/* if ($this->pattern === NULL)*/ {
+			if ($this->redirect !== NULL) 
+				return $this->initFlagsByPatternOrReverse(
+					$this->pattern !== NULL 
+						? $this->pattern 
+						: str_replace(['\\', '(?', ')?', '/?'], '', $this->match)
+				);
+			$this->throwExceptionIfNoPattern();
+		}
+
+		$this->lastPatternParam = NULL;
+		
+		$this->reverseSections = $this->initSectionsInfo($reverse);
+		$this->reverse = $reverse;
+
+		$match = NULL;
+		$this->reverseParams = $this->initReverseParams(
+			$reverse, $this->reverseSections, $this->constraints, $match
+		);
+
+		$this->initFlagsByPatternOrReverse($reverse);
+	}
+
+	protected function & initSectionsInfo (& $pattern) {
+		$result = [];
+		$index = 0;
+		$length = mb_strlen($pattern);
+		while ($index < $length) {
+			$openPos = mb_strpos($pattern, '[', $index);
+			$closePos = FALSE;
+			if ($openPos !== FALSE) 
+				$closePos = mb_strpos($pattern, ']', $openPos);
+			if ($closePos === FALSE) {
+				$result[] = (object) ['fixed' => TRUE, 'start' => $index, 'end' => $length, 'length' => $length - $index];
+				break;
+			} else {
+				if ($index < $openPos) 
+					$result[] = (object) ['fixed' => TRUE, 'start' => $index, 'end' => $openPos, 'length' => $openPos - $index];
+				$openPosPlusOne = $openPos + 1;
+				$lengthLocal = $closePos - $openPosPlusOne;
+				$pattern = mb_substr($pattern, 0, $openPos) 
+					. mb_substr($pattern, $openPosPlusOne, $lengthLocal)
+					. mb_substr($pattern, $closePos + 1);
+				$length -= 2;
+				$closePos -= 1;
+				$result[] = (object) ['fixed' => FALSE, 'start' => $openPos, 'end' => $closePos, 'length' => $lengthLocal];
+			}
+			$index = $closePos;
+		}
+		return $result;
+	}
+
+	protected function & initReverseParams (& $reverse, & $reverseSectionsInfo, & $constraints, & $match = NULL) {
+		$result = [];
+		$completeMatch = $match !== NULL;
+		$reverseIndex = 0;
+		$matchIndex = 0;
+		$sectionIndex = 0;
+		$section = $reverseSectionsInfo[$sectionIndex];
+		$reverseLength = mb_strlen($reverse);
+		$greedyCatched = FALSE;
+		$matchOpenPos = -1;
+		$matchClosePos = -1;
+		$this->lastPatternParam = '';
+		while ($reverseIndex < $reverseLength) {
+			$reverseOpenPos = mb_strpos($reverse, '<', $reverseIndex);
+			$reverseClosePos = FALSE;
+			if ($reverseOpenPos !== FALSE) {
+				$reverseClosePos = mb_strpos($reverse, '>', $reverseOpenPos);
+				if ($completeMatch) {
+					$matchOpenPos = mb_strpos($match, '<', $matchIndex);
+					$matchClosePos = mb_strpos($match, '>', $matchOpenPos) + 1;
+				}}
+			if ($reverseClosePos === FALSE) break;// no other param catched
+			// check if param belongs to current section 
+			// and if not, move to next (or next...) section
+			$reverseClosePos += 1;
+			if ($reverseClosePos > $section->end) {
+				while (TRUE) {
+					$nextSection = $reverseSectionsInfo[$sectionIndex + 1];
+					if ($reverseClosePos > $nextSection->end) {
+						$sectionIndex += 1;
+					} else {
+						$sectionIndex += 1;
+						$section = $reverseSectionsInfo[$sectionIndex];
+						break;
+					}}}
+			// complete param section length and param name
+			$paramLength = $reverseClosePos - $reverseOpenPos;
+			$paramName = mb_substr($reverse, $reverseOpenPos + 1, $paramLength - 2);
+			list ($greedyFlag, $sectionIsLast) = $this->initReverseParamsGetGreedyInfo(
+				$reverseSectionsInfo, $constraints, 
+				$paramName, $sectionIndex, $greedyCatched
+			);
+			if ($greedyFlag && $sectionIsLast) {
+				$lastSectionChar = mb_substr(
+					$reverse, $reverseClosePos, $reverseSectionsInfo[$sectionIndex]->end - $reverseClosePos
+				);
+				if ($lastSectionChar == '/') {
+					$lastSectionChar = '';
+					$reverseSectionsInfo[$sectionIndex]->end -= 1;
+				}
+				if ($lastSectionChar === '')
+					$this->lastPatternParam = $paramName;
+			}
+			$result[$paramName] = (object) [
+				'name'			=> $paramName,
+				'greedy'		=> $greedyFlag,
+				'sectionIndex'	=> $sectionIndex,
+				'length'		=> $paramLength,
+				'reverseStart'	=> $reverseOpenPos,
+				'reverseEnd'	=> $reverseClosePos,
+				'matchStart'	=> $matchOpenPos,
+				'matchEnd'		=> $matchClosePos,
+			];
+			$reverseIndex = $reverseClosePos;
+			$matchIndex = $matchClosePos;
+		}
+		return $result;
+	}
+
+	protected function initReverseParamsGetGreedyInfo (& $reverseSectionsInfo, & $constraints, & $paramName, & $sectionIndex, & $greedyCatched) {
+		// complete greedy flag by star character inside param name
+		$greedyFlag = mb_strpos($paramName, '*') !== FALSE;
+		$sectionIsLast = NULL;
+		// check greedy param specifics
+		if ($greedyFlag) {
+			if ($greedyFlag && $greedyCatched) throw new \InvalidArgumentException(
+				"[\".__CLASS__.\"] Route pattern definition can have only one greedy `<param_name*>` "
+				." with star (to include everything - all characters and slashes . `.*`) (\$this)."
+			);
+			$reverseSectionsCount = count($reverseSectionsInfo);
+			$sectionIndexPlusOne = $sectionIndex + 1;
+			if (// next section is optional
+				$sectionIndexPlusOne < $reverseSectionsCount &&
+				!($reverseSectionsInfo[$sectionIndexPlusOne]->fixed)
+			) {
+				// check if param is realy greedy or not
+				$constraintDefined = isset($constraints[$paramName]);
+				$constraint = $constraintDefined ? $constraints[$paramName] : NULL ;
+				$greedyReal = !$constraintDefined || ($constraintDefined && (
+					mb_strpos($constraint, '.*') !== FALSE || mb_strpos($constraint, '.+') !== FALSE
+				));
+				if ($greedyReal) throw new \InvalidArgumentException(
+					"[\".__CLASS__.\"] Route pattern definition can not have greedy `<param_name*>` with star "
+					."(to include everything - all characters and slashes . `.*`) immediately before optional "
+					."section (\$this)."
+				);
+			}
+			$greedyCatched = TRUE;
+			$paramName = str_replace('*', '', $paramName);
+			$sectionIsLast = $sectionIndexPlusOne === $reverseSectionsCount;
+		}
+		return [$greedyFlag, $sectionIsLast];
+	}
+
+	protected function initFlagsByPatternOrReverse ($pattern) {
+		$scheme = static::FLAG_SCHEME_NO;
+		if (mb_strpos($pattern, '//') === 0) {
+			$scheme = static::FLAG_SCHEME_ANY;
+		} else if (mb_strpos($pattern, 'http://') === 0) {
+			$scheme = static::FLAG_SCHEME_HTTP;
+		} else if (mb_strpos($pattern, 'https://') === 0) {
+			$scheme = static::FLAG_SCHEME_HTTPS;
+		}
+		$host = static::FLAG_HOST_NO;
+		if ($scheme) {
+			if (mb_strpos($pattern, static::PLACEHOLDER_HOST) !== FALSE) {
+				$host = static::FLAG_HOST_HOST;
+			} else if (mb_strpos($pattern, static::PLACEHOLDER_DOMAIN) !== FALSE) {
+				$host = static::FLAG_HOST_DOMAIN;
+			} else {
+				if (mb_strpos($pattern, static::PLACEHOLDER_TLD) !== FALSE) 
+					$host += static::FLAG_HOST_TLD;
+				if (mb_strpos($pattern, static::PLACEHOLDER_SLD) !== FALSE) 
+					$host += static::FLAG_HOST_SLD;
+			}
+			if (mb_strpos($pattern, static::PLACEHOLDER_BASEPATH) !== FALSE) 
+				$host += static::FLAG_HOST_BASEPATH;
+		}
+		$queryString = mb_strpos($pattern, '?') !== FALSE 
+			? static::FLAG_QUERY_INCL 
+			: static::FLAG_QUERY_NO;
+		$this->flags = [$scheme, $host, $queryString];
+	}
+	
+	protected function initMatchComposeRegex (& $match, & $matchSectionsInfo, & $reverseParams, & $constraints) {
+		$sections = [];
+		$paramIndex = 0;
+		$reverseParamsKeys = array_keys($reverseParams);
+		$paramsCount = count($reverseParamsKeys);
+		$anyParams = $paramsCount > 0;
+		$defaultPathConstraint = static::$defaultPathConstraint;
+		$defaultDomainConstraint = static::$defaultDomainConstraint;
+		$schemeFlag = $this->flags[0];
+		$matchIsAbsolute = boolval($schemeFlag);
+		$firstPathSlashPos = 0;
+		if ($matchIsAbsolute) {
+			$matchIsAbsolute = TRUE;
+			$defaultConstraint = $defaultDomainConstraint;
+			// if scheme flag is `http://` or `https://`, there is necessary to increase
+			// `mb_strpos()` index by one, because there is always backslash in match pattern 
+			// before `:` - like `http\://` or `https\://`
+			$firstPathSlashPos = mb_strpos($match, '/', $schemeFlag + ($schemeFlag > static::FLAG_SCHEME_ANY ? 1 : 0));
+		} else {
+			$defaultConstraint = $defaultPathConstraint;
+		}
+		$pathFixedSectionsCount = 0;
+		$lastPathFixedSectionIndex = 0;
+		$trailingSlash = '?';
+		$one = $matchIsAbsolute ? 0 : 1;
+		$sectionsCountMinusOne = count($matchSectionsInfo) - 1;
+		foreach ($matchSectionsInfo as $sectionIndex => $section) {
+			$sectionEnd = $section->end;
+			if ($anyParams) {
+				$sectionOffset = $section->start;
+				$sectionResult = '';
+				while ($paramIndex < $paramsCount) {
+					$paramKey = $reverseParamsKeys[$paramIndex];
+					$param = $reverseParams[$paramKey];
+					if ($param->sectionIndex !== $sectionIndex) break;
+					$paramStart = $param->matchStart;
+					if ($matchIsAbsolute && $paramStart > $firstPathSlashPos) 
+						$defaultConstraint = $defaultPathConstraint;
+					if ($sectionOffset < $paramStart)
+						$sectionResult .= mb_substr($match, $sectionOffset, $paramStart - $sectionOffset);
+					$paramName = $param->name;
+					$customConstraint = isset($constraints[$paramName]);
+					if (!$customConstraint && $param->greedy) $defaultConstraint = '.*';
+					if ($customConstraint) {
+						$constraint = $constraints[$paramName];
+					} else {
+						$constraint = $defaultConstraint;
+					}
+					$sectionResult .= '(?<' . $paramName . '>' . $constraint . ')';
+					$paramIndex += 1;
+					$sectionOffset = $param->matchEnd;
+				}
+				if ($sectionOffset < $sectionEnd) 
+					$sectionResult .= mb_substr($match, $sectionOffset, $sectionEnd - $sectionOffset);
+			} else {
+				$sectionResult = mb_substr($match, $section->start, $section->length);
+			}
+			if ($matchIsAbsolute && $sectionEnd > $firstPathSlashPos) $one = 1;
+			if ($section->fixed) {
+				$pathFixedSectionsCount += $one;
+				$lastPathFixedSectionIndex = $sectionIndex;
+			} else {
+				$sectionResult = '(' . $sectionResult . ')?';
+			}
+			$sections[] = $sectionResult;
+		}
+		if ($pathFixedSectionsCount > 0) {
+			$lastFixedSectionContent = & $sections[$lastPathFixedSectionIndex];
+			if ($sectionsCountMinusOne == 0 && $lastPathFixedSectionIndex == 0 && 
+				$lastFixedSectionContent === '/'
+			) {
+				$trailingSlash = ''; // homepage -> `/`
+			} else {
+				$lastCharIsSlash = mb_substr($lastFixedSectionContent, -1, 1) == '/';
+				if ($lastPathFixedSectionIndex == $sectionsCountMinusOne) {// last section is fixed section
+					if (!$lastCharIsSlash) $trailingSlash = '/?';
+				} else {// last section is optional section or sections
+					$lastFixedSectionContent .= ($lastCharIsSlash ? '' : '/') . '?';
+					$trailingSlash = '/?';
+				}}}
+		return '#^' . implode('', $sections) . $trailingSlash . '$#';
+	}
+
+	/**
+	 * Correct last character in path element completed in `Url()` method by 
+	 * cached router configuration property `\MvcCore\Router::$trailingSlashBehaviour;`.
+	 * @param string $urlPath
+	 * @return string
+	 */
+	protected function & urlCorrectTrailingSlashBehaviour (& $urlPath) {
+		$trailingSlashBehaviour = $this->router->GetTrailingSlashBehaviour();
+		$urlPathLength = mb_strlen($urlPath);
+		$lastCharIsSlash = $urlPathLength > 0 && mb_substr($urlPath, $urlPathLength - 1) === '/';
+		if (!$lastCharIsSlash && $trailingSlashBehaviour === \MvcCore\IRouter::TRAILING_SLASH_ALWAYS) {
+			$urlPath .= '/';
+		} else if ($lastCharIsSlash && $trailingSlashBehaviour === \MvcCore\IRouter::TRAILING_SLASH_REMOVE) {
+			$urlPath = mb_substr($urlPath, 0, $urlPathLength - 1);
+		}
+		if ($urlPath === '') 
+			$urlPath = '/';
+		return $urlPath;
+	}
+	
+	protected function throwExceptionIfNoPattern () {
+		throw new \LogicException(
 			"[".__CLASS__."] Route configuration property `\MvcCore\Route::\$pattern` is missing "
 			."to parse it and complete property(ies) `\MvcCore\Route::\$match` "
 			."(and `\MvcCore\Route::\$reverse`) correctly ($this)."
 		);
-		// parse all presented `<param>` occurances in `$pattern` argument:
-		list($matchPattern, $patternParams) = $this->parsePatternParams($this->pattern);
-		// compile match regular expression from parsed params and custom constraints:
-		if ($this->reverse === NULL) {
-			list($match, $reverse) = $this->initMatchAndReverse(
-				[$matchPattern, $this->pattern], $patternParams, TRUE, $localization
-			);
-		} else {
-			list($match, $reverse) = $this->initMatchAndReverse(
-				[$matchPattern, $this->pattern], $patternParams, FALSE, $localization
-			);
-		}
-		return [$match, $reverse];
 	}
 
+
+	
 	/**
 	 * Internal method for `\MvcCore\Route::initMatch();` processing,
 	 * always called from `\MvcCore\Router::Matches();` request routing.
@@ -1303,7 +1938,7 @@ class Route implements IRoute
 	 * @throws \LogicException Thrown, when founded any other param after greedy param.
 	 * @return array Match pattern sring and statistics about founded params occurances.
 	 */
-	protected function parsePatternParams (& $pattern) {
+	/*protected function _old_parsePatternParams (& $pattern) {
 		$patternParams = [];
 		$reverseIndex = 0;
 		$matchIndex = 0;
@@ -1351,7 +1986,7 @@ class Route implements IRoute
 			$matchIndex = $matchParamClosePos;
 		}
 		return [$match, $patternParams];
-	}
+	}*/
 
 	/**
 	 * Internal method for `\MvcCore\Route::initMatch();` processing,
@@ -1410,7 +2045,7 @@ class Route implements IRoute
 	 * @param string $localization Lowercase language code, optionally with dash and uppercase locale code, `NULL` by default, not implemented in core.
 	 * @return \string[]
 	 */
-	protected function initMatchAndReverse ($patterns, & $patternParams, $compileReverse, $localization = NULL) {
+	/*protected function _old_initMatchAndReverse ($patterns, & $patternParams, $compileReverse, $localization = NULL) {
 		$trailingSlash = FALSE;
 		list($matchPattern,) = $patterns;
 		if ($patternParams) {
@@ -1436,7 +2071,7 @@ class Route implements IRoute
 			}
 		}
 		if ($compileReverse) {
-			$this->initFlagsByReverse($reverse);
+			$this->initFlagsByPatternOrReverse($reverse);
 			$this->setReverseParams($reverseParams, $localization);
 		}
 		return [
@@ -1444,9 +2079,9 @@ class Route implements IRoute
 				. ($trailingSlash ? '(?=/$|$)' : '$') . '#',
 			$reverse
 		];
-	}
+	}*/
 
-	protected function initMatchAndReverseProcessParams (& $patterns, & $patternParams, $compileReverse, $localization = NULL) {
+	/*protected function _old_initMatchAndReverseProcessParams (& $patterns, & $patternParams, $compileReverse, $localization = NULL) {
 		$constraints = $this->GetConstraints($localization);
 		list($matchPattern, $reversePattern) = $patterns;
 		$defaultConstraint = static::$DefaultConstraint;
@@ -1458,7 +2093,6 @@ class Route implements IRoute
 			$reverse = mb_substr($reversePattern, 0, $patternParams[0][3]);
 			$reverseParams = [];
 		}
-		//x(strpos($patterns[1], 'something') !== false ? $patternParams : null);
 		foreach ($patternParams as $i => $patternParam) {
 			list($paramName, $paramSection, $matchIndex, $reverseIndex, $length, $greedy) = $patternParam;
 			$customConstraint = isset($constraints[$paramName]);
@@ -1499,7 +2133,7 @@ class Route implements IRoute
 			}
 		}
 		return [$match, $reverse, $reverseParams, $trailingSlash];
-	}
+	}*/
 
 	/**
 	 * Internal method, always called from `\MvcCore\Router::Matches();` request routing,
@@ -1509,7 +2143,7 @@ class Route implements IRoute
 	 * @param string $localization Lowercase language code, optionally with dash and uppercase locale code, `NULL` by default, not implemented in core.
 	 * @return string
 	 */
-	protected function initReverse ($localization = NULL) {
+	/*protected function _old_initReverse ($localization = NULL) {
 		$index = 0;
 		$reverse = $this->GetReverse($localization);
 		if ($reverse === NULL && $this->GetPattern($localization) !== NULL) {
@@ -1539,60 +2173,17 @@ class Route implements IRoute
 			$reverseLengthMinusTwo = mb_strlen($reverse) - 2;
 			$lastCharIsSlash = mb_substr($reverse, $reverseLengthMinusTwo, 1) == '/';
 			$closePosPlusOne = $closePos + 1;
-			if ($closePosPlusOne === $reverseLengthMinusTwo + 1 || ($lastCharIsSlash && $closePosPlusOne === $reverseLengthMinusTwo)) {
+			if (
+				// if pattern ends with param section closing bracket `...param>`
+				$closePosPlusOne === $reverseLengthMinusTwo + 1 || 
+				// or if last pattern char is slash after closed param section `...param>/`
+				($lastCharIsSlash && $closePosPlusOne === $reverseLengthMinusTwo)
+			) {
 				$this->lastPatternParam = $paramName;
 			}
 		}
-		$this->initFlagsByReverse($reverse);
+		$this->initFlagsByPatternOrReverse($reverse);
 		return $reverse;
-	}
+	}*/
 
-	/**
-	 * Correct last character in path element completed in `Url()` method by 
-	 * cached router configuration property `\MvcCore\Router::$trailingSlashBehaviour;`.
-	 * @param string $urlPath
-	 * @return string
-	 */
-	protected function & correctTrailingSlashBehaviour (& $urlPath) {
-		if ($this->_trailingSlashBehaviour === NULL)
-			$this->_trailingSlashBehaviour = \MvcCore\Application::GetInstance()->GetRouter()->GetTrailingSlashBehaviour();
-		$urlPathLength = mb_strlen($urlPath);
-		$lastCharIsSlash = $urlPathLength > 0 && mb_substr($urlPath, $urlPathLength - 1) === '/';
-		if (!$lastCharIsSlash && $this->_trailingSlashBehaviour === \MvcCore\IRouter::TRAILING_SLASH_ALWAYS) {
-			$urlPath .= '/';
-		} else if ($lastCharIsSlash && $this->_trailingSlashBehaviour === \MvcCore\IRouter::TRAILING_SLASH_REMOVE) {
-			$urlPath = mb_substr($urlPath, 0, $urlPathLength - 1);
-		}
-		if ($urlPath === '') 
-			$urlPath = '/';
-		return $urlPath;
-	}
-	
-	protected function initFlagsByReverse ($pattern) {
-		$scheme = static::FLAG_SCHEME_NO;
-		if (mb_strpos($pattern, '//') === 0) {
-			$scheme = static::FLAG_SCHEME_ANY;
-		} else if (mb_strpos($pattern, 'http://') === 0) {
-			$scheme = static::FLAG_SCHEME_HTTP;
-		} else if (mb_strpos($pattern, 'https://') === 0) {
-			$scheme = static::FLAG_SCHEME_HTTPS;
-		}
-		$host = static::FLAG_HOST_NO;
-		if ($scheme) {
-			if (mb_strpos($reserve, static::HOST_PLACEHOLDER_SERVER_NAME) !== FALSE) {
-				$host = static::FLAG_HOST_SERVER_NAME;
-			} else if (mb_strpos($reserve, static::HOST_PLACEHOLDER_DOMAIN) !== FALSE) {
-				$host = static::FLAG_HOST_DOMAIN;
-			} else {
-				if (mb_strpos($reserve, static::HOST_PLACEHOLDER_TLD) !== FALSE) 
-					$host += static::FLAG_HOST_TLD;
-				if (mb_strpos($reserve, static::HOST_PLACEHOLDER_SLD) !== FALSE) 
-					$host += static::FLAG_HOST_SLD;
-			}
-		}
-		$queryString = mb_strpos($pattern, '?') !== FALSE 
-			? static::FLAG_QUERY_INCL 
-			: static::FLAG_QUERY_NO;
-		$this->flags = [$scheme, $host, $queryString];
-	}
 }

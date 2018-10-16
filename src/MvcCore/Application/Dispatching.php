@@ -95,10 +95,10 @@ trait Dispatching
 	 * @return bool
 	 */
 	public function RouteRequest () {
-		$routingResult = $this->GetRouter()->SetRequest($this->GetRequest())->Route();
-		if (!$routingResult) 
-			return $this->DispatchException('No route for request', 404);
-		return TRUE;
+		return $this
+			->GetRouter()
+			->SetRequest($this->GetRequest())
+			->Route();
 	}
 
 	/**

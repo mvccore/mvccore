@@ -636,18 +636,18 @@ interface IRequest
 	/**
 	 * Set application server name - domain without any port.
 	 * Method also change host record and domain records automaticly.
-	 * Example: `$request->SetServerName("localhost");`
-	 * @param string $rawServerName
+	 * Example: `$request->SetHostName("localhost");`
+	 * @param string $rawHostName
 	 * @return \MvcCore\IRequest
 	 */
-	public function & SetServerName ($rawServerName);
+	public function & SetHostName ($rawHostName);
 
 	/**
 	 * Get application server name - domain without any port.
 	 * Example: `"localhost"`
 	 * @return string
 	 */
-	public function GetServerName ();
+	public function GetHostName ();
 
 	/**
 	 * Set application host with port if there is any.

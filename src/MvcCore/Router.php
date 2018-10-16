@@ -85,6 +85,12 @@ class Router implements IRouter
 	protected $urlRoutes = [];
 
 	/**
+	 * TODO: dopsat
+	 * @var bool|NULL
+	 */
+	protected $routeByQueryString = NULL;
+
+	/**
 	 * Matched route by `\MvcCore\Router::Match();` processing or NULL if no match.
 	 * By this route, there is created and dispatched controller lifecycle by core.
 	 * @var \MvcCore\Route|\MvcCore\IRoute
@@ -143,6 +149,12 @@ class Router implements IRouter
 	protected $trailingSlashBehaviour = -1;
 
 	/**
+	 * TODO: dopsat
+	 * @var bool
+	 */
+	protected $autoCanonizeRequests = TRUE;
+
+	/**
 	 * Query string params separator, always initialized by configured response type.
 	 * If response has no `Content-Type` header yet, query string separator is automaticly
 	 * configured to `&`. That's why is very important to define response content type
@@ -157,6 +169,12 @@ class Router implements IRouter
 	 * @var bool
 	 */
 	protected $anyRoutesConfigured = FALSE;
+
+	/**
+	 * TODO: dopsat
+	 * @var bool
+	 */
+	protected $internalRequest = FALSE;
 
 
 	/**
@@ -374,12 +392,15 @@ class Router implements IRouter
 		if ($prepend) $routes = array_reverse($routes);
 		$routeClass = self::$routeClass;
 		foreach ($routes as $routeName => & $route) {
-			$ctrlActionName = mb_strpos($routeName, ':') !== FALSE;
 			$numericKey = is_numeric($routeName);
+			$ctrlActionName = !$numericKey && mb_strpos($routeName, ':') !== FALSE;
 			if ($route instanceof \MvcCore\IRoute) {
 				if ($numericKey) {
-					if (!$route->GetName()) 
-						$route->SetName($route->GetControllerAction());
+					if (!$route->GetName()) {
+						$routeAutoName = $route->GetControllerAction();
+						if ($routeAutoName === ':') $routeAutoName = 'Route_' . $routeName;
+						$route->SetName($routeAutoName);
+					}
 				} else {
 					if ($ctrlActionName)
 						$route->SetControllerAction($routeName);
@@ -472,12 +493,12 @@ class Router implements IRouter
 			if (isset($this->urlRoutes[$controllerAction]))
 				$errorMsgs[] = 'Route with `Controller:Action` combination: `'.$controllerAction.'` has already been defined between router routes.';
 			if ($errorMsgs) {
-				var_dump($this->routes);
+				//var_dump($this->routes);
 				throw new \InvalidArgumentException('['.__CLASS__.'] '.implode(' ',$errorMsgs));
 			}
 		}
 		$this->urlRoutes[$routeName] = $instance;
-		$this->urlRoutes[$controllerAction] = $instance;
+		if ($controllerAction !== ':') $this->urlRoutes[$controllerAction] = $instance;
 		if ($prepend) {
 			$newRoutes = [];
 			$newRoutes[$routeName] = $instance; 
@@ -570,6 +591,24 @@ class Router implements IRouter
 	public function & SetRequest (\MvcCore\IRequest & $request) {
 		$this->request = & $request;
 		return $this;
+	}
+
+	/**
+	 * TODO: dopsat
+	 * @param bool|NULL $routeByQueryString 
+	 * @return \MvcCore\Router
+	 */
+	public function & SetRouteByQueryString ($routeByQueryString = TRUE) {
+		$this->routeByQueryString = $routeByQueryString;
+		return $this;
+	}
+
+	/**
+	 * TODO: dopsat
+	 * @return bool|NULL
+	 */
+	public function GetRouteByQueryString () {
+		return $this->routeByQueryString;
 	}
 
 	/**
@@ -681,6 +720,24 @@ class Router implements IRouter
 		return $this;
 	}
 
+	/**
+	 * TODO: dopsat
+	 * @return bool
+	 */
+	public function GetAutoCanonizeRequests () {
+		return $this->autoCanonizeRequests;
+	}
+
+	/**
+	 * TODO: dopsat
+	 * @param bool $autoCanonizeRequests 
+	 * @return \MvcCore\Router
+	 */
+	public function & SetAutoCanonizeRequests ($autoCanonizeRequests = TRUE) {
+		$this->autoCanonizeRequests = $autoCanonizeRequests;
+		return $this;
+	}
+
 
 	/**
 	 * Route current application request by configured routes list or by query string data.
@@ -706,38 +763,55 @@ class Router implements IRouter
 	 * @return bool
 	 */
 	public function Route () {
-		if (!$this->redirectToProperTrailingSlashIfNecessary()) return FALSE;
-		list($routeByQueryString, $requestCtrlName, $requestActionName) = $this->routeDetectStrategy();
+		$this->internalRequest = $this->request->IsInternalRequest();
+		if (!$this->internalRequest && !$this->routeByQueryString) 
+			if (!$this->redirectToProperTrailingSlashIfNecessary()) return FALSE;
+		list($requestCtrlName, $requestActionName) = $this->routeDetectStrategy();
 		$this->anyRoutesConfigured = count($this->routes) > 0;
-		if ($routeByQueryString) {
+		if ($this->routeByQueryString) {
 			$this->routeByControllerAndActionQueryString($requestCtrlName, $requestActionName);
 		} else {
 			$this->routeByRewriteRoutes($requestCtrlName, $requestActionName);
 		}
-		$this->routeSetUpDefaultForHomeIfNoMatch();
-		return $this->routeSetUpSelfRouteName();
+		if (!$this->routeProcessRouteRedirectionIfAny()) return FALSE;
+		return $this->routeSetUpDefaultForHomeIfNoMatch()
+					->routeSetUpSelfRouteNameIfAny()
+					->routeRedirect2CanonicalIfAny();
 	}
 
 	/**
-	 * Detect routing strategy - if first returned item is `TRUE`,
-	 * route by query string params, if `FALSE` route by reqrite routes.
+	 * TODO: neaktualni
 	 * @return array
 	 */
 	protected function routeDetectStrategy () {
 		$request = & $this->request;
 		$requestCtrlName = $request->GetControllerName();
 		$requestActionName = $request->GetActionName();
-		list($reqScriptName, $reqPath) = [$request->GetScriptName(), $request->GetPath(TRUE)];
-		$requestCtrlAndAlsoAction = $requestCtrlName !== NULL && $requestActionName !== NULL;
-		$requestCtrlOrAction = $requestCtrlName !== NULL || $requestActionName !== NULL;
-		$routeByQueryString = (
-			$requestCtrlAndAlsoAction ||
-			($requestCtrlOrAction && (
-				$reqScriptName === $reqPath || 
-				trim($reqPath, '/') === ''
-			))
-		);
-		return [$routeByQueryString, $requestCtrlName, $requestActionName];
+		if ($this->routeByQueryString === NULL) {
+			list($reqScriptName, $reqPath) = [$request->GetScriptName(), $request->GetPath(TRUE)];
+			$requestCtrlAndAlsoAction = $requestCtrlName !== NULL && $requestActionName !== NULL;
+			$requestCtrlOrAction = $requestCtrlName !== NULL || $requestActionName !== NULL;
+			$this->routeByQueryString = (
+				$requestCtrlAndAlsoAction ||
+				($requestCtrlOrAction && (
+					$reqScriptName === $reqPath || 
+					trim($reqPath, '/') === ''
+				))
+			);
+		}
+		return [$requestCtrlName, $requestActionName];
+	}
+
+	protected function routeProcessRouteRedirectionIfAny () {
+		if ($this->currentRoute instanceof \MvcCore\IRoute) {
+			$redirectRouteName = $this->currentRoute->GetRedirect();
+			if ($redirectRouteName !== NULL) {
+				$redirectUrl = $this->Url($redirectRouteName, $this->requestedParams);
+				$this->redirect($redirectUrl, \MvcCore\IResponse::MOVED_PERMANENTLY);
+				return FALSE;
+			}
+		}
+		return TRUE;
 	}
 
 	/**
@@ -745,7 +819,7 @@ class Router implements IRouter
 	 * check if request is homepage or if router is configured to route
 	 * request to default controller and action if no match and set up new 
 	 * route as current route for default controller and action if necessary.
-	 * @return void
+	 * @return \MvcCore\Router
 	 */
 	protected function routeSetUpDefaultForHomeIfNoMatch () {
 		if ($this->currentRoute === NULL) {
@@ -759,23 +833,107 @@ class Router implements IRouter
 				$this->SetOrCreateDefaultRouteAsCurrent(
 					\MvcCore\IRouter::DEFAULT_ROUTE_NAME, $dfltCtrl, $dftlAction
 				);
+				// set up requested params from query string if there are any (and path if there is path from previous fn)
+				$requestParams = array_merge([], $this->request->GetParams(FALSE));
+				unset($requestParams['controller'], $requestParams['action']);
+				$this->requestedParams = & $requestParams;
 			}
 		}
+		return $this;
 	}
 
 	/**
 	 * After routing is done, check if there is any current route and set up
 	 * property `$this->selfRouteName` with currently matched route name.
-	 * Return `TRUE` if current route is route instance or `FALSE` otherwise.
-	 * @return bool
+	 * @return \MvcCore\Router
 	 */
-	protected function routeSetUpSelfRouteName () {
-		$result = $this->currentRoute instanceof \MvcCore\IRoute;
-		if ($result) 
+	protected function routeSetUpSelfRouteNameIfAny () {
+		if ($this->currentRoute instanceof \MvcCore\IRoute) 
 			$this->selfRouteName = $this->anyRoutesConfigured
 				? $this->currentRoute->GetName()
 				: $this->currentRoute->GetControllerAction();
-		return $result;
+		return $this;
+	}
+
+	/**
+	 * TODO:
+	 * Return `TRUE` if current route is route instance or `FALSE` otherwise.
+	 * @return bool
+	 */
+	protected function routeRedirect2CanonicalIfAny () {
+		if (
+			$this->internalRequest || !$this->autoCanonizeRequests || 
+			$this->request->GetMethod() !== \MvcCore\IRequest::METHOD_GET
+		) return TRUE;
+		if ($this->routeByQueryString) {
+			// self url could be completed only by query string strategy
+			return $this->routeRedirect2CanonicalQueryStringStrategy();
+		} else if ($this->selfRouteName !== NULL) {
+			// self url could be completed by rewrite routes strategy
+			return $this->routeRedirect2CanonicalRewriteRoutesStrategy();
+		}
+		return TRUE;
+	}
+
+	protected function routeRedirect2CanonicalQueryStringStrategy () {
+		$req = & $this->request;
+		$redirectToCanonicalUrl = FALSE;
+		$requestGlobalGet = & $req->GetGlobalCollection('get');
+		$requestedCtrlDc = isset($requestGlobalGet['controller']) ? $requestGlobalGet['controller'] : NULL;
+		$requestedActionDc = isset($requestGlobalGet['action']) ? $requestGlobalGet['action'] : NULL;
+		$toolClass = self::$toolClass;
+		list($dfltCtrlPc, $dftlActionPc) = $this->application->GetDefaultControllerAndActionNames();
+		$dfltCtrlDc = $toolClass::GetDashedFromPascalCase($dfltCtrlPc);
+		$dftlActionDc = $toolClass::GetDashedFromPascalCase($dftlActionPc);
+		$requestedParamsClone = array_merge([], $this->requestedParams);
+		if ($requestedCtrlDc === NULL && $requestedParamsClone['controller'] === $dfltCtrlDc) {
+			unset($requestedParamsClone['controller']);
+			$redirectToCanonicalUrl = TRUE;
+		} else if ($requestedCtrlDc !== NULL && $requestedCtrlDc === $dfltCtrlDc) {
+			unset($requestedParamsClone['controller']);
+			$redirectToCanonicalUrl = TRUE;
+		}
+		if ($requestedActionDc === NULL && $requestedParamsClone['action'] === $dftlActionDc) {
+			unset($requestedParamsClone['action']);
+			$redirectToCanonicalUrl = TRUE;
+		} else if ($requestedActionDc !== NULL && $requestedActionDc === $dftlActionDc) {
+			unset($requestedParamsClone['action']);
+			$redirectToCanonicalUrl = TRUE;
+		}
+		if ($redirectToCanonicalUrl) {
+			$selfCanonicalUrl = $this->UrlByQueryString($this->selfRouteName, $requestedParamsClone);	
+			$this->redirect($selfCanonicalUrl, \MvcCore\IResponse::MOVED_PERMANENTLY);
+			return FALSE;
+		}
+		return TRUE;
+	}
+	
+	protected function routeRedirect2CanonicalRewriteRoutesStrategy () {
+		$req = & $this->request;
+		$redirectToCanonicalUrl = FALSE;
+		$defaultParams =  $this->GetDefaultParams() ?: [];
+		list($selfUrlDomainAndBasePart, $selfUrlPathAndQueryPart) = $this->urlRoutes[$this->selfRouteName]->Url(
+			$req, $this->requestedParams, $defaultParams, $this->getQueryStringParamsSepatator()
+		);
+		if (mb_strlen($selfUrlDomainAndBasePart) > 0 && $selfUrlDomainAndBasePart !== $req->GetBaseUrl()) 
+			$redirectToCanonicalUrl = TRUE;
+		if (mb_strlen($selfUrlPathAndQueryPart) > 0) {
+			$path = $req->GetPath(TRUE);
+			$path = $path === '' ? '/' : $path ;
+			$requestedUrl = $req->GetBasePath() . $path;
+			if (mb_strpos($selfUrlPathAndQueryPart, '?') !== FALSE) {
+				$selfUrlPathAndQueryPart = rawurldecode($selfUrlPathAndQueryPart);
+				$requestedUrl .= $req->GetQuery(TRUE, TRUE);
+			}
+			if ($selfUrlPathAndQueryPart !== $requestedUrl) 
+				$redirectToCanonicalUrl = TRUE;
+		}
+		if ($redirectToCanonicalUrl) {
+			$selfCanonicalUrl = $this->Url($this->selfRouteName, $this->requestedParams);
+			$this->redirect($selfCanonicalUrl, \MvcCore\IResponse::MOVED_PERMANENTLY);
+			return FALSE;
+		}
+		return TRUE;
 	}
 
 	/**
@@ -850,32 +1008,35 @@ class Router implements IRouter
 	 */
 	public function Url ($controllerActionOrRouteName = 'Index:Index', array $params = []) {
 		$result = '';
-		$request = & $this->request;
-		
-		$controllerActionOrRouteNameKey = $controllerActionOrRouteName;
-		if (strpos($controllerActionOrRouteName, ':') !== FALSE) {
-			list($ctrlPc, $actionPc) = explode(':', $controllerActionOrRouteName);
+		$ctrlActionOrRouteNameKey = $this->urlGetCompletedCtrlActionKey(
+			$controllerActionOrRouteName
+		);
+		if ($this->anyRoutesConfigured && isset($this->urlRoutes[$ctrlActionOrRouteNameKey])) {
+			$result = $this->UrlByRoute($this->urlRoutes[$ctrlActionOrRouteNameKey], $params, $controllerActionOrRouteName);
+		} else if ($this->anyRoutesConfigured && isset($this->routes[$ctrlActionOrRouteNameKey])) {
+			$result = $this->UrlByRoute($this->routes[$ctrlActionOrRouteNameKey], $params, $controllerActionOrRouteName);
+		} else {
+			$result = $this->UrlByQueryString($ctrlActionOrRouteNameKey, $params, $controllerActionOrRouteName);
+		}
+		return $result;
+	}
+
+	protected function urlGetCompletedCtrlActionKey ($controllerAction) {
+		$result = $controllerAction;
+		if (strpos($controllerAction, ':') !== FALSE) {
+			list($ctrlPc, $actionPc) = explode(':', $controllerAction);
 			if (!$ctrlPc) {
 				$toolClass = self::$toolClass;
-				$ctrlPc = $toolClass::GetPascalCaseFromDashed($request->GetControllerName());
+				$ctrlPc = $toolClass::GetPascalCaseFromDashed($this->request->GetControllerName());
 			}
 			if (!$actionPc) {
 				$toolClass = self::$toolClass;
-				$actionPc = $toolClass::GetPascalCaseFromDashed($request->GetActionName());
+				$actionPc = $toolClass::GetPascalCaseFromDashed($this->request->GetActionName());
 			}
-			$controllerActionOrRouteNameKey = "$ctrlPc:$actionPc";
-		} else if ($controllerActionOrRouteName == 'self') {
-			$controllerActionOrRouteNameKey = $this->selfRouteName;
+			$result = "$ctrlPc:$actionPc";
+		} else if ($controllerAction == 'self') {
+			$result = $this->selfRouteName;
 		}
-		
-		if ($this->anyRoutesConfigured && isset($this->urlRoutes[$controllerActionOrRouteNameKey])) {
-			$result = $this->UrlByRoute($this->urlRoutes[$controllerActionOrRouteNameKey], $params, $controllerActionOrRouteName);
-		} else if ($this->anyRoutesConfigured && isset($this->routes[$controllerActionOrRouteNameKey])) {
-			$result = $this->UrlByRoute($this->routes[$controllerActionOrRouteNameKey], $params, $controllerActionOrRouteName);
-		} else {
-			$result = $this->UrlByQueryString($controllerActionOrRouteNameKey, $params, $controllerActionOrRouteName);
-		}
-
 		return $result;
 	}
 
@@ -976,11 +1137,11 @@ class Router implements IRouter
 			unset($params['action']);
 		}
 		$amp = $this->getQueryStringParamsSepatator();
-		list($dfltCtrl, $dftlAction) = $this->application->GetDefaultControllerAndActionNames();
+		list($dfltCtrlPc, $dftlActionPc) = $this->application->GetDefaultControllerAndActionNames();
 		$absolute = $this->urlGetAbsoluteParam($params);
 		$result = '';
-		$ctrlIsNotDefault = $ctrlPc !== $dfltCtrl;
-		$actionIsNotDefault = $actionPc !== $dftlAction;
+		$ctrlIsNotDefault = $ctrlPc !== $dfltCtrlPc;
+		$actionIsNotDefault = $actionPc !== $dftlActionPc;
 		$sep = '?';
 		if ($params || $ctrlIsNotDefault || $actionIsNotDefault) {
 			$result .= $this->request->GetScriptName();
@@ -995,7 +1156,7 @@ class Router implements IRouter
 		}
 		if ($params) {
 			// `http_build_query()` automaticly converts all XSS chars to entities (`< > & " ' &`):
-			$result .= $sep . str_replace('%2F', '/', http_build_query($params, '', $amp));
+			$result .= $sep . str_replace('%2F', '/', http_build_query($params, '', $amp, PHP_QUERY_RFC3986));
 		}
 		if ($result == '') $result = '/';
 		$result = $this->request->GetBasePath() . $result;
@@ -1057,10 +1218,9 @@ class Router implements IRouter
 	 */
 	protected function & getRouteInstance (& $routeCfgOrRoute) {
 		if ($routeCfgOrRoute instanceof \MvcCore\IRoute) 
-			return $routeCfgOrRoute;
+			return $routeCfgOrRoute->SetRouter($this);
 		$routeClass = self::$routeClass;
-		$instance = $routeClass::CreateInstance($routeCfgOrRoute);
-		return $instance;
+		return $routeClass::CreateInstance($routeCfgOrRoute)->SetRouter($this);
 	}
 
 	/**
@@ -1101,34 +1261,32 @@ class Router implements IRouter
 		foreach ($this->routes as & $route) {
 			$routeMethod = $route->GetMethod();
 			if ($routeMethod !== NULL && $routeMethod !== $requestMethod) continue;
-			if ($allMatchedParams = $route->Matches($request, NULL)) {
+			if ($allMatchedParams = $route->Matches($request)) {
 				$this->currentRoute = clone $route;
-				
-
-				$requestParams = $this->routeByRewriteRoutesSetRequestedAndDefaultParams(
+				$this->currentRoute->SetMatchedParams($allMatchedParams);
+				$requestParams = $this->routeByRRSetRequestedAndDefaultParams(
 					$allMatchedParams
 				);
-
-
-				$break = $this->routeByRewriteRoutesSetRequestParams($allMatchedParams, $requestParams);
+				$break = $this->routeByRRSetRequestParams($allMatchedParams, $requestParams);
 				if ($break) break;
 			}
 		}
 		if ($this->currentRoute !== NULL) 
-			$this->routeByRewriteRoutesSetUpRequestByCurrentRoute(
+			$this->routeByRRSetUpRequestByCurrentRoute(
 				$allMatchedParams['controller'], $allMatchedParams['action']
 			);
 	}
 
-	protected function & routeByRewriteRoutesSetRequestedAndDefaultParams (& $allMatchedParams) {
+	protected function & routeByRRSetRequestedAndDefaultParams (& $allMatchedParams) {
 		$request = & $this->request;
 		$routeDefaults = & $this->currentRoute->GetDefaults();
 		$rawQueryParams = $request->GetParams(FALSE);
-		$routeReverseParams = $this->currentRoute->GetReverseParams();
+		// redirect route with strictly defined match regexp and not defined reverse could have `NULL` method result:
+		$routeReverseParams = $this->currentRoute->GetReverseParams() ?: [];
 		// complete realy matched params from path
 		$pathMatchedParams = array_merge([], $allMatchedParams);
-		$controllerInReverse	= in_array('controller', $routeReverseParams);
-		$actionInReverse		= in_array('action', $routeReverseParams);
+		$controllerInReverse	= in_array('controller', $routeReverseParams, TRUE);
+		$actionInReverse		= in_array('action', $routeReverseParams, TRUE);
 		if (!$controllerInReverse)	unset($pathMatchedParams['controller']);
 		if (!$actionInReverse)		unset($pathMatchedParams['action']);
 		// complete params for request object
@@ -1149,11 +1307,11 @@ class Router implements IRouter
 		return $requestParams;
 	}
 
-	protected function routeByRewriteRoutesSetRequestParams (& $allMatchedParams, & $requestParams) {
+	protected function routeByRRSetRequestParams (& $allMatchedParams, & $requestParams) {
 		$request = & $this->request;
 		// filter request params
 		list($success, $requestParamsFiltered) = $this->currentRoute->Filter(
-			$requestParams, $this->defaultParams, \MvcCore\IRoute::FILTER_IN
+			$requestParams, $this->defaultParams, \MvcCore\IRoute::CONFIG_FILTER_IN
 		);
 		if ($success === FALSE) {
 			$this->currentRoute = NULL;
@@ -1176,7 +1334,7 @@ class Router implements IRouter
 	 * @param string $actionName
 	 * @return void
 	 */
-	protected function routeByRewriteRoutesSetUpRequestByCurrentRoute ($requestCtrlName, $requestActionName) {
+	protected function routeByRRSetUpRequestByCurrentRoute ($requestCtrlName, $requestActionName) {
 		$route = $this->currentRoute;
 		$request = & $this->request;
 		$toolClass = self::$toolClass;

@@ -57,6 +57,7 @@ interface IRouter
 	 */
 	const DEFAULT_ROUTE_NAME_NOT_FOUND = 'not_found';
 
+
 	/**
 	 * Always keep trailing slash in requested url or
 	 * always add trailing slash into url and redirect to it.
@@ -73,6 +74,7 @@ interface IRouter
 	 */
 	const TRAILING_SLASH_REMOVE = -1;
 
+
 	/**
 	 * URL param name to define target controller.
 	 */
@@ -87,6 +89,31 @@ interface IRouter
 	 * URL param name to build absolute URL address.
 	 */
 	const URL_PARAM_ABSOLUTE = 'absolute';
+	
+	/**
+	 * URL param name to place custom host into route reverse pattern placeholder `%host%`.
+	 */
+	const URL_PARAM_HOST = 'host';
+	
+	/**
+	 * URL param name to place custom domain into route reverse pattern placeholder `%domain%`.
+	 */
+	const URL_PARAM_DOMAIN = 'domain';
+	
+	/**
+	 * URL param name to place custom tld into route reverse pattern placeholder `%tld%`.
+	 */
+	const URL_PARAM_TLD = 'tld';
+	
+	/**
+	 * URL param name to place custom sld into route reverse pattern placeholder `%sld%`.
+	 */
+	const URL_PARAM_SLD = 'sld';
+	
+	/**
+	 * URL param name to place custom basePath into route reverse pattern placeholder `%basePath%`.
+	 */
+	const URL_PARAM_BASEPATH = 'basePath';
 
 
 	/**
@@ -330,6 +357,19 @@ interface IRouter
 	public function & SetRequest (\MvcCore\IRequest & $request);
 
 	/**
+	 * TODO: dopsat
+	 * @param bool|NULL $routeByQueryString 
+	 * @return \MvcCore\IRouter
+	 */
+	public function & SetRouteByQueryString ($routeByQueryString = TRUE);
+
+	/**
+	 * TODO: dopsat
+	 * @return bool|NULL
+	 */
+	public function GetRouteByQueryString ();
+
+	/**
 	 * Set matched route instance for given request object
 	 * into `\MvcCore\Route::Route($request);` method. Currently
 	 * matched route is always assigned internally in that method.
@@ -418,6 +458,19 @@ interface IRouter
 	 * @return \MvcCore\IRouter
 	 */
 	public function & SetTrailingSlashBehaviour ($trailingSlashBehaviour = -1);
+
+	/**
+	 * TODO: dopsat
+	 * @return bool
+	 */
+	public function GetAutoCanonizeRequests ();
+
+	/**
+	 * TODO: dopsat
+	 * @param bool $autoCanonizeRequests 
+	 * @return \MvcCore\IRouter
+	 */
+	public function & SetAutoCanonizeRequests ($autoCanonizeRequests = TRUE);
 
 	/**
 	 * Route current application request by configured routes list or by query string data.

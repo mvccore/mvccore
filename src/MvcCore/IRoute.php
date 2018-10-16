@@ -63,44 +63,123 @@ namespace MvcCore;
 interface IRoute
 {
 	/**
-	 * Route configuration key for filtering params in - `"in"`.
+	 * Route advanced configuration key for filtering params in - `"in"`.
 	 */
-	const FILTER_IN = 'in';
+	const CONFIG_FILTER_IN = 'in';
 
 	/**
-	 * Route configuration key for filtering params out - `"out"`.
+	 * Route advanced configuration key for filtering params out - `"out"`.
 	 */
-	const FILTER_OUT = 'out';
+	const CONFIG_FILTER_OUT = 'out';
 
 	/**
-	 * Route INTERNAL flag if route `match` & `pattern` is relative with requested path only.
+	 * Route advanced configuration key to define the only matching http method.
 	 */
-	const FLAG_SHEME_NO = 0;
+	const CONFIG_METHOD = 'method';
 
 	/**
-	 * Route INTERNAL flag if route `match` & `pattern` contains `//` at the beginning.
+	 * Route advanced configuration key to define another route name to redirect matched request to.
 	 */
-	const FLAG_SHEME_ANY = 1;
+	const CONFIG_REDIRECT = 'redirect';
 
 	/**
-	 * Route INTERNAL flag if route `match` & `pattern` contains `http://` at the beginning.
+	 * Route advanced configuration key to complete always absolute URL address.
 	 */
-	const FLAG_SHEME_HTTP = 6;
+	const CONFIG_ABSOLUTE = 'absolute';
+
 
 	/**
-	 * Route INTERNAL flag if route `match` & `pattern` contains `https://` at the beginning.
+	 * Route INTERNAL flag if route `pattern` or `reverse` is relative with requested path only.
 	 */
-	const FLAG_SHEME_HTTPS = 7;
+	const FLAG_SCHEME_NO = 0;
 
 	/**
-	 * Route INTERNAL flag if route `match` & `pattern` doesn't contain query string.
+	 * Route INTERNAL flag if route `pattern` or `reverse` contains `//` at the beginning.
+	 * The value is also length of string `//`.
+	 */
+	const FLAG_SCHEME_ANY = 2;
+
+	/**
+	 * Route INTERNAL flag if route `pattern` or `reverse` contains `http://` at the beginning.
+	 * The value is also length of string `http://`.
+	 */
+	const FLAG_SCHEME_HTTP = 7;
+
+	/**
+	 * Route INTERNAL flag if route `pattern` or `reverse` contains `https://` at the beginning.
+	 * The value is also length of string `https://`.
+	 */
+	const FLAG_SCHEME_HTTPS = 8;
+
+	/**
+	 * Route INTERNAL flag if route `pattern` or `reverse` doesn't contain any query string chars.
 	 */
 	const FLAG_QUERY_NO = 0;
 
 	/**
-	 * Route INTERNAL flag if route `match` & `pattern` contains query string.
+	 * Route INTERNAL flag if route `pattern` or `reverse` contains some query string part.
 	 */
 	const FLAG_QUERY_INCL = 1;
+	
+	/**
+	 * Route INTERNAL flag if route `pattern` or `reverse` doesn't contain any host targeting.
+	 */
+	const FLAG_HOST_NO = 0;
+
+	/**
+	 * Route INTERNAL flag if route `pattern` or `reverse` contains whole `%host%` targeting.
+	 */
+	const FLAG_HOST_HOST = 1;
+
+	/**
+	 * Route INTERNAL flag if route `pattern` or `reverse` contains `%domain%` host targeting.
+	 */
+	const FLAG_HOST_DOMAIN = 2;
+
+	/**
+	 * Route INTERNAL flag if route `pattern` or `reverse` contains `%tld%` host targeting.
+	 */
+	const FLAG_HOST_TLD = 3;
+
+	/**
+	 * Route INTERNAL flag if route `pattern` or `reverse` contains `%sld%` host targeting.
+	 */
+	const FLAG_HOST_SLD = 4;
+
+	/**
+	 * Route INTERNAL flag if route `pattern` or `reverse` contains `%basePath%` targeting.
+	 */
+	const FLAG_HOST_BASEPATH = 10;
+	
+	/**
+	 * Route INTERNAL placeholder for `pattern` to match any request host and for `reverse`
+	 * to hold place for given `host` URL param or for currently requested host.
+	 */
+	const PLACEHOLDER_HOST = '%host%';
+	
+	/**
+	 * Route INTERNAL placeholder for `pattern` to match any request domain and for `reverse`
+	 * to hold place for given `domain` URL param or for currently requested domain.
+	 */
+	const PLACEHOLDER_DOMAIN = '%domain%';
+
+	/**
+	 * Route INTERNAL placeholder for `pattern` to match any request tld and for `reverse`
+	 * to hold place for given `tld` URL param or for currently requested tld.
+	 */
+	const PLACEHOLDER_TLD = '%tld%';
+
+	/**
+	 * Route INTERNAL placeholder for `pattern` to match any request sld and for `reverse`
+	 * to hold place for given `sld` URL param or for currently requested sld.
+	 */
+	const PLACEHOLDER_SLD = '%sld%';
+
+	/**
+	 * Route INTERNAL placeholder for `pattern` to match any request basePath and for `reverse`
+	 * to hold place for given `basePath` URL param or for currently requested basePath.
+	 */
+	const PLACEHOLDER_BASEPATH = '%basePath%';
 
 	/**
 	 * Create every time new route instance, no singleton managing!
@@ -172,10 +251,9 @@ interface IRoute
 	 *   matching all to the end of address. It has to be the last one.
 	 *
 	 * Example: `"/products-list/<name>/<color*>"`.
-	 * @param string $localization Lowercase language code, optionally with dash and uppercase locale code, `NULL` by default, not implemented in core.
 	 * @return string|\string[]|NULL
 	 */
-	public function GetPattern ($localization = NULL);
+	public function GetPattern ();
 
 	/**
 	 * Set route pattern to match request url and to build url address.
@@ -200,10 +278,9 @@ interface IRoute
 	 *
 	 * Example: `"/products-list/<name>/<color*>"`.
 	 * @param string|\string[] $pattern
-	 * @param string $localization Lowercase language code, optionally with dash and uppercase locale code, `NULL` by default, not implemented in core.
 	 * @return \MvcCore\IRoute
 	 */
-	public function & SetPattern ($pattern, $localization = NULL);
+	public function & SetPattern ($pattern);
 
 	/**
 	 * Get route match pattern in raw form (to use it as it is) to match proper request.
@@ -220,10 +297,9 @@ interface IRoute
 	 * conversion into `\MvcCore\Route::$match` and `\MvcCore\Route::$reverse` properties.
 	 *
 	 * Example: `"#^/products\-list/(?<name>[^/]*)/(?<color>[a-z]*)#"`
-	 * @param string $localization Lowercase language code, optionally with dash and uppercase locale code, `NULL` by default, not implemented in core.
 	 * @return string|\string[]|NULL
 	 */
-	public function GetMatch ($localization = NULL);
+	public function GetMatch ();
 
 	/**
 	 * Set route match pattern in raw form (to use it as it is) to match proper request.
@@ -241,10 +317,9 @@ interface IRoute
 	 *
 	 * Example: `"#^/products\-list/(?<name>[^/]*)/(?<color>[a-z]*)#"`
 	 * @param string|\string[] $match
-	 * @param string $localization Lowercase language code, optionally with dash and uppercase locale code, `NULL` by default, not implemented in core.
 	 * @return \MvcCore\IRoute
 	 */
-	public function & SetMatch ($match, $localization = NULL);
+	public function & SetMatch ($match);
 
 	/**
 	 * Get route reverse address replacements pattern to build url.
@@ -265,10 +340,9 @@ interface IRoute
 	 * conversion into `\MvcCore\Route::$match` and `\MvcCore\Route::$reverse` properties.
 	 *
 	 * Example: `"/products-list/<name>/<color>"`
-	 * @param string $localization Lowercase language code, optionally with dash and uppercase locale code, `NULL` by default, not implemented in core.
 	 * @return string|\string[]|NULL
 	 */
-	public function GetReverse ($localization = NULL);
+	public function GetReverse ();
 
 	/**
 	 * Set route reverse address replacements pattern to build url.
@@ -290,10 +364,9 @@ interface IRoute
 	 *
 	 * Example: `"/products-list/<name>/<color>"`
 	 * @param string|\string[] $reverse
-	 * @param string $localization Lowercase language code, optionally with dash and uppercase locale code, `NULL` by default, not implemented in core.
 	 * @return \MvcCore\IRoute
 	 */
-	public function & SetReverse ($reverse, $localization = NULL);
+	public function & SetReverse ($reverse);
 
 	/**
 	 * Get route name. It's your custom keyword/term
@@ -421,10 +494,9 @@ interface IRoute
 	 *	  "name"  => "default-name",
 	 *	  "color" => "red"
 	 *  );`.
-	 * @param string $localization Lowercase language code, optionally with dash and uppercase locale code, `NULL` by default, not implemented in core.
 	 * @return array|\array[]
 	 */
-	public function & GetDefaults ($localization = NULL);
+	public function & GetDefaults ();
 
 	/**
 	 * Set route rewrited params default values and also any other params default values.
@@ -436,10 +508,9 @@ interface IRoute
 	 *	  "color" => "red"
 	 *  );`.
 	 * @param array|\array[] $defaults
-	 * @param string $localization Lowercase language code, optionally with dash and uppercase locale code, `NULL` by default, not implemented in core.
 	 * @return \MvcCore\IRoute
 	 */
-	public function & SetDefaults ($defaults = [], $localization = NULL);
+	public function & SetDefaults ($defaults = []);
 
 	/**
 	 * Get array with param names and their custom regular expression
@@ -453,10 +524,9 @@ interface IRoute
 	 *		"name"	=> "[^/]*",
 	 *		"color"	=> "[a-z]*",
 	 *	);`
-	 * @param string $localization Lowercase language code, optionally with dash and uppercase locale code, `NULL` by default, not implemented in core.
 	 * @return array|\array[]
 	 */
-	public function GetConstraints ($localization = NULL);
+	public function GetConstraints ();
 
 	/**
 	 * Set array with param names and their custom regular expression
@@ -471,13 +541,12 @@ interface IRoute
 	 *		"color"	=> "[a-z]*",
 	 *	);`
 	 * @param array|\array[] $constraints
-	 * @param string $localization Lowercase language code, optionally with dash and uppercase locale code, `NULL` by default, not implemented in core.
 	 * @return \MvcCore\IRoute
 	 */
-	public function & SetConstraints ($constraints = [], $localization = NULL);
+	public function & SetConstraints ($constraints = []);
 
 	/**
-	 * Get URL address params filters fo filter URL aprams in and out. Filters are 
+	 * Get URL address params filters to filter URL params in and out. Filters are 
 	 * `callable`s always and only under keys `"in" | "out"`, accepting arguments: 
 	 * `array $params, array $defaultParams, \MvcCore\IRequest $request`. 
 	 * First argument is associative array with params from requested URL address 
@@ -490,7 +559,7 @@ interface IRoute
 	public function & GetFilters ();
 
 	/**
-	 * Set URL address params filters fo filter URL aprams in and out. Filters are 
+	 * Set URL address params filters to filter URL params in and out. Filters are 
 	 * `callable`s always and only under keys `"in" | "out"`, accepting arguments: 
 	 * `array $params, array $defaultParams, \MvcCore\IRequest $request`. 
 	 * First argument is associative array with params from requested URL address 
@@ -502,6 +571,35 @@ interface IRoute
 	 * @return \MvcCore\IRoute
 	 */
 	public function & SetFilters (array $filters = []);
+
+	/**
+	 * Get URL address params filter to filter URL params in and out. Filter is 
+	 * `callable` always and only under `$direction` keys `"in" | "out"`, accepting arguments: 
+	 * `array $params, array $defaultParams, \MvcCore\IRequest $request`. 
+	 * First argument is associative array with params from requested URL address 
+	 * for `"in"` filter and associative array with params to build URL address 
+	 * for `"out"` filter. Second param is always associative `array` with default 
+	 * params and third argument is current request instance.
+	 * `Callable` filter function must return `array` with filtered params.
+	 * @param string $direction
+	 * @return array
+	 */
+	public function GetFilter ($direction = \MvcCore\IRoute::CONFIG_FILTER_IN);
+
+	/**
+	 * Set URL address params filter to filter URL params in and out. 
+	 * Filter is `callable` accepting arguments: 
+	 * `array $params, array $defaultParams, \MvcCore\IRequest $request`. 
+	 * First argument is associative array with params from requested URL address 
+	 * for `"in"` filter and associative array with params to build URL address 
+	 * for `"out"` filter. Second param is always associative` array` with default 
+	 * params and third argument is current request instance.
+	 * `Callable` filter function must return `array` with filtered params.
+	 * @param callable $handler 
+	 * @param string $direction
+	 * @return \MvcCore\IRoute
+	 */
+	public function & SetFilter ($handler, $direction = \MvcCore\IRoute::CONFIG_FILTER_IN);
 
 	/**
 	 * Get http method to only match requests with this defined method.
@@ -523,17 +621,30 @@ interface IRoute
 	public function & SetMethod ($method = NULL);
 
 	/**
+	 * TODO: dopsat
+	 * @return string|NULL
+	 */
+	public function GetRedirect ();
+
+	/**
+	 * TODO: dopsat
+	 * @param string|NULL $redirectRouteName 
+	 * @return \MvcCore\IRoute
+	 */
+	public function & SetRedirect ($redirectRouteName = NULL);
+
+	/**
 	 * Return only reverse params names as `string`s array.
 	 * Example: `["name", "color"];`
 	 * @return \string[]|NULL
 	 */
 	public function GetReverseParams ();
-	
+
 	/**
 	 * Set manualy matched params from rewrite route for current route.
 	 * Use this method only on currently matched route!
 	 * @param array $matchedParams
-	 * @return \MvcCore\Route
+	 * @return \MvcCore\IRoute
 	 */
 	public function & SetMatchedParams ($matchedParams = []);
 
@@ -542,6 +653,13 @@ interface IRoute
 	 * @return array|NULL
 	 */
 	public function & GetMatchedParams ();
+	
+	/**
+	 * TODO:
+	 * @param \MvcCore\IRouter $router 
+	 * @return \MvcCore\IRoute
+	 */
+	public function & SetRouter (\MvcCore\IRouter & $router);
 
 	/**
 	 * Return array of matched params, with matched controller and action names,
@@ -551,11 +669,10 @@ interface IRoute
 	 * from `\MvcCore\Router::Route();` method and it's submethods.
 	 *
 	 * @param \MvcCore\Request $request Request object instance.
-	 * @param string $localization Lowercase language code, optionally with dash and uppercase locale code, `NULL` by default, not implemented in core.
 	 * @return array Matched and params array, keys are matched
 	 *				 params or controller and action params.
 	 */
-	public function & Matches (\MvcCore\IRequest & $request, $localization = NULL);
+	public function & Matches (\MvcCore\IRequest & $request);
 
 	/**
 	 * Filter given `array $params` by configured `"in" | "out"` filter `callable`.
@@ -566,7 +683,7 @@ interface IRoute
 	 * @param string $direction 
 	 * @return array
 	 */
-	public function Filter (array & $params = [], array & $defaultParams = [], $direction = \MvcCore\IRoute::FILTER_IN);
+	public function Filter (array & $params = [], array & $defaultParams = [], $direction = \MvcCore\IRoute::CONFIG_FILTER_IN);
 
 	/**
 	 * Complete route url by given params array and route
