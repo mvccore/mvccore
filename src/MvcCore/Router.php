@@ -828,8 +828,10 @@ class Router implements IRouter
 		$requestActionName = $request->GetActionName();
 		if ($this->routeByQueryString === NULL) {
 			list($reqScriptName, $reqPath) = [$request->GetScriptName(), $request->GetPath(TRUE)];
-			$requestCtrlAndAlsoAction = $requestCtrlName !== NULL && $requestActionName !== NULL;
-			$requestCtrlOrAction = $requestCtrlName !== NULL || $requestActionName !== NULL;
+			$requestCtrlNameNotNull = $requestCtrlName !== NULL;
+			$requestActionNameNotNull = $requestActionName !== NULL;
+			$requestCtrlAndAlsoAction = $requestCtrlNameNotNull && $requestActionNameNotNull;
+			$requestCtrlOrAction = $requestCtrlNameNotNull || $requestActionNameNotNull;
 			$this->routeByQueryString = (
 				$requestCtrlAndAlsoAction ||
 				($requestCtrlOrAction && (
@@ -1293,11 +1295,11 @@ class Router implements IRouter
 	 */
 	protected function routeByRewriteRoutes ($requestCtrlName, $requestActionName) {
 		$request = & $this->request;
-		/** @var $route \MvcCore\Route */
 		reset($this->routes);
 		$allMatchedParams = [];
 		$requestMethod = $request->GetMethod();
 		foreach ($this->routes as & $route) {
+			/** @var $route \MvcCore\Route */
 			$routeMethod = $route->GetMethod();
 			if ($routeMethod !== NULL && $routeMethod !== $requestMethod) continue;
 			if ($allMatchedParams = $route->Matches($request)) {
