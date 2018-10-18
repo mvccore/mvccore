@@ -193,6 +193,14 @@ class Router implements IRouter
 	protected $preRouteUrlBuildingHandler = NULL;
 
 	/**
+	 * Keys by `Url()` method first argument, when 
+	 * it was not possible to found any rewrite route
+	 * to build url.
+	 * @var array
+	 */
+	protected $noUrlRoutes = [];
+
+	/**
 	 * TODO: dopsat
 	 * @var bool
 	 */
@@ -391,8 +399,13 @@ class Router implements IRouter
 			$this->AddRoutes($routes, $groupName);
 		} else {
 			$this->routes = $routes;
+			$routesAreEmpty = count($routes) === 0;
 			$noGroupNameDefined = $groupName === NULL;
 			if ($noGroupNameDefined) {
+				if ($routesAreEmpty) {
+					$this->routesGroups = [];
+					$this->noUrlRoutes = [];
+				}
 				$this->routesGroups[''] = $routes;
 			} else {
 				$this->routesGroups[$groupName] = $routes;
@@ -411,7 +424,7 @@ class Router implements IRouter
 					$this->routesGroups[$routeGroupName][] = $route;
 				}
 			}
-			$this->anyRoutesConfigured = count($routes) > 0;
+			$this->anyRoutesConfigured = !$routesAreEmpty;
 		}
 		return $this;
 	}
@@ -871,6 +884,42 @@ class Router implements IRouter
 		return $this;
 	}
 
+	/**
+	 * TODO: dopsat
+	 * @param callable $preRouteMatchingHandler 
+	 * @return \MvcCore\Router
+	 */
+	public function & SetPreRouteMatchingHandler (callable $preRouteMatchingHandler) {
+		$this->preRouteMatchingHandler = $preRouteMatchingHandler;
+		return $this;
+	}
+
+	/**
+	 * TODO: dopsat
+	 * @return callable|NULL
+	 */
+	public function GetPreRouteMatchingHandler () {
+		return $this->preRouteMatchingHandler;
+	}
+
+	/**
+	 * TODO: dopsat
+	 * @param callable $preRouteMatchingHandler 
+	 * @return \MvcCore\Router
+	 */
+	public function & SetPreRouteUrlBuildingHandler (callable $preRouteUrlBuildingHandler) {
+		$this->preRouteUrlBuildingHandler = $preRouteUrlBuildingHandler;
+		return $this;
+	}
+
+	/**
+	 * TODO: dopsat
+	 * @return callable|NULL
+	 */
+	public function GetPreRouteUrlBuildingHandler () {
+		return $this->preRouteUrlBuildingHandler;
+	}
+
 
 	/**
 	 * Route current application request by configured routes list or by query string data.
@@ -1149,22 +1198,48 @@ class Router implements IRouter
 			$controllerActionOrRouteName
 		);
 		if ($this->anyRoutesConfigured) {
+			// try to found url route in global `$this->urlRoutes` store
 			if (isset($this->urlRoutes[$ctrlActionOrRouteNameKey])) {
+				// if there was a route under `$ctrlActionOrRouteNameKey` key already, 
+				// we can complete url by this route
 				$result = $this->UrlByRoute(
 					$this->urlRoutes[$ctrlActionOrRouteNameKey], 
 					$params, $controllerActionOrRouteName
 				);
 			} else {
-				// TODO: tady je místo, kde bych se měl zkusit zeptat do databáze, 
-				// zda tam něco je nebo ne, to, aby se to ptalo jak zplašený, to si
-				// asi musim pořešit tak, že nevim, budu si asi taky v routeru ukládat, 
-				// na co už se to ptalo?
-				$result = $this->UrlByQueryString(
-					$ctrlActionOrRouteNameKey, 
-					$params, $controllerActionOrRouteName
-				);
+				// if there is no route under key `$ctrlActionOrRouteNameKey` yet, 
+				// try to call configured `$this->preRouteUrlBuildingHandler` if any
+				// to load more routes for example from database and than, try to
+				// find route under key `$ctrlActionOrRouteNameKey` again
+				$urlRouteFound = FALSE;
+				if (!isset($this->noUrlRoutes)) {
+					if ($this->preRouteUrlBuildingHandler !== NULL) 
+						call_user_func($this->preRouteUrlBuildingHandler, $this, $ctrlActionOrRouteNameKey, $params);
+					// try to found url route again
+					if (isset($this->urlRoutes[$ctrlActionOrRouteNameKey])) {
+						$urlRouteFound = FALSE;
+					} else {
+						$this->noUrlRoutes[$ctrlActionOrRouteNameKey] = TRUE;
+					}
+				}
+				if ($urlRouteFound) {
+					// if route under key `$ctrlActionOrRouteNameKey` has been loaded by calling
+					// configured handler `$this->preRouteUrlBuildingHandler`, complete url by this route
+					$result = $this->UrlByRoute(
+						$this->urlRoutes[$ctrlActionOrRouteNameKey], 
+						$params, $controllerActionOrRouteName
+					);
+				} else {
+					// there is probably no route for given key `$ctrlActionOrRouteNameKey`,
+					// so complete result url with query string logic
+					$result = $this->UrlByQueryString(
+						$ctrlActionOrRouteNameKey, 
+						$params, $controllerActionOrRouteName
+					);
+				}
 			}
 		} else {
+			// if there are no url routes configured - complete url with query string logic
 			$result = $this->UrlByQueryString(
 				$ctrlActionOrRouteNameKey, 
 				$params, $controllerActionOrRouteName
@@ -1406,8 +1481,10 @@ class Router implements IRouter
 	 */
 	protected function routeByRewriteRoutes ($requestCtrlName, $requestActionName) {
 		$request = & $this->request;
+		$requestedPathFirstWord = $this->routeByRRGetRequestedPathFirstWord();
+		$this->routeByRRProcessPrehandlerIfAny($requestedPathFirstWord);
+		$routes = & $this->routeByRRGetRoutesToMatch($requestedPathFirstWord);
 		$requestMethod = $request->GetMethod();
-		$routes = & $this->routeByRRGetRoutesToMatch();
 		$allMatchedParams = [];
 		foreach ($routes as & $route) {
 			/** @var $route \MvcCore\Route */
@@ -1429,17 +1506,24 @@ class Router implements IRouter
 			);
 	}
 
-	protected function & routeByRRGetRoutesToMatch () {
+	protected function & routeByRRGetRequestedPathFirstWord () {
 		$requestedPath = ltrim($this->request->GetPath(), '/');
 		$nextSlashPos = mb_strpos($requestedPath, '/');
 		if ($nextSlashPos === FALSE) $nextSlashPos = mb_strlen($requestedPath);
-		$firstPathWord = mb_substr($requestedPath, 0, $nextSlashPos);
+		return mb_substr($requestedPath, 0, $nextSlashPos);
+	}
+
+	protected function routeByRRProcessPrehandlerIfAny ($firstPathWord) {
+		if ($this->preRouteMatchingHandler === NULL) return;
+		call_user_func($this->preRouteMatchingHandler, $this, $this->request, $firstPathWord);
+	}
+
+	protected function & routeByRRGetRoutesToMatch ($firstPathWord) {
 		if (array_key_exists($firstPathWord, $this->routesGroups)) {
 			$routes = & $this->routesGroups[$firstPathWord];
 		} else {
 			$routes = & $this->routesGroups[''];
 		}
-		x($routes);
 		reset($routes);
 		return $routes;
 	}

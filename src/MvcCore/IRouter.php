@@ -491,6 +491,32 @@ interface IRouter
 	public function & SetAutoCanonizeRequests ($autoCanonizeRequests = TRUE);
 
 	/**
+	 * TODO: dopsat
+	 * @param callable $preRouteMatchingHandler 
+	 * @return \MvcCore\IRouter
+	 */
+	public function & SetPreRouteMatchingHandler (callable $preRouteMatchingHandler);
+
+	/**
+	 * TODO: dopsat
+	 * @return callable|NULL
+	 */
+	public function GetPreRouteMatchingHandler ();
+
+	/**
+	 * TODO: dopsat
+	 * @param callable $preRouteMatchingHandler 
+	 * @return \MvcCore\IRouter
+	 */
+	public function & SetPreRouteUrlBuildingHandler (callable $preRouteUrlBuildingHandler);
+
+	/**
+	 * TODO: dopsat
+	 * @return callable|NULL
+	 */
+	public function GetPreRouteUrlBuildingHandler ();
+
+	/**
 	 * Route current application request by configured routes list or by query string data.
 	 * - If there is strictly defined `controller` and `action` value in query string,
 	 *   route request by given values, add new route and complete new empty
