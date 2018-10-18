@@ -656,10 +656,29 @@ interface IRoute
 	
 	/**
 	 * TODO:
+	 * @return \MvcCore\IRouter
+	 */
+	public function & GetRouter ();
+	
+	/**
+	 * TODO:
 	 * @param \MvcCore\IRouter $router 
 	 * @return \MvcCore\IRoute
 	 */
 	public function & SetRouter (\MvcCore\IRouter & $router);
+
+	/**
+	 * TODO: dopsat
+	 * @return string|NULL
+	 */
+	public function GetGroupName ();
+
+	/**
+	 * TODO: dopsat
+	 * @param string|NULL $groupName
+	 * @return \MvcCore\Route|\MvcCore\IRoute
+	 */
+	public function & SetGroupName ($groupName);
 
 	/**
 	 * Return array of matched params, with matched controller and action names,

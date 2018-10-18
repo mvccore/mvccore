@@ -637,7 +637,7 @@ class View implements IView
 			$helpersInterface = self::HELPERS_INTERFACE_CLASS_NAME;
 			if (!static::$helpersNamespaces) self::_initHelpersNamespaces();
 			foreach (static::$helpersNamespaces as $helperClassBase) {
-				$className = $helperClassBase . ucfirst($helperName);
+				$className = $helperClassBase . ucfirst($helperName) . 'Helper';
 				if (class_exists($className)) {
 					$helperFound = TRUE;
 					$setUpViewAgain = TRUE;
@@ -647,7 +647,7 @@ class View implements IView
 					} else {
 						$instance = new $className();
 					}
-					self::$_globalHelpers[$helperName] = [& $instance, $implementsIHelper];
+					self::$_globalHelpers[$helperName] = [$instance, $implementsIHelper];
 					break;
 				}
 			}

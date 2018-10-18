@@ -242,6 +242,8 @@ class Route implements IRoute
 
 	protected $absolute			= FALSE;
 
+	protected $groupName		= NULL;
+
 	/**
 	 * TODO: neaktuální
 	 * Array with `string` keys by all reverse pattern params and with values by 
@@ -815,7 +817,7 @@ class Route implements IRoute
 	 * @return \MvcCore\Route
 	 */
 	public function & SetDefaults ($defaults = []) {
-		$this->defaults = & $defaults;
+		$this->defaults = $defaults;
 		return $this;
 	}
 
@@ -855,7 +857,7 @@ class Route implements IRoute
 	 * @return \MvcCore\Route
 	 */
 	public function & SetConstraints ($constraints = []) {
-		$this->constraints = & $constraints;
+		$this->constraints = $constraints;
 		foreach ($constraints as $key => $value)
 			if (!isset($this->defaults[$key]))
 				$this->defaults[$key] = NULL;
@@ -1004,7 +1006,7 @@ class Route implements IRoute
 	 * @return \MvcCore\Route
 	 */
 	public function & SetMatchedParams ($matchedParams = []) {
-		$this->matchedParams = & $matchedParams;
+		$this->matchedParams = $matchedParams;
 		return $this;
 	}
 
@@ -1014,6 +1016,14 @@ class Route implements IRoute
 	 */
 	public function & GetMatchedParams () {
 		return $this->matchedParams;
+	}
+	
+	/**
+	 * TODO:
+	 * @return \MvcCore\Router|\MvcCore\IRouter
+	 */
+	public function & GetRouter () {
+		return $this->router;
 	}
 	
 	/**
@@ -1039,6 +1049,24 @@ class Route implements IRoute
 
 	public function & SetAbsolute ($absolute = TRUE) {
 		$this->absolute = $absolute;
+		return $this;
+	}
+
+	/**
+	 * TODO: dopsat
+	 * @return string|NULL
+	 */
+	public function GetGroupName () {
+		return $this->groupName;
+	}
+
+	/**
+	 * TODO: dopsat
+	 * @param string|NULL $groupName 
+	 * @return \MvcCore\Route|\MvcCore\IRoute
+	 */
+	public function & SetGroupName ($groupName) {
+		$this->groupName = $groupName;
 		return $this;
 	}
 
@@ -1487,7 +1515,7 @@ class Route implements IRoute
 		);
 		$result = [];
 		/** @var $prop \ReflectionProperty */
-		foreach ($allProps as & $prop) {
+		foreach ($allProps as $prop) {
 			if ($prop->isStatic()) continue;
 			if ($prop->isPrivate()) $prop->setAccessible(TRUE);
 			$value = NULL;

@@ -77,6 +77,16 @@ class Router implements IRouter
 	protected $routes = [];
 
 	/**
+	 * Another application route instances store to match request,
+	 * where are routes stored under key, representing first founded
+	 * word in requested path. Values under every first path word is array.
+	 * Every array has keys as route(s) names and values as `\MvcCore\Route` 
+	 * instances.
+	 * @var array
+	 */
+	protected $routesGroups = [];
+
+	/**
 	 * Global application route instances store to complete url addresses.
 	 * Keys are route(s) names and `Controller:Action` combinations,
 	 * values are `\MvcCore\Route` instances.
@@ -166,9 +176,21 @@ class Router implements IRouter
 	/**
 	 * If router has any routes configured in `Route()` function call, this property is `TRUE`.
 	 * If there are no routes configured in `Route()` function call moment, it's `FALSE`.
-	 * @var bool
+	 * @var bool|NULL
 	 */
-	protected $anyRoutesConfigured = FALSE;
+	protected $anyRoutesConfigured = NULL;
+
+	/**
+	 * TODO: dopsat
+	 * @var callable|NULL
+	 */
+	protected $preRouteMatchingHandler = NULL;
+	
+	/**
+	 * TODO: dopsat
+	 * @var callable|NULL
+	 */
+	protected $preRouteUrlBuildingHandler = NULL;
 
 	/**
 	 * TODO: dopsat
@@ -301,7 +323,7 @@ class Router implements IRouter
 	 * @return \MvcCore\Router
 	 */
 	public function __construct (array $routes = [], $autoInitialize = TRUE) {
-		if ($routes) $this->SetRoutes($routes, $autoInitialize);
+		if ($routes) $this->SetRoutes($routes, NULL, $autoInitialize);
 	}
 
 	/**
@@ -347,6 +369,11 @@ class Router implements IRouter
 	 * @param \MvcCore\Route[]|array $routes Keyed array with routes,
 	 *										 keys are route names or route
 	 *										`Controller::Action` definitions.
+	 * @param string|NULL $groupName Group name is first matched/parsed word in 
+	 *								 requested path to group routes by to try to
+	 *								 match only routes you realy need, not all of
+	 *								 them. If `NULL` by default, routes are 
+	 *								 inserted into default group.
 	 * @param bool $autoInitialize If `TRUE`, locale routes array is cleaned and 
 	 *							   then all routes (or configuration arrays) are 
 	 *							   sended into method `$router->AddRoutes();`, 
@@ -358,18 +385,31 @@ class Router implements IRouter
 	 *							   to restore cached routes etc.
 	 * @return \MvcCore\Router
 	 */
-	public function & SetRoutes ($routes = [], $autoInitialize = TRUE) {
+	public function & SetRoutes ($routes = [], $groupName = NULL, $autoInitialize = TRUE) {
 		if ($autoInitialize) {
 			$this->routes = [];
-			$this->AddRoutes($routes);
+			$this->AddRoutes($routes, $groupName);
 		} else {
 			$this->routes = $routes;
+			$noGroupNameDefined = $groupName === NULL;
+			if ($noGroupNameDefined) {
+				$this->routesGroups[''] = $routes;
+			} else {
+				$this->routesGroups[$groupName] = $routes;
+			}
 			$this->urlRoutes = [];
 			foreach ($routes as $route) {
 				$this->urlRoutes[$route->GetName()] = $route;
 				$controllerAction = $route->GetControllerAction();
 				if ($controllerAction !== ':') 
 					$this->urlRoutes[$controllerAction] = $route;
+				if ($noGroupNameDefined) {
+					$routeGroupName = $route->GetGroupName();
+					if ($routeGroupName === NULL) $routeGroupName = '';
+					if (!array_key_exists($routeGroupName, $this->routesGroups))
+						$this->routesGroups[$routeGroupName] = [];
+					$this->routesGroups[$routeGroupName][] = $route;
+				}
 			}
 			$this->anyRoutesConfigured = count($routes) > 0;
 		}
@@ -418,6 +458,11 @@ class Router implements IRouter
 	 * @param \MvcCore\Route[]|array $routes Keyed array with routes,
 	 *										 keys are route names or route
 	 *										 `Controller::Action` definitions.
+	 * @param string|NULL $groupName Group name is first matched/parsed word in 
+	 *								 requested path to group routes by to try to
+	 *								 match only routes you realy need, not all of
+	 *								 them. If `NULL` by default, routes are 
+	 *								 inserted into default group.
 	 * @param bool $prepend	Optional, if `TRUE`, all given routes will
 	 *						be prepended from the last to the first in
 	 *						given list, not appended.
@@ -427,7 +472,7 @@ class Router implements IRouter
 	 *											 is overwriten by new one.
 	 * @return \MvcCore\Router
 	 */
-	public function & AddRoutes (array $routes = [], $prepend = FALSE, $throwExceptionForDuplication = TRUE) {
+	public function & AddRoutes (array $routes = [], $groupName = NULL, $prepend = FALSE, $throwExceptionForDuplication = TRUE) {
 		if ($prepend) $routes = array_reverse($routes);
 		$routeClass = self::$routeClass;
 		foreach ($routes as $routeName => & $route) {
@@ -447,14 +492,14 @@ class Router implements IRouter
 						$route->SetName($routeName);
 				}
 				$this->AddRoute(
-					$route, $prepend, $throwExceptionForDuplication
+					$route, $groupName, $prepend, $throwExceptionForDuplication
 				);
 			} else if (is_array($route)) {
 				if (!$numericKey) 
 					$route[$ctrlActionName ? 'controllerAction'  : 'name'] = $routeName;
 				$this->AddRoute(
 					$this->getRouteInstance($route), 
-					$prepend, $throwExceptionForDuplication
+					$groupName, $prepend, $throwExceptionForDuplication
 				);
 			} else if (is_string($route)) {
 				// route name is always Controller:Action
@@ -462,11 +507,11 @@ class Router implements IRouter
 				$routeCfgData[$ctrlActionName ? 'controllerAction'  : 'name'] = $routeName;
 				$this->AddRoute(
 					$routeClass::CreateInstance($routeCfgData), 
-					$prepend, $throwExceptionForDuplication
+					$groupName, $prepend, $throwExceptionForDuplication
 				);
 			} else {
 				throw new \InvalidArgumentException (
-					"[".__CLASS__."] Route is not possible to assign (key: \"$routeName\", value: " . json_encode($route) . ")."
+					"[".__CLASS__."] Route is not possible to assign (key: \"$routeName\", value: " . serialize($route) . ")."
 				);
 			}
 		}
@@ -512,7 +557,12 @@ class Router implements IRouter
 	 *		"defaults"		=> ["name" => "default-name",	"color" => "red"],
 	 *	));`
 	 * @param \MvcCore\Route|\MvcCore\IRoute|array $routeCfgOrRoute Route instance or
-	 *																		   route config array.
+	 *																route config array.
+	 * @param string|NULL $groupName Group name is first matched/parsed word in 
+	 *								 requested path to group routes by to try to
+	 *								 match only routes you realy need, not all of
+	 *								 them. If `NULL` by default, routes are 
+	 *								 inserted into default group.
 	 * @param bool $prepend	Optional, if `TRUE`, given route will
 	 *						be prepended, not appended.
 	 * @param bool $throwExceptionForDuplication `TRUE` by default. Throw an exception,
@@ -521,7 +571,7 @@ class Router implements IRouter
 	 *											 is overwriten by new one.
 	 * @return \MvcCore\Router
 	 */
-	public function & AddRoute ($routeCfgOrRoute, $prepend = FALSE, $throwExceptionForDuplication = TRUE) {
+	public function & AddRoute ($routeCfgOrRoute, $groupName = NULL, $prepend = FALSE, $throwExceptionForDuplication = TRUE) {
 		$instance = & $this->getRouteInstance($routeCfgOrRoute);
 		$routeName = $instance->GetName();
 		$controllerAction = $instance->GetControllerAction();
@@ -538,12 +588,10 @@ class Router implements IRouter
 		}
 		$this->urlRoutes[$routeName] = $instance;
 		if ($controllerAction !== ':') $this->urlRoutes[$controllerAction] = $instance;
+		$this->addRouteToGroup ($instance, $routeName, $groupName, $prepend);
 		if ($prepend) {
-			$newRoutes = [];
-			$newRoutes[$routeName] = $instance; 
-			foreach ($this->routes as $routeName => $route)
-				$newRoutes[$routeName] = $route;
-			$this->routes = & $newRoutes;
+			$newItem = [$routeName => $instance];
+			$this->routes = $newItem + $this->routes;
 		} else {
 			$this->routes[$routeName] = $instance;
 		}
@@ -552,9 +600,37 @@ class Router implements IRouter
 	}
 
 	/**
+	 * TODO: dopsat
+	 * @param \MvcCore\Route $route 
+	 * @param string $routeName 
+	 * @param string|NULL $groupName 
+	 * @param bool $prepend 
+	 */
+	protected function addRouteToGroup (\MvcCore\IRoute & $route, $routeName, $groupName, $prepend) {
+		if ($groupName === NULL) {
+			$routesGroupsKey = '';
+		} else {
+			$routesGroupsKey = $groupName;
+			$route->SetGroupName($groupName);
+		}
+		if (array_key_exists($routesGroupsKey, $this->routesGroups)) {
+			$groupRoutes = & $this->routesGroups[$routesGroupsKey];
+		} else {
+			$groupRoutes = [];
+			$this->routesGroups[$routesGroupsKey] = & $groupRoutes;
+		}
+		if ($prepend) {
+			$newItem = [$routeName => $route];
+			$groupRoutes = $newItem + $groupRoutes;
+		} else {
+			$groupRoutes[$routeName] = $route;
+		}
+	}
+
+	/**
 	 * Return `TRUE` if router has any route by given route name, `FALSE` otherwise.
 	 * @param string|\MvcCore\IRoute $routeOrRouteName
-	 * @return boolean
+	 * @return bool
 	 */
 	public function HasRoute ($routeOrRouteName) {
 		if (is_string($routeOrRouteName)) {
@@ -579,22 +655,40 @@ class Router implements IRouter
 		if (isset($this->routes[$routeName])) {
 			$result = $this->routes[$routeName];
 			unset($this->routes[$routeName]);
+			$this->removeRouteFromGroup($result, $routeName);
 			$controllerAction = $result->GetControllerAction();
-			if (isset($this->urlRoutes[$routeName])) unset($this->urlRoutes[$routeName]);
-			if (isset($this->urlRoutes[$controllerAction])) unset($this->urlRoutes[$controllerAction]);
+			if (isset($this->urlRoutes[$routeName])) 
+				unset($this->urlRoutes[$routeName]);
+			if (isset($this->urlRoutes[$controllerAction])) 
+				unset($this->urlRoutes[$controllerAction]);
 			if ($this->currentRoute->GetName() === $result->GetName())
 				$this->currentRoute = NULL;
 		}
-		if (!$this->routes) $this->anyRoutesConfigured = FALSE;
+		if (!$this->routes && $this->preRouteMatchingHandler === NULL) 
+			$this->anyRoutesConfigured = FALSE;
 		return $result;
+	}
+
+	protected function removeRouteFromGroup (\MvcCore\IRoute & $route, $routeName) {
+		$routeGroup = $route->GetGroupName();
+		$groupRoutesKey = $routeGroup ?: '';
+		if (isset($this->routesGroups[$groupRoutesKey])) 
+			unset($this->routesGroups[$groupRoutesKey][$routeName]);
 	}
 
 	/**
 	 * Get all configured route(s) as `\MvcCore\Route` instances.
 	 * Keys in returned array are route names, values are route objects.
+	 * @param string|NULL $groupName Group name is first matched/parsed word in 
+	 *								 requested path to group routes by to try to
+	 *								 match only routes you realy need, not all of
+	 *								 them. If `NULL` by default, there are 
+	 *								 returned all routes from all groups.
 	 * @return \MvcCore\Route[]
 	 */
-	public function & GetRoutes () {
+	public function & GetRoutes ($groupName = NULL) {
+		if ($groupName !== NULL) 
+			return $this->routesGroups[$groupName];
 		return $this->routes;
 	}
 
@@ -806,7 +900,6 @@ class Router implements IRouter
 		if (!$this->internalRequest && !$this->routeByQueryString) 
 			if (!$this->redirectToProperTrailingSlashIfNecessary()) return FALSE;
 		list($requestCtrlName, $requestActionName) = $this->routeDetectStrategy();
-		$this->anyRoutesConfigured = count($this->routes) > 0;
 		if ($this->routeByQueryString) {
 			$this->routeByControllerAndActionQueryString($requestCtrlName, $requestActionName);
 		} else {
@@ -826,6 +919,9 @@ class Router implements IRouter
 		$request = & $this->request;
 		$requestCtrlName = $request->GetControllerName();
 		$requestActionName = $request->GetActionName();
+		$this->anyRoutesConfigured = (
+			$this->preRouteMatchingHandler !== NULL || count($this->routes) > 0
+		);
 		if ($this->routeByQueryString === NULL) {
 			list($reqScriptName, $reqPath) = [$request->GetScriptName(), $request->GetPath(TRUE)];
 			$requestCtrlNameNotNull = $requestCtrlName !== NULL;
@@ -1052,12 +1148,27 @@ class Router implements IRouter
 		$ctrlActionOrRouteNameKey = $this->urlGetCompletedCtrlActionKey(
 			$controllerActionOrRouteName
 		);
-		if ($this->anyRoutesConfigured && isset($this->urlRoutes[$ctrlActionOrRouteNameKey])) {
-			$result = $this->UrlByRoute($this->urlRoutes[$ctrlActionOrRouteNameKey], $params, $controllerActionOrRouteName);
-		} else if ($this->anyRoutesConfigured && isset($this->routes[$ctrlActionOrRouteNameKey])) {
-			$result = $this->UrlByRoute($this->routes[$ctrlActionOrRouteNameKey], $params, $controllerActionOrRouteName);
+		if ($this->anyRoutesConfigure) {
+			if (isset($this->urlRoutes[$ctrlActionOrRouteNameKey])) {
+				$result = $this->UrlByRoute(
+					$this->urlRoutes[$ctrlActionOrRouteNameKey], 
+					$params, $controllerActionOrRouteName
+				);
+			} else {
+				// TODO: tady je místo, kde bych se měl zkusit zeptat do databáze, 
+				// zda tam něco je nebo ne, to, aby se to ptalo jak zplašený, to si
+				// asi musim pořešit tak, že nevim, budu si asi taky v routeru ukládat, 
+				// na co už se to ptalo?
+				$result = $this->UrlByQueryString(
+					$ctrlActionOrRouteNameKey, 
+					$params, $controllerActionOrRouteName
+				);
+			}
 		} else {
-			$result = $this->UrlByQueryString($ctrlActionOrRouteNameKey, $params, $controllerActionOrRouteName);
+			$result = $this->UrlByQueryString(
+				$ctrlActionOrRouteNameKey, 
+				$params, $controllerActionOrRouteName
+			);
 		}
 		return $result;
 	}
@@ -1139,7 +1250,7 @@ class Router implements IRouter
 					'action'	=> NULL,
 				]);
 			$anyRoutesConfigured = $this->anyRoutesConfigured;
-			$this->AddRoute($defaultRoute, TRUE, FALSE);
+			$this->AddRoute($defaultRoute, NULL, TRUE, FALSE);
 			$this->anyRoutesConfigured = $anyRoutesConfigured;
 			if (!$request->IsInternalRequest()) 
 				$request->SetParam('path', ($request->HasParam('path')
@@ -1295,10 +1406,10 @@ class Router implements IRouter
 	 */
 	protected function routeByRewriteRoutes ($requestCtrlName, $requestActionName) {
 		$request = & $this->request;
-		reset($this->routes);
-		$allMatchedParams = [];
 		$requestMethod = $request->GetMethod();
-		foreach ($this->routes as & $route) {
+		$routes = & $this->routeByRRGetRoutesToMatch();
+		$allMatchedParams = [];
+		foreach ($routes as & $route) {
 			/** @var $route \MvcCore\Route */
 			$routeMethod = $route->GetMethod();
 			if ($routeMethod !== NULL && $routeMethod !== $requestMethod) continue;
@@ -1316,6 +1427,21 @@ class Router implements IRouter
 			$this->routeByRRSetUpRequestByCurrentRoute(
 				$allMatchedParams['controller'], $allMatchedParams['action']
 			);
+	}
+
+	protected function & routeByRRGetRoutesToMatch () {
+		$requestedPath = ltrim($this->request->GetPath(), '/');
+		$nextSlashPos = mb_strpos($requestedPath, '/');
+		if ($nextSlashPos === FALSE) $nextSlashPos = mb_strlen($requestedPath);
+		$firstPathWord = mb_substr($requestedPath, 0, $nextSlashPos);
+		if (array_key_exists($firstPathWord, $this->routesGroups)) {
+			$routes = & $this->routesGroups[$firstPathWord];
+		} else {
+			$routes = & $this->routesGroups[''];
+		}
+		x($routes);
+		reset($routes);
+		return $routes;
 	}
 
 	protected function & routeByRRSetRequestedAndDefaultParams (& $allMatchedParams) {

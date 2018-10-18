@@ -380,6 +380,13 @@ interface IApplication
 	public function & SetAppDir ($appDir);
 
 	/**
+	 * Set currently dispatched instance of protected `\MvcCore\Application::$controller;`.
+	 * @param \MvcCore\IController $controller
+	 * @return \MvcCore\IApplication
+	 */
+	public function & SetController (\MvcCore\IController $controller = NULL);
+
+	/**
 	 * Set controllers directory name (`"Controllers"` by default), for all controller classes,
 	 * it's placed directly in application directory by default.
 	 * It should by reconfigured to custom value in the very application beginning.

@@ -625,10 +625,10 @@ trait PropsGettersSetters
 
 	/**
 	 * Set currently dispatched instance of protected `\MvcCore\Application::$controller;`.
-	 * @param \MvcCore\Controller|\MvcCore\IController $controllersDir
+	 * @param \MvcCore\Controller|\MvcCore\IController $controller
 	 * @return \MvcCore\Application
 	 */
-	public function & SetController (\MvcCore\IController & $controller = NULL) {
+	public function & SetController (\MvcCore\IController $controller = NULL) {
 		$this->controller = $controller;
 		return $this;
 	}
