@@ -13,11 +13,6 @@
 
 namespace MvcCore;
 
-//include_once(__DIR__.'/IApplication.php');
-//include_once(__DIR__.'/Application/GettersSetters.php');
-//include_once(__DIR__.'/Application/Dispatching.php');
-//include_once(__DIR__.'/Application/Helpers.php');
-
 /**
  * Responsibility - singleton, instancing all core classes and handling request.
  * - Global store and managing singleton application instance.

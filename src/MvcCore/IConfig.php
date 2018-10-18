@@ -86,23 +86,17 @@ interface IConfig
 	public static function & CreateInstance ();
 
 	/**
-	 * Get singleton system config ini file as `stdClass`es and `array`s,
+	 * Get cached singleton system config ini file as `stdClass`es and `array`s,
 	 * placed by default in: `"/App/config.ini"`.
 	 * @return \stdClass|array|boolean
 	 */
 	public static function & GetSystem ();
 
 	/**
-	 * Load ini file and return parsed configuration or `FALSE` in failure.
-	 * - Second environment value setup:
-	 *   - Only if `$systemConfig` param is defined as `TRUE`.
-	 *   - By defined IPs or computer names in ini `[environments]` section.
-	 * - Load only sections for current environment name.
-	 * - Retype all `raw string` values into `array`, `float`, `int` or `boolean` types.
-	 * - Retype whole values level into `\stdClass`, if there are no numeric keys.
-	 * @param string $configPath
-	 * @param bool   $systemConfig
-	 * @return array|boolean
+	 * Get cached config ini file as `stdClass`es and `array`s,
+	 * placed relatively from application document root.
+	 * @param string $appRootRelativePath Any config relative path like `'/%appPath%/website.ini'`.
+	 * @return \stdClass|array|boolean
 	 */
-	public function & Load ($configPath = '');
+	public static function & GetConfig ($appRootRelativePath);
 }

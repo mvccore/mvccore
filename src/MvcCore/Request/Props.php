@@ -1,0 +1,306 @@
+<?php
+
+/**
+ * MvcCore
+ *
+ * This source file is subject to the BSD 3 License
+ * For the full copyright and license information, please view
+ * the LICENSE.md file that are distributed with this source code.
+ *
+ * @copyright	Copyright (c) 2016 Tom Flídr (https://github.com/mvccore/mvccore)
+ * @license  https://mvccore.github.io/docs/mvccore/5.0.0/LICENCE.md
+ */
+
+namespace MvcCore\Request;
+
+trait Props
+{
+	/**
+	 * List of exceptional two-segment top-level domain like
+	 * `'co.jp', 'co.uk', 'co.kr', 'co.nf' ...` to parse
+	 * domain string correctly.
+	 * @var \string[]
+	 */
+	protected static $twoSegmentTlds = ['co.jp'=>1,'ac.uk'=>1,'co.uk'=>1,'co.kr'=>1,'co.nl'=>1,'in.ua'=>1,'co.nf'=>1,'ny.us'=>1,'co.us'=>1];
+
+	/**
+	 * Language international code, lowercase, not used by default.
+	 * To use this variable - install  `\MvcCore\Router` extension `\MvcCore\Ext\Router\Lang`
+	 * Or use this variable by your own decision.
+	 * Example: `"en" | "de"`
+	 * @var string|NULL
+	 */
+	protected $lang				= NULL;
+
+	/**
+	 * Country/locale code, uppercase, not used by default.
+	 * To use this variable - install `\MvcCore\Router` extension `\MvcCore\Ext\Router\Lang`
+	 * Or use this variable by your own decision.
+	 * Example: `"US" | "UK"`
+	 * @var string|NULL
+	 */
+	protected $locale			= NULL;
+
+	/**
+	 * Media site key - `"full" | "tablet" | "mobile"`.
+	 * To use this variable - install `\MvcCore\Router` extension `\MvcCore\Ext\Routers\Media`
+	 * Or use this variable by your own decision.
+	 * Example: `"full" | "tablet" | "mobile"`
+	 * @var string|NULL
+	 */
+	protected $mediaSiteVersion = NULL;
+
+	/**
+	 * Http protocol: `"http:" | "https:"`
+	 * Example: `"http:"`
+	 * @var string|NULL
+	 */
+	protected $protocol			= NULL;
+
+	/**
+	 * `TRUE` if http protocol is `"https:"`
+	 * @var bool|NULL
+	 */
+	protected $secure			= NULL;
+
+	/**
+	 * Application server name - domain without any port.
+	 * Example: `"localhost"`
+	 * @var string|NULL
+	 */
+	protected $hostName		= NULL;
+
+	/**
+	 * Application host with port if there is any.
+	 * Example: `"localhost:88"`
+	 * @var string|NULL
+	 */
+	protected $host				= NULL;
+
+	/**
+	 * Http port defined in requested url if any, parsed by `parse_url()`.
+	 * Empty string if there is no port number in requested address.`.
+	 * Example: `"88" | ""`
+	 * @var string|NULL
+	 */
+	protected $port				= NULL;
+
+	/**
+	 * Parsed server name (domain without port) parts.
+	 * Example: `['any.content', 'example', 'co.uk'] | [NULL, NULL, 'localhost']`
+	 * @var \string[]|NULL
+	 */
+	protected $domainParts		= NULL;
+
+	/**
+	 * `TRUE` if http port defined in requested url (parsed by `parse_url()`).
+	 * @var bool
+	 */
+	protected $portDefined		= FALSE;
+
+	/**
+	 * Requested path in from application root (if `mod_rewrite` enabled), never with query string.
+	 * Example: `"/products/page/2"`
+	 * @var string|NULL
+	 */
+	protected $path				= NULL;
+
+	/**
+	 * Uri query string without question mark.
+	 * Example: `"param-1=value-1&param-2=value-2&param-3[]=value-3-a&param-3[]=value-3-b"`
+	 * @var string|NULL
+	 */
+	protected $query			= NULL;
+
+	/**
+	 * Uri fragment parsed by `parse_url()` including hash.
+	 * Example: `"#any-sublink-path"`
+	 * @var string|NULL
+	 */
+	protected $fragment			= NULL;
+
+	/**
+	 * `TRUE` if request is requested from browser by `XmlHttpRequest` object
+	 * with http header: `X-Requested-With: AnyJavascriptFrameworkName`, `FALSE` otherwise.
+	 * @var bool|null
+	 */
+	protected $ajax				= NULL;
+
+	/**
+	 * Php requested script name path from application root.
+	 * Example: `"/index.php"`
+	 * @var string|NULL
+	 */
+	protected $scriptName		= NULL;
+
+	/**
+	 * Application root path on hard drive.
+	 * Example: `"C:/www/my/development/direcotry/www"`
+	 * @var string|NULL
+	 */
+	protected $appRoot			= NULL;
+
+	/**
+	 * Base app directory path after domain, if application is placed in domain subdirectory
+	 * Example:
+	 * - full url:  `"http://localhost:88/my/development/direcotry/www/requested/path/after/domain?with=possible&query=string"`
+	 * - base path: `"/my/development/direcotry/www"`
+	 * @var string|NULL
+	 */
+	protected $basePath			= NULL;
+
+	/**
+	 * Request path after domain with possible query string
+	 * Example: `"/requested/path/after/app/root?with=possible&query=string"`
+	 * @var string|NULL
+	 */
+	protected $requestPath		= NULL;
+
+	/**
+	 * Url to requested domain and possible port.
+	 * Example: `"https://domain.com" | "http://domain:88"` if any port.
+	 * @var string|NULL
+	 */
+	protected $domainUrl		= NULL;
+
+	/**
+	 * Base url to application root.
+	 * Example: `"http://domain:88/my/development/direcotry/www"`
+	 * @var string|NULL
+	 */
+	protected $baseUrl			= NULL;
+
+	/**
+	 * Request url including scheme, domain, port, path, without any query string
+	 * Example: "`http://localhost:88/my/development/direcotry/www/requested/path/after/domain"`
+	 * @var string|NULL
+	 */
+	protected $requestUrl		= NULL;
+
+	/**
+	 * Request url including scheme, domain, port, path and with query string
+	 * Example: `"http://localhost:88/my/development/direcotry/www/requested/path/after/domain?with=possible&query=string"`
+	 * @var string|NULL
+	 */
+	protected $fullUrl			= NULL;
+
+	/**
+	 * Http method (uppercase) - `GET`, `POST`, `PUT`, `HEAD`...
+	 * Example: `"GET"`
+	 * @var string|NULL
+	 */
+	protected $method			= NULL;
+
+	/**
+	 * Referer url if any, safely readed by:
+	 * `filter_var($_SERVER['HTTP_REFERER'], FILTER_SANITIZE_URL);`
+	 * Example: `"http://foreing.domain.com/path/where/is/link/to/?my=app"`
+	 * @var string|NULL
+	 */
+	protected $referer			= NULL;
+
+	/**
+	 * Server ip address string.
+	 * Example: `"127.0.0.1" | "111.222.111.222"`
+	 * @var string|NULL
+	 */
+	protected $serverIp			= NULL;
+
+	/**
+	 * Client ip address string.
+	 * Example: `"127.0.0.1" | "222.111.222.111"`
+	 * @var string|NULL
+	 */
+	protected $clientIp			= NULL;
+
+	/**
+	 * Integer value from global `$_SERVER['CONTENT_LENGTH']`,
+	 * `NULL` if no value presented in global `$_SERVER` array.
+	 * Example: `123456 | NULL`
+	 * @var int|NULL
+	 */
+	protected $contentLength	= NULL;
+
+	/**
+	 * Timestamp of the start of the request, with microsecond precision.
+	 * @var float
+	 */
+	protected $microtime		= NULL;
+
+	/**
+	 * All raw http headers without any conversion, initialized by
+	 * `getallheaders()` or from `$_SERVER['HTTP_...']`.
+	 * Headers are `key => value` array, headers keys are
+	 * in standard format like: `"Content-Type" | "Content-Length" | "X-Requested-With" ...`.
+	 * @var array|NULL
+	 */
+	protected $headers			= NULL;
+
+	/**
+	 * Raw request params array, with keys defined in route or by query string,
+	 * always with controller and action keys completed by router.
+	 * Do not read this `$Params` array directly, read it's values by:
+	 * `\MvcCore\Request::GetParam($paramName, $allowedChars, $defaultValueIfNull, $targetType);`.
+	 * Example:
+	 *	`\MvcCore\Request:$Params = array(
+	 *		"controller"	=> "default",
+	 *		"action"		=> "default",
+	 *		"username"		=> "' OR 1=1;-- ",	// be carefull for this content with raw (danger) value!
+	 *	);`
+	 *	// Do not read `$Params` array directly,
+	 *	// to get safe param value use:
+	 *	`\MvcCore\Request::GetParam("username", "a-zA-Z0-9_");` // return `OR` string without danger chars.
+	 * @var array|NULL
+	 */
+	protected $params			= NULL;
+
+	/**
+	 * Request flag if request targets internal package asset or not,
+	 * - 0 => Means request is `Controller:Asset` call for internal package asset.
+	 * - 1 => Means request is classic application request.
+	 * @var bool|NULL
+	 */
+	protected $appRequest		= NULL;
+
+	/**
+	 * Cleaned input param `"controller"`, containing only chars: `"a-zA-Z0-9\-_/"`.
+	 * @var string
+	 */
+	protected $controllerName	= NULL;
+
+	/**
+	 * Cleaned input param `"action"`, containing only chars: `"a-zA-Z0-9\-_/"`.
+	 * @var string
+	 */
+	protected $actionName		= NULL;
+
+	/**
+	 * Content of referenced `$_SERVER` global variable.
+	 * @var array
+	 */
+	protected $globalServer	= [];
+
+	/**
+	 * Content of referenced `$_GET` global variable.
+	 * @var array
+	 */
+	protected $globalGet		= [];
+
+	/**
+	 * Content of referenced `$_POST` global variable.
+	 * @var array
+	 */
+	protected $globalPost		= [];
+
+	/**
+	 * Content of referenced `$_COOKIE` global variable.
+	 * @var array
+	 */
+	protected $globalCookies	= [];
+
+	/**
+	 * Content of referenced `$_FILES` global variable.
+	 * @var array
+	 */
+	protected $globalFiles		= [];
+}
