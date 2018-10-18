@@ -21,7 +21,7 @@ trait Reading
 	 * @return \stdClass|array|boolean
 	 */
 	public static function & GetSystem () {
-		if (self::$systemConfig) {
+		if (self::$systemConfig === NULL) {
 			$app = & \MvcCore\Application::GetInstance();
 			$systemConfigClass = $app->GetConfigClass();
 			$instance = $systemConfigClass::CreateInstance();

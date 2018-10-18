@@ -502,7 +502,7 @@ trait PropsGettersSetters
 	 * @return \MvcCore\Application
 	 */
 	public function & SetConfigClass ($configClass) {
-		return $this->setCoreClass($configClass, 'configClass', '\\MvcCore\\IConfig');
+		return $this->setCoreClass($configClass, 'configClass', 'MvcCore\IConfig');
 	}
 
 	/**
@@ -514,7 +514,7 @@ trait PropsGettersSetters
 	 * @return \MvcCore\Application
 	 */
 	public function & SetControllerClass ($controllerClass) {
-		return $this->setCoreClass($controllerClass, 'configClass', '\\MvcCore\\IController');
+		return $this->setCoreClass($controllerClass, 'configClass', 'MvcCore\IController');
 	}
 
 	/**
@@ -525,7 +525,7 @@ trait PropsGettersSetters
 	 * @return \MvcCore\Application
 	 */
 	public function & SetDebugClass ($debugClass) {
-		return $this->setCoreClass($debugClass, 'debugClass', '\\MvcCore\\IDebug');
+		return $this->setCoreClass($debugClass, 'debugClass', 'MvcCore\IDebug');
 	}
 
 	/**
@@ -536,7 +536,7 @@ trait PropsGettersSetters
 	 * @return \MvcCore\Application
 	 */
 	public function & SetRequestClass ($requestClass) {
-		return $this->setCoreClass($requestClass, 'requestClass', '\\MvcCore\\IRequest');
+		return $this->setCoreClass($requestClass, 'requestClass', 'MvcCore\IRequest');
 	}
 
 	/**
@@ -547,7 +547,7 @@ trait PropsGettersSetters
 	 * @return \MvcCore\Application
 	 */
 	public function & SetResponseClass ($responseClass) {
-		return $this->setCoreClass($responseClass, 'responseClass', '\\MvcCore\\IResponse');
+		return $this->setCoreClass($responseClass, 'responseClass', 'MvcCore\IResponse');
 	}
 
 	/**
@@ -559,7 +559,7 @@ trait PropsGettersSetters
 	 * @return \MvcCore\Application
 	 */
 	public function & SetRouteClass ($routeClass) {
-		return $this->setCoreClass($routeClass, 'routerClass', '\\MvcCore\\IRoute');
+		return $this->setCoreClass($routeClass, 'routerClass', 'MvcCore\IRoute');
 	}
 
 	/**
@@ -570,7 +570,7 @@ trait PropsGettersSetters
 	 * @return \MvcCore\Application
 	 */
 	public function & SetRouterClass ($routerClass) {
-		return $this->setCoreClass($routerClass, 'routerClass', '\\MvcCore\\IRouter');
+		return $this->setCoreClass($routerClass, 'routerClass', 'MvcCore\IRouter');
 	}
 
 	/**
@@ -581,7 +581,7 @@ trait PropsGettersSetters
 	 * @return \MvcCore\Application
 	 */
 	public function & SetSessionClass ($sessionClass) {
-		return $this->setCoreClass($sessionClass, 'sessionClass', '\\MvcCore\\ISession');
+		return $this->setCoreClass($sessionClass, 'sessionClass', 'MvcCore\ISession');
 	}
 
 	/**
@@ -592,7 +592,7 @@ trait PropsGettersSetters
 	 * @return \MvcCore\Application
 	 */
 	public function & SetToolClass ($toolClass) {
-		return $this->setCoreClass($toolClass, 'toolClass', '\\MvcCore\\ITool');
+		return $this->setCoreClass($toolClass, 'toolClass', 'MvcCore\ITool');
 	}
 
 	/**
@@ -603,7 +603,7 @@ trait PropsGettersSetters
 	 * @return \MvcCore\Application
 	 */
 	public function & SetViewClass ($viewClass) {
-		return $this->setCoreClass($viewClass, 'viewClass', '\\MvcCore\\IView');
+		return $this->setCoreClass($viewClass, 'viewClass', 'MvcCore\IView');
 	}
 
 

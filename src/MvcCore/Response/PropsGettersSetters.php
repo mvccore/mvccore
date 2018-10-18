@@ -16,11 +16,11 @@ namespace MvcCore\Response;
 trait PropsGettersSetters
 {
 	protected static $codeMessages = [
-		IResponse::OK						=> 'OK',
-		IResponse::MOVED_PERMANENTLY		=> 'Moved Permanently',
-		IResponse::SEE_OTHER				=> 'See Other',
-		IResponse::NOT_FOUND				=> 'Not Found',
-		IResponse::INTERNAL_SERVER_ERROR	=> 'Internal Server Error',
+		\MvcCore\IResponse::OK						=> 'OK',
+		\MvcCore\IResponse::MOVED_PERMANENTLY		=> 'Moved Permanently',
+		\MvcCore\IResponse::SEE_OTHER				=> 'See Other',
+		\MvcCore\IResponse::NOT_FOUND				=> 'Not Found',
+		\MvcCore\IResponse::INTERNAL_SERVER_ERROR	=> 'Internal Server Error',
 	];
 
 	/**

@@ -51,7 +51,7 @@ trait RoutingByRoutes
 			);
 	}
 
-	protected function & routeByRRGetRequestedPathFirstWord () {
+	protected function routeByRRGetRequestedPathFirstWord () {
 		$requestedPath = ltrim($this->request->GetPath(), '/');
 		$nextSlashPos = mb_strpos($requestedPath, '/');
 		if ($nextSlashPos === FALSE) $nextSlashPos = mb_strlen($requestedPath);

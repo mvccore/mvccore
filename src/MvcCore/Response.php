@@ -13,8 +13,6 @@
 
 namespace MvcCore;
 
-use \MvcCore\IResponse;
-
 /**
  * Responsibility - completing all information for response - headers (cookies) and content.
  * - HTTP response wrapper carrying response headers and response body.

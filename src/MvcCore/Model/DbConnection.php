@@ -195,6 +195,7 @@ trait DbConnection
 		$systemCfg = $configClass::GetSystem();
 		if ($systemCfg === FALSE && $throwExceptionIfNoSysConfig) throw new \Exception(
 			"[".__CLASS__."] System config.ini not found in '" . $configClass::$SystemConfigPath . "'."
+
 		);
 		if (!isset($systemCfg->db) && $throwExceptionIfNoSysConfig) throw new \Exception(
 			"[".__CLASS__."] No [db] section and no records matched 'db.*' found in system config.ini."
