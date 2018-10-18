@@ -44,9 +44,9 @@ trait Routing
 			if (!$this->redirectToProperTrailingSlashIfNecessary()) return FALSE;
 		list($requestCtrlName, $requestActionName) = $this->routeDetectStrategy();
 		if ($this->routeByQueryString) {
-			$this->routeByControllerAndActionQueryString($requestCtrlName, $requestActionName);
+			$this->queryStringRouting($requestCtrlName, $requestActionName);
 		} else {
-			$this->routeByRewriteRoutes($requestCtrlName, $requestActionName);
+			$this->rewriteRouting($requestCtrlName, $requestActionName);
 		}
 		if (!$this->routeProcessRouteRedirectionIfAny()) return FALSE;
 		return $this->routeSetUpDefaultForHomeIfNoMatch()
@@ -216,7 +216,7 @@ trait Routing
 	 * @param string $actionName
 	 * @return void
 	 */
-	protected function routeByControllerAndActionQueryString ($requestCtrlName, $requestActionName) {
+	protected function queryStringRouting ($requestCtrlName, $requestActionName) {
 		$toolClass = self::$toolClass;
 		list($ctrlDfltName, $actionDfltName) = $this->application->GetDefaultControllerAndActionNames();
 		$this->SetOrCreateDefaultRouteAsCurrent(
@@ -228,6 +228,10 @@ trait Routing
 		$this->defaultParams = array_merge([], $this->requestedParams);
 	}
 
+	/**
+	 * TODO: dopsat
+	 * @return bool
+	 */
 	protected function routeProcessRouteRedirectionIfAny () {
 		if ($this->currentRoute instanceof \MvcCore\IRoute) {
 			$redirectRouteName = $this->currentRoute->GetRedirect();

@@ -186,7 +186,7 @@ interface IRoute
 	 * Called usually from core methods:
 	 * - `\MvcCore\Router::AddRoutes();`
 	 * - `\MvcCore\Router::AddRoute();`
-	 * - `\MvcCore\Router::routeByControllerAndActionQueryString();`
+	 * - `\MvcCore\Router::queryStringRouting();`
 	 * This method is the best place where to implement custom
 	 * route initialization for core.
 	 * First argument should be configuration array or

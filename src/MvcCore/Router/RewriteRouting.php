@@ -13,7 +13,7 @@
 
 namespace MvcCore\Router;
 
-trait RoutingByRoutes
+trait RewriteRouting
 {
 	/**
 	 * Complete `\MvcCore\Router::$currentRoute` and request params by defined routes.
@@ -24,11 +24,11 @@ trait RoutingByRoutes
 	 * @param string $actionName
 	 * @return void
 	 */
-	protected function routeByRewriteRoutes ($requestCtrlName, $requestActionName) {
+	protected function rewriteRouting ($requestCtrlName, $requestActionName) {
 		$request = & $this->request;
-		$requestedPathFirstWord = $this->routeByRRGetRequestedPathFirstWord();
-		$this->routeByRRProcessPrehandlerIfAny($requestedPathFirstWord);
-		$routes = & $this->routeByRRGetRoutesToMatch($requestedPathFirstWord);
+		$requestedPathFirstWord = $this->rewriteRoutingGetReqPathFirstWord();
+		$this->rewriteRoutingProcessPreHandler($requestedPathFirstWord);
+		$routes = & $this->rewriteRoutingGetRoutesToMatch($requestedPathFirstWord);
 		$requestMethod = $request->GetMethod();
 		$allMatchedParams = [];
 		foreach ($routes as & $route) {
@@ -38,32 +38,32 @@ trait RoutingByRoutes
 			if ($allMatchedParams = $route->Matches($request)) {
 				$this->currentRoute = clone $route;
 				$this->currentRoute->SetMatchedParams($allMatchedParams);
-				$requestParams = $this->routeByRRSetRequestedAndDefaultParams(
+				$requestParams = $this->rewriteRoutingSetRequestedAndDefaultParams(
 					$allMatchedParams
 				);
-				$break = $this->routeByRRSetRequestParams($allMatchedParams, $requestParams);
+				$break = $this->rewriteRoutingSetRequestParams($allMatchedParams, $requestParams);
 				if ($break) break;
 			}
 		}
 		if ($this->currentRoute !== NULL) 
-			$this->routeByRRSetUpRequestByCurrentRoute(
+			$this->rewriteRoutingSetUpRequestByCurrentRoute(
 				$allMatchedParams['controller'], $allMatchedParams['action']
 			);
 	}
 
-	protected function routeByRRGetRequestedPathFirstWord () {
+	protected function rewriteRoutingGetReqPathFirstWord () {
 		$requestedPath = ltrim($this->request->GetPath(), '/');
 		$nextSlashPos = mb_strpos($requestedPath, '/');
 		if ($nextSlashPos === FALSE) $nextSlashPos = mb_strlen($requestedPath);
 		return mb_substr($requestedPath, 0, $nextSlashPos);
 	}
 
-	protected function routeByRRProcessPrehandlerIfAny ($firstPathWord) {
+	protected function rewriteRoutingProcessPreHandler ($firstPathWord) {
 		if ($this->preRouteMatchingHandler === NULL) return;
 		call_user_func($this->preRouteMatchingHandler, $this, $this->request, $firstPathWord);
 	}
 
-	protected function & routeByRRGetRoutesToMatch ($firstPathWord) {
+	protected function & rewriteRoutingGetRoutesToMatch ($firstPathWord) {
 		if (array_key_exists($firstPathWord, $this->routesGroups)) {
 			$routes = & $this->routesGroups[$firstPathWord];
 		} else {
@@ -73,7 +73,7 @@ trait RoutingByRoutes
 		return $routes;
 	}
 
-	protected function & routeByRRSetRequestedAndDefaultParams (& $allMatchedParams) {
+	protected function & rewriteRoutingSetRequestedAndDefaultParams (& $allMatchedParams) {
 		$request = & $this->request;
 		$routeDefaults = & $this->currentRoute->GetDefaults();
 		$rawQueryParams = $request->GetParams(FALSE);
@@ -103,7 +103,7 @@ trait RoutingByRoutes
 		return $requestParams;
 	}
 
-	protected function routeByRRSetRequestParams (& $allMatchedParams, & $requestParams) {
+	protected function rewriteRoutingSetRequestParams (& $allMatchedParams, & $requestParams) {
 		$request = & $this->request;
 		// filter request params
 		list($success, $requestParamsFiltered) = $this->currentRoute->Filter(
@@ -122,7 +122,7 @@ trait RoutingByRoutes
 
 	/**
 	 * Set up request object controller and action by current route (routing 
-	 * result) routed by method `$this->routeByRewriteRoutes();`. If there is no
+	 * result) routed by method `$this->rewriteRouting();`. If there is no
 	 * controller name and only action name or if there is no action name and only 
 	 * controller name, complete those missing record by default core values for 
 	 * controller name and action name.
@@ -130,7 +130,7 @@ trait RoutingByRoutes
 	 * @param string $actionName
 	 * @return void
 	 */
-	protected function routeByRRSetUpRequestByCurrentRoute ($requestCtrlName, $requestActionName) {
+	protected function rewriteRoutingSetUpRequestByCurrentRoute ($requestCtrlName, $requestActionName) {
 		$route = $this->currentRoute;
 		$request = & $this->request;
 		$toolClass = self::$toolClass;
