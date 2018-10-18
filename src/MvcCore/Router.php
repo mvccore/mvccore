@@ -1148,7 +1148,7 @@ class Router implements IRouter
 		$ctrlActionOrRouteNameKey = $this->urlGetCompletedCtrlActionKey(
 			$controllerActionOrRouteName
 		);
-		if ($this->anyRoutesConfigure) {
+		if ($this->anyRoutesConfigured) {
 			if (isset($this->urlRoutes[$ctrlActionOrRouteNameKey])) {
 				$result = $this->UrlByRoute(
 					$this->urlRoutes[$ctrlActionOrRouteNameKey], 
