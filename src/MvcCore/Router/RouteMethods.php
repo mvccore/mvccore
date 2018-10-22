@@ -79,21 +79,15 @@ trait RouteMethods
 			$this->routes = [];
 			$this->AddRoutes($routes, $groupName);
 		} else {
-			$this->routes = $routes;
 			$routesAreEmpty = count($routes) === 0;
 			$noGroupNameDefined = $groupName === NULL;
-			if ($noGroupNameDefined) {
-				if ($routesAreEmpty) {
-					$this->routesGroups = [];
-					$this->noUrlRoutes = [];
-				}
-				$this->routesGroups[''] = $routes;
-			} else {
-				$this->routesGroups[$groupName] = $routes;
-			}
+			// complete url routes and routes with name keys
+			$newRoutes = [];
 			$this->urlRoutes = [];
 			foreach ($routes as $route) {
-				$this->urlRoutes[$route->GetName()] = $route;
+				$routeName = $route->GetName();
+				$newRoutes[$routeName] = $route;
+				$this->urlRoutes[$routeName] = $route;
 				$controllerAction = $route->GetControllerAction();
 				if ($controllerAction !== ':') 
 					$this->urlRoutes[$controllerAction] = $route;
@@ -105,7 +99,17 @@ trait RouteMethods
 					$this->routesGroups[$routeGroupName][] = $route;
 				}
 			}
-			$this->anyRoutesConfigured = !$routesAreEmpty;
+			$this->routes = $newRoutes;
+			if ($noGroupNameDefined) {
+				if ($routesAreEmpty) {
+					$this->routesGroups = [];
+					$this->noUrlRoutes = [];
+				}
+				$this->routesGroups[''] = $newRoutes;
+			} else {
+				$this->routesGroups[$groupName] = $newRoutes;
+			}
+			$this->anyRoutesConfigured = (!$routesAreEmpty) || $this->preRouteMatchingHandler !== NULL;
 		}
 		return $this;
 	}
@@ -209,7 +213,7 @@ trait RouteMethods
 				);
 			}
 		}
-		$this->anyRoutesConfigured = count($routes) > 0;
+		$this->anyRoutesConfigured = count($routes) > 0 || $this->preRouteMatchingHandler !== NULL;
 		return $this;
 	}
 

@@ -38,17 +38,15 @@ trait RewriteRouting
 			if ($allMatchedParams = $route->Matches($request)) {
 				$this->currentRoute = clone $route;
 				$this->currentRoute->SetMatchedParams($allMatchedParams);
-				$requestParams = $this->rewriteRoutingSetRequestedAndDefaultParams(
-					$allMatchedParams
+				$this->rewriteRoutingSetRequestedAndDefaultParams(
+					$allMatchedParams, $requestCtrlName, $requestActionName
 				);
-				$break = $this->rewriteRoutingSetRequestParams($allMatchedParams, $requestParams);
+				$break = $this->rewriteRoutingSetRequestParams($allMatchedParams);
 				if ($break) break;
 			}
 		}
 		if ($this->currentRoute !== NULL) 
-			$this->rewriteRoutingSetUpRequestByCurrentRoute(
-				$allMatchedParams['controller'], $allMatchedParams['action']
-			);
+			$this->rewriteRoutingSetUpCurrentRouteByRequest();
 	}
 
 	protected function rewriteRoutingGetReqPathFirstWord () {
@@ -73,86 +71,94 @@ trait RewriteRouting
 		return $routes;
 	}
 
-	protected function & rewriteRoutingSetRequestedAndDefaultParams (& $allMatchedParams) {
+	protected function rewriteRoutingSetRequestedAndDefaultParams (& $allMatchedParams, $requestCtrlName = NULL, $requestActionName = NULL) {
+		// in array `$allMatchedParams` - there could be sometimes presented matched 
+		// or route speficied values from configuration already, under keys `controller` and 
+		// `action`, always with a value, never with `NULL`
+		/** @var $request \MvcCore\Request */
 		$request = & $this->request;
-		$routeDefaults = & $this->currentRoute->GetDefaults();
-		$rawQueryParams = $request->GetParams(FALSE);
+		$rawQueryParams = array_merge([], $request->GetParams(FALSE));
+		// complete controller and action from any possible source
+		list($ctrlDfltNamePc, $actionDfltNamePc) = $this->application->GetDefaultControllerAndActionNames();
+		$toolClass = self::$toolClass;
+		if ($requestCtrlName !== NULL) {
+			$request->SetControllerName($requestCtrlName);
+			$allMatchedParams['controller'] = $requestCtrlName;
+			$rawQueryParams['controller'] = $requestCtrlName;
+		} else if (isset($allMatchedParams['controller'])) {
+			$request->SetControllerName($allMatchedParams['controller']);
+		} else {
+			$defaultCtrlNameDashed = $toolClass::GetDashedFromPascalCase($ctrlDfltNamePc);
+			$request->SetControllerName($defaultCtrlNameDashed);
+			$allMatchedParams['controller'] = $defaultCtrlNameDashed;
+		}
+		if ($requestActionName !== NULL) {
+			$request->SetActionName($requestActionName);
+			$allMatchedParams['action'] = $requestActionName;
+			$rawQueryParams['action'] = $requestActionName;
+		} else if (isset($allMatchedParams['action'])) {
+			$request->SetActionName($allMatchedParams['action']);
+		} else {
+			$defaultActionNameDashed = $toolClass::GetDashedFromPascalCase($actionDfltNamePc);
+			$request->SetActionName($defaultActionNameDashed);
+			$allMatchedParams['action'] = $defaultActionNameDashed;
+		}
+		// complete params for request object - there have to be everytring including ctrl and action
+		$this->defaultParams = array_merge(
+			$this->currentRoute->GetDefaults(), $allMatchedParams, $rawQueryParams
+		);
 		// redirect route with strictly defined match regexp and not defined reverse could have `NULL` method result:
 		$routeReverseParams = $this->currentRoute->GetReverseParams() ?: [];
-		// complete realy matched params from path
-		$pathMatchedParams = array_merge([], $allMatchedParams);
+		// complete realy matched params from path - unset ctrl and action if ctrl and even action are not in pattern
+		$pathOnlyMatchedParams = array_merge([], $allMatchedParams);
 		$controllerInReverse	= in_array('controller', $routeReverseParams, TRUE);
 		$actionInReverse		= in_array('action', $routeReverseParams, TRUE);
-		if (!$controllerInReverse)	unset($pathMatchedParams['controller']);
-		if (!$actionInReverse)		unset($pathMatchedParams['action']);
-		// complete params for request object
-		$requestParams = array_merge(
-			$routeDefaults, $pathMatchedParams, $rawQueryParams
-		);
-		// complete default params - default params to build url with user 
-		// defined records possibility from filtering functions
-		$this->defaultParams = array_merge(
-			$routeDefaults, $allMatchedParams, $rawQueryParams
-		);
+		if (!$controllerInReverse)	unset($pathOnlyMatchedParams['controller']);
+		if (!$actionInReverse)		unset($pathOnlyMatchedParams['action']);
 		// requested params - all realy requested params for self URL addresses
-		// parsed from path and merged with query params
-		$this->requestedParams = array_merge([], $allMatchedParams);
-		if (!$controllerInReverse)	unset($this->requestedParams['controller']);
-		if (!$actionInReverse)		unset($this->requestedParams['action']);
-		$this->requestedParams = array_merge($this->requestedParams, $rawQueryParams);
-		return $requestParams;
+		// building base params array, parsed from path, merged with all query params 
+		// and merged later with given params array into method `Url()`.
+		// There cannot be `ctonroller` and `action` keys from route configuration,
+		// only if ctrl and action is defined by query string, that's different
+		$this->requestedParams = array_merge([], $pathOnlyMatchedParams, $rawQueryParams);
 	}
 
-	protected function rewriteRoutingSetRequestParams (& $allMatchedParams, & $requestParams) {
+	protected function rewriteRoutingSetRequestParams (& $allMatchedParams) {
 		$request = & $this->request;
+		$requestParams = array_merge([], $this->defaultParams);
 		// filter request params
 		list($success, $requestParamsFiltered) = $this->currentRoute->Filter(
 			$requestParams, $this->defaultParams, \MvcCore\IRoute::CONFIG_FILTER_IN
 		);
 		if ($success === FALSE) {
-			$this->currentRoute = NULL;
+			$this->defaultParams = [];
+			$this->requestedParams = [];
 			$allMatchedParams = [];
+			$this->currentRoute = NULL;
 			return FALSE;
 		}
-		$requestParamsFiltered['controller'] = $allMatchedParams['controller'];
-		$requestParamsFiltered['action'] = $allMatchedParams['action'];
+		$requestParamsFiltered = $requestParamsFiltered ?: $requestParams;
 		$request->SetParams($requestParamsFiltered);
+		if (isset($requestParamsFiltered['controller']))
+			$request->SetControllerName($requestParamsFiltered['controller']);
+		if (isset($requestParamsFiltered['action']))
+			$request->SetActionName($requestParamsFiltered['action']);
 		return TRUE;
 	}
 
 	/**
-	 * Set up request object controller and action by current route (routing 
-	 * result) routed by method `$this->rewriteRouting();`. If there is no
-	 * controller name and only action name or if there is no action name and only 
-	 * controller name, complete those missing record by default core values for 
-	 * controller name and action name.
-	 * @param string $controllerName
-	 * @param string $actionName
+	 * TODO: neaktualni
 	 * @return void
 	 */
-	protected function rewriteRoutingSetUpRequestByCurrentRoute ($requestCtrlName, $requestActionName) {
-		$route = $this->currentRoute;
+	protected function rewriteRoutingSetUpCurrentRouteByRequest () {
 		$request = & $this->request;
 		$toolClass = self::$toolClass;
-		$routeCtrl = $route->GetController();
-		$routeAction = $route->GetAction();
-		if (!$routeCtrl || !$routeAction) {
-			list($ctrlDfltName, $actionDfltName) = $this->application->GetDefaultControllerAndActionNames();
-			if (!$routeCtrl)
-				$route->SetController(
-					$requestCtrlName
-						? $toolClass::GetPascalCaseFromDashed($requestCtrlName)
-						: $ctrlDfltName
-				);
-			if (!$routeAction)
-				$route->SetAction(
-					$requestActionName
-						? $toolClass::GetPascalCaseFromDashed($requestActionName)
-						: $actionDfltName
-					);
-		}
-		$request
-			->SetControllerName($toolClass::GetDashedFromPascalCase($route->GetController()))
-			->SetActionName($toolClass::GetDashedFromPascalCase($route->GetAction()));
+		$this->currentRoute
+			->SetController(str_replace('/', '\\', 
+				$toolClass::GetPascalCaseFromDashed($request->GetControllerName())
+			))
+			->SetAction(
+				$toolClass::GetPascalCaseFromDashed($request->GetActionName())
+			);
 	}
 }

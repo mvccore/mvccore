@@ -49,12 +49,11 @@ trait Instancing
 	 *		"action"		=> "List",
 	 *		"defaults"		=> array("name" => "default-name",	"color" => "red"),
 	 * ));`
-	 * @param string|array	$patternOrConfig	Required, configuration array or route pattern value to parse into match and reverse patterns.
-	 * @param string		$controllerAction	Optional, controller and action name in pascale case like: `"Photogallery:List"`.
-	 * @param string		$defaults			Optional, default param values like: `array("name" => "default-name", "page" => 1)`.
-	 * @param array			$constraints		Optional, params regex constraints for regular expression match fn no `"match"` record in configuration array as first argument defined.
-	 * @param array			$filters			Optional, callable function(s) under keys `"in" | "out"` to filter in and out params accepting arguments: `array $params, array $defaultParams, \MvcCore\IRequest $request`.
-	 * @param array			$method				Optional, http method to only match requests by this method. If `NULL` (by default), request with any http method could be matched by this route. Given value is automaticly converted to upper case.
+	 * @param string|array	$patternOrConfig		Required, configuration array or route pattern value to parse into match and reverse patterns.
+	 * @param string		$controllerAction		Optional, controller and action name in pascale case like: `"Photogallery:List"`.
+	 * @param string		$defaults				Optional, default param values like: `array("name" => "default-name", "page" => 1)`.
+	 * @param array			$constraints			Optional, params regex constraints for regular expression match fn no `"match"` record in configuration array as first argument defined.
+	 * @param array			$advancedConfiguration	Optional, http method to only match requests by this method. If `NULL` (by default), request with any http method could be matched by this route. Given value is automaticly converted to upper case.
 	 * @return \MvcCore\Route
 	 */
 	public static function CreateInstance (
@@ -99,8 +98,7 @@ trait Instancing
 	 * @param string $controllerAction		Optional, controller and action name in pascale case like: `"Photogallery:List"`.
 	 * @param array $defaults				Optional, default param values like: `array("name" => "default-name", "page" => 1)`.
 	 * @param array $constraints			Optional, params regex constraints for regular expression match fn no `"match"` record in configuration array as first argument defined.
-	 * @param array	$filters				Optional, callable function(s) under keys `"in" | "out"` to filter in and out params accepting arguments: `array $params, array $defaultParams, \MvcCore\IRequest $request`.
-	 * @param array $method					Optional, http method to only match requests by this method. If `NULL` (by default), request with any http method could be matched by this route. Given value is automaticly converted to upper case.
+	 * @param array	$advancedConfiguration	Optional, http method to only match requests by this method. If `NULL` (by default), request with any http method could be matched by this route. Given value is automaticly converted to upper case.
 	 * @return \MvcCore\Route
 	 */
 	public function __construct (
@@ -113,24 +111,36 @@ trait Instancing
 		if (count(func_get_args()) === 0) return;
 		if (is_array($patternOrConfig)) {
 			$data = (object) $patternOrConfig;
-			if (isset($data->pattern)) 
-				$this->pattern = $data->pattern;
-			if (isset($data->match)) 
-				$this->match = $data->match;
-			if (isset($data->reverse)) 
-				$this->reverse = $data->reverse;
-			$this->constructCtrlActionNameDefConstrAndAdvCfg($data);
+			$this->constructDataPatternsDefaultsConstraintsFilters($data);
+			$this->constructDataCtrlActionName($data);
+			$this->constructDataAdvConf($data);
 		} else {
-			if ($patternOrConfig !== NULL) 
-				$this->pattern = $patternOrConfig;
-			$this->constructCtrlActionDefConstrAndAdvCfg(
-				$controllerAction, $defaults, $constraints, $advancedConfiguration
+			$this->constructVarsPatternDefaultsConstraintsFilters(
+				$patternOrConfig, $defaults, $constraints, $advancedConfiguration
 			);
+			$this->constructVarCtrlActionNameByData($controllerAction);
+			$this->constructVarAdvConf($advancedConfiguration);
 		}
 		$this->constructCtrlOrActionByName();
 	}
 
-	protected function constructCtrlActionNameDefConstrAndAdvCfg (& $data) {
+
+	protected function constructDataPatternsDefaultsConstraintsFilters (& $data) {
+		if (isset($data->pattern)) 
+			$this->pattern = $data->pattern;
+		if (isset($data->match)) 
+			$this->match = $data->match;
+		if (isset($data->reverse)) 
+			$this->reverse = $data->reverse;
+		if (isset($data->defaults)) 
+			$this->SetDefaults($data->defaults);
+		if (isset($data->constraints)) 
+			$this->SetConstraints($data->constraints);
+		if (isset($data->filters) && is_array($data->filters)) 
+			$this->SetFilters($data->filters);
+	}
+	
+	protected function constructDataCtrlActionName (& $data) {
 		if (isset($data->controllerAction)) {
 			list($ctrl, $action) = explode(':', $data->controllerAction);
 			if ($ctrl) $this->controller = $ctrl;
@@ -151,12 +161,9 @@ trait Instancing
 				$this->name = NULL;
 			}
 		}
-		if (isset($data->defaults)) 
-			$this->SetDefaults($data->defaults);
-		if (isset($data->constraints)) 
-			$this->SetConstraints($data->constraints);
-		if (isset($data->filters) && is_array($data->filters)) 
-			$this->SetFilters($data->filters);
+	}
+	
+	protected function constructDataAdvConf (& $data) {
 		$methodParam = static::CONFIG_METHOD;
 		if (isset($data->{$methodParam})) 
 			$this->method = strtoupper((string) $data->{$methodParam});
@@ -168,24 +175,30 @@ trait Instancing
 			$this->absolute = (bool) $data->{$absoluteParam};
 	}
 
-	protected function constructCtrlActionDefConstrAndAdvCfg (& $ctrlAction, & $defaults, & $constraints, & $advCfg) {
-		// Controller:Action, defaults and constraints
-		if ($ctrlAction !== NULL) {
-			list($ctrl, $action) = explode(':', $ctrlAction);
-			if ($ctrl) $this->controller = $ctrl;
-			if ($action) $this->action = $action;
-		}
+	protected function constructVarsPatternDefaultsConstraintsFilters (& $pattern, & $defaults, & $constraints, & $advCfg) {
+		if ($pattern !== NULL) 
+			$this->pattern = $pattern;
 		if ($defaults !== NULL)
 			$this->defaults = $defaults;
 		if ($constraints !== NULL)
 			$this->SetConstraints($constraints);
-		// filters, method, redirect and absolute
 		$filterInParam = static::CONFIG_FILTER_IN;
 		if (isset($advCfg[$filterInParam]))
 			$this->SetFilter($advCfg[$filterInParam]);
 		$filterOutParam = static::CONFIG_FILTER_OUT;
 		if (isset($advCfg[$filterOutParam]))
 			$this->SetFilter($advCfg[$filterOutParam]);
+	}
+
+	protected function constructVarCtrlActionNameByData (& $ctrlAction) {
+		if ($ctrlAction !== NULL) {
+			list($ctrl, $action) = explode(':', $ctrlAction);
+			if ($ctrl) $this->controller = $ctrl;
+			if ($action) $this->action = $action;
+		}
+	}
+
+	protected function constructVarAdvConf (& $advCfg) {
 		$methodParam = static::CONFIG_METHOD;
 		if (isset($advCfg[$methodParam]))
 			$this->method = strtoupper((string) $advCfg[$methodParam]);
@@ -196,6 +209,7 @@ trait Instancing
 		if (isset($advCfg[$absoluteParam]))
 			$this->absolute = (bool) $advCfg[$absoluteParam];
 	}
+
 
 	protected function constructCtrlOrActionByName () {
 		if (!$this->controller && !$this->action && strpos($this->name, ':') !== FALSE && strlen($this->name) > 1) {

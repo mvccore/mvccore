@@ -40,7 +40,7 @@ trait Routing
 	 */
 	public function Route () {
 		$this->internalRequest = $this->request->IsInternalRequest();
-		if (!$this->internalRequest && !$this->routeByQueryString) 
+		if (!$this->internalRequest) 
 			if (!$this->redirectToProperTrailingSlashIfNecessary()) return FALSE;
 		list($requestCtrlName, $requestActionName) = $this->routeDetectStrategy();
 		if ($this->routeByQueryString) {
@@ -51,7 +51,7 @@ trait Routing
 		if (!$this->routeProcessRouteRedirectionIfAny()) return FALSE;
 		return $this->routeSetUpDefaultForHomeIfNoMatch()
 					->routeSetUpSelfRouteNameIfAny()
-					->routeRedirect2CanonicalIfAny();
+					->canonicalRedirectIfAny();
 	}
 	
 	/**
@@ -188,9 +188,6 @@ trait Routing
 		$request = & $this->request;
 		$requestCtrlName = $request->GetControllerName();
 		$requestActionName = $request->GetActionName();
-		$this->anyRoutesConfigured = (
-			$this->preRouteMatchingHandler !== NULL || count($this->routes) > 0
-		);
 		if ($this->routeByQueryString === NULL) {
 			list($reqScriptName, $reqPath) = [$request->GetScriptName(), $request->GetPath(TRUE)];
 			$requestCtrlNameNotNull = $requestCtrlName !== NULL;
@@ -261,9 +258,10 @@ trait Routing
 			if ($requestIsHome || $this->routeToDefaultIfNotMatch) {
 				list($dfltCtrl, $dftlAction) = $this->application->GetDefaultControllerAndActionNames();
 				$this->SetOrCreateDefaultRouteAsCurrent(
-					\MvcCore\IRouter::DEFAULT_ROUTE_NAME, $dfltCtrl, $dftlAction
+					static::DEFAULT_ROUTE_NAME, $dfltCtrl, $dftlAction
 				);
-				// set up requested params from query string if there are any (and path if there is path from previous fn)
+				// set up requested params from query string if there are any 
+				// (and path if there is path from previous fn)
 				$requestParams = array_merge([], $this->request->GetParams(FALSE));
 				unset($requestParams['controller'], $requestParams['action']);
 				$this->requestedParams = & $requestParams;

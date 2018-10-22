@@ -65,11 +65,11 @@ trait UrlBuilding
 	 *		`"/products-list/cool-product-name/blue?variant[]=L&amp;variant[]=XL"`
 	 * @param \MvcCore\Request $request Currently requested request object.
 	 * @param array $params URL params from application point completed by developer.
-	 * @param array $requestedUrlParams Requested url route prams nad query string params without escaped HTML special chars: `< > & " ' &`.
+	 * @param array $defaultUrlParams Requested url route prams nad query string params without escaped HTML special chars: `< > & " ' &`.
 	 * @param string $queryStringParamsSepatator Query params separator, `&` by default. Always automaticly completed by router instance.
 	 * @return \string[] Result URL addres in two parts - domain part with base path and path part with query string.
 	 */
-	public function Url (\MvcCore\IRequest & $request, array & $params = [], array & $requestedUrlParams = [], $queryStringParamsSepatator = '&') {
+	public function Url (\MvcCore\IRequest & $request, array & $params = [], array & $defaultUrlParams = [], $queryStringParamsSepatator = '&') {
 		// check reverse initialization
 		if ($this->reverseParams === NULL) $this->initReverse();
 		// complete and filter all params to build reverse pattern
@@ -77,13 +77,16 @@ trait UrlBuilding
 			$allParamsClone = array_merge([], $params);
 		} else {// complete params with necessary values to build reverse pattern (and than query string)
 			$emptyReverseParams = array_fill_keys(array_keys($this->reverseParams), '');
-			$allMergedParams = array_merge($this->defaults, $requestedUrlParams, $params);
+			$allMergedParams = array_merge($this->defaults, $defaultUrlParams, $params);
+			// all params clone contains only keys necessary to build reverse 
+			// patern for this route and all given `$params` keys, nothing more 
+			// from currently requested url
 			$allParamsClone = array_merge(
 				$emptyReverseParams, array_intersect_key($allMergedParams, $emptyReverseParams), $params
 			);
 		}
 		// filter params
-		list(,$filteredParams) = $this->Filter($allParamsClone, $requestedUrlParams, \MvcCore\IRoute::CONFIG_FILTER_OUT);
+		list(,$filteredParams) = $this->Filter($allParamsClone, $defaultUrlParams, \MvcCore\IRoute::CONFIG_FILTER_OUT);
 		// split params into domain params array and into path and query params array
 		$domainParams = $this->urlGetAndRemoveDomainParams($filteredParams);
 		// build reverse pattern

@@ -164,6 +164,7 @@ trait Dispatching
 					// if view exists - change controller name to core controller, if not let it go to exception
 					$controllerName = $this->controllerClass;
 				} else {
+					$controllerName = $this->request->GetControllerName();
 					return $this->DispatchException("Controller class `$controllerName` doesn't exist.", 404);
 				}
 			}
@@ -218,9 +219,10 @@ trait Dispatching
 				$viewScriptPath = mb_strpos($viewScriptFullPath, $appRoot) === FALSE
 					? $viewScriptFullPath
 					: mb_substr($viewScriptFullPath, mb_strlen($appRoot));
+				$ctrlClassFullName = $this->request->GetControllerName();
 				return $this->DispatchException(
 					"Controller class `$ctrlClassFullName` has not method `$actionName` \n"
-					."or view doesn't exists: `$viewScriptPath`.",
+					."or view doesn't exist: `$viewScriptPath`.",
 					404
 				);
 			}
@@ -360,6 +362,7 @@ trait Dispatching
 			]);
 			$this->request->SetParams($newParams);
 			$this->response->SetCode(500);
+			$this->controller = NULL;
 			$this->DispatchControllerAction(
 				$defaultCtrlFullName,
 				$this->defaultControllerErrorActionName . "Action",
@@ -412,6 +415,7 @@ trait Dispatching
 			]);
 			$this->request->SetParams($newParams);
 			$this->response->SetCode(404);
+			$this->controller = NULL;
 			$this->DispatchControllerAction(
 				$defaultCtrlFullName,
 				$this->defaultControllerNotFoundActionName . "Action",

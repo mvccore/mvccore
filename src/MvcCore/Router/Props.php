@@ -22,13 +22,13 @@ trait Props
 	protected static $instance = NULL;
 
 	/**
-	 * Reference to `\MvcCore\Application::GetInstance()->GetRouteClass();`.
+	 * Value from `\MvcCore\Application::GetInstance()->GetRouteClass();`.
 	 * @var string|NULL
 	 */
 	protected static $routeClass = NULL;
 
 	/**
-	 * Reference to `\MvcCore\Application::GetInstance()->GetToolClass();`.
+	 * Value from `\MvcCore\Application::GetInstance()->GetToolClass();`.
 	 * @var string|NULL
 	 */
 	protected static $toolClass = NULL;

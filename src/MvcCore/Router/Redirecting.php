@@ -23,6 +23,7 @@ trait Redirecting
 	 */
 	protected function redirectToProperTrailingSlashIfNecessary () {
 		if (!$this->trailingSlashBehaviour) return TRUE;
+		// path is still not modified by media or localization router in this moment
 		$path = $this->request->GetPath();
 		if ($path == '/')
 			return TRUE; // do not redirect for homepage with trailing slash

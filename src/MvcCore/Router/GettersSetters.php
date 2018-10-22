@@ -169,6 +169,8 @@ trait GettersSetters
 	 */
 	public function & SetPreRouteMatchingHandler (callable $preRouteMatchingHandler) {
 		$this->preRouteMatchingHandler = $preRouteMatchingHandler;
+		if ($preRouteMatchingHandler === NULL)
+			$this->anyRoutesConfigured = count($this->routes) > 0;
 		return $this;
 	}
 
