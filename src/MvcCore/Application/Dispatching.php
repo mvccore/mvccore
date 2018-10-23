@@ -187,14 +187,14 @@ trait Dispatching
 	 * exception in controller lifecycle dispatching process
 	 * with first argument as catched exception.
 	 * @param string $ctrlClassFullName
-	 * @param string $actionName
+	 * @param string $actionNamePc
 	 * @param string $viewScriptFullPath
 	 * @param callable $exceptionCallback
 	 * @return bool
 	 */
 	public function DispatchControllerAction (
 		$ctrlClassFullName,
-		$actionName,
+		$actionNamePc,
 		$viewScriptFullPath,
 		callable $exceptionCallback
 	) {
@@ -213,7 +213,7 @@ trait Dispatching
 			->SetRequest($this->request)
 			->SetResponse($this->response)
 			->SetRouter($this->router);
-		if (!method_exists($this->controller, $actionName) && $ctrlClassFullName !== $this->controllerClass) {
+		if (!method_exists($this->controller, $actionNamePc) && $ctrlClassFullName !== $this->controllerClass) {
 			if (!file_exists($viewScriptFullPath)) {
 				$appRoot = $this->request->GetAppRoot();
 				$viewScriptPath = mb_strpos($viewScriptFullPath, $appRoot) === FALSE
@@ -221,7 +221,7 @@ trait Dispatching
 					: mb_substr($viewScriptFullPath, mb_strlen($appRoot));
 				$ctrlClassFullName = $this->request->GetControllerName();
 				return $this->DispatchException(
-					"Controller class `$ctrlClassFullName` has not method `$actionName` \n"
+					"Controller class `$ctrlClassFullName` has not method `$actionNamePc` \n"
 					."or view doesn't exist: `$viewScriptPath`.",
 					404
 				);
@@ -229,7 +229,7 @@ trait Dispatching
 		}
 		if (!$this->ProcessCustomHandlers($this->preDispatchHandlers)) return FALSE;
 		try {
-			$this->controller->Dispatch($actionName);
+			$this->controller->Dispatch($actionNamePc);
 		} catch (\Exception $e) {
 			return $exceptionCallback($e);
 		}

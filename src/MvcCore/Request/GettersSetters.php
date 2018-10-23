@@ -353,7 +353,7 @@ trait GettersSetters
 			}
 			$this->referer = $referer;
 		}
-		return $rawInput ? $this->referer : static::htmlSpecialChars($this->referer);
+		return $rawInput ? $this->referer : static::HtmlSpecialChars($this->referer);
 	}
 
 	/**
@@ -571,7 +571,7 @@ trait GettersSetters
 	public function GetPath ($rawInput = FALSE) {
 		if ($this->path === NULL) 
 			$this->initUrlSegments();
-		return $rawInput ? $this->path : static::htmlSpecialChars($this->path);
+		return $rawInput ? $this->path : static::HtmlSpecialChars($this->path);
 	}
 
 	/**
@@ -604,7 +604,7 @@ trait GettersSetters
 		$result = ($withQuestionMark && mb_strlen($this->query) > 0)
 			? '?' . $this->query
 			: $this->query;
-		return $rawInput ? $result : static::htmlSpecialChars($result);
+		return $rawInput ? $result : static::HtmlSpecialChars($result);
 	}
 
 	/**
@@ -617,7 +617,7 @@ trait GettersSetters
 		if ($this->requestPath === NULL) {
 			$this->requestPath = $this->GetPath(TRUE) . $this->GetQuery(TRUE, TRUE) . $this->GetFragment(TRUE, TRUE);
 		}
-		return $rawInput ? $this->requestPath : static::htmlSpecialChars($this->requestPath);
+		return $rawInput ? $this->requestPath : static::HtmlSpecialChars($this->requestPath);
 	}
 
 	/**
@@ -651,7 +651,7 @@ trait GettersSetters
 	public function GetRequestUrl ($rawInput = FALSE) {
 		if ($this->requestUrl === NULL) 
 			$this->requestUrl = $this->GetBaseUrl() . $this->GetPath(TRUE);
-		return $rawInput ? $this->requestUrl : $this->htmlSpecialChars($this->requestUrl);
+		return $rawInput ? $this->requestUrl : $this->HtmlSpecialChars($this->requestUrl);
 	}
 
 	/**
@@ -663,7 +663,7 @@ trait GettersSetters
 	public function GetFullUrl ($rawInput = FALSE) {
 		if ($this->fullUrl === NULL) 
 			$this->fullUrl = $this->GetRequestUrl(TRUE) . $this->GetQuery(TRUE, TRUE) . $this->GetFragment(TRUE, TRUE);
-		return $rawInput ? $this->fullUrl : static::htmlSpecialChars($this->fullUrl);
+		return $rawInput ? $this->fullUrl : static::HtmlSpecialChars($this->fullUrl);
 	}
 
 	/**
@@ -683,7 +683,7 @@ trait GettersSetters
 		$result = ($withHash && mb_strlen($this->fragment) > 0)
 			? '?' . $this->fragment
 			: $this->fragment;
-		return $rawInput ? $result : static::htmlSpecialChars($result);
+		return $rawInput ? $result : static::HtmlSpecialChars($result);
 	}
 
 	/**
@@ -753,7 +753,7 @@ trait GettersSetters
 	 * @param string $str 
 	 * @return string
 	 */
-	protected static function htmlSpecialChars ($str) {
+	public static function HtmlSpecialChars ($str) {
 		static $chars = ['"'=>'&quot;',"'"=>'&apos;','<'=>'&lt;','>'=>'&gt;',/*'&' => '&amp;',*/];
 		return strtr($str, $chars);
 	}

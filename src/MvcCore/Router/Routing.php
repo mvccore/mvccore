@@ -74,31 +74,42 @@ trait Routing
 		$currentRoute = & $this->currentRoute;
 		$currentRouteMatched = $currentRoute instanceof \MvcCore\IRoute;
 		$matchedParams = $currentRouteMatched ? $currentRoute->GetMatchedParams() : [];
-		if ($controllerNamePc !== NULL) {
+		$controllerNamePcNotNull = $controllerNamePc !== NULL;
+		$actionNamePcNotNull = $actionNamePc !== NULL;
+		if ($controllerNamePcNotNull) {
 			$ctrlNameDc = str_replace(['\\', '_'], '/', $toolClass::GetDashedFromPascalCase($controllerNamePc));
 			$matchedParams['controller'] = $ctrlNameDc;
 			$this->request->SetControllerName($ctrlNameDc)->SetParam('controller', $ctrlNameDc);
+			if (isset($this->requestedParams['controller'])) $this->requestedParams['controller'] = $ctrlNameDc;
+			$currentRoute->SetController($controllerNamePc);
 		}
-		if ($actionNamePc !== NULL) {
+		if ($actionNamePcNotNull) {
 			$actionNameDc = $toolClass::GetDashedFromPascalCase($actionNamePc);
 			$matchedParams['action'] = $actionNameDc;
 			$this->request->SetActionName($actionNameDc)->SetParam('action', $ctrlNameDc);
 			if (isset($this->requestedParams['action'])) $this->requestedParams['action'] = $actionNameDc;
+			$currentRoute->SetAction($actionNamePc);
 		}
 		if ($currentRouteMatched) {
 			$currentRoute->SetMatchedParams($matchedParams);
-			if (strpos($currentRoute->GetName(), ':') !== FALSE && $controllerNamePc !== NULL && $actionNamePc !== NULL) {
-				$currentRoute->SetName($controllerNamePc . ':' . $actionNamePc);
+			$currentRouteName = $currentRoute->GetName();
+			
+			if (strpos($currentRouteName, ':') !== FALSE && ($controllerNamePcNotNull || $actionNamePcNotNull)) {
+				list($ctrlPc, $actionPc) = explode(':', $currentRouteName);
+				$currentRoute->SetName(
+					 ($controllerNamePcNotNull ? $controllerNamePc : $ctrlPc)
+					. ':' . ($actionNamePcNotNull ? $actionNamePc : $actionPc)
+				);
 			}
 		}
 		if ($currentRouteMatched && $changeSelfRoute) {
 			$this->selfRouteName = $this->anyRoutesConfigured
 				? $currentRoute->GetName()
 				: $currentRoute->GetControllerAction();
-			if ($controllerNamePc !== NULL) 
+			if ($controllerNamePcNotNull) 
 				if (isset($this->requestedParams['controller'])) 
 					$this->requestedParams['controller'] = $ctrlNameDc;
-			if ($actionNamePc !== NULL)
+			if ($actionNamePcNotNull)
 				if (isset($this->requestedParams['action'])) 
 					$this->requestedParams['action'] = $actionNameDc;
 		}
@@ -151,23 +162,24 @@ trait Routing
 			$defaultRoute = $this->routes[$routeName];
 		} else {
 			$routeClass = self::$routeClass;
+			$pathParamName = static::URL_PARAM_PATH;
 			$defaultRoute = $routeClass::CreateInstance()
-				->SetMatch('#/(?<path>.*)#')
-				->SetReverse('/<path>')
+				->SetMatch("#/(?<$pathParamName>.*)#")
+				->SetReverse("/<$pathParamName>")
 				->SetName($routeName)
 				->SetController($controllerPc)
 				->SetAction($actionPc)
 				->SetDefaults([
-					'path'		=> NULL,
-					'controller'=> NULL,
-					'action'	=> NULL,
+					$pathParamName					=> NULL,
+					static::URL_PARAM_CONTROLLER	=> NULL,
+					static::URL_PARAM_ACTION		=> NULL,
 				]);
 			$anyRoutesConfigured = $this->anyRoutesConfigured;
 			$this->AddRoute($defaultRoute, NULL, TRUE, FALSE);
 			$this->anyRoutesConfigured = $anyRoutesConfigured;
 			if (!$request->IsInternalRequest()) 
-				$request->SetParam('path', ($request->HasParam('path')
-					? $request->GetParam('path', '.*')
+				$request->SetParam(static::URL_PARAM_PATH, ($request->HasParam(static::URL_PARAM_PATH)
+					? $request->GetParam(static::URL_PARAM_PATH, '.*')
 					: $request->GetPath())
 				);
 		}

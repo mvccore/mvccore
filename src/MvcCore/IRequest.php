@@ -796,4 +796,12 @@ interface IRequest
 	 * @return int|NULL
 	 */
 	public function GetContentLength ();
+
+	/**
+	 * Convert special characters to HTML entities except ampersand `&`.
+	 * @see http://php.net/manual/en/function.htmlspecialchars.php
+	 * @param string $str 
+	 * @return string
+	 */
+	public static function HtmlSpecialChars ($str);
 }

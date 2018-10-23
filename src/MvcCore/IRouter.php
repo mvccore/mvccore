@@ -114,6 +114,11 @@ interface IRouter
 	 * URL param name to place custom basePath into route reverse pattern placeholder `%basePath%`.
 	 */
 	const URL_PARAM_BASEPATH = 'basePath';
+	
+	/**
+	 * URL param name to place custom basePath into route reverse pattern placeholder `%basePath%`.
+	 */
+	const URL_PARAM_PATH = 'path';
 
 
 	/**

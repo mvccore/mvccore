@@ -595,14 +595,14 @@ interface IApplication
 	 * exception in controller lifecycle dispatching process
 	 * with first argument as catched exception.
 	 * @param string $ctrlClassFullName
-	 * @param string $actionName
+	 * @param string $actionNamePc
 	 * @param string $viewScriptFullPath
 	 * @param callable $exceptionCallback
 	 * @return bool
 	 */
 	public function DispatchControllerAction (
 		$controllerClassFullName,
-		$actionName,
+		$actionNamePc,
 		$viewScriptFullPath,
 		callable $exceptionCallback
 	);

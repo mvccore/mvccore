@@ -74,15 +74,14 @@ trait Canonical
 		$req = & $this->request;
 		$redirectToCanonicalUrl = FALSE;
 		$defaultParams =  $this->GetDefaultParams() ?: [];
-		list($selfUrlDomainAndBasePart, $selfUrlPathAndQueryPart) = $this->urlRoutes[$this->selfRouteName]->Url(
+		list($selfUrlDomainAndBasePart, $selfUrlPathAndQueryPart) =  $this->currentRoute->Url(
 			$req, $this->requestedParams, $defaultParams, $this->getQueryStringParamsSepatator()
 		);
 		if (mb_strlen($selfUrlDomainAndBasePart) > 0 && $selfUrlDomainAndBasePart !== $req->GetBaseUrl()) 
 			$redirectToCanonicalUrl = TRUE;
 		if (mb_strlen($selfUrlPathAndQueryPart) > 0) {
 			$path = $req->GetPath(TRUE);
-			$path = $path === '' ? '/' : $path ;
-			$requestedUrl = $req->GetBasePath() . $path;
+			$requestedUrl = $path === '' ? '/' : $path ;
 			if (mb_strpos($selfUrlPathAndQueryPart, '?') !== FALSE) {
 				$selfUrlPathAndQueryPart = rawurldecode($selfUrlPathAndQueryPart);
 				$requestedUrl .= $req->GetQuery(TRUE, TRUE);

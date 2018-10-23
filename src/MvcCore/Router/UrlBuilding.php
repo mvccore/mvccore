@@ -39,9 +39,9 @@ trait UrlBuilding
 		$ctrlActionOrRouteNameKey = $this->urlGetCompletedCtrlActionKey(
 			$controllerActionOrRouteName
 		);
-		if ($this->anyRoutesConfigured) {
+		if ($this->anyRoutesConfigured && !($this->routeByQueryString && $ctrlActionOrRouteNameKey === static::DEFAULT_ROUTE_NAME)) {
 			// try to found url route in global `$this->urlRoutes` store
-			if (isset($this->urlRoutes[$ctrlActionOrRouteNameKey])) {
+			if (isset($this->urlRoutes[$ctrlActionOrRouteNameKey]) && $this->urlRoutes[$ctrlActionOrRouteNameKey]->GetName() !== static::DEFAULT_ROUTE_NAME) {
 				// if there was a route under `$ctrlActionOrRouteNameKey` key already, 
 				// we can complete url by this route
 				$result = $this->UrlByRoute(
@@ -58,8 +58,8 @@ trait UrlBuilding
 					if ($this->preRouteUrlBuildingHandler !== NULL) 
 						call_user_func($this->preRouteUrlBuildingHandler, $this, $ctrlActionOrRouteNameKey, $params);
 					// try to found url route again
-					if (isset($this->urlRoutes[$ctrlActionOrRouteNameKey])) {
-						$urlRouteFound = FALSE;
+					if (isset($this->urlRoutes[$ctrlActionOrRouteNameKey]) && $this->urlRoutes[$ctrlActionOrRouteNameKey]->GetName() !== static::DEFAULT_ROUTE_NAME) {
+						$urlRouteFound = TRUE;
 					} else {
 						$this->noUrlRoutes[$ctrlActionOrRouteNameKey] = TRUE;
 					}
@@ -118,10 +118,28 @@ trait UrlBuilding
 	 * @return string
 	 */
 	public function UrlByQueryString ($controllerActionOrRouteName = 'Index:Index', array & $params = [], $givenRouteName = NULL) {
-		if ($givenRouteName == 'self') 
+		if ($givenRouteName == 'self') {
 			$params = array_merge($this->requestedParams ?: [], $params);
-		$toolClass = self::$toolClass;
-		list($ctrlPc, $actionPc) = explode(':', $controllerActionOrRouteName);
+			if ($controllerActionOrRouteName === static::DEFAULT_ROUTE_NAME && isset($params[static::URL_PARAM_PATH]))
+				unset($params[static::URL_PARAM_PATH]);
+		}
+		list($ctrlPc, $actionPc) = $this->urlByQueryStringCompleteCtrlAction(
+			$controllerActionOrRouteName, $params
+		);
+		$absolute = $this->urlGetAbsoluteParam($params);
+		$result = $this->urlByQueryStringCompleteResult(
+			$ctrlPc, $actionPc, $params
+		);
+		$result = $this->request->GetBasePath() . $result;
+		if ($absolute) 
+			$result = $this->request->GetDomainUrl() . $result;
+		return $result;
+	}
+	
+	protected function urlByQueryStringCompleteCtrlAction ($controllerActionOrRouteName, array & $params) {
+		list($ctrlPc, $actionPc) = strpos($controllerActionOrRouteName, ':') !== FALSE
+			? explode(':', $controllerActionOrRouteName)
+			: [NULL, NULL];
 		if (isset($params['controller'])) {
 			$ctrlPc = $params['controller'];
 			unset($params['controller']);
@@ -130,10 +148,14 @@ trait UrlBuilding
 			$actionPc = $params['action'];
 			unset($params['action']);
 		}
+		return [$ctrlPc, $actionPc];
+	}
+
+	protected function urlByQueryStringCompleteResult ($ctrlPc, $actionPc, array & $params) {
+		$result = '';
+		$toolClass = self::$toolClass;
 		$amp = $this->getQueryStringParamsSepatator();
 		list($dfltCtrlPc, $dftlActionPc) = $this->application->GetDefaultControllerAndActionNames();
-		$absolute = $this->urlGetAbsoluteParam($params);
-		$result = '';
 		$ctrlIsNotDefault = $ctrlPc !== $dfltCtrlPc;
 		$actionIsNotDefault = $actionPc !== $dftlActionPc;
 		$sep = '?';
@@ -153,9 +175,6 @@ trait UrlBuilding
 			$result .= $sep . str_replace('%2F', '/', http_build_query($params, '', $amp, PHP_QUERY_RFC3986));
 		}
 		if ($result == '') $result = '/';
-		$result = $this->request->GetBasePath() . $result;
-		if ($absolute) 
-			$result = $this->request->GetDomainUrl() . $result;
 		return $result;
 	}
 
