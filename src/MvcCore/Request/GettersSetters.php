@@ -273,6 +273,9 @@ trait GettersSetters
 	 */
 	public function & SetBasePath ($rawBasePath) {
 		$this->basePath = $rawBasePath;
+		$this->baseUrl = NULL;
+		$this->requestUrl = NULL;
+		$this->fullUrl = NULL;
 		return $this;
 	}
 
@@ -297,6 +300,10 @@ trait GettersSetters
 	 */
 	public function & SetProtocol ($rawProtocol) {
 		$this->protocol = $rawProtocol;
+		$this->domainUrl = NULL;
+		$this->baseUrl = NULL;
+		$this->requestUrl = NULL;
+		$this->fullUrl = NULL;
 		return $this;
 	}
 
@@ -370,6 +377,10 @@ trait GettersSetters
 		$this->hostName = trim(implode('.', $this->domainParts), '.');
 		if ($this->hostName && $this->portDefined) 
 			$this->host = $this->hostName . ':' . $this->port;
+		$this->domainUrl = NULL;
+		$this->baseUrl = NULL;
+		$this->requestUrl = NULL;
+		$this->fullUrl = NULL;
 		return $this;
 	}
 	
@@ -394,6 +405,10 @@ trait GettersSetters
 		$this->hostName = trim(implode('.', $this->domainParts), '.');
 		if ($this->hostName && $this->portDefined) 
 			$this->host = $this->hostName . ':' . $this->port;
+		$this->domainUrl = NULL;
+		$this->baseUrl = NULL;
+		$this->requestUrl = NULL;
+		$this->fullUrl = NULL;
 		return $this;
 	}
 	
@@ -418,6 +433,10 @@ trait GettersSetters
 		$this->hostName = trim(implode('.', $this->domainParts), '.');
 		if ($this->hostName && $this->portDefined) 
 			$this->host = $this->hostName . ':' . $this->port;
+		$this->domainUrl = NULL;
+		$this->baseUrl = NULL;
+		$this->requestUrl = NULL;
+		$this->fullUrl = NULL;
 		return $this;
 	}
 	
@@ -440,6 +459,10 @@ trait GettersSetters
 	public function & SetHostName ($rawHostName) {
 		if ($this->hostName !== $rawHostName) $this->domainParts = NULL;
 		$this->hostName = $rawHostName;
+		$this->domainUrl = NULL;
+		$this->baseUrl = NULL;
+		$this->requestUrl = NULL;
+		$this->fullUrl = NULL;
 		if ($rawHostName && $this->portDefined) 
 			$this->host = $rawHostName . ':' . $this->port;
 		return $this;
@@ -465,6 +488,10 @@ trait GettersSetters
 	 */
 	public function & SetHost ($rawHost) {
 		$this->host = $rawHost;
+		$this->domainUrl = NULL;
+		$this->baseUrl = NULL;
+		$this->requestUrl = NULL;
+		$this->fullUrl = NULL;
 		$doubleDotPos = mb_strpos($rawHost, ':');
 		if ($doubleDotPos !== FALSE) {
 			$hostName = mb_substr($rawHost, 0, $doubleDotPos);
@@ -496,7 +523,17 @@ trait GettersSetters
 	 */
 	public function & SetPort ($rawPort) {
 		$this->port = $rawPort;
-		$this->portDefined = strlen($rawPort) > 0;
+		$this->domainUrl = NULL;
+		$this->baseUrl = NULL;
+		$this->requestUrl = NULL;
+		$this->fullUrl = NULL;
+		if (strlen($rawPort) > 0) {
+			$this->host = $this->hostName . ':' . $rawPort;
+			$this->portDefined = TRUE;
+		} else {
+			$this->host = $this->hostName;
+			$this->portDefined = FALSE;
+		}
 		return $this;
 	}
 
@@ -519,6 +556,9 @@ trait GettersSetters
 	 */
 	public function & SetPath ($rawPathValue) {
 		$this->path = $rawPathValue;
+		$this->requestUrl = NULL;
+		$this->requestPath = NULL;
+		$this->fullUrl = NULL;
 		return $this;
 	}
 
@@ -542,6 +582,8 @@ trait GettersSetters
 	 */
 	public function & SetQuery ($rawQuery) {
 		$this->query = ltrim($rawQuery, '?');
+		$this->fullUrl = NULL;
+		$this->requestPath = NULL;
 		return $this;
 	}
 

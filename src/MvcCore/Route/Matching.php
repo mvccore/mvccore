@@ -83,7 +83,9 @@ trait Matching
 	
 	protected function matchesGetSubjectHost (\MvcCore\IRequest & $request, & $hostFlag) {
 		$hostPart = '';
-		if ($hostFlag == static::FLAG_HOST_HOST /* 1 */) {
+		if ($hostFlag == static::FLAG_HOST_NO /* 0 */) {
+			$hostPart = $request->GetHostName();
+		} else if ($hostFlag == static::FLAG_HOST_HOST /* 1 */) {
 			$hostPart = static::PLACEHOLDER_HOST;
 		} else if ($hostFlag == static::FLAG_HOST_DOMAIN /* 2 */) {
 			$hostPart = $request->GetThirdLevelDomain() . '.' . static::PLACEHOLDER_DOMAIN;
@@ -106,10 +108,10 @@ trait Matching
 	protected function matchesGetSubjectScheme (& $schemeFlag) {
 		static $prefixes = NULL;
 		if ($prefixes === NULL) $prefixes = [
-			static::FLAG_SCHEME_NO		=> '',
-			static::FLAG_SCHEME_ANY		=> '//',
-			static::FLAG_SCHEME_HTTP	=> 'http://',
-			static::FLAG_SCHEME_HTTPS	=> 'https://',
+			static::FLAG_SCHEME_NO		=> '',			// 0
+			static::FLAG_SCHEME_ANY		=> '//',		// 2
+			static::FLAG_SCHEME_HTTP	=> 'http://',	// 7
+			static::FLAG_SCHEME_HTTPS	=> 'https://',	// 8
 		];
 		return $prefixes[$schemeFlag];
 	}

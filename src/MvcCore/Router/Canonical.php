@@ -36,6 +36,7 @@ trait Canonical
 	}
 
 	protected function canonicalRedirectQueryStringStrategy () {
+		/** @var $req \MvcCore\Request */
 		$req = & $this->request;
 		$redirectToCanonicalUrl = FALSE;
 		$requestGlobalGet = & $req->GetGlobalCollection('get');
@@ -69,6 +70,7 @@ trait Canonical
 	}
 	
 	protected function canonicalRedirectRewriteRoutesStrategy () {
+		/** @var $req \MvcCore\Request */
 		$req = & $this->request;
 		$redirectToCanonicalUrl = FALSE;
 		$defaultParams =  $this->GetDefaultParams() ?: [];

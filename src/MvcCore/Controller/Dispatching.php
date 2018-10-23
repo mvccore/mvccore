@@ -219,7 +219,8 @@ trait Dispatching
 	public function PreDispatch () {
 		if ($this->dispatchState > 1) return;
 		if ($this->dispatchState == 0) $this->Init();
-		if ($this->viewEnabled) {
+		// check if view is still `NULL`, because it could be created by some parent class
+		if ($this->viewEnabled && $this->view === NULL) {
 			$viewClass = $this->application->GetViewClass();
 			$this->view = $viewClass::CreateInstance()->SetController($this);
 		}
