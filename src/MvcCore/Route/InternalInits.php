@@ -61,7 +61,7 @@ trait InternalInits
 		$this->reverseParams = $this->initReverseParams(
 			$reverse, $this->reverseSections, $this->constraints, $match
 		);
-		//$this->initFlagsByPatternOrReverse($reverse);
+		$this->initFlagsByPatternOrReverse($reverse);
 		$this->match = $this->initMatchComposeRegex(
 			$match, $matchSections, $this->reverseParams, $this->constraints
 		);

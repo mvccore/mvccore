@@ -88,7 +88,7 @@ trait UrlBuilding
 		// filter params
 		list(,$filteredParams) = $this->Filter($allParamsClone, $defaultUrlParams, \MvcCore\IRoute::CONFIG_FILTER_OUT);
 		// split params into domain params array and into path and query params array
-		$domainParams = $this->urlGetAndRemoveDomainParams($filteredParams);
+		$domainParams = $this->urlGetAndRemoveDomainPercentageParams($filteredParams);
 		// build reverse pattern
 		$result = $this->urlComposeByReverseSectionsAndParams(
 			$this->reverse, 
@@ -317,14 +317,14 @@ trait UrlBuilding
 	 * @param array $params 
 	 * @return boolean
 	 */
-	protected function urlGetAndRemoveDomainParams (array & $params = []) {
-		static $domainParams = [];
+	protected function urlGetAndRemoveDomainPercentageParams (array & $params = []) {
+		static $domainPercentageParams = [];
 		$absolute = FALSE;
 		$router = & $this->router;
 		$absoluteParamName = $router::URL_PARAM_ABSOLUTE;
 		$result = [];
-		if (!$domainParams) {
-			$domainParams = [
+		if (!$domainPercentageParams) {
+			$domainPercentageParams = [
 				$router::URL_PARAM_HOST,
 				$router::URL_PARAM_DOMAIN,
 				$router::URL_PARAM_TLD,
@@ -332,11 +332,11 @@ trait UrlBuilding
 				$router::URL_PARAM_BASEPATH,
 			];
 		}
-		foreach ($domainParams as $domainParam) {
-			if (isset($params[$domainParam])) {
+		foreach ($domainPercentageParams as $domainPercentageParam) {
+			if (isset($params[$domainPercentageParam])) {
 				$absolute = TRUE;
-				$result[$domainParam] = $params[$domainParam];
-				unset($params[$domainParam]);
+				$result[$domainPercentageParam] = $params[$domainPercentageParam];
+				unset($params[$domainPercentageParam]);
 			}
 		}
 		if ($absolute) {

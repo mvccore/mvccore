@@ -668,6 +668,22 @@ interface IRoute
 	public function & SetRouter (\MvcCore\IRouter & $router);
 
 	/**
+	 * Return `TRUE` if route reverse pattern contains 
+	 * domain part with two slases at the beginning
+	 * or if route is defined with `absolute` boolean flag 
+	 * by advanced configuration in constructor.
+	 * @return bool
+	 */
+	public function GetAbsolute ();
+
+	/**
+	 * TODO: dopsat
+	 * @param bool $absolute 
+	 * @return \MvcCore\IRoute
+	 */
+	public function & SetAbsolute ($absolute = TRUE);
+
+	/**
 	 * TODO: dopsat
 	 * @return string|NULL
 	 */

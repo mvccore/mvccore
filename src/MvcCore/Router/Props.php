@@ -82,7 +82,7 @@ trait Props
 	/**
 	 * Matched route by `\MvcCore\Router::Match();` processing or NULL if no match.
 	 * By this route, there is created and dispatched controller lifecycle by core.
-	 * @var \MvcCore\Route|\MvcCore\IRoute
+	 * @var \MvcCore\Route|\MvcCore\IRoute|NULL
 	 */
 	protected $currentRoute = NULL;
 
@@ -112,14 +112,14 @@ trait Props
 	 * Those params could contain additional user params from filter function.
 	 * @var array|NULL
 	 */
-	protected $defaultParams = NULL;
+	protected $defaultParams = [];
 
 	/**
 	 * All request params - params parsed by route and query string params.
 	 * Be carefull, it could contain XSS chars. Use always `htmlspecialchars()`.
 	 * @var array|NULL
 	 */
-	protected $requestedParams = NULL;
+	protected $requestedParams = [];
 
 	/**
 	 * Trrailing slash behaviour - integer state about what to do with trailing

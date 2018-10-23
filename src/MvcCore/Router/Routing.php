@@ -221,8 +221,10 @@ trait Routing
 			$toolClass::GetPascalCaseFromDashed($requestCtrlName ?: $ctrlDfltName),
 			$toolClass::GetPascalCaseFromDashed($requestActionName ?: $actionDfltName)
 		);
-		$this->requestedParams = array_merge([], $this->request->GetParams(FALSE));
-		$this->defaultParams = array_merge([], $this->requestedParams);
+		// default params are merged with previous default params to have 
+		// possiblity to add domain params by extended module router
+		$this->defaultParams = array_merge([], $this->defaultParams, $this->request->GetParams(FALSE));
+		$this->requestedParams = array_merge([], $this->defaultParams);
 	}
 
 	/**

@@ -184,10 +184,10 @@ trait Instancing
 			$this->SetConstraints($constraints);
 		$filterInParam = static::CONFIG_FILTER_IN;
 		if (isset($advCfg[$filterInParam]))
-			$this->SetFilter($advCfg[$filterInParam]);
+			$this->SetFilter($advCfg[$filterInParam], $filterInParam);
 		$filterOutParam = static::CONFIG_FILTER_OUT;
 		if (isset($advCfg[$filterOutParam]))
-			$this->SetFilter($advCfg[$filterOutParam]);
+			$this->SetFilter($advCfg[$filterOutParam], $filterOutParam);
 	}
 
 	protected function constructVarCtrlActionNameByData (& $ctrlAction) {

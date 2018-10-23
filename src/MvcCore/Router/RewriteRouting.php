@@ -71,7 +71,7 @@ trait RewriteRouting
 		return $routes;
 	}
 
-	protected function rewriteRoutingSetRequestedAndDefaultParams (& $allMatchedParams, $requestCtrlName = NULL, $requestActionName = NULL) {
+	protected function rewriteRoutingSetRequestedAndDefaultParams (array & $allMatchedParams, $requestCtrlName = NULL, $requestActionName = NULL) {
 		// in array `$allMatchedParams` - there could be sometimes presented matched 
 		// or route speficied values from configuration already, under keys `controller` and 
 		// `action`, always with a value, never with `NULL`
@@ -105,7 +105,10 @@ trait RewriteRouting
 		}
 		// complete params for request object - there have to be everytring including ctrl and action
 		$this->defaultParams = array_merge(
-			$this->currentRoute->GetDefaults(), $allMatchedParams, $rawQueryParams
+			// default params are merged with previous default params to have 
+			// possiblity to add domain params by extended module router
+			$this->currentRoute->GetDefaults(), $this->defaultParams, 
+			$allMatchedParams, $rawQueryParams
 		);
 		// redirect route with strictly defined match regexp and not defined reverse could have `NULL` method result:
 		$routeReverseParams = $this->currentRoute->GetReverseParams() ?: [];
@@ -123,15 +126,16 @@ trait RewriteRouting
 		$this->requestedParams = array_merge([], $pathOnlyMatchedParams, $rawQueryParams);
 	}
 
-	protected function rewriteRoutingSetRequestParams (& $allMatchedParams) {
+	protected function rewriteRoutingSetRequestParams (array & $allMatchedParams) {
 		$request = & $this->request;
+		$defaultParamsBefore = array_merge([], $this->defaultParams);
 		$requestParams = array_merge([], $this->defaultParams);
 		// filter request params
 		list($success, $requestParamsFiltered) = $this->currentRoute->Filter(
 			$requestParams, $this->defaultParams, \MvcCore\IRoute::CONFIG_FILTER_IN
 		);
 		if ($success === FALSE) {
-			$this->defaultParams = [];
+			$this->defaultParams = $defaultParamsBefore;
 			$this->requestedParams = [];
 			$allMatchedParams = [];
 			$this->currentRoute = NULL;
