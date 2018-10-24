@@ -1,0 +1,66 @@
+<?php
+
+/**
+ * MvcCore
+ *
+ * This source file is subject to the BSD 3 License
+ * For the full copyright and license information, please view
+ * the LICENSE.md file that are distributed with this source code.
+ *
+ * @copyright	Copyright (c) 2016 Tom Flídr (https://github.com/mvccore/mvccore)
+ * @license  https://mvccore.github.io/docs/mvccore/5.0.0/LICENCE.md
+ */
+
+namespace MvcCore\Router;
+
+trait UrlByRoutes
+{
+	/**
+	 * Complete optionally absolute, non-localized url by route instance reverse info.
+	 * Example:
+	 *	Input (`\MvcCore\Route::$reverse`):
+	 *		`"/products-list/<name>/<color>"`
+	 *	Input ($params):
+	 *		`array(
+	 *			"name"		=> "cool-product-name",
+	 *			"color"		=> "red",
+	 *			"variant"	=> array("L", "XL"),
+	 *		);`
+	 *	Output:
+	 *		`/application/base-bath/products-list/cool-product-name/blue?variant[]=L&amp;variant[]=XL"`
+	 * @param \MvcCore\Route $route
+	 * @param array $params
+	 * @param string $urlParamRouteName
+	 * @return string
+	 */
+	public function UrlByRoute (\MvcCore\IRoute & $route, array & $params = [], $urlParamRouteName = NULL) {
+		if ($urlParamRouteName == 'self') 
+			$params = array_merge($this->requestedParams ?: [], $params);
+		$defaultParams = $this->GetDefaultParams() ?: [];
+		return implode('', $route->Url(
+			$this->request, $params, $defaultParams, $this->getQueryStringParamsSepatator()
+		));
+	}
+
+	/**
+	 * Return XML query string separator `&amp;`, if response has any `Content-Type` header with `xml` substring inside
+	 * or return XML query string separator `&amp;` if `\MvcCore\View::GetDoctype()` is has any `XML` or any `XHTML` substring inside.
+	 * Otherwise return HTML query string separator `&`.
+	 * @return string
+	 */
+	protected function getQueryStringParamsSepatator () {
+		if ($this->queryParamsSepatator === NULL) {
+			$response = \MvcCore\Application::GetInstance()->GetResponse();
+			if ($response->HasHeader('Content-Type')) {
+				$this->queryParamsSepatator = $response->IsXmlOutput() ? '&amp;' : '&';
+			} else {
+				$viewDocType = \MvcCore\View::GetDoctype();
+				$this->queryParamsSepatator = (
+					strpos($viewDocType, \MvcCore\View::DOCTYPE_XML) !== FALSE ||
+					strpos($viewDocType, \MvcCore\View::DOCTYPE_XHTML) !== FALSE
+				) ? '&amp;' : '&';
+			}
+		}
+		return $this->queryParamsSepatator;
+	}
+}

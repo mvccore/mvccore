@@ -39,5 +39,6 @@ class Router implements IRouter
 	use \MvcCore\Router\Canonical;
 	use \MvcCore\Router\Redirecting;
 	use \MvcCore\Router\UrlBuilding;
-	
+	use \MvcCore\Router\UrlByQuery;
+	use \MvcCore\Router\UrlByRoutes;
 }
