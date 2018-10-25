@@ -217,7 +217,7 @@ trait Handlers
 
 	/**
 	 * Store given log record in text file.
-	 * Return full path where the message has been writen.
+	 * Return full path where the message has been written.
 	 * @param mixed $value
 	 * @param string $priority
 	 * @return string

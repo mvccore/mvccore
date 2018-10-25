@@ -77,6 +77,8 @@ trait Canonical
 		list($selfUrlDomainAndBasePart, $selfUrlPathAndQueryPart) =  $this->currentRoute->Url(
 			$req, $this->requestedParams, $defaultParams, $this->getQueryStringParamsSepatator()
 		);
+		if (mb_strpos($selfUrlDomainAndBasePart, '//') === FALSE)
+			$selfUrlDomainAndBasePart = $req->GetDomainUrl() . $selfUrlDomainAndBasePart;
 		if (mb_strlen($selfUrlDomainAndBasePart) > 0 && $selfUrlDomainAndBasePart !== $req->GetBaseUrl()) 
 			$redirectToCanonicalUrl = TRUE;
 		if (mb_strlen($selfUrlPathAndQueryPart) > 0) {
