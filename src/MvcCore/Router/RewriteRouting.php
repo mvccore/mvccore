@@ -69,10 +69,12 @@ trait RewriteRouting
 	}
 
 	protected function & rewriteRoutingGetRoutesToMatch ($firstPathWord) {
-		if (array_key_exists($firstPathWord, $this->routesGroups)) {
+		if (isset($this->routesGroups[$firstPathWord])) {
 			$routes = & $this->routesGroups[$firstPathWord];
-		} else {
+		} else if (isset($this->routesGroups[''])) {
 			$routes = & $this->routesGroups[''];
+		} else {
+			$routes = [];
 		}
 		reset($routes);
 		return $routes;

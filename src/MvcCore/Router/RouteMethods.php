@@ -311,7 +311,7 @@ trait RouteMethods
 			$routesGroupsKey = $groupName;
 			$route->SetGroupName($groupName);
 		}
-		if (array_key_exists($routesGroupsKey, $this->routesGroups)) {
+		if (isset($this->routesGroups[$routesGroupsKey])) {
 			$groupRoutes = & $this->routesGroups[$routesGroupsKey];
 		} else {
 			$groupRoutes = [];
