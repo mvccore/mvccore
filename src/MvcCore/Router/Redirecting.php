@@ -66,8 +66,6 @@ trait Redirecting
 	 */
 	protected function redirect ($url, $code = 301) {
 		$app = \MvcCore\Application::GetInstance();
-		x($url);
-		xxx();
 		$app->GetResponse()
 			->SetCode($code)
 			->SetHeader('Location', $url);
