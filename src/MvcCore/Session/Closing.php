@@ -39,6 +39,7 @@ trait Closing
 	 * @return void
 	 */
 	public static function SendCookie () {
+		if (static::$sessionStartTime === 0) return;
 		$maxExpiration = static::GetSessionMaxTime();
 		$response = & \MvcCore\Application::GetInstance()->GetResponse();
 		if (!$response->IsSent()) {
@@ -64,9 +65,11 @@ trait Closing
 	 */
 	public static function GetSessionMaxTime () {
 		static::$sessionMaxTime = static::$sessionStartTime;
-		foreach (static::$meta->expirations as /*$sessionNamespaceName => */$expiration) {
-			if ($expiration > static::$sessionMaxTime)
-				static::$sessionMaxTime = $expiration;
+		if (static::$meta->expirations) {
+			foreach (static::$meta->expirations as /*$sessionNamespaceName => */$expiration) {
+				if ($expiration > static::$sessionMaxTime)
+					static::$sessionMaxTime = $expiration;
+			}
 		}
 		return static::$sessionMaxTime;
 	}

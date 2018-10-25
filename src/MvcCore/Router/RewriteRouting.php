@@ -30,23 +30,30 @@ trait RewriteRouting
 		$this->rewriteRoutingProcessPreHandler($requestedPathFirstWord);
 		$routes = & $this->rewriteRoutingGetRoutesToMatch($requestedPathFirstWord);
 		$requestMethod = $request->GetMethod();
-		$allMatchedParams = [];
 		foreach ($routes as & $route) {
 			/** @var $route \MvcCore\Route */
-			$routeMethod = $route->GetMethod();
-			if ($routeMethod !== NULL && $routeMethod !== $requestMethod) continue;
-			if ($allMatchedParams = $route->Matches($request)) {
+			if ($this->rewriteRoutingCheckRoute($route, [$requestMethod])) continue;
+			$allMatchedParams = $route->Matches($request);
+			if ($allMatchedParams !== NULL) {
 				$this->currentRoute = clone $route;
 				$this->currentRoute->SetMatchedParams($allMatchedParams);
+
 				$this->rewriteRoutingSetRequestedAndDefaultParams(
 					$allMatchedParams, $requestCtrlName, $requestActionName
 				);
-				$break = $this->rewriteRoutingSetRequestParams($allMatchedParams);
-				if ($break) break;
+				if ($this->rewriteRoutingSetRequestParams($allMatchedParams)) continue;
+				
+				$this->rewriteRoutingSetUpCurrentRouteByRequest();
+				break;
 			}
 		}
-		if ($this->currentRoute !== NULL) 
-			$this->rewriteRoutingSetUpCurrentRouteByRequest();
+	}
+
+	protected function rewriteRoutingCheckRoute (\MvcCore\IRoute & $route, array $additionalInfo) {
+		list ($requestMethod,) = $additionalInfo;
+		$routeMethod = $route->GetMethod();
+		if ($routeMethod !== NULL && $routeMethod !== $requestMethod) return TRUE;
+		return FALSE;
 	}
 
 	protected function rewriteRoutingGetReqPathFirstWord () {
@@ -137,9 +144,9 @@ trait RewriteRouting
 		if ($success === FALSE) {
 			$this->defaultParams = $defaultParamsBefore;
 			$this->requestedParams = [];
-			$allMatchedParams = [];
+			$allMatchedParams = NULL;
 			$this->currentRoute = NULL;
-			return FALSE;
+			return TRUE;
 		}
 		$requestParamsFiltered = $requestParamsFiltered ?: $requestParams;
 		$request->SetParams($requestParamsFiltered);
@@ -147,7 +154,7 @@ trait RewriteRouting
 			$request->SetControllerName($requestParamsFiltered['controller']);
 		if (isset($requestParamsFiltered['action']))
 			$request->SetActionName($requestParamsFiltered['action']);
-		return TRUE;
+		return FALSE;
 	}
 
 	/**
@@ -158,7 +165,7 @@ trait RewriteRouting
 		$request = & $this->request;
 		$toolClass = self::$toolClass;
 		$this->currentRoute
-			->SetController(str_replace('/', '\\', 
+			->SetController(str_replace(['/', '\\\\'], ['\\', '//'],
 				$toolClass::GetPascalCaseFromDashed($request->GetControllerName())
 			))
 			->SetAction(

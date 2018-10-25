@@ -249,6 +249,8 @@ trait Props
 
 	protected $router			= NULL;
 
+	protected $config			= [];
+
 	/**
 	 * Copied and cached value from router configuration property:
 	 * `\MvcCore\Router::$trailingSlashBehaviour`.

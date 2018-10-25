@@ -34,7 +34,7 @@ trait Helpers
 	 */
 	public function GetDefaultControllerIfHasAction ($actionName) {
 		$defaultControllerName = $this->CompleteControllerName($this->defaultControllerName);
-		if (class_exists($defaultControllerName) && method_exists($defaultControllerName, $actionName.'Action')) {
+		if (class_exists($defaultControllerName) && method_exists($defaultControllerName, $actionName . 'Action')) {
 			return $defaultControllerName;
 		}
 		return '';
@@ -47,12 +47,12 @@ trait Helpers
 	 * @return string
 	 */
 	public function CompleteControllerName ($controllerNamePascalCase) {
-		$firstChar = substr($controllerNamePascalCase, 0, 1);
-		if ($firstChar == '\\') return str_replace('/', '\\', $controllerNamePascalCase);
+		if (substr($controllerNamePascalCase, 0, 2) == '//') 
+			return '\\' . ltrim($controllerNamePascalCase, '/');
 		return '\\' . implode('\\', [
 			$this->appDir,
 			$this->controllersDir,
-			str_replace('/', '\\', $controllerNamePascalCase)
+			ltrim($controllerNamePascalCase, '\\')
 		]);
 	}
 

@@ -114,12 +114,14 @@ trait Instancing
 			$this->constructDataPatternsDefaultsConstraintsFilters($data);
 			$this->constructDataCtrlActionName($data);
 			$this->constructDataAdvConf($data);
+			$this->config = & $patternOrConfig;
 		} else {
 			$this->constructVarsPatternDefaultsConstraintsFilters(
 				$patternOrConfig, $defaults, $constraints, $advancedConfiguration
 			);
 			$this->constructVarCtrlActionNameByData($controllerAction);
 			$this->constructVarAdvConf($advancedConfiguration);
+			$this->config = & $advancedConfiguration;
 		}
 		$this->constructCtrlOrActionByName();
 	}

@@ -760,4 +760,6 @@ interface IRoute
 	 * @return \MvcCore\IRequest
 	 */
 	public function & InitAll ();
+
+	public function GetAdvancedConfigProperty ($propertyName);
 }

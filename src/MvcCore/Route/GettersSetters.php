@@ -588,4 +588,11 @@ trait GettersSetters
 		$this->groupName = $groupName;
 		return $this;
 	}
+
+	public function GetAdvancedConfigProperty ($propertyName) {
+		$result = NULL;
+		if (isset($this->config[$propertyName]))
+			$result = $this->config[$propertyName];
+		return $result;
+	}
 }

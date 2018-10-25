@@ -96,7 +96,9 @@ trait UrlBuilding
 			list($ctrlPc, $actionPc) = explode(':', $controllerAction);
 			if (!$ctrlPc) {
 				$toolClass = self::$toolClass;
-				$ctrlPc = $toolClass::GetPascalCaseFromDashed($this->request->GetControllerName());
+				$ctrlPc = str_replace('/', '\\', 
+					$toolClass::GetPascalCaseFromDashed($this->request->GetControllerName())
+				);
 			}
 			if (!$actionPc) {
 				$toolClass = self::$toolClass;

@@ -185,8 +185,12 @@ trait Routing
 		}
 		$toolClass = self::$toolClass;
 		$request
-			->SetControllerName($toolClass::GetDashedFromPascalCase($defaultRoute->GetController()))
-			->SetActionName($toolClass::GetDashedFromPascalCase($defaultRoute->GetAction()));
+			->SetControllerName(str_replace('\\', '/', 
+				$toolClass::GetDashedFromPascalCase($defaultRoute->GetController())
+			))
+			->SetActionName(
+				$toolClass::GetDashedFromPascalCase($defaultRoute->GetAction())
+			);
 		$this->currentRoute = $defaultRoute;
 		if (!$fallbackCall) $this->selfRouteName = $routeName;
 		return $defaultRoute;

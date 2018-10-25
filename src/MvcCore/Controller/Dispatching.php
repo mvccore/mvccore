@@ -71,7 +71,7 @@ trait Dispatching
 	public function & SetRequest (\MvcCore\IRequest & $request) {
 		/** @var $request \MvcCore\Request */
 		$this->request = & $request;
-		$this->controllerName = $request->GetControllerName();
+		$this->controllerName = ltrim($request->GetControllerName(), '/');
 		$this->actionName = $request->GetActionName();
 		$this->ajax = $request->IsAjax();
 		if ($this->ajax || (
