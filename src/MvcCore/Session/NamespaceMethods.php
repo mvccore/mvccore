@@ -24,7 +24,7 @@ trait NamespaceMethods
 	public static function & GetNamespace (
 		$name = \MvcCore\ISession::DEFAULT_NAMESPACE_NAME
 	) {
-		if (!static::$started) static::Start();
+		if (!static::GetStarted()) static::Start();
 		if (!isset(static::$instances[$name])) {
 			static::$instances[$name] = new static($name);
 		}
@@ -82,7 +82,7 @@ trait NamespaceMethods
 	public static function DestroyAll () {
 		session_destroy();
 		$_SESSION = NULL;
-		static::$started = false;
+		static::$started = FALSE;
 		$response = & \MvcCore\Application::GetInstance()->GetResponse();
 		if (!$response->IsSent()) {
 			$params = (object) session_get_cookie_params();

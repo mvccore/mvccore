@@ -13,8 +13,14 @@
 
 namespace MvcCore\Tool;
 
-trait Json
+trait Helpers
 {
+	/**
+	 * Platform specific temporary directory.
+	 * @var string|NULL
+	 */
+	protected static $tmpDir = NULL;
+
 	/**
 	 * Safely encode json string from php value.
 	 * @param mixed $data
@@ -63,5 +69,42 @@ trait Json
 			$result->errorData = [json_last_error_msg(), $errorCode];
 		}
 		return $result;
+	}
+
+	/**
+	 * Returns the OS-specific directory for temporary files.
+	 * @return string
+	 */
+	public static function GetTmpDir () {
+		if (self::$tmpDir === NULL) {
+			if (strtolower(substr(PHP_OS, 0, 3)) == 'win') {
+				// Windows:
+				$tmpDir = sys_get_temp_dir();
+				$sysRoot = getenv('SystemRoot');
+				// do not store anything directly in C:\Windows, use C\windows\Temp instead
+				if (!$tmpDir || $tmpDir === $sysRoot) {
+					$tmpDir = !empty($_SERVER['TEMP']) 
+						? $_SERVER['TEMP']
+						: (!empty($_SERVER['TMP'])
+							? $_SERVER['TMP']
+							: (!empty($_SERVER['WINDIR'])
+								? $_SERVER['WINDIR'] . '/Temp'
+								: $sysRoot . '/Temp'
+							)
+						);
+				}
+				$tmpDir = str_replace('\\', '/', $tmpDir);
+			} else {
+				// Other systems
+				$tmpDir = !empty($_SERVER['TMPDIR']) 
+					? $_SERVER['TMPDIR']
+					: (!empty($_SERVER['TMP'])
+						? $_SERVER['TMP']
+						: '/tmp'
+					);
+			}
+			self::$tmpDir = $tmpDir;
+		}
+		return self::$tmpDir;
 	}
 }

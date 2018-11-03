@@ -21,7 +21,7 @@ trait Instancing
 	 * @return \MvcCore\Session
 	 */
 	public function __construct ($name = \MvcCore\ISession::DEFAULT_NAMESPACE_NAME) {
-		if (!static::$started) static::Start();
+		if (static::$started !== TRUE) static::Start();
 		$this->__name = $name;
 		static::$meta->names[$name] = 1;
 		if (!isset($_SESSION[$name])) $_SESSION[$name] = [];

@@ -66,6 +66,7 @@ trait Instancing
 		$this->globalPost = & $post;
 		$this->globalCookies = & $cookie;
 		$this->globalFiles = & $files;
+		$this->initCli();
 	}
 
 	/**

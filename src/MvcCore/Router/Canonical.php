@@ -47,22 +47,16 @@ trait Canonical
 		$dfltCtrlDc = $toolClass::GetDashedFromPascalCase($dfltCtrlPc);
 		$dftlActionDc = $toolClass::GetDashedFromPascalCase($dftlActionPc);
 		$requestedParamsClone = array_merge([], $this->requestedParams);
-		if ($requestedCtrlDc === NULL && $requestedParamsClone['controller'] === $dfltCtrlDc) {
-			unset($requestedParamsClone['controller']);
-			$redirectToCanonicalUrl = TRUE;
-		} else if ($requestedCtrlDc !== NULL && $requestedCtrlDc === $dfltCtrlDc) {
+		if ($requestedCtrlDc !== NULL && $requestedCtrlDc === $dfltCtrlDc) {
 			unset($requestedParamsClone['controller']);
 			$redirectToCanonicalUrl = TRUE;
 		}
-		if ($requestedActionDc === NULL && $requestedParamsClone['action'] === $dftlActionDc) {
-			unset($requestedParamsClone['action']);
-			$redirectToCanonicalUrl = TRUE;
-		} else if ($requestedActionDc !== NULL && $requestedActionDc === $dftlActionDc) {
+		if ($requestedActionDc !== NULL && $requestedActionDc === $dftlActionDc) {
 			unset($requestedParamsClone['action']);
 			$redirectToCanonicalUrl = TRUE;
 		}
 		if ($redirectToCanonicalUrl) {
-			$selfCanonicalUrl = $this->UrlByQueryString($this->selfRouteName, $requestedParamsClone);	
+			$selfCanonicalUrl = $this->UrlByQueryString($this->selfRouteName, $requestedParamsClone);
 			$this->redirect($selfCanonicalUrl, \MvcCore\IResponse::MOVED_PERMANENTLY);
 			return FALSE;
 		}

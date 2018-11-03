@@ -45,17 +45,6 @@ trait PropsGettersSetters
 	protected static $configsCache = [];
 
 	/**
-	 * Ini file values to convert into booleans.
-	 * @var mixed
-	 */
-	protected static $booleanValues = [
-		'yes'	=> TRUE,
-		'no'	=> FALSE,
-		'true'	=> TRUE,
-		'false'	=> FALSE,
-	];
-
-	/**
 	 * Reference to singleton instance in `\MvcCore\Application::GetInstance();`.
 	 * @var \MvcCore\Application
 	 */

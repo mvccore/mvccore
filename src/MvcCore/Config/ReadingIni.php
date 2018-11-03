@@ -13,8 +13,31 @@
 
 namespace MvcCore\Config;
 
-trait LoadingIniData
+trait ReadingIni
 {
+	/**
+	 * INI scanner mode. For old PHP versions, lower than `5.6.1`
+	 * is automatically set to `1`, for higher, where is possible to 
+	 * get INI data automatically type, is set to `2`.
+	 * @var int
+	 */
+	protected $iniScannerMode = 0;
+
+	/**
+	 * INI special values to type into `bool` or `NULL`.
+	 * @var array
+	 */
+	protected static $specialValues = [
+		'true'	=> TRUE,
+		'on'	=> TRUE,
+		'yes'	=> TRUE,
+		'false'	=> FALSE,
+		'off'	=> FALSE,
+		'no'	=> FALSE,
+		'none'	=> FALSE,
+		'null'	=> NULL,
+	];
+
 	/**
 	 * Load ini file and return parsed configuration or `FALSE` in failure.
 	 * - Second environment value setup:
@@ -27,10 +50,15 @@ trait LoadingIniData
 	 * @param bool   $systemConfig
 	 * @return array|bool
 	 */
-	protected function & load ($configPath = '', $systemConfig = FALSE) {
+	protected function & read ($configPath = '', $systemConfig = FALSE) {
 		$cfgFullPath = \MvcCore\Application::GetInstance()->GetRequest()->GetAppRoot() . $configPath;
 		if (!file_exists($cfgFullPath)) return $this->result;
-		$rawIniData = parse_ini_file($cfgFullPath, TRUE);
+		if (!$this->iniScannerMode) 
+			// 1 => INI_SCANNER_RAW, 2 => INI_SCANNER_TYPED
+			$this->iniScannerMode = version_compare(PHP_VERSION, '5.6.1', '<') ? 1 : 2;
+		$rawIniData = parse_ini_file(
+			$cfgFullPath, TRUE, $this->iniScannerMode
+		);
 		if ($rawIniData === FALSE) return $this->result;
 		$this->result = [];
 		$environment = $systemConfig
@@ -44,6 +72,7 @@ trait LoadingIniData
 		unset($this->objectTypes);
 		return $this->result;
 	}
+
 	/**
 	 * Align all raw ini data to single level array,
 	 * filtered for only current environment data items.
@@ -105,6 +134,7 @@ trait LoadingIniData
 	 */
 	protected function iniDataProcess (array & $iniData) {
 		$this->objectTypes[''] = [1, & $this->result];
+		$oldIniScannerMode = $this->iniScannerMode === 1;
 		foreach ($iniData as $rawKey => $rawValue) {
 			$current = & $this->result;
 			// prepare keys to build levels and configure stdClass/array types
@@ -124,14 +154,18 @@ trait LoadingIniData
 				if (!isset($current[$key])) {
 					$current[$key] = [];
 					$this->objectTypes[$levelKey] = [1, & $current[$key]]; // object type switch -> object by default
-					if ($this->isKeyNumeric($key) && isset($this->objectTypes[$prevLevelKey])) {
-						$this->objectTypes[$prevLevelKey][0] = 0; // object type switch -> set array of it was object
+					if (is_numeric($key) && isset($this->objectTypes[$prevLevelKey])) {
+						$this->objectTypes[$prevLevelKey][0] = 0; // object type switch -> set array if it was object
 					}
 				}
 				$current = & $current[$key];
 			}
-			// set up value into levels structure and confgure type into array if necessary
-			$typedValue = $this->getTypedValue($rawValue);
+			// set up value into levels structure and configure type into array if necessary
+			if ($oldIniScannerMode) {
+				$typedValue = $this->getTypedValue($rawValue);
+			} else {
+				$typedValue = $rawValue;
+			}
 			if (isset($current[$lastRawKey])) {
 				$current[$lastRawKey][] = $typedValue;
 				$this->objectTypes[$levelKey ? $levelKey : $lastRawKey][0] = 0; // object type switch -> set array
@@ -141,8 +175,67 @@ trait LoadingIniData
 					$this->objectTypes[$levelKey] = [0, & $current]; // object type switch -> set array
 				}
 				$current[$lastRawKey] = $typedValue;
-				if ($this->isKeyNumeric($lastRawKey)) $this->objectTypes[$levelKey][0] = 0; // object type switch -> set array
+				if (is_numeric($lastRawKey)) $this->objectTypes[$levelKey][0] = 0; // object type switch -> set array
 			}
+		}
+	}
+
+	/**
+	 * Retype raw ini value into `array` with retyped it's own values or
+	 * retype raw ini value into `float`, `int` or `string`.
+	 * @param string|array $rawValue
+	 * @return array|float|int|string
+	 */
+	protected function getTypedValue ($rawValue) {
+		if (gettype($rawValue) == "array") {
+			foreach ($rawValue as $key => $value) {
+				$rawValue[$key] = $this->getTypedValue($value);
+			}
+			return $rawValue; // array
+		} else if (mb_strlen($rawValue) > 0) {
+			if (is_numeric($rawValue)) {
+				return $this->getTypedValueFloatIpOrInt($rawValue);
+			} else {
+				return $this->getTypedSpecialValueOrString($rawValue);
+			}
+		} else {
+			return $this->getTypedSpecialValueOrString($rawValue);
+		}
+	}
+
+	/**
+	 * Retype raw ini value into `float`, `IP` or `int`.
+	 * @param string $rawValue
+	 * @return float|string|int
+	 */
+	protected function getTypedValueFloatIpOrInt ($rawValue) {
+		if (strpos($rawValue, '.') !== FALSE) {
+			if (substr_count($rawValue, '.') === 1) {
+				return floatval($rawValue); // float
+			} else {
+				return $rawValue; // ip
+			}
+		} else if (strpos($rawValue, 'e') !== FALSE || strpos($rawValue, 'E') !== FALSE) {
+			return floatval($rawValue); // float
+		} else {
+			$intVal = intval($rawValue); // int or string if integer is too high (more then PHP max/min: 2147483647/-2147483647)
+			return (string) $intVal === $rawValue 
+				? $intVal 
+				: $rawValue;
+		}
+	}
+
+	/**
+	 * Retype raw ini value into `bool`, `NULL` or `string`.
+	 * @param string $rawValue
+	 * @return bool|NULL|string
+	 */
+	protected function getTypedSpecialValueOrString ($rawValue) {
+		$lowerRawValue = strtolower($rawValue);
+		if (isset(static::$specialValues[$lowerRawValue])) {
+			return static::$specialValues[$lowerRawValue]; // bool or null
+		} else {
+			return trim($rawValue); // string
 		}
 	}
 }

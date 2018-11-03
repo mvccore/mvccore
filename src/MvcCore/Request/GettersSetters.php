@@ -61,7 +61,7 @@ trait GettersSetters
 	}
 
 	/**
-	 * Return cleaned requested controller name from `\MvcCore\Request::$Params['controller'];`.
+	 * Return cleaned requested controller name from `\MvcCore\Request::$params['controller'];`.
 	 * @return string
 	 */
 	public function GetControllerName () {
@@ -85,7 +85,7 @@ trait GettersSetters
 	}
 
 	/**
-	 * Return cleaned requested action name from `\MvcCore\Request::$Params['action'];`.
+	 * Return cleaned requested action name from `\MvcCore\Request::$params['action'];`.
 	 * @return string
 	 */
 	public function GetActionName () {
@@ -94,6 +94,15 @@ trait GettersSetters
 				$this->actionName = $this->GetParam('action', 'a-zA-Z0-9\-_', '', 'string');
 		}
 		return $this->actionName;
+	}
+
+	/**
+	 * `TRUE` if PHP `php_sapi_name()` is `cli` and also 
+	 * if there is no `$_SERVER['REQUEST_URI']` defined.
+	 * @return bool
+	 */
+	public function IsCli () {
+		return $this->cli;
 	}
 
 	/**
@@ -219,6 +228,15 @@ trait GettersSetters
 	public function GetScriptName () {
 		if ($this->scriptName === NULL) $this->initScriptNameAndBasePath();
 		return $this->scriptName;
+	}
+
+	/**
+	 * Get `php_sapi_name();` result string
+	 * Example: `"" | "cli"`
+	 * @return string
+	 */
+	public function GetPhpSapi () {
+		return $this->phpSapi;
 	}
 
 	/**

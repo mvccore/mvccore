@@ -405,7 +405,7 @@ interface IRequest
 	public function & SetControllerName ($controllerName);
 
 	/**
-	 * Return cleaned requested controller name from `\MvcCore\Request::$Params['controller'];`.
+	 * Return cleaned requested controller name from `\MvcCore\Request::$params['controller'];`.
 	 * @return string
 	 */
 	public function GetControllerName ();
@@ -419,10 +419,17 @@ interface IRequest
 	public function & SetActionName ($actionName);
 
 	/**
-	 * Return cleaned requested action name from `\MvcCore\Request::$Params['action'];`.
+	 * Return cleaned requested action name from `\MvcCore\Request::$params['action'];`.
 	 * @return string
 	 */
 	public function GetActionName ();
+
+	/**
+	 * `TRUE` if PHP `php_sapi_name()` is `cli` and also 
+	 * if there is no `$_SERVER['REQUEST_URI']` defined.
+	 * @return bool
+	 */
+	public function IsCli ();
 
 	/**
 	 * Set language international code.

@@ -27,6 +27,6 @@ namespace MvcCore;
 class Tool implements ITool
 {
 	use \MvcCore\Tool\StringCaseConversions;
-	use \MvcCore\Tool\Json;
+	use \MvcCore\Tool\Helpers;
 	use \MvcCore\Tool\OopChecking;
 }

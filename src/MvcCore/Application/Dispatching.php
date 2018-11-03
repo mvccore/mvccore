@@ -110,7 +110,7 @@ trait Dispatching
 	 * @return bool
 	 */
 	public function ProcessCustomHandlers (& $handlers = []) {
-		if ($this->request->IsInternalRequest() === TRUE) return TRUE;
+		if (!$handlers || $this->request->IsInternalRequest() === TRUE) return TRUE;
 		$result = TRUE;
 		foreach ($handlers as $handlerRecord) {
 			list ($closureCalling, $handler) = $handlerRecord;
@@ -272,7 +272,7 @@ trait Dispatching
 	public function Terminate () {
 		if ($this->terminated) return $this;
 		/** @var $this->response \MvcCore\Response */
-		$this->processCustomHandlers($this->postDispatchHandlers);
+		$this->ProcessCustomHandlers($this->postDispatchHandlers);
 		$sessionClass = $this->sessionClass;
 		$sessionClass::SendCookie();
 		$sessionClass::Close();
@@ -285,6 +285,7 @@ trait Dispatching
 			$dispatchStateProperty->setAccessible(TRUE);
 			$dispatchStateProperty->setValue($this->controller, 5);
 		}
+		$this->ProcessCustomHandlers($this->postTerminateHandlers);
 		return $this;
 	}
 

@@ -23,9 +23,9 @@ trait Props
 
 	/**
 	 * Static boolean about if session has been allready started or not.
-	 * @var bool
+	 * @var bool|NULL
 	 */
-	protected static $started = FALSE;
+	protected static $started = NULL;
 
 	/**
 	 * Metadata array or stdClass with all MvcCore namespaces metadata information:

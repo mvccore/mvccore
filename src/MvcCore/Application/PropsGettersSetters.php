@@ -70,7 +70,7 @@ trait PropsGettersSetters
 
 
 	/**
-	 * Pre route custom closure calls storrage.
+	 * Pre route custom closure calls storage.
 	 * Every item in this array has to be `callable`.
 	 * Params in callable should be two with following types:
 	 *	- `\MvcCore\Request`
@@ -88,7 +88,7 @@ trait PropsGettersSetters
 
 
 	/**
-	 * Post route custom closure calls storrage.
+	 * Post route custom closure calls storage.
 	 * Every item in this array has to be `callable`.
 	 * Params in callable should be two with following types:
 	 *	- `\MvcCore\Request`
@@ -105,7 +105,7 @@ trait PropsGettersSetters
 	protected $postRouteHandlers = [];
 
 	/**
-	 * Pre dispatch custom calls storrage.
+	 * Pre dispatch custom calls storage.
 	 * Every item in this array has to be `callable`.
 	 * Params in `callable` should be two with following types:
 	 *	- `\MvcCore\Request`
@@ -122,7 +122,7 @@ trait PropsGettersSetters
 	protected $preDispatchHandlers = [];
 
 	/**
-	 * Post dispatch custom calls storrage.
+	 * Post dispatch custom calls storage.
 	 * Every item in this array has to be `callable`.
 	 * Params in `callable` should be two with following types:
 	 *	- `\MvcCore\Request`
@@ -137,6 +137,25 @@ trait PropsGettersSetters
 	 * @var \array[]
 	 */
 	protected $postDispatchHandlers = [];
+	
+	/**
+	 * Post terminate custom calls storage.
+	 * Every item in this array has to be `callable`.
+	 * Params in `callable` should be two with following types:
+	 *	- `\MvcCore\Request`
+	 *	- `\MvcCore\Response`
+	 * Example:
+	 * `\MvcCore\Application::GetInstance()->AddPostTerminateHandler(function(
+	 *		\MvcCore\Request & $request,
+	 *		\MvcCore\Response & $response
+	 * ) {
+	 *		// close connection by previously configured 
+	 *		// header: header('Connection: close');
+	 *		// and run background process now:
+	 * });`
+	 * @var \array[]
+	 */
+	protected $postTerminateHandlers = [];
 
 
 	/**
@@ -803,5 +822,31 @@ trait PropsGettersSetters
 			"[".__CLASS__."] Post dispatch handler is not callable (handler: $handler, priorityIndex: $priorityIndex)."
 		);
 		return $this->setHandler($this->postDispatchHandlers, $handler, $priorityIndex);
+	}
+
+	/**
+	 * Add post terminate handler into post terminate handlers queue to process them
+	 * after every request is terminated by `\MvcCore\Application::Terminate();`.
+	 * Callable should be void and it's params should be two with following types:
+	 *	- `\MvcCore\Request`
+	 *	- `\MvcCore\Response`
+	 * Example:
+	 * `\MvcCore\Application::GetInstance()->AddPostTerminateHandler(function(
+	 *		\MvcCore\Request & $request,
+	 *		\MvcCore\Response & $response
+	 * ) {
+	 *		// close connection by previously configured 
+	 *		// header: header('Connection: close');
+	 *		// and run background process now:
+	 * });`
+	 * @param callable $handler
+	 * @param int|NULL $priorityIndex
+	 * @return \MvcCore\Application
+	 */
+	public function & AddPostTerminateHandler (callable $handler, $priorityIndex = NULL) {
+		if (!is_callable($handler)) throw new \InvalidArgumentException(
+			"[".__CLASS__."] Post terminate handler is not callable (handler: $handler, priorityIndex: $priorityIndex)."
+		);
+		return $this->setHandler($this->postTerminateHandlers, $handler, $priorityIndex);
 	}
 }

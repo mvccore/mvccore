@@ -23,6 +23,7 @@ trait Closing
 	 */
 	public static function Close () {
 		register_shutdown_function(function () {
+			if (!static::GetStarted()) return;
 			foreach (static::$instances as & $instance)
 				if (count((array) $_SESSION[$instance->__name]) === 0)
 					// if there is nothing in namespace - destroy it. It's useless.
@@ -39,7 +40,7 @@ trait Closing
 	 * @return void
 	 */
 	public static function SendCookie () {
-		if (static::$sessionStartTime === 0) return;
+		if (!static::GetStarted()) return;
 		$maxExpiration = static::GetSessionMaxTime();
 		$response = & \MvcCore\Application::GetInstance()->GetResponse();
 		if (!$response->IsSent()) {

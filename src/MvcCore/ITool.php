@@ -82,6 +82,12 @@ interface ITool
 	public static function DecodeJson (& $jsonStr);
 
 	/**
+	 * Returns the OS-specific directory for temporary files.
+	 * @return string
+	 */
+	public static function GetTmpDir ();
+
+	/**
 	 * Safely invoke internal PHP function with it's own error handler.
 	 * Error handler accepts arguments: 
 	 * - `string $errMessage`	- Error message.

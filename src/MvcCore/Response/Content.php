@@ -121,6 +121,7 @@ trait Content
 		$this->addTimeAndMemoryHeader();
 		echo $this->body;
 		if (ob_get_level()) echo ob_get_clean();
+		flush();
 		$this->sent = TRUE;
 	}
 

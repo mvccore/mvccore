@@ -25,7 +25,7 @@ trait Reading
 			$app = & \MvcCore\Application::GetInstance();
 			$systemConfigClass = $app->GetConfigClass();
 			$instance = $systemConfigClass::CreateInstance();
-			self::$systemConfig = $instance->load(str_replace(
+			self::$systemConfig = $instance->read(str_replace(
 				'%appPath%',
 				$app->GetAppDir(),
 				$systemConfigClass::$SystemConfigPath
@@ -45,7 +45,7 @@ trait Reading
 			$app = & \MvcCore\Application::GetInstance();
 			$systemConfigClass = $app->GetConfigClass();
 			$instance = $systemConfigClass::CreateInstance();
-			self::$configsCache[$appRootRelativePath] = $instance->load(str_replace(
+			self::$configsCache[$appRootRelativePath] = $instance->read(str_replace(
 				'%appPath%',
 				$app->GetAppDir(),
 				$appRootRelativePath
@@ -57,7 +57,7 @@ trait Reading
 	/**
 	 * This is INTERNAL method.
 	 * Return always new instance of staticly called class, no singleton.
-	 * Always called from `\MvcCore\Config::GetSystem()` before system config is loaded.
+	 * Always called from `\MvcCore\Config::GetSystem()` before system config is readed.
 	 * This is place where to customize any config creation process,
 	 * before it's created by MvcCore framework.
 	 * @return \MvcCore\Config

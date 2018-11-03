@@ -429,6 +429,19 @@ interface IController
 	public function JsonResponse ($data = NULL, $terminate = TRUE);
 
 	/**
+	 * Serialize any PHP value into `JSON string`, wrap around prepared public
+	 * javascript function in target window sended as `$_GET` param under 
+	 * variable `$callbackParamName` (allowed chars: `a-zA-Z0-9\.\-_\$`) and
+	 * store it inside `\MvcCore\Controller::$response` to send it
+	 * into client browser later in `MvcCore::Terminate();`.
+	 * @param mixed $data
+	 * @param string $callbackParamName
+	 * @param bool  $terminate
+	 * @return void
+	 */
+	public function JsonpResponse ($data = NULL, $callbackParamName = 'callback', $terminate = TRUE);
+
+	/**
 	 * Generates url:
 	 * - By `"Controller:Action"` name and params array
 	 *   (for routes configuration when routes array has keys with `"Controller:Action"` strings

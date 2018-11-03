@@ -134,7 +134,7 @@ trait Dispatching
 	public function Init () {
 		if ($this->dispatchState > 0) return;
 		self::$allControllers[spl_object_hash($this)] = & $this;
-		if ($this->parentController === NULL) {
+		if ($this->parentController === NULL && !$this->request->IsCli()) {
 			$this->application->SessionStart();
 			$responseContentType = $this->ajax ? 'text/javascript' : 'text/html';
 			$this->response->SetHeader('Content-Type', $responseContentType);

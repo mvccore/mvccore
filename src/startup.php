@@ -17,15 +17,16 @@ if (version_compare(PHP_VERSION, '5.4.0', "<")) {
 }
 call_user_func(function () {
 	error_reporting(E_ALL ^ E_NOTICE);
-	$scriptFilename = $_SERVER['SCRIPT_FILENAME'];
-	$scriptFilename = php_sapi_name() == 'cli'
-		? str_replace('\\', '/', getcwd()) . '/' . $scriptFilename
-		: str_replace('\\', '/', $scriptFilename);
-	if (strpos(__FILE__, 'phar://') === 0) {
-		$appRootPath = 'phar://' . $scriptFilename;
+	if (php_sapi_name() == 'cli') {
+		$backtraceItems = debug_backtrace(DEBUG_BACKTRACE_IGNORE_ARGS);
+		$scriptFilename =  $backtraceItems[count($backtraceItems) - 1]['file'];
 	} else {
-		$appRootPath = substr($scriptFilename, 0, strrpos($scriptFilename, '/'));
+		$scriptFilename = $_SERVER['SCRIPT_FILENAME'];
 	}
+	$scriptFilename = str_replace('\\', '/', $scriptFilename);
+	$appRootPath = strpos(__FILE__, 'phar://') === 0
+		? 'phar://' . $scriptFilename
+		: dirname($scriptFilename);
 	$includePaths = [
 		$appRootPath,
 		$appRootPath . '/App',

@@ -71,7 +71,7 @@ trait Rendering
 	 * @param bool $terminate
 	 * @return void
 	 */
-	public function HtmlResponse ($output = '', $terminate = FALSE) {
+	public function HtmlResponse ($output = '', $terminate = TRUE) {
 		if (!$this->response->HasHeader('Content-Type')) {
 			$contentTypeHeaderValue = strpos(
 				\MvcCore\View::GetDoctype(), \MvcCore\View::DOCTYPE_XHTML
@@ -91,7 +91,7 @@ trait Rendering
 	 * @param bool $terminate
 	 * @return void
 	 */
-	public function XmlResponse ($output = '', $terminate = FALSE) {
+	public function XmlResponse ($output = '', $terminate = TRUE) {
 		if (!$this->response->HasHeader('Content-Type'))
 			$this->response->SetHeader('Content-Type', 'application/xml');
 		$this->response
@@ -108,11 +108,36 @@ trait Rendering
 	 * @param bool  $terminate
 	 * @return void
 	 */
-	public function JsonResponse ($data = NULL, $terminate = FALSE) {
+	public function JsonResponse ($data = NULL, $terminate = TRUE) {
 		$toolClass = $this->application->GetToolClass();
 		$output = $toolClass::EncodeJson($data);
 		if (!$this->response->HasHeader('Content-Type'))
 			$this->response->SetHeader('Content-Type', 'text/javascript');
+		$this->response
+			->SetCode(\MvcCore\IResponse::OK)
+			->SetHeader('Content-Length', strlen($output))
+			->SetBody($output);
+		if ($terminate) $this->Terminate();
+	}
+
+	/**
+	 * Serialize any PHP value into `JSON string`, wrap around prepared public
+	 * javascript function in target window sended as `$_GET` param under 
+	 * variable `$callbackParamName` (allowed chars: `a-zA-Z0-9\.\-_\$`) and
+	 * store it inside `\MvcCore\Controller::$response` to send it
+	 * into client browser later in `MvcCore::Terminate();`.
+	 * @param mixed $data
+	 * @param string $callbackParamName
+	 * @param bool  $terminate
+	 * @return void
+	 */
+	public function JsonpResponse ($data = NULL, $callbackParamName = 'callback', $terminate = TRUE) {
+		$toolClass = $this->application->GetToolClass();
+		$output = $toolClass::EncodeJson($data);
+		if (!$this->response->HasHeader('Content-Type'))
+			$this->response->SetHeader('Content-Type', 'text/javascript');
+		$callbackParam = $this->GetParam($callbackParamName, 'a-zA-Z0-9\.\-_\$', $callbackParamName, 'string');
+		$output = $callbackParam . '(' . $output . ');';
 		$this->response
 			->SetCode(\MvcCore\IResponse::OK)
 			->SetHeader('Content-Length', strlen($output))

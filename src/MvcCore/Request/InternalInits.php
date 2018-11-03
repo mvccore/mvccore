@@ -56,6 +56,83 @@ trait InternalInits
 	}
 
 	/**
+	 * If request is processed via cli, initialize most of request properties 
+	 * with empty values and parse cli params into params array.
+	 * @return void
+	 */
+	protected function initCli () {
+		$this->phpSapi = php_sapi_name();
+		$phpSapiCHasCli = FALSE;
+		if (substr($this->phpSapi, 0, 3) === 'cli') {
+			$this->phpSapi = 'cli';
+			$phpSapiCHasCli = TRUE;
+		}
+		$this->cli = FALSE;
+		if ($phpSapiCHasCli && !isset($this->globalServer['REQUEST_URI'])) {
+			$this->cli = TRUE;
+			
+			$lh = 'localhost';
+			$this->protocol = 'file:';
+			$this->secure = FALSE;
+			$this->hostName = $lh;
+			$this->host = $lh;
+			$this->port = '';
+			$this->path = '';
+			$this->query = '';
+			$this->fragment = '';
+			$this->ajax = FALSE;
+
+			$this->basePath = '';
+			$this->requestPath = '';
+			$this->domainUrl = '';
+			$this->baseUrl = '';
+			$this->requestUrl = '';
+			$this->fullUrl = '';
+			$this->referer = '';
+			$this->serverIp = '127.0.0.1';
+			$this->clientIp = $this->serverIp;
+			$this->contentLength = 0;
+			$this->headers = [];
+			$this->params = [];
+			$this->appRequest = FALSE;
+
+			$this->method = 'GET';
+
+			$backtraceItems = debug_backtrace(DEBUG_BACKTRACE_IGNORE_ARGS);
+			$requestedFile = str_replace('\\', '/', $backtraceItems[count($backtraceItems) - 1]['file']);
+			$lastSlashPos = mb_strrpos($requestedFile, '/');
+			if ($lastSlashPos === FALSE) $lastSlashPos = 0;
+
+			$this->appRoot = mb_substr($requestedFile, 0, $lastSlashPos);
+			$this->scriptName = mb_substr($requestedFile, $lastSlashPos);
+
+			$args = $this->globalServer['argv'];
+			array_shift($args);
+			$params = [];
+			if ($args) {
+				foreach ($args as $arg) {
+					parse_str($arg, $paramsLocal);
+					if (!$paramsLocal) continue;
+					foreach ($paramsLocal as $paramName => $paramValue) {
+						if (is_array($paramValue)) {
+							$params = array_merge(
+								$params, 
+								[$paramName => array_merge(
+									$params[$paramName] ?: [], $paramValue
+								)]
+							);
+						} else {
+							$params[$paramName] = $paramValue;
+						}
+					}
+				}
+			}
+			$this->params = $params;
+			$this->globalGet = $params;
+		}
+	}
+
+	/**
 	 * Initialize url segments parsed by `parse_url()`
 	 * php method: port, path, query and fragment.
 	 * @return void
@@ -155,7 +232,7 @@ trait InternalInits
 		$ifNullValue = NULL,
 		$targetType = NULL
 	) {
-		if (!isset($paramsCollection[$name])) return NULL;
+		if (!isset($paramsCollection[$name])) return $ifNullValue;
 		if (is_array($paramsCollection[$name])) {
 			$result = [];
 			$paramsCollection = $paramsCollection[$name];

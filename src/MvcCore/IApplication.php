@@ -520,6 +520,27 @@ interface IApplication
 	 */
 	public function & AddPostDispatchHandler (callable $handler, $priorityIndex = NULL);
 
+	/**
+	 * Add post terminate handler into post terminate handlers queue to process them
+	 * after every request is terminated by `\MvcCore\Application::Terminate();`.
+	 * Callable should be void and it's params should be two with following types:
+	 *	- `\MvcCore\Request`
+	 *	- `\MvcCore\Response`
+	 * Example:
+	 * `\MvcCore\Application::GetInstance()->AddPostTerminateHandler(function(
+	 *		\MvcCore\Request & $request,
+	 *		\MvcCore\Response & $response
+	 * ) {
+	 *		// close connection by previously configured 
+	 *		// header: header('Connection: close');
+	 *		// and run background process now:
+	 * });`
+	 * @param callable $handler
+	 * @param int|NULL $priorityIndex
+	 * @return \MvcCore\IApplication
+	 */
+	public function & AddPostTerminateHandler (callable $handler, $priorityIndex = NULL);
+
 
 	/***********************************************************************************
 	 *				   `\MvcCore\Application` - Normal Dispatching				   *

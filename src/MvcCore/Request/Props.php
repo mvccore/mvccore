@@ -24,6 +24,13 @@ trait Props
 	protected static $twoSegmentTlds = ['co.jp'=>1,'ac.uk'=>1,'co.uk'=>1,'co.kr'=>1,'co.nl'=>1,'in.ua'=>1,'co.nf'=>1,'ny.us'=>1,'co.us'=>1];
 
 	/**
+	 * `TRUE` if PHP `php_sapi_name()` is `cli` and also 
+	 * if there is no `$_SERVER['REQUEST_URI']` defined.
+	 * @var bool'NULL
+	 */
+	protected $cli				= NULL;
+
+	/**
 	 * Language international code, lowercase, not used by default.
 	 * To use this variable - install  `\MvcCore\Router` extension `\MvcCore\Ext\Router\Lang`
 	 * Or use this variable by your own decision.
@@ -68,7 +75,7 @@ trait Props
 	 * Example: `"localhost"`
 	 * @var string|NULL
 	 */
-	protected $hostName		= NULL;
+	protected $hostName			= NULL;
 
 	/**
 	 * Application host with port if there is any.
