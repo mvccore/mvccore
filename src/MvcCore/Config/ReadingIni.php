@@ -16,52 +16,25 @@ namespace MvcCore\Config;
 trait ReadingIni
 {
 	/**
-	 * INI scanner mode. For old PHP versions, lower than `5.6.1`
-	 * is automatically set to `1`, for higher, where is possible to 
-	 * get INI data automatically type, is set to `2`.
-	 * @var int
-	 */
-	protected $iniScannerMode = 0;
-
-	/**
-	 * INI special values to type into `bool` or `NULL`.
-	 * @var array
-	 */
-	protected static $specialValues = [
-		'true'	=> TRUE,
-		'on'	=> TRUE,
-		'yes'	=> TRUE,
-		'false'	=> FALSE,
-		'off'	=> FALSE,
-		'no'	=> FALSE,
-		'none'	=> FALSE,
-		'null'	=> NULL,
-	];
-
-	/**
-	 * Load ini file and return parsed configuration or `FALSE` in failure.
+	 * Load INI file and return `TRUE` for success or `FALSE` in failure.
 	 * - Second environment value setup:
-	 *   - Only if `$systemConfig` param is defined as `TRUE`.
-	 *   - By defined IPs or computer names in ini `[environments]` section.
+	 *   - Only if `$this->system` property is defined as `TRUE`.
+	 *   - By defined IPs or computer names in INI `[environments]` section.
 	 * - Load only sections for current environment name.
 	 * - Retype all `raw string` values into `array`, `float`, `int` or `boolean` types.
 	 * - Retype whole values level into `\stdClass`, if there are no numeric keys.
-	 * @param string $configPath
-	 * @param bool   $systemConfig
-	 * @return array|bool
+	 * @return bool
 	 */
-	protected function & read ($configPath = '', $systemConfig = FALSE) {
-		$cfgFullPath = \MvcCore\Application::GetInstance()->GetRequest()->GetAppRoot() . $configPath;
-		if (!file_exists($cfgFullPath)) return $this->result;
-		if (!$this->iniScannerMode) 
+	protected function read () {
+		if (!$this->_iniScannerMode) 
 			// 1 => INI_SCANNER_RAW, 2 => INI_SCANNER_TYPED
-			$this->iniScannerMode = version_compare(PHP_VERSION, '5.6.1', '<') ? 1 : 2;
+			$this->_iniScannerMode = version_compare(PHP_VERSION, '5.6.1', '<') ? 1 : 2;
 		$rawIniData = parse_ini_file(
-			$cfgFullPath, TRUE, $this->iniScannerMode
+			$this->fullPath, TRUE, $this->_iniScannerMode
 		);
-		if ($rawIniData === FALSE) return $this->result;
-		$this->result = [];
-		$environment = $systemConfig
+		if ($rawIniData === FALSE) return FALSE;
+		$this->data = [];
+		$environment = $this->system
 			? $this->initDataDetectEnvironmentBySystemConfig($rawIniData)
 			: static::$environment;
 		$iniData = $this->iniPrepareToParse($rawIniData, $environment);
@@ -70,11 +43,11 @@ trait ReadingIni
 			if ($objectType[0]) $objectType[1] = (object) $objectType[1];
 		}
 		unset($this->objectTypes);
-		return $this->result;
+		return TRUE;
 	}
 
 	/**
-	 * Align all raw ini data to single level array,
+	 * Align all raw INI data to single level array,
 	 * filtered for only current environment data items.
 	 * @param array  $rawIniData
 	 * @param string $environment
@@ -133,10 +106,10 @@ trait ReadingIni
 	 * @return void
 	 */
 	protected function iniDataProcess (array & $iniData) {
-		$this->objectTypes[''] = [1, & $this->result];
-		$oldIniScannerMode = $this->iniScannerMode === 1;
+		$this->objectTypes[''] = [0, & $this->data];
+		$oldIniScannerMode = $this->_iniScannerMode === 1;
 		foreach ($iniData as $rawKey => $rawValue) {
-			$current = & $this->result;
+			$current = & $this->data;
 			// prepare keys to build levels and configure stdClass/array types
 			$rawKeys = [];
 			$lastRawKey = $rawKey;
@@ -181,8 +154,8 @@ trait ReadingIni
 	}
 
 	/**
-	 * Retype raw ini value into `array` with retyped it's own values or
-	 * retype raw ini value into `float`, `int` or `string`.
+	 * Retype raw INI value into `array` with retyped it's own values or
+	 * retype raw INI value into `float`, `int` or `string`.
 	 * @param string|array $rawValue
 	 * @return array|float|int|string
 	 */
@@ -204,7 +177,7 @@ trait ReadingIni
 	}
 
 	/**
-	 * Retype raw ini value into `float`, `IP` or `int`.
+	 * Retype raw INI value into `float`, `IP` or `int`.
 	 * @param string $rawValue
 	 * @return float|string|int
 	 */
@@ -226,7 +199,7 @@ trait ReadingIni
 	}
 
 	/**
-	 * Retype raw ini value into `bool`, `NULL` or `string`.
+	 * Retype raw INI value into `bool`, `NULL` or `string`.
 	 * @param string $rawValue
 	 * @return bool|NULL|string
 	 */

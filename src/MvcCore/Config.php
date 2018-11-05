@@ -26,7 +26,9 @@ namespace MvcCore;
 class Config implements IConfig
 {
 	use \MvcCore\Config\PropsGettersSetters;
-	use \MvcCore\Config\Reading;
+	use \MvcCore\Config\ReadingWriting;
 	use \MvcCore\Config\Environment;
+	use \MvcCore\Config\PropsIni;
 	use \MvcCore\Config\ReadingIni;
+	use \MvcCore\Config\WritingIni;
 }

@@ -77,7 +77,7 @@ interface IConfig
 
 	/**
 	 * This is INTERNAL method.
-	 * Return always new instance of staticly called class, no singleton.
+	 * Return always new instance of statically called class, no singleton.
 	 * Always called from `\MvcCore\Config::GetSystem()` before system config is loaded.
 	 * This is place where to customize any config creation process,
 	 * before it's created by MvcCore framework.
@@ -86,17 +86,37 @@ interface IConfig
 	public static function & CreateInstance ();
 
 	/**
-	 * Get cached singleton system config ini file as `stdClass`es and `array`s,
+	 * Get cached singleton system config INI file as `stdClass`es and `array`s,
 	 * placed by default in: `"/App/config.ini"`.
 	 * @return \stdClass|array|boolean
 	 */
 	public static function & GetSystem ();
 
 	/**
-	 * Get cached config ini file as `stdClass`es and `array`s,
+	 * Get cached config INI file as `stdClass`es and `array`s,
 	 * placed relatively from application document root.
 	 * @param string $appRootRelativePath Any config relative path like `'/%appPath%/website.ini'`.
 	 * @return \stdClass|array|boolean
 	 */
 	public static function & GetConfig ($appRootRelativePath);
+
+	/**
+	 * Encode all data into string and store it in `$this->fullPath` property.
+	 * @return bool
+	 */
+	public function & Save ();
+
+	/**
+	 * Get not defined property from `$this->data` array store, if there is nothing, return `NULL`.
+	 * @param string $key 
+	 * @return mixed
+	 */
+	public function __get ($key);
+
+	/**
+	 * Store not defined property inside `$this->data` array store.
+	 * @param string $key 
+	 * @return void
+	 */
+	public function __set ($key, $value);
 }
