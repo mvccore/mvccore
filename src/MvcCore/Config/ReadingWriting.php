@@ -130,9 +130,35 @@ trait ReadingWriting
 	/**
 	 * Store not defined property inside `$this->data` array store.
 	 * @param string $key 
-	 * @return void
+	 * @return mixed
 	 */
 	public function __set ($key, $value) {
-		$this->data[$key] = $value;
+		return $this->data[$key] = $value;
+	}
+	
+	/**
+	 * Magic function triggered by: `isset(\MvcCore\IConfig->key);`.
+	 * @param string $key
+	 * @return bool
+	 */
+	public function __isset ($key) {
+		return isset($this->data[$key]);
+	}
+
+	/**
+	 * Magic function triggered by: `unset(\MvcCore\IConfig->key);`.
+	 * @param string $key
+	 * @return void
+	 */
+	public function __unset ($key) {
+		if (isset($this->data[$key])) unset($this->data[$key]);
+	}
+	
+	/**
+	 * Magic `\ArrayObject` function triggered by: `count(\MvcCore\IConfig);`.
+	 * @return int
+	 */
+	public function count () {
+		return count($this->data);
 	}
 }
