@@ -147,4 +147,24 @@ interface IConfig
 	 * @return void
 	 */
 	public function __set ($key, $value);
+	
+	/**
+	 * Magic function triggered by: `isset(\MvcCore\IConfig->key);`.
+	 * @param string $key
+	 * @return bool
+	 */
+	public function __isset ($key);
+	
+	/**
+	 * Magic function triggered by: `unset(\MvcCore\IConfig->key);`.
+	 * @param string $key
+	 * @return void
+	 */
+	public function __unset ($key);
+	
+	/**
+	 * Magic `\ArrayObject` function triggered by: `count(\MvcCore\IConfig);`.
+	 * @return int
+	 */
+	public function count ();
 }
