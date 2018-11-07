@@ -194,7 +194,7 @@ trait DbConnection
 		$configClass = \MvcCore\Application::GetInstance()->GetConfigClass();
 		$systemCfg = $configClass::GetSystem();
 		if ($systemCfg === FALSE && $throwExceptionIfNoSysConfig) throw new \Exception(
-			"[".__CLASS__."] System config.ini not found in '" . $configClass::$SystemConfigPath . "'."
+			"[".__CLASS__."] System config not found in '" . $configClass::GetSystemConfigPath() . "'."
 
 		);
 		if (!isset($systemCfg->db) && $throwExceptionIfNoSysConfig) throw new \Exception(

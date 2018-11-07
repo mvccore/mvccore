@@ -28,7 +28,7 @@ class Config implements IConfig
 	use \MvcCore\Config\PropsGettersSetters;
 	use \MvcCore\Config\ReadingWriting;
 	use \MvcCore\Config\Environment;
-	use \MvcCore\Config\PropsIni;
-	use \MvcCore\Config\ReadingIni;
-	use \MvcCore\Config\WritingIni;
+	use \MvcCore\Config\IniProps;
+	use \MvcCore\Config\IniRead;
+	use \MvcCore\Config\IniDump;
 }

@@ -27,7 +27,7 @@ namespace MvcCore;
  */
 interface IConfig
 {
-	const ENVIRONMENT_DEVELOPMENT = 'development';
+	const ENVIRONMENT_DEVELOPMENT = 'dev';
 	const ENVIRONMENT_BETA = 'beta';
 	const ENVIRONMENT_ALPHA = 'alpha';
 	const ENVIRONMENT_PRODUCTION = 'production';
@@ -76,14 +76,28 @@ interface IConfig
 	public static function SetEnvironment ($environment = \MvcCore\IConfig::ENVIRONMENT_PRODUCTION);
 
 	/**
+	 * Get system config relative path from app root.
+	 * @return string
+	 */
+	public static function GetSystemConfigPath ();
+	
+	/**
+	 * Set system config relative path from app root.
+	 * @param string $systemConfigPath
+	 * @return void
+	 */
+	public static function SetSystemConfigPath ($systemConfigPath);
+
+	/**
 	 * This is INTERNAL method.
 	 * Return always new instance of statically called class, no singleton.
 	 * Always called from `\MvcCore\Config::GetSystem()` before system config is loaded.
 	 * This is place where to customize any config creation process,
 	 * before it's created by MvcCore framework.
-	 * @return \MvcCore\Config
+	 * @param string $appRootRelativePath Relative config path from app root.
+	 * @return \MvcCore\IConfig
 	 */
-	public static function & CreateInstance ();
+	public static function & CreateInstance ($appRootRelativePath = NULL);
 
 	/**
 	 * Get cached singleton system config INI file as `stdClass`es and `array`s,
@@ -99,6 +113,20 @@ interface IConfig
 	 * @return \stdClass|array|boolean
 	 */
 	public static function & GetConfig ($appRootRelativePath);
+
+	/**
+	 * Load config file and return `TRUE` for success or `FALSE` in failure.
+	 * - Second environment value setup:
+	 *   - Only if `$this->system` property is defined as `TRUE`.
+	 *   - By defined IPs or computer names in `environments` section.
+	 * - Load only sections for current environment name.
+	 * - Retype all `raw string` values into `array`, `float`, `int` or `boolean` types.
+	 * - Retype whole values level into `\stdClass`, if there are no numeric keys.
+	 * @param string $fullPath
+	 * @param bool $systemConfig
+	 * @return bool
+	 */
+	public function Read ($fullPath, $systemConfig = FALSE);
 
 	/**
 	 * Encode all data into string and store it in `$this->fullPath` property.

@@ -13,19 +13,24 @@
 
 namespace MvcCore\Config;
 
-trait ReadingIni
+trait IniRead
 {
 	/**
-	 * Load INI file and return `TRUE` for success or `FALSE` in failure.
+	 * Load config file and return `TRUE` for success or `FALSE` in failure.
 	 * - Second environment value setup:
 	 *   - Only if `$this->system` property is defined as `TRUE`.
-	 *   - By defined IPs or computer names in INI `[environments]` section.
+	 *   - By defined IPs or computer names in `environments` section.
 	 * - Load only sections for current environment name.
 	 * - Retype all `raw string` values into `array`, `float`, `int` or `boolean` types.
 	 * - Retype whole values level into `\stdClass`, if there are no numeric keys.
+	 * @param string $fullPath
+	 * @param bool $systemConfig
 	 * @return bool
 	 */
-	protected function read () {
+	public function Read ($fullPath, $systemConfig = FALSE) {
+		if ($this->data) return $this->data;
+		$this->fullPath = $fullPath;
+		$this->system = $systemConfig;
 		if (!$this->_iniScannerMode) 
 			// 1 => INI_SCANNER_RAW, 2 => INI_SCANNER_TYPED
 			$this->_iniScannerMode = version_compare(PHP_VERSION, '5.6.1', '<') ? 1 : 2;
@@ -35,17 +40,16 @@ trait ReadingIni
 		if ($rawIniData === FALSE) return FALSE;
 		$this->data = [];
 		$environment = $this->system
-			? $this->initDataDetectEnvironmentBySystemConfig($rawIniData)
+			? static::environmentDetectBySystemConfig($rawIniData)
 			: static::$environment;
-		$iniData = $this->iniPrepareToParse($rawIniData, $environment);
-		$this->iniDataProcess($iniData);
-		foreach ($this->objectTypes as & $objectType) {
+		$iniData = $this->iniReadFilterEnvironmentSections($rawIniData, $environment);
+		$this->iniReadExpandLevelsAndReType($iniData);
+		foreach ($this->objectTypes as & $objectType) 
 			if ($objectType[0]) $objectType[1] = (object) $objectType[1];
-		}
 		unset($this->objectTypes);
 		return TRUE;
 	}
-
+	
 	/**
 	 * Align all raw INI data to single level array,
 	 * filtered for only current environment data items.
@@ -53,7 +57,7 @@ trait ReadingIni
 	 * @param string $environment
 	 * @return array
 	 */
-	protected function & iniPrepareToParse (array & $rawIniData, $environment) {
+	protected function & iniReadFilterEnvironmentSections (array & $rawIniData, $environment) {
 		$iniData = [];
 		foreach ($rawIniData as $keyOrSectionName => $valueOrSectionValues) {
 			if (is_array($valueOrSectionValues)) {
@@ -72,41 +76,14 @@ trait ReadingIni
 	}
 
 	/**
-	 * Detect environment name in system config
-	 * to load proper config sections later.
-	 * @param array $rawIni
-	 * @return string|NULL
-	 */
-	protected function initDataDetectEnvironmentBySystemConfig (array & $rawIni = []) {
-		$environment = NULL;
-		if (isset($rawIni['environments'])) {
-			$environments = & $rawIni['environments'];
-			$serverAddress = ','.\MvcCore\Application::GetInstance()->GetRequest()->GetServerIp().',';
-			$serverComputerName = ','.gethostname().',';
-			foreach ($environments as $environmentName => $environmentComputerNamesOrIps) {
-				$environmentComputerNamesOrIps = ','.$environmentComputerNamesOrIps.',';
-				if (
-					strpos($environmentComputerNamesOrIps, $serverAddress) !== FALSE ||
-					strpos($environmentComputerNamesOrIps, $serverComputerName) !== FALSE
-				) {
-					$environment = $environmentName;
-					break;
-				}
-			}
-		}
-		if ($environment && !static::$environment) static::SetEnvironment($environment);
-		return static::$environment;
-	}
-
-	/**
 	 * Process single level array with dotted keys into tree structure
 	 * and complete object type switches about tree records
-	 * to set final `\stdClass`es or `array`s.
+	 * to complete journal about final `\stdClass`es or `array`s types.
 	 * @param array $iniData
 	 * @return void
 	 */
-	protected function iniDataProcess (array & $iniData) {
-		$this->objectTypes[''] = [0, & $this->data];
+	protected function iniReadExpandLevelsAndReType (array & $iniData) {
+		//$this->objectTypes[''] = [0, & $this->data];
 		$oldIniScannerMode = $this->_iniScannerMode === 1;
 		foreach ($iniData as $rawKey => $rawValue) {
 			$current = & $this->data;
@@ -167,7 +144,7 @@ trait ReadingIni
 			return $rawValue; // array
 		} else if (mb_strlen($rawValue) > 0) {
 			if (is_numeric($rawValue)) {
-				return $this->getTypedValueFloatIpOrInt($rawValue);
+				return $this->getTypedValueFloatOrInt($rawValue);
 			} else {
 				return $this->getTypedSpecialValueOrString($rawValue);
 			}
@@ -177,21 +154,16 @@ trait ReadingIni
 	}
 
 	/**
-	 * Retype raw INI value into `float`, `IP` or `int`.
+	 * Retype raw INI value into `float` or `int`.
 	 * @param string $rawValue
-	 * @return float|string|int
+	 * @return float|int|string
 	 */
-	protected function getTypedValueFloatIpOrInt ($rawValue) {
-		if (strpos($rawValue, '.') !== FALSE) {
-			if (substr_count($rawValue, '.') === 1) {
-				return floatval($rawValue); // float
-			} else {
-				return $rawValue; // ip
-			}
-		} else if (strpos($rawValue, 'e') !== FALSE || strpos($rawValue, 'E') !== FALSE) {
+	protected function getTypedValueFloatOrInt ($rawValue) {
+		if (strpos($rawValue, '.') !== FALSE || strpos($rawValue, 'e') !== FALSE || strpos($rawValue, 'E') !== FALSE) {
 			return floatval($rawValue); // float
 		} else {
-			$intVal = intval($rawValue); // int or string if integer is too high (more then PHP max/min: 2147483647/-2147483647)
+			// int or string if integer is too high (more then PHP max/min: 2147483647/-2147483647)
+			$intVal = intval($rawValue);
 			return (string) $intVal === $rawValue 
 				? $intVal 
 				: $rawValue;

@@ -16,13 +16,6 @@ namespace MvcCore\Config;
 trait PropsGettersSetters
 {
 	/**
-	 * System config relative path from app root.
-	 * This value could be changed to any value at the very application start.
-	 * @var string
-	 */
-	public static $SystemConfigPath = '/%appPath%/config.ini';
-
-	/**
 	 * Environment name. Usual values:
 	 * - `"development"`
 	 * - `"beta"`
@@ -80,12 +73,13 @@ trait PropsGettersSetters
 	 */
 	protected $objectTypes = [];
 
+
 	/**
 	 * Return `TRUE` if environment is `"development"`.
 	 * @param bool $autoloadSystemConfig If `TRUE`, environment will be detected by loaded system config.
 	 * @return bool
 	 */
-	public static function IsDevelopment ($autoloadSystemConfig = FALSE) {
+	public static function IsDevelopment ($autoloadSystemConfig = TRUE) {
 		return static::GetEnvironment($autoloadSystemConfig) === static::ENVIRONMENT_DEVELOPMENT;
 	}
 
@@ -94,7 +88,7 @@ trait PropsGettersSetters
 	 * @param bool $autoloadSystemConfig If `TRUE`, environment will be detected by loaded system config.
 	 * @return bool
 	 */
-	public static function IsBeta ($autoloadSystemConfig = FALSE) {
+	public static function IsBeta ($autoloadSystemConfig = TRUE) {
 		return static::GetEnvironment($autoloadSystemConfig) === static::ENVIRONMENT_BETA;
 	}
 
@@ -103,7 +97,7 @@ trait PropsGettersSetters
 	 * @param bool $autoloadSystemConfig If `TRUE`, environment will be detected by loaded system config.
 	 * @return bool
 	 */
-	public static function IsAlpha ($autoloadSystemConfig = FALSE) {
+	public static function IsAlpha ($autoloadSystemConfig = TRUE) {
 		return static::GetEnvironment($autoloadSystemConfig) === static::ENVIRONMENT_ALPHA;
 	}
 
@@ -112,7 +106,24 @@ trait PropsGettersSetters
 	 * @param bool $autoloadSystemConfig If `TRUE`, environment will be detected by loaded system config.
 	 * @return bool
 	 */
-	public static function IsProduction ($autoloadSystemConfig = FALSE) {
+	public static function IsProduction ($autoloadSystemConfig = TRUE) {
 		return static::GetEnvironment($autoloadSystemConfig) === static::ENVIRONMENT_PRODUCTION;
+	}
+
+	/**
+	 * Get system config relative path from app root.
+	 * @return string
+	 */
+	public static function GetSystemConfigPath () {
+		return static::$systemConfigPath;
+	}
+	
+	/**
+	 * Set system config relative path from app root.
+	 * @param string $systemConfigPath
+	 * @return void
+	 */
+	public static function SetSystemConfigPath ($systemConfigPath) {
+		static::$systemConfigPath = $systemConfigPath;
 	}
 }

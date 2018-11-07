@@ -44,7 +44,7 @@ trait Initializations
 	}
 
 	/**
-	 * Initialize debuging and logging handlers.
+	 * Initialize debugging and logging handlers.
 	 * @return void
 	 */
 	protected static function initHandlers () {
@@ -62,7 +62,8 @@ trait Initializations
 	 */
 	protected static function initLogDirectory () {
 		if (static::$logDirectoryInitialized) return;
-		$configClass = static::$app->GetConfigClass();
+		$app = static::$app ?: (static::$app = & \MvcCore\Application::GetInstance());
+		$configClass = $app->GetConfigClass();
 		$cfg = $configClass::GetSystem();
 		$logDirRelPath = static::$LogDirectory;
 		if ($cfg !== FALSE && isset($cfg->debug)) {
