@@ -23,7 +23,7 @@ namespace MvcCore;
  *   - Simple environment name detection by comparing server and client ip.
  *   - Environment name detection by config records about computer name or ip.
  */
-class Config implements IConfig
+class Config extends \ArrayObject implements IConfig
 {
 	use \MvcCore\Config\PropsGettersSetters;
 	use \MvcCore\Config\ReadingWriting;
