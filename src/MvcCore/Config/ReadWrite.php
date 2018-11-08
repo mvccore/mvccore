@@ -13,7 +13,7 @@
 
 namespace MvcCore\Config;
 
-trait ReadingWriting
+trait ReadWrite
 {
 	/**
 	 * This is INTERNAL method.
@@ -21,11 +21,13 @@ trait ReadingWriting
 	 * Always called from `\MvcCore\Config::GetSystem()` before system config is readed.
 	 * This is place where to customize any config creation process,
 	 * before it's created by MvcCore framework.
+	 * @param array $data Configuration raw data.
 	 * @param string $appRootRelativePath Relative config path from app root.
 	 * @return \MvcCore\Config
 	 */
-	public static function & CreateInstance ($appRootRelativePath = NULL) {
+	public static function & CreateInstance (array $data = [], $appRootRelativePath = NULL) {
 		$instance = new static();
+		if ($data) $instance->data = & $data;
 		if ($appRootRelativePath) {
 			$app = self::$app ?: self::$app = & \MvcCore\Application::GetInstance();
 			$appRoot = self::$appRoot ?: self::$appRoot = $app->GetRequest()->GetAppRoot();
@@ -71,30 +73,6 @@ trait ReadingWriting
 	}
 
 	/**
-	 * Try to load and parse config file by app root relative path.
-	 * If config contains system data, try to detect environment.
-	 * @param string $appRootRelativePath 
-	 * @param bool $systemConfig 
-	 * @return \MvcCore\Config|bool
-	 */
-	protected static function & getConfigInstance ($appRootRelativePath, $systemConfig = FALSE) {
-		$app = self::$app ?: self::$app = & \MvcCore\Application::GetInstance();
-		$appRoot = self::$appRoot ?: self::$appRoot = $app->GetRequest()->GetAppRoot();
-		$fullPath = $appRoot . '/' . str_replace(
-			'%appPath%', $app->GetAppDir(), ltrim($appRootRelativePath, '/')
-		);
-		if (!file_exists($fullPath)) {
-			$result = FALSE;
-		} else {
-			$systemConfigClass = $app->GetConfigClass();
-			$result = $systemConfigClass::CreateInstance();
-			if (!$result->Read($fullPath, $systemConfig)) 
-				$result = FALSE;
-		}
-		return $result;
-	}
-
-	/**
 	 * Encode all data into string and store it in `$this->fullPath` property.
 	 * @return bool
 	 */
@@ -117,48 +95,26 @@ trait ReadingWriting
 	}
 
 	/**
-	 * Get not defined property from `$this->data` array store, if there is nothing, return `NULL`.
-	 * @param string $key 
-	 * @return mixed
+	 * Try to load and parse config file by app root relative path.
+	 * If config contains system data, try to detect environment.
+	 * @param string $appRootRelativePath 
+	 * @param bool $systemConfig 
+	 * @return \MvcCore\Config|bool
 	 */
-	public function __get ($key) {
-		if (array_key_exists($key, $this->data))
-			return $this->data[$key];
-		return NULL;
-	}
-
-	/**
-	 * Store not defined property inside `$this->data` array store.
-	 * @param string $key 
-	 * @return mixed
-	 */
-	public function __set ($key, $value) {
-		return $this->data[$key] = $value;
-	}
-	
-	/**
-	 * Magic function triggered by: `isset(\MvcCore\IConfig->key);`.
-	 * @param string $key
-	 * @return bool
-	 */
-	public function __isset ($key) {
-		return isset($this->data[$key]);
-	}
-
-	/**
-	 * Magic function triggered by: `unset(\MvcCore\IConfig->key);`.
-	 * @param string $key
-	 * @return void
-	 */
-	public function __unset ($key) {
-		if (isset($this->data[$key])) unset($this->data[$key]);
-	}
-	
-	/**
-	 * Magic `\ArrayObject` function triggered by: `count(\MvcCore\IConfig);`.
-	 * @return int
-	 */
-	public function count () {
-		return count($this->data);
+	protected static function & getConfigInstance ($appRootRelativePath, $systemConfig = FALSE) {
+		$app = self::$app ?: self::$app = & \MvcCore\Application::GetInstance();
+		$appRoot = self::$appRoot ?: self::$appRoot = $app->GetRequest()->GetAppRoot();
+		$fullPath = $appRoot . '/' . str_replace(
+			'%appPath%', $app->GetAppDir(), ltrim($appRootRelativePath, '/')
+		);
+		if (!file_exists($fullPath)) {
+			$result = FALSE;
+		} else {
+			$systemConfigClass = $app->GetConfigClass();
+			$result = $systemConfigClass::CreateInstance();
+			if (!$result->Read($fullPath, $systemConfig)) 
+				$result = FALSE;
+		}
+		return $result;
 	}
 }

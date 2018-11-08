@@ -16,6 +16,52 @@ namespace MvcCore\Config;
 trait Environment
 {
 	/**
+	 * Environment name. Usual values:
+	 * - `"dev"`			- Development environment.
+	 * - `"beta"`			- Common team testing environment.
+	 * - `"alpha"`			- Release testing environment.
+	 * - `"production"`		- Release environment.
+	 * @var string|NULL
+	 */
+	protected static $environment = NULL;
+
+	/**
+	 * Return `TRUE` if environment is `"dev"`.
+	 * @param bool $autoloadSystemConfig If `TRUE`, environment will be detected by loaded system config.
+	 * @return bool
+	 */
+	public static function IsDevelopment ($autoloadSystemConfig = TRUE) {
+		return static::GetEnvironment($autoloadSystemConfig) === static::ENVIRONMENT_DEVELOPMENT;
+	}
+
+	/**
+	 * Return `TRUE` if environment is `"beta"`.
+	 * @param bool $autoloadSystemConfig If `TRUE`, environment will be detected by loaded system config.
+	 * @return bool
+	 */
+	public static function IsBeta ($autoloadSystemConfig = TRUE) {
+		return static::GetEnvironment($autoloadSystemConfig) === static::ENVIRONMENT_BETA;
+	}
+
+	/**
+	 * Return `TRUE` if environment is `"alpha"`.
+	 * @param bool $autoloadSystemConfig If `TRUE`, environment will be detected by loaded system config.
+	 * @return bool
+	 */
+	public static function IsAlpha ($autoloadSystemConfig = TRUE) {
+		return static::GetEnvironment($autoloadSystemConfig) === static::ENVIRONMENT_ALPHA;
+	}
+
+	/**
+	 * Return `TRUE` if environment is `"production"`.
+	 * @param bool $autoloadSystemConfig If `TRUE`, environment will be detected by loaded system config.
+	 * @return bool
+	 */
+	public static function IsProduction ($autoloadSystemConfig = TRUE) {
+		return static::GetEnvironment($autoloadSystemConfig) === static::ENVIRONMENT_PRODUCTION;
+	}
+
+	/**
 	 * Set environment name as string,
 	 * defined by constants: `\MvcCore\IConfig::ENVIRONMENT_<environment>`.
 	 * @param string $environment

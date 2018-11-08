@@ -16,16 +16,6 @@ namespace MvcCore\Config;
 trait PropsGettersSetters
 {
 	/**
-	 * Environment name. Usual values:
-	 * - `"development"`
-	 * - `"beta"`
-	 * - `"alpha"`
-	 * - `"production"`
-	 * @var string|NULL
-	 */
-	protected static $environment = NULL;
-
-	/**
 	 * Loaded configurations array cache.
 	 * @var array
 	 */
@@ -75,42 +65,6 @@ trait PropsGettersSetters
 
 
 	/**
-	 * Return `TRUE` if environment is `"development"`.
-	 * @param bool $autoloadSystemConfig If `TRUE`, environment will be detected by loaded system config.
-	 * @return bool
-	 */
-	public static function IsDevelopment ($autoloadSystemConfig = TRUE) {
-		return static::GetEnvironment($autoloadSystemConfig) === static::ENVIRONMENT_DEVELOPMENT;
-	}
-
-	/**
-	 * Return `TRUE` if environment is `"beta"`.
-	 * @param bool $autoloadSystemConfig If `TRUE`, environment will be detected by loaded system config.
-	 * @return bool
-	 */
-	public static function IsBeta ($autoloadSystemConfig = TRUE) {
-		return static::GetEnvironment($autoloadSystemConfig) === static::ENVIRONMENT_BETA;
-	}
-
-	/**
-	 * Return `TRUE` if environment is `"alpha"`.
-	 * @param bool $autoloadSystemConfig If `TRUE`, environment will be detected by loaded system config.
-	 * @return bool
-	 */
-	public static function IsAlpha ($autoloadSystemConfig = TRUE) {
-		return static::GetEnvironment($autoloadSystemConfig) === static::ENVIRONMENT_ALPHA;
-	}
-
-	/**
-	 * Return `TRUE` if environment is `"production"`.
-	 * @param bool $autoloadSystemConfig If `TRUE`, environment will be detected by loaded system config.
-	 * @return bool
-	 */
-	public static function IsProduction ($autoloadSystemConfig = TRUE) {
-		return static::GetEnvironment($autoloadSystemConfig) === static::ENVIRONMENT_PRODUCTION;
-	}
-
-	/**
 	 * Get system config relative path from app root.
 	 * @return string
 	 */
@@ -121,9 +75,9 @@ trait PropsGettersSetters
 	/**
 	 * Set system config relative path from app root.
 	 * @param string $systemConfigPath
-	 * @return void
+	 * @return string
 	 */
 	public static function SetSystemConfigPath ($systemConfigPath) {
-		static::$systemConfigPath = $systemConfigPath;
+		return static::$systemConfigPath = $systemConfigPath;
 	}
 }

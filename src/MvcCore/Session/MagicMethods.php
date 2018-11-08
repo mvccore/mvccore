@@ -15,27 +15,10 @@ namespace MvcCore\Session;
 
 trait MagicMethods
 {
-	/**
-	 * Magic function triggered by: `isset(\MvcCore\ISession->key);`.
-	 * @param string $key
-	 * @return bool
-	 */
-	public function __isset ($key) {
-		return isset($_SESSION[$this->__name][$key]);
-	}
+	/** Classic PHP magic methods for object access ***************************/
 
 	/**
-	 * Magic function triggered by: `unset(\MvcCore\ISession->key);`.
-	 * @param string $key
-	 * @return void
-	 */
-	public function __unset ($key) {
-		$name = $this->__name;
-		if (isset($_SESSION[$name][$key])) unset($_SESSION[$name][$key]);
-	}
-
-	/**
-	 * Magic function triggered by: `$value = \MvcCore\ISession->key;`.
+	 * Magic function triggered by: `$value = $sessionNamespace->key;`.
 	 * @param string $key
 	 * @return mixed
 	 */
@@ -46,17 +29,36 @@ trait MagicMethods
 	}
 
 	/**
-	 * Magic function triggered by: `\MvcCore\ISession->key = "value";`.
+	 * Magic function triggered by: `$sessionNamespace->key = "value";`.
 	 * @param string $key
 	 * @param mixed $value
-	 * @return void
+	 * @return mixed
 	 */
 	public function __set ($key, $value) {
-		$_SESSION[$this->__name][$key] = $value;
+		return $_SESSION[$this->__name][$key] = $value;
 	}
 
 	/**
-	 * Print all about current session namespace instance for debug purposses.
+	 * Magic function triggered by: `isset($sessionNamespace->key);`.
+	 * @param string $key
+	 * @return bool
+	 */
+	public function __isset ($key) {
+		return isset($_SESSION[$this->__name][$key]);
+	}
+
+	/**
+	 * Magic function triggered by: `unset($sessionNamespace->key);`.
+	 * @param string $key
+	 * @return void
+	 */
+	public function __unset ($key) {
+		$name = $this->__name;
+		if (isset($_SESSION[$name][$key])) unset($_SESSION[$name][$key]);
+	}
+
+	/**
+	 * Print all about current session namespace instance for debug purposes.
 	 * @return array
 	 */
 	public function __debugInfo () {
@@ -74,11 +76,75 @@ trait MagicMethods
 		];
 	}
 
+	
+	/** \Countable interface **************************************************/
+
 	/**
-	 * Magic `\ArrayObject` function triggered by: `count(\MvcCore\ISession);`.
+	 * Get how many records is in the session namespace.
+	 * Example: `count($sessionNamespace);`
 	 * @return int
 	 */
 	public function count () {
 		return count((array) $_SESSION[$this->__name]);
 	}
+
+	/** \IteratorAggregate interface ******************************************/
+
+	/**
+	 * Return new iterator from the internal data store 
+	 * to use session namespace instance in for each cycle.
+	 * Example: `foreach ($sessionNamespace as $key => $value) { var_dump([$key, $value]); }`
+	 * @return \ArrayIterator|\Traversable
+	 */
+	public function getIterator () {
+        return new \ArrayIterator($_SESSION[$this->__name]);
+    }
+
+
+	/** \ArrayAccess interface ************************************************/
+
+	/**
+	 * Set the value at the specified index.
+	 * Example: `$sessionNamespace['any'] = 'thing';`
+	 * @param mixed $offset 
+	 * @param mixed $value 
+	 */
+	public function offsetSet ($offset, $value) {
+		$data = & $_SESSION[$this->__name];
+        if ($offset === NULL) {
+            $data[] = $value;
+        } else {
+            $data[$offset] = $value;
+        }
+    }
+
+	/**
+	 * Get the value at the specified index.
+	 * Example: `$thing = $sessionNamespace['any'];`
+	 * @param mixed $offset 
+	 * @param mixed $value 
+	 */
+    public function offsetGet ($offset) {
+		$data = & $_SESSION[$this->__name];
+        return isset($data[$offset]) ? $data[$offset] : NULL;
+    }
+
+    /**
+     * Return whether the requested index exists.
+	 * Example: `isset($sessionNamespace['any']);`
+     * @param mixed $offset 
+     * @return bool
+     */
+    public function offsetExists ($offset) {
+        return isset($_SESSION[$this->__name][$offset]);
+    }
+
+    /**
+     * Unset the value at the specified index.
+	 * Example: `unset($sessionNamespace['any']);`
+     * @param mixed $offset 
+     */
+    public function offsetUnset ($offset) {
+        unset($_SESSION[$this->__name][$offset]);
+    }
 }

@@ -28,6 +28,7 @@ class Config extends \ArrayObject implements IConfig
 	use \MvcCore\Config\PropsGettersSetters;
 	use \MvcCore\Config\ReadingWriting;
 	use \MvcCore\Config\Environment;
+	use \MvcCore\Config\MagicMethods;
 	use \MvcCore\Config\IniProps;
 	use \MvcCore\Config\IniRead;
 	use \MvcCore\Config\IniDump;

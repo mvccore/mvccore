@@ -27,13 +27,28 @@ namespace MvcCore;
  */
 interface IConfig
 {
+	/**
+	 * Development environment.
+	 */
 	const ENVIRONMENT_DEVELOPMENT = 'dev';
-	const ENVIRONMENT_BETA = 'beta';
+
+	/**
+	 * Common team testing environment.
+	 */
 	const ENVIRONMENT_ALPHA = 'alpha';
+
+	/**
+	 * Release testing environment.
+	 */
+	const ENVIRONMENT_BETA = 'beta';
+
+	/**
+	 * Release environment.
+	 */
 	const ENVIRONMENT_PRODUCTION = 'production';
 
 	/**
-	 * Return `TRUE` if environment is `"development"`.
+	 * Return `TRUE` if environment is `"dev"`.
 	 * @param bool $autoloadSystemConfig If `TRUE`, environment will be detected by loaded system config.
 	 * @return bool
 	 */
@@ -84,7 +99,7 @@ interface IConfig
 	/**
 	 * Set system config relative path from app root.
 	 * @param string $systemConfigPath
-	 * @return void
+	 * @return string
 	 */
 	public static function SetSystemConfigPath ($systemConfigPath);
 
@@ -94,10 +109,11 @@ interface IConfig
 	 * Always called from `\MvcCore\Config::GetSystem()` before system config is loaded.
 	 * This is place where to customize any config creation process,
 	 * before it's created by MvcCore framework.
+	 * @param array $data Configuration raw data.
 	 * @param string $appRootRelativePath Relative config path from app root.
 	 * @return \MvcCore\IConfig
 	 */
-	public static function & CreateInstance ($appRootRelativePath = NULL);
+	public static function & CreateInstance (array $data = [], $appRootRelativePath = NULL);
 
 	/**
 	 * Get cached singleton system config INI file as `stdClass`es and `array`s,
@@ -135,7 +151,14 @@ interface IConfig
 	public function & Save ();
 
 	/**
-	 * Get not defined property from `$this->data` array store, if there is nothing, return `NULL`.
+	 * Get internal array store as reference.
+	 * @return array
+	 */
+	public function & GetData ();
+
+	/**
+	 * Get not defined property from `$this->data` array store, 
+	 * if there is nothing, return `NULL`.
 	 * @param string $key 
 	 * @return mixed
 	 */
@@ -144,27 +167,67 @@ interface IConfig
 	/**
 	 * Store not defined property inside `$this->data` array store.
 	 * @param string $key 
-	 * @return void
+	 * @return mixed
 	 */
 	public function __set ($key, $value);
 	
 	/**
-	 * Magic function triggered by: `isset(\MvcCore\IConfig->key);`.
+	 * Magic function triggered by: `isset($cfg->key);`.
 	 * @param string $key
 	 * @return bool
 	 */
 	public function __isset ($key);
-	
+
 	/**
-	 * Magic function triggered by: `unset(\MvcCore\IConfig->key);`.
+	 * Magic function triggered by: `unset($cfg->key);`.
 	 * @param string $key
 	 * @return void
 	 */
 	public function __unset ($key);
 	
 	/**
-	 * Magic `\ArrayObject` function triggered by: `count(\MvcCore\IConfig);`.
+	 * Get how many records is in the config internal store.
+	 * Example: `count($cfg);`
 	 * @return int
 	 */
 	public function count ();
+
+	/**
+	 * Return new iterator from the internal data store 
+	 * to use config instance in for each cycle.
+	 * Example: `foreach ($cfg as $key => $value) { var_dump([$key, $value]); }`
+	 * @return \ArrayIterator|\Traversable
+	 */
+	public function getIterator ();
+
+	/**
+	 * Set the value at the specified index in the internal store.
+	 * Example: `$cfg['any'] = 'thing';`
+	 * @param mixed $offset 
+	 * @param mixed $value 
+	 */
+	public function offsetSet ($offset, $value);
+
+	/**
+	 * Get the value at the specified index from the internal store.
+	 * Example: `$thing = $cfg['any'];`
+	 * @param mixed $offset 
+	 * @param mixed $value 
+	 */
+    public function offsetGet ($offset);
+
+    /**
+     * Return whether the requested index exists in the internal store.
+	 * Example: `isset($cfg['any']);`
+     * @param mixed $offset 
+     * @return bool
+     */
+    public function offsetExists ($offset);
+
+    /**
+     * Unset the value at the specified index in the internal store.
+	 * Example: `unset($cfg['any']);`
+     * @param mixed $offset 
+     */
+    public function offsetUnset ($offset);
 }
