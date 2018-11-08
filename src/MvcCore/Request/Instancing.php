@@ -36,6 +36,8 @@ trait Instancing
 		array & $cookie = [],
 		array & $files = []
 	) {
+		if (!func_get_args()) 
+			list($server, $get, $post, $cookie, $files) = [& $_SERVER, & $_GET, & $_POST, & $_COOKIE, & $_FILES];
 		$requestClass = \MvcCore\Application::GetInstance()->GetRequestClass();
 		return new $requestClass($server, $get, $post, $cookie, $files);
 	}

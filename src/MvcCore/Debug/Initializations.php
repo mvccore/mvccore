@@ -73,15 +73,7 @@ trait Initializations
 			if (isset($cfgDebug->logDirectory))
 				$logDirRelPath = $cfgDebug->logDirectory; // relative path from app root
 		}
-		if (php_sapi_name() == 'cli') {
-			$backtraceItems = debug_backtrace(DEBUG_BACKTRACE_IGNORE_ARGS);
-			$scriptFilename =  $backtraceItems[count($backtraceItems) - 1]['file'];
-		} else {
-			$scriptFilename = $_SERVER['SCRIPT_FILENAME'];
-		}
-		$scriptFilename = str_replace('\\', '/', $scriptFilename);
-		$appRoot = dirname($scriptFilename);
-		$logDirAbsPath = $appRoot . $logDirRelPath;
+		$logDirAbsPath = $app->GetRequest()->GetAppRoot() . '/' . ltrim($logDirRelPath, '/');
 		static::$LogDirectory = $logDirAbsPath;
 		try {
 			if (!is_dir($logDirAbsPath)) {

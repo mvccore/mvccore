@@ -248,11 +248,9 @@ trait GettersSetters
 		if ($this->appRoot === NULL) {
 			// ucfirst - cause IIS has lower case drive name here - different from __DIR__ value
 			$indexFilePath = ucfirst(str_replace(['\\', '//'], '/', $this->globalServer['SCRIPT_FILENAME']));
-			if (strpos(__FILE__, 'phar://') === 0) {
-				$this->appRoot = 'phar://' . $indexFilePath;
-			} else {
-				$this->appRoot = substr($indexFilePath, 0, mb_strrpos($indexFilePath, '/'));
-			}
+			$this->appRoot = strpos(__FILE__, 'phar://') === 0
+				? 'phar://' . $indexFilePath
+				: dirname($indexFilePath);
 		}
 		return $this->appRoot;
 	}

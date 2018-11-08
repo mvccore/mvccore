@@ -409,7 +409,7 @@ trait PropsGettersSetters
 	public function & GetRequest () {
 		if ($this->request === NULL) {
 			$requestClass = $this->requestClass;
-			$this->request = $requestClass::CreateInstance($_SERVER, $_GET, $_POST, $_COOKIE, $_FILES);
+			$this->request = $requestClass::CreateInstance();
 		}
 		return $this->request;
 	}
