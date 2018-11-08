@@ -26,7 +26,7 @@ namespace MvcCore;
 class Config extends \ArrayObject implements IConfig
 {
 	use \MvcCore\Config\PropsGettersSetters;
-	use \MvcCore\Config\ReadingWriting;
+	use \MvcCore\Config\ReadWrite;
 	use \MvcCore\Config\Environment;
 	use \MvcCore\Config\MagicMethods;
 	use \MvcCore\Config\IniProps;
