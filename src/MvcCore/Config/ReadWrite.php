@@ -84,13 +84,18 @@ trait ReadWrite
 		$tempFullPath = tempnam($toolClass::GetTmpDir(), 'mvccore_config');
 		file_put_contents($tempFullPath, $rawContent);
 		$canRename = TRUE;
-		if (file_exists($this->fullPath)) 
+		clearstatcache(TRUE, $this->fullPath);
+		if (file_exists($this->fullPath)) {
 			$canRename = unlink($this->fullPath);
+			clearstatcache(TRUE, $this->fullPath);
+		}
 		$success = FALSE;
 		if ($canRename)
 			$success = @rename($tempFullPath, $this->fullPath);
-		if (!$success) 
+		if (!$success) {
 			unlink($tempFullPath);
+			clearstatcache(TRUE, $this->fullPath);
+		}
 		return $success;
 	}
 

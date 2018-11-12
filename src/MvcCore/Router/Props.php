@@ -135,7 +135,7 @@ trait Props
 	 * Default value is `-1` - `\MvcCore\IRouter::TRAILING_SLASH_REMOVE`
 	 * @var int
 	 */
-	protected $trailingSlashBehaviour = -1;
+	protected $trailingSlashBehaviour = 0;
 
 	/**
 	 * TODO: dopsat

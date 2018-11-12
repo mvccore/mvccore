@@ -34,6 +34,8 @@ trait IniRead
 		if (!$this->_iniScannerMode) 
 			// 1 => INI_SCANNER_RAW, 2 => INI_SCANNER_TYPED
 			$this->_iniScannerMode = version_compare(PHP_VERSION, '5.6.1', '<') ? 1 : 2;
+		clearstatcache(TRUE, $fullPath);
+		$this->lastChanged = filemtime($fullPath);
 		$rawIniData = parse_ini_file(
 			$this->fullPath, TRUE, $this->_iniScannerMode
 		);

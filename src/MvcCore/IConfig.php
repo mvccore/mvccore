@@ -157,6 +157,24 @@ interface IConfig
 	public function & GetData ();
 
 	/**
+	 * Full path, where are configuration data stored.
+	 * @return string
+	 */
+	public function GetFullPath ();
+
+	/**
+	 * Config file last changed UNIX timestamp.
+	 * @return int
+	 */
+	public function GetLastChanged ();
+
+	/**
+	 * If `TRUE`, config contains system data.
+	 * @return bool
+	 */
+	public function IsSystem ();
+
+	/**
 	 * Get not defined property from `$this->data` array store, 
 	 * if there is nothing, return `NULL`.
 	 * @param string $key 

@@ -147,7 +147,7 @@ trait UrlBuilding
 			}
 			$sections[] = $sectionResult;
 		}
-		$result = implode('', $sections);
+		$result = str_replace('//', '/', implode('', $sections));
 		$result = & $this->urlCorrectTrailingSlashBehaviour($result);
 		return $result;
 	}

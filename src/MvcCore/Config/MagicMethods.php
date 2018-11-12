@@ -15,15 +15,6 @@ namespace MvcCore\Config;
 
 trait MagicMethods
 {
-	/**
-	 * Get internal array store as reference.
-	 * @return array
-	 */
-	public function & GetData () {
-		return $this->data;
-	}
-
-
 	/** Classic PHP magic methods for object access ***************************/
 
 	/**

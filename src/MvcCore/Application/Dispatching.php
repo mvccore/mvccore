@@ -270,6 +270,7 @@ trait Dispatching
 	 * @return \MvcCore\Application
 	 */
 	public function Terminate () {
+		//$stop();
 		if ($this->terminated) return $this;
 		/** @var $this->response \MvcCore\Response */
 		$this->ProcessCustomHandlers($this->postDispatchHandlers);

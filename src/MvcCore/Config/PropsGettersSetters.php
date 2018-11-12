@@ -34,23 +34,29 @@ trait PropsGettersSetters
 	protected static $appRoot;
 
 	/**
+	 * Temporary variable used when INI file is parsed and loaded
+	 * to store complete result to return.
+	 * @var array
+	 */
+	protected $data = [];
+
+	/**
 	 * Full path, where are configuration data stored.
 	 * @var string|NULL
 	 */
 	protected $fullPath = NULL;
 
 	/**
+	 * Config file last changed UNIX timestamp.
+	 * @var int|NULL
+	 */
+	protected $lastChanged = 0;
+
+	/**
 	 * If `TRUE`, config contains system data.
 	 * @var bool
 	 */
 	protected $system = FALSE;
-
-	/**
-	 * Temporary variable used when INI file is parsed and loaded
-	 * to store complete result to return.
-	 * @var array
-	 */
-	protected $data = [];
 
 	/**
 	 * Temporary variable used when INI file is parsed and loaded,
@@ -79,5 +85,37 @@ trait PropsGettersSetters
 	 */
 	public static function SetSystemConfigPath ($systemConfigPath) {
 		return static::$systemConfigPath = $systemConfigPath;
+	}
+
+	/**
+	 * Get internal array store as reference.
+	 * @return array
+	 */
+	public function & GetData () {
+		return $this->data;
+	}
+
+	/**
+	 * Full path, where are configuration data stored.
+	 * @return string
+	 */
+	public function GetFullPath () {
+		return $this->fullPath;
+	}
+
+	/**
+	 * Config file last changed UNIX timestamp.
+	 * @return int
+	 */
+	public function GetLastChanged () {
+		return $this->lastChanged;
+	}
+
+	/**
+	 * If `TRUE`, config contains system data.
+	 * @return bool
+	 */
+	public function IsSystem () {
+		return $this->system;
 	}
 }
