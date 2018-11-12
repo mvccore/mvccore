@@ -74,29 +74,35 @@ trait ReadWrite
 
 	/**
 	 * Encode all data into string and store it in `$this->fullPath` property.
-	 * @return bool
+	 * @return array
 	 */
-	public function & Save () {
+	public function Save () {
 		$rawContent = $this->Dump();
-		if ($rawContent === FALSE) return FALSE;
-		$app = self::$app ?: self::$app = & \MvcCore\Application::GetInstance();
-		$toolClass = $app->GetToolClass();
-		$tempFullPath = tempnam($toolClass::GetTmpDir(), 'mvccore_config');
-		file_put_contents($tempFullPath, $rawContent);
-		$canRename = TRUE;
-		clearstatcache(TRUE, $this->fullPath);
-		if (file_exists($this->fullPath)) {
-			$canRename = unlink($this->fullPath);
-			clearstatcache(TRUE, $this->fullPath);
+		if ($rawContent === FALSE) return [FALSE, 'Configuration data was not possible to dump.'];
+		@clearstatcache(TRUE, $this->fullPath);
+		if ($this->lastChanged > 0 && filemtime($this->fullPath) !== $this->lastChanged) {
+			return [FALSE, 'File has been changed already.'];
+		} else {
+			$msg = 'Configuration file has been successfully updated.';
+			$app = self::$app ?: self::$app = & \MvcCore\Application::GetInstance();
+			$toolClass = $app->GetToolClass();
+			$tempFullPath = tempnam($toolClass::GetTmpDir(), 'mvccore_config');
+			file_put_contents($tempFullPath, $rawContent);
+			$canRename = TRUE;
+			if (file_exists($this->fullPath)) {
+				$canRename = unlink($this->fullPath);
+				clearstatcache(TRUE, $this->fullPath);
+			}
+			$success = FALSE;
+			if ($canRename) 
+				$success = @rename($tempFullPath, $this->fullPath);
+			if (!$success) {
+				unlink($tempFullPath);
+				$msg = 'Configuration file is not possible to modify.';
+				clearstatcache(TRUE, $this->fullPath);
+			}
+			return [$success, $msg];
 		}
-		$success = FALSE;
-		if ($canRename)
-			$success = @rename($tempFullPath, $this->fullPath);
-		if (!$success) {
-			unlink($tempFullPath);
-			clearstatcache(TRUE, $this->fullPath);
-		}
-		return $success;
 	}
 
 	/**
