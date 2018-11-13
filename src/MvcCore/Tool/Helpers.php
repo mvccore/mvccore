@@ -171,7 +171,7 @@ trait Helpers
 		$fullPath, 
 		& $content, 
 		$writeMode = 'w', 
-		$lockWaitMiliSeconds = 100, 
+		$lockWaitMiliSeconds = 10, 
 		$maxLockWaitMiliSeconds = 5000, 
 		$oldLockMilisecondsTolerance = 30000
 	) {
