@@ -74,35 +74,28 @@ trait ReadWrite
 
 	/**
 	 * Encode all data into string and store it in `$this->fullPath` property.
-	 * @return array
+	 * @throws \Exception Configuration data was not possible to dump or write.
+	 * @return bool
 	 */
 	public function Save () {
 		$rawContent = $this->Dump();
-		if ($rawContent === FALSE) return [FALSE, 'Configuration data was not possible to dump.'];
-		@clearstatcache(TRUE, $this->fullPath);
-		if ($this->lastChanged > 0 && filemtime($this->fullPath) !== $this->lastChanged) {
-			return [FALSE, 'File has been changed already.'];
-		} else {
-			$msg = 'Configuration file has been successfully updated.';
-			$app = self::$app ?: self::$app = & \MvcCore\Application::GetInstance();
-			$toolClass = $app->GetToolClass();
-			$tempFullPath = tempnam($toolClass::GetTmpDir(), 'mvccore_config');
-			file_put_contents($tempFullPath, $rawContent);
-			$canRename = TRUE;
-			if (file_exists($this->fullPath)) {
-				$canRename = unlink($this->fullPath);
-				clearstatcache(TRUE, $this->fullPath);
-			}
-			$success = FALSE;
-			if ($canRename) 
-				$success = @rename($tempFullPath, $this->fullPath);
-			if (!$success) {
-				unlink($tempFullPath);
-				$msg = 'Configuration file is not possible to modify.';
-				clearstatcache(TRUE, $this->fullPath);
-			}
-			return [$success, $msg];
+		if ($rawContent === FALSE) 
+			throw new \Exception('Configuration data was not possible to dump.');
+		$app = self::$app ?: self::$app = & \MvcCore\Application::GetInstance();
+		$toolClass = $app->GetToolClass();
+		try {
+			$toolClass::SingleProcessWrite(
+				$this->fullPath, 
+				$rawContent, 
+				'w',	// Open for writing only; place pointer at the beginning and truncate to zero length. If file doesn't exist, create it.
+				100,	// Miliseconds to wait before next lock file existence is checked in `while()` cycle.
+				5000,	// Maximum miliseconds time to wait before thrown an exception about not possible write.
+				30000	// Maximum miliseconds time to consider lock file as operative or as old after some died process.
+			);
+		} catch (\Exception $ex) {
+			throw $ex;
 		}
+		return TRUE;
 	}
 
 	/**

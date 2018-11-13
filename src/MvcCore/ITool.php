@@ -85,7 +85,7 @@ interface ITool
 	 * Returns the OS-specific directory for temporary files.
 	 * @return string
 	 */
-	public static function GetTmpDir ();
+	public static function GetSystemTmpDir ();
 
 	/**
 	 * Safely invoke internal PHP function with it's own error handler.
@@ -109,6 +109,29 @@ interface ITool
 	 * @return mixed
 	 */
 	public static function Invoke ($internalFuncName, array $args, callable $onError);
+
+	/**
+	 * Write or append file content by only one single PHP process.
+	 * @see http://php.net/manual/en/function.flock.php
+	 * @see http://php.net/manual/en/function.set-error-handler.php
+	 * @see http://php.net/manual/en/function.clearstatcache.php
+	 * @param string $fullPath File full path.
+	 * @param string $content String content ot write.
+	 * @param string $writeMode PHP `fopen()` second argument flag, could be `w`, `w+`, `a`, `a+` etc...
+	 * @param int $lockWaitMiliSeconds Miliseconds to wait before next lock file existence is checked in `while()` cycle.
+	 * @param int $maxLockWaitMiliSeconds Maximum miliseconds time to wait before thrown an exception about not possible write.
+	 * @param int $oldLockMilisecondsTolerance Maximum miliseconds time to consider lock file as operative or as old after some died process.
+	 * @throws \Exception About 
+	 * @return bool
+	 */
+	public function SingleProcessWrite (
+		$fullPath, 
+		& $content, 
+		$writeMode = 'w', 
+		$lockWaitMiliSeconds = 100, 
+		$maxLockWaitMiliSeconds = 5000, 
+		$oldLockMilisecondsTolerance = 30000
+	);
 
 	/**
 	 * Check if given class implements given interface, else throw an exception.
