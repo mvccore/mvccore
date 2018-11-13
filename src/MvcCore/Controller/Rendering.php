@@ -106,11 +106,13 @@ trait Rendering
 	 * into client browser later in `MvcCore::Terminate();`.
 	 * @param mixed $data
 	 * @param bool  $terminate
+	 * @throws \Exception JSON encoding error.
 	 * @return void
 	 */
 	public function JsonResponse ($data = NULL, $terminate = TRUE) {
 		$toolClass = $this->application->GetToolClass();
 		$output = $toolClass::EncodeJson($data);
+		ob_clean(); // remove any possible warnings to break client's `JSON.parse();`
 		if (!$this->response->HasHeader('Content-Type'))
 			$this->response->SetHeader('Content-Type', 'text/javascript');
 		$this->response
@@ -129,11 +131,13 @@ trait Rendering
 	 * @param mixed $data
 	 * @param string $callbackParamName
 	 * @param bool  $terminate
+	 * @throws \Exception JSON encoding error.
 	 * @return void
 	 */
 	public function JsonpResponse ($data = NULL, $callbackParamName = 'callback', $terminate = TRUE) {
 		$toolClass = $this->application->GetToolClass();
 		$output = $toolClass::EncodeJson($data);
+		ob_clean(); // remove any possible warnings to break client's `JSON.parse();`
 		if (!$this->response->HasHeader('Content-Type'))
 			$this->response->SetHeader('Content-Type', 'text/javascript');
 		$callbackParam = $this->GetParam($callbackParamName, 'a-zA-Z0-9\.\-_\$', $callbackParamName, 'string');

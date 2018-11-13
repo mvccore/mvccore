@@ -101,6 +101,7 @@ trait Dispatching
 	 * @return void
 	 */
 	public function Dispatch ($actionName = "IndexAction") {
+		ob_start();
 		// \MvcCore\Debug::Timer('dispatch');
 		$this->Init();
 		if ($this->dispatchState == 5) return; // terminated or redirected

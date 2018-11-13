@@ -24,7 +24,7 @@ trait Helpers
 	/**
 	 * Safely encode json string from php value.
 	 * @param mixed $data
-	 * @throws \Exception
+	 * @throws \Exception JSON encoding error.
 	 * @return string
 	 */
 	public static function EncodeJson (& $data) {

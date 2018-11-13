@@ -424,6 +424,7 @@ interface IController
 	 * into client browser later in `MvcCore::Terminate();`.
 	 * @param mixed $data
 	 * @param bool  $terminate
+	 * @throws \Exception JSON encoding error.
 	 * @return void
 	 */
 	public function JsonResponse ($data = NULL, $terminate = TRUE);
@@ -436,7 +437,8 @@ interface IController
 	 * into client browser later in `MvcCore::Terminate();`.
 	 * @param mixed $data
 	 * @param string $callbackParamName
-	 * @param bool  $terminate
+	 * @param bool $terminate
+	 * @throws \Exception JSON encoding error.
 	 * @return void
 	 */
 	public function JsonpResponse ($data = NULL, $callbackParamName = 'callback', $terminate = TRUE);
