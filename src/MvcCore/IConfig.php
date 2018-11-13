@@ -146,9 +146,10 @@ interface IConfig
 
 	/**
 	 * Encode all data into string and store it in `$this->fullPath` property.
+	 * @throws \Exception Configuration data was not possible to dump or write.
 	 * @return bool
 	 */
-	public function & Save ();
+	public function Save ();
 
 	/**
 	 * Get internal array store as reference.
