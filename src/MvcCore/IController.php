@@ -45,7 +45,7 @@ namespace MvcCore;
  *   - `\MvcCore\Controller::$view` property initialization.
  * - `Render()`
  *   - Called after dispatching action has been called.
- *   - `Controller:Action` view rendering responsibility and response completition.
+ *   - `Controller:Action` view rendering responsibility and response completion.
  *
  * Important methods:
  * - `Url()` - proxy method to build url by configured routes.
@@ -60,7 +60,7 @@ namespace MvcCore;
  *   - Called internally after lifecycle dispatching,
  *	 but it's possible to use it for custom purposes.
  * - `Dispatch()`
- *   - Processing whole controller and subcontrollers lifecycle.
+ *   - Processing whole controller and sub-controllers lifecycle.
  * - `AssetAction()`
  *   - Handling internal MvcCore HTTP requests
  *	 to get assets from packed application package.
@@ -68,7 +68,7 @@ namespace MvcCore;
 interface IController
 {
 	/**
-	 * Return always new instance of staticly called class, no singleton.
+	 * Return always new instance of statically called class, no singleton.
 	 * Always called from `\MvcCore::DispatchControllerAction()` before controller is dispatched,
 	 * or always called in `\MvcCore\Controller::autoInitMembers();` in base controller initialization.
 	 * This is place where to customize any controller creation process,
@@ -98,13 +98,13 @@ interface IController
 	 * Dispatching controller life cycle by given action.
 	 * This is INTERNAL, not TEMPLATE method, internally
 	 * called in `\MvcCore::DispatchControllerAction();`.
-	 * Call this imediatelly after calling controller methods:
+	 * Call this immediately after calling controller methods:
 	 * - `\MvcCore\Controller::__construct()`
 	 * - `\MvcCore\Controller::SetApplication($application)`
 	 * - `\MvcCore\Controller::SetRequest($request)`
 	 * - `\MvcCore\Controller::SetResponse($response)`
 	 * - `\MvcCore\Controller::SetRouter($router)`
-	 * This function automaticly complete (throught controller lifecycle)
+	 * This function automatically complete (through controller lifecycle)
 	 * protected `\MvcCore\Response` object with response headers and content,
 	 * which you can send to client browser by method
 	 * `\MvcCore\Controller::Terminate()` or which you can store
@@ -121,10 +121,10 @@ interface IController
 	 * Application controllers initialization.
 	 * This is best time to initialize language, locale, session etc.
 	 * There is also called auto initialization processing - instance creation
-	 * on each controller class member imlementing `\MvcCore\IController`
+	 * on each controller class member implementing `\MvcCore\IController`
 	 * and marked in doc comments as `@autoinit`.
 	 * then there is of course called `\MvcCore\Controller::Init();` method on each
-	 * automaticly created subcontroller.
+	 * automatically created sub-controller.
 	 * @return void
 	 */
 	public function Init ();
@@ -134,14 +134,14 @@ interface IController
 	 * Application pre render common action - always used in application controllers.
 	 * This is best time to define any common properties or common view properties,
 	 * which are the same for multiple actions in controller etc.
-	 * There is also called `\MvcCore\Controller::PreDispatch();` method on each subcontroller.
+	 * There is also called `\MvcCore\Controller::PreDispatch();` method on each sub-controller.
 	 * @return void
 	 */
 	public function PreDispatch ();
 
 	/**
 	 * Get param value from `$_GET` or `$_POST` or `php://input`,
-	 * filtered by characters defined in second argument throught `preg_replace()`.
+	 * filtered by characters defined in second argument through `preg_replace()`.
 	 * Place into second argument only char groups you want to keep.
 	 * @param string $name
 	 * @param string $pregReplaceAllowedChars
@@ -270,7 +270,7 @@ interface IController
 	public function & SetLayout ($layout = '');
 	
 	/**
-	 * Get customized subcontrols template path value. `NULL` by default.
+	 * Get customized sub-controls template path value. `NULL` by default.
 	 * You need to set into this property any custom string as relative path to 
 	 * your template file placed somewhere in `/App/Views/Scripts/`. 
 	 * For example if you want to render template file placed in:
@@ -283,7 +283,7 @@ interface IController
 	public function GetViewScriptsPath ();
 
 	/**
-	 * Get customized subcontrols template path value. `NULL` by default.
+	 * Get customized sub-controls template path value. `NULL` by default.
 	 * You need to set into this property any custom string as relative path to 
 	 * your template file placed somewhere in `/App/Views/Scripts/`. 
 	 * For example if you want to render template file placed in:
@@ -297,17 +297,17 @@ interface IController
 	public function & SetViewScriptsPath ($viewScriptsPath = NULL);
 
 	/**
-	 * Get `TRUE` if view is automaticly created in base controler `PreDispatch()` 
-	 * method and if view is automaticly rendered with wrapping layout view 
+	 * Get `TRUE` if view is automatically created in base controller `PreDispatch()` 
+	 * method and if view is automatically rendered with wrapping layout view 
 	 * around after controller action is called. Or get `FALSE` if no view 
-	 * automaticly rendered. Default value is `TRUE` for all non-ajax requests.
+	 * automatically rendered. Default value is `TRUE` for all non-ajax requests.
 	 * @return bool
 	 */
 	public function GetViewEnabled ();
 
 	/**
-	 * Set `TRUE` if view object will be automaticly created in base controler
-	 * `PreDispatch()` method and if view will be automaticly rendered with wrapping
+	 * Set `TRUE` if view object will be automatically created in base controller
+	 * `PreDispatch()` method and if view will be automatically rendered with wrapping
 	 * layout view around after controller action is called. Or set `FALSE` 
 	 * otherwise to not render any view. Default value is `TRUE` for all non-ajax requests.
 	 * @return \MvcCore\IController
@@ -317,14 +317,14 @@ interface IController
 	/**
 	 * - Register child controller to process dispatching on it later.
 	 * - This method is always called INTERNALLY, but you can use it for custom purposes.
-	 * - This method automaticly assigns into child controller(s) properties from parent:
-	 *   - `\Mvccore\Controller::$_parentController`
-	 *   - `\Mvccore\Controller::$request`
-	 *   - `\Mvccore\Controller::$response`
+	 * - This method automatically assigns into child controller(s) properties from parent:
+	 *   - `\MvcCore\Controller::$_parentController`
+	 *   - `\MvcCore\Controller::$request`
+	 *   - `\MvcCore\Controller::$response`
 	 *   - `\MvcCore\Controller::$router`
-	 *   - `\Mvccore\Controller::$layout`
-	 *   - `\Mvccore\Controller::$viewEnabled`
-	 *   - `\Mvccore\Controller::$user`
+	 *   - `\MvcCore\Controller::$layout`
+	 *   - `\MvcCore\Controller::$viewEnabled`
+	 *   - `\MvcCore\Controller::$user`
 	 * @param \MvcCore\IController &$controller
 	 * @param string|int $index
 	 * @return \MvcCore\IController
@@ -350,7 +350,7 @@ interface IController
 
 	/**
 	 * Get all child controllers array, indexed by
-	 * subcontroller property string name or by
+	 * sub-controller property string name or by
 	 * custom string name or by custom numeric index.
 	 * @return \MvcCore\IController[]
 	 */
@@ -358,12 +358,12 @@ interface IController
 
 	/**
 	 * Set all child controllers array, indexed by
-	 * subcontroller property string name or by
+	 * sub-controller property string name or by
 	 * custom string name or by custom numeric index.
 	 * This method is dangerous, because it replace all
 	 * previous child controllers with given child controllers.
 	 * If you want only to add child controller, use method:
-	 * \MvcCore\Controller::Addchildcontroller();` instead.
+	 * \MvcCore\Controller::AddChildController();` instead.
 	 * @param \MvcCore\IController[] $childControllers
 	 * @return \MvcCore\IController
 	 */
@@ -371,7 +371,7 @@ interface IController
 
 	/**
 	 * Get child controller at specific index.
-	 * Subcontroller index should be string by parent controller
+	 * Sub-controller index should be string by parent controller
 	 * property name or custom string name or numeric index.
 	 * @param string|int $index
 	 * @return \MvcCore\IController
@@ -391,7 +391,7 @@ interface IController
 	 *   but you can use it sooner or in any different time for custom render purposes.
 	 * - Render prepared controller/action view in path by default:
 	 * `"/App/Views/Scripts/<ctrl-dashed-name>/<action-dashed-name>.phtml"`.
-	 * - If controller has no other parent controller, render layout view aroud action view.
+	 * - If controller has no other parent controller, render layout view around action view.
 	 * - For top most parent controller - store rendered action and layout view in response object and return empty string.
 	 * - For child controller - return rendered action view as string.
 	 * @param string $controllerDashedName
@@ -431,7 +431,7 @@ interface IController
 
 	/**
 	 * Serialize any PHP value into `JSON string`, wrap around prepared public
-	 * javascript function in target window sended as `$_GET` param under 
+	 * javascript function in target window sent as `$_GET` param under 
 	 * variable `$callbackParamName` (allowed chars: `a-zA-Z0-9\.\-_\$`) and
 	 * store it inside `\MvcCore\Controller::$response` to send it
 	 * into client browser later in `MvcCore::Terminate();`.
@@ -452,7 +452,7 @@ interface IController
 	 *	 (route name is key in routes configuration array, should be any string
 	 *	 but routes must have information about controller name and action name inside).
 	 * Result address (url string) should have two forms:
-	 * - Nice rewrited url by routes configuration
+	 * - Nice rewritten url by routes configuration
 	 *   (for apps with URL rewrite support (Apache `.htaccess` or IIS URL rewrite module)
 	 *   and when first param is key in routes configuration array).
 	 * - For all other cases is url form like: `"index.php?controller=ctrlName&amp;action=actionName"`
@@ -503,7 +503,7 @@ interface IController
 	 * - Write session.
 	 * This method is always called INTERNALLY after controller
 	 * lifecycle has been dispatched. But you can use it any
-	 * time sooner for custom purposses.
+	 * time sooner for custom purposes.
 	 * This method is only shortcut for: `\MvcCore\Application::GetInstance()->Terminate();`.
 	 * @return void
 	 */

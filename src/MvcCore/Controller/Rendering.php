@@ -20,7 +20,7 @@ trait Rendering
 	 *   but you can use it sooner or in any different time for custom render purposes.
 	 * - Render prepared controller/action view in path by default:
 	 * `"/App/Views/Scripts/<ctrl-dashed-name>/<action-dashed-name>.phtml"`.
-	 * - If controller has no other parent controller, render layout view aroud action view.
+	 * - If controller has no other parent controller, render layout view around action view.
 	 * - For top most parent controller - store rendered action and layout view in response object and return empty string.
 	 * - For child controller - return rendered action view as string.
 	 * @param string $controllerOrActionNameDashed
@@ -124,7 +124,7 @@ trait Rendering
 
 	/**
 	 * Serialize any PHP value into `JSON string`, wrap around prepared public
-	 * javascript function in target window sended as `$_GET` param under 
+	 * javascript function in target window sent as `$_GET` param under 
 	 * variable `$callbackParamName` (allowed chars: `a-zA-Z0-9\.\-_\$`) and
 	 * store it inside `\MvcCore\Controller::$response` to send it
 	 * into client browser later in `MvcCore::Terminate();`.
@@ -199,7 +199,7 @@ trait Rendering
 			if ($currentCtrlIsTopMostParent) { // if controller is tom most one - take routed controller name
 				$controllerNameDashed = $this->controllerName;
 			} else {
-				// if controller is child controller - translate classs name
+				// if controller is child controller - translate class name
 				// without default controllers directory into dashed name
 				$ctrlsDefaultNamespace = $this->application->GetAppDir() . '\\' 
 					. $this->application->GetControllersDir();

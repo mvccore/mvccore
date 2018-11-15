@@ -16,7 +16,7 @@ namespace MvcCore\Controller;
 trait PropsGettersSetters
 {
 	/**
-	 * Path to all static files - css, js, imgs and fonts.
+	 * Path to all static files - css, js, images and fonts.
 	 * @var string
 	 */
 	protected static $staticPath = '/static';
@@ -34,19 +34,19 @@ trait PropsGettersSetters
 	protected $application;
 
 	/**
-	 * Request object - parsed uri, query params, app paths...
+	 * Request object - parsed URI, query params, app paths...
 	 * @var \MvcCore\Request|\MvcCore\IRequest
 	 */
 	protected $request;
 
 	/**
-	 * Response object - storrage for response headers and rendered body.
+	 * Response object - storage for response headers and rendered body.
 	 * @var \MvcCore\Response|\MvcCore\IResponse
 	 */
 	protected $response;
 
 	/**
-	 * Application router object - reference storrage for application router to crate url addresses.
+	 * Application router object - reference storage for application router to crate url addresses.
 	 * @var \MvcCore\Router|\MvcCore\IRouter
 	 */
 	protected $router;
@@ -86,7 +86,7 @@ trait PropsGettersSetters
 	protected $layout = 'layout';
 
 	/**
-	 * This property is to customize subcontrols template path. `NULL` by default.
+	 * This property is to customize sub-controls template path. `NULL` by default.
 	 * You need to set into this property any custom string as relative path to 
 	 * your template file placed somewhere in `/App/Views/Scripts/`. 
 	 * For example if you want to render template file placed in:
@@ -99,8 +99,8 @@ trait PropsGettersSetters
 	protected $viewScriptsPath = NULL;
 
 	/**
-	 * If `TRUE`, view object is automaticly created in base controler
-	 * `PreDispatch()` method and view is automaticly rendered with wrapping
+	 * If `TRUE`, view object is automatically created in base controller
+	 * `PreDispatch()` method and view is automatically rendered with wrapping
 	 * layout view around after controller action is called. Default value is
 	 * `TRUE` for all non-ajax requests.
 	 * @var boolean
@@ -144,7 +144,7 @@ trait PropsGettersSetters
 	protected static $allControllers = [];
 
 	/**
-	 * All asset mime types possibly called throught `\MvcCore\Controller::AssetAction();`.
+	 * All asset mime types possibly called through `\MvcCore\Controller::AssetAction();`.
 	 * @var string
 	 */
 	private static $_assetsMimeTypes = [
@@ -169,7 +169,7 @@ trait PropsGettersSetters
 	 * "rule to keep defined characters only", defined in second argument (by `preg_replace()`).
 	 * Place into second argument only char groups you want to keep.
 	 * Shortcut for: `\MvcCore\Request::GetParam();`
-	 * @param string $name Parametter string name.
+	 * @param string $name Parameter string name.
 	 * @param string|array $pregReplaceAllowedChars If String - list of regular expression characters to only keep, if array - `preg_replace()` pattern and reverse.
 	 * @param mixed $ifNullValue Default value returned if given param name is null.
 	 * @param string $targetType Target type to retype param value or default if-null value. If param is an array, every param item will be retyped into given target type.
@@ -326,7 +326,7 @@ trait PropsGettersSetters
 	}
 
 	/**
-	 * Get customized subcontrols template path value. `NULL` by default.
+	 * Get customized sub-controls template path value. `NULL` by default.
 	 * You need to set into this property any custom string as relative path to 
 	 * your template file placed somewhere in `/App/Views/Scripts/`. 
 	 * For example if you want to render template file placed in:
@@ -341,7 +341,7 @@ trait PropsGettersSetters
 	}
 
 	/**
-	 * Get customized subcontrols template path value. `NULL` by default.
+	 * Get customized sub-controls template path value. `NULL` by default.
 	 * You need to set into this property any custom string as relative path to 
 	 * your template file placed somewhere in `/App/Views/Scripts/`. 
 	 * For example if you want to render template file placed in:
@@ -358,10 +358,10 @@ trait PropsGettersSetters
 	}
 
 	/**
-	 * Get `TRUE` if view is automaticly created in base controler `PreDispatch()` 
-	 * method and if view is automaticly rendered with wrapping layout view 
+	 * Get `TRUE` if view is automatically created in base controller `PreDispatch()` 
+	 * method and if view is automatically rendered with wrapping layout view 
 	 * around after controller action is called. Or get `FALSE` if no view 
-	 * automaticly rendered. Default value is `TRUE` for all non-ajax requests.
+	 * automatically rendered. Default value is `TRUE` for all non-ajax requests.
 	 * @return bool
 	 */
 	public function GetViewEnabled () {
@@ -369,8 +369,8 @@ trait PropsGettersSetters
 	}
 
 	/**
-	 * Set `TRUE` if view object will be automaticly created in base controler
-	 * `PreDispatch()` method and if view will be automaticly rendered with wrapping
+	 * Set `TRUE` if view object will be automatically created in base controller
+	 * `PreDispatch()` method and if view will be automatically rendered with wrapping
 	 * layout view around after controller action is called. Or set `FALSE` 
 	 * otherwise to not render any view. Default value is `TRUE` for all non-ajax requests.
 	 * @return \MvcCore\Controller
@@ -404,7 +404,7 @@ trait PropsGettersSetters
 
 	/**
 	 * Get all child controllers array, indexed by
-	 * subcontroller property string name or by
+	 * sub-controller property string name or by
 	 * custom string name or by custom numeric index.
 	 * @return \MvcCore\Controller[]
 	 */
@@ -414,12 +414,12 @@ trait PropsGettersSetters
 
 	/**
 	 * Set all child controllers array, indexed by
-	 * subcontroller property string name or by
+	 * sub-controller property string name or by
 	 * custom string name or by custom numeric index.
 	 * This method is dangerous, because it replace all
 	 * previous child controllers with given child controllers.
 	 * If you want only to add child controller, use method:
-	 * \MvcCore\Controller::Addchildcontroller();` instead.
+	 * \MvcCore\Controller::AddChildController();` instead.
 	 * @param \MvcCore\Controller[]|\MvcCore\IController[] $childControllers
 	 * @return \MvcCore\Controller
 	 */
@@ -430,7 +430,7 @@ trait PropsGettersSetters
 
 	/**
 	 * Get child controller at specific index.
-	 * Subcontroller index should be string by parent controller
+	 * Sub-controller index should be string by parent controller
 	 * property name or custom string name or numeric index.
 	 * @param string|int $index
 	 * @return \MvcCore\Controller
@@ -448,7 +448,7 @@ trait PropsGettersSetters
 	 *	 (route name is key in routes configuration array, should be any string
 	 *	 but routes must have information about controller name and action name inside).
 	 * Result address (url string) should have two forms:
-	 * - Nice rewrited url by routes configuration
+	 * - Nice rewritten url by routes configuration
 	 *   (for apps with URL rewrite support (Apache `.htaccess` or IIS URL rewrite module)
 	 *   and when first param is key in routes configuration array).
 	 * - For all other cases is url form like: `"index.php?controller=ctrlName&amp;action=actionName"`

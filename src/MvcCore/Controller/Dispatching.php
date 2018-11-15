@@ -16,7 +16,7 @@ namespace MvcCore\Controller;
 trait Dispatching
 {
 	/**
-	 * Return always new instance of staticly called class, no singleton.
+	 * Return always new instance of statically called class, no singleton.
 	 * Always called from `\MvcCore\Application::DispatchControllerAction()` before controller is dispatched,
 	 * or always called in `\MvcCore\Controller::autoInitMembers();` in base controller initialization.
 	 * This is place where to customize any controller creation process,
@@ -84,13 +84,13 @@ trait Dispatching
 	 * Dispatching controller life cycle by given action.
 	 * This is INTERNAL, not TEMPLATE method, internally
 	 * called in `\MvcCore::DispatchControllerAction();`.
-	 * Call this imediatelly after calling controller methods:
+	 * Call this immediately after calling controller methods:
 	 * - `\MvcCore\Controller::__construct()`
 	 * - `\MvcCore\Controller::SetApplication($application)`
 	 * - `\MvcCore\Controller::SetRequest($request)`
 	 * - `\MvcCore\Controller::SetResponse($response)`
 	 * - `\MvcCore\Controller::SetRouter($router)`
-	 * This function automaticly complete (throught controller lifecycle)
+	 * This function automatically complete (through controller lifecycle)
 	 * protected `\MvcCore\Response` object with response headers and content,
 	 * which you can send to client browser by method
 	 * `\MvcCore\Controller::Terminate()` or which you can store
@@ -109,7 +109,7 @@ trait Dispatching
 		// \MvcCore\Debug::Timer('dispatch');
 		$this->PreDispatch();
 		if ($this->dispatchState == 5) return; // terminated or redirected
-		if ($this->dispatchState < 2) $this->dispatchState = 2;// for cases somebody forget to call parent predispatch
+		if ($this->dispatchState < 2) $this->dispatchState = 2;// for cases somebody forget to call parent pre-dispatch
 		// \MvcCore\Debug::Timer('dispatch');
 		if (method_exists($this, $actionName)) $this->$actionName();
 		if ($this->dispatchState == 5) return; // terminated or redirected
@@ -126,10 +126,10 @@ trait Dispatching
 	 * Application controllers initialization.
 	 * This is best time to initialize language, locale, session etc.
 	 * There is also called auto initialization processing - instance creation
-	 * on each controller class member imlementing `\MvcCore\IController`
+	 * on each controller class member implementing `\MvcCore\IController`
 	 * and marked in doc comments as `@autoinit`.
 	 * then there is of course called `\MvcCore\Controller::Init();` method on each
-	 * automaticly created subcontroller.
+	 * automatically created sub-controller.
 	 * @return void
 	 */
 	public function Init () {
@@ -214,7 +214,7 @@ trait Dispatching
 	 * Application pre render common action - always used in application controllers.
 	 * This is best time to define any common properties or common view properties,
 	 * which are the same for multiple actions in controller etc.
-	 * There is also called `\MvcCore\Controller::PreDispatch();` method on each subcontroller.
+	 * There is also called `\MvcCore\Controller::PreDispatch();` method on each sub-controller.
 	 * @return void
 	 */
 	public function PreDispatch () {
@@ -236,14 +236,14 @@ trait Dispatching
 	/**
 	 * - Register child controller to process dispatching on it later.
 	 * - This method is always called INTERNALLY, but you can use it for custom purposes.
-	 * - This method automaticly assigns into child controller(s) properties from parent:
-	 *   - `\Mvccore\Controller::$_parentController`
-	 *   - `\Mvccore\Controller::$request`
-	 *   - `\Mvccore\Controller::$response`
+	 * - This method automatically assigns into child controller(s) properties from parent:
+	 *   - `\MvcCore\Controller::$_parentController`
+	 *   - `\MvcCore\Controller::$request`
+	 *   - `\MvcCore\Controller::$response`
 	 *   - `\MvcCore\Controller::$router`
-	 *   - `\Mvccore\Controller::$layout`
-	 *   - `\Mvccore\Controller::$viewEnabled`
-	 *   - `\Mvccore\Controller::$user`
+	 *   - `\MvcCore\Controller::$layout`
+	 *   - `\MvcCore\Controller::$viewEnabled`
+	 *   - `\MvcCore\Controller::$user`
 	 * @param \MvcCore\Controller &$controller
 	 * @param string|int $index
 	 * @return \MvcCore\Controller
@@ -305,7 +305,7 @@ trait Dispatching
 	 * - Write session.
 	 * This method is always called INTERNALLY after controller
 	 * lifecycle has been dispatched. But you can use it any
-	 * time sooner for custom purposses.
+	 * time sooner for custom purposes.
 	 * This method is only shortcut for: `\MvcCore\Application::GetInstance()->Terminate();`.
 	 * @return void
 	 */

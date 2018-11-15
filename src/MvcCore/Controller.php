@@ -39,7 +39,7 @@ namespace MvcCore;
  *   - `\MvcCore\Controller::$view` property initialization.
  * - `Render()`
  *   - Called after dispatching action has been called.
- *   - `Controller:Action` view rendering responsibility and response completition.
+ *   - `Controller:Action` view rendering responsibility and response competition.
  *
  * Important methods:
  * - `Url()` - proxy method to build url by configured routes.
@@ -54,7 +54,7 @@ namespace MvcCore;
  *   - Called internally after lifecycle dispatching,
  *	 but it's possible to use it for custom purposes.
  * - `Dispatch()`
- *   - Processing whole controller and subcontrollers lifecycle.
+ *   - Processing whole controller and sub-controllers lifecycle.
  * - `AssetAction()`
  *   - Handling internal MvcCore HTTP requests
  *	 to get assets from packed application package.
