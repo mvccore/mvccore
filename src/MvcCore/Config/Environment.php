@@ -80,7 +80,7 @@ trait Environment
 		if (static::$environment === NULL) {
 			if ($autoloadSystemConfig) {
 				if (static::GetSystem() === FALSE) 
-					// if there is no sysconfig, recognize environment only by very 
+					// if there is no system config, recognize environment only by very 
 					// simple way - by server and client IP only
 					static::environmentDetectByIps();
 			} else {
@@ -91,7 +91,7 @@ trait Environment
 	}
 
 	/**
-	 * First environment value setup - by server and client ip address.
+	 * First environment value setup - by server and client IP address.
 	 * @return void
 	 */
 	protected static function environmentDetectByIps () {
@@ -164,7 +164,7 @@ trait Environment
 			foreach ($environmentSection as $key => $value) {
 				if (is_numeric($key) || $key == 'clients') {
 					// if key is only numeric key provided, value is probably
-					// only one regular expression to match client ip or 
+					// only one regular expression to match client IP or 
 					// the strings list with the most and simple way - to describe client IPS:
 					// of if key has `clients` value, there could be list of clients IPs
 					// or list of clients IPs regular expressions

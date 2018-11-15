@@ -13,8 +13,6 @@
 
 namespace MvcCore;
 
-//include_once('IRoute.php');
-
 /**
  * Responsibility - singleton, instancing all core classes and handling request.
  * - Global store and managing singleton application instance.
@@ -36,21 +34,21 @@ interface IApplication
 
 	/**
 	 * MvcCore - version:
-	 * Comparation by PHP function `version_compare();`.
+	 * Comparison by PHP function `version_compare();`.
 	 * @see http://php.net/manual/en/function.version-compare.php
 	 */
 	const VERSION = '5.0.0-alpha';
 	/**
 	 * MvcCore application mode describing that the application is compiled in <b>ONE BIG PHP FILE</b>.
-	 * In PHP app mode should be packed php files or any asset files - phtml templates, ini files
+	 * In PHP app mode should be packed php files or any asset files - PHTML templates, INI files
 	 * or any static files. Unknown asset files or binary files are included as binary or base64 string.
-	 * This mode has always best speed, because it shoud not work with hard drive if you don't want to.
+	 * This mode has always best speed, because it should not work with hard drive if you don't want to.
 	 * Only with many or with large asset files, there may be greater demands on memory and processor,
 	 * which shouldn't be good for your application. Be aware to do that, if you have low memory limits.
 	 * Result application packed in PHP mode has special `\Packager_Php_Wrapper` class included
 	 * before any application content. This special class handles allowed file operations and assets
-	 * as binary or base64 encoded. Everything shoud be configured before PHP packing.
-	 * This mode has always four submodes started with PHP substring. All PHP package modes are:
+	 * as binary or base64 encoded. Everything should be configured before PHP packing.
+	 * This mode has always four sub-modes started with PHP substring. All PHP package modes are:
 	 * - `\Packager_Php_Wrapper::PHP_PRESERVE_HDD`
 	 * - `\Packager_Php_Wrapper::PHP_PRESERVE_PACKAGE`
 	 * - `\Packager_Php_Wrapper::PHP_STRICT_HDD`
@@ -74,9 +72,9 @@ interface IApplication
 	/**
 	 * MvcCore application mode describing that the application is in <b>THE STATE BEFORE
 	 * THEIR OWN COMPILATION INTO `PHP` OR `PHAR`</b> archive. This mode is always used to generate final
-	 * javascript and css files into teporary directory to pack them later into result php/phar file.
+	 * javascript and css files into temporary directory to pack them later into result php/phar file.
 	 * Shortcut `SFU` means "Single File Url". Application running in this mode has to generate
-	 * single file urls in form: "index.php?..." and everithing has to work properly before
+	 * single file URLs in form: "index.php?..." and everything has to work properly before
 	 * application will be compiled into PHP/PHAR package. Use this mode in index.php before
 	 * application compilation to generate and test everything necessary before app compilation by:
 	 * `\MvcCore\Application::GetInstance()->Run(TRUE);`
@@ -87,7 +85,7 @@ interface IApplication
 
 	/**
 	 * MvcCore application mode describing that the application is running as <b>STANDARD PHP PROJECT</b>
-	 * with many files on hard drive, using autoloading or anything else. It's also standard development mode.
+	 * with many files on hard drive, using auto-loading or anything else. It's also standard development mode.
 	 * @var string
 	 */
 	const NOT_COMPILED = '';
@@ -110,7 +108,7 @@ interface IApplication
 
 	/**
 	 * Get if application is running as standard php project or as single file application.
-	 * It shoud has values from:
+	 * It should has values from:
 	 * - `\MvcCore\IApplication::COMPILED_PHP`
 	 * - `\MvcCore\IApplication::COMPILED_PHAR`
 	 * - `\MvcCore\IApplication::COMPILED_SFU`
@@ -188,7 +186,7 @@ interface IApplication
 
 	/**
 	 * Get application view class implementing `\MvcCore\IView`.
-	 * Class to prepare and render controller view, subviews and wrapper layout.
+	 * Class to prepare and render controller view, sub-views and wrapper layout.
 	 * @return string
 	 */
 	public function GetViewClass ();
@@ -223,7 +221,7 @@ interface IApplication
 	 * - `/App/Controllers`
 	 * - `/App/Models`
 	 * - `/App/Views`
-	 * It should by refonfigured to custom value in the very application beginning.
+	 * It should by reconfigured to custom value in the very application beginning.
 	 * @return string
 	 */
 	public function GetAppDir ();
@@ -259,7 +257,7 @@ interface IApplication
 
 	/**
 	 * Set if application is running as standard php project or as single file application.
-	 * First param `$compiled` shoud has values from:
+	 * First param `$compiled` should has values from:
 	 * - `\MvcCore\IApplication::COMPILED_PHP`
 	 * - `\MvcCore\IApplication::COMPILED_PHAR`
 	 * - `\MvcCore\IApplication::COMPILED_SFU`
@@ -358,7 +356,7 @@ interface IApplication
 
 	/**
 	 * Set application view class implementing `\MvcCore\IView`.
-	 * Class to prepare and render controller view, subviews and wrapper layout.
+	 * Class to prepare and render controller view, sub-views and wrapper layout.
 	 * Core configuration method.
 	 * @param string $viewClass
 	 * @return \MvcCore\IApplication
@@ -372,7 +370,7 @@ interface IApplication
 	 * - `/App/Controllers`
 	 * - `/App/Models`
 	 * - `/App/Views`
-	 * It should by refonfigured to custom value in the very application beginning.
+	 * It should by reconfigured to custom value in the very application beginning.
 	 * Core configuration method.
 	 * @param string $appDir
 	 * @return \MvcCore\IApplication
@@ -558,7 +556,7 @@ interface IApplication
 	 * - 4. (Process post-route handlers queue.)
 	 * - 5. Create and set up controller instance.
 	 * - 6. (Process pre-dispatch handlers queue.)
-	 * - 7. Dispatch controller lifecycle.
+	 * - 7. Dispatch controller life-cycle.
 	 *  	- Call `\MvcCore\Controller::Init()` and `\MvcCore\Controller::PreDispatch()`.
 	 *	  - Call routed action method.
 	 *	  - Call `\MvcCore\Controller::Render()` to render all views.
@@ -574,7 +572,7 @@ interface IApplication
 
 	/**
 	 * Starts a session, standardly called from `\MvcCore\Controller::Init();`.
-	 * But is shoud be called anytime sooner, for example in any pre request handler
+	 * But is should be called anytime sooner, for example in any pre request handler
 	 * to redesign request before MVC dispatching or anywhere else.
 	 * @return void
 	 */
@@ -612,9 +610,9 @@ interface IApplication
 	 * Dispatch controller by:
 	 * - By full class name and by action name
 	 * - Or by view script full path
-	 * Call exception callback if there is catched any
-	 * exception in controller lifecycle dispatching process
-	 * with first argument as catched exception.
+	 * Call exception callback if there is caught any
+	 * exception in controller life-cycle dispatching process
+	 * with first argument as caught exception.
 	 * @param string $ctrlClassFullName
 	 * @param string $actionNamePc
 	 * @param string $viewScriptFullPath
@@ -637,7 +635,7 @@ interface IApplication
 	 *	 (route name is key in routes configuration array, should be any string
 	 *	 but routes must have information about controller name and action name inside).
 	 * Result address (url string) should have two forms:
-	 * - Nice rewrited url by routes configuration
+	 * - Nice rewritten url by routes configuration
 	 *   (for apps with URL rewrite support (Apache `.htaccess` or IIS URL rewrite module)
 	 *   and when first param is key in routes configuration array).
 	 * - For all other cases is url form like: `"index.php?controller=ctrlName&amp;action=actionName"`
@@ -652,11 +650,11 @@ interface IApplication
 	 * Terminate request.
 	 * The only place in application where is called `echo '....'` without output buffering.
 	 * - Process post-dispatch handlers queue.
-	 * - Write session throught registered handler into `register_shutdown_function()`.
+	 * - Write session through registered handler into `register_shutdown_function()`.
 	 * - Send HTTP headers (if still possible).
 	 * - Echo response body.
 	 * This method is always called INTERNALLY after controller
-	 * lifecycle has been dispatched. But you can use it any
+	 * life-cycle has been dispatched. But you can use it any
 	 * time sooner for custom purposes.
 	 * @return \MvcCore\IApplication
 	 */
@@ -668,7 +666,7 @@ interface IApplication
 	 ***********************************************************************************/
 
 	/**
-	 * Dispatch catched exception:
+	 * Dispatch caught exception:
 	 *	- If request is processing PHP package packing to determinate current script dependencies:
 	 *		- Do not log or render nothing.
 	 *	- If request is production mode:
@@ -685,7 +683,7 @@ interface IApplication
 	/**
 	 * Render error by configured default controller and error action,
 	 * `\App\Controllers\Index::Error();` by default.
-	 * If there is no controller/action like that or any other exception happends,
+	 * If there is no controller/action like that or any other exception happens,
 	 * it's processed very simple plain text response with 500 http code.
 	 * @param \Exception $e
 	 * @return bool
@@ -695,7 +693,7 @@ interface IApplication
 	/**
 	 * Render error by configured default controller and not found error action,
 	 * `\App\Controllers\Index::NotFound();` by default.
-	 * If there is no controller/action like that or any other exception happends,
+	 * If there is no controller/action like that or any other exception happens,
 	 * it's processed very simple plain text response with 404 http code.
 	 * @param \Exception $e
 	 * @return bool
@@ -704,7 +702,7 @@ interface IApplication
 
 	/**
 	 * Prepare very simple response with internal server error (500)
-	 * as plain text response into `\MvcCore\Appication::$response`.
+	 * as plain text response into `\MvcCore\Application::$response`.
 	 * @param string $text
 	 * @return bool
 	 */
@@ -712,7 +710,7 @@ interface IApplication
 
 	/**
 	 * Prepare very simple response with not found error (404)
-	 * as plain text response into `\MvcCore\Appication::$response`.
+	 * as plain text response into `\MvcCore\Application::$response`.
 	 * @param string $text
 	 * @return bool
 	 */

@@ -59,7 +59,7 @@ trait IniDump
 		$envSpecifics = [];
 		if (file_exists($this->fullPath)) {
 			$rawIniLines = file($this->fullPath, FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES);
-			// detect current environment sections and foreing sections
+			// detect current environment sections and foreign sections
 			$contentFilling = [];
 			foreach ($rawIniLines as $rawIniLine) {
 				$rawIniLine = trim($rawIniLine);

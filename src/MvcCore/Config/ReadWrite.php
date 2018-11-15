@@ -18,7 +18,7 @@ trait ReadWrite
 	/**
 	 * This is INTERNAL method.
 	 * Return always new instance of statically called class, no singleton.
-	 * Always called from `\MvcCore\Config::GetSystem()` before system config is readed.
+	 * Always called from `\MvcCore\Config::GetSystem()` before system config is read.
 	 * This is place where to customize any config creation process,
 	 * before it's created by MvcCore framework.
 	 * @param array $data Configuration raw data.
@@ -88,9 +88,9 @@ trait ReadWrite
 				$this->fullPath, 
 				$rawContent, 
 				'w',	// Open for writing only; place pointer at the beginning and truncate to zero length. If file doesn't exist, create it.
-				10,		// Miliseconds to wait before next lock file existence is checked in `while()` cycle.
-				5000,	// Maximum miliseconds time to wait before thrown an exception about not possible write.
-				30000	// Maximum miliseconds time to consider lock file as operative or as old after some died process.
+				10,		// Milliseconds to wait before next lock file existence is checked in `while()` cycle.
+				5000,	// Maximum milliseconds time to wait before thrown an exception about not possible write.
+				30000	// Maximum milliseconds time to consider lock file as operative or as old after some died process.
 			);
 		} catch (\Exception $ex) {
 			throw $ex;

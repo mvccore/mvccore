@@ -13,15 +13,6 @@
 
 namespace MvcCore\Application;
 
-//include_once(__DIR__.'/../Request.php');
-//include_once(__DIR__.'/../Response.php');
-//include_once(__DIR__.'/../Debug.php');
-//include_once(__DIR__.'/../Session.php');
-//include_once(__DIR__.'/../Router.php');
-//include_once(__DIR__.'/../View.php');
-//include_once(__DIR__.'/../Controller.php');
-//include_once(__DIR__.'/../Config.php');
-
 /**
  * Trait as partial class for `\MvcCore\Application`:
  * - Processing application run (`\MvcCore\Application::Run();`):
@@ -38,7 +29,7 @@ trait Dispatching
 
 	/**
 	 * Run application.
-	 * - 1. Complete and init:
+	 * - 1. Complete and niti:
 	 *	  - `\MvcCore\Application::$compiled` flag.
 	 *	  - Complete describing request object `\MvcCore\Request`.
 	 *	  - Complete response storage object `\MvcCore\Response`.
@@ -48,7 +39,7 @@ trait Dispatching
 	 * - 4. (Process post-route handlers queue.)
 	 * - 5. Create and set up controller instance.
 	 * - 6. (Process pre-dispatch handlers queue.)
-	 * - 7. Dispatch controller lifecycle.
+	 * - 7. Dispatch controller life cycle.
 	 *  	- Call `\MvcCore\Controller::Init()` and `\MvcCore\Controller::PreDispatch()`.
 	 *	  - Call routed action method.
 	 *	  - Call `\MvcCore\Controller::Render()` to render all views.
@@ -77,7 +68,7 @@ trait Dispatching
 
 	/**
 	 * Starts a session, standardly called from `\MvcCore\Controller::Init();`.
-	 * But is shoud be called anytime sooner, for example in any pre request handler
+	 * But is should be called anytime sooner, for example in any pre request handler
 	 * to redesign request before MVC dispatching or anywhere else.
 	 * @return void
 	 */
@@ -182,9 +173,9 @@ trait Dispatching
 	 * Dispatch controller by:
 	 * - By full class name and by action name
 	 * - Or by view script full path
-	 * Call exception callback if there is catched any
-	 * exception in controller lifecycle dispatching process
-	 * with first argument as catched exception.
+	 * Call exception callback if there is caught any
+	 * exception in controller life cycle dispatching process
+	 * with first argument as caught exception.
 	 * @param string $ctrlClassFullName
 	 * @param string $actionNamePc
 	 * @param string $viewScriptFullPath
@@ -244,7 +235,7 @@ trait Dispatching
 	 *	 (route name is key in routes configuration array, should be any string
 	 *	 but routes must have information about controller name and action name inside).
 	 * Result address (url string) should have two forms:
-	 * - Nice rewrited url by routes configuration
+	 * - Nice rewritten url by routes configuration
 	 *   (for apps with URL rewrite support (Apache `.htaccess` or IIS URL rewrite module)
 	 *   and when first param is key in routes configuration array).
 	 * - For all other cases is url form like: `"index.php?controller=ctrlName&amp;action=actionName"`
@@ -261,11 +252,11 @@ trait Dispatching
 	 * Terminate request.
 	 * The only place in application where is called `echo '....'` without output buffering.
 	 * - Process post-dispatch handlers queue.
-	 * - Write session throught registered handler into `register_shutdown_function()`.
+	 * - Write session through registered handler into `register_shutdown_function()`.
 	 * - Send HTTP headers (if still possible).
 	 * - Echo response body.
 	 * This method is always called INTERNALLY after controller
-	 * lifecycle has been dispatched. But you can use it any
+	 * life cycle has been dispatched. But you can use it any
 	 * time sooner for custom purposes.
 	 * @return \MvcCore\Application
 	 */
@@ -296,7 +287,7 @@ trait Dispatching
 	 ***********************************************************************************/
 
 	/**
-	 * Dispatch catched exception:
+	 * Dispatch caught exception:
 	 *	- If request is processing PHP package packing to determinate current script dependencies:
 	 *		- Do not log or render nothing.
 	 *	- If request is production mode:
@@ -338,7 +329,7 @@ trait Dispatching
 	/**
 	 * Render error by configured default controller and error action,
 	 * `\App\Controllers\Index::Error();` by default.
-	 * If there is no controller/action like that or any other exception happends,
+	 * If there is no controller/action like that or any other exception happens,
 	 * it's processed very simple plain text response with 500 http code.
 	 * @param \Exception $e
 	 * @return bool
@@ -391,7 +382,7 @@ trait Dispatching
 	/**
 	 * Render error by configured default controller and not found error action,
 	 * `\App\Controllers\Index::NotFound();` by default.
-	 * If there is no controller/action like that or any other exception happends,
+	 * If there is no controller/action like that or any other exception happens,
 	 * it's processed very simple plain text response with 404 http code.
 	 * @param \Exception $e
 	 * @return bool
@@ -443,7 +434,7 @@ trait Dispatching
 
 	/**
 	 * Prepare very simple response with internal server error (500)
-	 * as plain text response into `\MvcCore\Appication::$response`.
+	 * as plain text response into `\MvcCore\Application::$response`.
 	 * @param string $text
 	 * @return bool
 	 */
@@ -473,7 +464,7 @@ trait Dispatching
 
 	/**
 	 * Prepare very simple response with not found error (404)
-	 * as plain text response into `\MvcCore\Appication::$response`.
+	 * as plain text response into `\MvcCore\Application::$response`.
 	 * @param string $text
 	 * @return bool
 	 */

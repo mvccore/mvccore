@@ -34,7 +34,7 @@ class Application implements \MvcCore\IApplication
 	 * - Application normal requests and error requests dispatching methods.
 	 * - Application helper methods.
 	 * Traits in PHP is the only option, how to get something
-	 * analogicly the same as partial classes C#.
+	 * analogous the same as partial classes C#.
 	 */
 	use \MvcCore\Application\PropsGettersSetters;
 	use \MvcCore\Application\Dispatching;

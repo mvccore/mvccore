@@ -13,17 +13,20 @@
 
 namespace MvcCore;
 
-//include_once(__DIR__.'/../Application.php');
-
 /**
- * Responsibility - reading config file(s), detecting environment in system config.
+ * Responsibility - reading/writing config file(s), 
+ *					detecting environment in system config.
  * - Config file(s) reading:
  *   - Reading any `config.ini` file by relative path.
- *   - Parsing and typing ini data into `stdClass|array` by key types or typing
- *	 ini values into `int|float|bool|string` for all other detected primitives.
+ *   - Parsing and typing INI data into `stdClass|array` by key types or typing
+ *	   INI values into `int|float|bool|string` for all other detected primitives.
+ * - Config file(s) writing:
+ *   - Dumping `stdClass`es and `array`s into INI syntax string with 
+ *     all other environment records.
+ *   - Storing serialized config data in single process.
  * - Environment management:
- *   - Simple environment name detection by comparing server and client ip.
- *   - Environment name detection by config records about computer name or ip.
+ *   - Simple environment name detection by comparing server and client IP.
+ *   - Environment name detection by config records about computer name or IP.
  */
 interface IConfig
 {

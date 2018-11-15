@@ -27,14 +27,14 @@ trait PropsGettersSetters
 	 ***********************************************************************************/
 
 	/**
-	 * Application instance for current request. Singleton instance storrage.
+	 * Application instance for current request. Singleton instance storage.
 	 * @var \MvcCore\Application
 	 */
 	protected static $instance;
 
 	/**
 	 * Describes if application is running as standard php project or as single file application.
-	 * It shoud has values from:
+	 * It should has values from:
 	 * - `\MvcCore\IApplication::COMPILED_PHP`
 	 * - `\MvcCore\IApplication::COMPILED_PHAR`
 	 * - `\MvcCore\IApplication::COMPILED_SFU`
@@ -51,13 +51,13 @@ trait PropsGettersSetters
 	protected $controller = NULL;
 
 	/**
-	 * Request object - parsed uri, query params, app paths...
+	 * Request object - parsed URI, query params, app paths...
 	 * @var \MvcCore\Request|\MvcCore\IRequest
 	 */
 	protected $request = NULL;
 
 	/**
-	 * Response object - storrage for response headers and rendered body.
+	 * Response object - storage for response headers and rendered body.
 	 * @var \MvcCore\Response|\MvcCore\IResponse
 	 */
 	protected $response = NULL;
@@ -215,7 +215,7 @@ trait PropsGettersSetters
 	protected $toolClass = '\MvcCore\Tool';
 
 	/**
-	 * Class to prepare and render controller view, subviews and wrapper layout.
+	 * Class to prepare and render controller view, sub-views and wrapper layout.
 	 * @var string
 	 */
 	protected $viewClass = '\MvcCore\View';
@@ -227,7 +227,7 @@ trait PropsGettersSetters
 	 * - `/App/Controllers`
 	 * - `/App/Models`
 	 * - `/App/Views`
-	 * It should by refonfigured to custom value in the very application beginning.
+	 * It should by reconfigured to custom value in the very application beginning.
 	 * @var string
 	 */
 	protected $appDir = 'App';
@@ -288,7 +288,7 @@ trait PropsGettersSetters
 
 	/**
 	 * Get if application is running as standard php project or as single file application.
-	 * It shoud has values from:
+	 * It should has values from:
 	 * - `\MvcCore\IApplication::COMPILED_PHP`
 	 * - `\MvcCore\IApplication::COMPILED_PHAR`
 	 * - `\MvcCore\IApplication::COMPILED_SFU`
@@ -395,7 +395,7 @@ trait PropsGettersSetters
 
 	/**
 	 * Get application view class implementing `\MvcCore\IView`.
-	 * Class to prepare and render controller view, subviews and wrapper layout.
+	 * Class to prepare and render controller view, sub-views and wrapper layout.
 	 * @return string
 	 */
 	public function GetViewClass () {
@@ -452,7 +452,7 @@ trait PropsGettersSetters
 	 * - `/App/Controllers`
 	 * - `/App/Models`
 	 * - `/App/Views`
-	 * It should by refonfigured to custom value in the very application beginning.
+	 * It should by reconfigured to custom value in the very application beginning.
 	 * @return string
 	 */
 	public function GetAppDir () {
@@ -496,7 +496,7 @@ trait PropsGettersSetters
 
 	/**
 	 * Set if application is running as standard php project or as single file application.
-	 * First param `$compiled` shoud has values from:
+	 * First param `$compiled` should has values from:
 	 * - `\MvcCore\IApplication::COMPILED_PHP`
 	 * - `\MvcCore\IApplication::COMPILED_PHAR`
 	 * - `\MvcCore\IApplication::COMPILED_SFU`
@@ -616,7 +616,7 @@ trait PropsGettersSetters
 
 	/**
 	 * Set application view class implementing `\MvcCore\IView`.
-	 * Class to prepare and render controller view, subviews and wrapper layout.
+	 * Class to prepare and render controller view, sub-views and wrapper layout.
 	 * Core configuration method.
 	 * @param string $viewClass
 	 * @return \MvcCore\Application
@@ -632,7 +632,7 @@ trait PropsGettersSetters
 	 * - `/App/Controllers`
 	 * - `/App/Models`
 	 * - `/App/Views`
-	 * It should by refonfigured to custom value in the very application beginning.
+	 * It should by reconfigured to custom value in the very application beginning.
 	 * Core configuration method.
 	 * @param string $appDir
 	 * @return \MvcCore\Application

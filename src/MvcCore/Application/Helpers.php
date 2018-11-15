@@ -13,8 +13,6 @@
 
 namespace MvcCore\Application;
 
-//include_once(__DIR__.'/../Tools.php');
-
 /**
  * Trait as partial class for `\MvcCore\Application`:
  * - Helper methods for normal requests and error requests dispatching.
@@ -98,7 +96,7 @@ trait Helpers
 	}
 
 	/**
-	 * Set preroute, predispatch or post dispatche handler under specific priority index.
+	 * Set pre-route, pre-dispatch or post-dispatch handler under specific priority index.
 	 * @param array $handlers Application handlers collection reference.
 	 * @param callable $handler
 	 * @param int|NULL $priorityIndex
