@@ -80,7 +80,7 @@ trait MetaData
 
 	/**
 	 * Get session metadata about session namespaces.
-	 * This method is used for debuging purposses.
+	 * This method is used for debuging purposes.
 	 * @return \stdClass
 	 */
 	public static function GetSessionMetadata () {

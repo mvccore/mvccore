@@ -110,7 +110,7 @@ trait Handlers
 	}
 
 	/**
-	 * Print catched exception in browser.
+	 * Print caught exception in browser.
 	 * In non-development mode - store dumped exception in `exception.log`.
 	 * @param \Exception|\Error|\Throwable|array $exception
 	 * @param bool $exit
@@ -132,7 +132,7 @@ trait Handlers
 	}
 
 	/**
-	 * Print all stored dumps at the end of sended response body as browser debug bar.
+	 * Print all stored dumps at the end of sent response body as browser debug bar.
 	 * This function is called from registered shutdown handler by
 	 * `register_shutdown_function()` from `\MvcCore\Debug::initHandlers();`.
 	 * @return void

@@ -47,10 +47,10 @@ trait GettersSetters
 	}
 
 	/**
-	 * Get output document type (to automaticly and optionaly send proper
+	 * Get output document type (to automatically and optionally send proper
 	 * HTTP header `Content-Type`, if there is no `Content-Type` HTTP
 	 * header in response object yet).
-	 * This value could be used also for any other custom purposses.
+	 * This value could be used also for any other custom purposes.
 	 * Possible values:
 	 * - `HTML4` - `\MvcCore\IView::DOCTYPE_HTML4`
 	 * - `XHTML` - `\MvcCore\IView::DOCTYPE_XHTML`
@@ -64,10 +64,10 @@ trait GettersSetters
 	}
 
 	/**
-	 * Set output document type (to automaticly and optionaly send proper
+	 * Set output document type (to automatically and optionally send proper
 	 * HTTP header `Content-Type`, if there is no `Content-Type` HTTP
 	 * header in response object yet).
-	 * This value could be used also for any other custom purposses.
+	 * This value could be used also for any other custom purposes.
 	 * Possible values:
 	 * - `HTML4` - `\MvcCore\IView::DOCTYPE_HTML4`
 	 * - `XHTML` - `\MvcCore\IView::DOCTYPE_XHTML`

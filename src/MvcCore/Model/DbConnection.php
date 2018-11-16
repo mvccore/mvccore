@@ -81,7 +81,7 @@ trait DbConnection
 	}
 
 	/**
-	 * Set all known configuration at once, optionaly set default connection name/index.
+	 * Set all known configuration at once, optionally set default connection name/index.
 	 * Example:
 	 *	`\MvcCore\Model::SetConfigs(array(
 	 *		// connection name: 'mysql-cdcol':

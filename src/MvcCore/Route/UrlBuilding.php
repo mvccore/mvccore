@@ -66,7 +66,7 @@ trait UrlBuilding
 	 * @param \MvcCore\Request $request Currently requested request object.
 	 * @param array $params URL params from application point completed by developer.
 	 * @param array $defaultUrlParams Requested url route prams nad query string params without escaped HTML special chars: `< > & " ' &`.
-	 * @param string $queryStringParamsSepatator Query params separator, `&` by default. Always automaticly completed by router instance.
+	 * @param string $queryStringParamsSepatator Query params separator, `&` by default. Always automatically completed by router instance.
 	 * @return \string[] Result URL addres in two parts - domain part with base path and path part with query string.
 	 */
 	public function Url (\MvcCore\IRequest & $request, array & $params = [], array & $defaultUrlParams = [], $queryStringParamsSepatator = '&') {
@@ -99,7 +99,7 @@ trait UrlBuilding
 		);
 		// add all remaining params to query string
 		if ($filteredParams) {
-			// `http_build_query()` automaticly converts all XSS chars to entities (`< > & " ' &`):
+			// `http_build_query()` automatically converts all XSS chars to entities (`< > & " ' &`):
 			$result .= (mb_strpos($result, '?') !== FALSE ? $queryStringParamsSepatator : '?')
 				. str_replace('%2F', '/', http_build_query($filteredParams, '', $queryStringParamsSepatator, PHP_QUERY_RFC3986));
 		}

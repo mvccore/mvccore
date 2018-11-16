@@ -76,39 +76,39 @@ interface IRequest
 	const METHOD_PATCH = 'PATCH';
 
 	/**
-	 * Lowercase and uppercase alphabet characters only.
+	 * Lower case and upper case alphabet characters only.
 	 */
 	const PARAM_FILTER_ALPHABETS = 'a-zA-Z';
 
 	/**
-	 * Lowercase alphabet characters only.
+	 * Lower case alphabet characters only.
 	 */
 	const PARAM_FILTER_ALPHABETS_LOWER = 'a-z';
 
 	/**
-	 * Uppercase alphabet characters only.
+	 * Upper case alphabet characters only.
 	 */
 	const PARAM_FILTER_ALPHABETS_UPPER = 'A-Z';
 
 	/**
-	 * Lowercase and uppercase alphabet characters and digits only.
+	 * Lower case and upper case alphabet characters and digits only.
 	 */
 	const PARAM_FILTER_ALPHABETS_DIGITS = 'a-zA-Z0-9';
 
 	/**
-	 * Lowercase and uppercase alphabet characters and punctuation characters: 
+	 * Lower case and upper case alphabet characters and punctuation characters: 
 	 * - . , SPACE ; ` " ' : ? !
 	 */
 	const PARAM_FILTER_ALPHABETS_PUNCT = 'a-zA-Z\-\.\, ;`"\'\:\?\!';
 
 	/**
-	 * Lowercase and uppercase alphabet characters, digits with dot, comma, minus 
+	 * Lower case and upper case alphabet characters, digits with dot, comma, minus 
 	 * and plus sign and punctuation characters: - . , SPACE ; ` " ' : ? !
 	 */
 	const PARAM_FILTER_ALPHABETS_NUMERICS_PUNCT = 'a-zA-Z0-9\+\-\.\, ;`"\'\:\?\!';
 
 	/**
-	 * Lowercase and uppercase alphabet characters, digits with dot, comma, minus 
+	 * Lower case and upper case alphabet characters, digits with dot, comma, minus 
 	 * and plus sign, punctuation characters: - . , SPACE ; ` " ' : ? !
 	 * and special characters: % _ / @ ~ # & $ [ ] ( ) { } | = * ^
 	 */
@@ -148,7 +148,7 @@ interface IRequest
 	public static function AddTwoSegmentTlds (/* ...$twoSegmentTlds */);
 
 	/**
-	 * Static factory to get everytime new instance of http request object.
+	 * Static factory to get every time new instance of http request object.
 	 * Global variables for constructor arguments (`$_SERVER`, `$_GET`, `$_POST`...)
 	 * should be changed to any arrays with any values and injected here to get
 	 * different request object then currently called real request object.
@@ -357,7 +357,7 @@ interface IRequest
 
 	/**
 	 * Get request cookie value from referenced global `$_COOKIE` variable,
-	 * filtered by characters defined in second argument throught `preg_replace()`.
+	 * filtered by characters defined in second argument through `preg_replace()`.
 	 * Place into second argument only char groups you want to keep.
 	 * @param string $name Cookie string name.
 	 * @param string|array|bool $pregReplaceAllowedChars If String - list of regular expression characters to only keep, if array - `preg_replace()` pattern and reverse, if `FALSE`, raw value is returned.
@@ -440,7 +440,7 @@ interface IRequest
 	public function & SetLang ($lang);
 
 	/**
-	 * Get language international code, lowercase, not used by default.
+	 * Get language international code, lower case, not used by default.
 	 * To use this variable - install  `\MvcCore\Router` extension `\MvcCore\Ext\Router\Lang`
 	 * Or use this variable by your own decision.
 	 * Example: `"en" | "de"`
@@ -449,7 +449,7 @@ interface IRequest
 	public function GetLang ();
 
 	/**
-	 * Set country/locale code, uppercase.
+	 * Set country/locale code, upper case.
 	 * Use this locale storage by your own decision.
 	 * Example: `"US" | "UK"`
 	 * @var string|NULL
@@ -457,7 +457,7 @@ interface IRequest
 	public function & SetLocale ($locale);
 
 	/**
-	 * Get country/locale code, uppercase, not used by default.
+	 * Get country/locale code, upper case, not used by default.
 	 * To use this variable - install `\MvcCore\Router` extension `\MvcCore\Ext\Router\Lang`
 	 * Or use this variable by your own decision.
 	 * Example: `"US" | "UK"`
@@ -504,7 +504,7 @@ interface IRequest
 	public function __get ($name);
 
 	/**
-	 * Universal setter, if property not defined, it's automaticly declarated.
+	 * Universal setter, if property not defined, it's automatically declarated.
 	 * @param string $name
 	 * @param mixed	 $value
 	 * @return \MvcCore\IRequest
@@ -527,7 +527,7 @@ interface IRequest
 	public function GetAppRoot ();
 
 	/**
-	 * Set uppercased http method from global `$_SERVER['REQUEST_METHOD']`.
+	 * Set upper cased http method from global `$_SERVER['REQUEST_METHOD']`.
 	 * Example: `$request->SetMethod("GET" | "POST" | "PUT" | "HEAD"...);`
 	 * @param string $rawMethod
 	 * @return \MvcCore\IRequest
@@ -535,7 +535,7 @@ interface IRequest
 	public function & SetMethod ($rawMethod);
 
 	/**
-	 * Get uppercased http method from global `$_SERVER['REQUEST_METHOD']`.
+	 * Get upper cased http method from global `$_SERVER['REQUEST_METHOD']`.
 	 * Example: `"GET" | "POST" | "PUT" | "HEAD"...`
 	 * @return string
 	 */
@@ -587,7 +587,7 @@ interface IRequest
 	 * Get referer url if any, safely readed by:
 	 * `filter_var($_SERVER['HTTP_REFERER'], FILTER_SANITIZE_URL);`
 	 * Example: `"http://foreing.domain.com/path/where/is/link/to/?my=app"`
-	 * @param bool $rawInput Get raw input if `TRUE`. `FALSE` by default to get value throught `htmlspecialchars($result);` without amersand `&` escaping.
+	 * @param bool $rawInput Get raw input if `TRUE`. `FALSE` by default to get value through `htmlspecialchars($result);` without amersand `&` escaping.
 	 * @return string
 	 */
 	public function GetReferer ($rawInput = FALSE);
@@ -600,7 +600,7 @@ interface IRequest
 
 	/**
 	 * Set TOP level domain like `com` or `co.uk`.
-	 * Method also change server name and host record automaticly.
+	 * Method also change server name and host record automatically.
 	 * @param string|NULL $topLevelDomain 
 	 * @return \MvcCore\IRequest
 	 */
@@ -614,7 +614,7 @@ interface IRequest
 	
 	/**
 	 * Set second level domain like `example` in `www.example.com`.
-	 * Method also change server name and host record automaticly.
+	 * Method also change server name and host record automatically.
 	 * @param string|NULL $secondLevelDomain 
 	 * @return \MvcCore\IRequest
 	 */
@@ -628,7 +628,7 @@ interface IRequest
 	
 	/**
 	 * Set second level domain like `example` from `www.example.com`.
-	 * Method also change server name and host record automaticly.
+	 * Method also change server name and host record automatically.
 	 * @param string|NULL $thirdLevelDomain 
 	 * @return \MvcCore\IRequest
 	 */
@@ -642,7 +642,7 @@ interface IRequest
 
 	/**
 	 * Set application server name - domain without any port.
-	 * Method also change host record and domain records automaticly.
+	 * Method also change host record and domain records automatically.
 	 * Example: `$request->SetHostName("localhost");`
 	 * @param string $rawHostName
 	 * @return \MvcCore\IRequest
@@ -658,7 +658,7 @@ interface IRequest
 
 	/**
 	 * Set application host with port if there is any.
-	 * Method also change server name record and domain records automaticly.
+	 * Method also change server name record and domain records automatically.
 	 * Example: `$request->SetHost("localhost:88");`
 	 * @param string $rawHost
 	 * @return \MvcCore\IRequest
@@ -700,7 +700,7 @@ interface IRequest
 	/**
 	 * Get requested path in from application root (if `mod_rewrite` enabled), never with query string.
 	 * Example: `"/products/page/2"`
-	 * @param bool $rawInput Get raw input if `TRUE`. `FALSE` by default to get value throught `htmlspecialchars($result);` without amersand `&` escaping.
+	 * @param bool $rawInput Get raw input if `TRUE`. `FALSE` by default to get value through `htmlspecialchars($result);` without amersand `&` escaping.
 	 * @return string
 	 */
 	public function GetPath ($rawInput = FALSE);
@@ -721,7 +721,7 @@ interface IRequest
 	 *							   If `TRUE`, and query string contains any character(s), query string is returned
 	 *							   with question mark character at the beginning. But if query string contains no
 	 *							   character(s), query string is returned as EMPTY STRING WITHOUT question mark character.
-	 * @param bool $rawInput Get raw input if `TRUE`. `FALSE` by default to get value throught `htmlspecialchars($result);` without amersand `&` escaping.
+	 * @param bool $rawInput Get raw input if `TRUE`. `FALSE` by default to get value through `htmlspecialchars($result);` without amersand `&` escaping.
 	 * @return string
 	 */
 	public function GetQuery ($withQuestionMark = FALSE, $rawInput = FALSE);
@@ -729,7 +729,7 @@ interface IRequest
 	/**
 	 * Get request path after domain with possible query string
 	 * Example: `"/requested/path/after/app/root?with=possible&query=string"`
-	 * @param bool $rawInput Get raw input if `TRUE`. `FALSE` by default to get value throught `htmlspecialchars($result);` without amersand `&` escaping.
+	 * @param bool $rawInput Get raw input if `TRUE`. `FALSE` by default to get value through `htmlspecialchars($result);` without amersand `&` escaping.
 	 * @return string
 	 */
 	public function GetRequestPath ($rawInput = FALSE);
@@ -751,7 +751,7 @@ interface IRequest
 	/**
 	 * Get request url including scheme, domain, port, path, without any query string
 	 * Example: "`http://localhost:88/my/development/direcotry/www/requested/path/after/domain"`
-	 * @param bool $rawInput Get raw input if `TRUE`. `FALSE` by default to get value throught `htmlspecialchars($result);` without amersand `&` escaping.
+	 * @param bool $rawInput Get raw input if `TRUE`. `FALSE` by default to get value through `htmlspecialchars($result);` without amersand `&` escaping.
 	 * @return string
 	 */
 	public function GetRequestUrl ($rawInput = FALSE);
@@ -759,7 +759,7 @@ interface IRequest
 	/**
 	 * Get request url including scheme, domain, port, path and with query string
 	 * Example: `"http://localhost:88/my/development/direcotry/www/requested/path/after/domain?with=possible&query=string"`
-	 * @param bool $rawInput Get raw input if `TRUE`. `FALSE` by default to get value throught `htmlspecialchars($result);` without amersand `&` escaping.
+	 * @param bool $rawInput Get raw input if `TRUE`. `FALSE` by default to get value through `htmlspecialchars($result);` without amersand `&` escaping.
 	 * @return string
 	 */
 	public function GetFullUrl ($rawInput = FALSE);
@@ -772,7 +772,7 @@ interface IRequest
 	 *					   If `TRUE`, and fragment contains any character(s), fragment is returned
 	 *					   with hash character at the beginning. But if fragment contains no
 	 *					   character(s), fragment is returned as EMPTY STRING WITHOUT hash character.
-	 * @param bool $rawInput Get raw input if `TRUE`. `FALSE` by default to get value throught `htmlspecialchars($result);` without amersand `&` escaping.
+	 * @param bool $rawInput Get raw input if `TRUE`. `FALSE` by default to get value through `htmlspecialchars($result);` without amersand `&` escaping.
 	 * @return string
 	 */
 	public function GetFragment ($withHash = FALSE, $rawInput = FALSE);

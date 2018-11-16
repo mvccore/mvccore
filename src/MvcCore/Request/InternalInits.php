@@ -221,7 +221,7 @@ trait InternalInits
 
 	/**
 	 * Get param value from given collection (`$_GET`, `$_POST`, `php://input` or http headers),
-	 * filtered by characters defined in second argument throught `preg_replace()`.
+	 * filtered by characters defined in second argument through `preg_replace()`.
 	 * Place into second argument only char groups you want to keep.
 	 * @param array $collection Array with request params or array with request headers.
 	 * @param string $name Parametter string name.

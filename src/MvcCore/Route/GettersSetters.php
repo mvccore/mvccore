@@ -29,7 +29,7 @@ trait GettersSetters
 	 * - No regular expression border `#` characters, it will be
 	 *   used internally in route parsing.
 	 * - No start `^` or end `$` regular expression characters,
-	 *   those characters will be added automaticly.
+	 *   those characters will be added automatically.
 	 * - No escaping of regular expression characters:
 	 *   `[](){}<>|=+*.!?-/`, those characters will be escaped
 	 *   in route preparing process.
@@ -57,7 +57,7 @@ trait GettersSetters
 	 * - No regular expression border `#` characters, it will be
 	 *   used internally in route parsing.
 	 * - No start `^` or end `$` regular expression characters,
-	 *   those characters will be added automaticly.
+	 *   those characters will be added automatically.
 	 * - No escaping of regular expression characters:
 	 *   `[](){}<>|=+*.!?-/`, those characters will be escaped
 	 *   in route preparing process.
@@ -309,7 +309,7 @@ trait GettersSetters
 	}
 
 	/**
-	 * Get route rewrited params default values and also any other params default values.
+	 * Get route rewritten params default values and also any other params default values.
 	 * It could be used for any application request input - `$_GET`, `$_POST` or `php://input`.
 	 *
 	 * Example:
@@ -324,7 +324,7 @@ trait GettersSetters
 	}
 
 	/**
-	 * Set route rewrited params default values and also any other params default values.
+	 * Set route rewritten params default values and also any other params default values.
 	 * It could be used for any application request input - `$_GET`, `$_POST` or `php://input`.
 	 *
 	 * Example:
@@ -343,9 +343,9 @@ trait GettersSetters
 	/**
 	 * TODO: neaktualni
 	 * Get array with param names and their custom regular expression
-	 * matching rules. Not required, for all rewrited params there is used
+	 * matching rules. Not required, for all rewritten params there is used
 	 * default matching rule from `\MvcCore\Route::$defaultPathConstraint`.
-	 * It shoud be changed to any value. The value is `"[^/]*"` by default.
+	 * It should be changed to any value. The value is `"[^/]*"` by default.
 	 * It means "Any character(s) in any length, except next slash".
 	 *
 	 * Example:
@@ -362,9 +362,9 @@ trait GettersSetters
 	/**
 	 * TODO: neaktualni
 	 * Set array with param names and their custom regular expression
-	 * matching rules. Not required, for all rewrited params there is used
+	 * matching rules. Not required, for all rewritten params there is used
 	 * default matching rule from `\MvcCore\Route::$defaultPathConstraint`.
-	 * It shoud be changed to any value. The value is `"[^/]*"` by default.
+	 * It should be changed to any value. The value is `"[^/]*"` by default.
 	 * It means "Any character(s) in any length, except next slash".
 	 *
 	 * Example:
@@ -468,7 +468,7 @@ trait GettersSetters
 	/**
 	 * Get http method to only match requests with this defined method.
 	 * If `NULL` (by default), request with any http method could be matched by this route.
-	 * Value is automaticly in upper case.
+	 * Value is automatically in upper case.
 	 * Example: `"POST" | \MvcCore\IRequest::METHOD_POST`
 	 * @return string|NULL
 	 */
@@ -479,7 +479,7 @@ trait GettersSetters
 	/**
 	 * Set http method to only match requests with this defined method.
 	 * If `NULL` (by default), request with any http method could be matched by this route.
-	 * Given value is automaticly converted to upper case.
+	 * Given value is automatically converted to upper case.
 	 * Example: `"POST" | \MvcCore\IRequest::METHOD_POST`
 	 * @param string|NULL $method
 	 * @return \MvcCore\Route

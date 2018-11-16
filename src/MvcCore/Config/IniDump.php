@@ -113,14 +113,14 @@ trait IniDump
 				'[', ']', '(', ')', '{', '}', '<', '>', '\n', '\r', 
 			];
 			$valueStr = (string) $value;
-			$specialCharCatched = FALSE;
+			$specialCharCaught = FALSE;
 			foreach ($specialChars as $specialChar) {
 				if (mb_strpos($valueStr, $specialChar)) {
-					$specialCharCatched = TRUE;
+					$specialCharCaught = TRUE;
 					break;
 				}
 			}
-			if ($specialCharCatched) {
+			if ($specialCharCaught) {
 				return '"' . addcslashes($valueStr, '"') . '"';
 			} else {
 				return $valueStr;

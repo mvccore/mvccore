@@ -17,7 +17,7 @@ trait Instancing
 {
 	/**
 	 * Get singleton instance of `\MvcCore\Router` stored always here.
-	 * Optionaly set routes as first argument.
+	 * Optionally set routes as first argument.
 	 * Create proper router instance type at first time by
 	 * configured class name in `\MvcCore\Application` singleton.
 	 *
@@ -60,7 +60,7 @@ trait Instancing
 	 *										`Controller::Action` definitions.
 	 * @param bool $autoInitialize If `TRUE`, locale routes array is cleaned and 
 	 *							   then all routes (or configuration arrays) are 
-	 *							   sended into method `$router->AddRoutes();`, 
+	 *							   sent into method `$router->AddRoutes();`, 
 	 *							   where are routes auto initialized for missing 
 	 *							   route names or route controller or route action
 	 *							   record, completed always from array keys.
@@ -86,7 +86,7 @@ trait Instancing
 	/**
 	 * Create router as every time new instance,
 	 * no singleton instance management here.
-	 * optionaly set routes as first argument.
+	 * optionally set routes as first argument.
 	 * If there is no name configured in route array configuration,
 	 * set route name by given `$routes` array key, if key is not numeric.
 	 *
@@ -129,7 +129,7 @@ trait Instancing
 	 *										`Controller::Action` definitions.
 	 * @param bool $autoInitialize If `TRUE`, locale routes array is cleaned and 
 	 *							   then all routes (or configuration arrays) are 
-	 *							   sended into method `$router->AddRoutes();`, 
+	 *							   sent into method `$router->AddRoutes();`, 
 	 *							   where are routes auto initialized for missing 
 	 *							   route names or route controller or route action
 	 *							   record, completed always from array keys.

@@ -33,7 +33,7 @@ trait Props
 		'content'			=> '',
 		/**
 		  * Variables store, setted (always from controller)
-		  * throught `__set()` magic function.
+		  * through `__set()` magic function.
 		  * @var array
 		  */
 		'store'				=> [],
@@ -72,10 +72,10 @@ trait Props
 	protected static $extension = '.phtml';
 
 	/**
-	 * Output document type (to automaticly and optionaly send proper
+	 * Output document type (to automatically and optionally send proper
 	 * HTTP header `Content-Type`, if there is no `Content-Type` HTTP
 	 * header in response object yet).
-	 * This value could be used also for any other custom purposses.
+	 * This value could be used also for any other custom purposes.
 	 * Possible values:
 	 * - `HTML4` - `\MvcCore\IView::DOCTYPE_HTML4`
 	 * - `XHTML` - `\MvcCore\IView::DOCTYPE_XHTML`

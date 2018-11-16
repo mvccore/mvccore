@@ -16,7 +16,7 @@ namespace MvcCore\Debug;
 trait Props
 {
 	/**
-	 * Email recepient to send information about exceptions or errors,
+	 * Email recipient to send information about exceptions or errors,
 	 * `"admin@localhost"` by default.
 	 * @var string
 	 */
@@ -43,7 +43,7 @@ trait Props
 	protected static $development = NULL;
 
 	/**
-	 * Debuging and loging handlers, this should be customized in extended class.
+	 * Debugging and logging handlers, this should be customized in extended class.
 	 * @var array
 	 */
 	protected static $handlers = [
@@ -69,7 +69,7 @@ trait Props
 	protected static $timers = [];
 
 	/**
-	 * `TRUE` for cofigured debug class as `\MvcCore\Debug`,
+	 * `TRUE` for configured debug class as `\MvcCore\Debug`,
 	 * `FALSE` for any other configured extension.
 	 * @var bool
 	 */

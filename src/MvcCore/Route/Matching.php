@@ -23,7 +23,7 @@ trait Matching
 	 * from `\MvcCore\Router::Route();` method and it's submethods.
 	 *
 	 * @param \MvcCore\Request $request Request object instance.
-	 * @param string $localization Lowercase language code, optionally with dash and uppercase locale code, `NULL` by default, not implemented in core.
+	 * @param string $localization Lower case language code, optionally with dash and upper case locale code, `NULL` by default, not implemented in core.
 	 * @return array Matched and params array, keys are matched
 	 *				 params or controller and action params.
 	 */

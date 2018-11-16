@@ -23,9 +23,9 @@ namespace MvcCore;
  * - `$Pattern`
  *   Required, if you have not configured `\MvcCore\Route::$match` and
  *   `\MvcCore\Route::$reverse` property instead. Very basic URL address
- *   form to match and parse rewrited params by it. Address to parse
+ *   form to match and parse rewritten params by it. Address to parse
  *   and prepare `\MvcCore\Route::$match` property and `\MvcCore\Route::$reverse`
- *   property. automaticly in `\MvcCore\Route::Prepare();` call.
+ *   property automatically in `\MvcCore\Route::Prepare();` call.
  * - `$Match`
  *   Required together with `\MvcCore\Route::$reverse` property, if you
  *   have not configured `\MvcCore\Route::$pattern` property instead.
@@ -51,13 +51,13 @@ namespace MvcCore;
  * - `$Defaults`
  *   Not required, matched route params default values and query params default values.
  *   Last entry in array may be used for property `\MvcCore\Route::$lastPatternParam`
- *   describing last rewrited param inside match pattern to be automaticly trimmed
+ *   describing last rewritten param inside match pattern to be automatically trimmed
  *   from right side for possible address trailing slash in route matched moment.
  * - `$Constraints`
  *   not required, array with param names and their custom regular expression
  *   matching rules. If no constraint string for any param defined, there is used
- *   for all rewrited params default constraint rule to match everything except next slash.
- *   Default static property for matching rule shoud be changed here:
+ *   for all rewritten params default constraint rule to match everything except next slash.
+ *   Default static property for matching rule should be changed here:
  *   - by default: `\MvcCore\Route::$DefaultConstraint = '[^/]*';`
  */
 class Route implements IRoute
@@ -73,7 +73,7 @@ class Route implements IRoute
 	 * Internal method for `\MvcCore\Route::initMatch();` processing,
 	 * always called from `\MvcCore\Router::Matches();` request routing.
 	 *
-	 * Go throught given route pattern value and try to search for
+	 * Go through given route pattern value and try to search for
 	 * any url param occurances inside, like `<name>` or `<color*>`.
 	 * Return and array with describing records for each founded param.
 	 * Example:
@@ -157,13 +157,13 @@ class Route implements IRoute
 	 * always called from `\MvcCore\Router::Matches();` request routing.
 	 *
 	 * Compile and return value for `\MvcCore\Route::$match` pattern,
-	 * (optionaly by `$compileReverse` also for `\MvcCore\Route::$reverse`)
+	 * (optionally by `$compileReverse` also for `\MvcCore\Route::$reverse`)
 	 * from escaped `\MvcCore\Route::$pattern` and given params statistics
 	 * and from configured route constraints for regular expression:
-	 * - If pattern starts with slash `/`, set automaticly into
+	 * - If pattern starts with slash `/`, set automatically into
 	 *   result regular expression start rule (`#^/...`).
 	 * - If there is detected trailing slash in match pattern,
-	 *   set automaticly into result regular expression end rule
+	 *   set automatically into result regular expression end rule
 	 *   for trailing slash `...(?=/$|$)#` or just only end rule `...$#`.
 	 * - If there is detected any last param with possible trailing slash
 	 *   after, complete `\MvcCore\Route::$lastPatternParam` property
@@ -206,7 +206,7 @@ class Route implements IRoute
 	 * @param string $pattern
 	 * @param string $matchPattern
 	 * @param \array[] $patternParams
-	 * @param string $localization Lowercase language code, optionally with dash and uppercase locale code, `NULL` by default, not implemented in core.
+	 * @param string $localization Lower case language code, optionally with dash and upper case locale code, `NULL` by default, not implemented in core.
 	 * @return \string[]
 	 */
 	/*protected function _old_initMatchAndReverse ($patterns, & $patternParams, $compileReverse, $localization = NULL) {
@@ -304,7 +304,7 @@ class Route implements IRoute
 	 * when route has been matched and when there is still no `\MvcCore\Route::$reverseParams`
 	 * defined (`NULL`). It means that matched route has been defined by match and reverse
 	 * patterns, because there was no pattern property parsing to prepare values bellow before.
-	 * @param string $localization Lowercase language code, optionally with dash and uppercase locale code, `NULL` by default, not implemented in core.
+	 * @param string $localization Lower case language code, optionally with dash and upper case locale code, `NULL` by default, not implemented in core.
 	 * @return string
 	 */
 	/*protected function _old_initReverse ($localization = NULL) {

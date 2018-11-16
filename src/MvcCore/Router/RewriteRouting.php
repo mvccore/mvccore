@@ -17,8 +17,8 @@ trait RewriteRouting
 {
 	/**
 	 * Complete `\MvcCore\Router::$currentRoute` and request params by defined routes.
-	 * Go throught all configured routes and try to find matching route.
-	 * If there is catched any matching route - reset `\MvcCore\Request::$params`
+	 * Go through all configured routes and try to find matching route.
+	 * If there is caught any matching route - reset `\MvcCore\Request::$params`
 	 * with default route params, with params itself and with params parsed from matching process.
 	 * @param string $controllerName
 	 * @param string $actionName
@@ -121,13 +121,13 @@ trait RewriteRouting
 		);
 		// redirect route with strictly defined match regexp and not defined reverse could have `NULL` method result:
 		$routeReverseParams = $this->currentRoute->GetReverseParams() ?: [];
-		// complete realy matched params from path - unset ctrl and action if ctrl and even action are not in pattern
+		// complete really matched params from path - unset ctrl and action if ctrl and even action are not in pattern
 		$pathOnlyMatchedParams = array_merge([], $allMatchedParams);
 		$controllerInReverse	= in_array('controller', $routeReverseParams, TRUE);
 		$actionInReverse		= in_array('action', $routeReverseParams, TRUE);
 		if (!$controllerInReverse)	unset($pathOnlyMatchedParams['controller']);
 		if (!$actionInReverse)		unset($pathOnlyMatchedParams['action']);
-		// requested params - all realy requested params for self URL addresses
+		// requested params - all really requested params for self URL addresses
 		// building base params array, parsed from path, merged with all query params 
 		// and merged later with given params array into method `Url()`.
 		// There cannot be `ctonroller` and `action` keys from route configuration,

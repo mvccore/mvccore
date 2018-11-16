@@ -58,7 +58,7 @@ trait GettersSetters
 	}
 
 	/**
-	 * Get `TRUE` if request has to be automaticly dispatched as default
+	 * Get `TRUE` if request has to be automatically dispatched as default
 	 * `Index:Index` route, if there was no route matching current request
 	 * and if request was not `/` (homepage) but `/something-more`.
 	 * Default protected property value: `FALSE`.
@@ -69,7 +69,7 @@ trait GettersSetters
 	}
 
 	/**
-	 * Set `TRUE` if request has to be automaticly dispatched as default
+	 * Set `TRUE` if request has to be automatically dispatched as default
 	 * `Index:Index` route, if there was no route matching current request
 	 * and if request was not `/` (homepage) but `/something-more`.
 	 * Default protected property value: `FALSE`.
@@ -83,7 +83,7 @@ trait GettersSetters
 	/**
 	 * Get default request params - default params to build url with possibility
 	 * to define custom records for filter functions.
-	 * Be carefull, it could contain XSS chars. Use always `htmlspecialchars()`.
+	 * Be careful, it could contain XSS chars. Use always `htmlspecialchars()`.
 	 * @return array
 	 */
 	public function & GetDefaultParams () {
@@ -92,7 +92,7 @@ trait GettersSetters
 
 	/**
 	 * Get all request params - params parsed by route and query string params.
-	 * Be carefull, it could contain XSS chars. Use always `htmlspecialchars()`.
+	 * Be careful, it could contain XSS chars. Use always `htmlspecialchars()`.
 	 * @return array
 	 */
 	public function & GetRequestedParams () {

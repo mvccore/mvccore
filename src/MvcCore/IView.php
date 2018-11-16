@@ -109,10 +109,10 @@ interface IView
 	public static function SetExtension ($extension = '.phtml');
 
 	/**
-	 * Get output document type (to automaticly and optionaly send proper
+	 * Get output document type (to automatically and optionally send proper
 	 * HTTP header `Content-Type`, if there is no `Content-Type` HTTP
 	 * header in response object yet).
-	 * This value could be used also for any other custom purposses.
+	 * This value could be used also for any other custom purposes.
 	 * Possible values:
 	 * - `HTML4` - `\MvcCore\IView::DOCTYPE_HTML4`
 	 * - `XHTML` - `\MvcCore\IView::DOCTYPE_XHTML`
@@ -124,10 +124,10 @@ interface IView
 	public static function GetDoctype ();
 
 	/**
-	 * Set output document type (to automaticly and optionaly send proper
+	 * Set output document type (to automatically and optionally send proper
 	 * HTTP header `Content-Type`, if there is no `Content-Type` HTTP
 	 * header in response object yet).
-	 * This value could be used also for any other custom purposses.
+	 * This value could be used also for any other custom purposes.
 	 * Possible values:
 	 * - `HTML4` - `\MvcCore\IView::DOCTYPE_HTML4`
 	 * - `XHTML` - `\MvcCore\IView::DOCTYPE_XHTML`
@@ -335,7 +335,7 @@ interface IView
 	 * Evaluate given code as PHP code by `eval()` in current view context,
 	 * any `$this` keyword will be used as current view context.
 	 * Returned result is content from output buffer as string reference.
-	 * Evaluated code is wrapped into `try/catch` automaticly.
+	 * Evaluated code is wrapped into `try/catch` automatically.
 	 * @param string $content
 	 * @return string
 	 */
@@ -350,7 +350,7 @@ interface IView
 	 *	 (route name is key in routes configuration array, should be any string
 	 *	 but routes must have information about controller name and action name inside).
 	 * Result address (url string) should have two forms:
-	 * - Nice rewrited url by routes configuration
+	 * - Nice rewritten url by routes configuration
 	 *   (for apps with URL rewrite support (Apache `.htaccess` or IIS URL rewrite module)
 	 *   and when first param is key in routes configuration array).
 	 * - For all other cases is url form like: `"index.php?controller=ctrlName&amp;action=actionName"`
@@ -382,7 +382,7 @@ interface IView
 	public function & GetHelper ($helperName);
 
 	/**
-	 * Set view helper for current template or for all templates globaly by default.
+	 * Set view helper for current template or for all templates globally by default.
 	 * If view helper already exist in global helpers store - it's overwritten.
 	 * @param string $helperName View helper method name in pascal case.
 	 * @param \MvcCore\Ext\Views\Helpers\IHelper|mixed $instance View helper instance.

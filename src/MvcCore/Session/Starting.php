@@ -35,7 +35,7 @@ trait Starting
 
 	/**
 	 * Get unix epoch for current request session start moment.
-	 * This method is used for debuging purposses.
+	 * This method is used for debuging purposes.
 	 * @return int
 	 */
 	public static function GetSessionStartTime () {

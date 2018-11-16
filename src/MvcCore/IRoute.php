@@ -23,9 +23,9 @@ namespace MvcCore;
  * - `$Pattern`
  *   Required, if you have not configured `\MvcCore\Route::$match` and
  *   `\MvcCore\Route::$reverse` property instead. Very basic URL address
- *   form to match and parse rewrited params by it. Address to parse
+ *   form to match and parse rewritten params by it. Address to parse
  *   and prepare `\MvcCore\Route::$match` property and `\MvcCore\Route::$reverse`
- *   property. automaticly in `\MvcCore\Route::Prepare();` call.
+ *   property automatically in `\MvcCore\Route::Prepare();` call.
  * - `$Match`
  *   Required together with `\MvcCore\Route::$reverse` property, if you
  *   have not configured `\MvcCore\Route::$pattern` property instead.
@@ -51,13 +51,13 @@ namespace MvcCore;
  * - `$Defaults`
  *   Not required, matched route params default values and query params default values.
  *   Last entry in array may be used for property `\MvcCore\Route::$LastPatternParam`
- *   describing last rewrited param inside match pattern to be automaticly trimmed
+ *   describing last rewritten param inside match pattern to be automatically trimmed
  *   from right side for possible address trailing slash in route matched moment.
  * - `$Constraints`
  *   not required, array with param names and their custom regular expression
  *   matching rules. If no constraint string for any param defined, there is used
- *   for all rewrited params default constraint rule to match everything except next slash.
- *   Default static property for matching rule shoud be changed here:
+ *   for all rewritten params default constraint rule to match everything except next slash.
+ *   Default static property for matching rule should be changed here:
  *   - by default: `\MvcCore\Route::$DefaultConstraint = '[^/]*';`
  */
 interface IRoute
@@ -218,7 +218,7 @@ interface IRoute
 	 * @param string		$controllerAction	Optional, controller and action name in pascale case like: `"Photogallery:List"`.
 	 * @param string		$defaults			Optional, default param values like: `array("name" => "default-name", "page" => 1)`.
 	 * @param array			$constraints		Optional, params regex constraints for regular expression match fn no `"match"` record in configuration array as first argument defined.
-	 * @param array			$method				Optional, http method to only match requests by this method. If `NULL` (by default), request with any http method could be matched by this route. Given value is automaticly converted to upper case.
+	 * @param array			$method				Optional, http method to only match requests by this method. If `NULL` (by default), request with any http method could be matched by this route. Given value is automatically converted to upper case.
 	 * @return \MvcCore\IRoute
 	 */
 	public static function CreateInstance (
@@ -243,7 +243,7 @@ interface IRoute
 	 * - No regular expression border `#` characters, it will be
 	 *   used internally in route parsing.
 	 * - No start `^` or end `$` regular expression characters,
-	 *   those characters will be added automaticly.
+	 *   those characters will be added automatically.
 	 * - No escaping of regular expression characters:
 	 *   `[](){}<>|=+*.!?-/`, those characters will be escaped
 	 *   in route preparing process.
@@ -269,7 +269,7 @@ interface IRoute
 	 * - No regular expression border `#` characters, it will be
 	 *   used internally in route parsing.
 	 * - No start `^` or end `$` regular expression characters,
-	 *   those characters will be added automaticly.
+	 *   those characters will be added automatically.
 	 * - No escaping of regular expression characters:
 	 *   `[](){}<>|=+*.!?-/`, those characters will be escaped
 	 *   in route preparing process.
@@ -486,7 +486,7 @@ interface IRoute
 	public function & SetControllerAction ($controllerAction);
 
 	/**
-	 * Get route rewrited params default values and also any other params default values.
+	 * Get route rewritten params default values and also any other params default values.
 	 * It could be used for any application request input - `$_GET`, `$_POST` or `php://input`.
 	 *
 	 * Example:
@@ -499,7 +499,7 @@ interface IRoute
 	public function & GetDefaults ();
 
 	/**
-	 * Set route rewrited params default values and also any other params default values.
+	 * Set route rewritten params default values and also any other params default values.
 	 * It could be used for any application request input - `$_GET`, `$_POST` or `php://input`.
 	 *
 	 * Example:
@@ -514,9 +514,9 @@ interface IRoute
 
 	/**
 	 * Get array with param names and their custom regular expression
-	 * matching rules. Not required, for all rewrited params there is used
+	 * matching rules. Not required, for all rewritten params there is used
 	 * default matching rule from `\MvcCore\Route::$DefaultConstraint`.
-	 * It shoud be changed to any value. The value is `"[^/]*"` by default.
+	 * It should be changed to any value. The value is `"[^/]*"` by default.
 	 * It means "Any character(s) in any length, except next slash".
 	 *
 	 * Example:
@@ -530,9 +530,9 @@ interface IRoute
 
 	/**
 	 * Set array with param names and their custom regular expression
-	 * matching rules. Not required, for all rewrited params there is used
+	 * matching rules. Not required, for all rewritten params there is used
 	 * default matching rule from `\MvcCore\Route::$DefaultConstraint`.
-	 * It shoud be changed to any value. The value is `"[^/]*"` by default.
+	 * It should be changed to any value. The value is `"[^/]*"` by default.
 	 * It means "Any character(s) in any length, except next slash".
 	 *
 	 * Example:
@@ -604,7 +604,7 @@ interface IRoute
 	/**
 	 * Get http method to only match requests with this defined method.
 	 * If `NULL` (by default), request with any http method could be matched by this route.
-	 * Value is automaticly in upper case.
+	 * Value is automatically in upper case.
 	 * Example: `"POST" | \MvcCore\IRequest::METHOD_POST`
 	 * @return string|NULL
 	 */
@@ -613,7 +613,7 @@ interface IRoute
 	/**
 	 * Set http method to only match requests with this defined method.
 	 * If `NULL` (by default), request with any http method could be matched by this route.
-	 * Given value is automaticly converted to upper case.
+	 * Given value is automatically converted to upper case.
 	 * Example: `"POST" | \MvcCore\IRequest::METHOD_POST`
 	 * @param string|NULL $method
 	 * @return \MvcCore\IRoute
@@ -742,7 +742,7 @@ interface IRoute
 	 * @param \MvcCore\IRequest $request Currently requested request object.
 	 * @param array $params URL params from application point completed by developer.
 	 * @param array $defaultUrlParams Requested url route parms nad query string params without escaped HTML special chars: `< > & " ' &`.
-	 * @param string $queryStringParamsSepatator Query params separator, `&` by default. Always automaticly completed by router instance.
+	 * @param string $queryStringParamsSepatator Query params separator, `&` by default. Always automatically completed by router instance.
 	 * @return \string[] Result URL addres in two parts - domain part with base path and path part with query string.
 	 */
 	public function Url (\MvcCore\IRequest & $request, array & $params = [], array & $defaultUrlParams = [], $queryParamsSepatator = '&');

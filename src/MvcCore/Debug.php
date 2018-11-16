@@ -17,8 +17,8 @@ namespace MvcCore {
 	 * Responsibility - any devel and logging messages and exceptions printing and logging.
 	 * - Printing any variable in content body.
 	 * - Printing any variable in browser debug bar.
-	 * - Catched exceptions printing.
-	 * - Any variables and catched exceptions file logging.
+	 * - Caught exceptions printing.
+	 * - Any variables and caught exceptions file logging.
 	 * - Time printing.
 	 */
 	class Debug implements IDebug

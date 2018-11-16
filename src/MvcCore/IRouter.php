@@ -34,7 +34,7 @@ namespace MvcCore;
 interface IRouter
 {
 	/**
-	 * Default system route name, automaticly created for requests:
+	 * Default system route name, automatically created for requests:
 	 * - For requests with explicitly defined controler and action in query string.
 	 * - For requests targeting homepage with controller and action `Index:Index`.
 	 * - For requests targeting any not matched path by other routes with
@@ -44,14 +44,14 @@ interface IRouter
 	const DEFAULT_ROUTE_NAME = 'default';
 
 	/**
-	 * Default system route name, automaticly created for error requests,
-	 * where was uncatched exception in controller or template, catched by application.
+	 * Default system route name, automatically created for error requests,
+	 * where was uncaught exception in controller or template, caught by application.
 	 * This route is created with controller and action `Index:Error` by default.
 	 */
 	const DEFAULT_ROUTE_NAME_ERROR = 'error';
 
 	/**
-	 * Default system route name, automaticly created for not matched requests,
+	 * Default system route name, automatically created for not matched requests,
 	 * where was not possible to found requested controller or template or anything else.
 	 * This route is created with controller and action `Index:NotFound` by default.
 	 */
@@ -123,7 +123,7 @@ interface IRouter
 
 	/**
 	 * Get singleton instance of `\MvcCore\Router` stored always here.
-	 * Optionaly set routes as first argument.
+	 * Optionally set routes as first argument.
 	 * Create proper router instance type at first time by
 	 * configured class name in `\MvcCore\Application` singleton.
 	 *
@@ -166,7 +166,7 @@ interface IRouter
 	 *													 `Controller::Action` definitions.
 	 * @param bool $autoInitialize If `TRUE`, locale routes array is cleaned and 
 	 *							   then all routes (or configuration arrays) are 
-	 *							   sended into method `$router->AddRoutes();`, 
+	 *							   sent into method `$router->AddRoutes();`, 
 	 *							   where are routes auto initialized for missing 
 	 *							   route names or route controller or route action
 	 *							   record, completed always from array keys.
@@ -220,7 +220,7 @@ interface IRouter
 	 *													 `Controller::Action` definitions.
 	 * @param bool $autoInitialize If `TRUE`, locale routes array is cleaned and 
 	 *							   then all routes (or configuration arrays) are 
-	 *							   sended into method `$router->AddRoutes();`, 
+	 *							   sent into method `$router->AddRoutes();`, 
 	 *							   where are routes auto initialized for missing 
 	 *							   route names or route controller or route action
 	 *							   record, completed always from array keys.
@@ -410,7 +410,7 @@ interface IRouter
 	public function & GetCurrentRoute ();
 
 	/**
-	 * Get `TRUE` if request has to be automaticly dispatched as default
+	 * Get `TRUE` if request has to be automatically dispatched as default
 	 * `Index:Index` route, if there was no route matching current request.
 	 * Default protected property value: `FALSE`.
 	 * @param bool $enable
@@ -419,7 +419,7 @@ interface IRouter
 	public function GetRouteToDefaultIfNotMatch ();
 
 	/**
-	 * Set `TRUE` if request has to be automaticly dispatched as default
+	 * Set `TRUE` if request has to be automatically dispatched as default
 	 * `Index:Index` route, if there was no route matching current request.
 	 * Default protected property value: `FALSE`.
 	 * @param bool $enable
@@ -430,14 +430,14 @@ interface IRouter
 	/**
 	 * Get default request params - default params to build url with possibility
 	 * to define custom records for filter functions.
-	 * Be carefull, it could contain XSS chars. Use always `htmlspecialchars()`.
+	 * Be careful, it could contain XSS chars. Use always `htmlspecialchars()`.
 	 * @return array
 	 */
 	public function & GetDefaultParams ();
 
 	/**
 	 * Get all request params - params parsed by route and query string params.
-	 * Be carefull, it could contain XSS chars. Use always `htmlspecialchars()`.
+	 * Be careful, it could contain XSS chars. Use always `htmlspecialchars()`.
 	 * @return array
 	 */
 	public function & GetRequestedParams ();
@@ -527,15 +527,15 @@ interface IRouter
 	 *   route request by given values, add new route and complete new empty
 	 *   `\MvcCore\Router::$currentRoute` route with `controller` and `action` values from query string.
 	 * - If there is no strictly defined `controller` and `action` value in query string,
-	 *   go throught all configured routes and try to find matching route:
-	 *   - If there is catched any matching route:
+	 *   go through all configured routes and try to find matching route:
+	 *   - If there is caught any matching route:
 	 *	 - Set up `\MvcCore\Router::$currentRoute`.
 	 *	 - Reset `\MvcCore\Request::$params` again with with default route params,
 	 *	   with request params itself and with params parsed from matching process.
 	 * - If there is no route matching the request and also if the request is targeting homepage
 	 *   or there is no route matching the request and also if the request is targeting something
 	 *   else and also router is configured to route to default controller and action if no route
-	 *   founded, complete `\MvcCore\Router::$currentRoute` with new empty automaticly created route
+	 *   founded, complete `\MvcCore\Router::$currentRoute` with new empty automatically created route
 	 *   targeting default controller and action by configuration in application instance (`Index:Index`)
 	 *   and route type create by configured `\MvcCore\Application::$routeClass` class name.
 	 * - Return `TRUE` if `\MvcCore\Router::$currentRoute` is route instance or `FALSE` for redirection.
@@ -570,7 +570,7 @@ interface IRouter
 	 *	 (route name is key in routes configuration array, should be any string
 	 *	 but routes must have information about controller name and action name inside).
 	 * Result address (url string) should have two forms:
-	 * - Nice rewrited url by routes configuration
+	 * - Nice rewritten url by routes configuration
 	 *   (for apps with URL rewrite support (Apache `.htaccess` or IIS URL rewrite module)
 	 *   and when first param is key in routes configuration array).
 	 * - For all other cases is url form like: `"index.php?controller=ctrlName&amp;action=actionName"`
@@ -636,8 +636,8 @@ interface IRouter
 	 *   `$router->SetRouteToDefaultIfNotMatch();`.
 	 * - When is necessary to create not found route or error route
 	 *   when there was not possible to route the request or when
-	 *   there was any uncatched exception in controller or template
-	 *   catched later by application.
+	 *   there was any uncaught exception in controller or template
+	 *   caught later by application.
 	 *
 	 * @param string $routeName Always as `default`, `error` or `not_found`, by constants:
 	 *						 `\MvcCore\IRouter::DEFAULT_ROUTE_NAME`

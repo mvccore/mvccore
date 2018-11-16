@@ -16,7 +16,7 @@ namespace MvcCore\Response;
 trait Instancing
 {
 	/**
-	 * No singleton, get everytime new instance of configured HTTP response
+	 * No singleton, get every time new instance of configured HTTP response
 	 * class in `\MvcCore\Application::GetInstance()->GetResponseClass();`.
 	 * @param int		$code
 	 * @param array		$headers

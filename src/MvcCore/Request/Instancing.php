@@ -16,7 +16,7 @@ namespace MvcCore\Request;
 trait Instancing
 {
 	/**
-	 * Static factory to get everytime new instance of http request object.
+	 * Static factory to get every time new instance of http request object.
 	 * Global variables for constructor arguments (`$_SERVER`, `$_GET`, `$_POST`...)
 	 * should be changed to any arrays with any values and injected here to get
 	 * different request object then currently called real request object.

@@ -31,7 +31,7 @@ trait Props
 	protected $cli				= NULL;
 
 	/**
-	 * Language international code, lowercase, not used by default.
+	 * Language international code, lower case, not used by default.
 	 * To use this variable - install  `\MvcCore\Router` extension `\MvcCore\Ext\Router\Lang`
 	 * Or use this variable by your own decision.
 	 * Example: `"en" | "de"`
@@ -40,7 +40,7 @@ trait Props
 	protected $lang				= NULL;
 
 	/**
-	 * Country/locale code, uppercase, not used by default.
+	 * Country/locale code, upper case, not used by default.
 	 * To use this variable - install `\MvcCore\Router` extension `\MvcCore\Ext\Router\Lang`
 	 * Or use this variable by your own decision.
 	 * Example: `"US" | "UK"`
@@ -192,7 +192,7 @@ trait Props
 	protected $fullUrl			= NULL;
 
 	/**
-	 * Http method (uppercase) - `GET`, `POST`, `PUT`, `HEAD`...
+	 * Http method (upper case) - `GET`, `POST`, `PUT`, `HEAD`...
 	 * Example: `"GET"`
 	 * @var string|NULL
 	 */
@@ -252,7 +252,7 @@ trait Props
 	 *	`\MvcCore\Request:$Params = array(
 	 *		"controller"	=> "default",
 	 *		"action"		=> "default",
-	 *		"username"		=> "' OR 1=1;-- ",	// be carefull for this content with raw (danger) value!
+	 *		"username"		=> "' OR 1=1;-- ",	// be careful for this content with raw (danger) value!
 	 *	);`
 	 *	// Do not read `$Params` array directly,
 	 *	// to get safe param value use:

@@ -53,7 +53,7 @@ trait Instancing
 	 * @param string		$controllerAction		Optional, controller and action name in pascale case like: `"Photogallery:List"`.
 	 * @param string		$defaults				Optional, default param values like: `array("name" => "default-name", "page" => 1)`.
 	 * @param array			$constraints			Optional, params regex constraints for regular expression match fn no `"match"` record in configuration array as first argument defined.
-	 * @param array			$advancedConfiguration	Optional, http method to only match requests by this method. If `NULL` (by default), request with any http method could be matched by this route. Given value is automaticly converted to upper case.
+	 * @param array			$advancedConfiguration	Optional, http method to only match requests by this method. If `NULL` (by default), request with any http method could be matched by this route. Given value is automatically converted to upper case.
 	 * @return \MvcCore\Route
 	 */
 	public static function CreateInstance (
@@ -98,7 +98,7 @@ trait Instancing
 	 * @param string $controllerAction		Optional, controller and action name in pascale case like: `"Photogallery:List"`.
 	 * @param array $defaults				Optional, default param values like: `array("name" => "default-name", "page" => 1)`.
 	 * @param array $constraints			Optional, params regex constraints for regular expression match fn no `"match"` record in configuration array as first argument defined.
-	 * @param array	$advancedConfiguration	Optional, http method to only match requests by this method. If `NULL` (by default), request with any http method could be matched by this route. Given value is automaticly converted to upper case.
+	 * @param array	$advancedConfiguration	Optional, http method to only match requests by this method. If `NULL` (by default), request with any http method could be matched by this route. Given value is automatically converted to upper case.
 	 * @return \MvcCore\Route
 	 */
 	public function __construct (

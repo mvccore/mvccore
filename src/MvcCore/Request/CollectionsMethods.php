@@ -301,7 +301,7 @@ trait CollectionsMethods
 
 	/**
 	 * Get request cookie value from referenced global `$_COOKIE` variable,
-	 * filtered by characters defined in second argument throught `preg_replace()`.
+	 * filtered by characters defined in second argument through `preg_replace()`.
 	 * Place into second argument only char groups you want to keep.
 	 * @param string $name Cookie string name.
 	 * @param string|array|bool $pregReplaceAllowedChars If String - list of regular expression characters to only keep, if array - `preg_replace()` pattern and reverse, if `FALSE`, raw value is returned.

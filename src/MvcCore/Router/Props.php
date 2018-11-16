@@ -98,7 +98,7 @@ trait Props
 	protected $selfRouteName = NULL;
 
 	/**
-	 * `TRUE` if request has to be automaticly dispatched as default
+	 * `TRUE` if request has to be automatically dispatched as default
 	 * `Index:Index` route, if there was no route matching current request
 	 * and if request was not `/` (homepage) but `/something-more`.
 	 * Default value: `FALSE`.
@@ -108,7 +108,7 @@ trait Props
 
 	/**
 	 * All request params - params parsed by route and query string params.
-	 * Be carefull, it could contain XSS chars. Use always `htmlspecialchars()`.
+	 * Be careful, it could contain XSS chars. Use always `htmlspecialchars()`.
 	 * Those params could contain additional user params from filter function.
 	 * @var array|NULL
 	 */
@@ -116,7 +116,7 @@ trait Props
 
 	/**
 	 * All request params - params parsed by route and query string params.
-	 * Be carefull, it could contain XSS chars. Use always `htmlspecialchars()`.
+	 * Be careful, it could contain XSS chars. Use always `htmlspecialchars()`.
 	 * @var array|NULL
 	 */
 	protected $requestedParams = [];
@@ -145,7 +145,7 @@ trait Props
 
 	/**
 	 * Query string params separator, always initialized by configured response type.
-	 * If response has no `Content-Type` header yet, query string separator is automaticly
+	 * If response has no `Content-Type` header yet, query string separator is automatically
 	 * configured to `&`. That's why is very important to define response content type
 	 * as the very first command in controller `Init()` method, if you want to send XML content.
 	 * @var string|NULL

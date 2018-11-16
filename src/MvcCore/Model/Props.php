@@ -27,10 +27,10 @@ trait Props
 	 *
 	 * Every key in this field is driver name, so you can use usual `\PDO` drivers:
 	 * - `mysql`, `sqlite`, `sqlsrv` (mssql), `firebird`, `ibm`, `informix`, `4D`
-	 * Following drivers shoud be used with defaults, no connection args from here are necessary:
+	 * Following drivers should be used with defaults, no connection args from here are necessary:
 	 * - `oci`, `pgsql`, `cubrid`, `sysbase`, `dblib`
 	 *
-	 * Every value in this configuration field shoud be defined as:
+	 * Every value in this configuration field should be defined as:
 	 * - `dsn`		- connection query as first `\PDO` contructor argument
 	 *				  with database config replacements.
 	 * - `auth`		- if required to use database credentials for connecting or not.
@@ -119,7 +119,7 @@ trait Props
 	protected static $configs = NULL;
 
 	/**
-	 * Automaticly initialize config, db connection and resource class.
+	 * Automatically initialize config, db connection and resource class.
 	 * @var bool
 	 */
 	protected $autoInit = TRUE;

@@ -62,7 +62,7 @@ trait PropsGettersSetters
 	protected $sent = FALSE;
 
 	/**
-	 * Disabled headers, never sended except if there is 
+	 * Disabled headers, never sent except if there is 
 	 * rendered exception in development environment.
 	 * @var array
 	 */

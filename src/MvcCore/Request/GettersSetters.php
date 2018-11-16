@@ -117,7 +117,7 @@ trait GettersSetters
 	}
 
 	/**
-	 * Get language international code, lowercase, not used by default.
+	 * Get language international code, lower case, not used by default.
 	 * To use this variable - install  `\MvcCore\Router` extension `\MvcCore\Ext\Router\Lang`
 	 * Or use this variable by your own decision.
 	 * Example: `"en" | "de"`
@@ -129,7 +129,7 @@ trait GettersSetters
 	}
 
 	/**
-	 * Set country/locale code, uppercase.
+	 * Set country/locale code, upper case.
 	 * Use this locale storage by your own decision.
 	 * Example: `"US" | "UK"`
 	 * @var string|NULL
@@ -140,7 +140,7 @@ trait GettersSetters
 	}
 
 	/**
-	 * Get country/locale code, uppercase, not used by default.
+	 * Get country/locale code, upper case, not used by default.
 	 * To use this variable - install `\MvcCore\Router` extension `\MvcCore\Ext\Router\Lang`
 	 * Or use this variable by your own decision.
 	 * Example: `"US" | "UK"`
@@ -209,7 +209,7 @@ trait GettersSetters
 	}
 
 	/**
-	 * Universal setter, if property not defined, it's automaticly declarated.
+	 * Universal setter, if property not defined, it's automatically declarated.
 	 * @param string $name
 	 * @param mixed	 $value
 	 * @return \MvcCore\Request
@@ -256,7 +256,7 @@ trait GettersSetters
 	}
 
 	/**
-	 * Set uppercased http method from global `$_SERVER['REQUEST_METHOD']`.
+	 * Set upper cased http method from global `$_SERVER['REQUEST_METHOD']`.
 	 * Example: `$request->SetMethod("GET" | "POST" | "PUT" | "HEAD"...);`
 	 * @param string $rawMethod
 	 * @return \MvcCore\Request
@@ -267,7 +267,7 @@ trait GettersSetters
 	}
 
 	/**
-	 * Get uppercased http method from global `$_SERVER['REQUEST_METHOD']`.
+	 * Get upper cased http method from global `$_SERVER['REQUEST_METHOD']`.
 	 * Example: `"GET" | "POST" | "PUT" | "HEAD"...`
 	 * @return string
 	 */
@@ -354,7 +354,7 @@ trait GettersSetters
 	 * Get referer url if any, safely readed by:
 	 * `filter_var($_SERVER['HTTP_REFERER'], FILTER_SANITIZE_URL);`
 	 * Example: `"http://foreing.domain.com/path/where/is/link/to/?my=app"`
-	 * @param bool $rawInput Get raw input if `TRUE`. `FALSE` by default to get value throught `htmlspecialchars($result);` without amersand `&` escaping.
+	 * @param bool $rawInput Get raw input if `TRUE`. `FALSE` by default to get value through `htmlspecialchars($result);` without amersand `&` escaping.
 	 * @return string
 	 */
 	public function GetReferer ($rawInput = FALSE) {
@@ -383,7 +383,7 @@ trait GettersSetters
 
 	/**
 	 * Set TOP level domain like `com` or `co.uk`.
-	 * Method also change server name and host record automaticly.
+	 * Method also change server name and host record automatically.
 	 * @param string|NULL $topLevelDomain 
 	 * @return \MvcCore\Request
 	 */
@@ -411,7 +411,7 @@ trait GettersSetters
 	
 	/**
 	 * Set second level domain like `example` in `www.example.com`.
-	 * Method also change server name and host record automaticly.
+	 * Method also change server name and host record automatically.
 	 * @param string|NULL $secondLevelDomain 
 	 * @return \MvcCore\Request
 	 */
@@ -439,7 +439,7 @@ trait GettersSetters
 	
 	/**
 	 * Set second level domain like `example` from `www.example.com`.
-	 * Method also change server name and host record automaticly.
+	 * Method also change server name and host record automatically.
 	 * @param string|NULL $thirdLevelDomain 
 	 * @return \MvcCore\Request
 	 */
@@ -467,7 +467,7 @@ trait GettersSetters
 
 	/**
 	 * Set application server name - domain without any port.
-	 * Method also change host record and domain records automaticly.
+	 * Method also change host record and domain records automatically.
 	 * Example: `$request->SetHostName("localhost");`
 	 * @param string $rawHostName
 	 * @return \MvcCore\Request
@@ -497,7 +497,7 @@ trait GettersSetters
 
 	/**
 	 * Set application host with port if there is any.
-	 * Method also change server name record and domain records automaticly.
+	 * Method also change server name record and domain records automatically.
 	 * Example: `$request->SetHost("localhost:88");`
 	 * @param string $rawHost
 	 * @return \MvcCore\Request
@@ -581,7 +581,7 @@ trait GettersSetters
 	/**
 	 * Get requested path in from application root (if `mod_rewrite` enabled), never with query string.
 	 * Example: `"/products/page/2"`
-	 * @param bool $rawInput Get raw input if `TRUE`. `FALSE` by default to get value throught `htmlspecialchars($result);` without amersand `&` escaping.
+	 * @param bool $rawInput Get raw input if `TRUE`. `FALSE` by default to get value through `htmlspecialchars($result);` without amersand `&` escaping.
 	 * @return string
 	 */
 	public function GetPath ($rawInput = FALSE) {
@@ -611,7 +611,7 @@ trait GettersSetters
 	 *							   If `TRUE`, and query string contains any character(s), query string is returned
 	 *							   with question mark character at the beginning. But if query string contains no
 	 *							   character(s), query string is returned as EMPTY STRING WITHOUT question mark character.
-	 * @param bool $rawInput Get raw input if `TRUE`. `FALSE` by default to get value throught `htmlspecialchars($result);` without amersand `&` escaping.
+	 * @param bool $rawInput Get raw input if `TRUE`. `FALSE` by default to get value through `htmlspecialchars($result);` without amersand `&` escaping.
 	 * @return string
 	 */
 	public function GetQuery ($withQuestionMark = FALSE, $rawInput = FALSE) {
@@ -626,7 +626,7 @@ trait GettersSetters
 	/**
 	 * Get request path after domain with possible query string
 	 * Example: `"/requested/path/after/app/root?with=possible&query=string"`
-	 * @param bool $rawInput Get raw input if `TRUE`. `FALSE` by default to get value throught `htmlspecialchars($result);` without amersand `&` escaping.
+	 * @param bool $rawInput Get raw input if `TRUE`. `FALSE` by default to get value through `htmlspecialchars($result);` without amersand `&` escaping.
 	 * @return string
 	 */
 	public function GetRequestPath ($rawInput = FALSE) {
@@ -661,7 +661,7 @@ trait GettersSetters
 	/**
 	 * Get request url including scheme, domain, port, path, without any query string
 	 * Example: "`http://localhost:88/my/development/direcotry/www/requested/path/after/domain"`
-	 * @param bool $rawInput Get raw input if `TRUE`. `FALSE` by default to get value throught `htmlspecialchars($result);` without amersand `&` escaping.
+	 * @param bool $rawInput Get raw input if `TRUE`. `FALSE` by default to get value through `htmlspecialchars($result);` without amersand `&` escaping.
 	 * @return string
 	 */
 	public function GetRequestUrl ($rawInput = FALSE) {
@@ -673,7 +673,7 @@ trait GettersSetters
 	/**
 	 * Get request url including scheme, domain, port, path and with query string
 	 * Example: `"http://localhost:88/my/development/direcotry/www/requested/path/after/domain?with=possible&query=string"`
-	 * @param bool $rawInput Get raw input if `TRUE`. `FALSE` by default to get value throught `htmlspecialchars($result);` without amersand `&` escaping.
+	 * @param bool $rawInput Get raw input if `TRUE`. `FALSE` by default to get value through `htmlspecialchars($result);` without amersand `&` escaping.
 	 * @return string
 	 */
 	public function GetFullUrl ($rawInput = FALSE) {
@@ -690,7 +690,7 @@ trait GettersSetters
 	 *					   If `TRUE`, and fragment contains any character(s), fragment is returned
 	 *					   with hash character at the beginning. But if fragment contains no
 	 *					   character(s), fragment is returned as EMPTY STRING WITHOUT hash character.
-	 * @param bool $rawInput Get raw input if `TRUE`. `FALSE` by default to get value throught `htmlspecialchars($result);` without amersand `&` escaping.
+	 * @param bool $rawInput Get raw input if `TRUE`. `FALSE` by default to get value through `htmlspecialchars($result);` without amersand `&` escaping.
 	 * @return string
 	 */
 	public function GetFragment ($withHash = FALSE, $rawInput = FALSE) {

@@ -14,11 +14,11 @@
 namespace MvcCore;
 
 /**
- * Responsibility - any devel and logging messages and exceptions printing and logging.
+ * Responsibility - any development and logging messages and exceptions printing and logging.
  * - Printing any variable in content body.
  * - Printing any variable in browser debug bar.
- * - Catched exceptions printing.
- * - Any variables and catched exceptions file logging.
+ * - Caught exceptions printing.
+ * - Any variables and caught exceptions file logging.
  * - Time printing.
  */
 interface IDebug
@@ -72,11 +72,11 @@ interface IDebug
 	public static function BarDump ($value, $title = NULL, $options = []);
 
 	/**
-	 * Logs any message or exception with log datetime, in `*.log` file
+	 * Logs any message or exception with log date time, in `*.log` file
 	 * by given log level, in configured logging directory.
 	 * @param  string|\Exception|\Throwable	$value
 	 * @param  string						$priority
-	 * @return string						Logging filename fullpath.
+	 * @return string						Logging filename full path.
 	 */
 	public static function Log ($value, $priority = \MvcCore\IDebug::INFO);
 
@@ -89,7 +89,7 @@ interface IDebug
 	public static function FireLog ($value, $priority = \MvcCore\IDebug::DEBUG);
 
 	/**
-	 * Print catched exception in browser.
+	 * Print caught exception in browser.
 	 * In non-development mode - store dumped exception in `exception.log`.
 	 * @param \Exception|\Error|\Throwable|array $exception
 	 * @param bool $exit
@@ -98,7 +98,7 @@ interface IDebug
 	public static function Exception ($exception, $exit = TRUE);
 
 	/**
-	 * Print all stored dumps at the end of sended response body as browser debug bar.
+	 * Print all stored dumps at the end of sent response body as browser debug bar.
 	 * This function is called from registered shutdown handler by
 	 * `register_shutdown_function()` from `\MvcCore\Debug::initHandlers();`.
 	 * @return void

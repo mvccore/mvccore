@@ -21,15 +21,15 @@ trait Routing
 	 *   route request by given values, add new route and complete new empty
 	 *   `\MvcCore\Router::$currentRoute` route with `controller` and `action` values from query string.
 	 * - If there is no strictly defined `controller` and `action` value in query string,
-	 *   go throught all configured routes and try to find matching route:
-	 *   - If there is catched any matching route:
+	 *   go through all configured routes and try to find matching route:
+	 *   - If there is caught any matching route:
 	 *	 - Set up `\MvcCore\Router::$currentRoute`.
 	 *	 - Reset `\MvcCore\Request::$params` again with with default route params,
 	 *	   with request params itself and with params parsed from matching process.
 	 * - If there is no route matching the request and also if the request is targeting homepage
 	 *   or there is no route matching the request and also if the request is targeting something
 	 *   else and also router is configured to route to default controller and action if no route
-	 *   founded, complete `\MvcCore\Router::$currentRoute` with new empty automaticly created route
+	 *   founded, complete `\MvcCore\Router::$currentRoute` with new empty automatically created route
 	 *   targeting default controller and action by configuration in application instance (`Index:Index`)
 	 *   and route type create by configured `\MvcCore\Application::$routeClass` class name.
 	 * - Return `TRUE` if routing has no redirection or `FALSE` for redirection.
@@ -140,8 +140,8 @@ trait Routing
 	 *   `$router->SetRouteToDefaultIfNotMatch();`.
 	 * - When is necessary to create not found route or error route
 	 *   when there was not possible to route the request or when
-	 *   there was any uncatched exception in controller or template
-	 *   catched later by application.
+	 *   there was any uncaught exception in controller or template
+	 *   caught later by application.
 	 *
 	 * @param string $routeName Always as `default`, `error` or `not_found`, by constants:
 	 *						 `\MvcCore\IRouter::DEFAULT_ROUTE_NAME`

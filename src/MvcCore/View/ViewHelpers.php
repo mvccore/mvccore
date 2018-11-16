@@ -143,7 +143,7 @@ trait ViewHelpers
 	}
 
 	/**
-	 * Set view helper for current template or for all templates globaly by default.
+	 * Set view helper for current template or for all templates globally by default.
 	 * If view helper already exist in global helpers store - it's overwritten.
 	 * @param string $helperName View helper method name in pascal case.
 	 * @param \MvcCore\Ext\Views\Helpers\AbstractHelper|\MvcCore\Ext\Views\Helpers\IHelper|mixed $instance View helper instance.

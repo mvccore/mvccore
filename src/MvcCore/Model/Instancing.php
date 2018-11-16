@@ -16,7 +16,7 @@ namespace MvcCore\Model;
 trait Instancing
 {
 	/**
-	 * Automaticly initialize `$this-config`, `$this->db` and `$this->resource` properties
+	 * Automatically initialize `$this-config`, `$this->db` and `$this->resource` properties
 	 * if local protected property `$this->autoInit` is still `TRUE` (`TRUE` as default in `\MvcCore\Model`).
 	 * @param string|int|NULL $connectionName Optional. If not set, there is used value from `static::$connectionName`.
 	 * @return void

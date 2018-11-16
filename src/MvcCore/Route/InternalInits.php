@@ -34,7 +34,7 @@ trait InternalInits
 	/**
 	 * TODO: asi neaktuální
 	 * Initialize `\MvcCore\Router::$Match` property (and `\MvcCore\Router::$lastPatternParam`
-	 * property) from `\MvcCore\Router::$Pattern`, optionaly initialize
+	 * property) from `\MvcCore\Router::$Pattern`, optionally initialize
 	 * `\MvcCore\Router::$Reverse` property if there is nothing inside.
 	 * - Add backslashes for all special regex chars excluding `<` and `>` chars.
 	 * - Parse all `<param>` occurrances in pattern into statistics array `$patternParams`.
@@ -182,7 +182,7 @@ trait InternalInits
 		$sectionIndex = 0;
 		$section = $reverseSectionsInfo[$sectionIndex];
 		$reverseLength = mb_strlen($reverse);
-		$greedyCatched = FALSE;
+		$greedyCaught = FALSE;
 		$matchOpenPos = -1;
 		$matchClosePos = -1;
 		$this->lastPatternParam = '';
@@ -195,7 +195,7 @@ trait InternalInits
 					$matchOpenPos = mb_strpos($match, '<', $matchIndex);
 					$matchClosePos = mb_strpos($match, '>', $matchOpenPos) + 1;
 				}}
-			if ($reverseClosePos === FALSE) break;// no other param catched
+			if ($reverseClosePos === FALSE) break;// no other param caught
 			// check if param belongs to current section 
 			// and if not, move to next (or next...) section
 			$reverseClosePos += 1;
@@ -214,7 +214,7 @@ trait InternalInits
 			$paramName = mb_substr($reverse, $reverseOpenPos + 1, $paramLength - 2);
 			list ($greedyFlag, $sectionIsLast) = $this->initReverseParamsGetGreedyInfo(
 				$reverseSectionsInfo, $constraints, 
-				$paramName, $sectionIndex, $greedyCatched
+				$paramName, $sectionIndex, $greedyCaught
 			);
 			if ($greedyFlag && $sectionIsLast) {
 				$lastSectionChar = mb_substr(
@@ -243,13 +243,13 @@ trait InternalInits
 		return $result;
 	}
 
-	protected function initReverseParamsGetGreedyInfo (& $reverseSectionsInfo, & $constraints, & $paramName, & $sectionIndex, & $greedyCatched) {
+	protected function initReverseParamsGetGreedyInfo (& $reverseSectionsInfo, & $constraints, & $paramName, & $sectionIndex, & $greedyCaught) {
 		// complete greedy flag by star character inside param name
 		$greedyFlag = mb_strpos($paramName, '*') !== FALSE;
 		$sectionIsLast = NULL;
 		// check greedy param specifics
 		if ($greedyFlag) {
-			if ($greedyFlag && $greedyCatched) throw new \InvalidArgumentException(
+			if ($greedyFlag && $greedyCaught) throw new \InvalidArgumentException(
 				"[\".__CLASS__.\"] Route pattern definition can have only one greedy `<param_name*>` "
 				." with star (to include everything - all characters and slashes . `.*`) (\$this)."
 			);
@@ -259,7 +259,7 @@ trait InternalInits
 				$sectionIndexPlusOne < $reverseSectionsCount &&
 				!($reverseSectionsInfo[$sectionIndexPlusOne]->fixed)
 			) {
-				// check if param is realy greedy or not
+				// check if param is really greedy or not
 				$constraintDefined = isset($constraints[$paramName]);
 				$constraint = $constraintDefined ? $constraints[$paramName] : NULL ;
 				$greedyReal = !$constraintDefined || ($constraintDefined && (
@@ -271,7 +271,7 @@ trait InternalInits
 					."section (\$this)."
 				);
 			}
-			$greedyCatched = TRUE;
+			$greedyCaught = TRUE;
 			$paramName = str_replace('*', '', $paramName);
 			$sectionIsLast = $sectionIndexPlusOne === $reverseSectionsCount;
 		}

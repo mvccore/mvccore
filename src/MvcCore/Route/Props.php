@@ -17,8 +17,8 @@ trait Props
 {
 	/**
 	 * TODO: neaktualni?
-	 * Default constraint used for all rewrited params, if no
-	 * constraint for rewrited param has been specified.
+	 * Default constraint used for all rewritten params, if no
+	 * constraint for rewritten param has been specified.
 	 * configured as `"[^/]*"` by default. This value means:
 	 * - "Any character(s) in any length, except next slash."
 	 * @var string
@@ -41,7 +41,7 @@ trait Props
 	 * - No regular expression border `#` characters, it will be
 	 *   used internally in route parsing.
 	 * - No start `^` or end `$` regular expression characters,
-	 *   those characters will be added automaticly.
+	 *   those characters will be added automatically.
 	 * - No escaping of regular expression characters:
 	 *   `[](){}<>|=+*.!?-/`, those characters will be escaped
 	 *   in route preparing process.
@@ -142,7 +142,7 @@ trait Props
 	protected $action		= '';
 
 	/**
-	 * Route rewrited params default values and also any other params default values.
+	 * Route rewritten params default values and also any other params default values.
 	 * It could be used for any application request input - `$_GET`, `$_POST` or `php://input`.
 	 *
 	 * Example: `array("name" => "default-name", "color" => "red",);`.
@@ -153,9 +153,9 @@ trait Props
 	/**
 	 * TODO: neaktualni
 	 * Array with param names and their custom regular expression
-	 * matching rules. Not required, for all rewrited params there is used
+	 * matching rules. Not required, for all rewritten params there is used
 	 * default matching rule from `\MvcCore\Route::$defaultPathConstraint`.
-	 * It shoud be changed to any value. The value is `"[^/]*"` by default.
+	 * It should be changed to any value. The value is `"[^/]*"` by default.
 	 * It means "Any character(s) in any length, except next slash".
 	 *
 	 * Example:
@@ -199,7 +199,7 @@ trait Props
 	 * TODO: neaktuální
 	 * Array with `string` keys by all reverse pattern params and with values by 
 	 * every param occurance start, length and required in reverse pattern string.
-	 * This array is parsed automaticly by method `\MvcCore\Route::initMatch();` 
+	 * This array is parsed automatically by method `\MvcCore\Route::initMatch();` 
 	 * if necessary or by method `\MvcCore\Route::initReverse();` after it's 
 	 * necessary, to be able to complete URL address string in method and sub
 	 * methods of `\MvcCore\Route::Url();`.
@@ -220,12 +220,12 @@ trait Props
 	 * Optional, param name, which has to be also inside `\MvcCore\Route::$pattern` or
 	 * inside `\MvcCore\Route::$match` or inside `\MvcCore\Route::$reverse` pattern property
 	 * as the last one. And after it's value, there could be only trailing slash or nothing
-	 * (pattern end). This trailing slash param definition automaticly trims this last param
+	 * (pattern end). This trailing slash param definition automatically trims this last param
 	 * value for right trailing slash when route is matched.
 	 *
-	 * This property is automaticly completed by method `\MvcCore\Route::initMatch()`,
+	 * This property is automatically completed by method `\MvcCore\Route::initMatch()`,
 	 * when there is parsed `\MvcCore\Route::$pattern` string into `\MvcCore\Route::$match` property
-	 * or it is automaticly completed by method `\MvcCore\Route::initReverse()`, when
+	 * or it is automatically completed by method `\MvcCore\Route::initReverse()`, when
 	 * there is parsed `\MvcCore\Route::$reverse` string into `\MvcCore\Route::$reverseParams`
 	 * array to build url addresses.
 	 *

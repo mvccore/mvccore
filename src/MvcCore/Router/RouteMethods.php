@@ -60,12 +60,12 @@ trait RouteMethods
 	 *										`Controller::Action` definitions.
 	 * @param string|NULL $groupName Group name is first matched/parsed word in 
 	 *								 requested path to group routes by to try to
-	 *								 match only routes you realy need, not all of
+	 *								 match only routes you really need, not all of
 	 *								 them. If `NULL` by default, routes are 
 	 *								 inserted into default group.
 	 * @param bool $autoInitialize If `TRUE`, locale routes array is cleaned and 
 	 *							   then all routes (or configuration arrays) are 
-	 *							   sended into method `$router->AddRoutes();`, 
+	 *							   sent into method `$router->AddRoutes();`, 
 	 *							   where are routes auto initialized for missing 
 	 *							   route names or route controller or route action
 	 *							   record, completed always from array keys.
@@ -158,7 +158,7 @@ trait RouteMethods
 	 *										 `Controller::Action` definitions.
 	 * @param string|NULL $groupName Group name is first matched/parsed word in 
 	 *								 requested path to group routes by to try to
-	 *								 match only routes you realy need, not all of
+	 *								 match only routes you really need, not all of
 	 *								 them. If `NULL` by default, routes are 
 	 *								 inserted into default group.
 	 * @param bool $prepend	Optional, if `TRUE`, all given routes will
@@ -258,7 +258,7 @@ trait RouteMethods
 	 *																route config array.
 	 * @param string|NULL $groupName Group name is first matched/parsed word in 
 	 *								 requested path to group routes by to try to
-	 *								 match only routes you realy need, not all of
+	 *								 match only routes you really need, not all of
 	 *								 them. If `NULL` by default, routes are 
 	 *								 inserted into default group.
 	 * @param bool $prepend	Optional, if `TRUE`, given route will
@@ -379,7 +379,7 @@ trait RouteMethods
 	 * Keys in returned array are route names, values are route objects.
 	 * @param string|NULL $groupName Group name is first matched/parsed word in 
 	 *								 requested path to group routes by to try to
-	 *								 match only routes you realy need, not all of
+	 *								 match only routes you really need, not all of
 	 *								 them. If `NULL` by default, there are 
 	 *								 returned all routes from all groups.
 	 * @return \MvcCore\Route[]
