@@ -92,6 +92,7 @@ trait Helpers
 			[$this->toolClass, 'CheckClassInterface'], 
 			$newCoreClassName, $coreClassInterface, TRUE, TRUE // check static methods and throw an exception if false
 		)) $this->$coreClassVar = $newCoreClassName;
+		/** @var $this \MvcCore\Application */
 		return $this;
 	}
 
@@ -119,6 +120,7 @@ trait Helpers
 				$handlers[$priorityIndex] = [$closureCalling, $handler];
 			}
 		}
+		/** @var $this \MvcCore\Application */
 		return $this;
 	}
 }

@@ -22,6 +22,9 @@ namespace MvcCore;
  *   - `"PascalCase"		=> "unserscore_case"`
  * - Static functions to safely encode/decode JSON.
  * - Static functions to get client/server IPs.
+ * - Static functions to get system temp directory.
+ * - Static functions to safely invoke dangerous call.
+ * - Static functions to write into file by one process only.
  * - Static function to check core classes inheritance.
  */
 interface ITool
@@ -95,7 +98,7 @@ interface ITool
 	 * - `string $errFile`		- Optional, full path to error file name where error was raised.
 	 * - `int $errLine`			- Optional, The error file line number.
 	 * - `array $errContext`	- Optional, array that points to the active symbol table at the 
-	 *							  point the error occurred. In other words, errcontext will contain 
+	 *							  point the error occurred. In other words, `$errContext` will contain 
 	 *							  an array of every variable that existed in the scope the error 
 	 *							  was triggered in. User error handler must not modify error context.
 	 *							  Warning: This parameter has been DEPRECATED as of PHP 7.2.0. 
@@ -116,11 +119,11 @@ interface ITool
 	 * @see http://php.net/manual/en/function.set-error-handler.php
 	 * @see http://php.net/manual/en/function.clearstatcache.php
 	 * @param string $fullPath File full path.
-	 * @param string $content String content ot write.
+	 * @param string $content String content to write.
 	 * @param string $writeMode PHP `fopen()` second argument flag, could be `w`, `w+`, `a`, `a+` etc...
-	 * @param int $lockWaitMiliSeconds Miliseconds to wait before next lock file existence is checked in `while()` cycle.
-	 * @param int $maxLockWaitMiliSeconds Maximum miliseconds time to wait before thrown an exception about not possible write.
-	 * @param int $oldLockMilisecondsTolerance Maximum miliseconds time to consider lock file as operative or as old after some died process.
+	 * @param int $lockWaitMilliseconds Milliseconds to wait before next lock file existence is checked in `while()` cycle.
+	 * @param int $maxLockWaitMilliseconds Maximum milliseconds time to wait before thrown an exception about not possible write.
+	 * @param int $oldLockMillisecondsTolerance Maximum milliseconds time to consider lock file as operative or as old after some died process.
 	 * @throws \Exception About 
 	 * @return bool
 	 */
@@ -128,9 +131,9 @@ interface ITool
 		$fullPath, 
 		& $content, 
 		$writeMode = 'w', 
-		$lockWaitMiliSeconds = 100, 
-		$maxLockWaitMiliSeconds = 5000, 
-		$oldLockMilisecondsTolerance = 30000
+		$lockWaitMilliseconds = 100, 
+		$maxLockWaitMilliseconds = 5000, 
+		$oldLockMillisecondsTolerance = 30000
 	);
 
 	/**

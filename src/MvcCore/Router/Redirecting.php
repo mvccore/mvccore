@@ -16,7 +16,7 @@ namespace MvcCore\Router;
 trait Redirecting
 {
 	/**
-	 * Redirect to proper trailing slash url version only
+	 * Redirect to proper trailing slash URL version only
 	 * if it is necessary by `\MvcCore\Router::$trailingSlashBehaviour`
 	 * and if it is necessary by last character in request path.
 	 * @return bool
@@ -60,7 +60,7 @@ trait Redirecting
 	}
 
 	/**
-	 * Redirect request to given url with optional code and terminate application.
+	 * Redirect request to given URL with optional code and terminate application.
 	 * @param string	$url New location url.
 	 * @param int		$code Http status code, 301 by default.
 	 */

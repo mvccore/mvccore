@@ -13,10 +13,6 @@
 
 namespace MvcCore;
 
-//include_once(__DIR__ . '/ISession.php');
-//include_once('Application.php');
-//include_once('Request.php');
-
 /**
  * Responsibility - session data management - starting, writing and expirations.
  * - Safe start (only once)

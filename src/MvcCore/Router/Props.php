@@ -42,8 +42,8 @@ trait Props
 
 	/**
 	 * Internally used `\MvcCore\Request` request object reference for:
-	 * - Routing process in `\MvcCore\Router::Route();` and it's protected submethods.
-	 * - URL addresses completing in `\MvcCore\Router::Url()` and it's protected submethods.
+	 * - Routing process in `\MvcCore\Router::Route();` and it's protected sub-methods.
+	 * - URL addresses completing in `\MvcCore\Router::Url()` and it's protected sub-methods.
 	 * @var \MvcCore\Request|\MvcCore\IRequest|NULL
 	 */
 	protected $request = NULL;
@@ -66,7 +66,7 @@ trait Props
 	protected $routesGroups = [];
 
 	/**
-	 * Global application route instances store to complete url addresses.
+	 * Global application route instances store to complete URL addresses.
 	 * Keys are route(s) names and `Controller:Action` combinations,
 	 * values are `\MvcCore\Route` instances.
 	 * @var \MvcCore\Route[]
@@ -122,16 +122,16 @@ trait Props
 	protected $requestedParams = [];
 
 	/**
-	 * Trrailing slash behaviour - integer state about what to do with trailing
-	 * slash in all requested url except homepage. Possible states are:
+	 * Trailing slash behaviour - integer state about what to do with trailing
+	 * slash in all requested URL except homepage. Possible states are:
 	 * - `-1` (`\MvcCore\IRouter::TRAILING_SLASH_REMOVE`)
-	 *		Always remove trailing slash from requested url if there
+	 *		Always remove trailing slash from requested URL if there
 	 *		is any and redirect to it, except homepage.
 	 * -  `0` (`\MvcCore\IRouter::TRAILING_SLASH_BENEVOLENT`)
 	 *		Be absolutely benevolent for trailing slash in requested url.
 	 * -  `1` (`\MvcCore\IRouter::TRAILING_SLASH_ALWAYS`)
-	 *		Always keep trailing slash in requested url or always add trailing
-	 *		slash into url and redirect to it.
+	 *		Always keep trailing slash in requested URL or always add trailing
+	 *		slash into URL and redirect to it.
 	 * Default value is `-1` - `\MvcCore\IRouter::TRAILING_SLASH_REMOVE`
 	 * @var int
 	 */

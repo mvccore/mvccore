@@ -27,7 +27,7 @@ trait Instancing
 	 * @param array $post
 	 * @param array $cookie
 	 * @param array $files
-	 * @return \MvcCore\Request
+	 * @return \MvcCore\Request|\MvcCore\IRequest
 	 */
 	public static function CreateInstance (
 		array & $server = [],
@@ -54,7 +54,7 @@ trait Instancing
 	 * @param array $post
 	 * @param array $cookie
 	 * @param array $files
-	 * @return \MvcCore\Request
+	 * @return void
 	 */
 	public function __construct (
 		array & $server = [],
@@ -72,14 +72,15 @@ trait Instancing
 	}
 
 	/**
-	 * Initialize all possible protected values from all globals,
+	 * Initialize all possible protected values from all global variables,
 	 * including all http headers, all params and application inputs.
-	 * This method is not recomanded to use in production mode, it's
+	 * This method is not recommended to use in production mode, it's
 	 * designed mostly for development purposes, to see in one moment,
 	 * what could be inside request after calling any getter method.
-	 * @return \MvcCore\Request
+	 * @return \MvcCore\Request|\MvcCore\IRequest
 	 */
 	public function & InitAll () {
+		/** @var $this \MvcCore\Request */
 		$this->GetScriptName();
 		$this->GetAppRoot();
 		$this->GetMethod();

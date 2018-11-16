@@ -16,7 +16,7 @@ namespace MvcCore\Router;
 trait UrlByRoutes
 {
 	/**
-	 * Complete optionally absolute, non-localized url by route instance reverse info.
+	 * Complete optionally absolute, non-localized URL by route instance reverse info.
 	 * Example:
 	 *	Input (`\MvcCore\Route::$reverse`):
 	 *		`"/products-list/<name>/<color>"`

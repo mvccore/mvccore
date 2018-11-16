@@ -105,7 +105,7 @@ trait MagicMethods
 		if (isset($reflectionTypes[$currentContextObjectName])) {
 			return $reflectionTypes[$currentContextObjectName];
 		}
-		// prevent inifinite loop
+		// prevent infinite loop
 		if ($privates['reflectionName'] === $currentContextObjectName) {
 			$privates['reflectionName'] = NULL;
 			return NULL;

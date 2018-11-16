@@ -18,7 +18,7 @@ trait Instancing
 	/**
 	 * Get new or existing MvcCore session namespace instance.
 	 * @param string $name
-	 * @return \MvcCore\Session
+	 * @return void
 	 */
 	public function __construct ($name = \MvcCore\ISession::DEFAULT_NAMESPACE_NAME) {
 		if (static::$started !== TRUE) static::Start();

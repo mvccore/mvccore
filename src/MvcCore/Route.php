@@ -14,10 +14,10 @@
 namespace MvcCore;
 
 /**
- * Responsibility - describing request(s) to match and reversely build url addresses.
+ * Responsibility - describing request(s) to match and reversely build URL addresses.
  * - Describing request to match it (read more about properties).
  * - Matching request by given request object, see `\MvcCore\Route::Matches()`.
- * - Completing url address by given params array, see `\MvcCore\Route::Url()`.
+ * - Completing URL address by given params array, see `\MvcCore\Route::Url()`.
  *
  * Main Properties:
  * - `$Pattern`
@@ -30,11 +30,11 @@ namespace MvcCore;
  *   Required together with `\MvcCore\Route::$reverse` property, if you
  *   have not configured `\MvcCore\Route::$pattern` property instead.
  *   This property is always used to match request by `\MvcCore\Request::Path`
- *   by classic PHP regualar expression matching by `preg_match_all();`.
+ *   by classic PHP regular expression matching by `preg_match_all();`.
  * - `$Reverse`
  *   Required together with `\MvcCore\Route::$match` property, if you
  *   have not configured `\MvcCore\Route::$pattern` property instead.
- *   This property is always used to complete url address by called params
+ *   This property is always used to complete URL address by called params
  *   array and by this string with rewrite params replacements inside.
  * - `$Controller`
  *   Required, if there is no `controller` param inside `\MvcCore\Route::$pattern`
@@ -45,9 +45,9 @@ namespace MvcCore;
  *   or inside `\MvcCore\Route::$match property`. Public method in controller
  *   in pascal case form, but in controller named as `public function <CoolName>Action () {...`.
  * - `$Name`
- *   Not required, if you want to create url addresses always by `Controller:Action`
+ *   Not required, if you want to create URL addresses always by `Controller:Action`
  *   named records. It could be any string, representing route custom name to
- *   complete url address by that name inside your application.
+ *   complete URL address by that name inside your application.
  * - `$Defaults`
  *   Not required, matched route params default values and query params default values.
  *   Last entry in array may be used for property `\MvcCore\Route::$lastPatternParam`
@@ -74,7 +74,7 @@ class Route implements IRoute
 	 * always called from `\MvcCore\Router::Matches();` request routing.
 	 *
 	 * Go through given route pattern value and try to search for
-	 * any url param occurances inside, like `<name>` or `<color*>`.
+	 * any URL param occurrences inside, like `<name>` or `<color*>`.
 	 * Return and array with describing records for each founded param.
 	 * Example:
 	 *	Input (`$pattern`):
@@ -83,24 +83,24 @@ class Route implements IRoute
 	 *		`array(
 	 *			array(
 	 *				"name",		// param name
-	 *				"<name>",	// param name for regex match pattern
-	 *				16,			// `"<name>"` occurance position in escaped pattern for match
-	 *				15,			// `"<name>"` occurance position in original pattern for reverse
+	 *				"<name>",	// param name for regular expression match pattern
+	 *				16,			// `"<name>"` occurrence position in escaped pattern for match
+	 *				15,			// `"<name>"` occurrence position in original pattern for reverse
 	 *				6,			// `"<name>"` string length
 	 *				FALSE		// greedy param star flag
 	 *			),
 	 *			array(
 	 *				"color",	// param name
-	 *				"<color>",	// param name for regex match pattern
-	 *				23,			// `"<color*>"` occurance position in escaped pattern for match
-	 *				22,			// `"<color*>"` occurance position in original pattern for reverse
+	 *				"<color>",	// param name for regular expression match pattern
+	 *				23,			// `"<color*>"` occurrence position in escaped pattern for match
+	 *				22,			// `"<color*>"` occurrence position in original pattern for reverse
 	 *				7,			// `"<color>"` string length
 	 *				TRUE		// greedy param star flag
 	 *			)
 	 *		);
 	 * @param string $pattern Route pattern.
 	 * @throws \LogicException Thrown, when founded any other param after greedy param.
-	 * @return array Match pattern sring and statistics about founded params occurances.
+	 * @return array Match pattern string and statistics about founded params occurrences.
 	 */
 	/*protected function _old_parsePatternParams (& $pattern) {
 		$patternParams = [];
@@ -176,17 +176,17 @@ class Route implements IRoute
 	 *		`array(
 	 *			array(
 	 *				"name",		// param name
-	 *				"<name>",	// param name for regex match pattern
-	 *				16,			// `"<name>"` occurance position in escaped pattern for match
-	 *				15,			// `"<name>"` occurance position in original pattern for reverse
+	 *				"<name>",	// param name for regular expression match pattern
+	 *				16,			// `"<name>"` occurrence position in escaped pattern for match
+	 *				15,			// `"<name>"` occurrence position in original pattern for reverse
 	 *				6,			// `"<name>"` string length
 	 *				FALSE		// greedy param star flag
 	 *			),
 	 *			array(
 	 *				"color",	// param name
-	 *				"<color>",	// param name for regex match pattern
-	 *				23,			// `"<color*>"` occurance position in escaped pattern for match
-	 *				22,			// `"<color*>"` occurance position in original pattern for reverse
+	 *				"<color>",	// param name for regular expression match pattern
+	 *				23,			// `"<color*>"` occurrence position in escaped pattern for match
+	 *				22,			// `"<color*>"` occurrence position in original pattern for reverse
 	 *				7,			// `"<color>"` string length
 	 *				TRUE		// greedy param star flag
 	 *			)
@@ -278,7 +278,7 @@ class Route implements IRoute
 				// else if this param is the last one:
 				$matchUrlPartBeforeNext = mb_substr($matchPattern, $matchIndex + $length);
 				$reverseUrlPartBeforeNext = mb_substr($reversePattern, $reverseIndex + $length);
-				// if there is nothing more in url or just only a slash char `/`:
+				// if there is nothing more in URL or just only a slash char `/`:
 				if ($matchUrlPartBeforeNext == '' || $matchUrlPartBeforeNext == '/') {
 					$trailingSlash = TRUE;
 					$this->lastPatternParam = $paramName;

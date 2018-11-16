@@ -34,8 +34,8 @@ trait Starting
 	}
 
 	/**
-	 * Get unix epoch for current request session start moment.
-	 * This method is used for debuging purposes.
+	 * Get Unix epoch for current request session start moment.
+	 * This method is used for debugging purposes.
 	 * @return int
 	 */
 	public static function GetSessionStartTime () {
@@ -43,7 +43,7 @@ trait Starting
 	}
 
 	/**
-	 * Get static boolean about if session has been allready started or not.
+	 * Get static boolean about if session has been already started or not.
 	 * @return bool
 	 */
 	public static function GetStarted () {

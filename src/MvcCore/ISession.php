@@ -30,7 +30,7 @@ namespace MvcCore;
 interface ISession
 {
 	/**
-	 * Metadata key in `$_SESSION` storrage.
+	 * Metadata key in `$_SESSION` storage.
 	 * @var string
 	 */
 	const SESSION_METADATA_KEY = '__MC';
@@ -84,21 +84,21 @@ interface ISession
 	public static function Start ();
 
 	/**
-	 * Get unix epoch for current request session start moment.
+	 * Get Unix epoch for current request session start moment.
 	 * @return int
 	 */
 	public static function GetSessionStartTime ();
 
 	/**
 	 * Get session metadata about session namespaces.
-	 * This method is used for debuging purposes.
+	 * This method is used for debugging purposes.
 	 * @return \stdClass
 	 */
 	public static function GetSessionMetadata ();
 
 	/**
 	 * Write and close session in `\MvcCore::Terminate();`.
-	 * Serialize all metadata and call php function to write session into php session storrage.
+	 * Serialize all metadata and call php function to write session into php session storage.
 	 * (HDD, Redis, database, etc., depends on php configuration).
 	 * @return void
 	 */
@@ -136,15 +136,15 @@ interface ISession
 	public static function SendCookie ();
 
 	/**
-	 * Destroy whole session namespace in `$_SESSION` storrage
-	 * and internal static storrages.
+	 * Destroy whole session namespace in `$_SESSION` storage
+	 * and internal static storages.
 	 * @return void
 	 */
 	public function Destroy ();
 
 	/**
-	 * Destroy all existing session namespaces in `$_SESSION` storrage
-	 * and internal static storrages, destroy whole PHP session.
+	 * Destroy all existing session namespaces in `$_SESSION` storage
+	 * and internal static storages, destroy whole PHP session.
 	 * @return void
 	 */
 	public static function DestroyAll ();

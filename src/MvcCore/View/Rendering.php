@@ -17,7 +17,7 @@ trait Rendering
 {
 	/**
 	 * Render action template script or any include script and return it's result as reference.
-	 * Do not use this method in layout subtemplates, use method `RenderLayout()` instead.
+	 * Do not use this method in layout sub-templates, use method `RenderLayout()` instead.
 	 * @param string $relativePath
 	 * @return string
 	 */
@@ -27,7 +27,7 @@ trait Rendering
 
 	/**
 	 * Render layout template script or any include script and return it's result as reference.
-	 * Do not use this method in action subtemplates, use method `RenderScript()` instead.
+	 * Do not use this method in action sub-templates, use method `RenderScript()` instead.
 	 * @param string $relativePath
 	 * @return string
 	 */
@@ -58,6 +58,7 @@ trait Rendering
 	 * @return string
 	 */
 	public function & Render ($typePath = '', $relativePath = '') {
+		/** @var $this \MvcCore\View */
 		if (!$typePath) $typePath = static::$scriptsDir;
 		$result = '';
 		$relativePath = $this->_correctRelativePath(
@@ -72,7 +73,7 @@ trait Rendering
 		ob_start();
 		include($viewScriptFullPath);
 		$result = ob_get_clean();
-		array_pop($renderedFullPaths); // unset last
+		\array_pop($renderedFullPaths); // unset last
 		return $result;
 	}
 
@@ -104,6 +105,7 @@ trait Rendering
 	 * @return \MvcCore\View
 	 */
 	public function & SetUpStore (\MvcCore\IView & $view, $overwriteExistingKeys = TRUE) {
+		/** @var $this \MvcCore\View */
 		$currentStore = & $this->__protected['store'];
 		$viewStore = & $view->__protected['store'];
 		if ($overwriteExistingKeys) {

@@ -24,10 +24,10 @@ trait UrlBuilding
 	 *	 (route name is key in routes configuration array, should be any string
 	 *	 but routes must have information about controller name and action name inside).
 	 * Result address (url string) should have two forms:
-	 * - Nice rewritten url by routes configuration
+	 * - Nice rewritten URL by routes configuration
 	 *   (for apps with URL rewrite support (Apache `.htaccess` or IIS URL rewrite module)
 	 *   and when first param is key in routes configuration array).
-	 * - For all other cases is url form like: `"index.php?controller=ctrlName&amp;action=actionName"`
+	 * - For all other cases is URL form like: `"index.php?controller=ctrlName&amp;action=actionName"`
 	 *	 (when first param is not founded in routes configuration array).
 	 * @param string $controllerActionOrRouteName	Should be `"Controller:Action"` combination or just any route name as custom specific string.
 	 * @param array  $params						Optional, array with params, key is param name, value is param value.
@@ -40,10 +40,10 @@ trait UrlBuilding
 			$controllerActionOrRouteName
 		);
 		if ($this->anyRoutesConfigured && !($this->routeByQueryString && $ctrlActionOrRouteNameKey === static::DEFAULT_ROUTE_NAME)) {
-			// try to found url route in global `$this->urlRoutes` store
+			// try to found URL route in global `$this->urlRoutes` store
 			if (isset($this->urlRoutes[$ctrlActionOrRouteNameKey]) && $this->urlRoutes[$ctrlActionOrRouteNameKey]->GetName() !== static::DEFAULT_ROUTE_NAME) {
 				// if there was a route under `$ctrlActionOrRouteNameKey` key already, 
-				// we can complete url by this route
+				// we can complete URL by this route
 				$result = $this->UrlByRoute(
 					$this->urlRoutes[$ctrlActionOrRouteNameKey], 
 					$params, $controllerActionOrRouteName
@@ -57,7 +57,7 @@ trait UrlBuilding
 				if (!isset($this->noUrlRoutes)) {
 					if ($this->preRouteUrlBuildingHandler !== NULL) 
 						call_user_func($this->preRouteUrlBuildingHandler, $this, $ctrlActionOrRouteNameKey, $params);
-					// try to found url route again
+					// try to found URL route again
 					if (isset($this->urlRoutes[$ctrlActionOrRouteNameKey]) && $this->urlRoutes[$ctrlActionOrRouteNameKey]->GetName() !== static::DEFAULT_ROUTE_NAME) {
 						$urlRouteFound = TRUE;
 					} else {
@@ -66,14 +66,14 @@ trait UrlBuilding
 				}
 				if ($urlRouteFound) {
 					// if route under key `$ctrlActionOrRouteNameKey` has been loaded by calling
-					// configured handler `$this->preRouteUrlBuildingHandler`, complete url by this route
+					// configured handler `$this->preRouteUrlBuildingHandler`, complete URL by this route
 					$result = $this->UrlByRoute(
 						$this->urlRoutes[$ctrlActionOrRouteNameKey], 
 						$params, $controllerActionOrRouteName
 					);
 				} else {
 					// there is probably no route for given key `$ctrlActionOrRouteNameKey`,
-					// so complete result url with query string logic
+					// so complete result URL with query string logic
 					$result = $this->UrlByQueryString(
 						$ctrlActionOrRouteNameKey, 
 						$params, $controllerActionOrRouteName
@@ -81,7 +81,7 @@ trait UrlBuilding
 				}
 			}
 		} else {
-			// if there are no url routes configured - complete url with query string logic
+			// if there are no URL routes configured - complete URL with query string logic
 			$result = $this->UrlByQueryString(
 				$ctrlActionOrRouteNameKey, 
 				$params, $controllerActionOrRouteName

@@ -33,9 +33,10 @@ trait CollectionsMethods
 	 * Header name(s) as array keys should be in standard format like:
 	 * `"Content-Type" | "Content-Length" | "X-Requested-With" ...`.
 	 * @param array $headers
-	 * @return \MvcCore\Request
+	 * @return \MvcCore\Request|\MvcCore\IRequest
 	 */
 	public function & SetHeaders (array & $headers = []) {
+		/** @var $this \MvcCore\Request */
 		$this->headers = & $headers;
 		return $this;
 	}
@@ -67,9 +68,10 @@ trait CollectionsMethods
 	 * `"Content-Type" | "Content-Length" | "X-Requested-With" ...`.
 	 * @param string $name
 	 * @param string|string[] $value
-	 * @return \MvcCore\Request
+	 * @return \MvcCore\Request|\MvcCore\IRequest
 	 */
 	public function & SetHeader ($name = '', $value = '') {
+		/** @var $this \MvcCore\Request */
 		if ($this->headers === NULL) $this->initHeaders();
 		$this->headers[$name] = $value;
 		return $this;
@@ -99,7 +101,7 @@ trait CollectionsMethods
 	}
 
 	/**
-	 * Return if reqest has any http header by given name.
+	 * Return if request has any http header by given name.
 	 * @param string $name Http header string name.
 	 * @return bool
 	 */
@@ -112,9 +114,10 @@ trait CollectionsMethods
 	/**
 	 * Set directly all raw parameters without any conversion at once.
 	 * @param array $params
-	 * @return \MvcCore\Request
+	 * @return \MvcCore\Request|\MvcCore\IRequest
 	 */
 	public function & SetParams (array & $params = []) {
+		/** @var $this \MvcCore\Request */
 		$this->params = & $params;
 		return $this;
 	}
@@ -150,9 +153,10 @@ trait CollectionsMethods
 	 * Set directly raw parameter value without any conversion.
 	 * @param string $name
 	 * @param string|string[] $value
-	 * @return \MvcCore\Request
+	 * @return \MvcCore\Request|\MvcCore\IRequest
 	 */
 	public function & SetParam ($name = '', $value = '') {
+		/** @var $this \MvcCore\Request */
 		if ($this->params === NULL) $this->initParams();
 		$this->params[$name] = $value;
 		return $this;
@@ -161,9 +165,10 @@ trait CollectionsMethods
 	/**
 	 * Remove parameter by name.
 	 * @param string $name
-	 * @return \MvcCore\Request
+	 * @return \MvcCore\Request|\MvcCore\IRequest
 	 */
 	public function & RemoveParam ($name = '') {
+		/** @var $this \MvcCore\Request */
 		if ($this->params === NULL) $this->initParams();
 		unset($this->params[$name]);
 		return $this;
@@ -173,7 +178,7 @@ trait CollectionsMethods
 	 * Get param value from `$_GET`, `$_POST` or `php://input`, filtered by
 	 * "rule to keep defined characters only", defined in second argument (by `preg_replace()`).
 	 * Place into second argument only char groups you want to keep.
-	 * @param string $name Parametter string name.
+	 * @param string $name Parameter string name.
 	 * @param string|array|bool $pregReplaceAllowedChars If String - list of regular expression characters to only keep, if array - `preg_replace()` pattern and reverse, if `FALSE`, raw value is returned.
 	 * @param mixed $ifNullValue Default value returned if given param name is null.
 	 * @param string $targetType Target type to retype param value or default if-null value. If param is an array, every param item will be retyped into given target type.
@@ -193,7 +198,7 @@ trait CollectionsMethods
 
 	/**
 	 * Get if any param value exists in `$_GET`, `$_POST` or `php://input`
-	 * @param string $name Parametter string name.
+	 * @param string $name Parameter string name.
 	 * @return bool
 	 */
 	public function HasParam ($name = '') {
@@ -205,9 +210,10 @@ trait CollectionsMethods
 	/**
 	 * Set directly whole raw global `$_FILES` without any conversion at once.
 	 * @param array $files
-	 * @return \MvcCore\Request
+	 * @return \MvcCore\Request|\MvcCore\IRequest
 	 */
 	public function & SetFiles (array & $files = []) {
+		/** @var $this \MvcCore\Request */
 		$this->globalFiles = & $files;
 		return $this;
 	}
@@ -225,9 +231,10 @@ trait CollectionsMethods
 	 * Set file item into global `$_FILES` without any conversion at once.
 	 * @param string $file Uploaded file string name.
 	 * @param array $data
-	 * @return \MvcCore\Request
+	 * @return \MvcCore\Request|\MvcCore\IRequest
 	 */
 	public function & SetFile ($file = '', $data = []) {
+		/** @var $this \MvcCore\Request */
 		$this->globalFiles[$file] = $data;
 		return $this;
 	}
@@ -239,6 +246,7 @@ trait CollectionsMethods
 	 * @return array
 	 */
 	public function GetFile ($file = '') {
+		/** @var $this \MvcCore\Request */
 		if (isset($this->globalFiles[$file])) return $this->globalFiles[$file];
 		return [];
 	}
@@ -256,9 +264,10 @@ trait CollectionsMethods
 	/**
 	 * Set directly whole raw global `$_COOKIE` without any conversion at once.
 	 * @param array $cookies
-	 * @return \MvcCore\Request
+	 * @return \MvcCore\Request|\MvcCore\IRequest
 	 */
 	public function & SetCookies (array & $cookies = []) {
+		/** @var $this \MvcCore\Request */
 		$this->globalCookies = & $cookies;
 		return $this;
 	}
@@ -292,9 +301,10 @@ trait CollectionsMethods
 	 * Set raw request cookie into referenced global `$_COOKIE` without any conversion.
 	 * @param string $name
 	 * @param string|string[] $value
-	 * @return \MvcCore\Request
+	 * @return \MvcCore\Request|\MvcCore\IRequest
 	 */
 	public function & SetCookie ($name = "", $value = "") {
+		/** @var $this \MvcCore\Request */
 		$this->globalCookies[$name] = $value;
 		return $this;
 	}

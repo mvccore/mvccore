@@ -81,8 +81,9 @@ trait RewriteRouting
 	}
 
 	protected function rewriteRoutingSetRequestedAndDefaultParams (array & $allMatchedParams, $requestCtrlName = NULL, $requestActionName = NULL) {
+		/** @var $this \MvcCore\Router */
 		// in array `$allMatchedParams` - there could be sometimes presented matched 
-		// or route speficied values from configuration already, under keys `controller` and 
+		// or route specified values from configuration already, under keys `controller` and 
 		// `action`, always with a value, never with `NULL`
 		/** @var $request \MvcCore\Request */
 		$request = & $this->request;
@@ -112,14 +113,14 @@ trait RewriteRouting
 			$request->SetActionName($defaultActionNameDashed);
 			$allMatchedParams['action'] = $defaultActionNameDashed;
 		}
-		// complete params for request object - there have to be everytring including ctrl and action
+		// complete params for request object - there have to be everything including ctrl and action
 		$this->defaultParams = array_merge(
 			// default params are merged with previous default params to have 
-			// possiblity to add domain params by extended module router
+			// possibility to add domain params by extended module router
 			$this->currentRoute->GetDefaults(), $this->defaultParams, 
 			$allMatchedParams, $rawQueryParams
 		);
-		// redirect route with strictly defined match regexp and not defined reverse could have `NULL` method result:
+		// redirect route with strictly defined match regular expression and not defined reverse could have `NULL` method result:
 		$routeReverseParams = $this->currentRoute->GetReverseParams() ?: [];
 		// complete really matched params from path - unset ctrl and action if ctrl and even action are not in pattern
 		$pathOnlyMatchedParams = array_merge([], $allMatchedParams);
@@ -130,7 +131,7 @@ trait RewriteRouting
 		// requested params - all really requested params for self URL addresses
 		// building base params array, parsed from path, merged with all query params 
 		// and merged later with given params array into method `Url()`.
-		// There cannot be `ctonroller` and `action` keys from route configuration,
+		// There cannot be `controller` and `action` keys from route configuration,
 		// only if ctrl and action is defined by query string, that's different
 		$this->requestedParams = array_merge([], $pathOnlyMatchedParams, $rawQueryParams);
 	}

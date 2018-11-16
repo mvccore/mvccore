@@ -46,7 +46,7 @@ trait PropsGettersSetters
 	protected $response;
 
 	/**
-	 * Application router object - reference storage for application router to crate url addresses.
+	 * Application router object - reference storage for application router to crate URL addresses.
 	 * @var \MvcCore\Router|\MvcCore\IRouter
 	 */
 	protected $router;
@@ -200,7 +200,7 @@ trait PropsGettersSetters
 	 * `\MvcCore\Application::DispatchControllerAction()` before controller is dispatched.
 	 * Usually call this as soon as possible after controller creation.
 	 * @param \MvcCore\Application $application
-	 * @return \MvcCore\Controller
+	 * @return \MvcCore\Controller|\MvcCore\Controller\PropsGettersSetters
 	 */
 	public function & SetApplication (\MvcCore\IApplication & $application) {
 		$this->application = & $application;
@@ -229,7 +229,7 @@ trait PropsGettersSetters
 	 * `\MvcCore::DispatchControllerAction()` before controller is dispatched.
 	 * Usually call this as soon as possible after controller creation.
 	 * @param \MvcCore\Response $response
-	 * @return \MvcCore\Controller
+	 * @return \MvcCore\Controller|\MvcCore\Controller\PropsGettersSetters
 	 */
 	public function & SetResponse (\MvcCore\IResponse & $response) {
 		$this->response = & $response;
@@ -250,7 +250,7 @@ trait PropsGettersSetters
 	 * `\MvcCore::DispatchControllerAction()` before controller is dispatched.
 	 * Usually call this as soon as possible after controller creation.
 	 * @param \MvcCore\Router $router
-	 * @return \MvcCore\Controller
+	 * @return \MvcCore\Controller|\MvcCore\Controller\PropsGettersSetters
 	 */
 	public function & SetRouter (\MvcCore\IRouter & $router) {
 		$this->router = & $router;
@@ -278,7 +278,7 @@ trait PropsGettersSetters
 	/**
 	 * Set user model instance.
 	 * @param \MvcCore\Model|\MvcCore\IModel $user
-	 * @return \MvcCore\Controller
+	 * @return \MvcCore\Controller|\MvcCore\Controller\PropsGettersSetters
 	 */
 	public function & SetUser (& $user) {
 		$this->user = $user;
@@ -298,7 +298,7 @@ trait PropsGettersSetters
 	/**
 	 * Set current controller view object.
 	 * @param \MvcCore\View $view
-	 * @return \MvcCore\Controller
+	 * @return \MvcCore\Controller|\MvcCore\Controller\PropsGettersSetters
 	 */
 	public function & SetView (\MvcCore\IView & $view) {
 		$this->view = $view;
@@ -318,7 +318,7 @@ trait PropsGettersSetters
 	 * Set layout name to render html wrapper around rendered action view.
 	 * Example: `"front" | "admin" | "account"...`.
 	 * @param string $layout
-	 * @return \MvcCore\Controller
+	 * @return \MvcCore\Controller|\MvcCore\Controller\PropsGettersSetters
 	 */
 	public function & SetLayout ($layout = '') {
 		$this->layout = $layout;
@@ -350,7 +350,7 @@ trait PropsGettersSetters
 	 * necessary to render your template only by calling controller rendering by:
 	 * `$subcontrollerInstance->Render('custom');`
 	 * @param string|NULL $viewScriptsPath
-	 * @return \MvcCore\Controller
+	 * @return \MvcCore\Controller|\MvcCore\Controller\PropsGettersSetters
 	 */
 	public function & SetViewScriptsPath ($viewScriptsPath = NULL) {
 		$this->viewScriptsPath = $viewScriptsPath;
@@ -373,7 +373,7 @@ trait PropsGettersSetters
 	 * `PreDispatch()` method and if view will be automatically rendered with wrapping
 	 * layout view around after controller action is called. Or set `FALSE` 
 	 * otherwise to not render any view. Default value is `TRUE` for all non-ajax requests.
-	 * @return \MvcCore\Controller
+	 * @return \MvcCore\Controller|\MvcCore\Controller\PropsGettersSetters
 	 */
 	public function & SetViewEnabled ($viewEnabled = TRUE) {
 		$this->viewEnabled = $viewEnabled;
@@ -395,7 +395,7 @@ trait PropsGettersSetters
 	 * or `NULL` for "top most parent" controller.
 	 * Method for child controllers.
 	 * @param \MvcCore\Controller|\MvcCore\IController|NULL $parentController
-	 * @return \MvcCore\Controller
+	 * @return \MvcCore\Controller|\MvcCore\Controller\PropsGettersSetters
 	 */
 	public function & SetParentController (\MvcCore\IController & $parentController = NULL) {
 		$this->parentController = $parentController;
@@ -421,7 +421,7 @@ trait PropsGettersSetters
 	 * If you want only to add child controller, use method:
 	 * \MvcCore\Controller::AddChildController();` instead.
 	 * @param \MvcCore\Controller[]|\MvcCore\IController[] $childControllers
-	 * @return \MvcCore\Controller
+	 * @return \MvcCore\Controller|\MvcCore\Controller\PropsGettersSetters
 	 */
 	public function & SetChildControllers (array & $childControllers = []) {
 		$this->childControllers = & $childControllers;
@@ -448,10 +448,10 @@ trait PropsGettersSetters
 	 *	 (route name is key in routes configuration array, should be any string
 	 *	 but routes must have information about controller name and action name inside).
 	 * Result address (url string) should have two forms:
-	 * - Nice rewritten url by routes configuration
+	 * - Nice rewritten URL by routes configuration
 	 *   (for apps with URL rewrite support (Apache `.htaccess` or IIS URL rewrite module)
 	 *   and when first param is key in routes configuration array).
-	 * - For all other cases is url form like: `"index.php?controller=ctrlName&amp;action=actionName"`
+	 * - For all other cases is URL form like: `"index.php?controller=ctrlName&amp;action=actionName"`
 	 *	 (when first param is not founded in routes configuration array).
 	 * @param string $controllerActionOrRouteName	Should be `"Controller:Action"` combination or just any route name as custom specific string.
 	 * @param array  $params						Optional, array with params, key is param name, value is param value.
@@ -462,7 +462,7 @@ trait PropsGettersSetters
 	}
 
 	/**
-	 * Return asset path or single file mode url for small assets
+	 * Return asset path or single file mode URL for small assets
 	 * handled by internal controller action `"Controller:Asset"`.
 	 * @param string $path
 	 * @return string

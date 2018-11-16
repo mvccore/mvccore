@@ -48,7 +48,7 @@ namespace MvcCore;
  *   - `Controller:Action` view rendering responsibility and response completion.
  *
  * Important methods:
- * - `Url()` - proxy method to build url by configured routes.
+ * - `Url()` - proxy method to build URL by configured routes.
  * - `GetParam()` - proxy method to read and clean request param values.
  * - `AddChildController()` - method to register child controller (navigations, etc.)
  *
@@ -343,7 +343,7 @@ interface IController
 	 * Set parent controller instance
 	 * or `NULL` for "top most parent" controller.
 	 * Method for child controllers.
-	 * @param \MvcCore\IController|NULL $parentController
+	 * @param \MvcCore\IController|\MvcCore\Controller\Dispatching|NULL $parentController
 	 * @return \MvcCore\IController
 	 */
 	public function & SetParentController (\MvcCore\IController & $parentController = NULL);
@@ -452,10 +452,10 @@ interface IController
 	 *	 (route name is key in routes configuration array, should be any string
 	 *	 but routes must have information about controller name and action name inside).
 	 * Result address (url string) should have two forms:
-	 * - Nice rewritten url by routes configuration
+	 * - Nice rewritten URL by routes configuration
 	 *   (for apps with URL rewrite support (Apache `.htaccess` or IIS URL rewrite module)
 	 *   and when first param is key in routes configuration array).
-	 * - For all other cases is url form like: `"index.php?controller=ctrlName&amp;action=actionName"`
+	 * - For all other cases is URL form like: `"index.php?controller=ctrlName&amp;action=actionName"`
 	 *	 (when first param is not founded in routes configuration array).
 	 * @param string $controllerActionOrRouteName	Should be `"Controller:Action"` combination or just any route name as custom specific string.
 	 * @param array  $params						Optional, array with params, key is param name, value is param value.
@@ -464,7 +464,7 @@ interface IController
 	public function Url ($controllerActionOrRouteName = 'Index:Index', array $params = []);
 
 	/**
-	 * Return asset path or single file mode url for small assets
+	 * Return asset path or single file mode URL for small assets
 	 * handled by internal controller action `"Controller:Asset"`.
 	 * @param string $path
 	 * @return string

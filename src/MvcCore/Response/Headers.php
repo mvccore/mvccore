@@ -28,9 +28,10 @@ trait Headers
 	 * @param array $headers
 	 * @param bool $cleanAllPrevious `FALSE` by default. If `TRUE`, all previous headers
 	 *								 set by PHP `header()` or by this object will be removed.
-	 * @return \MvcCore\Response
+	 * @return \MvcCore\Response|\MvcCore\IResponse
 	 */
 	public function & SetHeaders (array $headers = [], $cleanAllPrevious = FALSE) {
+		/** @var $this \MvcCore\Response */
 		if ($cleanAllPrevious) {
 			header_remove();
 			$this->headers = [];
@@ -50,9 +51,10 @@ trait Headers
 	 * Example: `$request->SetHeader('Content-Type', 'text/plain; charset=utf-8');`
 	 * @param string $name
 	 * @param string $value
-	 * @return \MvcCore\Response
+	 * @return \MvcCore\Response|\MvcCore\IResponse
 	 */
 	public function & SetHeader ($name, $value) {
+		/** @var $this \MvcCore\Response */
 		if (isset($this->disabledHeaders[$name])) 
 			return $this;
 		header($name . ": " . $value);
@@ -71,7 +73,7 @@ trait Headers
 	}
 
 	/**
-	 * Get HTTP response header by name. If header dowsn't exists, null is returned.
+	 * Get HTTP response header by name. If header doesn't exists, null is returned.
 	 * Example: `$request->GetHeader('Content-Type'); // returns 'text/plain; charset=utf-8'`
 	 * @param string $name
 	 * @return string|NULL
@@ -121,9 +123,10 @@ trait Headers
 	 * Set disabled headers, never sent except if there is 
 	 * rendered exception in development environment.
 	 * @param \string[] $disabledHeaders,...
-	 * @return \MvcCore\Response
+	 * @return \MvcCore\Response|\MvcCore\IResponse
 	 */
 	public function & SetDisabledHeaders (/* ...$disabledHeaders */) {
+		/** @var $this \MvcCore\Response */
 		$this->disabledHeaders = [];
 		$args = func_get_args();
 		if (count($args) === 1 && is_array($args[0])) $args = $args[0];

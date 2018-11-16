@@ -17,7 +17,7 @@ trait UrlBuilding
 {
 	/**
 	 * Filter given `array $params` by configured `"in" | "out"` filter `callable`.
-	 * This function return `array` with first item as `bool` about successfull
+	 * This function return `array` with first item as `bool` about successful
 	 * filter processing in `try/catch` and second item as filtered params `array`.
 	 * @param array $params 
 	 * @param array $defaultParams
@@ -45,11 +45,11 @@ trait UrlBuilding
 	}
 
 	/**
-	 * Complete route url by given params array and route
+	 * Complete route URL by given params array and route
 	 * internal reverse replacements pattern string.
 	 * If there are more given params in first argument
 	 * than count of replacement places in reverse pattern,
-	 * then create url with query string params after reverse
+	 * then create URL with query string params after reverse
 	 * pattern, containing that extra record(s) value(s).
 	 *
 	 * Example:
@@ -65,9 +65,9 @@ trait UrlBuilding
 	 *		`"/products-list/cool-product-name/blue?variant[]=L&amp;variant[]=XL"`
 	 * @param \MvcCore\Request $request Currently requested request object.
 	 * @param array $params URL params from application point completed by developer.
-	 * @param array $defaultUrlParams Requested url route prams nad query string params without escaped HTML special chars: `< > & " ' &`.
+	 * @param array $defaultUrlParams Requested URL route params and query string params without escaped HTML special chars: `< > & " ' &`.
 	 * @param string $queryStringParamsSepatator Query params separator, `&` by default. Always automatically completed by router instance.
-	 * @return \string[] Result URL addres in two parts - domain part with base path and path part with query string.
+	 * @return \string[] Result URL address in two parts - domain part with base path and path part with query string.
 	 */
 	public function Url (\MvcCore\IRequest & $request, array & $params = [], array & $defaultUrlParams = [], $queryStringParamsSepatator = '&') {
 		// check reverse initialization
@@ -79,8 +79,8 @@ trait UrlBuilding
 			$emptyReverseParams = array_fill_keys(array_keys($this->reverseParams), '');
 			$allMergedParams = array_merge($this->defaults, $defaultUrlParams, $params);
 			// all params clone contains only keys necessary to build reverse 
-			// patern for this route and all given `$params` keys, nothing more 
-			// from currently requested url
+			// pattern for this route and all given `$params` keys, nothing more 
+			// from currently requested URL
 			$allParamsClone = array_merge(
 				$emptyReverseParams, array_intersect_key($allMergedParams, $emptyReverseParams), $params
 			);
@@ -172,7 +172,7 @@ trait UrlBuilding
 			// route is defined as absolute with possible `%domain%` and other params
 			// process possible replacements in reverse result - `%host%`, `%domain%`, `%tld%` and `%sld%`
 			$this->urlReplaceDomainReverseParams($request, $resultUrl, $domainParams, $domainParamsFlag);
-			// try to find url position after domain part and after base path part
+			// try to find URL position after domain part and after base path part
 			if ($basePathInReverse) {
 				return $this->urlSplitResultByReverseBasePath($request, $resultUrl, $domainParams);
 			} else {
@@ -180,7 +180,7 @@ trait UrlBuilding
 			}
 		} else {
 			// route is not defined as absolute, there could be only flag 
-			// in domain params array to complete absolute url by developer
+			// in domain params array to complete absolute URL by developer
 			// and there could be also `basePath` param defined.
 			return $this->urlSplitResultByAbsoluteAndBasePath($request, $resultUrl, $domainParams, $domainParamsFlag);
 		}
@@ -315,7 +315,7 @@ trait UrlBuilding
 	 * `"absolute"` array key and if the record is `TRUE`. Unset the absolute 
 	 * flag from `$params` in any case.
 	 * @param array $params 
-	 * @return boolean
+	 * @return array
 	 */
 	protected function urlGetAndRemoveDomainPercentageParams (array & $params = []) {
 		static $domainPercentageParams = [];

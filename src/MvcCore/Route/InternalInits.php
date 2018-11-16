@@ -18,11 +18,12 @@ trait InternalInits
 	/**
 	 * TODO:
 	 * Initialize all possible protected values (`match`, `reverse` etc...)
-	 * This method is not recomanded to use in production mode, it's
+	 * This method is not recommended to use in production mode, it's
 	 * designed mostly for development purposes, to see what could be inside route.
 	 * @return \MvcCore\Route|\MvcCore\IRoute
 	 */
 	public function & InitAll () {
+		/** @var $this \MvcCore\Route */
 		if ($this->match === NULL && $this->reverse === NULL) {
 			$this->initMatchAndReverse();
 		} else if ($this->match !== NULL && ($this->reverseParams === NULL || $this->lastPatternParam === NULL)) {
@@ -36,8 +37,8 @@ trait InternalInits
 	 * Initialize `\MvcCore\Router::$Match` property (and `\MvcCore\Router::$lastPatternParam`
 	 * property) from `\MvcCore\Router::$Pattern`, optionally initialize
 	 * `\MvcCore\Router::$Reverse` property if there is nothing inside.
-	 * - Add backslashes for all special regex chars excluding `<` and `>` chars.
-	 * - Parse all `<param>` occurrances in pattern into statistics array `$patternParams`.
+	 * - Add backslashes for all special regular expression chars excluding `<` and `>` chars.
+	 * - Parse all `<param>` occurrence in pattern into statistics array `$patternParams`.
 	 * - Complete from the statistic array the match property and if there no reverse property,
 	 *   complete also reverse property.
 	 * This method is usually called in core request routing process from
@@ -394,7 +395,7 @@ trait InternalInits
 	protected function throwExceptionIfNoPattern () {
 		throw new \LogicException(
 			"[".__CLASS__."] Route configuration property `\MvcCore\Route::\$pattern` is missing "
-			."to parse it and complete property(ies) `\MvcCore\Route::\$match` "
+			."to parse it and complete property (or properties) `\MvcCore\Route::\$match` "
 			."(and `\MvcCore\Route::\$reverse`) correctly ($this)."
 		);
 	}

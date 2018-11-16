@@ -17,7 +17,7 @@ trait Closing
 {
 	/**
 	 * Write and close session in `\MvcCore::Terminate();`.
-	 * Serialize all metadata and call php function to write session into php session storrage.
+	 * Serialize all metadata and call php function to write session into php session storage.
 	 * (HDD, Redis, database, etc., depends on php configuration).
 	 * @return void
 	 */

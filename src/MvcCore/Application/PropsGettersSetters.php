@@ -63,7 +63,7 @@ trait PropsGettersSetters
 	protected $response = NULL;
 
 	/**
-	 * Application http router to route request and build url addresses.
+	 * Application http router to route request and build URL addresses.
 	 * @var \MvcCore\Router|\MvcCore\IRouter
 	 */
 	protected $router = NULL;
@@ -197,7 +197,7 @@ trait PropsGettersSetters
 	protected $routeClass = '\MvcCore\Route';
 
 	/**
-	 * Class to store all routes, dispatch request by routes and generate url addresses by routes.
+	 * Class to store all routes, dispatch request by routes and generate URL addresses by routes.
 	 * @var string
 	 */
 	protected $routerClass = '\MvcCore\Router';
@@ -368,7 +368,7 @@ trait PropsGettersSetters
 
 	/**
 	 * Get application router class implementing `\MvcCore\IRouter`.
-	 * Class to store all routes, dispatch request by routes and generate url addresses by routes.
+	 * Class to store all routes, dispatch request by routes and generate URL addresses by routes.
 	 * @return string
 	 */
 	public function GetRouterClass () {
@@ -507,6 +507,7 @@ trait PropsGettersSetters
 	 * @return \MvcCore\Application
 	 */
 	public function & SetCompiled ($compiled = '') {
+		/** @var $this \MvcCore\Application */
 		$this->compiled = $compiled;
 		return $this;
 	}
@@ -583,7 +584,7 @@ trait PropsGettersSetters
 
 	/**
 	 * Set application router class implementing `\MvcCore\IRouter`.
-	 * Class to store all routes, dispatch request by routes and generate url addresses by routes.
+	 * Class to store all routes, dispatch request by routes and generate URL addresses by routes.
 	 * Core configuration method.
 	 * @param string $routerClass
 	 * @return \MvcCore\Application
@@ -638,6 +639,7 @@ trait PropsGettersSetters
 	 * @return \MvcCore\Application
 	 */
 	public function & SetAppDir ($appDir) {
+		/** @var $this \MvcCore\Application */
 		$this->appDir = $appDir;
 		return $this;
 	}
@@ -648,6 +650,7 @@ trait PropsGettersSetters
 	 * @return \MvcCore\Application
 	 */
 	public function & SetController (\MvcCore\IController $controller = NULL) {
+		/** @var $this \MvcCore\Application */
 		$this->controller = $controller;
 		return $this;
 	}
@@ -661,6 +664,7 @@ trait PropsGettersSetters
 	 * @return \MvcCore\Application
 	 */
 	public function & SetControllersDir ($controllersDir) {
+		/** @var $this \MvcCore\Application */
 		$this->controllersDir = $controllersDir;
 		return $this;
 	}
@@ -674,6 +678,7 @@ trait PropsGettersSetters
 	 * @return \MvcCore\Application
 	 */
 	public function & SetViewsDir ($viewsDir) {
+		/** @var $this \MvcCore\Application */
 		$this->viewsDir = $viewsDir;
 		return $this;
 	}
@@ -685,6 +690,7 @@ trait PropsGettersSetters
 	 * @return \MvcCore\Application
 	 */
 	public function & SetDefaultControllerName ($defaultControllerName) {
+		/** @var $this \MvcCore\Application */
 		$this->defaultControllerName = $defaultControllerName;
 		return $this;
 	}
@@ -696,6 +702,7 @@ trait PropsGettersSetters
 	 * @return \MvcCore\Application
 	 */
 	public function & SetDefaultControllerDefaultActionName ($defaultActionName) {
+		/** @var $this \MvcCore\Application */
 		$this->defaultControllerDefaultActionName = $defaultActionName;
 		return $this;
 	}
@@ -707,6 +714,7 @@ trait PropsGettersSetters
 	 * @return \MvcCore\Application
 	 */
 	public function & SetDefaultControllerErrorActionName ($defaultControllerErrorActionName) {
+		/** @var $this \MvcCore\Application */
 		$this->defaultControllerErrorActionName = $defaultControllerErrorActionName;
 		return $this;
 	}
@@ -718,6 +726,7 @@ trait PropsGettersSetters
 	 * @return \MvcCore\Application
 	 */
 	public function & SetDefaultControllerNotFoundActionName ($defaultControllerNotFoundActionName) {
+		/** @var $this \MvcCore\Application */
 		$this->defaultControllerNotFoundActionName = $defaultControllerNotFoundActionName;
 		return $this;
 	}

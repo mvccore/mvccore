@@ -22,7 +22,7 @@ trait Props
 	protected $__name = \MvcCore\ISession::DEFAULT_NAMESPACE_NAME;
 
 	/**
-	 * Static boolean about if session has been allready started or not.
+	 * Static boolean about if session has been already started or not.
 	 * @var bool|NULL
 	 */
 	protected static $started = NULL;
@@ -32,7 +32,7 @@ trait Props
 	 * - `"names"`			=> Array with all namespace records names.
 	 * - `"hoops"`			=> Array with all namespace records page requests count to expire.
 	 * - `"expirations"`	=> Array with all records expiration times.
-	 * This metadata arrays are decoded from `$_SESSION` storrage only once at in session start.
+	 * This metadata arrays are decoded from `$_SESSION` storage only once at in session start.
 	 * @var array|\stdClass
 	 */
 	protected static $meta = [
@@ -46,7 +46,7 @@ trait Props
 
 	/**
 	 * Array of created `\MvcCore\ISession` instances,
-	 * keys in this array storrage are session namespaces names.
+	 * keys in this array storage are session namespaces names.
 	 * @var \MvcCore\ISession[]
 	 */
 	protected static $instances = [];

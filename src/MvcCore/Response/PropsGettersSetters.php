@@ -72,9 +72,10 @@ trait PropsGettersSetters
 	/**
 	 * Set HTTP response code.
 	 * @param int $code
-	 * @return \MvcCore\Response
+	 * @return \MvcCore\Response|\MvcCore\IResponse
 	 */
 	public function & SetCode ($code) {
+		/** @var $this \MvcCore\Response */
 		$this->code = $code;
 		http_response_code($code);
 		return $this;
@@ -96,9 +97,10 @@ trait PropsGettersSetters
 	 * Set HTTP response content encoding.
 	 * Example: `$response->SetEncoding('utf-8');`
 	 * @param string $encoding
-	 * @return \MvcCore\Response
+	 * @return \MvcCore\Response|\MvcCore\IResponse
 	 */
 	public function & SetEncoding ($encoding = 'utf-8') {
+		/** @var $this \MvcCore\Response */
 		$this->encoding = $encoding;
 		$this->headers['Content-Encoding'] = $encoding;
 		return $this;

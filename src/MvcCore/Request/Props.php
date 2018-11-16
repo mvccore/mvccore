@@ -85,7 +85,7 @@ trait Props
 	protected $host				= NULL;
 
 	/**
-	 * Http port defined in requested url if any, parsed by `parse_url()`.
+	 * Http port defined in requested URI if any, parsed by `parse_url()`.
 	 * Empty string if there is no port number in requested address.`.
 	 * Example: `"88" | ""`
 	 * @var string|NULL
@@ -100,7 +100,7 @@ trait Props
 	protected $domainParts		= NULL;
 
 	/**
-	 * `TRUE` if http port defined in requested url (parsed by `parse_url()`).
+	 * `TRUE` if http port defined in requested URI (parsed by `parse_url()`).
 	 * @var bool
 	 */
 	protected $portDefined		= FALSE;
@@ -142,7 +142,7 @@ trait Props
 
 	/**
 	 * Application root path on hard drive.
-	 * Example: `"C:/www/my/development/direcotry/www"`
+	 * Example: `"C:/www/my/development/directory/www"`
 	 * @var string|NULL
 	 */
 	protected $appRoot			= NULL;
@@ -150,8 +150,8 @@ trait Props
 	/**
 	 * Base app directory path after domain, if application is placed in domain subdirectory
 	 * Example:
-	 * - full url:  `"http://localhost:88/my/development/direcotry/www/requested/path/after/domain?with=possible&query=string"`
-	 * - base path: `"/my/development/direcotry/www"`
+	 * - full URI:  `"http://localhost:88/my/development/directory/www/requested/path/after/domain?with=possible&query=string"`
+	 * - base path: `"/my/development/directory/www"`
 	 * @var string|NULL
 	 */
 	protected $basePath			= NULL;
@@ -171,22 +171,22 @@ trait Props
 	protected $domainUrl		= NULL;
 
 	/**
-	 * Base url to application root.
-	 * Example: `"http://domain:88/my/development/direcotry/www"`
+	 * Base URI to application root.
+	 * Example: `"http://domain:88/my/development/directory/www"`
 	 * @var string|NULL
 	 */
 	protected $baseUrl			= NULL;
 
 	/**
-	 * Request url including scheme, domain, port, path, without any query string
-	 * Example: "`http://localhost:88/my/development/direcotry/www/requested/path/after/domain"`
+	 * Request URI including scheme, domain, port, path, without any query string
+	 * Example: "`http://localhost:88/my/development/directory/www/requested/path/after/domain"`
 	 * @var string|NULL
 	 */
 	protected $requestUrl		= NULL;
 
 	/**
-	 * Request url including scheme, domain, port, path and with query string
-	 * Example: `"http://localhost:88/my/development/direcotry/www/requested/path/after/domain?with=possible&query=string"`
+	 * Request URI including scheme, domain, port, path and with query string
+	 * Example: `"http://localhost:88/my/development/directory/www/requested/path/after/domain?with=possible&query=string"`
 	 * @var string|NULL
 	 */
 	protected $fullUrl			= NULL;
@@ -199,7 +199,7 @@ trait Props
 	protected $method			= NULL;
 
 	/**
-	 * Referer url if any, safely readed by:
+	 * Referer URI if any, safely read by:
 	 * `filter_var($_SERVER['HTTP_REFERER'], FILTER_SANITIZE_URL);`
 	 * Example: `"http://foreing.domain.com/path/where/is/link/to/?my=app"`
 	 * @var string|NULL
@@ -207,14 +207,14 @@ trait Props
 	protected $referer			= NULL;
 
 	/**
-	 * Server ip address string.
+	 * Server IP address string.
 	 * Example: `"127.0.0.1" | "111.222.111.222"`
 	 * @var string|NULL
 	 */
 	protected $serverIp			= NULL;
 
 	/**
-	 * Client ip address string.
+	 * Client IP address string.
 	 * Example: `"127.0.0.1" | "222.111.222.111"`
 	 * @var string|NULL
 	 */

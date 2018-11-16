@@ -18,9 +18,10 @@ trait Content
 	/**
 	 * Set HTTP response body.
 	 * @param string $body
-	 * @return \MvcCore\Response
+	 * @return \MvcCore\Response|\MvcCore\IResponse
 	 */
 	public function & SetBody ($body) {
+		/** @var $this \MvcCore\Response */
 		$this->body = & $body;
 		return $this;
 	}
@@ -28,9 +29,10 @@ trait Content
 	/**
 	 * Prepend HTTP response body.
 	 * @param string $body
-	 * @return \MvcCore\Response
+	 * @return \MvcCore\Response|\MvcCore\IResponse
 	 */
 	public function & PrependBody ($body) {
+		/** @var $this \MvcCore\Response */
 		$this->body = $body . $this->body;
 		return $this;
 	}
@@ -38,9 +40,10 @@ trait Content
 	/**
 	 * Append HTTP response body.
 	 * @param string $body
-	 * @return \MvcCore\Response
+	 * @return \MvcCore\Response|\MvcCore\IResponse
 	 */
 	public function & AppendBody ($body) {
+		/** @var $this \MvcCore\Response */
 		$this->body .= $body;
 		return $this;
 	}

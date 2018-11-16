@@ -16,15 +16,17 @@ namespace MvcCore\View;
 trait GettersSetters
 {
 	/**
-	 * Return always new instance of staticly called class, no singleton.
+	 * Return always new instance of statically called class, no singleton.
 	 * Always called from `\MvcCore\Controller::PreDispatch()` and
 	 * `\MvcCore\Controller::Render()` to create layout view.
 	 * This is place where to customize any view creation process,
 	 * before it's created by MvcCore framework to fill and render it.
-	 * @return \MvcCore\View
+	 * @return \MvcCore\View|\MvcCore\IView
 	 */
 	public static function CreateInstance () {
-		return new static();
+		/** @var $result \MvcCore\View */
+		$result = new static();
+		return $result;
 	}
 
 	/**
@@ -39,7 +41,7 @@ trait GettersSetters
 	/**
 	 * Set view scripts files extension.
 	 * given value could be with or without leading dot char.
-	 * @param string $extension Extension with or without leading dot char.
+	 * @param string $extension An extension with or without leading dot char.
 	 * @return string
 	 */
 	public static function SetExtension ($extension = '.phtml') {
@@ -136,6 +138,7 @@ trait GettersSetters
 	 * @return \MvcCore\View
 	 */
 	public function & SetController (\MvcCore\IController & $controller) {
+		/** @var $this \MvcCore\View */
 		$this->controller = $controller;
 		return $this;
 	}
@@ -145,6 +148,7 @@ trait GettersSetters
 	 * @return \MvcCore\Controller
 	 */
 	public function & GetController () {
+		/** @var $this \MvcCore\View */
 		return $this->controller;
 	}
 }

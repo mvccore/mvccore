@@ -13,12 +13,10 @@
 
 namespace MvcCore;
 
-//include_once(__DIR__.'/../Application.php');
-
 /**
- * Responsibility - request description - url and params inputs parsing and cleaning.
- * - Linear request url parsing from referenced `$_SERVER` global variable
- *   (as constructor argument) into local properties, describing url sections.
+ * Responsibility - request description - URL and params inputs parsing and cleaning.
+ * - Linear request URL parsing from referenced `$_SERVER` global variable
+ *   (as constructor argument) into local properties, describing URL sections.
  * - Params reading from referenced `$_GET` and `$_POST` global variables
  *   (as constructor arguments) or reading data from direct PHP
  *   input `"php://input"` (as encoded JSON data or as query string).
@@ -229,7 +227,7 @@ interface IRequest
 	);
 
 	/**
-	 * Return if reqest has any http header by given name.
+	 * Return if request has any http header by given name.
 	 * @param string $name Http header string name.
 	 * @return bool
 	 */
@@ -272,7 +270,7 @@ interface IRequest
 	 * Get param value from `$_GET`, `$_POST` or `php://input`, filtered by
 	 * "rule to keep defined characters only", defined in second argument (by `preg_replace()`).
 	 * Place into second argument only char groups you want to keep.
-	 * @param string $name Parametter string name.
+	 * @param string $name Parameter string name.
 	 * @param string|array|bool $pregReplaceAllowedChars If String - list of regular expression characters to only keep, if array - `preg_replace()` pattern and reverse, if `FALSE`, raw value is returned.
 	 * @param mixed $ifNullValue Default value returned if given param name is null.
 	 * @param string $targetType Target type to retype param value or default if-null value. If param is an array, every param item will be retyped into given target type.
@@ -287,7 +285,7 @@ interface IRequest
 
 	/**
 	 * Get if any param value exists in `$_GET`, `$_POST` or `php://input`
-	 * @param string $name Parametter string name.
+	 * @param string $name Parameter string name.
 	 * @return bool
 	 */
 	public function HasParam ($name = '');
@@ -381,9 +379,9 @@ interface IRequest
 
 
 	/**
-	 * Initialize all possible protected values from all globals,
+	 * Initialize all possible protected values from all global variables,
 	 * including all http headers, all params and application inputs.
-	 * This method is not recomanded to use in production mode, it's
+	 * This method is not recommended to use in production mode, it's
 	 * designed mostly for development purposes, to see in one moment,
 	 * what could be inside request after calling any getter method.
 	 * @return \MvcCore\IRequest
@@ -504,7 +502,7 @@ interface IRequest
 	public function __get ($name);
 
 	/**
-	 * Universal setter, if property not defined, it's automatically declarated.
+	 * Universal setter, if property not defined, it's automatically declared.
 	 * @param string $name
 	 * @param mixed	 $value
 	 * @return \MvcCore\IRequest
@@ -521,7 +519,7 @@ interface IRequest
 
 	/**
 	 * Get application root path on hard drive.
-	 * Example: `"C:/www/my/development/direcotry/www"`
+	 * Example: `"C:/www/my/development/directory/www"`
 	 * @return string
 	 */
 	public function GetAppRoot ();
@@ -546,7 +544,7 @@ interface IRequest
 	 * if application is placed in domain subdirectory.
 	 * Example:
 	 * - for full url:  `"http://localhost:88/my/development/direcotry/www/requested/path/after/domain?with=possible&query=string"`
-	 * - set base path: `$request->SetBasePath("/my/development/direcotry/www");`
+	 * - set base path: `$request->SetBasePath("/my/development/directory/www");`
 	 * @param string $rawBasePath
 	 * @return \MvcCore\IRequest
 	 */
@@ -557,7 +555,7 @@ interface IRequest
 	 * if application is placed in domain subdirectory.
 	 * Example:
 	 * - full url:  `"http://localhost:88/my/development/direcotry/www/requested/path/after/domain?with=possible&query=string"`
-	 * - base path: `"/my/development/direcotry/www"`
+	 * - base path: `"/my/development/directory/www"`
 	 * @return string
 	 */
 	public function GetBasePath ();
@@ -584,10 +582,10 @@ interface IRequest
 	public function IsSecure ();
 
 	/**
-	 * Get referer url if any, safely readed by:
+	 * Get referer URL if any, safely read by:
 	 * `filter_var($_SERVER['HTTP_REFERER'], FILTER_SANITIZE_URL);`
 	 * Example: `"http://foreing.domain.com/path/where/is/link/to/?my=app"`
-	 * @param bool $rawInput Get raw input if `TRUE`. `FALSE` by default to get value through `htmlspecialchars($result);` without amersand `&` escaping.
+	 * @param bool $rawInput Get raw input if `TRUE`. `FALSE` by default to get value through `htmlspecialchars($result);` without ampersand `&` escaping.
 	 * @return string
 	 */
 	public function GetReferer ($rawInput = FALSE);
@@ -673,7 +671,7 @@ interface IRequest
 	public function GetHost ();
 
 	/**
-	 * Set http port defined in requested url if any, parsed by `parse_url().
+	 * Set http port defined in requested URL if any, parsed by `parse_url().
 	 * Empty string if there is no port number in requested address.`.
 	 * Example: `$request->SetPort("88")`
 	 * @param string $rawPort
@@ -682,7 +680,7 @@ interface IRequest
 	public function & SetPort ($rawPort);
 
 	/**
-	 * Get http port defined in requested url if any, parsed by `parse_url().
+	 * Get http port defined in requested URL if any, parsed by `parse_url().
 	 * Empty string if there is no port number in requested address.`.
 	 * Example: `"88" | ""`
 	 * @return string
@@ -700,13 +698,13 @@ interface IRequest
 	/**
 	 * Get requested path in from application root (if `mod_rewrite` enabled), never with query string.
 	 * Example: `"/products/page/2"`
-	 * @param bool $rawInput Get raw input if `TRUE`. `FALSE` by default to get value through `htmlspecialchars($result);` without amersand `&` escaping.
+	 * @param bool $rawInput Get raw input if `TRUE`. `FALSE` by default to get value through `htmlspecialchars($result);` without ampersand `&` escaping.
 	 * @return string
 	 */
 	public function GetPath ($rawInput = FALSE);
 
 	/**
-	 * Set uri query string, with or without question mark character, doesn't matter.
+	 * Set URL query string, with or without question mark character, doesn't matter.
 	 * Example: `$request->SetQuery("param-1=value-1&param-2=value-2&param-3[]=value-3-a&param-3[]=value-3-b");`
 	 * @param string $rawQuery
 	 * @return \MvcCore\IRequest
@@ -714,14 +712,14 @@ interface IRequest
 	public function & SetQuery ($rawQuery);
 
 	/**
-	 * Get uri query string (without question mark character by default).
+	 * Get URL query string (without question mark character by default).
 	 * Example: `"param-1=value-1&param-2=value-2&param-3[]=value-3-a&param-3[]=value-3-b"`
 	 * @param bool $withQuestionMark If `FALSE` (by default), query string is returned always without question
 	 *							   mark character at the beginning.
 	 *							   If `TRUE`, and query string contains any character(s), query string is returned
 	 *							   with question mark character at the beginning. But if query string contains no
 	 *							   character(s), query string is returned as EMPTY STRING WITHOUT question mark character.
-	 * @param bool $rawInput Get raw input if `TRUE`. `FALSE` by default to get value through `htmlspecialchars($result);` without amersand `&` escaping.
+	 * @param bool $rawInput Get raw input if `TRUE`. `FALSE` by default to get value through `htmlspecialchars($result);` without ampersand `&` escaping.
 	 * @return string
 	 */
 	public function GetQuery ($withQuestionMark = FALSE, $rawInput = FALSE);
@@ -729,50 +727,50 @@ interface IRequest
 	/**
 	 * Get request path after domain with possible query string
 	 * Example: `"/requested/path/after/app/root?with=possible&query=string"`
-	 * @param bool $rawInput Get raw input if `TRUE`. `FALSE` by default to get value through `htmlspecialchars($result);` without amersand `&` escaping.
+	 * @param bool $rawInput Get raw input if `TRUE`. `FALSE` by default to get value through `htmlspecialchars($result);` without ampersand `&` escaping.
 	 * @return string
 	 */
 	public function GetRequestPath ($rawInput = FALSE);
 
 	/**
-	 * Get url to requested domain and possible port.
+	 * Get URL to requested domain and possible port.
 	 * Example: `"https://domain.com" | "http://domain:88"` if any port.
 	 * @return string
 	 */
 	public function GetDomainUrl ();
 
 	/**
-	 * Get base url to application root.
+	 * Get base URL to application root.
 	 * Example: `"http://domain:88/my/development/direcotry/www"`
 	 * @return string
 	 */
 	public function GetBaseUrl ();
 
 	/**
-	 * Get request url including scheme, domain, port, path, without any query string
+	 * Get request URL including scheme, domain, port, path, without any query string
 	 * Example: "`http://localhost:88/my/development/direcotry/www/requested/path/after/domain"`
-	 * @param bool $rawInput Get raw input if `TRUE`. `FALSE` by default to get value through `htmlspecialchars($result);` without amersand `&` escaping.
+	 * @param bool $rawInput Get raw input if `TRUE`. `FALSE` by default to get value through `htmlspecialchars($result);` without ampersand `&` escaping.
 	 * @return string
 	 */
 	public function GetRequestUrl ($rawInput = FALSE);
 
 	/**
-	 * Get request url including scheme, domain, port, path and with query string
+	 * Get request URL including scheme, domain, port, path and with query string
 	 * Example: `"http://localhost:88/my/development/direcotry/www/requested/path/after/domain?with=possible&query=string"`
-	 * @param bool $rawInput Get raw input if `TRUE`. `FALSE` by default to get value through `htmlspecialchars($result);` without amersand `&` escaping.
+	 * @param bool $rawInput Get raw input if `TRUE`. `FALSE` by default to get value through `htmlspecialchars($result);` without ampersand `&` escaping.
 	 * @return string
 	 */
 	public function GetFullUrl ($rawInput = FALSE);
 
 	/**
-	 * Get uri fragment parsed by `parse_url()` (without hash character by default).
+	 * Get URI fragment parsed by `parse_url()` (without hash character by default).
 	 * Example: `"any-sublink-path"`
 	 * @param bool $withHash If `FALSE` (by default), fragment is returned always without hash character
 	 *					   at the beginning.
 	 *					   If `TRUE`, and fragment contains any character(s), fragment is returned
 	 *					   with hash character at the beginning. But if fragment contains no
 	 *					   character(s), fragment is returned as EMPTY STRING WITHOUT hash character.
-	 * @param bool $rawInput Get raw input if `TRUE`. `FALSE` by default to get value through `htmlspecialchars($result);` without amersand `&` escaping.
+	 * @param bool $rawInput Get raw input if `TRUE`. `FALSE` by default to get value through `htmlspecialchars($result);` without ampersand `&` escaping.
 	 * @return string
 	 */
 	public function GetFragment ($withHash = FALSE, $rawInput = FALSE);

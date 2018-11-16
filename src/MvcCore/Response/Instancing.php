@@ -21,7 +21,7 @@ trait Instancing
 	 * @param int		$code
 	 * @param array		$headers
 	 * @param string	$body
-	 * @return \MvcCore\Response
+	 * @return \MvcCore\Response|\MvcCore\IResponse
 	 */
 	public static function CreateInstance (
 		$code = \MvcCore\IResponse::OK,
@@ -37,7 +37,7 @@ trait Instancing
 	 * @param int		$code
 	 * @param array		$headers
 	 * @param string	$body
-	 * @return \MvcCore\Response
+	 * @return void
 	 */
 	public function __construct (
 		$code = \MvcCore\IResponse::OK,

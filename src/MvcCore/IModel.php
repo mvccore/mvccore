@@ -13,11 +13,9 @@
 
 namespace MvcCore;
 
-//include_once(__DIR__.'/../Config.php');
-
 /**
  * Responsibility - static members for connections and by configuration,
- *				  instances members for active record pattern.
+ *					instances members for active record pattern.
  * - Reading `db` section from system `config.ini` file.
  * - Database `\PDO` connecting by config settings and index.
  * - Instance loaded variables initializing.
@@ -42,10 +40,10 @@ interface IModel
 	/**
 	 * Set up given `$data` items into `$this` instance context
 	 * as typed properties by PHP doc comments, as properties
-	 * with the same names as `$data` array keys. Case sesitively by default.
+	 * with the same names as `$data` array keys. Case sensitively by default.
 	 * Do not set any `$data` items, which are not declared in `$this` context.
 	 * @param array   $data					 Collection with data to set up
-	 * @param boolean $keysInsensitive			If `TRUE`, set up properties from `$data` with case insensivity.
+	 * @param boolean $keysInsensitive			If `TRUE`, set up properties from `$data` with case insensitively.
 	 * @param boolean $includeInheritProperties If `TRUE`, include only fields from current model class and from parent classes.
 	 * @param boolean $publicOnly			   If `TRUE`, include only public model fields.
 	 * @return \MvcCore\IModel
@@ -90,7 +88,7 @@ interface IModel
 
 	/**
 	 * Returns `\PDO` database connection by connection name/index,
-	 * usually by system ini config values (cached by local store)
+	 * usually by system INI config values (cached by local store)
 	 * or create new connection of no connection cached.
 	 * @param string|int|array|NULL $connectionNameOrConfig
 	 * @return \PDO

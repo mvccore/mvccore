@@ -21,9 +21,10 @@ trait Dispatching
 	 * or always called in `\MvcCore\Controller::autoInitMembers();` in base controller initialization.
 	 * This is place where to customize any controller creation process,
 	 * before it's created by MvcCore framework to dispatch it.
-	 * @return \MvcCore\Controller
+	 * @return \MvcCore\Controller|\MvcCore\IController
 	 */
 	public static function & CreateInstance () {
+		/** @var $instance \MvcCore\Controller */
 		$instance = new static();
 		self::$allControllers[spl_object_hash($instance)] = & $instance;
 		return $instance;
@@ -69,6 +70,7 @@ trait Dispatching
 	 * @return \MvcCore\Controller
 	 */
 	public function & SetRequest (\MvcCore\IRequest & $request) {
+		/** @var $this \MvcCore\Controller */
 		/** @var $request \MvcCore\Request */
 		$this->request = & $request;
 		$this->controllerName = ltrim($request->GetControllerName(), '/');
@@ -249,6 +251,8 @@ trait Dispatching
 	 * @return \MvcCore\Controller
 	 */
 	public function AddChildController (\MvcCore\IController & $controller, $index = NULL) {
+		/** @var $this \MvcCore\Controller */
+		/** @var $controller \MvcCore\Controller */
 		self::$allControllers[spl_object_hash($controller)] = & $controller;
 		if (!in_array($controller, $this->childControllers, TRUE)) {
 			if ($index === NULL) {

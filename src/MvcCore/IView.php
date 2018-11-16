@@ -13,17 +13,15 @@
 
 namespace MvcCore;
 
-//include_once('IController.php');
-
 /**
  * Core view:
  * - Static storage for
- *   - commonly used doctype
+ *   - commonly used document type
  *   - common views extension
  *   - common directories names containing view scripts
  *   - common views helpers namespaces
- * - It's possible to use this class for any controller, subcontroller or form.
- * - View prerender preparing and rendering.
+ * - It's possible to use this class for any controller, sub controller or form.
+ * - View pre render preparing and rendering.
  * - View helpers management on demand:
  *   - Creating by predefined class namespaces.
  *   - global static helpers instances storage and repeatable calling.
@@ -36,20 +34,19 @@ namespace MvcCore;
  *   - __set() - To set anything from controller to get it back in view.
  *   - __get() - To get anything in view previously initialized from controller.
  * - Optional direct code evaluation.
- * - No special view language implemented.
- *   - Why to use such stupid things, if we have configured `short_open_tags` by default? `<?=...?>`
+ * - No special view language implemented, use `short_open_tags` (`<?=...?>`) allowed by default.
  *
  * MvcCore view properties and helpers:
- * @property-read \MvcCore\IController $controller Currently dispatched controller instance.
- * @method \MvcCore\Ext\Views\Helpers\Css Css(string $groupName = self::GROUP_NAME_DEFAULT asdfa) Get css helper instance by group name. To use this method, you need to instal extension `mvccore/ext-view-helper-assets`.
- * @method \MvcCore\Ext\Views\Helpers\Js Js(string $groupName = self::GROUP_NAME_DEFAULT) Get js helper instance by group name. To use this method, you need to instal extension `mvccore/ext-view-helper-assets`.
- * @method string FormatDateTime(\DateTime|\IntlCalendar|int $dateTimeOrTimestamp = NULL, int|string $dateTypeOrFormatMask = NULL, int $timeType = NULL, string|\IntlTimeZone|\DateTimeZone $timeZone = NULL, int $calendar = NULL) Format given datetime by `Intl` extension or by `strftime()` as fallback. To use this method, you need to instal extension `mvccore/ext-view-helper-formatdatetime`.
- * @method string FormatNumber(float|int $number = 0.0, int $decimals = 0, string $dec_point = NULL , string $thousands_sep = NULL) To use this method, you need to instal extension `mvccore/ext-view-helper-formatnumber`.
- * @method string FormatMoney(float|int$number = 0.0, int $decimals = 0, string $dec_point = NULL , string $thousands_sep = NULL) To use this method, you need to instal extension `mvccore/ext-view-helper-formatmoney`.
- * @method string LineBreaks(string $text, string $lang = '') Prevent breaking line inside numbers, after week words, shortcuts, numbers and units and much more, very configurable. To use this method, you need to instal extension `mvccore/ext-view-helper-linebreaks`.
- * @method string DataUrl(string $relativeOrAbsolutePath) Return any file content by given relative or absolute path in data url like `data:image/png;base64,iVBOR..`. Path could be relative from currently rendered view, relative from application root or absolute path to file. To use this method, you need to instal extension `mvccore/ext-view-helper-dataurl`.
- * @method string WriteByJS(string $string) Return any given HTML code as code rendered in javascript: `<script>document.write(String.fromCharCode(...));</script>`. To use this method, you need to instal extension `mvccore/ext-view-helper-writebyjs`.
- * @method string Truncate(string $text, int $maxChars = 200, bool $isHtml = NULL) Truncate plain text or text with html tags by given max. characters number and add three dots at the end. To use this method, you need to instal extension `mvccore/ext-view-helper-truncate`.
+ * @property-read \MvcCore\Controller $controller Currently dispatched controller instance.
+ * @method \MvcCore\Ext\Views\Helpers\Css Css(string $groupName = self::GROUP_NAME_DEFAULT) Get css helper instance by group name. To use this method, you need to install extension `mvccore/ext-view-helper-assets`.
+ * @method \MvcCore\Ext\Views\Helpers\Js Js(string $groupName = self::GROUP_NAME_DEFAULT) Get js helper instance by group name. To use this method, you need to install extension `mvccore/ext-view-helper-assets`.
+ * @method string FormatDateTime(\DateTime|\IntlCalendar|int $dateTimeOrTimestamp = NULL, int|string $dateTypeOrFormatMask = NULL, int $timeType = NULL, string|\IntlTimeZone|\DateTimeZone $timeZone = NULL, int $calendar = NULL) Format given date time by `Intl` extension or by `strftime()` as fallback. To use this method, you need to install extension `mvccore/ext-view-helper-formatdatetime`.
+ * @method string FormatNumber(float|int $number = 0.0, int $decimals = 0, string $dec_point = NULL , string $thousands_sep = NULL) To use this method, you need to install extension `mvccore/ext-view-helper-formatnumber`.
+ * @method string FormatMoney(float|int$number = 0.0, int $decimals = 0, string $dec_point = NULL , string $thousands_sep = NULL) To use this method, you need to install extension `mvccore/ext-view-helper-formatmoney`.
+ * @method string LineBreaks(string $text, string $lang = '') Prevent breaking line inside numbers, after week words, shortcuts, numbers and units and much more, very configurable. To use this method, you need to install extension `mvccore/ext-view-helper-linebreaks`.
+ * @method string DataUrl(string $relativeOrAbsolutePath) Return any file content by given relative or absolute path in data URL like `data:image/png;base64,iVBOR..`. Path could be relative from currently rendered view, relative from application root or absolute path to file. To use this method, you need to install extension `mvccore/ext-view-helper-dataurl`.
+ * @method string WriteByJS(string $string) Return any given HTML code as code rendered in javascript: `<script>document.write(String.fromCharCode(...));</script>`. To use this method, you need to install extension `mvccore/ext-view-helper-writebyjs`.
+ * @method string Truncate(string $text, int $maxChars = 200, bool $isHtml = NULL) Truncate plain text or text with html tags by given max. characters number and add three dots at the end. To use this method, you need to install extension `mvccore/ext-view-helper-truncate`.
  */
 interface IView
 {
@@ -84,7 +81,7 @@ interface IView
 	const HELPERS_INTERFACE_CLASS_NAME = 'MvcCore\\Ext\\Views\\Helpers\\IHelper';
 
 	/**
-	 * Return always new instance of staticly called class, no singleton.
+	 * Return always new instance of statically called class, no singleton.
 	 * Always called from `\MvcCore\Controller::PreDispatch()` and
 	 * `\MvcCore\Controller::Render()` to create layout view.
 	 * This is place where to customize any view creation process,
@@ -103,7 +100,7 @@ interface IView
 	/**
 	 * Set view scripts files extension.
 	 * given value could be with or without leading dot char.
-	 * @param string $extension Extension with or without leading dot char.
+	 * @param string $extension An extension with or without leading dot char.
 	 * @return string
 	 */
 	public static function SetExtension ($extension = '.phtml');
@@ -206,7 +203,7 @@ interface IView
 
 	/**
 	 * Set view helpers classes namespace(s). This method replace all previously configured namespaces.
-	 * If you want only to add namespace, use `\Mvccore\View::AddHelpersNamespaces();` instead.
+	 * If you want only to add namespace, use `\MvcCore\View::AddHelpersNamespaces();` instead.
 	 * Example: `\MvcCore\View::SetHelpersClassNamespaces('Any\Other\ViewHelpers\Place', '...');`.
 	 * @param string $helperNamespace,... View helper classes namespace(s).
 	 * @return void
@@ -296,7 +293,7 @@ interface IView
 
 	/**
 	 * Render action template script or any include script and return it's result as reference.
-	 * Do not use this method in layout subtemplates, use method `RenderLayout()` instead.
+	 * Do not use this method in layout sub-templates, use method `RenderLayout()` instead.
 	 * @param string $relativePath
 	 * @return string
 	 */
@@ -304,7 +301,7 @@ interface IView
 
 	/**
 	 * Render layout template script or any include script and return it's result as reference.
-	 * Do not use this method in action subtemplates, use method `RenderScript()` instead.
+	 * Do not use this method in action sub-templates, use method `RenderScript()` instead.
 	 * @param string $relativePath
 	 * @return string
 	 */
@@ -350,10 +347,10 @@ interface IView
 	 *	 (route name is key in routes configuration array, should be any string
 	 *	 but routes must have information about controller name and action name inside).
 	 * Result address (url string) should have two forms:
-	 * - Nice rewritten url by routes configuration
+	 * - Nice rewritten URL by routes configuration
 	 *   (for apps with URL rewrite support (Apache `.htaccess` or IIS URL rewrite module)
 	 *   and when first param is key in routes configuration array).
-	 * - For all other cases is url form like: `"index.php?controller=ctrlName&amp;action=actionName"`
+	 * - For all other cases is URL form like: `"index.php?controller=ctrlName&amp;action=actionName"`
 	 *	 (when first param is not founded in routes configuration array).
 	 * @param string $controllerActionOrRouteName	Should be `"Controller:Action"` combination or just any route name as custom specific string.
 	 * @param array  $params						Optional, array with params, key is param name, value is param value.
@@ -362,7 +359,7 @@ interface IView
 	public function Url ($controllerActionOrRouteName = 'Index:Index', array $params = []);
 
 	/**
-	 * Return asset path or single file mode url for small assets
+	 * Return asset path or single file mode URL for small assets
 	 * handled by internal controller action `"Controller:Asset"`.
 	 * Example: `echo $this->AssetUrl('/static/img/favicon.ico');`
 	 * @param string $path
@@ -377,7 +374,7 @@ interface IView
 	 * Example: `echo $this->GetHelper('Facebook')->RenderSomeSpecialWidgetMethod();`
 	 * @param string $helperName View helper method name in pascal case.
 	 * @throws \InvalidArgumentException If view doesn't exist in configured namespaces.
-	 * @return \MvcCore\Ext\Views\Helpers\IHelper|mixed View helper instance.
+	 * @return mixed View helper instance, always as `\MvcCore\Ext\Views\Helpers\AbstractHelper|\MvcCore\Ext\Views\Helpers\IHelper` instance.
 	 */
 	public function & GetHelper ($helperName);
 
@@ -385,9 +382,9 @@ interface IView
 	 * Set view helper for current template or for all templates globally by default.
 	 * If view helper already exist in global helpers store - it's overwritten.
 	 * @param string $helperName View helper method name in pascal case.
-	 * @param \MvcCore\Ext\Views\Helpers\IHelper|mixed $instance View helper instance.
+	 * @param mixed $instance View helper instance, always as `\MvcCore\Ext\Views\Helpers\AbstractHelper|\MvcCore\Ext\Views\Helpers\IHelper` instance.
 	 * @param bool $forAllTemplates register this helper instance for all rendered views in the future.
-	 * @return \MvcCore\IView
+	 * @return \MvcCore\View|\MvcCore\IView
 	 */
 	public function & SetHelper ($helperName, & $instance, $forAllTemplates = TRUE);
 
@@ -429,9 +426,10 @@ interface IView
 	 * If helper already exists in global helpers store - do not create it again - use instance from the store.
 	 * Then call it's public method named in the same way as helper and return result
 	 * as it is, without any conversion. So then there could be called any other helper method if whole helper instance is returned.
-	 * @param string $method
-	 * @param mixed $arguments
-	 * @return string|mixed
+	 * @param string $method View helper method name in pascal case.
+	 * @param mixed $arguments View helper method arguments.
+	 * @throws \InvalidArgumentException If view doesn't exist in configured namespaces.
+	 * @return string|mixed View helper string result or any other view helper result type or view helper instance, always as `\MvcCore\Ext\Views\Helpers\AbstractHelper|\MvcCore\Ext\Views\Helpers\IHelper` instance.
 	 */
 	public function __call ($method, $arguments);
 }

@@ -28,13 +28,13 @@ trait Props
 	protected static $defaultDomainConstraint = '[^\.]+';
 
 	/**
-	 * Route pattern to match request url and to build url address.
+	 * Route pattern to match request URL and to build URL address.
 	 *
 	 * To define route by this form is the most comfortable way,
 	 * but a way slower, because there is necessary every request
 	 * to convert this value into `\MvcCore\Route::$match` and into
 	 * `\MvcCore\Route::$reverse` properties correctly and you can
-	 * specify those both properties manualy, if you are not too lazy.
+	 * specify those both properties manually, if you are not too lazy.
 	 *
 	 * This match and reverse definition has to be in very basic form
 	 * without regular expression escaping or advanced rules:
@@ -56,13 +56,13 @@ trait Props
 	/**
 	 * Route match pattern in raw form (to use it as it is) to match proper request.
 	 * This property is always used to match request by `\MvcCore\Request::Path`
-	 * by classic PHP regualar expression matching by `preg_match_all();`.
+	 * by classic PHP regular expression matching by `preg_match_all();`.
 	 *
 	 * Required together with `\MvcCore\Route::$reverse` property, if you
 	 * have not configured `\MvcCore\Route::$pattern` property instead.
 	 *
 	 * To define the route object by assigning properties `\MvcCore\Route::$match` and
-	 * `\MvcCore\Route::$reverse` together is little bit more anoying way to define it
+	 * `\MvcCore\Route::$reverse` together is little bit more annoying way to define it
 	 * (because you have to write almost the same information twice), but it's the best
 	 * speed solution, because there is no `\MvcCore\Route::$pattern` parsing and
 	 * conversion into `\MvcCore\Route::$match` and `\MvcCore\Route::$reverse` properties.
@@ -85,7 +85,7 @@ trait Props
 	 * `<page>`) for given values by `\MvcCore\Router::Url($name, $params);` method.
 	 *
 	 * To define the route object by assigning properties `\MvcCore\Route::$match` and
-	 * `\MvcCore\Route::$reverse` together is little bit more anoying way to define it
+	 * `\MvcCore\Route::$reverse` together is little bit more annoying way to define it
 	 * (because you have to write almost the same information twice), but it's the best
 	 * speed solution, because there is no `\MvcCore\Route::$pattern` parsing and
 	 * conversion into `\MvcCore\Route::$match` and `\MvcCore\Route::$reverse` properties.
@@ -101,7 +101,7 @@ trait Props
 	 * describing `"Controller:Action"` target to be dispatched.
 	 *
 	 * By this name there is selected proper route object to
-	 * complete url string by given params in router method:
+	 * complete URL string by given params in router method:
 	 * `\MvcCore\Router:Url($name, $params);`.
 	 *
 	 * Example: `"products_list" | "Products:Gallery"`
@@ -112,7 +112,7 @@ trait Props
 	/**
 	 * Controller name to dispatch, in pascal case. Required only if
 	 * there is no `controller` param inside `\MvcCore\Route::$pattern`
-	 * or inside `\MvcCore\Route::$match properties as url params`.
+	 * or inside `\MvcCore\Route::$match properties as URL params`.
 	 *
 	 * It should contain controller class namespaces defined in standard PHP notation.
 	 * If there is backslash at the beginning - controller class will not be loaded from
@@ -168,7 +168,7 @@ trait Props
 	protected $constraints		= [];
 
 	/**
-	 * URL address params filters fo filter URL aprams in and out. Filters are 
+	 * URL address params filters to filter URL params in and out. Filters are 
 	 * `callable`s always and only under keys `"in" | "out"`, accepting arguments: 
 	 * `array $params, array $defaultParams, \MvcCore\IRequest $request`. 
 	 * First argument is associative array with params from requested URL address 
@@ -198,7 +198,7 @@ trait Props
 	/**
 	 * TODO: neaktuální
 	 * Array with `string` keys by all reverse pattern params and with values by 
-	 * every param occurance start, length and required in reverse pattern string.
+	 * every param occurrence start, length and required in reverse pattern string.
 	 * This array is parsed automatically by method `\MvcCore\Route::initMatch();` 
 	 * if necessary or by method `\MvcCore\Route::initReverse();` after it's 
 	 * necessary, to be able to complete URL address string in method and sub
@@ -227,7 +227,7 @@ trait Props
 	 * when there is parsed `\MvcCore\Route::$pattern` string into `\MvcCore\Route::$match` property
 	 * or it is automatically completed by method `\MvcCore\Route::initReverse()`, when
 	 * there is parsed `\MvcCore\Route::$reverse` string into `\MvcCore\Route::$reverseParams`
-	 * array to build url addresses.
+	 * array to build URL addresses.
 	 *
 	 * @var \string|NULL
 	 */

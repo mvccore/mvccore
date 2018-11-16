@@ -16,13 +16,13 @@ namespace MvcCore\Route;
 trait GettersSetters
 {
 	/**
-	 * Get route pattern to match request url and to build url address.
+	 * Get route pattern to match request URL and to build URL address.
 	 *
 	 * To define route by this form is the most comfortable way,
 	 * but a way slower, because there is necessary every request
 	 * to convert this value into `\MvcCore\Route::$match` and into
 	 * `\MvcCore\Route::$reverse` properties correctly and you can
-	 * specify those both properties manualy, if you are not too lazy.
+	 * specify those both properties manually, if you are not too lazy.
 	 *
 	 * This match and reverse definition has to be in very basic form
 	 * without regular expression escaping or advanced rules:
@@ -44,13 +44,13 @@ trait GettersSetters
 	}
 
 	/**
-	 * Set route pattern to match request url and to build url address.
+	 * Set route pattern to match request URL and to build URL address.
 	 *
 	 * To define route by this form is the most comfortable way,
 	 * but a way slower, because there is necessary every request
 	 * to convert this value into `\MvcCore\Route::$match` and into
 	 * `\MvcCore\Route::$reverse` properties correctly and you can
-	 * specify those both properties manualy, if you are not too lazy.
+	 * specify those both properties manually, if you are not too lazy.
 	 *
 	 * This match and reverse definition has to be in very basic form
 	 * without regular expression escaping or advanced rules:
@@ -69,6 +69,7 @@ trait GettersSetters
 	 * @return \MvcCore\Route
 	 */
 	public function & SetPattern ($pattern) {
+		/** @var $this \MvcCore\Route */
 		$this->pattern = $pattern;
 		return $this;
 	}
@@ -76,13 +77,13 @@ trait GettersSetters
 	/**
 	 * Get route match pattern in raw form (to use it as it is) to match proper request.
 	 * This property is always used to match request by `\MvcCore\Request::Path`
-	 * by classic PHP regualar expression matching by `preg_match_all();`.
+	 * by classic PHP regular expression matching by `preg_match_all();`.
 	 *
 	 * Required together with `\MvcCore\Route::$reverse` property, if you
 	 * have not configured `\MvcCore\Route::$pattern` property instead.
 	 *
 	 * To define the route object by assigning properties `\MvcCore\Route::$match` and
-	 * `\MvcCore\Route::$reverse` together is little bit more anoying way to define it
+	 * `\MvcCore\Route::$reverse` together is little bit more annoying way to define it
 	 * (because you have to write almost the same information twice), but it's the best
 	 * speed solution, because there is no `\MvcCore\Route::$pattern` parsing and
 	 * conversion into `\MvcCore\Route::$match` and `\MvcCore\Route::$reverse` properties.
@@ -97,13 +98,13 @@ trait GettersSetters
 	/**
 	 * Set route match pattern in raw form (to use it as it is) to match proper request.
 	 * This property is always used to match request by `\MvcCore\Request::Path`
-	 * by classic PHP regualar expression matching by `preg_match_all();`.
+	 * by classic PHP regular expression matching by `preg_match_all();`.
 	 *
 	 * Required together with `\MvcCore\Route::$reverse` property, if you
 	 * have not configured `\MvcCore\Route::$pattern` property instead.
 	 *
 	 * To define the route object by assigning properties `\MvcCore\Route::$match` and
-	 * `\MvcCore\Route::$reverse` together is little bit more anoying way to define it
+	 * `\MvcCore\Route::$reverse` together is little bit more annoying way to define it
 	 * (because you have to write almost the same information twice), but it's the best
 	 * speed solution, because there is no `\MvcCore\Route::$pattern` parsing and
 	 * conversion into `\MvcCore\Route::$match` and `\MvcCore\Route::$reverse` properties.
@@ -113,6 +114,7 @@ trait GettersSetters
 	 * @return \MvcCore\Route
 	 */
 	public function & SetMatch ($match) {
+		/** @var $this \MvcCore\Route */
 		$this->match = $match;
 		return $this;
 	}
@@ -130,7 +132,7 @@ trait GettersSetters
 	 * `<page>`) for given values by `\MvcCore\Router::Url($name, $params);` method.
 	 *
 	 * To define the route object by assigning properties `\MvcCore\Route::$match` and
-	 * `\MvcCore\Route::$reverse` together is little bit more anoying way to define it
+	 * `\MvcCore\Route::$reverse` together is little bit more annoying way to define it
 	 * (because you have to write almost the same information twice), but it's the best
 	 * speed solution, because there is no `\MvcCore\Route::$pattern` parsing and
 	 * conversion into `\MvcCore\Route::$match` and `\MvcCore\Route::$reverse` properties.
@@ -155,7 +157,7 @@ trait GettersSetters
 	 * `<page>`) for given values by `\MvcCore\Router::Url($name, $params);` method.
 	 *
 	 * To define the route object by assigning properties `\MvcCore\Route::$match` and
-	 * `\MvcCore\Route::$reverse` together is little bit more anoying way to define it
+	 * `\MvcCore\Route::$reverse` together is little bit more annoying way to define it
 	 * (because you have to write almost the same information twice), but it's the best
 	 * speed solution, because there is no `\MvcCore\Route::$pattern` parsing and
 	 * conversion into `\MvcCore\Route::$match` and `\MvcCore\Route::$reverse` properties.
@@ -165,6 +167,7 @@ trait GettersSetters
 	 * @return \MvcCore\Route
 	 */
 	public function & SetReverse ($reverse) {
+		/** @var $this \MvcCore\Route */
 		$this->reverse = $reverse;
 		return $this;
 	}
@@ -175,7 +178,7 @@ trait GettersSetters
 	 * describing `"Controller:Action"` target to be dispatched.
 	 *
 	 * By this name there is selected proper route object to
-	 * complete url string by given params in router method:
+	 * complete URL string by given params in router method:
 	 * `\MvcCore\Router:Url($name, $params);`.
 	 *
 	 * Example: `"products_list" | "Products:Gallery"`
@@ -191,7 +194,7 @@ trait GettersSetters
 	 * describing `"Controller:Action"` target to be dispatched.
 	 *
 	 * By this name there is selected proper route object to
-	 * complete url string by given params in router method:
+	 * complete URL string by given params in router method:
 	 * `\MvcCore\Router:Url($name, $params);`.
 	 *
 	 * Example: `"products_list" | "Products:Gallery"`
@@ -199,6 +202,7 @@ trait GettersSetters
 	 * @return \MvcCore\Route
 	 */
 	public function & SetName ($name) {
+		/** @var $this \MvcCore\Route */
 		$this->name = $name;
 		return $this;
 	}
@@ -206,7 +210,7 @@ trait GettersSetters
 	/**
 	 * Get controller name to dispatch, in pascal case. Required only if
 	 * there is no `controller` param inside `\MvcCore\Route::$pattern`
-	 * or inside `\MvcCore\Route::$match properties as url params`.
+	 * or inside `\MvcCore\Route::$match properties as URL params`.
 	 *
 	 * It should contain controller class namespaces defined in standard PHP notation.
 	 * If there is backslash at the beginning - controller class will not be loaded from
@@ -226,7 +230,7 @@ trait GettersSetters
 	/**
 	 * Set controller name to dispatch, in pascal case. Required only if
 	 * there is no `controller` param inside `\MvcCore\Route::$pattern`
-	 * or inside `\MvcCore\Route::$match properties as url params`.
+	 * or inside `\MvcCore\Route::$match properties as URL params`.
 	 *
 	 * It should contain controller class namespaces defined in standard PHP notation.
 	 * If there is backslash at the beginning - controller class will not be loaded from
@@ -241,6 +245,7 @@ trait GettersSetters
 	 * @return \MvcCore\Route
 	 */
 	public function & SetController ($controller) {
+		/** @var $this \MvcCore\Route */
 		$this->controller = $controller;
 		return $this;
 	}
@@ -248,7 +253,7 @@ trait GettersSetters
 	/**
 	 * Get action name to call it in controller dispatch processing, in pascal case.
 	 * Required, if there is no `action` param inside `\MvcCore\Route::$pattern`
-	 * or inside `\MvcCore\Route::$match properties as url params`.
+	 * or inside `\MvcCore\Route::$match properties as URL params`.
 	 *
 	 * If this property has value `"List"`, then public
 	 * method in target controller has to be named as:
@@ -264,7 +269,7 @@ trait GettersSetters
 	/**
 	 * Set action name to call it in controller dispatch processing, in pascal case.
 	 * Required, if there is no `action` param inside `\MvcCore\Route::$pattern`
-	 * or inside `\MvcCore\Route::$match properties as url params`.
+	 * or inside `\MvcCore\Route::$match properties as URL params`.
 	 *
 	 * If this property has value `"List"`, then public
 	 * method in target controller has to be named as:
@@ -275,6 +280,7 @@ trait GettersSetters
 	 * @return \MvcCore\Route
 	 */
 	public function & SetAction ($action) {
+		/** @var $this \MvcCore\Route */
 		$this->action = $action;
 		return $this;
 	}
@@ -282,7 +288,7 @@ trait GettersSetters
 	/**
 	 * Get target controller name and controller action name
 	 * together in one setter, in pascal case, separated by colon.
-	 * There are also controller namespace definition posibilities as
+	 * There are also controller namespace definition possibilities as
 	 * in `\MvcCore\Route::GetController();` getter method.
 	 *
 	 * Example: `"Products:List"`
@@ -295,13 +301,14 @@ trait GettersSetters
 	/**
 	 * Set target controller name and controller action name
 	 * together in one setter, in pascal case, separated by colon.
-	 * There are also controller namespace definition posibilities as
+	 * There are also controller namespace definition possibilities as
 	 * in `\MvcCore\Route::SetController();` setter method.
 	 *
 	 * Example: `"Products:List"`
 	 * @return \MvcCore\Route
 	 */
 	public function & SetControllerAction ($controllerAction) {
+		/** @var $this \MvcCore\Route */
 		list($ctrl, $action) = explode(':', $controllerAction);
 		if ($ctrl) $this->controller = $ctrl;
 		if ($action) $this->action = $action;
@@ -336,6 +343,7 @@ trait GettersSetters
 	 * @return \MvcCore\Route
 	 */
 	public function & SetDefaults ($defaults = []) {
+		/** @var $this \MvcCore\Route */
 		$this->defaults = $defaults;
 		return $this;
 	}
@@ -376,6 +384,7 @@ trait GettersSetters
 	 * @return \MvcCore\Route
 	 */
 	public function & SetConstraints ($constraints = []) {
+		/** @var $this \MvcCore\Route */
 		$this->constraints = $constraints;
 		foreach ($constraints as $key => $value)
 			if (!isset($this->defaults[$key]))
@@ -419,6 +428,7 @@ trait GettersSetters
 		// and `[$childInstance, 'parent::methodName']`.
 		foreach ($filters as $direction => $handler) 
 			$this->SetFilter($handler, $direction);
+		/** @var $this \MvcCore\Route */
 		return $this;
 	}
 
@@ -461,6 +471,7 @@ trait GettersSetters
 			(is_string($handler) && strpos($handler, '::') !== FALSE) ||
 			(is_array($handler) && strpos($handler[1], '::') !== FALSE)
 		) ? FALSE : TRUE;
+		/** @var $this \MvcCore\Route */
 		$this->filters[$direction] = [$closureCalling, $handler];
 		return $this;
 	}
@@ -485,6 +496,7 @@ trait GettersSetters
 	 * @return \MvcCore\Route
 	 */
 	public function & SetMethod ($method = NULL) {
+		/** @var $this \MvcCore\Route */
 		$this->method = strtoupper($method);
 		return $this;
 	}
@@ -503,6 +515,7 @@ trait GettersSetters
 	 * @return \MvcCore\Route
 	 */
 	public function & SetRedirect ($redirectRouteName = NULL) {
+		/** @var $this \MvcCore\Route */
 		$this->redirect = $redirectRouteName;
 		return $this;
 	}
@@ -519,12 +532,13 @@ trait GettersSetters
 	}
 
 	/**
-	 * Set manualy matched params from rewrite route for current route.
+	 * Set manually matched params from rewrite route for current route.
 	 * Use this method only on currently matched route!
 	 * @param array $matchedParams
 	 * @return \MvcCore\Route
 	 */
 	public function & SetMatchedParams ($matchedParams = []) {
+		/** @var $this \MvcCore\Route */
 		$this->matchedParams = $matchedParams;
 		return $this;
 	}
@@ -551,13 +565,14 @@ trait GettersSetters
 	 * @return \MvcCore\Route|\MvcCore\IRoute
 	 */
 	public function & SetRouter (\MvcCore\IRouter & $router) {
+		/** @var $this \MvcCore\Route */
 		$this->router = & $router;
 		return $this;
 	}
 
 	/**
 	 * Return `TRUE` if route reverse pattern contains 
-	 * domain part with two slases at the beginning
+	 * domain part with two slashes at the beginning
 	 * or if route is defined with `absolute` boolean flag 
 	 * by advanced configuration in constructor.
 	 * @return bool
@@ -585,6 +600,7 @@ trait GettersSetters
 	 * @return \MvcCore\Route|\MvcCore\IRoute
 	 */
 	public function & SetGroupName ($groupName) {
+		/** @var $this \MvcCore\Route */
 		$this->groupName = $groupName;
 		return $this;
 	}

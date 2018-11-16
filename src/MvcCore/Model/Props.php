@@ -31,7 +31,7 @@ trait Props
 	 * - `oci`, `pgsql`, `cubrid`, `sysbase`, `dblib`
 	 *
 	 * Every value in this configuration field should be defined as:
-	 * - `dsn`		- connection query as first `\PDO` contructor argument
+	 * - `dsn`		- connection query as first `\PDO` constructor argument
 	 *				  with database config replacements.
 	 * - `auth`		- if required to use database credentials for connecting or not.
 	 * - `fileDb`	- if database if file database or not.
@@ -94,7 +94,7 @@ trait Props
 	];
 
 	/**
-	 * Default database connection name/index, in config ini defined in section `db.default = name`.
+	 * Default database connection name/index, in system config defined in section `db.default = name`.
 	 * In extended classes - use this for connection name/index of current model if different.
 	 * @var string|int|NULL
 	 */
@@ -143,7 +143,7 @@ trait Props
 	protected $resource;
 
 	/**
-	 * Originaly declared internal model properties to protect their
+	 * Originally declared internal model properties to protect their
 	 * possible overwriting by `__set()` or `__get()` magic methods.
 	 * @var array
 	 */

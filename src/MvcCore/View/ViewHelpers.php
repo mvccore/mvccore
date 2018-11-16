@@ -52,7 +52,7 @@ trait ViewHelpers
 
 	/**
 	 * Set view helpers classes namespace(s). This method replace all previously configured namespaces.
-	 * If you want only to add namespace, use `\Mvccore\View::AddHelpersNamespaces();` instead.
+	 * If you want only to add namespace, use `\MvcCore\View::AddHelpersNamespaces();` instead.
 	 * Example: `\MvcCore\View::SetHelpersClassNamespaces('Any\Other\ViewHelpers\Place', '...');`.
 	 * @param string $helperNamespace,... View helper classes namespace(s).
 	 * @return void
@@ -72,7 +72,7 @@ trait ViewHelpers
 	 * @param string $method View helper method name in pascal case.
 	 * @param mixed $arguments View helper method arguments.
 	 * @throws \InvalidArgumentException If view doesn't exist in configured namespaces.
-	 * @return \MvcCore\Ext\Views\Helpers\AbstractHelper|\MvcCore\Ext\Views\Helpers\IHelper|string|mixed View helper string result or view helper instance or any other view helper result type.
+	 * @return string|mixed View helper string result or any other view helper result type or view helper instance, always as `\MvcCore\Ext\Views\Helpers\AbstractHelper|\MvcCore\Ext\Views\Helpers\IHelper` instance.
 	 */
 	public function __call ($method, $arguments) {
 		$result = '';
@@ -94,7 +94,7 @@ trait ViewHelpers
 	 * Example: `echo $this->GetHelper('Facebook')->RenderSomeSpecialWidgetMethod();`
 	 * @param string $helperName View helper method name in pascal case.
 	 * @throws \InvalidArgumentException If view doesn't exist in configured namespaces.
-	 * @return \MvcCore\Ext\Views\Helpers\AbstractHelper|\MvcCore\Ext\Views\Helpers\IHelper|mixed View helper instance.
+	 * @return mixed View helper instance, always as `\MvcCore\Ext\Views\Helpers\AbstractHelper|\MvcCore\Ext\Views\Helpers\IHelper` instance.
 	 */
 	public function & GetHelper ($helperName) {
 		$setUpViewAgain = FALSE;
@@ -146,11 +146,12 @@ trait ViewHelpers
 	 * Set view helper for current template or for all templates globally by default.
 	 * If view helper already exist in global helpers store - it's overwritten.
 	 * @param string $helperName View helper method name in pascal case.
-	 * @param \MvcCore\Ext\Views\Helpers\AbstractHelper|\MvcCore\Ext\Views\Helpers\IHelper|mixed $instance View helper instance.
+	 * @param mixed $instance View helper instance, always as `\MvcCore\Ext\Views\Helpers\AbstractHelper|\MvcCore\Ext\Views\Helpers\IHelper` instance.
 	 * @param bool $forAllTemplates register this helper instance for all rendered views in the future.
 	 * @return \MvcCore\View|\MvcCore\IView
 	 */
 	public function & SetHelper ($helperName, & $instance, $forAllTemplates = TRUE) {
+		/** @var $this \MvcCore\View */
 		$implementsIHelper = FALSE;
 		if ($forAllTemplates) {
 			if (self::$_toolClass === NULL)

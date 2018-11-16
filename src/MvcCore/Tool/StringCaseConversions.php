@@ -26,7 +26,7 @@ trait StringCaseConversions
 	 */
 	public static function GetDashedFromPascalCase ($pascalCase = '') {
 		/*
-		// This cmmented version converts `MyWFTValue` to `my-wtf-value`, which 
+		// This commented version converts `MyWFTValue` to `my-wtf-value`, which 
 		// is cool, but inputs `MyWFTValue` and `MyWtfValue` have the same 
 		// inconsistent output `my-wtf-value`, which is wrong.
 		$result = preg_replace_callback("#[A-Z]{2,}#", function ($match) {
@@ -78,7 +78,7 @@ trait StringCaseConversions
 	 */
 	public static function GetUnderscoredFromPascalCase ($pascalCase = '') {
 		/*
-		// This cmmented version converts `MyWFTValue` to `my_wtf_value`, which 
+		// This commented version converts `MyWFTValue` to `my_wtf_value`, which 
 		// is cool, but inputs `MyWFTValue` and `MyWtfValue` have the same 
 		// inconsistent output `my_wtf_value`, which is wrong.
 		$result = preg_replace_callback("#[A-Z]{2,}#", function ($match) {

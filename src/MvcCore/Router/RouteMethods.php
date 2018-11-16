@@ -70,18 +70,19 @@ trait RouteMethods
 	 *							   route names or route controller or route action
 	 *							   record, completed always from array keys.
 	 *							   You can you `FALSE` to set routes without any 
-	 *							   change or autoinitialization, it could be usefull 
+	 *							   change or auto-initialization, it could be useful 
 	 *							   to restore cached routes etc.
 	 * @return \MvcCore\Router
 	 */
 	public function & SetRoutes ($routes = [], $groupName = NULL, $autoInitialize = TRUE) {
+		/** @var $this \MvcCore\Router */
 		if ($autoInitialize) {
 			$this->routes = [];
 			$this->AddRoutes($routes, $groupName);
 		} else {
 			$routesAreEmpty = count($routes) === 0;
 			$noGroupNameDefined = $groupName === NULL;
-			// complete url routes and routes with name keys
+			// complete URL routes and routes with name keys
 			$newRoutes = [];
 			$this->urlRoutes = [];
 			foreach ($routes as $route) {
@@ -167,10 +168,11 @@ trait RouteMethods
 	 * @param bool $throwExceptionForDuplication `TRUE` by default. Throw an exception,
 	 *											 if route `name` or route `Controller:Action`
 	 *											 has been defined already. If `FALSE` old route
-	 *											 is overwriten by new one.
+	 *											 is over-written by new one.
 	 * @return \MvcCore\Router
 	 */
 	public function & AddRoutes (array $routes = [], $groupName = NULL, $prepend = FALSE, $throwExceptionForDuplication = TRUE) {
+		/** @var $this \MvcCore\Router */
 		if ($prepend) $routes = array_reverse($routes);
 		$routeClass = self::$routeClass;
 		foreach ($routes as $routeName => & $route) {
@@ -222,7 +224,7 @@ trait RouteMethods
 	 * Set up route by route name into `\MvcCore\Router::$routes` array
 	 * to route incoming request and also set up route by route name and
 	 * by `Controller:Action` combination into `\MvcCore\Router::$urlRoutes`
-	 * array to build url addresses.
+	 * array to build URL addresses.
 	 *
 	 * Route could be defined in various forms:
 	 * Example:
@@ -266,10 +268,11 @@ trait RouteMethods
 	 * @param bool $throwExceptionForDuplication `TRUE` by default. Throw an exception,
 	 *											 if route `name` or route `Controller:Action`
 	 *											 has been defined already. If `FALSE` old route
-	 *											 is overwriten by new one.
+	 *											 is over-written by new one.
 	 * @return \MvcCore\Router
 	 */
 	public function & AddRoute ($routeCfgOrRoute, $groupName = NULL, $prepend = FALSE, $throwExceptionForDuplication = TRUE) {
+		/** @var $this \MvcCore\Router */
 		$instance = & $this->getRouteInstance($routeCfgOrRoute);
 		$routeName = $instance->GetName();
 		$controllerAction = $instance->GetControllerAction();
@@ -333,7 +336,7 @@ trait RouteMethods
 	public function HasRoute ($routeOrRouteName) {
 		if (is_string($routeOrRouteName)) {
 			return isset($this->routes[$routeOrRouteName]);
-		} else /*if ($routeOrRouteName instanceof \MvcCore\IRoute)*/ {
+		} else /*if ($routeOrRouteName instance of \MvcCore\IRoute)*/ {
 			return (
 				isset($this->routes[$routeOrRouteName->GetName()]) || 
 				isset($this->routes[$routeOrRouteName->GetControllerAction()])
@@ -408,6 +411,7 @@ trait RouteMethods
 	 * @return \MvcCore\Router
 	 */
 	public function & SetCurrentRoute (\MvcCore\IRoute $currentRoute) {
+		/** @var $this \MvcCore\Router */
 		$this->currentRoute = $currentRoute;
 		return $this;
 	}
@@ -430,6 +434,7 @@ trait RouteMethods
 	 * @return \MvcCore\Route|\MvcCore\IRoute
 	 */
 	protected function & getRouteInstance (& $routeCfgOrRoute) {
+		/** @var $this \MvcCore\Router */
 		if ($routeCfgOrRoute instanceof \MvcCore\IRoute) 
 			return $routeCfgOrRoute->SetRouter($this);
 		$routeClass = self::$routeClass;

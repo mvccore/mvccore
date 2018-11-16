@@ -15,7 +15,7 @@ namespace MvcCore;
 
 /**
  * Responsibility - static members for connections and by configuration,
- *				  instances members for active record pattern.
+ *					instances members for active record pattern.
  * - Reading `db` section from system `config.ini` file.
  * - Database `\PDO` connecting by config settings and index.
  * - Instance loaded variables initializing.

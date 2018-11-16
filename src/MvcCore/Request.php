@@ -14,9 +14,9 @@
 namespace MvcCore;
 
 /**
- * Responsibility - request description - url and params inputs parsing and cleaning.
- * - Linear request url parsing from referenced `$_SERVER` global variable
- *   (as constructor argument) into local properties, describing url sections.
+ * Responsibility - request description - URL and params inputs parsing and cleaning.
+ * - Linear request URL parsing from referenced `$_SERVER` global variable
+ *   (as constructor argument) into local properties, describing URL sections.
  * - Params reading from referenced `$_GET` and `$_POST` global variables
  *   (as constructor arguments) or reading data from direct PHP
  *   input `"php://input"` (as encoded JSON data or as query string).

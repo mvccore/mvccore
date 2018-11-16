@@ -17,7 +17,7 @@ trait DbConnection
 {
 	/**
 	 * Returns `\PDO` database connection by connection name/index,
-	 * usually by system ini config values (cached by local store)
+	 * usually by system config values (cached by local store)
 	 * or create new connection of no connection cached.
 	 * @param string|int|array|NULL $connectionNameOrConfig
 	 * @return \PDO
@@ -43,7 +43,7 @@ trait DbConnection
 				$cfg = current(static::$configs); // if still nothing - take first database record
 			$conArgs = (object) self::$connectionArguments[isset(self::$connectionArguments[$cfg->driver]) ? $cfg->driver : 'default'];
 			$connection = NULL;
-			// If database is filesystem based, complete app root and extend
+			// If database is file system based, complete app root and extend
 			// relative path in $cfg->database to absolute path
 			if ($conArgs->fileDb) {
 				$appRoot = \MvcCore\Application::GetInstance()->GetRequest()->GetAppRoot();
@@ -58,7 +58,7 @@ trait DbConnection
 			foreach ((array) $cfg as $key => $value)
 				$dsn = str_replace('{'.$key.'}', $value, $dsn);
 			// If database required user and password credentials,
-			// connect with wull arguments count or only with one (sqllite only)
+			// connect with full arguments count or only with one (sqlite only)
 			if ($conArgs->auth) {
 				$connection = new \PDO($dsn, $cfg->user, $cfg->password, $conArgs->options);
 			} else {

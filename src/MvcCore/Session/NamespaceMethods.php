@@ -19,7 +19,7 @@ trait NamespaceMethods
 	 * Get new or existing MvcCore session namespace instance.
 	 * If session is not started, start session.
 	 * @param string $name Session namespace unique name.
-	 * @return \MvcCore\Session
+	 * @return \MvcCore\Session|\MvcCore\ISession
 	 */
 	public static function & GetNamespace (
 		$name = \MvcCore\ISession::DEFAULT_NAMESPACE_NAME
@@ -28,7 +28,9 @@ trait NamespaceMethods
 		if (!isset(static::$instances[$name])) {
 			static::$instances[$name] = new static($name);
 		}
-		return static::$instances[$name];
+		/** @var $result \MvcCore\Session */
+		$result = & static::$instances[$name];
+		return $result;
 	}
 
 	/**
@@ -37,6 +39,7 @@ trait NamespaceMethods
 	 * @return \MvcCore\Session
 	 */
 	public function & SetExpirationHoops ($hoops) {
+		/** @var $this \MvcCore\Session */
 		static::$meta->hoops[$this->__name] = $hoops;
 		return $this;
 	}
@@ -49,6 +52,7 @@ trait NamespaceMethods
 	 * @return \MvcCore\Session
 	 */
 	public function & SetExpirationSeconds ($seconds = 0) {
+		/** @var $this \MvcCore\Session */
 		if ($seconds > 0) 
 			static::$meta->expirations[$this->__name] = static::$sessionStartTime + $seconds;
 		return $this;
@@ -57,8 +61,8 @@ trait NamespaceMethods
 	
 
 	/**
-	 * Destroy whole session namespace in `$_SESSION` storrage
-	 * and internal static storrages.
+	 * Destroy whole session namespace in `$_SESSION` storage
+	 * and internal static storages.
 	 * @return void
 	 */
 	public function Destroy () {
@@ -75,8 +79,8 @@ trait NamespaceMethods
 	}
 
 	/**
-	 * Destroy all existing session namespaces in `$_SESSION` storrage
-	 * and internal static storrages, destroy whole PHP session.
+	 * Destroy all existing session namespaces in `$_SESSION` storage
+	 * and internal static storages, destroy whole PHP session.
 	 * @return void
 	 */
 	public static function DestroyAll () {

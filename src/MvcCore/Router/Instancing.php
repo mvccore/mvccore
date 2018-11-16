@@ -65,7 +65,7 @@ trait Instancing
 	 *							   route names or route controller or route action
 	 *							   record, completed always from array keys.
 	 *							   You can you `FALSE` to set routes without any 
-	 *							   change or autoinitialization, it could be usefull 
+	 *							   change or auto-initialization, it could be useful 
 	 *							   to restore cached routes etc.
 	 * @return \MvcCore\Router
 	 */
@@ -134,9 +134,9 @@ trait Instancing
 	 *							   route names or route controller or route action
 	 *							   record, completed always from array keys.
 	 *							   You can you `FALSE` to set routes without any 
-	 *							   change or autoinitialization, it could be usefull 
+	 *							   change or auto-initialization, it could be useful 
 	 *							   to restore cached routes etc.
-	 * @return \MvcCore\Router
+	 * @return void
 	 */
 	public function __construct (array $routes = [], $autoInitialize = TRUE) {
 		if ($routes) $this->SetRoutes($routes, NULL, $autoInitialize);

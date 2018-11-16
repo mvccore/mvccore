@@ -165,7 +165,7 @@ interface IApplication
 
 	/**
 	 * Get application router class implementing `\MvcCore\IRouter`.
-	 * Class to store all routes, dispatch request by routes and generate url addresses by routes.
+	 * Class to store all routes, dispatch request by routes and generate URL addresses by routes.
 	 * @return string
 	 */
 	public function GetRouterClass ();
@@ -329,7 +329,7 @@ interface IApplication
 
 	/**
 	 * Set application router class implementing `\MvcCore\IRouter`.
-	 * Class to store all routes, dispatch request by routes and generate url addresses by routes.
+	 * Class to store all routes, dispatch request by routes and generate URL addresses by routes.
 	 * Core configuration method.
 	 * @param string $routerClass
 	 * @return \MvcCore\IApplication
@@ -635,10 +635,10 @@ interface IApplication
 	 *	 (route name is key in routes configuration array, should be any string
 	 *	 but routes must have information about controller name and action name inside).
 	 * Result address (url string) should have two forms:
-	 * - Nice rewritten url by routes configuration
+	 * - Nice rewritten URL by routes configuration
 	 *   (for apps with URL rewrite support (Apache `.htaccess` or IIS URL rewrite module)
 	 *   and when first param is key in routes configuration array).
-	 * - For all other cases is url form like: `"index.php?controller=ctrlName&amp;action=actionName"`
+	 * - For all other cases is URL form like: `"index.php?controller=ctrlName&amp;action=actionName"`
 	 *	 (when first param is not founded in routes configuration array).
 	 * @param string $controllerActionOrRouteName	Should be `"Controller:Action"` combination or just any route name as custom specific string.
 	 * @param array  $params						Optional, array with params, key is param name, value is param value.

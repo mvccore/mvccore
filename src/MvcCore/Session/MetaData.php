@@ -39,7 +39,7 @@ trait MetaData
 	/**
 	 * Set up namespaces data - only if data has not been expired yet,
 	 * if data has been expired, unset data from
-	 * `\MvcCore\ISession::$meta` and `$_SESSION` storrage.
+	 * `\MvcCore\ISession::$meta` and `$_SESSION` storage.
 	 * Called only once at session start by `\MvcCore\ISession::Start();`.
 	 * @return void
 	 */
@@ -80,7 +80,7 @@ trait MetaData
 
 	/**
 	 * Get session metadata about session namespaces.
-	 * This method is used for debuging purposes.
+	 * This method is used for debugging purposes.
 	 * @return \stdClass
 	 */
 	public static function GetSessionMetadata () {

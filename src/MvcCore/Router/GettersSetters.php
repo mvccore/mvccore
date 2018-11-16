@@ -17,24 +17,26 @@ trait GettersSetters
 {
 	/**
 	 * Get `\MvcCore\Request` object as reference, used internally for:
-	 * - Routing process in `\MvcCore\Router::Route();` and it's protected submethods.
-	 * - URL addresses completing in `\MvcCore\Router::Url()` and it's protected submethods.
+	 * - Routing process in `\MvcCore\Router::Route();` and it's protected sub-methods.
+	 * - URL addresses completing in `\MvcCore\Router::Url()` and it's protected sub-methods.
 	 * @return \MvcCore\Request
 	 */
 	public function & GetRequest () {
+		/** @var $this \MvcCore\Router */
 		return $this->request;
 	}
 
 	/**
 	 * Sets up `\MvcCore\Request` object as reference to use it internally for:
-	 * - Routing process in `\MvcCore\Router::Route();` and it's protected submethods.
-	 * - URL addresses completing in `\MvcCore\Router::Url()` and it's protected submethods.
+	 * - Routing process in `\MvcCore\Router::Route();` and it's protected sub-methods.
+	 * - URL addresses completing in `\MvcCore\Router::Url()` and it's protected sub-methods.
 	 * This is INTERNAL, not TEMPLATE method, internally called in
 	 * `\MvcCore\Application::Run();` => `\MvcCore\Application::routeRequest();`.
 	 * @param \MvcCore\Request $request
 	 * @return \MvcCore\Router
 	 */
 	public function & SetRequest (\MvcCore\IRequest & $request) {
+		/** @var $this \MvcCore\Router */
 		$this->request = & $request;
 		return $this;
 	}
@@ -45,6 +47,7 @@ trait GettersSetters
 	 * @return \MvcCore\Router
 	 */
 	public function & SetRouteByQueryString ($routeByQueryString = TRUE) {
+		/** @var $this \MvcCore\Router */
 		$this->routeByQueryString = $routeByQueryString;
 		return $this;
 	}
@@ -81,7 +84,7 @@ trait GettersSetters
 	}
 
 	/**
-	 * Get default request params - default params to build url with possibility
+	 * Get default request params - default params to build URL with possibility
 	 * to define custom records for filter functions.
 	 * Be careful, it could contain XSS chars. Use always `htmlspecialchars()`.
 	 * @return array
@@ -100,16 +103,16 @@ trait GettersSetters
 	}
 
 	/**
-	 * Get trrailing slash behaviour - integer state about what to do with trailing
-	 * slash in all requested url except homepage. Possible states are:
+	 * Get trailing slash behaviour - integer state about what to do with trailing
+	 * slash in all requested URL except homepage. Possible states are:
 	 * - `-1` (`\MvcCore\IRouter::TRAILING_SLASH_REMOVE`)
-	 *		Always remove trailing slash from requested url if there
+	 *		Always remove trailing slash from requested URL if there
 	 *		is any and redirect to it, except homepage.
 	 * -  `0` (`\MvcCore\IRouter::TRAILING_SLASH_BENEVOLENT`)
 	 *		Be absolutely benevolent for trailing slash in requested url.
 	 * -  `1` (`\MvcCore\IRouter::TRAILING_SLASH_ALWAYS`)
-	 *		Always keep trailing slash in requested url or always add trailing
-	 *		slash into url and redirect to it.
+	 *		Always keep trailing slash in requested URL or always add trailing
+	 *		slash into URL and redirect to it.
 	 * Default value is `-1` - `\MvcCore\IRouter::TRAILING_SLASH_REMOVE`
 	 * @return int
 	 */
@@ -118,28 +121,29 @@ trait GettersSetters
 	}
 
 	/**
-	 * Set trrailing slash behaviour - integer state about what to do with trailing
-	 * slash in all requested url except homepage. Possible states are:
+	 * Set trailing slash behaviour - integer state about what to do with trailing
+	 * slash in all requested URL except homepage. Possible states are:
 	 * - `-1` (`\MvcCore\IRouter::TRAILING_SLASH_REMOVE`)
-	 *		Always remove trailing slash from requested url if there
+	 *		Always remove trailing slash from requested URL if there
 	 *		is any and redirect to it, except homepage.
 	 * -  `0` (`\MvcCore\IRouter::TRAILING_SLASH_BENEVOLENT`)
 	 *		Be absolutely benevolent for trailing slash in requested url.
 	 * -  `1` (`\MvcCore\IRouter::TRAILING_SLASH_ALWAYS`)
-	 *		Always keep trailing slash in requested url or always add trailing
-	 *		slash into url and redirect to it.
+	 *		Always keep trailing slash in requested URL or always add trailing
+	 *		slash into URL and redirect to it.
 	 * Default value is `-1` - `\MvcCore\IRouter::TRAILING_SLASH_REMOVE`
 	 * @param int $trailingSlashBehaviour `-1` (`\MvcCore\IRouter::TRAILING_SLASH_REMOVE`)
-	 *										 Always remove trailing slash from requested url if there
+	 *										 Always remove trailing slash from requested URL if there
 	 *										 is any and redirect to it, except homepage.
 	 *									 `0` (`\MvcCore\IRouter::TRAILING_SLASH_BENEVOLENT`)
 	 *										 Be absolutely benevolent for trailing slash in requested url.
 	 *									 `1` (`\MvcCore\IRouter::TRAILING_SLASH_ALWAYS`)
-	 *										 Always keep trailing slash in requested url or always add trailing
-	 *										 slash into url and redirect to it.
+	 *										 Always keep trailing slash in requested URL or always add trailing
+	 *										 slash into URL and redirect to it.
 	 * @return \MvcCore\Router|\MvcCore\IRouter
 	 */
 	public function & SetTrailingSlashBehaviour ($trailingSlashBehaviour = -1) {
+		/** @var $this \MvcCore\Router */
 		$this->trailingSlashBehaviour = $trailingSlashBehaviour;
 		return $this;
 	}
@@ -158,6 +162,7 @@ trait GettersSetters
 	 * @return \MvcCore\Router
 	 */
 	public function & SetAutoCanonizeRequests ($autoCanonizeRequests = TRUE) {
+		/** @var $this \MvcCore\Router */
 		$this->autoCanonizeRequests = $autoCanonizeRequests;
 		return $this;
 	}
@@ -168,6 +173,7 @@ trait GettersSetters
 	 * @return \MvcCore\Router
 	 */
 	public function & SetPreRouteMatchingHandler (callable $preRouteMatchingHandler) {
+		/** @var $this \MvcCore\Router */
 		$this->preRouteMatchingHandler = $preRouteMatchingHandler;
 		if ($preRouteMatchingHandler === NULL)
 			$this->anyRoutesConfigured = count($this->routes) > 0;
@@ -188,6 +194,7 @@ trait GettersSetters
 	 * @return \MvcCore\Router
 	 */
 	public function & SetPreRouteUrlBuildingHandler (callable $preRouteUrlBuildingHandler) {
+		/** @var $this \MvcCore\Router */
 		$this->preRouteUrlBuildingHandler = $preRouteUrlBuildingHandler;
 		return $this;
 	}

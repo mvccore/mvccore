@@ -42,7 +42,7 @@ namespace MvcCore;
  *   - `Controller:Action` view rendering responsibility and response competition.
  *
  * Important methods:
- * - `Url()` - proxy method to build url by configured routes.
+ * - `Url()` - proxy method to build URL by configured routes.
  * - `GetParam()` - proxy method to read and clean request param values.
  * - `AddChildController()` - method to register child controller (navigations, etc.)
  *

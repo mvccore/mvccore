@@ -13,9 +13,6 @@
 
 namespace MvcCore;
 
-//include_once(__DIR__ . '/Application.php');
-//include_once(__DIR__ . '/IView.php');
-
 /**
  * Core view:
  * - Static storage for
@@ -37,20 +34,19 @@ namespace MvcCore;
  *   - __set() - To set anything from controller to get it back in view.
  *   - __get() - To get anything in view previously initialized from controller.
  * - Optional direct code evaluation.
- * - No special view language implemented.
- *   - Why to use such stupid things, if we have configured `short_open_tags` by default? `<?=...?>`
+ * - No special view language implemented, use `short_open_tags` (`<?=...?>`) allowed by default.
  *
  * MvcCore view properties and helpers:
  * @property-read \MvcCore\Controller $controller Currently dispatched controller instance.
- * @method \MvcCore\Ext\Views\Helpers\Css Css(string $groupName = self::GROUP_NAME_DEFAULT asdfa) Get css helper instance by group name. To use this method, you need to instal extension `mvccore/ext-view-helper-assets`.
- * @method \MvcCore\Ext\Views\Helpers\Js Js(string $groupName = self::GROUP_NAME_DEFAULT) Get js helper instance by group name. To use this method, you need to instal extension `mvccore/ext-view-helper-assets`.
- * @method string FormatDateTime(\DateTime|\IntlCalendar|int $dateTimeOrTimestamp = NULL, int|string $dateTypeOrFormatMask = NULL, int $timeType = NULL, string|\IntlTimeZone|\DateTimeZone $timeZone = NULL, int $calendar = NULL) Format given datetime by `Intl` extension or by `strftime()` as fallback. To use this method, you need to instal extension `mvccore/ext-view-helper-formatdatetime`.
- * @method string FormatNumber(float|int $number = 0.0, int $decimals = 0, string $dec_point = NULL , string $thousands_sep = NULL) To use this method, you need to instal extension `mvccore/ext-view-helper-formatnumber`.
- * @method string FormatMoney(float|int$number = 0.0, int $decimals = 0, string $dec_point = NULL , string $thousands_sep = NULL) To use this method, you need to instal extension `mvccore/ext-view-helper-formatmoney`.
- * @method string LineBreaks(string $text, string $lang = '') Prevent breaking line inside numbers, after week words, shortcuts, numbers and units and much more, very configurable. To use this method, you need to instal extension `mvccore/ext-view-helper-linebreaks`.
- * @method string DataUrl(string $relativeOrAbsolutePath) Return any file content by given relative or absolute path in data url like `data:image/png;base64,iVBOR..`. Path could be relative from currently rendered view, relative from application root or absolute path to file. To use this method, you need to instal extension `mvccore/ext-view-helper-dataurl`.
- * @method string WriteByJS(string $string) Return any given HTML code as code rendered in javascript: `<script>document.write(String.fromCharCode(...));</script>`. To use this method, you need to instal extension `mvccore/ext-view-helper-writebyjs`.
- * @method string Truncate(string $text, int $maxChars = 200, bool $isHtml = NULL) Truncate plain text or text with html tags by given max. characters number and add three dots at the end. To use this method, you need to instal extension `mvccore/ext-view-helper-truncate`.
+ * @method \MvcCore\Ext\Views\Helpers\Css Css(string $groupName = self::GROUP_NAME_DEFAULT) Get css helper instance by group name. To use this method, you need to install extension `mvccore/ext-view-helper-assets`.
+ * @method \MvcCore\Ext\Views\Helpers\Js Js(string $groupName = self::GROUP_NAME_DEFAULT) Get js helper instance by group name. To use this method, you need to install extension `mvccore/ext-view-helper-assets`.
+ * @method string FormatDateTime(\DateTime|\IntlCalendar|int $dateTimeOrTimestamp = NULL, int|string $dateTypeOrFormatMask = NULL, int $timeType = NULL, string|\IntlTimeZone|\DateTimeZone $timeZone = NULL, int $calendar = NULL) Format given date time by `Intl` extension or by `strftime()` as fallback. To use this method, you need to install extension `mvccore/ext-view-helper-formatdatetime`.
+ * @method string FormatNumber(float|int $number = 0.0, int $decimals = 0, string $dec_point = NULL , string $thousands_sep = NULL) To use this method, you need to install extension `mvccore/ext-view-helper-formatnumber`.
+ * @method string FormatMoney(float|int$number = 0.0, int $decimals = 0, string $dec_point = NULL , string $thousands_sep = NULL) To use this method, you need to install extension `mvccore/ext-view-helper-formatmoney`.
+ * @method string LineBreaks(string $text, string $lang = '') Prevent breaking line inside numbers, after week words, shortcuts, numbers and units and much more, very configurable. To use this method, you need to install extension `mvccore/ext-view-helper-linebreaks`.
+ * @method string DataUrl(string $relativeOrAbsolutePath) Return any file content by given relative or absolute path in data URL like `data:image/png;base64,iVBOR..`. Path could be relative from currently rendered view, relative from application root or absolute path to file. To use this method, you need to install extension `mvccore/ext-view-helper-dataurl`.
+ * @method string WriteByJS(string $string) Return any given HTML code as code rendered in javascript: `<script>document.write(String.fromCharCode(...));</script>`. To use this method, you need to install extension `mvccore/ext-view-helper-writebyjs`.
+ * @method string Truncate(string $text, int $maxChars = 200, bool $isHtml = NULL) Truncate plain text or text with html tags by given max. characters number and add three dots at the end. To use this method, you need to install extension `mvccore/ext-view-helper-truncate`.
  */
 class View implements IView
 {

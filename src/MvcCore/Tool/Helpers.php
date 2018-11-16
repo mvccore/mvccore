@@ -116,7 +116,7 @@ trait Helpers
 	 * - `string $errFile`		- Optional, full path to error file name where error was raised.
 	 * - `int $errLine`			- Optional, The error file line number.
 	 * - `array $errContext`	- Optional, array that points to the active symbol table at the 
-	 *							  point the error occurred. In other words, errcontext will contain 
+	 *							  point the error occurred. In other words, `$errContext` will contain 
 	 *							  an array of every variable that existed in the scope the error 
 	 *							  was triggered in. User error handler must not modify error context.
 	 *							  Warning: This parameter has been DEPRECATED as of PHP 7.2.0. 
@@ -130,6 +130,7 @@ trait Helpers
 	 * @return mixed
 	 */
 	public static function Invoke ($internalFuncName, array $args, callable $onError) {
+		$prevErrorHandler = NULL;
 		$prevErrorHandler = set_error_handler(
 			function ($errLevel, $errMessage, $errFile, $errLine, $errContext) use ($onError, & $prevErrorHandler, $internalFuncName) {
 				if ($errFile === '' && defined('HHVM_VERSION'))  // https://github.com/facebook/hhvm/issues/4625
@@ -137,7 +138,7 @@ trait Helpers
 				if ($errFile === __FILE__) {
 					$errMessage = preg_replace("#^$internalFuncName\(.*?\): #", '', $errMessage);
 					if ($onError($errMessage, $errLevel, $errFile, $errLine, $errContext) !== FALSE) 
-						return;
+						return TRUE;
 				}
 				return $prevErrorHandler 
 					? call_user_func_array($prevErrorHandler, func_get_args()) 
@@ -151,6 +152,7 @@ trait Helpers
 			restore_error_handler();
 		}*/
 		restore_error_handler();
+		return NULL;
 	}
 
 	/**
@@ -159,11 +161,11 @@ trait Helpers
 	 * @see http://php.net/manual/en/function.set-error-handler.php
 	 * @see http://php.net/manual/en/function.clearstatcache.php
 	 * @param string $fullPath File full path.
-	 * @param string $content String content ot write.
+	 * @param string $content String content to write.
 	 * @param string $writeMode PHP `fopen()` second argument flag, could be `w`, `w+`, `a`, `a+` etc...
-	 * @param int $lockWaitMiliSeconds Miliseconds to wait before next lock file existence is checked in `while()` cycle.
-	 * @param int $maxLockWaitMiliSeconds Maximum miliseconds time to wait before thrown an exception about not possible write.
-	 * @param int $oldLockMilisecondsTolerance Maximum miliseconds time to consider lock file as operative or as old after some died process.
+	 * @param int $lockWaitMilliseconds Milliseconds to wait before next lock file existence is checked in `while()` cycle.
+	 * @param int $maxLockWaitMilliseconds Maximum milliseconds time to wait before thrown an exception about not possible write.
+	 * @param int $oldLockMillisecondsTolerance Maximum milliseconds time to consider lock file as operative or as old after some died process.
 	 * @throws \Exception About 
 	 * @return bool
 	 */
@@ -171,21 +173,21 @@ trait Helpers
 		$fullPath, 
 		& $content, 
 		$writeMode = 'w', 
-		$lockWaitMiliSeconds = 10, 
-		$maxLockWaitMiliSeconds = 5000, 
-		$oldLockMilisecondsTolerance = 30000
+		$lockWaitMilliseconds = 10, 
+		$maxLockWaitMilliseconds = 5000, 
+		$oldLockMillisecondsTolerance = 30000
 	) {
-		$waitUTime = $lockWaitMiliSeconds * 1000;
+		$waitUTime = $lockWaitMilliseconds * 1000;
 
 		$tmpDir = self::GetSystemTmpDir();
 		$lockFullPath = $tmpDir . '/mvccore_lock_' . sha1($fullPath) . '.tmp';
 
-		// capture E_WARNINGs for fopen() and filemtime() and do not log them:
+		// capture E_WARNINGs for `fopen()` and `filemtime()` and do not log them:
 		set_error_handler(function ($level, $msg, $file, $line, $args) use ($lockFullPath) {
 			if ($level == E_WARNING) {
-				// do not log any fopen() E_WARNINGs
+				// do not log any `fopen()` `E_WARNING`s
 				if (mb_strpos($msg, 'fopen(' . $lockFullPath) === 0) return TRUE;
-				// do not log any fopen() E_WARNINGs
+				// do not log any `fopen()` `E_WARNING`s
 				if (mb_strpos($msg, 'filemtime(' . $lockFullPath) === 0) return TRUE;
 			}
 			return FALSE;
@@ -197,7 +199,7 @@ trait Helpers
 		if (file_exists($lockFullPath)) {
 			$fileModTime = @filemtime($lockFullPath);
 			if ($fileModTime !== FALSE) {
-				if (time() > $fileModTime + $oldLockMilisecondsTolerance) 
+				if (time() > $fileModTime + $oldLockMillisecondsTolerance) 
 					unlink($lockFullPath);
 			}
 		}
@@ -209,8 +211,8 @@ trait Helpers
 			clearstatcache(TRUE, $lockFullPath);
 			$lockHandle = @fopen($lockFullPath, 'x');
 			if ($lockHandle !== FALSE) break;
-			$waitingTime += $lockWaitMiliSeconds;
-			if ($waitingTime > $maxLockWaitMiliSeconds) {
+			$waitingTime += $lockWaitMilliseconds;
+			if ($waitingTime > $maxLockWaitMilliseconds) {
 				throw new \Exception(
 					'Unable to create lock handle for file: `' . $fullPath 
 					. '`. Lock creation timeout. Try to clear cache: `' 

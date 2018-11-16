@@ -40,15 +40,16 @@ trait DataMethods
 	/**
 	 * Set up given `$data` items into `$this` instance context
 	 * as typed properties by PHP doc comments, as properties
-	 * with the same names as `$data` array keys. Case sesitively by default.
+	 * with the same names as `$data` array keys. Case sensitively by default.
 	 * Do not set any `$data` items, which are not declared in `$this` context.
 	 * @param array   $data					 Collection with data to set up
-	 * @param boolean $keysInsensitive			If `TRUE`, set up properties from `$data` with case insensivity.
+	 * @param boolean $keysInsensitive			If `TRUE`, set up properties from `$data` with case insensitively.
 	 * @param boolean $includeInheritProperties If `TRUE`, include only fields from current model class and from parent classes.
 	 * @param boolean $publicOnly			   If `TRUE`, include only public model fields.
 	 * @return \MvcCore\Model|\MvcCore\IModel
 	 */
 	public function & SetUp ($data = [], $keysInsensitive = FALSE, $includeInheritProperties = TRUE, $publicOnly = TRUE) {
+		/** @var $this \MvcCore\Model */
 		$modelClassName = get_class($this);
 		$classReflector = new \ReflectionClass($modelClassName);
 		$properties = $publicOnly
@@ -114,7 +115,7 @@ trait DataMethods
 	public function __set ($name, $value) {
 		if (isset(static::$protectedProperties[$name])) {
 			throw new \InvalidArgumentException(
-				'['.__CLASS__."] It's not possible to change property: '$name' originaly declared in class ".__CLASS__.'.'
+				'['.__CLASS__."] It's not possible to change property: '$name' originally declared in class ".__CLASS__.'.'
 			);
 		}
 		return $this->$name = $value;
@@ -130,7 +131,7 @@ trait DataMethods
 	public function __get ($name) {
 		if (isset(static::$protectedProperties[$name])) {
 			throw new \InvalidArgumentException(
-				'['.__CLASS__."] It's not possible to get property: '$name' originaly declared in class ".__CLASS__.'.'
+				'['.__CLASS__."] It's not possible to get property: '$name' originally declared in class ".__CLASS__.'.'
 			);
 		}
 		return (isset($this->$name)) ? $this->$name : null;

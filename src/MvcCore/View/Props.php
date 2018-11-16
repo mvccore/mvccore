@@ -47,7 +47,7 @@ trait Props
 		'helpers'			=> [],
 		/**
 		  * Currently rendered php/phtml file path(s).
-		  * @var array
+		  * @var \string[]
 		  */
 		'renderedFullPaths'	=> [],
 		/**
@@ -123,7 +123,7 @@ trait Props
 	];
 
 	/**
-	 * Global helpers instances storrage.
+	 * Global helpers instances storage.
 	 * Keys in array are helper method names.
 	 * These helpers instances are used for all views.
 	 * @var array

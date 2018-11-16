@@ -13,11 +13,8 @@
 
 namespace MvcCore;
 
-//include_once('IRequest.php');
-//include_once('IRoute.php');
-
 /**
- * Responsibility - singleton, routes instancing, request routing and url building.
+ * Responsibility - singleton, routes instancing, request routing and URL building.
  * - Application router singleton instance managing.
  * - Global storage for all configured routes.
  *	 - Instancing all route(s) from application start
@@ -26,7 +23,7 @@ namespace MvcCore;
  * - Matching proper route object in `\MvcCore\Router::Route();`
  *   by `\MvcCore\Request::$Path`, always called from core in
  *   `\MvcCore\Application::Run();` => `\MvcCore\Application::routeRequest();`.
- * - Application url addresses completing:
+ * - Application URL addresses completing:
  *   - Into `mod_rewrite` form by configured route instances.
  *   - Into `index.php?` + query string form, containing
  *	 `controller`, `action` and all other params.
@@ -35,7 +32,7 @@ interface IRouter
 {
 	/**
 	 * Default system route name, automatically created for requests:
-	 * - For requests with explicitly defined controler and action in query string.
+	 * - For requests with explicitly defined controller and action in query string.
 	 * - For requests targeting homepage with controller and action `Index:Index`.
 	 * - For requests targeting any not matched path by other routes with
 	 *   configured router as `$router->SetRouteToDefaultIfNotMatch();` which
@@ -59,8 +56,8 @@ interface IRouter
 
 
 	/**
-	 * Always keep trailing slash in requested url or
-	 * always add trailing slash into url and redirect to it.
+	 * Always keep trailing slash in requested URL or
+	 * always add trailing slash into URL and redirect to it.
 	 */
 	const TRAILING_SLASH_ALWAYS = 1;
 
@@ -70,7 +67,7 @@ interface IRouter
 	const TRAILING_SLASH_BENEVOLENT = 0;
 
 	/**
-	 * Always remove trailing slash from requested url if there is any and redirect to it, except homepage.
+	 * Always remove trailing slash from requested URL if there is any and redirect to it, except homepage.
 	 */
 	const TRAILING_SLASH_REMOVE = -1;
 
@@ -171,7 +168,7 @@ interface IRouter
 	 *							   route names or route controller or route action
 	 *							   record, completed always from array keys.
 	 *							   You can you `FALSE` to set routes without any 
-	 *							   change or autoinitialization, it could be usefull 
+	 *							   change or auto-initialization, it could be useful 
 	 *							   to restore cached routes etc.
 	 * @return \MvcCore\IRouter
 	 */
@@ -225,7 +222,7 @@ interface IRouter
 	 *							   route names or route controller or route action
 	 *							   record, completed always from array keys.
 	 *							   You can you `FALSE` to set routes without any 
-	 *							   change or autoinitialization, it could be usefull 
+	 *							   change or auto-initialization, it could be useful 
 	 *							   to restore cached routes etc.
 	 * @return \MvcCore\IRouter
 	 */
@@ -279,7 +276,7 @@ interface IRouter
 	 * @param bool $throwExceptionForDuplication `TRUE` by default. Throw an exception,
 	 *											 if route `name` or route `Controller:Action`
 	 *											 has been defined already. If `FALSE` old route
-	 *											 is overwriten by new one.
+	 *											 is over-written by new one.
 	 * @return \MvcCore\IRouter
 	 */
 	public function & AddRoutes (array $routes = [], $prepend = FALSE, $throwExceptionForDuplication = TRUE);
@@ -289,7 +286,7 @@ interface IRouter
 	 * Set up route by route name into `\MvcCore\Router::$routes` array
 	 * to route incoming request and also set up route by route name and
 	 * by `Controller:Action` combination into `\MvcCore\Router::$urlRoutes`
-	 * array to build url addresses.
+	 * array to build URL addresses.
 	 *
 	 * Route could be defined in various forms:
 	 * Example:
@@ -327,7 +324,7 @@ interface IRouter
 	 * @param bool $throwExceptionForDuplication `TRUE` by default. Throw an exception,
 	 *											 if route `name` or route `Controller:Action`
 	 *											 has been defined already. If `FALSE` old route
-	 *											 is overwriten by new one.
+	 *											 is over-written by new one.
 	 * @return \MvcCore\IRouter
 	 */
 	public function & AddRoute ($routeCfgOrRoute, $prepend = FALSE, $throwExceptionForDuplication = TRUE);
@@ -362,16 +359,16 @@ interface IRouter
 
 	/**
 	 * Get `\MvcCore\Request` object as reference, used internally for:
-	 * - Routing process in `\MvcCore\Router::Route();` and it's protected submethods.
-	 * - URL addresses completing in `\MvcCore\Router::Url()` and it's protected submethods.
+	 * - Routing process in `\MvcCore\Router::Route();` and it's protected sub-methods.
+	 * - URL addresses completing in `\MvcCore\Router::Url()` and it's protected sub-methods.
 	 * @return \MvcCore\IRequest
 	 */
 	public function & GetRequest ();
 
 	/**
 	 * Sets up `\MvcCore\Request` object as reference to use it internally for:
-	 * - Routing process in `\MvcCore\Router::Route();` and it's protected submethods.
-	 * - URL addresses completing in `\MvcCore\Router::Url()` and it's protected submethods.
+	 * - Routing process in `\MvcCore\Router::Route();` and it's protected sub-methods.
+	 * - URL addresses completing in `\MvcCore\Router::Url()` and it's protected sub-methods.
 	 * This is INTERNAL, not TEMPLATE method, internally called in
 	 * `\MvcCore\Application::Run();` => `\MvcCore\Application::routeRequest();`.
 	 * @param \MvcCore\IRequest $request
@@ -428,7 +425,7 @@ interface IRouter
 	public function & SetRouteToDefaultIfNotMatch ($enable = TRUE);
 
 	/**
-	 * Get default request params - default params to build url with possibility
+	 * Get default request params - default params to build URL with possibility
 	 * to define custom records for filter functions.
 	 * Be careful, it could contain XSS chars. Use always `htmlspecialchars()`.
 	 * @return array
@@ -443,41 +440,41 @@ interface IRouter
 	public function & GetRequestedParams ();
 
 	/**
-	 * Get trrailing slash behaviour - integer state about what to do with trailing
-	 * slash in all requested url except homepage. Possible states are:
+	 * Get trailing slash behaviour - integer state about what to do with trailing
+	 * slash in all requested URL except homepage. Possible states are:
 	 * - `-1` (`\MvcCore\IRouter::TRAILING_SLASH_REMOVE`)
-	 *		Always remove trailing slash from requested url if there
+	 *		Always remove trailing slash from requested URL if there
 	 *		is any and redirect to it, except homepage.
 	 * -  `0` (`\MvcCore\IRouter::TRAILING_SLASH_BENEVOLENT`)
 	 *		Be absolutely benevolent for trailing slash in requested url.
 	 * -  `1` (`\MvcCore\IRouter::TRAILING_SLASH_ALWAYS`)
-	 *		Always keep trailing slash in requested url or always add trailing
-	 *		slash into url and redirect to it.
+	 *		Always keep trailing slash in requested URL or always add trailing
+	 *		slash into URL and redirect to it.
 	 * Default value is `-1` - `\MvcCore\IRouter::TRAILING_SLASH_REMOVE`
 	 * @return int
 	 */
 	public function GetTrailingSlashBehaviour ();
 
 	/**
-	 * Set trrailing slash behaviour - integer state about what to do with trailing
-	 * slash in all requested url except homepage. Possible states are:
+	 * Set trailing slash behaviour - integer state about what to do with trailing
+	 * slash in all requested URL except homepage. Possible states are:
 	 * - `-1` (`\MvcCore\IRouter::TRAILING_SLASH_REMOVE`)
-	 *		Always remove trailing slash from requested url if there
+	 *		Always remove trailing slash from requested URL if there
 	 *		is any and redirect to it, except homepage.
 	 * -  `0` (`\MvcCore\IRouter::TRAILING_SLASH_BENEVOLENT`)
 	 *		Be absolutely benevolent for trailing slash in requested url.
 	 * -  `1` (`\MvcCore\IRouter::TRAILING_SLASH_ALWAYS`)
-	 *		Always keep trailing slash in requested url or always add trailing
-	 *		slash into url and redirect to it.
+	 *		Always keep trailing slash in requested URL or always add trailing
+	 *		slash into URL and redirect to it.
 	 * Default value is `-1` - `\MvcCore\IRouter::TRAILING_SLASH_REMOVE`
 	 * @param int $trailingSlashBehaviour `-1` (`\MvcCore\IRouter::TRAILING_SLASH_REMOVE`)
-	 *										 Always remove trailing slash from requested url if there
+	 *										 Always remove trailing slash from requested URL if there
 	 *										 is any and redirect to it, except homepage.
 	 *									 `0` (`\MvcCore\IRouter::TRAILING_SLASH_BENEVOLENT`)
 	 *										 Be absolutely benevolent for trailing slash in requested url.
 	 *									 `1` (`\MvcCore\IRouter::TRAILING_SLASH_ALWAYS`)
-	 *										 Always keep trailing slash in requested url or always add trailing
-	 *										 slash into url and redirect to it.
+	 *										 Always keep trailing slash in requested URL or always add trailing
+	 *										 slash into URL and redirect to it.
 	 * @return \MvcCore\IRouter
 	 */
 	public function & SetTrailingSlashBehaviour ($trailingSlashBehaviour = -1);
@@ -549,14 +546,14 @@ interface IRouter
 	/**
 	 * Here you can redefine target controller and action and it doesn't matter,
 	 * what has been routed before. This method is only possible to use and it 
-	 * make sence to use it only in any application post route handler, after 
+	 * make sense to use it only in any application post route handler, after 
 	 * `Route()` method has been called and before controller is created by 
 	 * application and dispatched. This method is very advanced. you have to 
 	 * know what you are doing. There is no missing template or controller or 
 	 * action checking!
-	 * @param string $controllerNamePc Pascal case clasic controller name definition.
+	 * @param string $controllerNamePc Pascal case classic controller name definition.
 	 * @param string $actionNamePc Pascal case action name without `Action` suffix.
-	 * @param bool $changeSelfRoute \FALSE` by default to change self route to generate self urls.
+	 * @param bool $changeSelfRoute \FALSE` by default to change self route to generate self URLs.
 	 * @return bool
 	 */
 	public function RedefineRoutedTarget ($controllerNamePc = NULL, $actionNamePc = NULL, $changeSelfRoute = FALSE);
@@ -570,10 +567,10 @@ interface IRouter
 	 *	 (route name is key in routes configuration array, should be any string
 	 *	 but routes must have information about controller name and action name inside).
 	 * Result address (url string) should have two forms:
-	 * - Nice rewritten url by routes configuration
+	 * - Nice rewritten URL by routes configuration
 	 *   (for apps with URL rewrite support (Apache `.htaccess` or IIS URL rewrite module)
 	 *   and when first param is key in routes configuration array).
-	 * - For all other cases is url form like: `"index.php?controller=ctrlName&amp;action=actionName"`
+	 * - For all other cases is URL form like: `"index.php?controller=ctrlName&amp;action=actionName"`
 	 *	 (when first param is not founded in routes configuration array).
 	 * @param string $controllerActionOrRouteName	Should be `"Controller:Action"` combination or just any route name as custom specific string.
 	 * @param array  $params						Optional, array with params, key is param name, value is param value.
@@ -583,7 +580,7 @@ interface IRouter
 	public function Url ($controllerActionOrRouteName = 'Index:Index', array $params = []);
 
 	/**
-	 * Complete optionally absolute, non-localized url with all params in query string.
+	 * Complete optionally absolute, non-localized URL with all params in query string.
 	 * Example: `"/application/base-bath/index.php?controller=ctrlName&amp;action=actionName&amp;name=cool-product-name&amp;color=blue"`
 	 * @param string $controllerActionOrRouteName
 	 * @param array  $params
@@ -593,7 +590,7 @@ interface IRouter
 	public function UrlByQueryString ($controllerActionOrRouteName = 'Index:Index', array & $params = [], $givenRouteName = NULL);
 
 	/**
-	 * Complete optionally absolute, non-localized url by route instance reverse info.
+	 * Complete optionally absolute, non-localized URL by route instance reverse info.
 	 * Example:
 	 *	Input (`\MvcCore\Route::$Reverse`):
 	 *		`"/products-list/<name>/<color>"`
@@ -623,10 +620,10 @@ interface IRouter
 	 * create new empty route by configured route class from application core
 	 * and set up this new route by given `$routeName`, `$controllerPc`, `$actionPc`
 	 * with route match pattern to match any request `#/(?<path>.*)#` and with reverse
-	 * pattern `/<path>` to create url by single `path` param only. Add this newly
+	 * pattern `/<path>` to create URL by single `path` param only. Add this newly
 	 * created route into routes and set this new route as current route object.
 	 *
-	 * This method is always called internaly for following cases:
+	 * This method is always called internally for following cases:
 	 * - When router has no routes configured and request is necessary
 	 *   to route by query string arguments only (controller and action).
 	 * - When no route matched and when is necessary to create

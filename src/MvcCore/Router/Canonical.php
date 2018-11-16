@@ -26,20 +26,20 @@ trait Canonical
 			$this->request->GetMethod() !== \MvcCore\IRequest::METHOD_GET
 		) return TRUE;
 		if ($this->routeByQueryString) {
-			// self url could be completed only by query string strategy
+			// self URL could be completed only by query string strategy
 			return $this->canonicalRedirectQueryStringStrategy();
 		} else if ($this->selfRouteName !== NULL) {
-			// self url could be completed by rewrite routes strategy
+			// self URL could be completed by rewrite routes strategy
 			return $this->canonicalRedirectRewriteRoutesStrategy();
 		}
 		return TRUE;
 	}
 
 	protected function canonicalRedirectQueryStringStrategy () {
-		/** @var $req \MvcCore\Request */
-		$req = & $this->request;
+		/** @var $request \MvcCore\Request */
+		$request = & $this->request;
 		$redirectToCanonicalUrl = FALSE;
-		$requestGlobalGet = & $req->GetGlobalCollection('get');
+		$requestGlobalGet = & $request->GetGlobalCollection('get');
 		$requestedCtrlDc = isset($requestGlobalGet['controller']) ? $requestGlobalGet['controller'] : NULL;
 		$requestedActionDc = isset($requestGlobalGet['action']) ? $requestGlobalGet['action'] : NULL;
 		$toolClass = self::$toolClass;
@@ -64,23 +64,23 @@ trait Canonical
 	}
 	
 	protected function canonicalRedirectRewriteRoutesStrategy () {
-		/** @var $req \MvcCore\Request */
-		$req = & $this->request;
+		/** @var $request \MvcCore\Request */
+		$request = & $this->request;
 		$redirectToCanonicalUrl = FALSE;
 		$defaultParams =  $this->GetDefaultParams() ?: [];
 		list($selfUrlDomainAndBasePart, $selfUrlPathAndQueryPart) =  $this->currentRoute->Url(
-			$req, $this->requestedParams, $defaultParams, $this->getQueryStringParamsSepatator()
+			$request, $this->requestedParams, $defaultParams, $this->getQueryStringParamsSepatator()
 		);
 		if (mb_strpos($selfUrlDomainAndBasePart, '//') === FALSE)
-			$selfUrlDomainAndBasePart = $req->GetDomainUrl() . $selfUrlDomainAndBasePart;
-		if (mb_strlen($selfUrlDomainAndBasePart) > 0 && $selfUrlDomainAndBasePart !== $req->GetBaseUrl()) 
+			$selfUrlDomainAndBasePart = $request->GetDomainUrl() . $selfUrlDomainAndBasePart;
+		if (mb_strlen($selfUrlDomainAndBasePart) > 0 && $selfUrlDomainAndBasePart !== $request->GetBaseUrl()) 
 			$redirectToCanonicalUrl = TRUE;
 		if (mb_strlen($selfUrlPathAndQueryPart) > 0) {
-			$path = $req->GetPath(TRUE);
+			$path = $request->GetPath(TRUE);
 			$requestedUrl = $path === '' ? '/' : $path ;
 			if (mb_strpos($selfUrlPathAndQueryPart, '?') !== FALSE) {
 				$selfUrlPathAndQueryPart = rawurldecode($selfUrlPathAndQueryPart);
-				$requestedUrl .= $req->GetQuery(TRUE, TRUE);
+				$requestedUrl .= $request->GetQuery(TRUE, TRUE);
 			}
 			if ($selfUrlPathAndQueryPart !== $requestedUrl) 
 				$redirectToCanonicalUrl = TRUE;

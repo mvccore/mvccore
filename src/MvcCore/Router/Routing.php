@@ -24,7 +24,7 @@ trait Routing
 	 *   go through all configured routes and try to find matching route:
 	 *   - If there is caught any matching route:
 	 *	 - Set up `\MvcCore\Router::$currentRoute`.
-	 *	 - Reset `\MvcCore\Request::$params` again with with default route params,
+	 *	 - Reset `\MvcCore\Request::$params` again with default route params,
 	 *	   with request params itself and with params parsed from matching process.
 	 * - If there is no route matching the request and also if the request is targeting homepage
 	 *   or there is no route matching the request and also if the request is targeting something
@@ -57,14 +57,14 @@ trait Routing
 	/**
 	 * Here you can redefine target controller and action and it doesn't matter,
 	 * what has been routed before. This method is only possible to use and it 
-	 * make sence to use it only in any application post route handler, after 
+	 * make sense to use it only in any application post route handler, after 
 	 * `Route()` method has been called and before controller is created by 
 	 * application and dispatched. This method is very advanced. you have to 
 	 * know what you are doing. There is no missing template or controller or 
 	 * action checking!
-	 * @param string $controllerNamePc Pascal case clasic controller name definition.
+	 * @param string $controllerNamePc Pascal case classic controller name definition.
 	 * @param string $actionNamePc Pascal case action name without `Action` suffix.
-	 * @param bool $changeSelfRoute `FALSE` by default to change self route to generate self urls.
+	 * @param bool $changeSelfRoute `FALSE` by default to change self route to generate self URLs.
 	 * @return bool
 	 */
 	public function RedefineRoutedTarget ($controllerNamePc = NULL, $actionNamePc = NULL, $changeSelfRoute = FALSE) {
@@ -127,10 +127,10 @@ trait Routing
 	 * create new empty route by configured route class from application core
 	 * and set up this new route by given `$routeName`, `$controllerPc`, `$actionPc`
 	 * with route match pattern to match any request `#/(?<path>.*)#` and with reverse
-	 * pattern `/<path>` to create url by single `path` param only. Add this newly
+	 * pattern `/<path>` to create URL by single `path` param only. Add this newly
 	 * created route into routes and set this new route as current route object.
 	 *
-	 * This method is always called internaly for following cases:
+	 * This method is always called internally for following cases:
 	 * - When router has no routes configured and request is necessary
 	 *   to route by query string arguments only (controller and action).
 	 * - When no route matched and when is necessary to create
@@ -238,7 +238,7 @@ trait Routing
 			$toolClass::GetPascalCaseFromDashed($requestActionName ?: $actionDfltName)
 		);
 		// default params are merged with previous default params to have 
-		// possiblity to add domain params by extended module router
+		// possibility to add domain params by extended module router
 		$this->defaultParams = array_merge([], $this->defaultParams, $this->request->GetParams(FALSE));
 		$this->requestedParams = array_merge([], $this->defaultParams);
 	}
@@ -267,6 +267,7 @@ trait Routing
 	 * @return \MvcCore\Router
 	 */
 	protected function routeSetUpDefaultForHomeIfNoMatch () {
+		/** @var $this \MvcCore\Router */
 		if ($this->currentRoute === NULL) {
 			$request = & $this->request;
 			$requestIsHome = (
@@ -294,6 +295,7 @@ trait Routing
 	 * @return \MvcCore\Router
 	 */
 	protected function routeSetUpSelfRouteNameIfAny () {
+		/** @var $this \MvcCore\Router */
 		if ($this->currentRoute instanceof \MvcCore\IRoute) 
 			$this->selfRouteName = $this->anyRoutesConfigured
 				? $this->currentRoute->GetName()

@@ -20,9 +20,9 @@ trait Matching
 	 * if route matches request always `\MvcCore\Request::$path` property by `preg_match_all()`.
 	 *
 	 * This method is usually called in core request routing process
-	 * from `\MvcCore\Router::Route();` method and it's submethods.
+	 * from `\MvcCore\Router::Route();` method and it's sub-methods.
 	 *
-	 * @param \MvcCore\Request $request Request object instance.
+	 * @param \MvcCore\Request $request The request object instance.
 	 * @param string $localization Lower case language code, optionally with dash and upper case locale code, `NULL` by default, not implemented in core.
 	 * @return array Matched and params array, keys are matched
 	 *				 params or controller and action params.
