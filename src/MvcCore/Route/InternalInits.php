@@ -250,10 +250,13 @@ trait InternalInits
 		$sectionIsLast = NULL;
 		// check greedy param specifics
 		if ($greedyFlag) {
-			if ($greedyFlag && $greedyCaught) throw new \InvalidArgumentException(
-				"[\".__CLASS__.\"] Route pattern definition can have only one greedy `<param_name*>` "
-				." with star (to include everything - all characters and slashes . `.*`) (\$this)."
-			);
+			if ($greedyFlag && $greedyCaught) {
+				$selfClass = version_compare(PHP_VERSION, '5.5', '>') ? self::class : __CLASS__;
+				throw new \InvalidArgumentException(
+					"[".$selfClass."] Route pattern definition can have only one greedy `<param_name*>` "
+					." with star (to include everything - all characters and slashes . `.*`) ($this)."
+				);
+			}
 			$reverseSectionsCount = count($reverseSectionsInfo);
 			$sectionIndexPlusOne = $sectionIndex + 1;
 			if (// next section is optional
@@ -266,11 +269,14 @@ trait InternalInits
 				$greedyReal = !$constraintDefined || ($constraintDefined && (
 					mb_strpos($constraint, '.*') !== FALSE || mb_strpos($constraint, '.+') !== FALSE
 				));
-				if ($greedyReal) throw new \InvalidArgumentException(
-					"[\".__CLASS__.\"] Route pattern definition can not have greedy `<param_name*>` with star "
-					."(to include everything - all characters and slashes . `.*`) immediately before optional "
-					."section (\$this)."
-				);
+				if ($greedyReal) {
+					$selfClass = version_compare(PHP_VERSION, '5.5', '>') ? self::class : __CLASS__;
+					throw new \InvalidArgumentException(
+						"[".$selfClass."] Route pattern definition can not have greedy `<param_name*>` with star "
+						."(to include everything - all characters and slashes . `.*`) immediately before optional "
+						."section ($this)."
+					);
+				}
 			}
 			$greedyCaught = TRUE;
 			$paramName = str_replace('*', '', $paramName);
@@ -393,8 +399,9 @@ trait InternalInits
 	}
 
 	protected function throwExceptionIfNoPattern () {
+		$selfClass = version_compare(PHP_VERSION, '5.5', '>') ? self::class : __CLASS__;
 		throw new \LogicException(
-			"[".__CLASS__."] Route configuration property `\MvcCore\Route::\$pattern` is missing "
+			"[".$selfClass."] Route configuration property `\MvcCore\Route::\$pattern` is missing "
 			."to parse it and complete property (or properties) `\MvcCore\Route::\$match` "
 			."(and `\MvcCore\Route::\$reverse`) correctly ($this)."
 		);

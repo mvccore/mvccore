@@ -80,8 +80,9 @@ trait ViewHelpers
 		if (method_exists($instance, $method)) {
 			$result = call_user_func_array([$instance, $method], $arguments);
 		} else {
+			$selfClass = version_compare(PHP_VERSION, '5.5', '>') ? self::class : __CLASS__;
 			throw new \InvalidArgumentException(
-				"[".__CLASS__."] View helper instance '".get_class($instance)."' has no method '$method'."
+				"[".$selfClass."] View class instance has no method '$method', no view helper found."
 			);
 		}
 		return $result;
@@ -130,10 +131,14 @@ trait ViewHelpers
 					break;
 				}
 			}
-			if (!$helperFound) throw new \InvalidArgumentException(
-				"[".__CLASS__."] View helper method '$helperName' is not possible to handle by any configured view helper "
-				." (View helper namespaces: '".implode("', '", static::$helpersNamespaces)."')."
-			);
+			if (!$helperFound) {
+				$selfClass = version_compare(PHP_VERSION, '5.5', '>') ? self::class : __CLASS__;
+				throw new \InvalidArgumentException(
+					"[".$selfClass."] View helper method '$helperName' is not"
+					." possible to handle by any configured view helper (View"
+					." helper namespaces: '".implode("', '", static::$helpersNamespaces)."')."
+				);
+			}
 		}
 		if ($setUpViewAgain) {
 			if ($implementsIHelper) $instance->SetView($this);

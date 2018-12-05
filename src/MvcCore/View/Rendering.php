@@ -66,7 +66,8 @@ trait Rendering
 		);
 		$viewScriptFullPath = static::GetViewScriptFullPath($typePath, $relativePath);
 		if (!file_exists($viewScriptFullPath)) {
-			throw new \InvalidArgumentException('['.__CLASS__."] Template not found in path: `$viewScriptFullPath`.");
+			$selfClass = version_compare(PHP_VERSION, '5.5', '>') ? self::class : __CLASS__;
+			throw new \InvalidArgumentException('['.$selfClass."] Template not found in path: `$viewScriptFullPath`.");
 		}
 		$renderedFullPaths = & $this->__protected['renderedFullPaths'];
 		$renderedFullPaths[] = $viewScriptFullPath;

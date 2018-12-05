@@ -34,7 +34,8 @@ trait Helpers
 			(defined('JSON_PRESERVE_ZERO_FRACTION') ? JSON_PRESERVE_ZERO_FRACTION : 0);
 		$json = json_encode($data, $flags);
 		if ($errorCode = json_last_error()) {
-			throw new \RuntimeException("[".__CLASS__."] ".json_last_error_msg(), $errorCode);
+			$selfClass = version_compare(PHP_VERSION, '5.5', '>') ? self::class : __CLASS__;
+			throw new \RuntimeException("[".$selfClass."] ".json_last_error_msg(), $errorCode);
 		}
 		if (PHP_VERSION_ID < 70100) {
 			$json = strtr($json, [

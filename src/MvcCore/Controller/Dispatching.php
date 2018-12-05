@@ -332,11 +332,11 @@ trait Dispatching
 			strpos($path, static::$staticPath) !== 0 &&
 			strpos($path, static::$tmpPath) !== 0
 		) {
-			throw new \ErrorException("[".__CLASS__."] File path: '$path' is not allowed.", 500);
+			throw new \ErrorException("[".get_class($this)."] File path: '$path' is not allowed.", 500);
 		}
 		$path = $this->request->GetAppRoot() . $path;
 		if (!file_exists($path)) {
-			throw new \ErrorException("[".__CLASS__."] File not found: '$path'.", 404);
+			throw new \ErrorException("[".get_class($this)."] File not found: '$path'.", 404);
 		}
 		$lastDotPos = strrpos($path, '.');
 		if ($lastDotPos !== FALSE) {

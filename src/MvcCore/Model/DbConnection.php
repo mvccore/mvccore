@@ -193,13 +193,20 @@ trait DbConnection
 	protected static function loadConfigs ($throwExceptionIfNoSysConfig = TRUE) {
 		$configClass = \MvcCore\Application::GetInstance()->GetConfigClass();
 		$systemCfg = $configClass::GetSystem();
-		if ($systemCfg === FALSE && $throwExceptionIfNoSysConfig) throw new \Exception(
-			"[".__CLASS__."] System config not found in '" . $configClass::GetSystemConfigPath() . "'."
-
-		);
-		if (!isset($systemCfg->db) && $throwExceptionIfNoSysConfig) throw new \Exception(
-			"[".__CLASS__."] No [db] section and no records matched 'db.*' found in system config.ini."
-		);
+		if ($systemCfg === FALSE && $throwExceptionIfNoSysConfig) {
+			$selfClass = version_compare(PHP_VERSION, '5.5', '>') ? self::class : __CLASS__;
+			throw new \Exception(
+				"[".$selfClass."] System config not found in '" 
+				. $configClass::GetSystemConfigPath() . "'."
+			);
+		}
+		if (!isset($systemCfg->db) && $throwExceptionIfNoSysConfig) {
+			$selfClass = version_compare(PHP_VERSION, '5.5', '>') ? self::class : __CLASS__;
+			throw new \Exception(
+				"[".$selfClass."] No [db] section and no records matched "
+				."'db.*' found in system config.ini."
+			);
+		}
 		$systemCfgDb = & $systemCfg->db;
 		$cfgType = gettype($systemCfgDb);
 		$configs = [];
@@ -233,9 +240,13 @@ trait DbConnection
 				reset($configs);
 				$defaultConnectionName = key($configs);
 			}
-			if (!isset($configs[$defaultConnectionName])) throw new \Exception(
-				"[".__CLASS__."] No default connection name '$defaultConnectionName' found in 'db.*' section in system config.ini."
-			);
+			if (!isset($configs[$defaultConnectionName])) {
+				$selfClass = version_compare(PHP_VERSION, '5.5', '>') ? self::class : __CLASS__;
+				throw new \Exception(
+					"[".$selfClass."] No default connection name '$defaultConnectionName'"
+					." found in 'db.*' section in system config.ini."
+				);
+			}
 			self::$connectionName = $defaultConnectionName;
 		}
 		static::$configs = & $configs;

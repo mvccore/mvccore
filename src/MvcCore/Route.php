@@ -129,7 +129,7 @@ class Route implements IRoute
 			$greedy = mb_strpos($paramName, '*');
 			if ($greedy !== FALSE) {
 				if ($greedyCatched) throw new \LogicException(
-					"[".__CLASS__."] Route could have greedy `<param_name*>` with star "
+					"[".get_class($this)."] Route could have greedy `<param_name*>` with star "
 					."to include slashes only as the very last parameter ($this)."
 				);
 				$greedyCatched = TRUE;

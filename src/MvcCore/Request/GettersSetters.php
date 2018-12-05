@@ -197,7 +197,8 @@ trait GettersSetters
 			$this->$prop = isset($arguments[0]) ? $arguments[0] : NULL;
 			return $this;
 		} else {
-			throw new \InvalidArgumentException('['.__CLASS__."] No property with name '$prop' defined.");
+			$selfClass = version_compare(PHP_VERSION, '5.5', '>') ? self::class : __CLASS__;
+			throw new \InvalidArgumentException('['.$selfClass."] No property with name '$prop' defined.");
 		}
 	}
 

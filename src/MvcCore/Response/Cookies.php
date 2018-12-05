@@ -32,9 +32,12 @@ trait Cookies
 		$lifetime = 0, $path = '/',
 		$domain = NULL, $secure = NULL, $httpOnly = TRUE
 	) {
-		if ($this->IsSent()) throw new \RuntimeException(
-			"[".__CLASS__."] Cannot set cookie after HTTP headers have been sent."
-		);
+		if ($this->IsSent()) {
+			$selfClass = version_compare(PHP_VERSION, '5.5', '>') ? self::class : __CLASS__;
+			throw new \RuntimeException(
+				"[".$selfClass."] Cannot set cookie after HTTP headers have been sent."
+			);
+		}
 		$request = \MvcCore\Application::GetInstance()->GetRequest();
 		return \setcookie(
 			$name, $value,

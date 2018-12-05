@@ -210,8 +210,10 @@ trait RouteMethods
 					$groupName, $prepend, $throwExceptionForDuplication
 				);
 			} else {
+				$selfClass = version_compare(PHP_VERSION, '5.5', '>') ? self::class : __CLASS__;
 				throw new \InvalidArgumentException (
-					"[".__CLASS__."] Route is not possible to assign (key: \"$routeName\", value: " . serialize($route) . ")."
+					"[".$selfClass."] Route is not possible to assign"
+					." (key: \"$routeName\", value: " . serialize($route) . ")."
 				);
 			}
 		}
@@ -284,7 +286,8 @@ trait RouteMethods
 				$errorMsgs[] = 'Route with `Controller:Action` combination: `'.$controllerAction.'` has already been defined between router routes.';
 			if ($errorMsgs) {
 				//var_dump($this->routes);
-				throw new \InvalidArgumentException('['.__CLASS__.'] '.implode(' ',$errorMsgs));
+				$selfClass = version_compare(PHP_VERSION, '5.5', '>') ? self::class : __CLASS__;
+				throw new \InvalidArgumentException('['.$selfClass.'] '.implode(' ',$errorMsgs));
 			}
 		}
 		$this->urlRoutes[$routeName] = $instance;

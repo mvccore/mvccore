@@ -101,7 +101,8 @@ trait DataMethods
 			$this->$name = isset($arguments[0]) ? $arguments[0] : NULL;
 			return $this;
 		} else {
-			throw new \InvalidArgumentException('['.__CLASS__."] No property with name '$name' defined.");
+			$selfClass = version_compare(PHP_VERSION, '5.5', '>') ? self::class : __CLASS__;
+			throw new \InvalidArgumentException('['.$selfClass."] No property with name '$name' defined.");
 		}
 	}
 
@@ -114,8 +115,9 @@ trait DataMethods
 	 */
 	public function __set ($name, $value) {
 		if (isset(static::$protectedProperties[$name])) {
+			$selfClass = version_compare(PHP_VERSION, '5.5', '>') ? self::class : __CLASS__;
 			throw new \InvalidArgumentException(
-				'['.__CLASS__."] It's not possible to change property: '$name' originally declared in class ".__CLASS__.'.'
+				'['.$selfClass."] It's not possible to change property: '$name' originally declared in class ".__CLASS__.'.'
 			);
 		}
 		return $this->$name = $value;
@@ -130,8 +132,9 @@ trait DataMethods
 	 */
 	public function __get ($name) {
 		if (isset(static::$protectedProperties[$name])) {
+			$selfClass = version_compare(PHP_VERSION, '5.5', '>') ? self::class : __CLASS__;
 			throw new \InvalidArgumentException(
-				'['.__CLASS__."] It's not possible to get property: '$name' originally declared in class ".__CLASS__.'.'
+				'['.$selfClass."] It's not possible to get property: '$name' originally declared in this class."
 			);
 		}
 		return (isset($this->$name)) ? $this->$name : null;
