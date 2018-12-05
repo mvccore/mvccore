@@ -166,7 +166,7 @@ trait Helpers
 	 * @param int $lockWaitMilliseconds Milliseconds to wait before next lock file existence is checked in `while()` cycle.
 	 * @param int $maxLockWaitMilliseconds Maximum milliseconds time to wait before thrown an exception about not possible write.
 	 * @param int $oldLockMillisecondsTolerance Maximum milliseconds time to consider lock file as operative or as old after some died process.
-	 * @throws \Exception About 
+	 * @throws \Exception
 	 * @return bool
 	 */
 	public function SingleProcessWrite (
