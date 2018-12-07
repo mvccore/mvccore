@@ -16,8 +16,11 @@ namespace MvcCore\Router;
 trait Canonical
 {
 	/**
-	 * TODO:
-	 * Return `TRUE` if current route is route instance or `FALSE` otherwise.
+	 * Redirect to canonical URL if request is not an internal and also if request 
+	 * is not realized by GET method and also if canonical redirect is not permitted.
+	 * Then try to complete canonical (shorter) URL by detected strategy and if
+	 * canonical URL is different, redirect to it.
+	 * Return `TRUE` if there was not necessary to redirect, `FALSE` otherwise.
 	 * @return bool
 	 */
 	protected function canonicalRedirectIfAny () {
@@ -35,6 +38,12 @@ trait Canonical
 		return TRUE;
 	}
 
+	/**
+	 * If request is routed by query string strategy, check if request controller
+	 * or request action is the same as default values. Then redirect to shorter
+	 * canonical URL.
+	 * @return bool
+	 */
 	protected function canonicalRedirectQueryStringStrategy () {
 		/** @var $request \MvcCore\Request */
 		$request = & $this->request;
@@ -63,6 +72,13 @@ trait Canonical
 		return TRUE;
 	}
 	
+	/**
+	 * If request is routed by rewrite routes strategy, try to complete canonical
+	 * URL by current route. Then compare completed base URL part with requested 
+	 * base URL part or completed path and query part with requested path and query
+	 * part. If first or second part is different, redirect to canonical shorter URL.
+	 * @return bool
+	 */
 	protected function canonicalRedirectRewriteRoutesStrategy () {
 		/** @var $request \MvcCore\Request */
 		$request = & $this->request;
@@ -73,9 +89,12 @@ trait Canonical
 		);
 		if (mb_strpos($selfUrlDomainAndBasePart, '//') === FALSE)
 			$selfUrlDomainAndBasePart = $request->GetDomainUrl() . $selfUrlDomainAndBasePart;
-		if (mb_strlen($selfUrlDomainAndBasePart) > 0 && $selfUrlDomainAndBasePart !== $request->GetBaseUrl()) 
+		if (
+			mb_strlen($selfUrlDomainAndBasePart) > 0 && 
+			$selfUrlDomainAndBasePart !== $request->GetBaseUrl()
+		) {
 			$redirectToCanonicalUrl = TRUE;
-		if (mb_strlen($selfUrlPathAndQueryPart) > 0) {
+		} else if (mb_strlen($selfUrlPathAndQueryPart) > 0) { 
 			$path = $request->GetPath(TRUE);
 			$requestedUrl = $path === '' ? '/' : $path ;
 			if (mb_strpos($selfUrlPathAndQueryPart, '?') !== FALSE) {

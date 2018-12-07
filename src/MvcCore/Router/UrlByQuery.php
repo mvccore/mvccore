@@ -42,6 +42,14 @@ trait UrlByQuery
 		return $result;
 	}
 	
+	/**
+	 * Complete controller or action possible passed through `$params` array.
+	 * It there is controller or action founded, unset it from `$params` and 
+	 * returns it as result Array - first index is controller, second is action. 
+	 * @param mixed $controllerActionOrRouteName 
+	 * @param array $params 
+	 * @return array
+	 */
 	protected function urlByQueryStringCompleteCtrlAction ($controllerActionOrRouteName, array & $params) {
 		list($ctrlPc, $actionPc) = strpos($controllerActionOrRouteName, ':') !== FALSE
 			? explode(':', $controllerActionOrRouteName)
@@ -58,6 +66,18 @@ trait UrlByQuery
 		return [$ctrlPc, $actionPc];
 	}
 
+	/**
+	 * Complete query string URL address - the query part from `?` by fully completed 
+	 * arguments - controller and action. If controller or action has default 
+	 * values, do not render them in result URL address. If there are also any
+	 * `$params` in third argument, add those params as query string after.
+	 * If controller and also action has default values and there are no params,
+	 * return `/` slash (to target homepage).
+	 * @param string $ctrlPc 
+	 * @param string $actionPc 
+	 * @param array $params 
+	 * @return string
+	 */
 	protected function urlByQueryStringCompleteResult ($ctrlPc, $actionPc, array & $params) {
 		$result = '';
 		$toolClass = self::$toolClass;
@@ -66,9 +86,8 @@ trait UrlByQuery
 		$ctrlIsNotDefault = $ctrlPc !== $dfltCtrlPc;
 		$actionIsNotDefault = $actionPc !== $dftlActionPc;
 		$sep = '?';
-		if ($params || $ctrlIsNotDefault || $actionIsNotDefault) {
+		if ($params || $ctrlIsNotDefault || $actionIsNotDefault) 
 			$result .= $this->request->GetScriptName();
-		}
 		if ($ctrlIsNotDefault) {
 			$result .= $sep . 'controller=' . $toolClass::GetDashedFromPascalCase($ctrlPc);
 			$sep = $amp;
@@ -77,19 +96,20 @@ trait UrlByQuery
 			$result .= $sep . 'action=' . $toolClass::GetDashedFromPascalCase($actionPc);
 			$sep = $amp;
 		}
-		if ($params) {
+		if ($params) 
 			// `http_build_query()` automatically converts all XSS chars to entities (`< > & " ' &`):
 			$result .= $sep . str_replace('%2F', '/', http_build_query($params, '', $amp, PHP_QUERY_RFC3986));
-		}
-		if ($result == '') $result = '/';
+		if ($result == '') 
+			$result = '/';
 		return $result;
 	}
 
 	/**
-	 * Get `TRUE` if given `array $params` contains `boolean` record under 
-	 * `"absolute"` array key and if the record is `TRUE`. Unset the absolute 
-	 * flag from `$params` in any case.
-	 * @param array $params 
+	 * Return boolean about to generate absolute URL address or not. Get `TRUE` 
+	 * if given `array $params` contains `boolean` record under `"absolute"`
+	 * array key and if the record is `TRUE`. Unset the absolute flag from 
+	 * `$params` in any case and return the boolean value (`FALSE` by default).
+	 * @param array $params Params array, the second argument from router `Url()` method.
 	 * @return boolean
 	 */
 	protected function urlGetAbsoluteParam (array & $params = []) {

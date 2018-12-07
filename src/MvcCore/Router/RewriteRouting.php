@@ -16,12 +16,22 @@ namespace MvcCore\Router;
 trait RewriteRouting
 {
 	/**
-	 * Complete `\MvcCore\Router::$currentRoute` and request params by defined routes.
-	 * Go through all configured routes and try to find matching route.
-	 * If there is caught any matching route - reset `\MvcCore\Request::$params`
-	 * with default route params, with params itself and with params parsed from matching process.
-	 * @param string $controllerName
-	 * @param string $actionName
+	 * Try to parse first word from request path to get proper routes group.
+	 * If there is no first word in request path, get default routes group. 
+	 * 
+	 * If there is any configured pre-routing handler, execute the handler to
+	 * for example load only specific routes from database or anything else.
+	 * 
+	 * Go through all chosen routes and check if route is possible to use for 
+	 * current request. Then try to match route by given request. If route doesn't 
+	 * match the request, continue to another route and try to complete current
+	 * route object. If route matches the request, set up default and request 
+	 * params and try to process route filtering in. If it is successful, set 
+	 * up current route object and end route matching process.
+	 * @param string|NULL $requestCtrlName		Possible controller name value or `NULL` assigned directly 
+	 *											from request object in `\MvcCore\router::routeDetectStrategy();`
+	 * @param string|NULL $requestActionName	Possible action name value or `NULL` assigned directly 
+	 *											from request object in `\MvcCore\router::routeDetectStrategy();`
 	 * @return void
 	 */
 	protected function rewriteRouting ($requestCtrlName, $requestActionName) {
@@ -48,26 +58,40 @@ trait RewriteRouting
 			}
 		}
 	}
-
-	protected function rewriteRoutingCheckRoute (\MvcCore\IRoute & $route, array $additionalInfo) {
-		list ($requestMethod,) = $additionalInfo;
-		$routeMethod = $route->GetMethod();
-		if ($routeMethod !== NULL && $routeMethod !== $requestMethod) return TRUE;
-		return FALSE;
-	}
-
+	
+	/**
+	 * Parse first word from request path - first element between first two slashes.
+	 * Return for example from `/eshop/detail/name` first word `eshop`.
+	 * If there is no first word in request path, return an empty string.
+	 * @return string
+	 */
 	protected function rewriteRoutingGetReqPathFirstWord () {
 		$requestedPath = ltrim($this->request->GetPath(), '/');
 		$nextSlashPos = mb_strpos($requestedPath, '/');
 		if ($nextSlashPos === FALSE) $nextSlashPos = mb_strlen($requestedPath);
 		return mb_substr($requestedPath, 0, $nextSlashPos);
 	}
-
+	
+	/**
+	 * Call any configured pre-route matching handler with first parsed word from
+	 * requested path and with request object to load for example from database
+	 * only routes you need to use for routing, not all of them.
+	 * @param string $firstPathWord 
+	 * @return void
+	 */
 	protected function rewriteRoutingProcessPreHandler ($firstPathWord) {
 		if ($this->preRouteMatchingHandler === NULL) return;
 		call_user_func($this->preRouteMatchingHandler, $this, $this->request, $firstPathWord);
 	}
-
+	
+	/**
+	 * Get specific routes group by first parsed word from request path if any.
+	 * If first path word is an empty string, there is returned routes with no group
+	 * word defined. If still there are no such routes in default group, returned 
+	 * is an empty array.
+	 * @param string $firstPathWord 
+	 * @return array
+	 */
 	protected function & rewriteRoutingGetRoutesToMatch ($firstPathWord) {
 		if (isset($this->routesGroups[$firstPathWord])) {
 			$routes = & $this->routesGroups[$firstPathWord];
@@ -80,6 +104,46 @@ trait RewriteRouting
 		return $routes;
 	}
 
+	/**
+	 * Return `TRUE` if there is possible by additional info array records 
+	 * to route request by given route as first argument. For example if route
+	 * object has defined http method and request has the same method or not 
+	 * or much more by additional info array records in extended classes.
+	 * @param \MvcCore\IRoute $route 
+	 * @param array $additionalInfo 
+	 * @return bool
+	 */
+	protected function rewriteRoutingCheckRoute (\MvcCore\IRoute & $route, array $additionalInfo) {
+		list ($requestMethod,) = $additionalInfo;
+		$routeMethod = $route->GetMethod();
+		if ($routeMethod !== NULL && $routeMethod !== $requestMethod) return TRUE;
+		return FALSE;
+	}
+
+	/**
+	 * When route is matched, set up request and default params. 
+	 * 
+	 * Request params are necessary to complete any `self` URL, to route request
+	 * properly, to complete canonical URL and to process possible route redirection.
+	 * 
+	 * Default params are necessary to handle route filtering in and out and to
+	 * complete URL by any other route name for case, when some required param 
+	 * is not presented in second `$params` argument in Url() method (then the
+	 * param is assigned from default params).
+	 * 
+	 * This method also completes any missing `controller` or `action` param
+	 * values with default values. Request params can not contain those 
+	 * automatically completed values, only values really requested.
+	 * @param array			$allMatchedParams	All matched params completed `\MvcCore\Route::Matches();`, 
+	 *											where could be controller and action if it is defined in 
+	 *											route object, default param values from route and all 
+	 *											rewrite params parsed by route.
+	 * @param string|NULL	$requestCtrlName	Possible controller name value or `NULL` assigned directly 
+	 *											from request object in `\MvcCore\router::routeDetectStrategy();`
+	 * @param string|NULL	$requestActionName	Possible action name value or `NULL` assigned directly from 
+	 *											request object in `\MvcCore\router::routeDetectStrategy();`
+	 * @return void
+	 */
 	protected function rewriteRoutingSetRequestedAndDefaultParams (array & $allMatchedParams, $requestCtrlName = NULL, $requestActionName = NULL) {
 		/** @var $this \MvcCore\Router */
 		// in array `$allMatchedParams` - there could be sometimes presented matched 
@@ -136,6 +200,17 @@ trait RewriteRouting
 		$this->requestedParams = array_merge([], $pathOnlyMatchedParams, $rawQueryParams);
 	}
 
+	/**
+	 * Filter route in and if filtering is not successful, return `TRUE` about 
+	 * continuing another route matching. If filtering is successful, set matched
+	 * controller and action into request object and return `TRUE` to finish routes
+	 * matching process.
+	 * @param array $allMatchedParams	All matched params completed `\MvcCore\Route::Matches();`, 
+	 *									where could be controller and action if it is defined in 
+	 *									route object, default param values from route and all 
+	 *									rewrite params parsed by route.
+	 * @return bool
+	 */
 	protected function rewriteRoutingSetRequestParams (array & $allMatchedParams) {
 		$request = & $this->request;
 		$defaultParamsBefore = array_merge([], $this->defaultParams);
@@ -161,7 +236,8 @@ trait RewriteRouting
 	}
 
 	/**
-	 * TODO: neaktualni
+	 * Set up into current route controller and action 
+	 * in pascal case from request object.
 	 * @return void
 	 */
 	protected function rewriteRoutingSetUpCurrentRouteByRequest () {

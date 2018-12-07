@@ -23,14 +23,14 @@ trait Initializations
 	 */
 	public static function Init ($forceDevelopmentMode = NULL) {
 		if (static::$development !== NULL) return;
-
-		static::$app = & \MvcCore\Application::GetInstance();
-		static::$requestBegin = static::$app->GetRequest()->GetMicrotime();
+		
+		$app = static::$app ?: (static::$app = & \MvcCore\Application::GetInstance());
+		static::$requestBegin = $app->GetRequest()->GetMicrotime();
 
 		if (gettype($forceDevelopmentMode) == 'boolean') {
 			static::$development = $forceDevelopmentMode;
 		} else {
-			$configClass = static::$app->GetConfigClass();
+			$configClass = $app->GetConfigClass();
 			static::$development = $configClass::IsDevelopment(TRUE);
 		}
 
@@ -38,7 +38,7 @@ trait Initializations
 		//directory only if there is necessary to log something - later.
 
 		$selfClass = version_compare(PHP_VERSION, '5.5', '>') ? self::class : __CLASS__;
-		static::$originalDebugClass = ltrim(static::$app->GetDebugClass(), '\\') == $selfClass;
+		static::$originalDebugClass = ltrim($app->GetDebugClass(), '\\') == $selfClass;
 		static::initHandlers();
 		$initGlobalShortHandsHandler = static::$InitGlobalShortHands;
 		$initGlobalShortHandsHandler(static::$development);

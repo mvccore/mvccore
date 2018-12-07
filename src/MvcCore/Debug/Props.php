@@ -51,7 +51,6 @@ trait Props
 		'dump'				=> 'dumpHandler',
 		'barDump'			=> 'dumpHandler',
 		'log'				=> 'dumpHandler',
-		'fireLog'			=> 'dumpHandler',
 		'exceptionHandler'	=> 'exceptionHandler',
 		'shutdownHandler'	=> 'ShutdownHandler',
 	];
@@ -86,7 +85,7 @@ trait Props
 	 * Reference to singleton instance in `\MvcCore\Application::GetInstance();`.
 	 * @var \MvcCore\Application
 	 */
-	protected static $app;
+	protected static $app = NULL;
 
 	/**
 	 * Reference to `\MvcCore\Application::GetInstance()->GetRequest()->GetMicrotime();`.

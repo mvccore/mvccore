@@ -304,11 +304,13 @@ trait RouteMethods
 	}
 
 	/**
-	 * TODO: dopsat
-	 * @param \MvcCore\Route $route 
-	 * @param string $routeName 
-	 * @param string|NULL $groupName 
-	 * @param bool $prepend 
+	 * Add route instance into named routes group. Every routes group is chosen 
+	 * in routing moment by first parsed word from requested URL.
+	 * @param \MvcCore\Route	$route		Route instance reference.
+	 * @param string			$routeName	Route name.
+	 * @param string|NULL		$groupName	Group name, first parsed word from requested URL.
+	 * @param bool				$prepend	IF `TRUE`, prepend route instance, `FALSE` otherwise.
+	 * @return void
 	 */
 	protected function addRouteToGroup (\MvcCore\IRoute & $route, $routeName, $groupName, $prepend) {
 		if ($groupName === NULL) {

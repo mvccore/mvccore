@@ -81,14 +81,6 @@ interface IDebug
 	public static function Log ($value, $priority = \MvcCore\IDebug::INFO);
 
 	/**
-	 * Sends given `$value` into FireLogger console.
-	 * @param	mixed	$value	Message to log.
-	 * @param	string	$priority	Priority.
-	 * @return	bool				Was successful?
-	 */
-	public static function FireLog ($value, $priority = \MvcCore\IDebug::DEBUG);
-
-	/**
 	 * Print caught exception in browser.
 	 * In non-development mode - store dumped exception in `exception.log`.
 	 * @param \Exception|\Error|\Throwable|array $exception
