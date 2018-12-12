@@ -31,8 +31,8 @@ trait Instancing
 	 *		'products_list'	=> [
 	 *			"pattern"			=> "/products-list/<name>/<color>",
 	 *			"controllerAction"	=> "Products:List",
-	 *			"defaults"			=> array("name" => "default-name",	"color" => "red"),
-	 *			"constraints"		=> array("name" => "[^/]*",			"color" => "[a-z]*")
+	 *			"defaults"			=> ["name" => "default-name",	"color" => "red"],
+	 *			"constraints"		=> ["name" => "[^/]*",			"color" => "[a-z]*"]
 	 *		]
 	 *	]);`
 	 * or:
@@ -40,8 +40,8 @@ trait Instancing
 	 *		new Route(
 	 *			"/products-list/<name>/<color>",
 	 *			"Products:List",
-	 *			array("name" => "default-name",	"color" => "red"),
-	 *			array("name" => "[^/]*",		"color" => "[a-z]*")
+	 *			["name" => "default-name",	"color" => "red"],
+	 *			["name" => "[^/]*",		"color" => "[a-z]*"]
 	 *		)
 	 *	]);`
 	 * or:
@@ -52,7 +52,7 @@ trait Instancing
 	 *			"reverse"		=> "/products-list/<name>/<color>",
 	 *			"controller"	=> "Products",
 	 *			"action"		=> "List",
-	 *			"defaults"		=> array("name" => "default-name",	"color" => "red"),
+	 *			"defaults"		=> ["name" => "default-name",	"color" => "red"],
 	 *		)
 	 *	]);`
 	 * @param \MvcCore\Route[]|array $routes Keyed array with routes,
@@ -105,14 +105,14 @@ trait Instancing
 	 *		]
 	 *	]);`
 	 * or:
-	 *	`new \MvcCore\Router(array(
+	 *	`new \MvcCore\Router([
 	 *		new Route(
 	 *			"/products-list/<name>/<color>",
 	 *			"Products:List",
 	 *			["name" => "default-name",	"color" => "red"],
 	 *			["name" => "[^/]*",		"color" => "[a-z]*"]
 	 *		)
-	 *	);`
+	 *	]);`
 	 * or:
 	 *	`new \MvcCore\Router([
 	 *		new Route(

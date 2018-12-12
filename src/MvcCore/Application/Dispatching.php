@@ -86,10 +86,17 @@ trait Dispatching
 	 * @return bool
 	 */
 	public function RouteRequest () {
-		return $this
-			->GetRouter()
-			->SetRequest($this->GetRequest())
-			->Route();
+		$router = $this->GetRouter()->SetRequest($this->GetRequest());
+		try {
+			// `Route()` method could throws a `\LogicException` with text:
+			// Route configuration property is missing.
+			$result = $router->Route();
+		} catch (\Exception $e) {
+			$this->DispatchException($e);
+			$result = FALSE;
+			break;
+		}
+		return $result;
 	}
 
 	/**

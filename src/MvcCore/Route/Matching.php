@@ -16,14 +16,19 @@ namespace MvcCore\Route;
 trait Matching
 {
 	/**
-	 * Return array of matched params, with matched controller and action names,
-	 * if route matches request always `\MvcCore\Request::$path` property by `preg_match_all()`.
-	 *
+	 * Return array of all matched params, with matched controller and action 
+	 * names, if route matches (always) request property `\MvcCore\Request::$path` 
+	 * by PHP `preg_match_all()`. Sometimes, matching subject could be different, 
+	 * if route specifies it - if route `pattern` (or `match`) property contains
+	 * domain (or base path part) - it means if it is absolute or if `pattern` 
+	 * (or `match`) property contains a query string part.
 	 * This method is usually called in core request routing process
 	 * from `\MvcCore\Router::Route();` method and it's sub-methods.
-	 *
-	 * @param \MvcCore\Request $request The request object instance.
-	 * @param string $localization Lower case language code, optionally with dash and upper case locale code, `NULL` by default, not implemented in core.
+	 * @param \MvcCore\Request	$request		The request object instance.
+	 * @param string			$localization	Lower case language code, optionally  
+	 *											with dash and upper case locale code, 
+	 *											`NULL` by default, not implemented in core.
+	 * @throws \LogicException Route configuration property is missing.
 	 * @return array Matched and params array, keys are matched
 	 *				 params or controller and action params.
 	 */
@@ -42,6 +47,18 @@ trait Matching
 		return $matchedParams;
 	}
 
+	/**
+	 * Return pattern value used for `preg_match_all()` route match processing.
+	 * Check if `match` property has any value and if it has, process internal
+	 * route initialization only on `reverse` (or `pattern`) property, because 
+	 * `match` regular expression is probably prepared and initialized manually. 
+	 * If there is no value in `match` property (`NULL`), process internal 
+	 * initialization on `pattern` property (or on `reverse` if exists) and 
+	 * complete regular expression into `match` property and metadata about 
+	 * `reverse` property to build URL address any time later on this route.
+	 * @throws \LogicException Route configuration property is missing.
+	 * @return string
+	 */
 	protected function & matchesGetPattern () {
 		if ($this->match === NULL) {
 			$this->initMatchAndReverse();
@@ -51,6 +68,16 @@ trait Matching
 		return $this->match;
 	}
 
+	/**
+	 * Return subject value used for `preg_match_all()` route match processing.
+	 * Complete subject by route flags. If route `pattern` (or `reverse`) contains
+	 * domain part or base path, prepare those values from request object. Than 
+	 * prepare always request path and if route `pattern` (or `reverse`) contains
+	 * any query string part, append into result subject query string from request
+	 * object.
+	 * @param \MvcCore\IRequest $request 
+	 * @return string
+	 */
 	protected function matchesGetSubject (\MvcCore\IRequest & $request) {
 		$subject = $this->matchesGetSubjectHostAndBase($request) 
 			. $request->GetPath(TRUE);
@@ -59,6 +86,17 @@ trait Matching
 		return $subject;
 	}
 
+	/**
+	 * Return subject value scheme, domain and base path part, used for 
+	 * `preg_match_all()` route match processing. Check which protocol route
+	 * `pattern` (or `reverse`) contains and prepare protocol string. Than check 
+	 * if route `pattern` (or `reverse`) contains domain part with any domain 
+	 * placeholders and prepare domain part with the placeholders. Then also in 
+	 * the same way prepare base path part if necessary, there is also base path 
+	 * placeholder possibility.
+	 * @param \MvcCore\IRequest $request 
+	 * @return string
+	 */
 	protected function matchesGetSubjectHostAndBase (\MvcCore\IRequest & $request) {
 		$schemeFlag = $this->flags[0];
 		$basePathDefined = FALSE;
@@ -80,7 +118,36 @@ trait Matching
 		}
 		return $subject;
 	}
+
+	/**
+	 * Return subject value - the scheme part, used for `preg_match_all()` route 
+	 * match processing. Given flag value contains scheme part string length,  
+	 * which is an array index inside local static property to return real scheme 
+	 * string by the flag.
+	 * @param int $schemeFlag 
+	 * @return string
+	 */
+	protected function matchesGetSubjectScheme (& $schemeFlag) {
+		static $prefixes = NULL;
+		if ($prefixes === NULL) $prefixes = [
+			static::FLAG_SCHEME_NO		=> '',			// 0
+			static::FLAG_SCHEME_ANY		=> '//',		// 2
+			static::FLAG_SCHEME_HTTP	=> 'http://',	// 7
+			static::FLAG_SCHEME_HTTPS	=> 'https://',	// 8
+		];
+		return $prefixes[$schemeFlag];
+	}
 	
+	/**
+	 * Return subject value - the domain part, used for `preg_match_all()` route 
+	 * match processing. Given flag value contains integer about which placeholder 
+	 * strings the route `pattern` (or `reverse`) contains. Result is only the 
+	 * domain part with requested domain parts or placeholders to match pattern 
+	 * and subject in match processing.
+	 * @param \MvcCore\IRequest $request 
+	 * @param int $hostFlag 
+	 * @return string
+	 */
 	protected function matchesGetSubjectHost (\MvcCore\IRequest & $request, & $hostFlag) {
 		$hostPart = '';
 		if ($hostFlag == static::FLAG_HOST_NO /* 0 */) {
@@ -105,17 +172,17 @@ trait Matching
 		return $hostPart;
 	}
 
-	protected function matchesGetSubjectScheme (& $schemeFlag) {
-		static $prefixes = NULL;
-		if ($prefixes === NULL) $prefixes = [
-			static::FLAG_SCHEME_NO		=> '',			// 0
-			static::FLAG_SCHEME_ANY		=> '//',		// 2
-			static::FLAG_SCHEME_HTTP	=> 'http://',	// 7
-			static::FLAG_SCHEME_HTTPS	=> 'https://',	// 8
-		];
-		return $prefixes[$schemeFlag];
-	}
-
+	/**
+	 * Parse rewrite params from `preg_match_all()` `$matches` result array into 
+	 * array, keyed by param name with parsed value. If route has defined any
+	 * `controller` or `action` property, those values are defined into result 
+	 * array first, converted into dashed case. If any rewrite param defines 
+	 * `controller` or `action` again, those values are overwritten in result 
+	 * array by values from regular expression `$matches` array.
+	 * @param array $matchedValues 
+	 * @param array $defaults 
+	 * @return array
+	 */
 	protected function & matchesParseRewriteParams (& $matchedValues, & $defaults) {
 		$toolClass = \MvcCore\Application::GetInstance()->GetToolClass();
 		$matchedParams = [];

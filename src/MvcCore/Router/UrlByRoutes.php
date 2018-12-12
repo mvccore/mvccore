@@ -16,7 +16,10 @@ namespace MvcCore\Router;
 trait UrlByRoutes
 {
 	/**
-	 * Complete optionally absolute, non-localized URL by route instance reverse info.
+	 * Complete optionally absolute, non-localized URL by route instance reverse 
+	 * pattern and given `$params` array. If any param required by reverse 
+	 * pattern is missing in params, there is used router default params
+	 * completed in routing process.
 	 * Example:
 	 *	Input (`\MvcCore\Route::$reverse`):
 	 *		`"/products-list/<name>/<color>"`
@@ -43,9 +46,11 @@ trait UrlByRoutes
 	}
 
 	/**
-	 * Return XML query string separator `&amp;`, if response has any `Content-Type` header with `xml` substring inside
-	 * or return XML query string separator `&amp;` if `\MvcCore\View::GetDoctype()` is has any `XML` or any `XHTML` substring inside.
-	 * Otherwise return HTML query string separator `&`.
+	 * Return XML query string separator `&amp;`, if response has any 
+	 * `Content-Type` header with `xml` substring inside or return XML query 
+	 * string separator `&amp;` if `\MvcCore\View::GetDoctype()` is has any 
+	 * `XML` or any `XHTML` substring inside. Otherwise return HTML query 
+	 * string separator `&`.
 	 * @return string
 	 */
 	protected function getQueryStringParamsSepatator () {

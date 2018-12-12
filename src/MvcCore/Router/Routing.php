@@ -34,6 +34,7 @@ trait Routing
 	 * `FALSE` and return from this method. Else continue to next step and return `TRUE`.
 	 * This method is always called from core routing by:
 	 * `\MvcCore\Application::Run();` => `\MvcCore\Application::routeRequest();`.
+	 * @throws \LogicException Route configuration property is missing.
 	 * @return bool
 	 */
 	public function Route () {
@@ -114,6 +115,8 @@ trait Routing
 	}
 
 	/**
+	 * THIS METHOD IS MOSTLY USED INTERNALLY.
+	 * 
 	 * Try to find any existing route by `$routeName` argument
 	 * or try to find any existing route by `$controllerPc:$actionPc` arguments
 	 * combination and set this founded route instance as current route object.
@@ -230,7 +233,7 @@ trait Routing
 	 * If there is chosen query string routing strategy, create new route by 
 	 * controller and action directly assigned from request and if controller or 
 	 * action values are missing, assign there default controller and action values.
-	 * Set up also default and request params by requet object.
+	 * Set up also default and request params by request object.
 	 * 
 	 * Request params are necessary to complete any `self` URL, to route request
 	 * properly, to complete canonical URL and to process possible route redirection.
@@ -306,7 +309,7 @@ trait Routing
 						static::DEFAULT_ROUTE_NAME, $dfltCtrl, $dftlAction
 					);
 					// set up requested params from query string if there are any 
-					// (and path if there is path from previous fn)
+					// (and path if there is path from previous function)
 					$requestParams = array_merge([], $this->request->GetParams(FALSE));
 					unset($requestParams['controller'], $requestParams['action']);
 					$this->requestedParams = & $requestParams;

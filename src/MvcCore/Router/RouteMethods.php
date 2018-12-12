@@ -367,6 +367,7 @@ trait RouteMethods
 				unset($this->urlRoutes[$routeName]);
 			if (isset($this->urlRoutes[$controllerAction])) 
 				unset($this->urlRoutes[$controllerAction]);
+			/** @var $this->currentRoute \MvcCore\Route */
 			if ($this->currentRoute->GetName() === $result->GetName())
 				$this->currentRoute = NULL;
 		}

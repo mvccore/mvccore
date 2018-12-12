@@ -60,8 +60,14 @@ trait UrlBuilding
 				// find route under key `$ctrlActionOrRouteNameKey` again
 				$urlRouteFound = FALSE;
 				if (!isset($this->noUrlRoutes)) {
-					if ($this->preRouteUrlBuildingHandler !== NULL) 
-						call_user_func($this->preRouteUrlBuildingHandler, $this, $ctrlActionOrRouteNameKey, $params);
+					if ($this->preRouteUrlBuildingHandler !== NULL) {
+						$newUrlRoutes = call_user_func(
+							$this->preRouteUrlBuildingHandler, 
+							$this, $ctrlActionOrRouteNameKey, $params
+						);
+						if (is_array($newUrlRoutes) && $newUrlRoutes) 
+							$this->urlRoutes = array_merge($newUrlRoutes, $this->urlRoutes);
+					}
 					// try to found URL route again
 					if (isset($this->urlRoutes[$ctrlActionOrRouteNameKey]) && $this->urlRoutes[$ctrlActionOrRouteNameKey]->GetName() !== static::DEFAULT_ROUTE_NAME) {
 						$urlRouteFound = TRUE;

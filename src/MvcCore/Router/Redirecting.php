@@ -17,8 +17,9 @@ trait Redirecting
 {
 	/**
 	 * Redirect to proper trailing slash URL version only
-	 * if it is necessary by `\MvcCore\Router::$trailingSlashBehaviour`
-	 * and if it is necessary by last character in request path.
+	 * if there is necessary by configurable property
+	 * `\MvcCore\Router::$trailingSlashBehaviour` and if 
+	 * there is necessary by last character in request path.
 	 * @return bool
 	 */
 	protected function redirectToProperTrailingSlashIfNecessary () {

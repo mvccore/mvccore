@@ -497,7 +497,7 @@ interface IRouter
 	 * @param callable $preRouteMatchingHandler 
 	 * @return \MvcCore\IRouter
 	 */
-	public function & SetPreRouteMatchingHandler (callable $preRouteMatchingHandler);
+	public function & SetPreRouteMatchingHandler (callable $preRouteMatchingHandler = NULL);
 
 	/**
 	 * TODO: dopsat
@@ -510,7 +510,7 @@ interface IRouter
 	 * @param callable $preRouteMatchingHandler 
 	 * @return \MvcCore\IRouter
 	 */
-	public function & SetPreRouteUrlBuildingHandler (callable $preRouteUrlBuildingHandler);
+	public function & SetPreRouteUrlBuildingHandler (callable $preRouteUrlBuildingHandler = NULL);
 
 	/**
 	 * TODO: dopsat

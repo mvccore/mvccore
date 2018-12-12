@@ -16,10 +16,9 @@ namespace MvcCore\Route;
 trait InternalInits
 {
 	/**
-	 * TODO:
-	 * Initialize all possible protected values (`match`, `reverse` etc...)
-	 * This method is not recommended to use in production mode, it's
-	 * designed mostly for development purposes, to see what could be inside route.
+	 * Initialize all possible protected values (`match`, `reverse` etc...) This 
+	 * method is not recommended to use in production mode, it's designed mostly 
+	 * for development purposes, to see what could be inside route object.
 	 * @return \MvcCore\Route|\MvcCore\IRoute
 	 */
 	public function & InitAll () {
@@ -33,16 +32,12 @@ trait InternalInits
 	}
 
 	/**
-	 * TODO: asi neaktuální
-	 * Initialize `\MvcCore\Router::$Match` property (and `\MvcCore\Router::$lastPatternParam`
-	 * property) from `\MvcCore\Router::$Pattern`, optionally initialize
-	 * `\MvcCore\Router::$Reverse` property if there is nothing inside.
-	 * - Add backslashes for all special regular expression chars excluding `<` and `>` chars.
-	 * - Parse all `<param>` occurrence in pattern into statistics array `$patternParams`.
-	 * - Complete from the statistic array the match property and if there no reverse property,
-	 *   complete also reverse property.
-	 * This method is usually called in core request routing process from
-	 * `\MvcCore\Router::Matches();` method.
+	 * Initialize internal properties `match`, `reverse` and other properties
+	 * about those values when there is necessary to prepare pattern value for 
+	 * PHP `preg_match_all()` route match processing. This method is usually 
+	 * called in core request routing process from `\MvcCore\Router::Matches();` 
+	 * method on each route. 
+	 * @throws \LogicException Route configuration property is missing.
 	 * @return void
 	 */
 	protected function initMatchAndReverse () {
@@ -68,6 +63,12 @@ trait InternalInits
 		);
 	}
 
+	/**
+	 * 
+	 * @param string $match 
+	 * @param string $reverse 
+	 * @return array
+	 */
 	protected function initSectionsInfoForMatchAndReverse (& $match, & $reverse) {
 		$matchInfo = [];
 		$reverseInfo = [];
@@ -117,6 +118,11 @@ trait InternalInits
 		return [$matchInfo, $reverseInfo];
 	}
 
+	/**
+	 * 
+	 * @throws \LogicException Route configuration property is missing.
+	 * @return void
+	 */
 	protected function initReverse () {
 		$reverse = NULL;
 		if ($this->reverse !== NULL) {
@@ -146,6 +152,11 @@ trait InternalInits
 		$this->initFlagsByPatternOrReverse($reverse);
 	}
 
+	/**
+	 * 
+	 * @param string $pattern 
+	 * @return \stdClass[]
+	 */
 	protected function & initSectionsInfo (& $pattern) {
 		$result = [];
 		$index = 0;
@@ -175,6 +186,14 @@ trait InternalInits
 		return $result;
 	}
 
+	/**
+	 * @param string		$reverse 
+	 * @param \stdClass[]	$reverseSectionsInfo 
+	 * @param array			$constraints 
+	 * @param string|NULL	$match 
+	 * @return array		An array with keys as param names and values as  
+	 *						`\stdClass` objects with data about reverse params.
+	 */
 	protected function & initReverseParams (& $reverse, & $reverseSectionsInfo, & $constraints, & $match = NULL) {
 		$result = [];
 		$completeMatch = $match !== NULL;
@@ -244,6 +263,18 @@ trait InternalInits
 		return $result;
 	}
 
+	/**
+	 * 
+	 * @param \stdClass[]	$reverseSectionsInfo 
+	 * @param array			$constraints 
+	 * @param string		$paramName 
+	 * @param int			$sectionIndex 
+	 * @param bool			$greedyCaught 
+	 * @throws \InvalidArgumentException 
+	 * @return \bool[]		Array with two boolean values. First is greedy flag 
+	 *						and second is about if section is last or not. The
+	 *						second could be `NULL`
+	 */
 	protected function initReverseParamsGetGreedyInfo (& $reverseSectionsInfo, & $constraints, & $paramName, & $sectionIndex, & $greedyCaught) {
 		// complete greedy flag by star character inside param name
 		$greedyFlag = mb_strpos($paramName, '*') !== FALSE;
@@ -285,6 +316,11 @@ trait InternalInits
 		return [$greedyFlag, $sectionIsLast];
 	}
 
+	/**
+	 * 
+	 * @param string $pattern 
+	 * @return void
+	 */
 	protected function initFlagsByPatternOrReverse ($pattern) {
 		$scheme = static::FLAG_SCHEME_NO;
 		if (mb_strpos($pattern, '//') === 0) {
@@ -398,6 +434,10 @@ trait InternalInits
 		return '#^' . implode('', $sections) . $trailingSlash . '$#';
 	}
 
+	/**
+	 * @throws \LogicException Route configuration property is missing.
+	 * @return void
+	 */
 	protected function throwExceptionIfNoPattern () {
 		$selfClass = version_compare(PHP_VERSION, '5.5', '>') ? self::class : __CLASS__;
 		throw new \LogicException(

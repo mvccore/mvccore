@@ -32,6 +32,7 @@ trait RewriteRouting
 	 *											from request object in `\MvcCore\router::routeDetectStrategy();`
 	 * @param string|NULL $requestActionName	Possible action name value or `NULL` assigned directly 
 	 *											from request object in `\MvcCore\router::routeDetectStrategy();`
+	 * @throws \LogicException Route configuration property is missing.
 	 * @return void
 	 */
 	protected function rewriteRouting ($requestCtrlName, $requestActionName) {
