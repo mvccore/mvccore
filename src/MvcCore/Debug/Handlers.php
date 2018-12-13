@@ -32,7 +32,7 @@ trait Handlers
 	 * Dumps information about any variable in readable format and return it.
 	 * In non-development mode - store dumped variable in `debug.log`.
 	 * @param  mixed  $value		Variable to dump.
-	 * @param  bool   $return		Return output instead of printing it.
+	 * @param  bool   $return		Let's return output instead of printing it.
 	 * @param  bool   $exit			`TRUE` for last dump call by `xxx();` method to dump and `exit;`.
 	 * @return mixed				Variable itself or dumped variable string.
 	 */
@@ -80,7 +80,7 @@ trait Handlers
 	 * by given log level, in configured logging directory.
 	 * @param  string|\Exception|\Throwable	$value
 	 * @param  string						$priority
-	 * @return string						Logging filename fullpath.
+	 * @return string						Logging filename full path.
 	 */
 	public static function Log ($value, $priority = \MvcCore\IDebug::INFO) {
 		if (static::$originalDebugClass) {
@@ -197,7 +197,7 @@ trait Handlers
 	/**
 	 * Format all dump records into single string with source PHP script file 
 	 * link element and remove all useless new lines in PHP dumps.
-	 * @return array Array with formatted dumps string and boolean about last dump before script exit.
+	 * @return array An array with formatted dumps string and boolean about last dump before script exit.
 	 */
 	protected static function formatDebugDumps () {
 		$dumps = '';
@@ -217,7 +217,7 @@ trait Handlers
 	 * link element and remove all useless new lines in PHP dumps.
 	 * @param array $dumpRecord Dump record from `self::$dumps` with items under indexes: `0` => dump string, `1` => title, `2` => options.
 	 * @param string|NULL $appRoot 
-	 * @return array Array with formatted dump string and boolean about last dump before script exit.
+	 * @return array An array with formatted dump string and boolean about last dump before script exit.
 	 */
 	protected static function formatDebugDump ($dumpRecord, $appRoot = NULL) {
 		$result = '';

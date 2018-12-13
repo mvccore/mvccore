@@ -29,6 +29,7 @@ trait Matching
 	 *											with dash and upper case locale code, 
 	 *											`NULL` by default, not implemented in core.
 	 * @throws \LogicException Route configuration property is missing.
+	 * @throws \InvalidArgumentException Wrong route pattern format.
 	 * @return array Matched and params array, keys are matched
 	 *				 params or controller and action params.
 	 */
@@ -57,6 +58,7 @@ trait Matching
 	 * complete regular expression into `match` property and metadata about 
 	 * `reverse` property to build URL address any time later on this route.
 	 * @throws \LogicException Route configuration property is missing.
+	 * @throws \InvalidArgumentException Wrong route pattern format.
 	 * @return string
 	 */
 	protected function & matchesGetPattern () {

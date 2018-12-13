@@ -189,10 +189,22 @@ trait Props
 	 */
 	protected $method			= NULL;
 
+	/**
+	 * 
+	 * @var string|NULL
+	 */
 	protected $redirect			= NULL;
 
+	/**
+	 * 
+	 * @var bool
+	 */
 	protected $absolute			= FALSE;
 
+	/**
+	 * 
+	 * @var string|NULL
+	 */
 	protected $groupName		= NULL;
 
 	/**
@@ -210,45 +222,55 @@ trait Props
 	 */
 	protected $reverseParams	= NULL;
 
+	/**
+	 * 
+	 * @var array
+	 */
 	protected $matchedParams	= [];
 
-	// TODO: napsat komentář
+	/**
+	 * 
+	 * @var \stdClass
+	 */
 	protected $reverseSections	= NULL;
 	
 	/**
-	 * // TODO: přepsat - asi nektuální
-	 * Optional, param name, which has to be also inside `\MvcCore\Route::$pattern` or
-	 * inside `\MvcCore\Route::$match` or inside `\MvcCore\Route::$reverse` pattern property
-	 * as the last one. And after it's value, there could be only trailing slash or nothing
-	 * (pattern end). This trailing slash param definition automatically trims this last param
-	 * value for right trailing slash when route is matched.
-	 *
-	 * This property is automatically completed by method `\MvcCore\Route::initMatch()`,
-	 * when there is parsed `\MvcCore\Route::$pattern` string into `\MvcCore\Route::$match` property
-	 * or it is automatically completed by method `\MvcCore\Route::initReverse()`, when
-	 * there is parsed `\MvcCore\Route::$reverse` string into `\MvcCore\Route::$reverseParams`
-	 * array to build URL addresses.
-	 *
+	 * Optional, param name, which is founded in internal initialization process 
+	 * inside `pattern` or inside `reverse` property as the last one. And after 
+	 * it's value, there could be only trailing slash or nothing (pattern end). 
+	 * This trailing slash param definition is used to automatically trim last 
+	 * param value from right site when route is matched and rewrite params parsed.
 	 * @var \string|NULL
 	 */
 	protected $lastPatternParam	= NULL;
 
 	/**
 	 * Array with route reverse pattern flags. First item is integer flag about
+	 * defined scheme in `pattern` (or `reverse`), second flag is about domain parts
+	 * founded in `pattern` (or `reverse`) and third flag is about existing query 
+	 * string part in `pattern` (or in `reverse`)
 	 * absolute or relative reverse form and second item is about query string
 	 * inside reverse string.
 	 * @var \int[]
 	 */
 	protected $flags			= [
-		/*
-		\MvcCore\IRoute::FLAG_SHEME_NO, 
-		\MvcCore\IRoute::FLAG_HOST_NO,
-		\MvcCore\IRoute::FLAG_QUERY_NO,
-		*/
+		/* \MvcCore\IRoute::FLAG_SHEME_NO, */
+		/* \MvcCore\IRoute::FLAG_HOST_NO,  */
+		/* \MvcCore\IRoute::FLAG_QUERY_NO, */
 	];
 
+	/**
+	 * Router instance reference used mostly in route URL building process.
+	 * @var \MvcCore\Router|\MvcCore\IRouter
+	 */
 	protected $router			= NULL;
 
+	/**
+	 * Initial route fourth argument with advanced configuration properties or
+	 * while configuration array, when route is instanced by only single array.
+	 * This could be used for any advanced property to define in extended class.
+	 * @var array
+	 */
 	protected $config			= [];
 
 	/**

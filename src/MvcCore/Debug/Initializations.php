@@ -26,7 +26,7 @@ trait Initializations
 		
 		$app = static::$app ?: (static::$app = & \MvcCore\Application::GetInstance());
 		static::$requestBegin = $app->GetRequest()->GetMicrotime();
-
+		
 		if (gettype($forceDevelopmentMode) == 'boolean') {
 			static::$development = $forceDevelopmentMode;
 		} else {

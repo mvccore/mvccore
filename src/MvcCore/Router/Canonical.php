@@ -85,7 +85,7 @@ trait Canonical
 		$redirectToCanonicalUrl = FALSE;
 		$defaultParams =  $this->GetDefaultParams() ?: [];
 		list($selfUrlDomainAndBasePart, $selfUrlPathAndQueryPart) =  $this->currentRoute->Url(
-			$request, $this->requestedParams, $defaultParams, $this->getQueryStringParamsSepatator()
+			$request, $this->requestedParams, $defaultParams, $this->getQueryStringParamsSepatator(), TRUE
 		);
 		if (mb_strpos($selfUrlDomainAndBasePart, '//') === FALSE)
 			$selfUrlDomainAndBasePart = $request->GetDomainUrl() . $selfUrlDomainAndBasePart;

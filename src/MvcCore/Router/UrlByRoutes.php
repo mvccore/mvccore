@@ -40,9 +40,10 @@ trait UrlByRoutes
 		if ($urlParamRouteName == 'self') 
 			$params = array_merge($this->requestedParams ?: [], $params);
 		$defaultParams = $this->GetDefaultParams() ?: [];
-		return implode('', $route->Url(
-			$this->request, $params, $defaultParams, $this->getQueryStringParamsSepatator()
-		));
+		list ($resultUrl) = $route->Url(
+			$this->request, $params, $defaultParams, $this->getQueryStringParamsSepatator(), FALSE
+		);
+		return $resultUrl;
 	}
 
 	/**

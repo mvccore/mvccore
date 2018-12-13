@@ -745,7 +745,7 @@ interface IRoute
 	 * @param string $queryStringParamsSepatator Query params separator, `&` by default. Always automatically completed by router instance.
 	 * @return \string[] Result URL address in two parts - domain part with base path and path part with query string.
 	 */
-	public function Url (\MvcCore\IRequest & $request, array & $params = [], array & $defaultUrlParams = [], $queryParamsSepatator = '&');
+	public function Url (\MvcCore\IRequest & $request, array & $params = [], array & $defaultUrlParams = [], $queryParamsSepatator = '&', $splitUrl = FALSE);
 
 	/**
 	 * Render all instance properties values into string.

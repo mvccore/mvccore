@@ -29,7 +29,7 @@ trait Dispatching
 
 	/**
 	 * Run application.
-	 * - 1. Complete and niti:
+	 * - 1. Complete and init:
 	 *	  - `\MvcCore\Application::$compiled` flag.
 	 *	  - Complete describing request object `\MvcCore\Request`.
 	 *	  - Complete response storage object `\MvcCore\Response`.
@@ -88,13 +88,15 @@ trait Dispatching
 	public function RouteRequest () {
 		$router = $this->GetRouter()->SetRequest($this->GetRequest());
 		try {
-			// `Route()` method could throws a `\LogicException` with text:
-			// Route configuration property is missing.
+			/**
+			 * `Route()` method could throws those exceptions:
+			 * @throws \LogicException Route configuration property is missing.
+			 * @throws \InvalidArgumentException Wrong route pattern format.
+			 */
 			$result = $router->Route();
 		} catch (\Exception $e) {
 			$this->DispatchException($e);
 			$result = FALSE;
-			break;
 		}
 		return $result;
 	}

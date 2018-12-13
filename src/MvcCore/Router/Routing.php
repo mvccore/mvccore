@@ -35,6 +35,7 @@ trait Routing
 	 * This method is always called from core routing by:
 	 * `\MvcCore\Application::Run();` => `\MvcCore\Application::routeRequest();`.
 	 * @throws \LogicException Route configuration property is missing.
+	 * @throws \InvalidArgumentException Wrong route pattern format.
 	 * @return bool
 	 */
 	public function Route () {

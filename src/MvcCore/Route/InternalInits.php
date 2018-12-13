@@ -32,17 +32,19 @@ trait InternalInits
 	}
 
 	/**
-	 * Initialize internal properties `match`, `reverse` and other properties
-	 * about those values when there is necessary to prepare pattern value for 
-	 * PHP `preg_match_all()` route match processing. This method is usually 
-	 * called in core request routing process from `\MvcCore\Router::Matches();` 
-	 * method on each route. 
+	 * Initialize properties `match`, `reverse` and other internal properties
+	 * about those values, when there is necessary to prepare `pattern` value 
+	 * for: a) PHP `preg_match_all()` route match processing, b) for `reverse` 
+	 * value for later self URL building. This method is usually called in core 
+	 * request routing process from `\MvcCore\Router::Matches();` method on each 
+	 * route. 
 	 * @throws \LogicException Route configuration property is missing.
+	 * @throws \InvalidArgumentException Wrong route pattern format.
 	 * @return void
 	 */
 	protected function initMatchAndReverse () {
 		if ($this->pattern === NULL)
-			$this->throwExceptionIfNoPattern();
+			$this->throwExceptionIfKeyPropertyIsMissing('pattern');
 
 		$this->lastPatternParam = NULL;
 		$match = addcslashes($this->pattern, "#(){}-?!=^$.+|:*\\");
@@ -64,10 +66,19 @@ trait InternalInits
 	}
 
 	/**
-	 * 
-	 * @param string $match 
-	 * @param string $reverse 
-	 * @return array
+	 * Process together given `match` and `reverse` value and complete two 
+	 * arrays with sections info about those two given values. Also change the 
+	 * given `match` and `reverse` string references and remove all brackets 
+	 * `[]` defining variable section(s). Every result array with this sections 
+	 * info, with those statistics contains for each fixed section or variable 
+	 * section defined with brackets `[]` info about it's type (fixed or 
+	 * variable), about start position, end position and length. Those 
+	 * statistics are always used to build URL later.
+	 * @param string $match		A match string prepared from `pattern` property.
+	 * @param string $reverse	A reverse string value, directly from `reverse` 
+	 *							property or from `pattern` property if `reverse` 
+	 *							property is empty.
+	 * @return \stdClass[][] Two arrays with array with `\stdClass` objects.
 	 */
 	protected function initSectionsInfoForMatchAndReverse (& $match, & $reverse) {
 		$matchInfo = [];
@@ -87,22 +98,39 @@ trait InternalInits
 				$matchClosePos = mb_strpos($match, ']', $matchOpenPos);
 			}
 			if ($reverseClosePos === FALSE) {
-				$reverseInfo[] = (object) ['fixed' => TRUE, 'start' => $reverseIndex, 'end' => $reverseLength, 'length' => $reverseLength - $reverseIndex];
-				$matchInfo[] = (object) ['fixed' => TRUE, 'start' => $matchIndex, 'end' => $matchLength, 'length' => $matchLength - $matchIndex];
+				$reverseInfo[] = (object) [
+					'fixed'=>TRUE, 'start'=>$reverseIndex, 'end'=>$reverseLength, 
+					'length' => $reverseLength - $reverseIndex
+				];
+				$matchInfo[]   = (object) [
+					'fixed' => TRUE, 'start'=>$matchIndex, 'end'=>$matchLength,  
+					'length' => $matchLength - $matchIndex
+				];
 				break;
 			} else {
 				if ($reverseIndex < $reverseOpenPos) {
-					$reverseInfo[] = (object) ['fixed' => TRUE, 'start' => $reverseIndex, 'end' => $reverseOpenPos, 'length' => $reverseOpenPos - $reverseIndex];
-					$matchInfo[] = (object) ['fixed' => TRUE, 'start' => $matchIndex, 'end' => $matchOpenPos, 'length' => $matchOpenPos - $matchIndex];
+					$reverseInfo[]	= (object) [
+						'fixed'=> TRUE,			'start'=> $reverseIndex, 
+						'end'=> $reverseOpenPos,
+						'length' => $reverseOpenPos - $reverseIndex
+					];
+					$matchInfo[]	= (object) [
+						'fixed'=> TRUE, 
+						'start'=> $matchIndex,   
+						'end'=> $matchOpenPos,   
+						'length'=> $matchOpenPos - $matchIndex];
 				}
 				$reverseOpenPosPlusOne = $reverseOpenPos + 1;
 				$reverseLocalLength = $reverseClosePos - $reverseOpenPosPlusOne;
-				$reverse = mb_substr($reverse, 0, $reverseOpenPos) 
-					. mb_substr($reverse, $reverseOpenPosPlusOne, $reverseLocalLength) 
-					. mb_substr($reverse, $reverseClosePos + 1);
+				$reverse = mb_substr($reverse, 0, $reverseOpenPos) . mb_substr(
+					$reverse, $reverseOpenPosPlusOne, $reverseLocalLength 
+					) . mb_substr($reverse, $reverseClosePos + 1);
 				$reverseLength -= 2;
 				$reverseClosePos -= 1;
-				$reverseInfo[] = (object) ['fixed' => FALSE, 'start' => $reverseOpenPos, 'end' => $reverseClosePos, 'length' => $reverseLocalLength];
+				$reverseInfo[] = (object) [
+					'fixed'	=> FALSE,				'start'	=> $reverseOpenPos, 
+					'end'	=> $reverseClosePos,	'length'=> $reverseLocalLength
+				];
 				$matchOpenPosPlusOne = $matchOpenPos + 1;
 				$matchLocalLength = $matchClosePos - $matchOpenPosPlusOne;
 				$match = mb_substr($match, 0, $matchOpenPos) 
@@ -110,7 +138,10 @@ trait InternalInits
 					. mb_substr($match, $matchClosePos + 1);
 				$matchLength -= 2;
 				$matchClosePos -= 1;
-				$matchInfo[] = (object) ['fixed' => FALSE, 'start' => $matchOpenPos, 'end' => $matchClosePos, 'length' => $matchLocalLength];
+				$matchInfo[] = (object) [
+					'fixed'	=> FALSE,			'start'	=> $matchOpenPos,
+					'end'	=> $matchClosePos,	'length'=> $matchLocalLength
+				];
 			}
 			$reverseIndex = $reverseClosePos;
 			$matchIndex = $matchClosePos;
@@ -119,8 +150,13 @@ trait InternalInits
 	}
 
 	/**
-	 * 
+	 * Initialize property `reverse` and other internal properties about this 
+	 * value, when there is necessary to prepare it for: a) URL building, b) for 
+	 * request routing, when there is configured `match` property directly 
+	 * an when is necessary to initialize route flags from `reverse` to complete
+	 * correctly subject to match.
 	 * @throws \LogicException Route configuration property is missing.
+	 * @throws \InvalidArgumentException Wrong route pattern format.
 	 * @return void
 	 */
 	protected function initReverse () {
@@ -136,7 +172,7 @@ trait InternalInits
 						? $this->pattern 
 						: str_replace(['\\', '(?', ')?', '/?'], '', $this->match)
 				);
-			$this->throwExceptionIfNoPattern();
+			$this->throwExceptionIfKeyPropertyIsMissing('reverse', 'pattern');
 		}
 
 		$this->lastPatternParam = NULL;
@@ -153,9 +189,17 @@ trait InternalInits
 	}
 
 	/**
-	 * 
-	 * @param string $pattern 
-	 * @return \stdClass[]
+	 * Process given `reverse` value and complete array with sections info about 
+	 * this given value. Also change the given `reverse` string reference and 
+	 * remove all brackets `[]` defining variable section(s). The result array 
+	 * with sections info, with this statistic contains for each fixed section 
+	 * or variable section defined with brackets `[]` info about it's type 
+	 * (fixed or variable), about start position, end position and length. This 
+	 * statistic is always used to build URL later.
+	 * @param string $pattern A reverse string value, directly from `reverse` 
+	 *						  property or from `pattern` property if `reverse` 
+	 *						  property is empty.
+	 * @return \stdClass[][] An array with `\stdClass` objects.
 	 */
 	protected function & initSectionsInfo (& $pattern) {
 		$result = [];
@@ -167,11 +211,17 @@ trait InternalInits
 			if ($openPos !== FALSE) 
 				$closePos = mb_strpos($pattern, ']', $openPos);
 			if ($closePos === FALSE) {
-				$result[] = (object) ['fixed' => TRUE, 'start' => $index, 'end' => $length, 'length' => $length - $index];
+				$result[] = (object) [
+					'fixed'	=> TRUE,	'start'		=> $index, 
+					'end'	=> $length,	'length'	=> $length - $index
+				];
 				break;
 			} else {
 				if ($index < $openPos) 
-					$result[] = (object) ['fixed' => TRUE, 'start' => $index, 'end' => $openPos, 'length' => $openPos - $index];
+					$result[] = (object) [
+					'fixed'	=> TRUE,		'start'		=> $index, 
+					'end'	=> $openPos,	'length'	=> $openPos - $index
+				];
 				$openPosPlusOne = $openPos + 1;
 				$lengthLocal = $closePos - $openPosPlusOne;
 				$pattern = mb_substr($pattern, 0, $openPos) 
@@ -179,7 +229,10 @@ trait InternalInits
 					. mb_substr($pattern, $closePos + 1);
 				$length -= 2;
 				$closePos -= 1;
-				$result[] = (object) ['fixed' => FALSE, 'start' => $openPos, 'end' => $closePos, 'length' => $lengthLocal];
+				$result[] = (object) [
+					'fixed'	=> FALSE,		'start'		=> $openPos,
+					'end'	=> $closePos,	'length'	=> $lengthLocal
+				];
 			}
 			$index = $closePos;
 		}
@@ -187,12 +240,22 @@ trait InternalInits
 	}
 
 	/**
-	 * @param string		$reverse 
-	 * @param \stdClass[]	$reverseSectionsInfo 
-	 * @param array			$constraints 
-	 * @param string|NULL	$match 
+	 * Initialize reverse params info array. Each item in completed array is 
+	 * `\stdClass` object with records about founded parameter place: `name`, 
+	 * `greedy`, `sectionIndex`, `length`, `reverseStart`, `reverseEnd`. Records 
+	 * `matchStart` and `matchEnd` could be values `-1` when function argument
+	 * `$match` is `NULL`, because this function is used to complete `match` and
+	 * `reverse` properties together and also to complete `reverse` property 
+	 * separately and only. Result array is always used as `reverseParams` 
+	 * property to complete URL rewrite params inside result `reverse` string.
+	 * @param string		$reverse				A reverse string with `<param>`s.
+	 * @param \stdClass[]	$reverseSectionsInfo	Reverse sections statistics with 
+	 *												fixed and variable sections.
+	 * @param array			$constraints			Route constraints array.
+	 * @param string|NULL	$match					A match string, could be `NULL`.
+	 * @throws \InvalidArgumentException Wrong route pattern format.
 	 * @return array		An array with keys as param names and values as  
-	 *						`\stdClass` objects with data about reverse params.
+	 *						`\stdClass` objects with data about each reverse param.
 	 */
 	protected function & initReverseParams (& $reverse, & $reverseSectionsInfo, & $constraints, & $match = NULL) {
 		$result = [];
@@ -264,13 +327,17 @@ trait InternalInits
 	}
 
 	/**
-	 * 
-	 * @param \stdClass[]	$reverseSectionsInfo 
-	 * @param array			$constraints 
-	 * @param string		$paramName 
-	 * @param int			$sectionIndex 
-	 * @param bool			$greedyCaught 
-	 * @throws \InvalidArgumentException 
+	 * Get if founded param place is greedy or not. If it's greedy, check if it 
+	 * is only one greedy param in whole pattern string and if it is the last 
+	 * param between other params. Get also if given section index belongs to
+	 * the last section info in line.
+	 * @param \stdClass[]	$reverseSectionsInfo	Whole sections info array ref.
+	 *												with `\stdClass` objects.
+	 * @param array			$constraints			Route params constraints.
+	 * @param string		$paramName				Route parsed params.
+	 * @param int			$sectionIndex			Currently checked section index.
+	 * @param bool			$greedyCaught			Boolean about if param is checked as greedy.
+	 * @throws \InvalidArgumentException Wrong route pattern format.
 	 * @return \bool[]		Array with two boolean values. First is greedy flag 
 	 *						and second is about if section is last or not. The
 	 *						second could be `NULL`
@@ -317,7 +384,10 @@ trait InternalInits
 	}
 
 	/**
-	 * 
+	 * Initialize three route integer flags. About if and what scheme definition
+	 * is contained in given pattern, if and what domain parts are contained in 
+	 * given pattern and if given pattern contains any part of query string.
+	 * Given pattern is `reverse` and if reverse is empty, it's `pattern` prop.
 	 * @param string $pattern 
 	 * @return void
 	 */
@@ -351,6 +421,24 @@ trait InternalInits
 		$this->flags = [$scheme, $host, $queryString];
 	}
 	
+	/**
+	 * Compose regular expression pattern to match incoming request or not.
+	 * This method is called in route matching process, when it's necessary to 
+	 * complete route `match` property from `pattern` property. The result 
+	 * regular expression is always composed to match trailing slash or missing 
+	 * trailing slash and any fixed and variable sections defined by `pattern`.
+	 * @param string		$match				A pattern string with escaped all special regular
+	 *											expression special characters except `<>` chars.
+	 * @param \stdClass[]	$matchSectionsInfo	Match sections info about fixed or variable
+	 *											section, param name, start, end and length.
+	 * @param array			$reverseParams		An array with keys as param names and values as 
+	 *											`\stdClass` objects with data about reverse params.
+	 * @param array			$constraints		Route params regular expression constraints 
+	 *											Defining which value each param could contain or not.
+	 *											If there is no constraint for param, there is used
+	 *											default constraint defined in route static property.
+	 * @return string
+	 */
 	protected function initMatchComposeRegex (& $match, & $matchSectionsInfo, & $reverseParams, & $constraints) {
 		$sections = [];
 		$paramIndex = 0;
@@ -435,27 +523,38 @@ trait InternalInits
 	}
 
 	/**
+	 * Thrown a logic exception about missing key property in route object to 
+	 * parse `pattern` or `reverse`. Those properties are necessary to complete 
+	 * correctly `match` property to route incoming request or to complete 
+	 * correctly `reverse` property to build URL address.
 	 * @throws \LogicException Route configuration property is missing.
+	 * @param \string[] $propsNames,... Missing properties names.
 	 * @return void
 	 */
-	protected function throwExceptionIfNoPattern () {
+	protected function throwExceptionIfKeyPropertyIsMissing (/* ...$propsNames */) {
+		$propsNames = func_get_args();
 		$selfClass = version_compare(PHP_VERSION, '5.5', '>') ? self::class : __CLASS__;
 		throw new \LogicException(
-			"[".$selfClass."] Route configuration property `\MvcCore\Route::\$pattern` is missing "
-			."to parse it and complete property (or properties) `\MvcCore\Route::\$match` "
-			."(and `\MvcCore\Route::\$reverse`) correctly ($this)."
+			"[".$selfClass."] Route configuration property/properties is/are"
+			." missing: `" . implode("`, `", $propsNames) . "`, to parse and"
+			." complete key properties `match` and/or `reverse` to route"
+			." or build URL correctly ($this)."
 		);
 	}
 
 	/**
-	 * Render all instance properties values into string.
+	 * This method serve only for debug and development purposes. It renders all 
+	 * instance properties values into string, to print whole route in logic 
+	 * exception message about what property is missing.
 	 * @return string
 	 */
 	public function __toString () {
 		$type = new \ReflectionClass($this);
 		/** @var $props \ReflectionProperty[] */
 		$allProps = $type->getProperties(
-			\ReflectionProperty::IS_PUBLIC | \ReflectionProperty::IS_PROTECTED | \ReflectionProperty::IS_PRIVATE
+			\ReflectionProperty::IS_PUBLIC | 
+			\ReflectionProperty::IS_PROTECTED | 
+			\ReflectionProperty::IS_PRIVATE
 		);
 		$result = [];
 		/** @var $prop \ReflectionProperty */
