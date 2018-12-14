@@ -16,37 +16,40 @@ namespace MvcCore\Route;
 trait Props
 {
 	/**
-	 * TODO: neaktualni?
-	 * Default constraint used for all rewritten params, if no
-	 * constraint for rewritten param has been specified.
-	 * configured as `"[^/]*"` by default. This value means:
-	 * - "Any character(s) in any length, except next slash."
+	 * Default constraint used for all rewrite params in request path, if no 
+	 * constraint for that param has been specified in route instance. 
+	 * Default value is `"[^/]+"`, what means "any character(s) except slash, 
+	 * one or more character(s) long."
 	 * @var string
 	 */
 	protected static $defaultPathConstraint = '[^/]+';
 
+	/**
+	 * Default constraint used for all rewrite params in domain pattern part, if 
+	 * no constraint for that param has been specified in route instance. 
+	 * Default value is `"[^\.]+"`, what means "any character(s) except dot, 
+	 * one or more character(s) long."
+	 * @var string
+	 */
 	protected static $defaultDomainConstraint = '[^\.]+';
 
 	/**
-	 * Route pattern to match request URL and to build URL address.
+	 * Route base pattern to complete match pattern string to match requested 
+	 * URL and to complete reverse pattern string to build back an URL address.
 	 *
-	 * To define route by this form is the most comfortable way,
-	 * but a way slower, because there is necessary every request
-	 * to convert this value into `\MvcCore\Route::$match` and into
-	 * `\MvcCore\Route::$reverse` properties correctly and you can
-	 * specify those both properties manually, if you are not too lazy.
+	 * To define route by this form is the most comfortable way, but a way 
+	 * slower, because there is necessary every request to convert this value 
+	 * into `match` and into `reverse` properties correctly. But you can specify 
+	 * those both properties directly, if you can write regular expressions.
 	 *
-	 * This match and reverse definition has to be in very basic form
-	 * without regular expression escaping or advanced rules:
-	 * - No regular expression border `#` characters, it will be
-	 *   used internally in route parsing.
-	 * - No start `^` or end `$` regular expression characters,
-	 *   those characters will be added automatically.
-	 * - No escaping of regular expression characters:
-	 *   `[](){}<>|=+*.!?-/`, those characters will be escaped
-	 *   in route preparing process.
-	 * - star char inside param name (`<color*>`) means greedy param
-	 *   matching all to the end of address. It has to be the last one.
+	 * This match and reverse definition has to be in very basic form without 
+	 * regular expression escaping or advanced rules:
+	 * - No regular expression border `#` characters, it's used in `match` only.
+	 * - No start `^` or end `$` regular expression chars, also used in `match`.
+	 * - No escaping of regular expression characters: `[](){}<>|=+*.!?-/`, 
+	 *   those characters will be escaped in route `match` property.
+	 * - Star character inside param name (`<color*>`) means greedy param
+	 *   matching all to the end of the URL address. It has to be the last one.
 	 *
 	 * Example: `"/products-list/<name>/<color*>"`.
 	 * @var string|\string[]|NULL
@@ -54,18 +57,21 @@ trait Props
 	protected $pattern		= NULL;
 
 	/**
-	 * Route match pattern in raw form (to use it as it is) to match proper request.
-	 * This property is always used to match request by `\MvcCore\Request::Path`
-	 * by classic PHP regular expression matching by `preg_match_all();`.
+	 * Route match pattern in raw form (to use it as it is) to match requested
+	 * URL. This `match` pattern must have the very same structure and content 
+	 * as `reverse` pattern, because there is necessary to complete route flags 
+	 * from `reverse` pattern string - to prepare proper regular expression 
+	 * subject for this `match`, not just only the request `path`. Because those
+	 * flags is not possible to detect from raw regular expression string.
 	 *
-	 * Required together with `\MvcCore\Route::$reverse` property, if you
-	 * have not configured `\MvcCore\Route::$pattern` property instead.
+	 * This is required together with route `reverse` property, if you have not 
+	 * configured route `pattern` property instead.
 	 *
-	 * To define the route object by assigning properties `\MvcCore\Route::$match` and
-	 * `\MvcCore\Route::$reverse` together is little bit more annoying way to define it
-	 * (because you have to write almost the same information twice), but it's the best
-	 * speed solution, because there is no `\MvcCore\Route::$pattern` parsing and
-	 * conversion into `\MvcCore\Route::$match` and `\MvcCore\Route::$reverse` properties.
+	 * To define the route by assigning properties route `match` and route 
+	 * `reverse` together is little bit more annoying way to define it (because 
+	 * you have to write almost the same information twice), but it's the best 
+	 * speed solution, because there is no route internal metadata completion 
+	 * and `pattern` parsing into `match` and `reverse` properties.
 	 *
 	 * Example: `"#^/products\-list/(?<name>[^/]*)/(?<color>[a-z]*)#"`
 	 * @var string|\string[]|NULL
@@ -78,17 +84,17 @@ trait Props
 	 * - No regular expression characters escaping (`[](){}<>|=+*.!?-/`).
 	 * - No start `^` or end `$` regular expression characters.
 	 *
-	 * Required together with `\MvcCore\Route::$match` property, if you
-	 * have not configured `\MvcCore\Route::$pattern` property instead.
+	 * Required together with route `match` property, if you have not configured 
+	 * route `pattern` property instead. This is only very simple string with 
+	 * variable section definitions defined by brackets `[]` and with parameters 
+	 * replacement places (like `<name>` or `<page>`) for given values by 
+	 * `\MvcCore\Router::Url($name, $params);` method.
 	 *
-	 * This is only very simple string with replacement places (like `<name>` or
-	 * `<page>`) for given values by `\MvcCore\Router::Url($name, $params);` method.
-	 *
-	 * To define the route object by assigning properties `\MvcCore\Route::$match` and
-	 * `\MvcCore\Route::$reverse` together is little bit more annoying way to define it
-	 * (because you have to write almost the same information twice), but it's the best
-	 * speed solution, because there is no `\MvcCore\Route::$pattern` parsing and
-	 * conversion into `\MvcCore\Route::$match` and `\MvcCore\Route::$reverse` properties.
+	 * To define the route by assigning properties route `match` and route 
+	 * `reverse` together is little bit more annoying way to define it (because 
+	 * you have to write almost the same information twice), but it's the best 
+	 * speed solution, because there is no route internal metadata completion 
+	 * and `pattern` parsing into `match` and `reverse` properties.
 	 *
 	 * Example: `"/products-list/<name>/<color>"`
 	 * @var string|\string[]|NULL
@@ -96,13 +102,12 @@ trait Props
 	protected $reverse		= NULL;
 
 	/**
-	 * Not required. Route name is your custom keyword/term
-	 * or pascal case combination of controller and action
-	 * describing `"Controller:Action"` target to be dispatched.
+	 * Not required. Route name is your custom keyword/term or pascal case 
+	 * combination of controller and action describing `"Controller:Action"` 
+	 * target to be dispatched.
 	 *
-	 * By this name there is selected proper route object to
-	 * complete URL string by given params in router method:
-	 * `\MvcCore\Router:Url($name, $params);`.
+	 * By this name there is selected proper route object to complete URL string 
+	 * by given params in router method: `\MvcCore\Router:Url($name, $params);`.
 	 *
 	 * Example: `"products_list" | "Products:Gallery"`
 	 * @var string
@@ -110,31 +115,35 @@ trait Props
 	protected $name			= '';
 
 	/**
-	 * Controller name to dispatch, in pascal case. Required only if
-	 * there is no `controller` param inside `\MvcCore\Route::$pattern`
-	 * or inside `\MvcCore\Route::$match properties as URL params`.
+	 * Controller name to dispatch, in pascal case. Required only if there is no 
+	 * `controller` param inside route `pattern` or inside route `match` 
+	 * properties as URL param.
 	 *
-	 * It should contain controller class namespaces defined in standard PHP notation.
-	 * If there is backslash at the beginning - controller class will not be loaded from
-	 * standard controllers directory (`/App/Controllers`) but from different specified place
-	 * by full controller class name.
-	 *
+	 * It should contain controller class namespaces defined in standard PHP 
+	 * notation. If there is backslash at the beginning - controller class will 
+	 * be loaded directly from base standard controllers directory 
+	 * `/App/Controllers`, not by any relative place defined by possible domain
+	 * route from extended router. If there are two standard slashes in the 
+	 * beginning, controller class will be loaded without those two slashes
+	 * from base PHP place without any automatic MvcCore namespace prepending.
+	 * 
 	 * Example:
-	 *  `"Products"								// placed in /App/Controllers/Products.php`
-	 *  `"Front\Business\Products"				// placed in /App/Controllers/Front/Business/Products.php`
-	 *  `"\Anywhere\Else\Controllers\Products"	// placed in /Anywhere/Else/Controllers/Products.php`
+	 *  `"Products"								// normally placed in /App/Controllers/Products.php`
+	 *											// (but it could be also in some sub-directory
+	 *											// if there is used extended route with namespace)
+	 *  `"\Front\Business\Products"				// placed in /App/Controllers/Front/Business/Products.php`
+	 *  `"//Anywhere\Else\Controllers\Products"	// placed in /Anywhere/Else/Controllers/Products.php`
 	 * @var string
 	 */
 	protected $controller	= '';
 
 	/**
-	 * Action name to call in controller dispatching, in pascal case.
-	 * Required, if there is no `action` param inside `\MvcCore\Route::$pattern`
-	 * or inside `\MvcCore\Route::$match property`.
+	 * Action name to call in controller dispatching, in pascal case. Required, 
+	 * if there is no `action` param inside route `pattern` or inside route 
+	 * `match` pattern property.
 	 *
-	 * If this property has value `"List"`, then public
-	 * method in target controller has to be named as:
-	 * `public function ListAction () {...}`.
+	 * If this property has value `"List"`, then public method in target 
+	 * controller has to be named as: `public function ListAction () {...}`.
 	 *
 	 * Example: `"List"`
 	 * @var string
@@ -142,95 +151,128 @@ trait Props
 	protected $action		= '';
 
 	/**
-	 * Route rewritten params default values and also any other params default values.
-	 * It could be used for any application request input - `$_GET`, `$_POST` or `php://input`.
+	 * Route rewrite params default values and also any other params default 
+	 * values. It could be used for any application request input - `$_GET`, 
+	 * `$_POST` or `php://input`.
 	 *
-	 * Example: `array("name" => "default-name", "color" => "red",);`.
+	 * Example: `["name" => "default-name", "color" => "red",]`.
 	 * @var array|\array[]
 	 */
 	protected $defaults		= [];
 
 	/**
-	 * TODO: neaktualni
-	 * Array with param names and their custom regular expression
-	 * matching rules. Not required, for all rewritten params there is used
-	 * default matching rule from `\MvcCore\Route::$defaultPathConstraint`.
-	 * It should be changed to any value. The value is `"[^/]*"` by default.
-	 * It means "Any character(s) in any length, except next slash".
+	 * Array with param names and their custom regular expression matching 
+	 * rules. Not required, for all rewrite params there is used default 
+	 * matching rules from route static properties `$defaultDomainConstraint` or
+	 * `defaultPathConstraint`. It should be changed to any value. Default value 
+	 * is `"[^.]+"` for domain part and `"[^/]+"` for path part.
 	 *
-	 * Example:
-	 *	`array(
-	 *		"name"	=> "[^/]*",
-	 *		"color"	=> "[a-z]*",
-	 *	);`
+	 * Example: `["name"	=> "[^/]+", "color"	=> "[a-z]+",]`
 	 * @var array|\array[]
 	 */
 	protected $constraints		= [];
 
 	/**
 	 * URL address params filters to filter URL params in and out. Filters are 
-	 * `callable`s always and only under keys `"in" | "out"`, accepting arguments: 
-	 * `array $params, array $defaultParams, \MvcCore\IRequest $request`. 
-	 * First argument is associative array with params from requested URL address 
-	 * for `"in"` filter and associative array with params to build URL address 
-	 * for `"out"` filter. Second param is always associative `array` with default 
-	 * params and third argument is current request instance.
-	 * `Callable` filter function must return `array` with filtered params.
+	 * `callable`s always and only under keys `"in" | "out"` in route 
+	 * configuration array in constructor, accepting arguments: 
+	 * - `$params`  associative array with params from requested URL address for 
+	 *				in filter and associative array with params to build URL 
+	 *				address for out filter.
+	 * - `$defaultParams`	associative array with default params to store 
+	 *						any custom value necessary to filter effectively.
+	 * - `$request`	current request instance implements `\MvcCore\IRequest`.
+	 * `Callable` filter must return associative `array` with filtered params. 
 	 * @var array
 	 */
 	protected $filters			= [];
 
 	/**
-	 * Http method to only match requests with this defined method.
-	 * If `NULL`, request with any http method could be matched by this route.
-	 * Value has to be upper case.
+	 * Http method to only match requests with this defined method. If `NULL`, 
+	 * request with any http method could be matched by this route. Value has to 
+	 * be in upper case.
 	 * Example: `"POST" | \MvcCore\IRequest::METHOD_POST`
 	 * @var string|NULL
 	 */
 	protected $method			= NULL;
 
 	/**
-	 * 
+	 * Other route unique name to redirect request to. To this target route are 
+	 * passed params parsed from this matched route. This property is used for 
+	 * routes handling old pages or old request forms, redirecting those request
+	 * to new form.
 	 * @var string|NULL
 	 */
 	protected $redirect			= NULL;
 
 	/**
-	 * 
+	 * Boolean about to generate absolute URL addresses. If `TRUE`, there is 
+	 * always generated absolute URL forms. If `FALSE`, absolute URL address is 
+	 * generated only if `pattern` (or `reverse`) property contains absolute 
+	 * matching form.
 	 * @var bool
 	 */
 	protected $absolute			= FALSE;
 
 	/**
-	 * 
+	 * Route group name to belongs to. Group name is always first word parsed
+	 * from request path. First word is content between two first slashes in 
+	 * request path. If group name is `NULL`, route belongs to default group 
+	 * and that group is used when no other group matching the request path.
 	 * @var string|NULL
 	 */
 	protected $groupName		= NULL;
 
 	/**
-	 * TODO: neaktuální
-	 * Array with `string` keys by all reverse pattern params and with values by 
-	 * every param occurrence start, length and required in reverse pattern string.
-	 * This array is parsed automatically by method `\MvcCore\Route::initMatch();` 
-	 * if necessary or by method `\MvcCore\Route::initReverse();` after it's 
-	 * necessary, to be able to complete URL address string in method and sub
-	 * methods of `\MvcCore\Route::Url();`.
+	 * Associative array with `\stdClass` objects with metadata about all 
+	 * rewrite params in `pattern` (or `reverse`) property. Every object item
+	 * has those keys about founded param place: `name`, `greedy`, `sectionIndex`, 
+	 * `reverseStart` and`reverseEnd`. Keys `matchStart` and `matchEnd` could 
+	 * have value `-1` and no real string indexes, if this metadata array is 
+	 * completed only by `reverse` pattern (It happens if `match` property is 
+	 * configured directly). This array is parsed automatically by route method 
+	 * `initMatchAndReverse();` or by route method `initReverse();` after it's 
+	 * necessary - to be able to complete `match` to match incoming request (if 
+	 * `match` is configured as `NULL`) and to complete URL address string in 
+	 * method `Url();` and it's sub-methods.
 	 * Example: 
-	 * // For pattern `/products-list/<name>/<color>`
-	 * `["name" => [15, 6, TRUE], "color" => [22, 7, TRUE]];`
+	 * // For pattern `/products-list/<name>[/<color*>]`
+	 * `[
+	 *		'name' => (object) [
+	 *			'name'			=> 'name',	'greedy'		=> FALSE,	
+	 *			'sectionIndex'	=> 0,		'reverseStart'	=> 15,	
+	 *			'reverseEnd'	=> 21,		'matchStart'	=> 15,	
+	 *			'matchEnd'		=> 21,
+	 *		],
+	 *		'color' => object) [
+	 *			'name'			=> 'color',	'greedy'		=> TRUE,
+				'sectionIndex'	=> 1,		'reverseStart'	=> 22,		
+				'reverseEnd'	=> 30,		'matchStart'	=> 22,
+				'matchEnd'		=> 30,
+	 *		]
+	 * ];`
 	 * @var array|NULL
 	 */
 	protected $reverseParams	= NULL;
 
 	/**
-	 * 
+	 * This associative array is used only in cloned matched route object and 
+	 * there is stored all only matched rewrite params and route controller and 
+	 * route action if any. All params are in raw form. Not filtered.
 	 * @var array
 	 */
 	protected $matchedParams	= [];
 
 	/**
-	 * 
-	 * @var \stdClass
+	 * An array with `\stdClass` objects with metadata about all fixed or 
+	 * variable sections in `pattern` (or `reverse`) property. Every object item
+	 * has those keys about section: `fixed`, `start`, `end` and `length`. This 
+	 * array is parsed automatically by route method `initMatchAndReverse();` or 
+	 * by route method `initReverse();` after it's necessary - to be able to 
+	 * complete `match` to match incoming request (if `match` is configured as 
+	 * `NULL`) and to complete URL address string in method `Url();` and it's 
+	 * sub-methods.
+	 * @var \stdClass[]
 	 */
 	protected $reverseSections	= NULL;
 	

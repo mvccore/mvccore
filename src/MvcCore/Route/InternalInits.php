@@ -242,7 +242,7 @@ trait InternalInits
 	/**
 	 * Initialize reverse params info array. Each item in completed array is 
 	 * `\stdClass` object with records about founded parameter place: `name`, 
-	 * `greedy`, `sectionIndex`, `length`, `reverseStart`, `reverseEnd`. Records 
+	 * `greedy`, `sectionIndex`, `reverseStart`, `reverseEnd`. Records 
 	 * `matchStart` and `matchEnd` could be values `-1` when function argument
 	 * `$match` is `NULL`, because this function is used to complete `match` and
 	 * `reverse` properties together and also to complete `reverse` property 
@@ -314,7 +314,7 @@ trait InternalInits
 				'name'			=> $paramName,
 				'greedy'		=> $greedyFlag,
 				'sectionIndex'	=> $sectionIndex,
-				'length'		=> $paramLength,
+				//'length'		=> $paramLength,
 				'reverseStart'	=> $reverseOpenPos,
 				'reverseEnd'	=> $reverseClosePos,
 				'matchStart'	=> $matchOpenPos,
