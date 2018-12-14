@@ -15,50 +15,9 @@ namespace MvcCore;
 
 /**
  * Responsibility - describing request(s) to match and reversely build URL addresses.
- * - Describing request to match it (read more about properties).
+ * - Describing request to match and target it (read more about properties).
  * - Matching request by given request object, see `\MvcCore\Route::Matches()`.
  * - Completing URL address by given params array, see `\MvcCore\Route::Url()`.
- *
- * Main Properties:
- * - `$Pattern`
- *   Required, if you have not configured `\MvcCore\Route::$match` and
- *   `\MvcCore\Route::$reverse` property instead. Very basic URL address
- *   form to match and parse rewritten params by it. Address to parse
- *   and prepare `\MvcCore\Route::$match` property and `\MvcCore\Route::$reverse`
- *   property automatically in `\MvcCore\Route::Prepare();` call.
- * - `$Match`
- *   Required together with `\MvcCore\Route::$reverse` property, if you
- *   have not configured `\MvcCore\Route::$pattern` property instead.
- *   This property is always used to match request by `\MvcCore\Request::Path`
- *   by classic PHP regular expression matching by `preg_match_all();`.
- * - `$Reverse`
- *   Required together with `\MvcCore\Route::$match` property, if you
- *   have not configured `\MvcCore\Route::$pattern` property instead.
- *   This property is always used to complete URL address by called params
- *   array and by this string with rewrite params replacements inside.
- * - `$Controller`
- *   Required, if there is no `controller` param inside `\MvcCore\Route::$pattern`
- *   or inside `\MvcCore\Route::$match property`. Controller class name to dispatch
- *   in pascal case form, namespaces and including slashes as namespace delimiters.
- * - `$Action`
- *   Required, if there is no `action` param inside `\MvcCore\Route::$pattern`
- *   or inside `\MvcCore\Route::$match property`. Public method in controller
- *   in pascal case form, but in controller named as `public function <CoolName>Action () {...`.
- * - `$Name`
- *   Not required, if you want to create URL addresses always by `Controller:Action`
- *   named records. It could be any string, representing route custom name to
- *   complete URL address by that name inside your application.
- * - `$Defaults`
- *   Not required, matched route params default values and query params default values.
- *   Last entry in array may be used for property `\MvcCore\Route::$lastPatternParam`
- *   describing last rewritten param inside match pattern to be automatically trimmed
- *   from right side for possible address trailing slash in route matched moment.
- * - `$Constraints`
- *   not required, array with param names and their custom regular expression
- *   matching rules. If no constraint string for any param defined, there is used
- *   for all rewritten params default constraint rule to match everything except next slash.
- *   Default static property for matching rule should be changed here:
- *   - by default: `\MvcCore\Route::$DefaultConstraint = '[^/]*';`
  */
 class Route implements IRoute
 {
