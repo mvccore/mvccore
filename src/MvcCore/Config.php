@@ -24,9 +24,10 @@ namespace MvcCore;
  *   - Dumping `stdClass`es and `array`s into INI syntax string with 
  *     all other environment records.
  *   - Storing serialized config data in single process.
- * - Environment management:
- *   - Simple environment name detection by comparing server and client IP.
- *   - Environment name detection by config records about computer name or IP.
+ * - Environment management and detection by:
+ *   - comparing server and client IP, by value or regular expression.
+ *   - comparing server hostname or IP, by value or regular expression.
+ *   - checking system environment variable existence, value or by regular exp.
  */
 class Config extends \ArrayObject implements IConfig
 {

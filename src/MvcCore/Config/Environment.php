@@ -82,9 +82,9 @@ trait Environment
 				if (static::GetSystem() === FALSE) 
 					// if there is no system config, recognize environment only by very 
 					// simple way - by server and client IP only
-					static::environmentDetectByIps();
+					static::envDetectByIps();
 			} else {
-				static::environmentDetectByIps();
+				static::envDetectByIps();
 			}
 		}
 		return static::$environment;
@@ -94,7 +94,7 @@ trait Environment
 	 * First environment value setup - by server and client IP address.
 	 * @return void
 	 */
-	protected static function environmentDetectByIps () {
+	protected static function envDetectByIps () {
 		if (static::$environment === NULL) {
 			$request = & \MvcCore\Application::GetInstance()->GetRequest();
 			$serverAddress = $request->GetServerIp();
@@ -112,7 +112,7 @@ trait Environment
 	 * @param array $rawCfgData
 	 * @return string|NULL
 	 */
-	protected static function environmentDetectBySystemConfig (array & $rawCfgData = []) {
+	protected static function envDetectBySystemConfig (array & $rawCfgData = []) {
 		$environment = NULL;
 		if (isset($rawCfgData['environments'])) {
 			$environmentsSections = & $rawCfgData['environments'];
@@ -122,8 +122,8 @@ trait Environment
 			$serverHostName = NULL;
 			$serverGlobals = NULL;
 			foreach ($environmentsSections as $environmentName => $environmentSection) {
-				$sectionData = static::environmentDetectParseSysConfigEnvSectionData($environmentSection);
-				$detected = static::environmentDetectBySystemConfigEnvSection(
+				$sectionData = static::envDetectParseSysConfigEnvSectionData($environmentSection);
+				$detected = static::envDetectBySystemConfigEnvSection(
 					$sectionData, $request, $clientIp, $serverHostName, $serverGlobals
 				);
 				if ($detected) {
@@ -137,7 +137,13 @@ trait Environment
 		return static::$environment;
 	}
 
-	protected static function environmentDetectParseSysConfigEnvSectionData ($environmentSection) {
+	/**
+	 * Parse system config environment section data from various declarations 
+	 * into specific detection structure.
+	 * @param mixed $environmentSection 
+	 * @return \stdClass
+	 */
+	protected static function envDetectParseSysConfigEnvSectionData ($environmentSection) {
 		$data = (object) [
 			'clientIps' => (object) [
 				'check'		=> FALSE,
@@ -159,7 +165,7 @@ trait Environment
 		if (is_string($environmentSection) && strlen($environmentSection) > 0) {
 			// if there is only string provided, value is probably only
 			// about the most and simple way - to describe client IPS:
-			static::environmentDetectParseSysConfigClientIps($data, $environmentSection);
+			static::envDetectParseSysConfigClientIps($data, $environmentSection);
 		} else if (is_array($environmentSection)) {
 			foreach ($environmentSection as $key => $value) {
 				if (is_numeric($key) || $key == 'clients') {
@@ -168,24 +174,31 @@ trait Environment
 					// the strings list with the most and simple way - to describe client IPS:
 					// of if key has `clients` value, there could be list of clients IPs
 					// or list of clients IPs regular expressions
-					static::environmentDetectParseSysConfigClientIps($data, $value);
+					static::envDetectParseSysConfigClientIps($data, $value);
 				} else if ($key == 'servers') {
 					// if key is `servers`, there could be string with single regular
 					// expression to match hostname or string with comma separated hostnames
 					// or list with hostnames and hostname regular expressions
-					static::environmentDetectParseSysConfigServerNames($data, $value);
+					static::envDetectParseSysConfigServerNames($data, $value);
 				} else if ($key == 'variables') {
 					// if key is `variables`, there could be string with `$_SERVER` variable
 					// names to check if they exists or key => value object with variable
 					// name and value, which could be also regular expression to match
-					static::environmentDetectParseSysConfigVariables($data, $value);
+					static::envDetectParseSysConfigVariables($data, $value);
 				}
 			}
 		}
 		return $data;
 	}
 
-	protected static function environmentDetectParseSysConfigClientIps (& $data, $rawClientIps) {
+	/**
+	 * Parse system config environment section data from various declarations 
+	 * about client IP addresses into specific detection structure. 
+	 * @param \stdClass $data 
+	 * @param mixed $rawClientIps 
+	 * @return void
+	 */
+	protected static function envDetectParseSysConfigClientIps (& $data, $rawClientIps) {
 		$data->clientIps->check = TRUE;
 		if (is_string($rawClientIps)) {
 			if (substr($rawClientIps, 0, 1) == '/') {
@@ -210,7 +223,14 @@ trait Environment
 		}
 	}
 
-	protected static function environmentDetectParseSysConfigServerNames (& $data, $rawHostNames) {
+	/**
+	 * Parse system config environment section data from various declarations 
+	 * about server host names into specific detection structure. 
+	 * @param \stdClass $data 
+	 * @param mixed $rawHostNames 
+	 * @return void
+	 */
+	protected static function envDetectParseSysConfigServerNames (& $data, $rawHostNames) {
 		$data->serverHostNames->check = TRUE;
 		if (is_string($rawHostNames)) {
 			if (substr($rawHostNames, 0, 1) == '/') {
@@ -235,7 +255,14 @@ trait Environment
 		}
 	}
 	
-	protected static function environmentDetectParseSysConfigVariables (& $data, $rawServerVariable) {
+	/**
+	 * Parse system config environment section data from various declarations 
+	 * about server environment variables into specific detection structure. 
+	 * @param \stdClass $data 
+	 * @param mixed $rawServerVariable 
+	 * @return void
+	 */
+	protected static function envDetectParseSysConfigVariables (& $data, $rawServerVariable) {
 		$data->serverVariables->check = TRUE;
 		if (is_string($rawServerVariable)) {
 			$data->serverVariables->existence[] = $rawServerVariable;
@@ -252,7 +279,31 @@ trait Environment
 		}
 	}
 
-	protected static function environmentDetectBySystemConfigEnvSection (& $data, & $req, & $clientIp, & $serverHostName, & $serverGlobals) {
+	/**
+	 * Detect environment by specifically parsed environment configuration data.
+	 * This method is called for all founded environments in system config in 
+	 * order by system config and it tries to detect environment by following 
+	 * order: 
+	 *	- by client IP address (if defined)
+	 *		- by IPs list (if defined)
+	 *		- by regular expression (if defined)
+	 *	- by server hostname (if defined)
+	 *		- by host names list (if defined)
+	 *		- by regular expression (if defined)
+	 *	- by server variable(s) (if defined)
+	 *		- by existence (if defined)
+	 *		- by value (if defined)
+	 *		- by regular expression (if defined)
+	 * Method returns `TRUE` to stop environment detection or `FALSE`, if 
+	 * environment was not detected by given data.
+	 * @param \stdClass			$data 
+	 * @param \MvcCore\IRequest	$req 
+	 * @param string|NULL		$clientIp 
+	 * @param string|NULL		$serverHostName 
+	 * @param array|NULL		$serverGlobals 
+	 * @return bool If `TRUE`, environment has been detected and detection procedure could stop.
+	 */
+	protected static function envDetectBySystemConfigEnvSection (& $data, & $req, & $clientIp, & $serverHostName, & $serverGlobals) {
 		if ($data->clientIps->check) {
 			// try to recognize environment by any configured client IP address value
 			$clientIp = $clientIp ?: $req->GetClientIp();

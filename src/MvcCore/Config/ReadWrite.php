@@ -73,7 +73,7 @@ trait ReadWrite
 	}
 
 	/**
-	 * Encode all data into string and store it in `$this->fullPath` property.
+	 * Encode all data into string and store it in `\MvcCore\Config::$fullPath`.
 	 * @throws \Exception Configuration data was not possible to dump or write.
 	 * @return bool
 	 */

@@ -15,6 +15,16 @@ namespace MvcCore\Config;
 
 trait IniDump
 {
+	/**
+	 * Dump configuration data in INI syntax with originally loaded sections and 
+	 * environment dependency support. This method try to load original INI file 
+	 * if exists and creates INI sections by original file. Or all data are 
+	 * rendered in plain structure without any section. If there is in original 
+	 * config file any section for different environment, this method dumps that
+	 * section content immediately after current environment section, so all 
+	 * data for different environment stays there.
+	 * @return string
+	 */
 	public function Dump () {
 		$environment = static::GetEnvironment(TRUE);
 		list($sections, $envSpecifics) = $this->dumpSectionsInfo();
@@ -54,6 +64,16 @@ trait IniDump
 		return $result;
 	}
 
+	/**
+	 * Try to load original config INI file and parse it. Complete all section 
+	 * names and all sections for different environments against current 
+	 * environment and return two variables - `$sections, $envSpecifics`.
+	 * First is array with keys as string section names and values as integers
+	 * about if section is dependent on environment or not. The second result 
+	 * item is environment specific section data keyed by section name and 
+	 * values as array keyed by environment and values as section raw values.
+	 * @return \array[]
+	 */
 	protected function dumpSectionsInfo () {
 		$sections = [];
 		$envSpecifics = [];
@@ -89,6 +109,13 @@ trait IniDump
 		return [$sections, $envSpecifics];
 	}
 
+	/**
+	 * Dump recursive with dot syntax any PHP object/array data into INI syntax.
+	 * @param string $levelKey 
+	 * @param mixed  $data 
+	 * @param mixed  $rawData 
+	 * @return void
+	 */
 	protected function dumpRecursive ($levelKey, & $data, & $rawData) {
 		if (is_object($data) || is_array($data)) {
 			if (strlen($levelKey) > 0) $levelKey .= '.';
@@ -99,7 +126,13 @@ trait IniDump
 			$rawData[] = $levelKey . ' = ' . $this->dumpScalarValue($data);
 		}
 	}
-
+	
+	/**
+	 * Dump any PHP scalar value into INI syntax by special local static 
+	 * configuration array.
+	 * @param mixed $value 
+	 * @return string
+	 */
 	protected function dumpScalarValue ($value) {
 		if (is_numeric($value)) {
 			return (string) $value;

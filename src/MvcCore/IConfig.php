@@ -24,9 +24,10 @@ namespace MvcCore;
  *   - Dumping `stdClass`es and `array`s into INI syntax string with 
  *     all other environment records.
  *   - Storing serialized config data in single process.
- * - Environment management:
- *   - Simple environment name detection by comparing server and client IP.
- *   - Environment name detection by config records about computer name or IP.
+ * - Environment management and detection by:
+ *   - comparing server and client IP, by value or regular expression.
+ *   - comparing server hostname or IP, by value or regular expression.
+ *   - checking system environment variable existence, value or by regular exp.
  */
 interface IConfig
 {
@@ -109,7 +110,7 @@ interface IConfig
 	/**
 	 * This is INTERNAL method.
 	 * Return always new instance of statically called class, no singleton.
-	 * Always called from `\MvcCore\Config::GetSystem()` before system config is loaded.
+	 * Always called from `\MvcCore\Config::GetSystem()` before system config is read.
 	 * This is place where to customize any config creation process,
 	 * before it's created by MvcCore framework.
 	 * @param array $data Configuration raw data.
@@ -121,7 +122,7 @@ interface IConfig
 	/**
 	 * Get cached singleton system config INI file as `stdClass`es and `array`s,
 	 * placed by default in: `"/App/config.ini"`.
-	 * @return \stdClass|array|boolean
+	 * @return \MvcCore\IConfig|bool
 	 */
 	public static function & GetSystem ();
 
@@ -129,14 +130,14 @@ interface IConfig
 	 * Get cached config INI file as `stdClass`es and `array`s,
 	 * placed relatively from application document root.
 	 * @param string $appRootRelativePath Any config relative path like `'/%appPath%/website.ini'`.
-	 * @return \stdClass|array|boolean
+	 * @return \MvcCore\IConfig|bool
 	 */
 	public static function & GetConfig ($appRootRelativePath);
 
 	/**
 	 * Load config file and return `TRUE` for success or `FALSE` in failure.
 	 * - Second environment value setup:
-	 *   - Only if `$this->system` property is defined as `TRUE`.
+	 *   - Only if `\MvcCore\Config::$system` property is defined as `TRUE`.
 	 *   - By defined IPs or computer names in `environments` section.
 	 * - Load only sections for current environment name.
 	 * - Retype all `raw string` values into `array`, `float`, `int` or `boolean` types.
@@ -148,7 +149,7 @@ interface IConfig
 	public function Read ($fullPath, $systemConfig = FALSE);
 
 	/**
-	 * Encode all data into string and store it in `$this->fullPath` property.
+	 * Encode all data into string and store it in `\MvcCore\Config::$fullPath`.
 	 * @throws \Exception Configuration data was not possible to dump or write.
 	 * @return bool
 	 */

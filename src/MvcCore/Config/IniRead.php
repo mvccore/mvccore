@@ -18,7 +18,7 @@ trait IniRead
 	/**
 	 * Load config file and return `TRUE` for success or `FALSE` in failure.
 	 * - Second environment value setup:
-	 *   - Only if `$this->system` property is defined as `TRUE`.
+	 *   - Only if `\MvcCore\Config::$system` property is defined as `TRUE`.
 	 *   - By defined IPs or computer names in `environments` section.
 	 * - Load only sections for current environment name.
 	 * - Retype all `raw string` values into `array`, `float`, `int` or `boolean` types.
@@ -42,7 +42,7 @@ trait IniRead
 		if ($rawIniData === FALSE) return FALSE;
 		$this->data = [];
 		$environment = $this->system
-			? static::environmentDetectBySystemConfig($rawIniData)
+			? static::envDetectBySystemConfig($rawIniData)
 			: static::$environment;
 		$iniData = $this->iniReadFilterEnvironmentSections($rawIniData, $environment);
 		$this->iniReadExpandLevelsAndReType($iniData);
