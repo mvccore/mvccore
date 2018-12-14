@@ -19,7 +19,8 @@ trait IniRead
 	 * Load config file and return `TRUE` for success or `FALSE` in failure.
 	 * - Second environment value setup:
 	 *   - Only if `\MvcCore\Config::$system` property is defined as `TRUE`.
-	 *   - By defined IPs or computer names in `environments` section.
+	 *   - By defined client IPs, server hostnames or environment variables 
+	 *     in `environments` section. By values or regular expressions.
 	 * - Load only sections for current environment name.
 	 * - Retype all `raw string` values into `array`, `float`, `int` or `boolean` types.
 	 * - Retype whole values level into `\stdClass`, if there are no numeric keys.
