@@ -255,7 +255,7 @@ trait GettersSetters
 	 *				 - placed in `/App/Controllers/Front/Business/Products.php`
 	 *  `"//Anywhere\Else\Controllers\Products"
 	 *				 - placed in `/Anywhere/Else/Controllers/Products.php`
-	 * @param string $controller
+	 * @param string|NULL $controller
 	 * @return \MvcCore\Route
 	 */
 	public function & SetController ($controller) {
@@ -294,7 +294,7 @@ trait GettersSetters
 	 * controller has to be named as: `public function ListAction () {...}`.
 	 *
 	 * Example: `"List"`
-	 * @param string $action
+	 * @param string|NULL $action
 	 * @return \MvcCore\Route
 	 */
 	public function & SetAction ($action) {
@@ -605,7 +605,7 @@ trait GettersSetters
 	 * request path. If group name is `NULL`, route belongs to default group 
 	 * and that group is used when no other group matching the request path.
 	 * @param string|NULL $groupName 
-	 * @return \MvcCore\Route|\MvcCore\IRoute
+	 * @return \MvcCore\Route
 	 */
 	public function & SetGroupName ($groupName) {
 		/** @var $this \MvcCore\Route */
@@ -663,7 +663,7 @@ trait GettersSetters
 	/**
 	 * Set router instance reference, used mostly in route URL building process.
 	 * @param \MvcCore\Router|\MvcCore\IRouter $router 
-	 * @return \MvcCore\Route|\MvcCore\IRoute
+	 * @return \MvcCore\Route
 	 */
 	public function & SetRouter (\MvcCore\IRouter & $router) {
 		/** @var $this \MvcCore\Route */

@@ -24,10 +24,7 @@ trait Matching
 	 * (or `match`) property contains a query string part.
 	 * This method is usually called in core request routing process
 	 * from `\MvcCore\Router::Route();` method and it's sub-methods.
-	 * @param \MvcCore\Request	$request		The request object instance.
-	 * @param string			$localization	Lower case language code, optionally  
-	 *											with dash and upper case locale code, 
-	 *											`NULL` by default, not implemented in core.
+	 * @param \MvcCore\Request $request The request object instance.
 	 * @throws \LogicException Route configuration property is missing.
 	 * @throws \InvalidArgumentException Wrong route pattern format.
 	 * @return array Matched and params array, keys are matched
