@@ -300,7 +300,7 @@ trait Instancing
 	 * if route is initialized by single array argument with all data, this
 	 * function is called to initialize `controller` and `action` properties if
 	 * those are still `NULL`. Function tries to initialize those properties
-	 * from route `action` property`, if it contains double dot char `:`.
+	 * from route `action` property`, if it contains colon char `:`.
 	 * @param array $advCfg An array with possible keys `method`, 
 	 *						`redirect` and `absolute`.
 	 * @return void

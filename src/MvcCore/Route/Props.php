@@ -51,7 +51,7 @@ trait Props
 	 * - Star character inside param name (`<color*>`) means greedy param
 	 *   matching all to the end of the URL address. It has to be the last one.
 	 *
-	 * Example: `"/products-list/<name>/<color*>"`.
+	 * Example: `"/products-list/<name>[/<color*>]"`.
 	 * @var string|\string[]|NULL
 	 */
 	protected $pattern		= NULL;
@@ -73,7 +73,7 @@ trait Props
 	 * speed solution, because there is no route internal metadata completion 
 	 * and `pattern` parsing into `match` and `reverse` properties.
 	 *
-	 * Example: `"#^/products\-list/(?<name>[^/]*)/(?<color>[a-z]*)#"`
+	 * Example: `"#^/products\-list/(?<name>[^/]+)(/(?<id>\d+))?/?$#"`
 	 * @var string|\string[]|NULL
 	 */
 	protected $match		= NULL;
@@ -96,7 +96,7 @@ trait Props
 	 * speed solution, because there is no route internal metadata completion 
 	 * and `pattern` parsing into `match` and `reverse` properties.
 	 *
-	 * Example: `"/products-list/<name>/<color>"`
+	 * Example: `"/products-list/<name>[/<color>]"`
 	 * @var string|\string[]|NULL
 	 */
 	protected $reverse		= NULL;
@@ -115,9 +115,10 @@ trait Props
 	protected $name			= '';
 
 	/**
-	 * Controller name to dispatch, in pascal case. Required only if there is no 
-	 * `controller` param inside route `pattern` or inside route `match` 
-	 * properties as URL param.
+	 * Controller name/path to dispatch, in pascal case. This property is not 
+	 * required. If there is `controller` param inside route `pattern` or inside 
+	 * route `match` pattern property, it's used to define this record to dispatch
+	 * specific requested controller.
 	 *
 	 * It should contain controller class namespaces defined in standard PHP 
 	 * notation. If there is backslash at the beginning - controller class will 
@@ -128,19 +129,24 @@ trait Props
 	 * from base PHP place without any automatic MvcCore namespace prepending.
 	 * 
 	 * Example:
-	 *  `"Products"								// normally placed in /App/Controllers/Products.php`
-	 *											// (but it could be also in some sub-directory
-	 *											// if there is used extended route with namespace)
-	 *  `"\Front\Business\Products"				// placed in /App/Controllers/Front/Business/Products.php`
-	 *  `"//Anywhere\Else\Controllers\Products"	// placed in /Anywhere/Else/Controllers/Products.php`
+	 *  `"Products"` - normally placed in /App/Controllers/Products.php` (but it 
+	 *				   could be also in some sub-directory if there is used 
+	 *				   extended route with namespace)
+	 *  `"\Front\Business\Products"`
+	 *				 - placed in `/App/Controllers/Front/Business/Products.php`
+	 *  `"//Anywhere\Else\Controllers\Products"
+	 *				 - placed in `/Anywhere/Else/Controllers/Products.php`
 	 * @var string
 	 */
 	protected $controller	= '';
 
 	/**
-	 * Action name to call in controller dispatching, in pascal case. Required, 
-	 * if there is no `action` param inside route `pattern` or inside route 
-	 * `match` pattern property.
+	 * Action name to call in dispatched controller, in pascal case. This 
+	 * property is not required. If controller instance has default method
+	 * `IndexAction()`, its called. If there is no such method, no method is 
+	 * called. If there is `action` param inside route `pattern` or inside route 
+	 * `match` pattern property, it's used to overwrite this record to dispatch
+	 * specific requested action.
 	 *
 	 * If this property has value `"List"`, then public method in target 
 	 * controller has to be named as: `public function ListAction () {...}`.
@@ -151,9 +157,9 @@ trait Props
 	protected $action		= '';
 
 	/**
-	 * Route rewrite params default values and also any other params default 
-	 * values. It could be used for any application request input - `$_GET`, 
-	 * `$_POST` or `php://input`.
+	 * Route rewrite params default values and also any other query string 
+	 * params default values. It could be used for any application request 
+	 * param from those application inputs - `$_GET`, `$_POST` or `php://input`.
 	 *
 	 * Example: `["name" => "default-name", "color" => "red",]`.
 	 * @var array|\array[]
@@ -163,7 +169,7 @@ trait Props
 	/**
 	 * Array with param names and their custom regular expression matching 
 	 * rules. Not required, for all rewrite params there is used default 
-	 * matching rules from route static properties `$defaultDomainConstraint` or
+	 * matching rules from route static properties `defaultDomainConstraint` or
 	 * `defaultPathConstraint`. It should be changed to any value. Default value 
 	 * is `"[^.]+"` for domain part and `"[^/]+"` for path part.
 	 *
@@ -173,16 +179,24 @@ trait Props
 	protected $constraints		= [];
 
 	/**
-	 * URL address params filters to filter URL params in and out. Filters are 
-	 * `callable`s always and only under keys `"in" | "out"` in route 
-	 * configuration array in constructor, accepting arguments: 
+	 * URL address params filters to filter URL params in and out. By route 
+	 * filters you can change incoming request params into application and out 
+	 * from application. For example to translate the values or anything else. 
+	 * 
+	 * Filters are `callable`s and always in this array under keys `"in"` and 
+	 * `"out"` accepting arguments: 
 	 * - `$params`  associative array with params from requested URL address for 
 	 *				in filter and associative array with params to build URL 
 	 *				address for out filter.
 	 * - `$defaultParams`	associative array with default params to store 
 	 *						any custom value necessary to filter effectively.
 	 * - `$request`	current request instance implements `\MvcCore\IRequest`.
+	 * 
 	 * `Callable` filter must return associative `array` with filtered params. 
+	 * 
+	 * There is possible to call any `callable` as closure function in variable
+	 * except forms like `'ClassName::methodName'` and `['childClassName', 
+	 * 'parent::methodName']` and `[$childInstance, 'parent::methodName']`.
 	 * @var array
 	 */
 	protected $filters			= [];
@@ -201,13 +215,14 @@ trait Props
 	 * passed params parsed from this matched route. This property is used for 
 	 * routes handling old pages or old request forms, redirecting those request
 	 * to new form.
+	 * Example: `"new_route_name"`
 	 * @var string|NULL
 	 */
 	protected $redirect			= NULL;
 
 	/**
 	 * Boolean about to generate absolute URL addresses. If `TRUE`, there is 
-	 * always generated absolute URL forms. If `FALSE`, absolute URL address is 
+	 * always generated absolute URL form. If `FALSE`, absolute URL address is 
 	 * generated only if `pattern` (or `reverse`) property contains absolute 
 	 * matching form.
 	 * @var bool
@@ -308,9 +323,13 @@ trait Props
 	protected $router			= NULL;
 
 	/**
-	 * Initial route fourth argument with advanced configuration properties or
-	 * while configuration array, when route is instanced by only single array.
-	 * This could be used for any advanced property to define in extended class.
+	 * This array contains data from route constructor. If route is initialized
+	 * with all params (not only by single array), this array contains the fourth 
+	 * param with advanced route configuration. If route is initialized only with
+	 * one single array argument, this array contains that whole configuration 
+	 * single array argument. Data in this array are without no change against 
+	 * initialization moment. This could be used for any advanced property to 
+	 * define in extended class.
 	 * @var array
 	 */
 	protected $config			= [];

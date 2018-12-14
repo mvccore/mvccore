@@ -104,7 +104,7 @@ trait UrlBuilding
 	/**
 	 * Correct `Url()` method first argument. Given controller and/or action
 	 * combination could have missing controller or missing actions. If there is
-	 * double dot char in first Url() method argument, complete missing value 
+	 * colon character in first Url() method argument, complete missing value 
 	 * with default controller name or default action. 
 	 * If first `Url()` method argument is `self` keyword, return self route name
 	 * value from routing process.
