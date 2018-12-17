@@ -123,14 +123,16 @@ interface IRoute
 	const PLACEHOLDER_DOMAIN = '%domain%';
 
 	/**
-	 * Route INTERNAL placeholder for `pattern` to match any request tld and for `reverse`
-	 * to hold place for given `tld` URL param or for currently requested tld.
+	 * Route INTERNAL placeholder for `pattern` to match any request top level 
+	 * domain and for `reverse` to hold place for given `tld` URL param or for 
+	 * currently requested top level domain.
 	 */
 	const PLACEHOLDER_TLD = '%tld%';
 
 	/**
-	 * Route INTERNAL placeholder for `pattern` to match any request sld and for `reverse`
-	 * to hold place for given `sld` URL param or for currently requested sld.
+	 * Route INTERNAL placeholder for `pattern` to match any request second 
+	 * level domain and for `reverse` to hold place for given `sld` URL param 
+	 * or for currently requested second level domain.
 	 */
 	const PLACEHOLDER_SLD = '%sld%';
 
@@ -184,8 +186,8 @@ interface IRoute
 	 *						`["name" => "default-name", "page" => 1]`.
 	 * @param array			$constraints
 	 *						Optional, params regular expression constraints for
-	 *						regular expression match function no `"match"` record
-	 *						in configuration array as first argument defined.
+	 *						regular expression match function if no `"match"` 
+	 *						property in config array as first argument defined.
 	 * @param array			$advancedConfiguration
 	 *						Optional, http method to only match requests by this 
 	 *						method. If `NULL` (by default), request with any http 
@@ -749,12 +751,14 @@ interface IRoute
 	public function GetAdvancedConfigProperty ($propertyName);
 
 	/**
-	 * Return array of all matched params, with matched controller and action 
-	 * names, if route matches (always) request property `\MvcCore\Request::$path` 
-	 * by PHP `preg_match_all()`. Sometimes, matching subject could be different, 
-	 * if route specifies it - if route `pattern` (or `match`) property contains
-	 * domain (or base path part) - it means if it is absolute or if `pattern` 
-	 * (or `match`) property contains a query string part.
+	 * Return array of matched params if incoming request match this route
+	 * or `NULL` if doesn't. Returned array must contain all matched reverse 
+	 * params with matched controller and action names by route and by matched 
+	 * params. Route is matched usually if request property `path` matches by 
+	 * PHP `preg_match_all()` route `match` pattern. Sometimes, matching subject 
+	 * could be different if route specifies it - if route `pattern` (or `match`) 
+	 * property contains domain (or base path part) - it means if it is absolute 
+	 * or if `pattern` (or `match`) property contains a query string part.
 	 * This method is usually called in core request routing process
 	 * from `\MvcCore\Router::Route();` method and it's sub-methods.
 	 * @param \MvcCore\IRequest $request The request object instance.
@@ -783,19 +787,24 @@ interface IRoute
 	 * then create URL with query string params after reverse pattern, 
 	 * containing that extra record(s) value(s). Returned is an array with only
 	 * one string as result URL or it could be returned for extended classes
-	 * an array with to strings - result URL in two parts - first part as scheme, 
+	 * an array with two strings - result URL in two parts - first part as scheme, 
 	 * domain and base path and second as path and query string.
 	 * Example:
 	 *	Input (`$params`):
 	 *		`[
 	 *			"name"		=> "cool-product-name",
 	 *			"color"		=> "blue",
-	 *			"variants"	=> array("L", "XL"),
+	 *			"variants"	=> ["L", "XL"],
 	 *		];`
 	 *	Input (`\MvcCore\Route::$reverse`):
 	 *		`"/products-list/<name>/<color*>"`
 	 *	Output:
-	 *		`["/products-list/cool-product-name/blue?variant[]=L&amp;variant[]=XL"]`
+	 *		`["/any/app/base/path/products-list/cool-product-name/blue?variant[]=L&amp;variant[]=XL"]`
+	 *		or:
+	 *		`[
+	 *			"/any/app/base/path", 
+	 *			"/products-list/cool-product-name/blue?variant[]=L&amp;variant[]=XL"
+	 *		]`
 	 * @param \MvcCore\Request	$request 
 	 *							Currently requested request object.
 	 * @param array				$params
@@ -832,7 +841,7 @@ interface IRoute
 	public function __toString ();
 
 	/**
-	 * Initialize all possible protected values (`match`, `reverse` etc...) This 
+	 * Initialize all possible protected values (`match`, `reverse` etc...). This 
 	 * method is not recommended to use in production mode, it's designed mostly 
 	 * for development purposes, to see what could be inside route object.
 	 * @return \MvcCore\IRoute

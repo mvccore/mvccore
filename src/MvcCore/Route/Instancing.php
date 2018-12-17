@@ -59,8 +59,8 @@ trait Instancing
 	 *						`["name" => "default-name", "page" => 1]`.
 	 * @param array			$constraints
 	 *						Optional, params regular expression constraints for
-	 *						regular expression match function no `"match"` record
-	 *						in configuration array as first argument defined.
+	 *						regular expression match function if no `"match"` 
+	 *						property in config array as first argument defined.
 	 * @param array			$advancedConfiguration
 	 *						Optional, http method to only match requests by this 
 	 *						method. If `NULL` (by default), request with any http 
@@ -154,8 +154,8 @@ trait Instancing
 	/**
 	 * If route is initialized by single array argument with all data, 
 	 * initialize following properties if those exist in given object: 
-	 * `pattern`, `match` and `reverse`. If properties `defaults` and `filters` exist
-	 * in given object, initialize them by setter methods.
+	 * `pattern`, `match` and `reverse`. If properties `defaults`, `constraints` 
+	 * and `filters` exist in given object, initialize them by setter methods.
 	 * @param \stdClass $data	Object containing properties `pattern`, 
 	 *							`match`, `reverse`, `filters` and `defaults`.
 	 * @return void

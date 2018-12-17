@@ -16,7 +16,7 @@ namespace MvcCore\Route;
 trait InternalInits
 {
 	/**
-	 * Initialize all possible protected values (`match`, `reverse` etc...) This 
+	 * Initialize all possible protected values (`match`, `reverse` etc...). This 
 	 * method is not recommended to use in production mode, it's designed mostly 
 	 * for development purposes, to see what could be inside route object.
 	 * @return \MvcCore\Route|\MvcCore\IRoute

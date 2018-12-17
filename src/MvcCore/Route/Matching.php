@@ -16,15 +16,17 @@ namespace MvcCore\Route;
 trait Matching
 {
 	/**
-	 * Return array of all matched params, with matched controller and action 
-	 * names, if route matches (always) request property `\MvcCore\Request::$path` 
-	 * by PHP `preg_match_all()`. Sometimes, matching subject could be different, 
-	 * if route specifies it - if route `pattern` (or `match`) property contains
-	 * domain (or base path part) - it means if it is absolute or if `pattern` 
-	 * (or `match`) property contains a query string part.
+	 * Return array of matched params if incoming request match this route
+	 * or `NULL` if doesn't. Returned array must contain all matched reverse 
+	 * params with matched controller and action names by route and by matched 
+	 * params. Route is matched usually if request property `path` matches by 
+	 * PHP `preg_match_all()` route `match` pattern. Sometimes, matching subject 
+	 * could be different if route specifies it - if route `pattern` (or `match`) 
+	 * property contains domain (or base path part) - it means if it is absolute 
+	 * or if `pattern` (or `match`) property contains a query string part.
 	 * This method is usually called in core request routing process
 	 * from `\MvcCore\Router::Route();` method and it's sub-methods.
-	 * @param \MvcCore\Request $request The request object instance.
+	 * @param \MvcCore\Request|\MvcCore\IRequest $request The request object instance.
 	 * @throws \LogicException Route configuration property is missing.
 	 * @throws \InvalidArgumentException Wrong route pattern format.
 	 * @return array Matched and params array, keys are matched

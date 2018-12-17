@@ -259,7 +259,7 @@ trait Props
 	 *			'reverseEnd'	=> 21,		'matchStart'	=> 15,	
 	 *			'matchEnd'		=> 21,
 	 *		],
-	 *		'color' => object) [
+	 *		'color' => (object) [
 	 *			'name'			=> 'color',	'greedy'		=> TRUE,
 				'sectionIndex'	=> 1,		'reverseStart'	=> 22,		
 				'reverseEnd'	=> 30,		'matchStart'	=> 22,
@@ -287,6 +287,18 @@ trait Props
 	 * complete `match` to match incoming request (if `match` is configured as 
 	 * `NULL`) and to complete URL address string in method `Url();` and it's 
 	 * sub-methods.
+	 * Example: 
+	 * // For pattern `/products-list/<name>[/<color*>]`
+	 * `[
+	 *		(object) [
+	 *			'fixed'	=> TRUE,	'start'		=> 0,
+	 *			'end'	=> 21,		'length'	=> 21,
+	 *		],
+	 *		(object) [
+	 *			'fixed'	=> FALSE,	'start'		=> 21,
+	 *			'end'	=> 30,		'length'	=> 9,
+	 *		]
+	 * ];`
 	 * @var \stdClass[]
 	 */
 	protected $reverseSections	= NULL;

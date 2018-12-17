@@ -51,19 +51,24 @@ trait UrlBuilding
 	 * then create URL with query string params after reverse pattern, 
 	 * containing that extra record(s) value(s). Returned is an array with only
 	 * one string as result URL or it could be returned for extended classes
-	 * an array with to strings - result URL in two parts - first part as scheme, 
+	 * an array with two strings - result URL in two parts - first part as scheme, 
 	 * domain and base path and second as path and query string.
 	 * Example:
 	 *	Input (`$params`):
 	 *		`[
 	 *			"name"		=> "cool-product-name",
 	 *			"color"		=> "blue",
-	 *			"variants"	=> array("L", "XL"),
+	 *			"variants"	=> ["L", "XL"],
 	 *		];`
 	 *	Input (`\MvcCore\Route::$reverse`):
 	 *		`"/products-list/<name>/<color*>"`
 	 *	Output:
-	 *		`["/products-list/cool-product-name/blue?variant[]=L&amp;variant[]=XL"]`
+	 *		`["/any/app/base/path/products-list/cool-product-name/blue?variant[]=L&amp;variant[]=XL"]`
+	 *		or:
+	 *		`[
+	 *			"/any/app/base/path", 
+	 *			"/products-list/cool-product-name/blue?variant[]=L&amp;variant[]=XL"
+	 *		]`
 	 * @param \MvcCore\Request	$request 
 	 *							Currently requested request object.
 	 * @param array				$params
