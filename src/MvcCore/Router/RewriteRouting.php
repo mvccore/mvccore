@@ -92,7 +92,7 @@ trait RewriteRouting
 	 * word defined. If still there are no such routes in default group, returned 
 	 * is an empty array.
 	 * @param string $firstPathWord 
-	 * @return array
+	 * @return array|\MvcCore\IRoute[]
 	 */
 	protected function & rewriteRoutingGetRoutesToMatch ($firstPathWord) {
 		if (isset($this->routesGroups[$firstPathWord])) {

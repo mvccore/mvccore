@@ -55,24 +55,23 @@ trait RouteMethods
 	 *			"defaults"		=> ["name" => "default-name",	"color" => "red"],
 	 *		)
 	 *	]);`
-	 * @param \MvcCore\Route[]|array $routes Keyed array with routes,
-	 *										 keys are route names or route
-	 *										`Controller::Action` definitions.
-	 * @param string|NULL $groupName Group name is first matched/parsed word in 
-	 *								 requested path to group routes by to try to
-	 *								 match only routes you really need, not all of
-	 *								 them. If `NULL` by default, routes are 
-	 *								 inserted into default group.
-	 * @param bool $autoInitialize If `TRUE`, locale routes array is cleaned and 
-	 *							   then all routes (or configuration arrays) are 
-	 *							   sent into method `$router->AddRoutes();`, 
-	 *							   where are routes auto initialized for missing 
-	 *							   route names or route controller or route action
-	 *							   record, completed always from array keys.
-	 *							   You can you `FALSE` to set routes without any 
-	 *							   change or auto-initialization, it could be useful 
-	 *							   to restore cached routes etc.
-	 * @return \MvcCore\Router
+	 * @param \MvcCore\Route[]|array $routes 
+	 *				Keyed array with routes, keys are route names or route
+	 *				`Controller::Action` definitions.
+	 * @param string|NULL $groupName 
+	 *				Group name is first matched/parsed word in requested path to 
+	 *				group routes by to try to match only routes you really need, 
+	 *				not all of them. If `NULL` by default, routes are inserted 
+	 *				into default group.
+	 * @param bool $autoInitialize 
+	 *				If `TRUE`, locale routes array is cleaned and then all 
+	 *				routes (or configuration arrays) are sent into method 
+	 *				`$router->AddRoutes();`, where are routes auto initialized 
+	 *				for missing route names or route controller or route action
+	 *				record, completed always from array keys. You can you `FALSE` 
+	 *				to set routes without any change or auto-initialization, it 
+	 *				could be useful to restore cached routes etc.
+	 * @return \MvcCore\Router|\MvcCore\IRouter
 	 */
 	public function & SetRoutes ($routes = [], $groupName = NULL, $autoInitialize = TRUE) {
 		/** @var $this \MvcCore\Router */
@@ -154,22 +153,22 @@ trait RouteMethods
 	 *			"defaults"		=> ["name" => "default-name",	"color" => "red"],
 	 *		)
 	 *	]);`
-	 * @param \MvcCore\Route[]|array $routes Keyed array with routes,
-	 *										 keys are route names or route
-	 *										 `Controller::Action` definitions.
-	 * @param string|NULL $groupName Group name is first matched/parsed word in 
-	 *								 requested path to group routes by to try to
-	 *								 match only routes you really need, not all of
-	 *								 them. If `NULL` by default, routes are 
-	 *								 inserted into default group.
-	 * @param bool $prepend	Optional, if `TRUE`, all given routes will
-	 *						be prepended from the last to the first in
-	 *						given list, not appended.
-	 * @param bool $throwExceptionForDuplication `TRUE` by default. Throw an exception,
-	 *											 if route `name` or route `Controller:Action`
-	 *											 has been defined already. If `FALSE` old route
-	 *											 is over-written by new one.
-	 * @return \MvcCore\Router
+	 * @param \MvcCore\Route[]|\MvcCore\IRoute[]|array $routes 
+	 *			   Keyed array with routes, keys are route names or route 
+	 *			   `Controller::Action` definitions.
+	 * @param string|NULL $groupName 
+	 *			   Group name is first matched/parsed word in requested path to 
+	 *			   group routes by to try to match only routes you really need, 
+	 *			   not all of them. If `NULL` by default, routes are inserted 
+	 *			   into default group.
+	 * @param bool $prepend	
+	 *			   Optional, if `TRUE`, all given routes will be prepended from 
+	 *			   the last to the first in given list, not appended.
+	 * @param bool $throwExceptionForDuplication 
+	 *			   `TRUE` by default. Throw an exception, if route `name` or 
+	 *			   route `Controller:Action` has been defined already. If 
+	 *			   `FALSE` old route is over-written by new one.
+	 * @return \MvcCore\Router|\MvcCore\IRouter
 	 */
 	public function & AddRoutes (array $routes = [], $groupName = NULL, $prepend = FALSE, $throwExceptionForDuplication = TRUE) {
 		/** @var $this \MvcCore\Router */
@@ -258,20 +257,21 @@ trait RouteMethods
 	 *		"action"		=> "List",
 	 *		"defaults"		=> ["name" => "default-name",	"color" => "red"],
 	 *	));`
-	 * @param \MvcCore\Route|\MvcCore\IRoute|array $routeCfgOrRoute Route instance or
-	 *																route config array.
-	 * @param string|NULL $groupName Group name is first matched/parsed word in 
-	 *								 requested path to group routes by to try to
-	 *								 match only routes you really need, not all of
-	 *								 them. If `NULL` by default, routes are 
-	 *								 inserted into default group.
-	 * @param bool $prepend	Optional, if `TRUE`, given route will
-	 *						be prepended, not appended.
-	 * @param bool $throwExceptionForDuplication `TRUE` by default. Throw an exception,
-	 *											 if route `name` or route `Controller:Action`
-	 *											 has been defined already. If `FALSE` old route
-	 *											 is over-written by new one.
-	 * @return \MvcCore\Router
+	 * @param \MvcCore\Route|\MvcCore\IRoute|array $routeCfgOrRoute 
+	 *			   Route instance or route config array.
+	 * @param string|NULL $groupName 
+	 *			   Group name is first matched/parsed word in requested path to 
+	 *			   group routes by to try to match only routes you really need, 
+	 *			   not all of them. If `NULL` by default, routes are inserted 
+	 *			   into default group.
+	 * @param bool $prepend
+	 *			   Optional, if `TRUE`, given route will be prepended, 
+	 *			   not appended.
+	 * @param bool $throwExceptionForDuplication 
+	 *			   `TRUE` by default. Throw an exception, if route `name` or 
+	 *			   route `Controller:Action` has been defined already. If 
+	 *			   `FALSE` old route is over-written by new one.
+	 * @return \MvcCore\Router|\MvcCore\IRouter
 	 */
 	public function & AddRoute ($routeCfgOrRoute, $groupName = NULL, $prepend = FALSE, $throwExceptionForDuplication = TRUE) {
 		/** @var $this \MvcCore\Router */
@@ -306,7 +306,7 @@ trait RouteMethods
 	/**
 	 * Add route instance into named routes group. Every routes group is chosen 
 	 * in routing moment by first parsed word from requested URL.
-	 * @param \MvcCore\Route	$route		Route instance reference.
+	 * @param \MvcCore\Route	$route		A route instance reference.
 	 * @param string			$routeName	Route name.
 	 * @param string|NULL		$groupName	Group name, first parsed word from requested URL.
 	 * @param bool				$prepend	IF `TRUE`, prepend route instance, `FALSE` otherwise.
@@ -334,7 +334,7 @@ trait RouteMethods
 	}
 
 	/**
-	 * Return `TRUE` if router has any route by given route name, `FALSE` otherwise.
+	 * Get `TRUE` if router has any route by given route name or `FALSE` if not.
 	 * @param string|\MvcCore\IRoute $routeOrRouteName
 	 * @return bool
 	 */
@@ -376,6 +376,14 @@ trait RouteMethods
 		return $result;
 	}
 
+	/**
+	 * Unset route from defined group. This method doesn't unset the route
+	 * from router object to not be possible to create URL by given route anymore.
+	 * This does route method: `\MvcCore\Route::RemoveRoute($routeName);`.
+	 * @param \MvcCore\IRoute $route 
+	 * @param string $routeName 
+	 * @return void
+	 */
 	protected function removeRouteFromGroup (\MvcCore\IRoute & $route, $routeName) {
 		$routeGroup = $route->GetGroupName();
 		$groupRoutesKey = $routeGroup ?: '';
@@ -386,12 +394,12 @@ trait RouteMethods
 	/**
 	 * Get all configured route(s) as `\MvcCore\Route` instances.
 	 * Keys in returned array are route names, values are route objects.
-	 * @param string|NULL $groupName Group name is first matched/parsed word in 
-	 *								 requested path to group routes by to try to
-	 *								 match only routes you really need, not all of
-	 *								 them. If `NULL` by default, there are 
-	 *								 returned all routes from all groups.
-	 * @return \MvcCore\Route[]
+	 * @param string|NULL $groupName 
+	 *				Group name is first matched/parsed word in requested path to 
+	 *				group routes by to try to match only routes you really need, 
+	 *				not all of them. If `NULL` by default, there are returned 
+	 *				all routes from all groups.
+	 * @return \MvcCore\Route[]|\MvcCore\IRoute[]
 	 */
 	public function & GetRoutes ($groupName = NULL) {
 		if ($groupName !== NULL) 
@@ -400,8 +408,9 @@ trait RouteMethods
 	}
 
 	/**
-	 * Get configured `\MvcCore\Route` route instances by route name, `NULL` if no route presented.
-	 * @return \MvcCore\Route|NULL
+	 * Get configured `\MvcCore\Route` route instances by route name, 
+	 * `NULL` if no route presented.
+	 * @return \MvcCore\Route|\MvcCore\IRoute|NULL
 	 */
 	public function & GetRoute ($routeName) {
 		if (isset($this->routes[$routeName]))
@@ -413,8 +422,8 @@ trait RouteMethods
 	 * Set matched route instance for given request object
 	 * into `\MvcCore\Route::Route();` method. Currently matched
 	 * route is always assigned internally in that method.
-	 * @param \MvcCore\Route $currentRoute
-	 * @return \MvcCore\Router
+	 * @param \MvcCore\Route|\MvcCore\IRoute $currentRoute
+	 * @return \MvcCore\Router|\MvcCore\IRouter
 	 */
 	public function & SetCurrentRoute (\MvcCore\IRoute $currentRoute) {
 		/** @var $this \MvcCore\Router */
@@ -426,7 +435,7 @@ trait RouteMethods
 	 * Get matched route instance reference for given request object
 	 * into `\MvcCore\Route::Route($request);` method. Currently
 	 * matched route is always assigned internally in that method.
-	 * @return \MvcCore\Route
+	 * @return \MvcCore\Route|\MvcCore\IRoute
 	 */
 	public function & GetCurrentRoute () {
 		return $this->currentRoute;

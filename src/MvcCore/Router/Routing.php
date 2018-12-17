@@ -16,23 +16,24 @@ namespace MvcCore\Router;
 trait Routing
 {
 	/**
-	 * Route current application request by configured routes lists or by query string.
-	 * 1. Check if request is targeting any internal action in internal controller.
+	 * Route current app request by configured routes lists or by query string.
+	 * 1. Check if request is targeting any internal action in internal ctrl.
 	 * 2. If request is not internal, redirect to possible better URL form by
 	 *    configured trailing slash strategy and return `FALSE` for redirection.
 	 * 3. Choose route strategy by request path and existing query string 
-	 *    controller and/or action values - strategy by query string or by rewrite routes.
+	 *    controller and/or action values - strategy by query string or by 
+	 *    rewrite routes.
 	 * 4. Try to complete current route object by chosen strategy.
-	 * 5. If any current route found and if route contains redirection, process it.
+	 * 5. If any current route found and if route contains redirection, do it.
 	 * 6. If there is no current route and request is targeting homepage, create
-	 *    new empty route by default values if controller configuration allows it.
-	 * 7. If there is any current route completed, complete self route name by it
-	 *    to generate `self` routes and canonical URL later.
+	 *    new empty route by default values if ctrl configuration allows it.
+	 * 7. If there is any current route completed, complete self route name by 
+	 *    it to generate `self` routes and canonical URL later.
 	 * 8. If there is necessary, try to complete canonical URL and if canonical 
 	 *    URL is shorter than requested URL, redirect user to shorter version.
-	 * If there was necessary to redirect user in routing process, return immediately
-	 * `FALSE` and return from this method. Else continue to next step and return `TRUE`.
-	 * This method is always called from core routing by:
+	 * If there was necessary to redirect user in routing process, return 
+	 * immediately `FALSE` and return from this method. Else continue to next 
+	 * step and return `TRUE`. This method is always called from core routing by:
 	 * `\MvcCore\Application::Run();` => `\MvcCore\Application::routeRequest();`.
 	 * @throws \LogicException Route configuration property is missing.
 	 * @throws \InvalidArgumentException Wrong route pattern format.

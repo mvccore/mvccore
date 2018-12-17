@@ -17,9 +17,11 @@ trait GettersSetters
 {
 	/**
 	 * Get `\MvcCore\Request` object as reference, used internally for:
-	 * - Routing process in `\MvcCore\Router::Route();` and it's protected sub-methods.
-	 * - URL addresses completing in `\MvcCore\Router::Url()` and it's protected sub-methods.
-	 * @return \MvcCore\Request
+	 * - Routing process in `\MvcCore\Router::Route();` and it's protected 
+	 *   sub-methods.
+	 * - URL addresses completing in `\MvcCore\Router::Url()` and it's protected 
+	 *   sub-methods.
+	 * @return \MvcCore\Request|\MvcCore\IRequest
 	 */
 	public function & GetRequest () {
 		/** @var $this \MvcCore\Router */
@@ -28,12 +30,14 @@ trait GettersSetters
 
 	/**
 	 * Sets up `\MvcCore\Request` object as reference to use it internally for:
-	 * - Routing process in `\MvcCore\Router::Route();` and it's protected sub-methods.
-	 * - URL addresses completing in `\MvcCore\Router::Url()` and it's protected sub-methods.
+	 * - Routing process in `\MvcCore\Router::Route();` and it's protected 
+	 *   sub-methods.
+	 * - URL addresses completing in `\MvcCore\Router::Url()` and it's protected 
+	 *   sub-methods.
 	 * This is INTERNAL, not TEMPLATE method, internally called in
 	 * `\MvcCore\Application::Run();` => `\MvcCore\Application::routeRequest();`.
-	 * @param \MvcCore\Request $request
-	 * @return \MvcCore\Router
+	 * @param \MvcCore\Request|\MvcCore\IRequest $request
+	 * @return \MvcCore\Router|\MvcCore\IRouter
 	 */
 	public function & SetRequest (\MvcCore\IRequest & $request) {
 		/** @var $this \MvcCore\Router */
@@ -48,7 +52,7 @@ trait GettersSetters
 	 * with `FALSE` value, there are used only rewrite routes routing and no 
 	 * query string data. this method is highly advanced.
 	 * @param bool|NULL $routeByQueryString 
-	 * @return \MvcCore\Router
+	 * @return \MvcCore\Router|\MvcCore\IRouter
 	 */
 	public function & SetRouteByQueryString ($routeByQueryString = TRUE) {
 		/** @var $this \MvcCore\Router */
@@ -71,7 +75,7 @@ trait GettersSetters
 	 * `Index:Index` route, if there was no route matching current request
 	 * and if request was not `/` (homepage) but `/something-more`.
 	 * Default protected property value: `FALSE`.
-	 * @param bool $enable
+	 * @return bool
 	 */
 	public function GetRouteToDefaultIfNotMatch () {
 		return $this->routeToDefaultIfNotMatch;
@@ -83,8 +87,10 @@ trait GettersSetters
 	 * and if request was not `/` (homepage) but `/something-more`.
 	 * Default protected property value: `FALSE`.
 	 * @param bool $enable
+	 * @return \MvcCore\Router|\MvcCore\IRouter
 	 */
 	public function & SetRouteToDefaultIfNotMatch ($enable = TRUE) {
+		/** @var $this \MvcCore\Router */
 		$this->routeToDefaultIfNotMatch = $enable;
 		return $this;
 	}
@@ -109,8 +115,8 @@ trait GettersSetters
 	}
 
 	/**
-	 * Get trailing slash behaviour - integer state about what to do with trailing
-	 * slash in all requested URL except homepage. Possible states are:
+	 * Get trailing slash behaviour - integer state about what to do with 
+	 * trailing slash in all requested URL except homepage. Possible states are:
 	 * - `-1` (`\MvcCore\IRouter::TRAILING_SLASH_REMOVE`)
 	 *		Always remove trailing slash from requested URL if there
 	 *		is any and redirect to it, except homepage.
@@ -127,8 +133,8 @@ trait GettersSetters
 	}
 
 	/**
-	 * Set trailing slash behaviour - integer state about what to do with trailing
-	 * slash in all requested URL except homepage. Possible states are:
+	 * Set trailing slash behaviour - integer state about what to do with 
+	 * trailing slash in all requested URL except homepage. Possible states are:
 	 * - `-1` (`\MvcCore\IRouter::TRAILING_SLASH_REMOVE`)
 	 *		Always remove trailing slash from requested URL if there
 	 *		is any and redirect to it, except homepage.
@@ -164,7 +170,7 @@ trait GettersSetters
 	 * otherwise for example for development purposes when you develop for 
 	 * example url filtering in and out.
 	 * @param bool $autoCanonizeRequests 
-	 * @return \MvcCore\Router
+	 * @return \MvcCore\Router|\MvcCore\IRouter
 	 */
 	public function & SetAutoCanonizeRequests ($autoCanonizeRequests = TRUE) {
 		/** @var $this \MvcCore\Router */
@@ -192,7 +198,7 @@ trait GettersSetters
 	 *		}
 	 *	);`
 	 * @param callable $preRouteMatchingHandler 
-	 * @return \MvcCore\Router
+	 * @return \MvcCore\Router|\MvcCore\IRouter
 	 */
 	public function & SetPreRouteMatchingHandler (callable $preRouteMatchingHandler = NULL) {
 		/** @var $this \MvcCore\Router */
@@ -244,7 +250,7 @@ trait GettersSetters
 	 *		}
 	 *	);`
 	 * @param callable $preRouteMatchingHandler 
-	 * @return \MvcCore\Router
+	 * @return \MvcCore\Router|\MvcCore\IRouter
 	 */
 	public function & SetPreRouteUrlBuildingHandler (callable $preRouteUrlBuildingHandler = NULL) {
 		/** @var $this \MvcCore\Router */

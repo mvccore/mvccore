@@ -55,19 +55,19 @@ trait Instancing
 	 *			"defaults"		=> ["name" => "default-name",	"color" => "red"],
 	 *		)
 	 *	]);`
-	 * @param \MvcCore\Route[]|array $routes Keyed array with routes,
-	 *										 keys are route names or route
-	 *										`Controller::Action` definitions.
-	 * @param bool $autoInitialize If `TRUE`, locale routes array is cleaned and 
-	 *							   then all routes (or configuration arrays) are 
-	 *							   sent into method `$router->AddRoutes();`, 
-	 *							   where are routes auto initialized for missing 
-	 *							   route names or route controller or route action
-	 *							   record, completed always from array keys.
-	 *							   You can you `FALSE` to set routes without any 
-	 *							   change or auto-initialization, it could be useful 
-	 *							   to restore cached routes etc.
-	 * @return \MvcCore\Router
+	 * @param \MvcCore\Route[]|\MvcCore\IRoute[]|array $routes 
+	 *				Keyed array with routes, keys are route names or route
+	 *				`Controller::Action` definitions.
+	 * @param bool $autoInitialize 
+	 *				If `TRUE`, locale routes array is cleaned and then all 
+	 *				routes (or configuration arrays) are sent into method 
+	 *				`$router->AddRoutes();`, where are routes auto initialized 
+	 *				for missing route names or route controller or route action
+	 *				record, completed always from array keys. You can you 
+	 *				`FALSE` to set routes without any change or 
+	 *				auto-initialization, it could be useful to restore cached 
+	 *				routes etc.
+	 * @return \MvcCore\Router|\MvcCore\IRouter
 	 */
 	public static function & GetInstance (array $routes = [], $autoInitialize = TRUE) {
 		if (!self::$instance) {

@@ -31,7 +31,7 @@ trait UrlByRoutes
 	 *		);`
 	 *	Output:
 	 *		`/application/base-bath/products-list/cool-product-name/blue?variant[]=L&amp;variant[]=XL"`
-	 * @param \MvcCore\Route $route
+	 * @param \MvcCore\Route|\MvcCore\IRoute $route
 	 * @param array $params
 	 * @param string $urlParamRouteName
 	 * @return string
