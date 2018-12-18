@@ -29,6 +29,13 @@ namespace MvcCore;
 class Application implements \MvcCore\IApplication
 {
 	/**
+	 * MvcCore - version:
+	 * Comparison by PHP function `version_compare();`.
+	 * @see http://php.net/manual/en/function.version-compare.php
+	 */
+	const VERSION = '5.0.0-alpha';
+
+	/**
 	 * Include traits with
 	 * - Application properties, getters and setters methods.
 	 * - Application normal requests and error requests dispatching methods.

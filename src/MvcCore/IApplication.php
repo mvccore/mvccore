@@ -33,12 +33,6 @@ interface IApplication
 	 ***********************************************************************************/
 
 	/**
-	 * MvcCore - version:
-	 * Comparison by PHP function `version_compare();`.
-	 * @see http://php.net/manual/en/function.version-compare.php
-	 */
-	const VERSION = '5.0.0-alpha';
-	/**
 	 * MvcCore application mode describing that the application is compiled in <b>ONE BIG PHP FILE</b>.
 	 * In PHP app mode should be packed php files or any asset files - PHTML templates, INI files
 	 * or any static files. Unknown asset files or binary files are included as binary or base64 string.
