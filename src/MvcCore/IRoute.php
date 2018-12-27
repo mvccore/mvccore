@@ -148,10 +148,11 @@ interface IRoute
 	 * - `\MvcCore\Router::AddRoutes();`
 	 * - `\MvcCore\Router::AddRoute();`
 	 * - `\MvcCore\Router::SetOrCreateDefaultRouteAsCurrent();`
-	 * This method is the best place where to implement custom route 
-	 * initialization for configured core class. First argument should be 
-	 * configuration array or route pattern value to parse into match and 
-	 * reverse values.
+	 * This method is the best place where to implement custom route init for 
+	 * configured core class. First argument could be configuration array with 
+	 * all necessary constructor values or all separated arguments - first is 
+	 * route pattern value to parse into match and reverse values, then 
+	 * controller with action, params default values and constraints.
 	 * Example:
 	 * `new Route([
 	 *		"pattern"			=> "/products-list/<name>/<color>",

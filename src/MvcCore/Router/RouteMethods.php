@@ -28,12 +28,12 @@ trait RouteMethods
 	 *	));`
 	 * or:
 	 *	`\MvcCore\Router::GetInstance()->SetRoutes([
-	 *		'products_list'	=> array(
+	 *		'products_list'	=> [
 	 *			"pattern"			=> "/products-list/<name>/<color>",
 	 *			"controllerAction"	=> "Products:List",
 	 *			"defaults"			=> ["name" => "default-name",	"color" => "red"],
 	 *			"constraints"		=> ["name" => "[^/]*",			"color" => "[a-z]*"]
-	 *		)
+	 *		]
 	 *	]);`
 	 * or:
 	 *	`\MvcCore\Router::GetInstance()->SetRoutes([
@@ -41,7 +41,7 @@ trait RouteMethods
 	 *			"/products-list/<name>/<color>",
 	 *			"Products:List",
 	 *			["name" => "default-name",	"color" => "red"],
-	 *			["name" => "[^/]*",		"color" => "[a-z]*"]
+	 *			["name" => "[^/]*",			"color" => "[a-z]*"]
 	 *		)
 	 *	]);`
 	 * or:
