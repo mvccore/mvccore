@@ -7,23 +7,23 @@
 PHP MVC framework to develop and pack projects (partially or completely) into super fast single file apps and tools.
 
 ## Outline  
-- 1. [Installation](#user-content-1-installation)  
-- 2. [Usage](#user-content-2-usage)  
-- 3. [Examples](#user-content-3-examples)  
-  - 3.1. [Examples - Basic](#user-content-3-1-examples---basic)  
+1. [Installation](#user-content-1-installation)  
+2. [Usage](#user-content-2-usage)  
+3. [Examples](#user-content-3-examples)  
+  3.1. [Examples - Basic](#user-content-3-1-examples---basic)  
     - 3.1.1. [Examples - Basic - Hello World](#user-content-)  
     - 3.1.2. [Examples - Basic - Pig-Latin Translator](#user-content-)  
     - 3.1.3. [Examples - Basic - CD Collection](#user-content-)  
-  - 3.2. [Examples - Empty Templates](#user-content-)  
+  3.2. [Examples - Empty Templates](#user-content-)  
     - 3.2.1. [Examples - Empty Templates - Basic](#user-content-)  
     - 3.2.1. [Examples - Empty Templates - Portable](#user-content-)  
-  - 3.3. [Examples - Advanced (Applications)](#user-content-)  
+  3.3. [Examples - Advanced (Applications)](#user-content-)  
     - 3.3.1. [Examples - Advanced - XML Documents](#user-content-)  
     - 3.3.2. [Examples - Advanced - Questionnaires](#user-content-)  
     - 3.3.3. [Examples - Advanced - Single File Editor & Manager](#user-content-)  
-- 4. [Features](#user-content-2-features)  
-  - 4.1. [Features - Classic MVC web framework features](#user-content-21-features---routing)  
-  - 4.2. [Features - `MvcCore` classes features](#user-content-22-features---url-generating)  
+4. [Features](#user-content-2-features)  
+  4.1. [Features - Classic MVC web framework features](#user-content-21-features---routing)  
+  4.2. [Features - `MvcCore` classes features](#user-content-22-features---url-generating)  
     - 4.2.1. [Features - Classes - `\MvcCore\Application`](#user-content-22-features---url-generating)  
     - 4.4.2. [Features - Classes - `\MvcCore\Model`](#user-content-22-features---url-generating)  
     - 4.2.3. [Features - Classes - `\MvcCore\View`](#user-content-22-features---url-generating)  
@@ -36,8 +36,8 @@ PHP MVC framework to develop and pack projects (partially or completely) into su
     - 4.2.10. [Features - Classes - `\MvcCore\Config`](#user-content-22-features---url-generating)  
     - 4.2.11. [Features - Classes - `\MvcCore\Tool`](#user-content-22-features---url-generating)  
     - 4.2.12. [Features - Classes - `\MvcCore\Debug`](#user-content-22-features---url-generating)  
-  - 4.3. [Features - Main extension that is definitely worth talking about](#user-content-22-features---url-generating)  
-  - 4.4. [Features - Packing & Single File Building](#user-content-3-how-it-works)  
+  4.3. [Features - Main extension that is definitely worth talking about](#user-content-22-features---url-generating)  
+  4.4. [Features - Packing & Single File Building](#user-content-3-how-it-works)  
 
 
 ## 1. Installation
