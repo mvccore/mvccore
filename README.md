@@ -228,13 +228,24 @@ After exploring basic examples, you could look into more complex MvcCore applica
 - many more features in extended classes
 
 ### 4.3. Features - Main extension that is definitely worth talking about
-- form and form fields
-- authentications
+- [Web Forms Extension](https://github.com/mvccore/ext-form) and [Web Forms Fields Extensions](https://github.com/mvccore/ext-form-all#user-content-form-extensible-packages-map)
+- [Authentication Extension](https://github.com/mvccore/ext-auth)
 - many routers types
-- `tracy/tracy` debug bar and panels
-- many view helpers
-- tools
-- YAML config
+  - [Router With Localization](https://github.com/mvccore/ext-router-localization)  
+  - [Router With Media Site Version](https://github.com/mvccore/ext-router-media)  
+  - [Router With Localization And Media Site Version](https://github.com/mvccore/ext-router-media-localization)  
+  - [Router With Modules By Domains](https://github.com/mvccore/ext-router-module)  
+  - [Router With Modules By Domains With Localization](https://github.com/mvccore/ext-router-module-localization)  
+  - [Router With Modules By Domains With Media Site Version](https://github.com/mvccore/ext-router-module-media-localization)  
+  - [Router With Modules By Domains With Localization And Media Site Version](https://github.com/mvccore/ext-router-module-media-localization)  
+- [View Helpers Extensions](https://github.com/mvccore/ext-view-helper-all#user-content-extensions)
+- Integration for debug bar and panels from [tracy/tracy](https://github.com/tracy/tracy)
+- MvcCore special tools
+  - [Images Processing Extension](https://github.com/mvccore/ext-tool-image)
+  - [Any Platform Locale Setup](https://github.com/mvccore/ext-tool-locale)
+  - [Float Numbers Parsing](https://github.com/ext-tool-locale-floatparser)  
+  - [Working With Mime-Types And File Extensions](https://github.com/ext-tool-mimetype-extension)  
+- [YAML Config Extension](https://github.com/mvccore/ext-config-yaml)
 
 ### 4.4. Features - Packing & Single File Building
 - partial or complete application packaging/building into single PHP file by [**Packager (mvccore/packager)**](https://github.com/mvccore/packager) library
