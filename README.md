@@ -10,14 +10,14 @@ PHP MVC framework to develop and pack projects (partially or completely) into su
 1. [Installation](#user-content-1-installation)  
 2. [Usage](#user-content-2-usage)  
 3. [Examples](#user-content-3-examples)  
-   3.1. [Examples - Basic](#user-content-3-1-examples---basic)  
-   3.2. [Examples - Empty Templates](#user-content-)  
-   3.3. [Examples - Advanced (Applications)](#user-content-)  
-4. [Features](#user-content-2-features)  
-   4.1. [Features - Classic MVC web framework features](#user-content-21-features---routing)  
-   4.2. [Features - `MvcCore` classes features](#user-content-22-features---url-generating)  
-   4.3. [Features - Main extension that is definitely worth talking about](#user-content-22-features---url-generating)  
-   4.4. [Features - Packing & Single File Building](#user-content-3-how-it-works)  
+   3.1. [Examples - Basic](#user-content-31-examples---basic)  
+   3.2. [Examples - Empty Templates](#user-content-32-examples---empty-templates)  
+   3.3. [Examples - Advanced (Applications)](#user-content-33-examples---advanced-applications)  
+4. [Features](#user-content-4-features)  
+   4.1. [Features - Classic MVC web framework features](#user-content-41-features---classic-mvc-web-framework-features)  
+   4.2. [Features - `MvcCore` classes features](#user-content-42features----mvccore-classes-features)  
+   4.3. [Features - Main extension that is definitely worth talking about](#user-content-43-features---main-extension-that-is-definitely-worth-talking-about)  
+   4.4. [Features - Packing & Single File Building](#user-content-44-features---packing--single-file-building)  
 
 
 ## 1. Installation
