@@ -14,9 +14,9 @@ PHP MVC framework to develop and pack projects (partially or completely) into su
    3.2. [Examples - Empty Templates](#user-content-32-examples---empty-templates)  
    3.3. [Examples - Advanced (Applications)](#user-content-33-examples---advanced-applications)  
 4. [Features](#user-content-4-features)  
-   4.1. [Features - Classic MVC web framework features](#user-content-41-features---classic-mvc-web-framework-features)  
-   4.2. [Features - `MvcCore` classes features](#user-content-42features----mvccore-classes-features)  
-   4.3. [Features - Main extension that is definitely worth talking about](#user-content-43-features---main-extension-that-is-definitely-worth-talking-about)  
+   4.1. [Features - Classic MVC Web Framework Features](#user-content-41-features---classic-mvc-web-framework-features)  
+   4.2. [Features - `MvcCore` Classes Features](#user-content-42features----mvccore-classes-features)  
+   4.3. [Features - Main Extensions That Is Definitely Worth Talking About](#user-content-43-features---main-extensions-that-is-definitely-worth-talking-about)  
    4.4. [Features - Packing & Single File Building](#user-content-44-features---packing--single-file-building)  
 
 
@@ -87,7 +87,7 @@ After exploring basic examples, you could look into more complex MvcCore applica
 
 ## 4. Features
 
-### 4.1. Features - Classic MVC web framework features
+### 4.1. Features - Classic MVC Web Framework Features
 - any request types handling and HTML/XML/JSON responses
 - great `Namespace\Controller:Action` routing by query params or rewrite routes
 - automatic URL generating by route name or `Namespace\Controller:Action` combination
@@ -102,7 +102,7 @@ After exploring basic examples, you could look into more complex MvcCore applica
 - possibility to extend or patch (replace) any `MvcCore` core class
 - no unnecessary code in framework, everything spacial is always `MvcCore` extension
 
-### 4.2.Features -  `MvcCore` classes features
+### 4.2.Features -  `MvcCore` Classes Features
 
 #### 4.2.1. Features - Classes - `\MvcCore\Application`
 - application instance singleton
@@ -227,7 +227,7 @@ After exploring basic examples, you could look into more complex MvcCore applica
 - global debug shortcut methods `x()`, `xx()` and `xxx()`
 - many more features in extended classes
 
-### 4.3. Features - Main extension that is definitely worth talking about
+### 4.3. Features - Main Extensions That Is Definitely Worth Talking About
 - [Web Forms Extension](https://github.com/mvccore/ext-form) and [Web Forms Fields Extensions](https://github.com/mvccore/ext-form-all#user-content-form-extensible-packages-map)
 - [Authentication Extension](https://github.com/mvccore/ext-auth)
 - many routers types
