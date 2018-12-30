@@ -8,24 +8,36 @@ PHP MVC framework to develop and pack projects (partially or completely) into su
 
 ## Outline  
 1. [Installation](#user-content-1-installation)  
-2. [Features](#user-content-2-features)  
-    2.1. [Clasic MVC web framework features](#user-content-21-features---routing)  
-    2.2. [`MvcCore` classes and their features](#user-content-22-features---url-generating)  
-        2.2.1. [`\MvcCore\Application`](#user-content-22-features---url-generating) 
-        2.2.2. [`\MvcCore\Model`](#user-content-22-features---url-generating) 
-        2.2.3. [`\MvcCore\View`](#user-content-22-features---url-generating) 
-        2.2.4. [`\MvcCore\Controller`](#user-content-22-features---url-generating) 
-        2.2.5. [`\MvcCore\Request`](#user-content-22-features---url-generating) 
-        2.2.6. [`\MvcCore\Response`](#user-content-22-features---url-generating) 
-        2.2.7. [`\MvcCore\Session`](#user-content-22-features---url-generating) 
-        2.2.8. [`\MvcCore\Router`](#user-content-22-features---url-generating) 
-        2.2.9. [`\MvcCore\Route`](#user-content-22-features---url-generating) 
-        2.2.10. [`\MvcCore\Config`](#user-content-22-features---url-generating) 
-        2.2.11. [`\MvcCore\Tool`](#user-content-22-features---url-generating) 
-        2.2.12. [`\MvcCore\Debug`](#user-content-22-features---url-generating) 
-    2.3. [`Main extension that is definitely worth talking about](#user-content-22-features---url-generating)  
-3. [Packing/Building features](#user-content-3-how-it-works)  
-4. [Usage](#user-content-3-how-it-works)  
+2. [Usage](#user-content-2-usage)  
+3. [Examples](#user-content-3-examples)  
+	3.1. [Examples - Basic](#user-content-3-1-examples---basic)
+		3.1.1. [Examples - Basic - Hello World](#user-content-)
+		3.1.2. [Examples - Basic - Pig-Latin Translator](#user-content-)
+		3.1.3. [Examples - Basic - CD Collection](#user-content-)
+	3.2. [Examples - Empty Templates](#user-content-)
+		3.2.1. [Examples - Empty Templates - Basic](#user-content-)
+		3.2.1. [Examples - Empty Templates - Portable](#user-content-)
+	3.3. [Examples - Advanced (Applications)](#user-content-)
+		3.3.1. [Examples - Advanced - XML Documents](#user-content-)
+		3.3.2. [Examples - Advanced - Questionnaires](#user-content-)
+		3.3.3. [Examples - Advanced - Single File Editor & Manager](#user-content-)
+4. [Features](#user-content-2-features)  
+    4.1. [Features - Classic MVC web framework features](#user-content-21-features---routing)  
+    4.2. [Features - `MvcCore` classes features](#user-content-22-features---url-generating)  
+        4.2.1. [Features - Classes - `\MvcCore\Application`](#user-content-22-features---url-generating) 
+        4.4.2. [Features - Classes - `\MvcCore\Model`](#user-content-22-features---url-generating) 
+        4.2.3. [Features - Classes - `\MvcCore\View`](#user-content-22-features---url-generating) 
+        4.2.4. [Features - Classes - `\MvcCore\Controller`](#user-content-22-features---url-generating) 
+        4.2.5. [Features - Classes - `\MvcCore\Request`](#user-content-22-features---url-generating) 
+        4.2.6. [Features - Classes - `\MvcCore\Response`](#user-content-22-features---url-generating) 
+        4.2.7. [Features - Classes - `\MvcCore\Session`](#user-content-22-features---url-generating) 
+        4.2.8. [Features - Classes - `\MvcCore\Router`](#user-content-22-features---url-generating) 
+        4.2.9. [Features - Classes - `\MvcCore\Route`](#user-content-22-features---url-generating) 
+        4.2.10. [Features - Classes - `\MvcCore\Config`](#user-content-22-features---url-generating) 
+        4.2.11. [Features - Classes - `\MvcCore\Tool`](#user-content-22-features---url-generating) 
+        4.2.12. [Features - Classes - `\MvcCore\Debug`](#user-content-22-features---url-generating) 
+    4.3. [Features - Main extension that is definitely worth talking about](#user-content-22-features---url-generating)  
+	4.4. [Features - Packing & Single File Building](#user-content-3-how-it-works)  
 
 
 ## 1. Installation
@@ -33,9 +45,67 @@ PHP MVC framework to develop and pack projects (partially or completely) into su
 composer require mvccore/mvccore
 ```
 
-## 2. Features
+## 3. Examples
 
-### 2.1. Clasic MVC web framework features
+### 3.1. Examples - Basic
+
+#### 3.1.1. [Examples - Basic - Hello World (`mvccore/example-helloworld`)](https://github.com/mvccore/example-helloworld)
+- Best example where to start - simple request and response via controller instance and it's view.
+- How controller and view is defined and rendered.
+- How is possible to pack single file application - all JS/CSS files and images is possible to pack into single PHP or PHAR.
+- Example has very simple `Bootstrap.php`, 2 controllers - `Default.php` and `Base.php`, very simple layout and few views.
+- Example could work as single file application.
+
+#### 3.1.2. [Examples - Basic - Pig-Latin Translator (`mvccore/example-translator`)](https://github.com/mvccore/example-translator)
+- Translator from English to Pig-Latin.
+- Example with standard and AJAX request/responses.
+- Example contains simple form created only in HTML.
+- Example could work as single file application.
+
+#### 3.1.3. [Examples - Basic - CD Collection (`mvccore/example-cdcol`)](https://github.com/mvccore/example-cdcol)
+- Standard CRUD example working with SQLite file database.
+- Example contains MySQL and MSSQL database dumps and system config commented connections settings.
+- Example with a rewrite routes, CRUD controller and very simple database SQL model.
+- Example contains forms created and validated by forms extension.
+- Example could work as single file application.
+
+### 3.2. [Examples - Empty Templates]
+
+#### 3.2.1. [Examples - Empty Templates - Basic (`mvccore/project-basic`)](https://github.com/mvccore/project-basic)
+- Website project designed for standard Web usage, not designed for full portable build/pack.
+- Example has not defined any controllers in sub-namespaces, but it could.
+- Example prints only table names from database, connection from database is defined in example system config.
+- Example has defined single `layout.phtml` and 2 action views - `home.phtml` and `not-found.phtml`.
+
+#### 3.2.2. [Examples - Empty Templates - Portable (`mvccore/project-portable`)](https://github.com/mvccore/project-portable)
+- Website project designed for full portable build/pack.
+- To develop new application - work in `/development` directory.
+- To build single file application - use `make.cmd` and configure build process in `make-php.php` or `make-phar.php` (see examples).
+- Test your built application in `/release` directory.
+
+### 3.3. [Examples - Advanced (Applications)]
+After exploring basic examples, you could look into more complex MvcCore applications:
+
+#### 3.3.1. [Examples - Advanced - XML Documents (`mvccore/app-xmldocs`)](https://github.com/mvccore/app-xmldocs)
+- Very simple website with documents defined in XML files.
+- Example contains controllers structured deeply in `Admin` and `Front` namespaces.
+- Example contains sub-controllers.
+- Example contains XML document model class example.
+
+#### 3.3.2. [Examples - Advanced - Questionnaires (`mvccore/app-xmldocs`)](https://github.com/mvccore/app-questionnaires)
+- Application to create questionnaire with predefined question types defined by XML.
+- All questions are rendered as forms, created and validated by forms extension.
+- All answers are stored in MySQL database to create reports.
+- All questionnaires has automatically created reports with visual graphs by question types.
+- Example could work as single file application.
+
+#### 3.3.3. [Examples - Advanced - Single File Editor & Manager (`mvccore/example-file-manager`)](https://github.com/mvccore/example-file-manager)
+- Files and directories editor, working for now only with files.
+- File couldn't work as single file application yet.
+
+## 4. Features
+
+### 4.1. Features - Classic MVC web framework features
 - any request types handling and HTML/XML/JSON responses
 - great `Namespace\Controller:Action` routing by query params or rewrite routes
 - automatic URL generating by route name or `Namespace\Controller:Action` combination
@@ -50,9 +120,9 @@ composer require mvccore/mvccore
 - possibility to extend or patch (replace) any `MvcCore` core class
 - no unnecessary code in framework, everything spacial is always `MvcCore` extension
 
-### 2.2. `MvcCore` classes and their features
+### 4.2.Features -  `MvcCore` classes features
 
-#### 2.2.1. `\MvcCore\Application`
+#### 4.2.1. Features - Classes - `\MvcCore\Application`
 - application instance singleton
 - main MVC object instances storage (getters/setters)
 - storage for core classes names (getters/setters)
@@ -78,7 +148,7 @@ composer require mvccore/mvccore
 - there is possible to redirect or terminate the whole 
   lifecycle in any application lifecycle point
 
-#### 2.2.2. `\MvcCore\Model`
+#### 4.2.2. Features - Classes - `\MvcCore\Model`
 - automatic connection into database when any database getter is called for first time
 - connection is realized by direct method params or by system config database indexed sections
 - connection index could be defined for whole class or in database getter method param
@@ -86,11 +156,11 @@ composer require mvccore/mvccore
 - data methods to get only dirty properties
 - data methods to set up raw database data into model properties
 
-#### 2.2.3. `\MvcCore\View`
+#### 4.2.3. Features - Classes - `\MvcCore\View`
 - many extension with view helpers
   - assets, formatting numbers, money, dates, truncating, data URL, line breaks, writing content in JS etc...
 
-#### 2.2.4. `\MvcCore\Controller`
+#### 4.2.4. Features - Classes - `\MvcCore\Controller`
 - application logic pattern class
 - template helper methods to get main MVC objects and shortcut methods
 - useful build-in properties automatically filled before dispatching
@@ -101,7 +171,7 @@ composer require mvccore/mvccore
 - view creating and rendering by automatically detected path or custom path
 - single file application assets dispatching
 
-#### 2.2.5. `\MvcCore\Request`
+#### 4.2.5. Features - Classes - `\MvcCore\Request`
 - request describing object, not a singleton
 - getter and setter methods for any request part property
 - collections storage and filtering - files, headers, cookies, params
@@ -109,21 +179,21 @@ composer require mvccore/mvccore
   when is necessary (on demand), not all properties initialization at start
 - `Accept-Language`header static parsing
 
-#### 2.2.6. `\MvcCore\Response`
+#### 4.2.6. Features - Classes - `\MvcCore\Response`
 - response describing object, not a singleton
 - getter and setter methods for any response part property - code, headers and content
 - headers management - content type, encoding etc.
 - safe cookies writing and removing
 - content sending management
 
-#### 2.2.7. `\MvcCore\Session`
+#### 4.2.7. Features - Classes - `\MvcCore\Session`
 - session namespaces with different validity
 - validity by specific time or number of hoops
 - possibility to create/read/update/delete any property in session namespace
 - automatic session start, metadata parsing, write and close
 - write and close is always called in `register_shutdown_function()` handler
 
-#### 2.2.8. `\MvcCore\Router`
+#### 4.2.8. Features - Classes - `\MvcCore\Router`
 - request matching by two strategies
   - query string strategy - if there are `controller` and `action` query string params)
   - rewrite routes strategy . if there are any rewrite routes defined
@@ -135,7 +205,7 @@ composer require mvccore/mvccore
 - many more features in extended classes
   - localization routing and management, media (devices) routing and management, modules routing and management etc...
 
-#### 2.2.9. `\MvcCore\Route`
+#### 4.2.9. Features - Classes - `\MvcCore\Route`
 - request and target method describing object
 - every route must has unique name or `Namespace\Controller:Action` combination
 - describing request to match request and generating URL to defined application point
@@ -156,26 +226,26 @@ composer require mvccore/mvccore
 - possibility to define another route name to redirect old request path to new request path
 - many more features in extended classes - localized routes, domain routes etc...
 
-#### 2.2.10. `\MvcCore\Config`
+#### 4.2.10. Features - Classes - `\MvcCore\Config`
 - environment name management
 - automatic environment detection or detection by system config
 - system config or custom config files read/write with environment specific sections (extended INI format)
 - many more features in extended classes - YAML syntax and environment specific files
 
-#### 2.2.11. `\MvcCore\Tool`
+#### 4.2.11. Features - Classes - `\MvcCore\Tool`
 - OOP programming and checking helper methods
 - JSON encoding/decoding
 - string case conversions
 - single process file writing
 - many more features in extended classes - images processing, locales, floats parsing etc...
 
-#### 2.2.12. `\MvcCore\Debug`
+#### 4.2.12. Features - Classes - `\MvcCore\Debug`
 - browser debug bar to dump any variable in HTML or in AJAX request
 - any variable/data/exceptions logging into predefined logging level files
 - global debug shortcut methods `x()`, `xx()` and `xxx()`
 - many more features in extended classes
 
-### 2.3. Main extension that is definitely worth talking about
+### 4.3. Features - Main extension that is definitely worth talking about
 - form and form fields
 - authentications
 - many routers types
@@ -184,7 +254,7 @@ composer require mvccore/mvccore
 - tools
 - YAML config
 
-### 3. Packing/Building features
+### 4.4. Features - Packing & Single File Building
 - partial or complete application packaging/building into single PHP file by [**Packager (mvccore/packager)**](https://github.com/mvccore/packager) library
 	- you can include only file extensions you want
 	- or include all files (binary or text, doesn't matter, everything is possible)
@@ -194,7 +264,7 @@ composer require mvccore/mvccore
 	  development version also running on FastCGI/OPcache
 - packing configuration features:
 	- including/excluding folders by regular expressions
-	- result code regexp and string replacements
+	- result code regular expression and string replacements
 	- PHTML templates minification
 	- PHP scripts minification (`@var` doc comments possible to keep)
 	- **AUTOMATIC ORDER DETECTION** for packed PHP scripts (PHP packing only)
@@ -226,24 +296,3 @@ composer require mvccore/mvccore
 - url rewrite with `.htaccess` or `web.config` still possible with packed application
 - desktop and mobile website versions and languages versions by MvcCore Router extensions
 - possibility to use any third party library or framework in Libs folder through MvcCore autoloader or by composer vendor package
-
-## 4. Usage
-- explore MvcCore examples:
-	- [**Hello World (mvccore/example-helloworld)**](https://github.com/mvccore/example-helloworld)
-	- [**Pig Latin Translator (mvccore/example-translator)**](https://github.com/mvccore/example-translator)
-	- [**CD Collection (mvccore/example-cdcol)**](https://github.com/mvccore/example-cdcol)
-	- begin with Hello World example and read the source code:
-		- Hello world example has only 2 important controllers (Default.php and Base.php)
-		- MvcCore framework has only 12 core classes (well documented comments, not everything used every time)
-- than explore more complex MvcCore applications:
-	- [**XML Documents (mvccore/app-xmldocs)**](https://github.com/mvccore/app-xmldocs)
-	- [**Questionnaires (mvccore/app-questionnaires)**](https://github.com/mvccore/app-questionnaires)
-- check out some of empty MvcCore project templates
-	- [**Project - Basic**](https://github.com/mvccore/project-basic)
-		- Website project not designed for full portable build/pack.
-	- [**Project - Portable**](https://github.com/mvccore/app-xmldocs)
-		- Website project designed for full portable build/pack.
-		- To develop new application - work in `/development` directory
-		- To build single file application - use `make.cmd` and configure build process in `make-php.php` 
-		  or `make-phar.php` (see examples)
-		- Test your built application in `/release` directory
