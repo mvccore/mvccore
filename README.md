@@ -25,6 +25,8 @@ PHP MVC framework to develop and pack projects (partially or completely) into su
 composer require mvccore/mvccore
 ```
 
+[go to top](#user-content-outline)
+
 ## 2. Usage
 With MvcCore framework, you can develop classic web applicatons or application in single PHP or PHAR file:
 
@@ -33,6 +35,8 @@ Use basic [empty project template (`mvccore/project-basic`)](https://github.com/
 ```shell
 composer create-project mvccore/project-basic
 ```
+
+[go to top](#user-content-outline)
 
 ### 2.1. Create Application In Single PHP Or PHAR File
 Use basic [single file project template (`mvccore/project-portable`)](https://github.com/mvccore/project-portable):
@@ -49,6 +53,8 @@ composer create-project mvccore/project-basic-portable development
 # ... now you can do anything in development dir
 ```
 
+[go to top](#user-content-outline)
+
 ## 3. Examples
 
 ### 3.1. Examples - Basic
@@ -60,11 +66,15 @@ composer create-project mvccore/project-basic-portable development
 - Example has very simple `Bootstrap.php`, 2 controllers - `Default.php` and `Base.php`, very simple layout and few views.
 - Example could work as single file application.
 
+[go to top](#user-content-outline)
+
 #### 3.1.2. [Examples - Basic - Pig-Latin Translator (`mvccore/example-translator`)](https://github.com/mvccore/example-translator)
 - Translator from English to Pig-Latin.
 - Example with standard and AJAX request/responses.
 - Example contains simple form created only in HTML.
 - Example could work as single file application.
+
+[go to top](#user-content-outline)
 
 #### 3.1.3. [Examples - Basic - CD Collection (`mvccore/example-cdcol`)](https://github.com/mvccore/example-cdcol)
 - Standard CRUD example working with SQLite file database.
@@ -72,6 +82,8 @@ composer create-project mvccore/project-basic-portable development
 - Example with a rewrite routes, CRUD controller and very simple database SQL model.
 - Example contains forms created and validated by forms extension.
 - Example could work as single file application.
+
+[go to top](#user-content-outline)
 
 ### 3.2. Examples - Empty Templates
 
@@ -81,11 +93,15 @@ composer create-project mvccore/project-basic-portable development
 - Example prints only table names from database, connection from database is defined in example system config.
 - Example has defined single `layout.phtml` and 2 action views - `home.phtml` and `not-found.phtml`.
 
+[go to top](#user-content-outline)
+
 #### 3.2.2. [Examples - Empty Templates - Portable (`mvccore/project-portable`)](https://github.com/mvccore/project-portable)
 - Website project designed for full portable build/pack.
 - To develop new application - work in `/development` directory.
 - To build single file application - use `make.cmd` and configure build process in `make-php.php` or `make-phar.php` (see examples).
 - Test your built application in `/release` directory.
+
+[go to top](#user-content-outline)
 
 ### 3.3. Examples - Advanced (Applications)
 After exploring basic examples, you could look into more complex MvcCore applications:
@@ -96,6 +112,8 @@ After exploring basic examples, you could look into more complex MvcCore applica
 - Example contains sub-controllers.
 - Example contains XML document model class example.
 
+[go to top](#user-content-outline)
+
 #### 3.3.2. [Examples - Advanced - Questionnaires (`mvccore/app-xmldocs`)](https://github.com/mvccore/app-questionnaires)
 - Application to create questionnaire with predefined question types defined by XML.
 - All questions are rendered as forms, created and validated by forms extension.
@@ -103,9 +121,13 @@ After exploring basic examples, you could look into more complex MvcCore applica
 - All questionnaires has automatically created reports with visual graphs by question types.
 - Example could work as single file application.
 
+[go to top](#user-content-outline)
+
 #### 3.3.3. [Examples - Advanced - Single File Editor & Manager (`mvccore/example-file-manager`)](https://github.com/mvccore/example-file-manager)
 - Files and directories editor, working for now only with files.
 - File couldn't work as single file application yet.
+
+[go to top](#user-content-outline)
 
 ## 4. Features
 
@@ -123,6 +145,8 @@ After exploring basic examples, you could look into more complex MvcCore applica
 - special framework tools for OOP
 - possibility to extend or patch (replace) any `MvcCore` core class
 - no unnecessary code in framework, everything spacial is always `MvcCore` extension
+
+[go to top](#user-content-outline)
 
 ### 4.2.Features -  `MvcCore` Classes Features
 
@@ -152,6 +176,8 @@ After exploring basic examples, you could look into more complex MvcCore applica
 - there is possible to redirect or terminate the whole 
   lifecycle in any application lifecycle point
 
+[go to top](#user-content-outline)
+
 #### 4.2.2. Features - Classes - `\MvcCore\Model`
 - automatic connection into database when any database getter is called for first time
 - connection is realized by direct method params or by system config database indexed sections
@@ -160,9 +186,13 @@ After exploring basic examples, you could look into more complex MvcCore applica
 - data methods to get only dirty properties
 - data methods to set up raw database data into model properties
 
+[go to top](#user-content-outline)
+
 #### 4.2.3. Features - Classes - `\MvcCore\View`
 - many extension with view helpers
   - assets, formatting numbers, money, dates, truncating, data URL, line breaks, writing content in JS etc...
+
+[go to top](#user-content-outline)
 
 #### 4.2.4. Features - Classes - `\MvcCore\Controller`
 - application logic pattern class
@@ -175,6 +205,8 @@ After exploring basic examples, you could look into more complex MvcCore applica
 - view creating and rendering by automatically detected path or custom path
 - single file application assets dispatching
 
+[go to top](#user-content-outline)
+
 #### 4.2.5. Features - Classes - `\MvcCore\Request`
 - request describing object, not a singleton
 - getter and setter methods for any request part property
@@ -183,6 +215,8 @@ After exploring basic examples, you could look into more complex MvcCore applica
   when is necessary (on demand), not all properties initialization at start
 - `Accept-Language`header static parsing
 
+[go to top](#user-content-outline)
+
 #### 4.2.6. Features - Classes - `\MvcCore\Response`
 - response describing object, not a singleton
 - getter and setter methods for any response part property - code, headers and content
@@ -190,12 +224,16 @@ After exploring basic examples, you could look into more complex MvcCore applica
 - safe cookies writing and removing
 - content sending management
 
+[go to top](#user-content-outline)
+
 #### 4.2.7. Features - Classes - `\MvcCore\Session`
 - session namespaces with different validity
 - validity by specific time or number of hoops
 - possibility to create/read/update/delete any property in session namespace
 - automatic session start, metadata parsing, write and close
 - write and close is always called in `register_shutdown_function()` handler
+
+[go to top](#user-content-outline)
 
 #### 4.2.8. Features - Classes - `\MvcCore\Router`
 - request matching by two strategies
@@ -208,6 +246,8 @@ After exploring basic examples, you could look into more complex MvcCore applica
 - automatic check if requested URL is canonical (automatic redirect to shorter version)
 - many more features in extended classes
   - localization routing and management, media (devices) routing and management, modules routing and management etc...
+
+[go to top](#user-content-outline)
 
 #### 4.2.9. Features - Classes - `\MvcCore\Route`
 - request and target method describing object
@@ -230,11 +270,15 @@ After exploring basic examples, you could look into more complex MvcCore applica
 - possibility to define another route name to redirect old request path to new request path
 - many more features in extended classes - localized routes, domain routes etc...
 
+[go to top](#user-content-outline)
+
 #### 4.2.10. Features - Classes - `\MvcCore\Config`
 - environment name management
 - automatic environment detection or detection by system config
 - system config or custom config files read/write with environment specific sections (extended INI format)
 - many more features in extended classes - YAML syntax and environment specific files
+
+[go to top](#user-content-outline)
 
 #### 4.2.11. Features - Classes - `\MvcCore\Tool`
 - OOP programming and checking helper methods
@@ -243,11 +287,15 @@ After exploring basic examples, you could look into more complex MvcCore applica
 - single process file writing
 - many more features in extended classes - images processing, locales, floats parsing etc...
 
+[go to top](#user-content-outline)
+
 #### 4.2.12. Features - Classes - `\MvcCore\Debug`
 - browser debug bar to dump any variable in HTML or in AJAX request
 - any variable/data/exceptions logging into predefined logging level files
 - global debug shortcut methods `x()`, `xx()` and `xxx()`
 - many more features in extended classes
+
+[go to top](#user-content-outline)
 
 ### 4.3. Features - Main Extensions That Is Definitely Worth Talking About
 - [Web Forms Extension](https://github.com/mvccore/ext-form) and [Web Forms Fields Extensions](https://github.com/mvccore/ext-form-all#user-content-form-extensible-packages-map)
@@ -268,6 +316,8 @@ After exploring basic examples, you could look into more complex MvcCore applica
   - [Float Numbers Parsing](https://github.com/ext-tool-locale-floatparser)  
   - [Working With Mime-Types And File Extensions](https://github.com/ext-tool-mimetype-extension)  
 - [YAML Config Extension](https://github.com/mvccore/ext-config-yaml)
+
+[go to top](#user-content-outline)
 
 ### 4.4. Features - Packing & Single File Building
 - partial or complete application packaging/building into single PHP file by [**Packager (mvccore/packager)**](https://github.com/mvccore/packager) library
@@ -311,3 +361,5 @@ After exploring basic examples, you could look into more complex MvcCore applica
 - url rewrite with `.htaccess` or `web.config` still possible with packed application
 - desktop and mobile website versions and languages versions by MvcCore Router extensions
 - possibility to use any third party library or framework in Libs folder through MvcCore autoloader or by composer vendor package
+
+[go to top](#user-content-outline)
