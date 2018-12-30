@@ -25,6 +25,8 @@ PHP MVC framework to develop and pack projects (partially or completely) into su
 composer require mvccore/mvccore
 ```
 
+## 2. Usage
+
 ## 3. Examples
 
 ### 3.1. Examples - Basic
