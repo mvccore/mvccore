@@ -51,7 +51,7 @@ composer require mvccore/mvccore
 - Example contains forms created and validated by forms extension.
 - Example could work as single file application.
 
-### 3.2. [Examples - Empty Templates]
+### 3.2. Examples - Empty Templates
 
 #### 3.2.1. [Examples - Empty Templates - Basic (`mvccore/project-basic`)](https://github.com/mvccore/project-basic)
 - Website project designed for standard Web usage, not designed for full portable build/pack.
@@ -65,7 +65,7 @@ composer require mvccore/mvccore
 - To build single file application - use `make.cmd` and configure build process in `make-php.php` or `make-phar.php` (see examples).
 - Test your built application in `/release` directory.
 
-### 3.3. [Examples - Advanced (Applications)]
+### 3.3. Examples - Advanced (Applications)
 After exploring basic examples, you could look into more complex MvcCore applications:
 
 #### 3.3.1. [Examples - Advanced - XML Documents (`mvccore/app-xmldocs`)](https://github.com/mvccore/app-xmldocs)
