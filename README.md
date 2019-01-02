@@ -9,6 +9,8 @@ PHP MVC framework to develop and pack projects (partially or completely) into su
 ## Outline  
 1. [Installation](#user-content-1-installation)  
 2. [Usage](#user-content-2-usage)  
+   2.1. [Usage - Create Classic Web Application](#user-content-21-usage---create-classic-web-application)  
+   2.2. [Usage - Create Application In Single PHP Or PHAR File](#user-content-22-usage---create-application-in-single-php-or-phar-file)  
 3. [Examples](#user-content-3-examples)  
    3.1. [Examples - Basic](#user-content-31-examples---basic)  
    3.2. [Examples - Empty Templates](#user-content-32-examples---empty-templates)  
@@ -38,7 +40,7 @@ composer create-project mvccore/project-basic
 
 [go to top](#user-content-outline)
 
-### 2.1. Create Application In Single PHP Or PHAR File
+### 2.2. Create Application In Single PHP Or PHAR File
 Use basic [single file project template (`mvccore/project-portable`)](https://github.com/mvccore/project-portable):
 ```shell
 # load MvcCore portable project structure
