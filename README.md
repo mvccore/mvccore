@@ -32,7 +32,7 @@ composer require mvccore/mvccore
 ## 2. Usage
 With MvcCore framework, you can develop classic web applicatons or application in single PHP or PHAR file:
 
-### 2.1. Create Classic Web Application
+### 2.1. Usage - Create Classic Web Application
 Use basic [empty project template (`mvccore/project-basic`)](https://github.com/mvccore/project-basic):
 ```shell
 composer create-project mvccore/project-basic
@@ -40,7 +40,7 @@ composer create-project mvccore/project-basic
 
 [go to top](#user-content-outline)
 
-### 2.2. Create Application In Single PHP Or PHAR File
+### 2.2. Usage - Create Application In Single PHP Or PHAR File
 Use basic [single file project template (`mvccore/project-portable`)](https://github.com/mvccore/project-portable):
 ```shell
 # load MvcCore portable project structure
