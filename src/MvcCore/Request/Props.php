@@ -246,15 +246,15 @@ trait Props
 	/**
 	 * Raw request params array, with keys defined in route or by query string,
 	 * always with controller and action keys completed by router.
-	 * Do not read this `$Params` array directly, read it's values by:
+	 * Do not read this `$params` array directly, read it's values by:
 	 * `\MvcCore\Request::GetParam($paramName, $allowedChars, $defaultValueIfNull, $targetType);`.
 	 * Example:
-	 *	`\MvcCore\Request:$Params = array(
+	 *	`\MvcCore\Request:$params = array(
 	 *		"controller"	=> "default",
 	 *		"action"		=> "default",
 	 *		"username"		=> "' OR 1=1;-- ",	// be careful for this content with raw (danger) value!
 	 *	);`
-	 *	// Do not read `$Params` array directly,
+	 *	// Do not read `$params` array directly,
 	 *	// to get safe param value use:
 	 *	`\MvcCore\Request::GetParam("username", "a-zA-Z0-9_");` // return `OR` string without danger chars.
 	 * @var array|NULL

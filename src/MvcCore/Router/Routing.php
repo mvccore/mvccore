@@ -78,16 +78,16 @@ trait Routing
 		$actionNamePcNotNull = $actionNamePc !== NULL;
 		if ($controllerNamePcNotNull) {
 			$ctrlNameDc = str_replace(['\\', '_'], '/', $toolClass::GetDashedFromPascalCase($controllerNamePc));
-			$matchedParams['controller'] = $ctrlNameDc;
-			$this->request->SetControllerName($ctrlNameDc)->SetParam('controller', $ctrlNameDc);
-			if (isset($this->requestedParams['controller'])) $this->requestedParams['controller'] = $ctrlNameDc;
+			$matchedParams[static::URL_PARAM_CONTROLLER] = $ctrlNameDc;
+			$this->request->SetControllerName($ctrlNameDc)->SetParam(static::URL_PARAM_CONTROLLER, $ctrlNameDc);
+			if (isset($this->requestedParams[static::URL_PARAM_CONTROLLER])) $this->requestedParams[static::URL_PARAM_CONTROLLER] = $ctrlNameDc;
 			$currentRoute->SetController($controllerNamePc);
 		}
 		if ($actionNamePcNotNull) {
 			$actionNameDc = $toolClass::GetDashedFromPascalCase($actionNamePc);
-			$matchedParams['action'] = $actionNameDc;
-			$this->request->SetActionName($actionNameDc)->SetParam('action', $ctrlNameDc);
-			if (isset($this->requestedParams['action'])) $this->requestedParams['action'] = $actionNameDc;
+			$matchedParams[static::URL_PARAM_ACTION] = $actionNameDc;
+			$this->request->SetActionName($actionNameDc)->SetParam(static::URL_PARAM_ACTION, $ctrlNameDc);
+			if (isset($this->requestedParams[static::URL_PARAM_ACTION])) $this->requestedParams[static::URL_PARAM_ACTION] = $actionNameDc;
 			$currentRoute->SetAction($actionNamePc);
 		}
 		if ($currentRouteMatched) {
@@ -107,11 +107,11 @@ trait Routing
 				? $currentRoute->GetName()
 				: $currentRoute->GetControllerAction();
 			if ($controllerNamePcNotNull) 
-				if (isset($this->requestedParams['controller'])) 
-					$this->requestedParams['controller'] = $ctrlNameDc;
+				if (isset($this->requestedParams[static::URL_PARAM_CONTROLLER])) 
+					$this->requestedParams[static::URL_PARAM_CONTROLLER] = $ctrlNameDc;
 			if ($actionNamePcNotNull)
-				if (isset($this->requestedParams['action'])) 
-					$this->requestedParams['action'] = $actionNameDc;
+				if (isset($this->requestedParams[static::URL_PARAM_ACTION])) 
+					$this->requestedParams[static::URL_PARAM_ACTION] = $actionNameDc;
 		}
 		return TRUE;
 	}
@@ -313,7 +313,7 @@ trait Routing
 					// set up requested params from query string if there are any 
 					// (and path if there is path from previous function)
 					$requestParams = array_merge([], $this->request->GetParams(FALSE));
-					unset($requestParams['controller'], $requestParams['action']);
+					unset($requestParams[static::URL_PARAM_CONTROLLER], $requestParams[static::URL_PARAM_ACTION]);
 					$this->requestedParams = & $requestParams;
 				}
 			}

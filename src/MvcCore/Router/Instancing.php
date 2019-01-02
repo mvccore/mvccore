@@ -74,6 +74,7 @@ trait Instancing
 			/** @var $app \MvcCore\Application */
 			$app = & \MvcCore\Application::GetInstance();
 			self::$routeClass = $app->GetRouteClass();
+			self::$routerClass = $app->GetRouterClass();
 			self::$toolClass = $app->GetToolClass();
 			$routerClass = $app->GetRouterClass();
 			$instance = new $routerClass($routes, $autoInitialize);

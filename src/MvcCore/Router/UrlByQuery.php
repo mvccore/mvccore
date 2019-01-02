@@ -54,13 +54,13 @@ trait UrlByQuery
 		list($ctrlPc, $actionPc) = strpos($controllerActionOrRouteName, ':') !== FALSE
 			? explode(':', $controllerActionOrRouteName)
 			: [NULL, NULL];
-		if (isset($params['controller'])) {
-			$ctrlPc = $params['controller'];
-			unset($params['controller']);
+		if (isset($params[static::URL_PARAM_CONTROLLER])) {
+			$ctrlPc = $params[static::URL_PARAM_CONTROLLER];
+			unset($params[static::URL_PARAM_CONTROLLER]);
 		}
-		if (isset($params['action'])) {
-			$actionPc = $params['action'];
-			unset($params['action']);
+		if (isset($params[static::URL_PARAM_ACTION])) {
+			$actionPc = $params[static::URL_PARAM_ACTION];
+			unset($params[static::URL_PARAM_ACTION]);
 		}
 		$ctrlPc = str_replace('\\', '/', $ctrlPc);
 		return [$ctrlPc, $actionPc];

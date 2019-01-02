@@ -49,19 +49,19 @@ trait Canonical
 		$request = & $this->request;
 		$redirectToCanonicalUrl = FALSE;
 		$requestGlobalGet = & $request->GetGlobalCollection('get');
-		$requestedCtrlDc = isset($requestGlobalGet['controller']) ? $requestGlobalGet['controller'] : NULL;
-		$requestedActionDc = isset($requestGlobalGet['action']) ? $requestGlobalGet['action'] : NULL;
+		$requestedCtrlDc = isset($requestGlobalGet[static::URL_PARAM_CONTROLLER]) ? $requestGlobalGet[static::URL_PARAM_CONTROLLER] : NULL;
+		$requestedActionDc = isset($requestGlobalGet[static::URL_PARAM_ACTION]) ? $requestGlobalGet[static::URL_PARAM_ACTION] : NULL;
 		$toolClass = self::$toolClass;
 		list($dfltCtrlPc, $dftlActionPc) = $this->application->GetDefaultControllerAndActionNames();
 		$dfltCtrlDc = $toolClass::GetDashedFromPascalCase($dfltCtrlPc);
 		$dftlActionDc = $toolClass::GetDashedFromPascalCase($dftlActionPc);
 		$requestedParamsClone = array_merge([], $this->requestedParams);
 		if ($requestedCtrlDc !== NULL && $requestedCtrlDc === $dfltCtrlDc) {
-			unset($requestedParamsClone['controller']);
+			unset($requestedParamsClone[static::URL_PARAM_CONTROLLER]);
 			$redirectToCanonicalUrl = TRUE;
 		}
 		if ($requestedActionDc !== NULL && $requestedActionDc === $dftlActionDc) {
-			unset($requestedParamsClone['action']);
+			unset($requestedParamsClone[static::URL_PARAM_ACTION]);
 			$redirectToCanonicalUrl = TRUE;
 		}
 		if ($redirectToCanonicalUrl) {

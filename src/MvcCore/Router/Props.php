@@ -22,6 +22,12 @@ trait Props
 	protected static $instance = NULL;
 
 	/**
+	 * Value from `\MvcCore\Application::GetInstance()->GetRouterClass();`.
+	 * @var string|NULL
+	 */
+	protected static $routerClass = NULL;
+
+	/**
 	 * Value from `\MvcCore\Application::GetInstance()->GetRouteClass();`.
 	 * @var string|NULL
 	 */

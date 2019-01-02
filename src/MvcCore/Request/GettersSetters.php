@@ -50,14 +50,17 @@ trait GettersSetters
 
 	/**
 	 * Set cleaned requested controller name into `\MvcCore\Request::$controllerName;`
-	 * and into `\MvcCore\Request::$Params['controller'];`.
+	 * and into `\MvcCore\Request::$params['controller'];`.
 	 * @param string $controllerName
 	 * @return \MvcCore\Request|\MvcCore\IRequest
 	 */
 	public function & SetControllerName ($controllerName) {
 		/** @var $this \MvcCore\Request */
 		$this->controllerName = $controllerName;
-		$this->params['controller'] = $controllerName;
+		$routerClass = self::$routerClass;
+		$router = & $routerClass::GetInstance();
+		$this->params[$router::URL_PARAM_CONTROLLER] = $controllerName;
+		
 		return $this;
 	}
 
@@ -67,22 +70,26 @@ trait GettersSetters
 	 */
 	public function GetControllerName () {
 		if ($this->controllerName === NULL) {
-			if (isset($this->globalGet['controller']))
-				$this->controllerName = $this->GetParam('controller', 'a-zA-Z0-9\-_/', '', 'string');
+			$routerClass = self::$routerClass;
+			$router = & $routerClass::GetInstance();
+			if (isset($this->globalGet[$router::URL_PARAM_CONTROLLER]))
+				$this->controllerName = $this->GetParam($router::URL_PARAM_CONTROLLER, 'a-zA-Z0-9\-_/', '', 'string');
 		}
 		return $this->controllerName;
 	}
 
 	/**
 	 * Set cleaned requested controller name into `\MvcCore\Request::$actionName;`
-	 * and into `\MvcCore\Request::$Params['action'];`.
+	 * and into `\MvcCore\Request::$params['action'];`.
 	 * @param string $actionName
 	 * @return \MvcCore\Request|\MvcCore\IRequest
 	 */
 	public function & SetActionName ($actionName) {
 		/** @var $this \MvcCore\Request */
 		$this->actionName = $actionName;
-		$this->params['action'] = $actionName;
+		$routerClass = self::$routerClass;
+		$router = & $routerClass::GetInstance();
+		$this->params[$router::URL_PARAM_ACTION] = $actionName;
 		return $this;
 	}
 
@@ -92,8 +99,10 @@ trait GettersSetters
 	 */
 	public function GetActionName () {
 		if ($this->actionName === NULL) {
-			if (isset($this->globalGet['action']))
-				$this->actionName = $this->GetParam('action', 'a-zA-Z0-9\-_', '', 'string');
+			$routerClass = self::$routerClass;
+			$router = & $routerClass::GetInstance();
+			if (isset($this->globalGet[$router::URL_PARAM_ACTION]))
+				$this->actionName = $this->GetParam($router::URL_PARAM_ACTION, 'a-zA-Z0-9\-_', '', 'string');
 		}
 		return $this->actionName;
 	}

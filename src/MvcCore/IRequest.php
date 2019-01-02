@@ -396,7 +396,7 @@ interface IRequest
 
 	/**
 	 * Set cleaned requested controller name into `\MvcCore\Request::$controllerName;`
-	 * and into `\MvcCore\Request::$Params['controller'];`.
+	 * and into `\MvcCore\Request::$params['controller'];`.
 	 * @param string $controllerName
 	 * @return \MvcCore\IRequest
 	 */
@@ -410,7 +410,7 @@ interface IRequest
 
 	/**
 	 * Set cleaned requested controller name into `\MvcCore\Request::$actionName;`
-	 * and into `\MvcCore\Request::$Params['action'];`.
+	 * and into `\MvcCore\Request::$params['action'];`.
 	 * @param string $actionName
 	 * @return \MvcCore\IRequest
 	 */

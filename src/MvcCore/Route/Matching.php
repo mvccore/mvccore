@@ -187,12 +187,13 @@ trait Matching
 	protected function & matchesParseRewriteParams (& $matchedValues, & $defaults) {
 		$toolClass = \MvcCore\Application::GetInstance()->GetToolClass();
 		$matchedParams = [];
+		$router = & $this->router;
 		if ($this->controller !== NULL) 
-			$matchedParams['controller'] = $toolClass::GetDashedFromPascalCase(
+			$matchedParams[$router::URL_PARAM_CONTROLLER] = $toolClass::GetDashedFromPascalCase(
 				str_replace(['_', '\\'], '/', $this->controller)
 			);
 		if ($this->action !== NULL)
-			$matchedParams['action'] = $toolClass::GetDashedFromPascalCase(
+			$matchedParams[$router::URL_PARAM_ACTION] = $toolClass::GetDashedFromPascalCase(
 				$this->action
 			);
 		array_shift($matchedValues); // first item is always matched whole `$request->GetPath()` string.

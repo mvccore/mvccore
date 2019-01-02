@@ -159,25 +159,25 @@ trait RewriteRouting
 		$toolClass = self::$toolClass;
 		if ($requestCtrlName !== NULL) {
 			$request->SetControllerName($requestCtrlName);
-			$allMatchedParams['controller'] = $requestCtrlName;
-			$rawQueryParams['controller'] = $requestCtrlName;
-		} else if (isset($allMatchedParams['controller'])) {
-			$request->SetControllerName($allMatchedParams['controller']);
+			$allMatchedParams[static::URL_PARAM_CONTROLLER] = $requestCtrlName;
+			$rawQueryParams[static::URL_PARAM_CONTROLLER] = $requestCtrlName;
+		} else if (isset($allMatchedParams[static::URL_PARAM_CONTROLLER])) {
+			$request->SetControllerName($allMatchedParams[static::URL_PARAM_CONTROLLER]);
 		} else {
 			$defaultCtrlNameDashed = $toolClass::GetDashedFromPascalCase($ctrlDfltNamePc);
 			$request->SetControllerName($defaultCtrlNameDashed);
-			$allMatchedParams['controller'] = $defaultCtrlNameDashed;
+			$allMatchedParams[static::URL_PARAM_CONTROLLER] = $defaultCtrlNameDashed;
 		}
 		if ($requestActionName !== NULL) {
 			$request->SetActionName($requestActionName);
-			$allMatchedParams['action'] = $requestActionName;
-			$rawQueryParams['action'] = $requestActionName;
-		} else if (isset($allMatchedParams['action'])) {
-			$request->SetActionName($allMatchedParams['action']);
+			$allMatchedParams[static::URL_PARAM_ACTION] = $requestActionName;
+			$rawQueryParams[static::URL_PARAM_ACTION] = $requestActionName;
+		} else if (isset($allMatchedParams[static::URL_PARAM_ACTION])) {
+			$request->SetActionName($allMatchedParams[static::URL_PARAM_ACTION]);
 		} else {
 			$defaultActionNameDashed = $toolClass::GetDashedFromPascalCase($actionDfltNamePc);
 			$request->SetActionName($defaultActionNameDashed);
-			$allMatchedParams['action'] = $defaultActionNameDashed;
+			$allMatchedParams[static::URL_PARAM_ACTION] = $defaultActionNameDashed;
 		}
 		// complete params for request object - there have to be everything including ctrl and action
 		$this->defaultParams = array_merge(
@@ -190,10 +190,10 @@ trait RewriteRouting
 		$routeReverseParams = $this->currentRoute->GetReverseParams() ?: [];
 		// complete really matched params from path - unset ctrl and action if ctrl and even action are not in pattern
 		$pathOnlyMatchedParams = array_merge([], $allMatchedParams);
-		$controllerInReverse	= in_array('controller', $routeReverseParams, TRUE);
-		$actionInReverse		= in_array('action', $routeReverseParams, TRUE);
-		if (!$controllerInReverse)	unset($pathOnlyMatchedParams['controller']);
-		if (!$actionInReverse)		unset($pathOnlyMatchedParams['action']);
+		$controllerInReverse	= in_array(static::URL_PARAM_CONTROLLER, $routeReverseParams, TRUE);
+		$actionInReverse		= in_array(static::URL_PARAM_ACTION, $routeReverseParams, TRUE);
+		if (!$controllerInReverse)	unset($pathOnlyMatchedParams[static::URL_PARAM_CONTROLLER]);
+		if (!$actionInReverse)		unset($pathOnlyMatchedParams[static::URL_PARAM_ACTION]);
 		// requested params - all really requested params for self URL addresses
 		// building base params array, parsed from path, merged with all query params 
 		// and merged later with given params array into method `Url()`.
@@ -230,10 +230,10 @@ trait RewriteRouting
 		}
 		$requestParamsFiltered = $requestParamsFiltered ?: $requestParams;
 		$request->SetParams($requestParamsFiltered);
-		if (isset($requestParamsFiltered['controller']))
-			$request->SetControllerName($requestParamsFiltered['controller']);
-		if (isset($requestParamsFiltered['action']))
-			$request->SetActionName($requestParamsFiltered['action']);
+		if (isset($requestParamsFiltered[static::URL_PARAM_CONTROLLER]))
+			$request->SetControllerName($requestParamsFiltered[static::URL_PARAM_CONTROLLER]);
+		if (isset($requestParamsFiltered[static::URL_PARAM_ACTION]))
+			$request->SetActionName($requestParamsFiltered[static::URL_PARAM_ACTION]);
 		return FALSE;
 	}
 
