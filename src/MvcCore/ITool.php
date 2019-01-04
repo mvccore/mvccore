@@ -127,7 +127,7 @@ interface ITool
 	 * @throws \Exception
 	 * @return bool
 	 */
-	public function SingleProcessWrite (
+	public static function SingleProcessWrite (
 		$fullPath, 
 		& $content, 
 		$writeMode = 'w', 

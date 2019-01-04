@@ -24,6 +24,12 @@ trait Props
 	protected static $twoSegmentTlds = ['co.jp'=>1,'ac.uk'=>1,'co.uk'=>1,'co.kr'=>1,'co.nl'=>1,'in.ua'=>1,'co.nf'=>1,'ny.us'=>1,'co.us'=>1];
 
 	/**
+	 * Configured router full class name string from core, loaded in `__constructor()`.
+	 * @var string|NULL
+	 */
+	protected static $routerClass = NULL;
+
+	/**
 	 * `TRUE` if PHP `php_sapi_name()` is `cli` and also 
 	 * if there is no `$_SERVER['REQUEST_URI']` defined.
 	 * @var bool'NULL

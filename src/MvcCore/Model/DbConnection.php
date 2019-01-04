@@ -31,8 +31,8 @@ trait DbConnection
 			// if no connection index specified, try to get from class or from base model
 			if (static::$configs === NULL) static::loadConfigs(TRUE);
 			$connectionName = $connectionNameOrConfig;
-			if ($connectionName == NULL) $connectionName = static::$connectionName;
-			if ($connectionName == NULL) $connectionName = self::$connectionName;
+			if ($connectionName === NULL) $connectionName = static::$connectionName;
+			if ($connectionName === NULL) $connectionName = self::$connectionName;
 		}
 		// if no connection exists under connection name key - connect to database
 		if (!isset(static::$connections[$connectionName])) {
@@ -127,8 +127,8 @@ trait DbConnection
 	 */
 	public static function & GetConfig ($connectionName = NULL) {
 		if (static::$configs === NULL) static::loadConfigs(TRUE);
-		if ($connectionName == NULL) $connectionName = static::$connectionName;
-		if ($connectionName == NULL) $connectionName = self::$connectionName;
+		if ($connectionName === NULL) $connectionName = static::$connectionName;
+		if ($connectionName === NULL) $connectionName = self::$connectionName;
 		return static::$configs[$connectionName];
 	}
 

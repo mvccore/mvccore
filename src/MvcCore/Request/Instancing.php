@@ -63,6 +63,7 @@ trait Instancing
 		array & $cookie = [],
 		array & $files = []
 	) {
+		self::$routerClass = self::$routerClass ?: \MvcCore\Application::GetInstance()->GetRouterClass();
 		$this->globalServer = & $server;
 		$this->globalGet = & $get;
 		$this->globalPost = & $post;
