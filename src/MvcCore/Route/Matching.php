@@ -89,8 +89,8 @@ trait Matching
 
 	/**
 	 * Return subject value scheme, domain and base path part, used for 
-	 * `preg_match_all()` route match processing. Check which protocol route
-	 * `pattern` (or `reverse`) contains and prepare protocol string. Than check 
+	 * `preg_match_all()` route match processing. Check which scheme route
+	 * `pattern` (or `reverse`) contains and prepare scheme string. Than check 
 	 * if route `pattern` (or `reverse`) contains domain part with any domain 
 	 * placeholders and prepare domain part with the placeholders. Then also in 
 	 * the same way prepare base path part if necessary, there is also base path 

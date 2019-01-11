@@ -357,7 +357,7 @@ trait UrlBuilding
 			? $domainParams[$basePathParamName]
 			: $request->GetBasePath();
 		if ($this->flags[0] === static::FLAG_SCHEME_ANY)
-			$basePart = $request->GetProtocol() . $basePart;
+			$basePart = $request->GetScheme() . $basePart;
 		if ($splitUrl) return [$basePart, $pathPart];
 		return [$basePart . $pathPart];
 	}
@@ -396,7 +396,7 @@ trait UrlBuilding
 			$resultAfterScheme = mb_substr($resultUrl, $doubleSlashPos);
 			$resultAfterScheme = str_replace('//', '/', $resultAfterScheme);
 			if ($this->flags[0] === static::FLAG_SCHEME_ANY) {
-				$resultUrl = $request->GetProtocol() . '//' . $resultAfterScheme;
+				$resultUrl = $request->GetScheme() . '//' . $resultAfterScheme;
 			} else {
 				$resultUrl = $resultSchemePart . $resultAfterScheme;
 			}
@@ -420,7 +420,7 @@ trait UrlBuilding
 			}
 			$basePart = mb_substr($resultUrl, 0, $baseUrlPartEndPos);
 			if ($this->flags[0] === static::FLAG_SCHEME_ANY)
-				$basePart = $request->GetProtocol() . $basePart;
+				$basePart = $request->GetScheme() . $basePart;
 			$pathAndQueryPart = str_replace('//', '/', mb_substr($resultUrl, $baseUrlPartEndPos));
 			return [$basePart, $pathAndQueryPart];
 		}

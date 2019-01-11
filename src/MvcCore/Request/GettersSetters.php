@@ -25,7 +25,7 @@ trait GettersSetters
 	 * @param \string[] $twoSegmentTlds,... List of two-segment top-level domains without leading dot.
 	 * @return void
 	 */
-	public static function AddTwoSegmentTlds (/* ...$twoSegmentTlds */) {
+	public static function AddTwoSegmentTlds ($twoSegmentTlds) {
 		$tlds = func_get_args();
 		if (count($tlds) === 1 && is_array($tlds[0])) $tlds = $tlds[0];
 		foreach ($tlds as $tld) self::$twoSegmentTlds[$tld] = TRUE;
@@ -324,14 +324,14 @@ trait GettersSetters
 	}
 
 	/**
-	 * Set http protocol string.
-	 * Example: `$request->SetProtocol("https:");`
+	 * Set http scheme string.
+	 * Example: `$request->SetScheme("https:");`
 	 * @param string $rawProtocol
 	 * @return \MvcCore\Request|\MvcCore\IRequest
 	 */
-	public function & SetProtocol ($rawProtocol) {
+	public function & SetScheme ($rawProtocol) {
 		/** @var $this \MvcCore\Request */
-		$this->protocol = $rawProtocol;
+		$this->scheme = $rawProtocol;
 		$this->domainUrl = NULL;
 		$this->baseUrl = NULL;
 		$this->requestUrl = NULL;
@@ -340,29 +340,34 @@ trait GettersSetters
 	}
 
 	/**
-	 * Get http protocol string.
+	 * Get http scheme string.
 	 * Example: `"http:" | "https:"`
 	 * @return string
 	 */
-	public function GetProtocol () {
-		if ($this->protocol === NULL) {
-			$this->protocol = (
-				isset($this->globalServer['HTTPS']) &&
-				strtolower($this->globalServer['HTTPS']) == 'on'
+	public function GetScheme () {
+		if ($this->scheme === NULL) {
+			$this->scheme = (
+				(isset($this->globalServer['HTTPS']) && strtolower($this->globalServer['HTTPS']) == 'on') ||
+				$this->globalServer['SERVER_PORT'] == 443
 			)
-				? static::PROTOCOL_HTTPS
-				: static::PROTOCOL_HTTP;
+				? static::SCHEME_HTTPS
+				: static::SCHEME_HTTP;
 		}
-		return $this->protocol;
+		return $this->scheme;
 	}
 
 	/**
-	 * Get `TRUE` if http protocol is `"https:"`.
+	 * Get `TRUE` if http scheme is `"https:"`.
 	 * @return bool
 	 */
 	public function IsSecure () {
-		if ($this->secure === NULL)
-			$this->secure = $this->GetProtocol() == static::PROTOCOL_HTTPS;
+		if ($this->secure === NULL) 
+			$this->secure = in_array($this->GetScheme(), [
+				static::SCHEME_HTTPS,
+				static::SCHEME_FTPS,
+				static::SCHEME_IRCS,
+				static::SCHEME_SSH
+			], TRUE);
 		return $this->secure;
 	}
 
@@ -666,7 +671,7 @@ trait GettersSetters
 	 */
 	public function GetDomainUrl () {
 		if ($this->domainUrl === NULL) 
-			$this->domainUrl = $this->GetProtocol() . '//' . $this->GetHost();
+			$this->domainUrl = $this->GetScheme() . '//' . $this->GetHost();
 		return $this->domainUrl;
 	}
 

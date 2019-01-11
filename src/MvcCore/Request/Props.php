@@ -64,14 +64,14 @@ trait Props
 	protected $mediaSiteVersion = NULL;
 
 	/**
-	 * Http protocol: `"http:" | "https:"`
+	 * Http scheme: `"http:" | "https:"`
 	 * Example: `"http:"`
 	 * @var string|NULL
 	 */
-	protected $protocol			= NULL;
+	protected $scheme			= NULL;
 
 	/**
-	 * `TRUE` if http protocol is `"https:"`
+	 * `TRUE` if http scheme is `"https:"`
 	 * @var bool|NULL
 	 */
 	protected $secure			= NULL;

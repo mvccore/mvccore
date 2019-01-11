@@ -49,7 +49,7 @@ trait Initializations
 	 * @return void
 	 */
 	protected static function initHandlers () {
-		$className = get_called_class();
+		$className = version_compare(PHP_VERSION, '5.5', '>') ? static::class : get_called_class();
 		foreach (static::$handlers as $key => $value) {
 			static::$handlers[$key] = [$className, $value];
 		}

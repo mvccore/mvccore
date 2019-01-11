@@ -243,7 +243,7 @@ interface IResponse
 	 * @param \string[] $disabledHeaders,...
 	 * @return \MvcCore\IResponse
 	 */
-	public function & SetDisabledHeaders (/* ...$disabledHeaders */);
+	public function & SetDisabledHeaders ($disabledHeaders);
 	
 	/**
 	 * Get disabled headers, never sent except if there is 

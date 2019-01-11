@@ -30,13 +30,13 @@ trait Instancing
 	 * @param mixed $args,... unlimited OPTIONAL variables to pass into model `__construct()` method.
 	 * @return \MvcCore\Model|\MvcCore\IModel
 	 */
-	public static function & GetInstance (/* ...$args */) {
+	public static function & GetInstance ($args) {
 		// get `"ClassName"` string from this call: `ClassName::GetInstance();`
-		$className = get_called_class();
+		$staticClassName = version_compare(PHP_VERSION, '5.5', '>') ? static::class : get_called_class();
 		$args = func_get_args();
-		$instanceIndex = md5($className . '_' . serialize($args));
+		$instanceIndex = str_replace('\\', '_', $staticClassName) . '#' . serialize($args);
 		if (!isset(self::$instances[$instanceIndex])) {
-			$reflectionClass = new \ReflectionClass($className);
+			$reflectionClass = new \ReflectionClass($staticClassName);
 			$instance = $reflectionClass->newInstanceArgs($args);
 			self::$instances[$instanceIndex] = $instance;
 		}
@@ -52,7 +52,8 @@ trait Instancing
 	 */
 	public static function GetResource ($args = [], $modelClassName = '', $resourceClassPath = '\Resource') {
 		$result = NULL;
-		if (!$modelClassName) $modelClassName = get_called_class();
+		if (!$modelClassName) 
+			$modelClassName = version_compare(PHP_VERSION, '5.5', '>') ? static::class : get_called_class();
 		// do not create resource instance in resource class (if current class name doesn't end with '_Resource' substring):
 		if (strpos($modelClassName, '\Resource') === FALSE) {
 			$resourceClassName = $modelClassName . $resourceClassPath;

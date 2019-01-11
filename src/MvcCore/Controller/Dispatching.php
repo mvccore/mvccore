@@ -40,7 +40,7 @@ trait Dispatching
 		$result = NULL;
 		$backtraceItems = debug_backtrace(DEBUG_BACKTRACE_PROVIDE_OBJECT);
 		if (count($backtraceItems) < 3) return $result;
-		$calledClass = get_called_class();
+		$calledClass = version_compare(PHP_VERSION, '5.5', '>') ? static::class : get_called_class();
 		foreach ($backtraceItems as $backtraceItem) {
 			if (!isset($backtraceItem['object']) || !$backtraceItem['object']) continue;
 			$object = & $backtraceItem['object'];

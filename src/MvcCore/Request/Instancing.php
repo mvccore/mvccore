@@ -86,7 +86,7 @@ trait Instancing
 		$this->GetAppRoot();
 		$this->GetMethod();
 		$this->GetBasePath();
-		$this->GetProtocol();
+		$this->GetScheme();
 		$this->IsSecure();
 		$this->GetHostName();
 		$this->GetHost();

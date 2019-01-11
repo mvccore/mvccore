@@ -196,19 +196,19 @@ interface IView
 	/**
 	 * Add view helpers classes namespace(s),
 	 * Example: `\MvcCore\View::AddHelpersNamespaces('Any\Other\ViewHelpers\Place', '...');`.
-	 * @param string $helperNamespace,... View helper classes namespace(s).
+	 * @param string $helperNamespaces,... View helper classes namespace(s).
 	 * @return void
 	 */
-	public static function AddHelpersNamespaces (/* ...$helperNamespace */);
+	public static function AddHelpersNamespaces ($helperNamespaces);
 
 	/**
 	 * Set view helpers classes namespace(s). This method replace all previously configured namespaces.
 	 * If you want only to add namespace, use `\MvcCore\View::AddHelpersNamespaces();` instead.
 	 * Example: `\MvcCore\View::SetHelpersClassNamespaces('Any\Other\ViewHelpers\Place', '...');`.
-	 * @param string $helperNamespace,... View helper classes namespace(s).
+	 * @param string $helperNamespaces,... View helper classes namespace(s).
 	 * @return void
 	 */
-	public static function SetHelpersNamespaces (/* ...$helperNamespace */);
+	public static function SetHelpersNamespaces ($helperNamespaces);
 
 	/**
 	 * Get view script full path by internal application configuration,

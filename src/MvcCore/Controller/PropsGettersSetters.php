@@ -216,6 +216,22 @@ trait PropsGettersSetters
 	}
 
 	/**
+	 * Get requested controller name - `"dashed-controller-name"`.
+	 * @return string
+	 */
+	public function GetControllerName () {
+		return $this->controllerName;
+	}
+
+	/**
+	 * Get requested action name - `"dashed-action-name"`.
+	 * @return string
+	 */
+	public function GetActionName () {
+		return $this->actionName;
+	}
+
+	/**
 	 * Get current application response object as reference.
 	 * @return \MvcCore\Response
 	 */

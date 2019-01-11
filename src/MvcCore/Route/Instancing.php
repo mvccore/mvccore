@@ -76,7 +76,8 @@ trait Instancing
 		$constraints = [],
 		$advancedConfiguration = []
 	) {
-		return (new \ReflectionClass(get_called_class()))
+		$className = version_compare(PHP_VERSION, '5.5', '>') ? static::class : get_called_class();
+		return (new \ReflectionClass($className))
 			->newInstanceArgs(func_get_args());
 	}
 

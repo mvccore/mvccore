@@ -72,7 +72,7 @@ trait InternalInits
 			$this->cli = TRUE;
 			
 			$lh = 'localhost';
-			$this->protocol = 'file:';
+			$this->scheme = 'file:';
 			$this->secure = FALSE;
 			$this->hostName = $lh;
 			$this->host = $lh;
@@ -143,18 +143,71 @@ trait InternalInits
 	 * @return void
 	 */
 	protected function initUrlSegments () {
-		$absoluteUrl = $this->GetProtocol() . '//'
-			. $this->globalServer['HTTP_HOST']
-			. rawurldecode($this->globalServer['REQUEST_URI']);
-		$parsedUrl = parse_url($absoluteUrl);
-		if (isset($parsedUrl['port'])) {
-			$this->port = $parsedUrl['port'];
-			$this->portDefined = TRUE;
+		$this->portDefined = FALSE;
+		$this->port = '';
+		$this->path = '';
+		$this->query = '';
+		$this->fragment = '';
+
+		$uri = $this->GetScheme() . '//'
+			. $this->globalServer['HTTP_HOST'];
+		if (isset($this->globalServer['UNENCODED_URL'])) {
+			$uri .= rawurldecode($this->globalServer['UNENCODED_URL']);
+		} else if (isset($this->globalServer['UNENCODED_URL'])) {
+			$uri .= rawurldecode($this->globalServer['UNENCODED_URL']);
+		} else {
+			$uri .= rawurldecode($this->globalServer['REQUEST_URI']);
 		}
-		$this->path = isset($parsedUrl['path']) ? $parsedUrl['path'] : '';
-		$this->path = trim(mb_substr($this->path, mb_strlen($this->GetBasePath())), '?&');
-		$this->query = trim(isset($parsedUrl['query']) ? $parsedUrl['query'] : '', '?&');
-		$this->fragment = trim(isset($parsedUrl['fragment']) ? $parsedUrl['fragment'] : '', '#');
+
+		$firstColonPos = mb_strpos($uri, ':');
+		if ($firstColonPos !== FALSE) 
+			$uri = mb_substr($uri, $firstColonPos + 1);
+		
+		if (mb_substr($uri, 0, 2) === '//') {
+			$nextSlashPos = mb_strpos($uri, '/', 2);
+			if ($nextSlashPos !== FALSE) {
+				$authority = mb_substr($uri, 2, $nextSlashPos - 2);
+				$uri = mb_substr($uri, $nextSlashPos);
+				$colonsCount = mb_substr_count($authority, ':');
+				if ($colonsCount === 1) {
+					$colonPos = mb_strpos($authority, ':');
+					$this->port = mb_substr($authority, $colonPos + 1);
+					if ($this->port !== '') 
+						$this->portDefined = TRUE;
+				}
+			} else {
+				return;
+			}
+		}
+
+		$basePath = $this->GetBasePath();
+		$uri = mb_substr($uri, mb_strlen($basePath));
+		
+		$questionMarkPos = mb_strpos($uri, '?');
+		$hashPos = mb_strpos($uri, '#');
+		$questionMarkContained = $questionMarkPos !== FALSE;
+		$hashContained = $hashPos !== FALSE;
+		if (!$questionMarkContained && !$hashContained) {
+			// path, no query, no hash
+			$this->path = $uri;
+		} else if ($questionMarkContained && !$hashContained) {
+			// path, query and no hash
+			$this->path = mb_substr($uri, 0, $questionMarkPos);
+			$this->query = trim(mb_substr($uri, $questionMarkPos + 1), '&');
+		} else if (!$questionMarkContained && $hashContained) {
+			// path, no query and hash
+			$this->path = mb_substr($uri, 0, $hashPos);
+			$this->fragment = mb_substr($uri, $hashPos + 1);
+		} else if ($questionMarkContained && $hashContained && $questionMarkPos < $hashPos) {
+			// path, query and hash
+			$this->path = mb_substr($uri, 0, $questionMarkPos);
+			$this->query = trim(mb_substr($uri, $questionMarkPos + 1, $questionMarkPos + 1 - $hashPos), '&');
+			$this->fragment = mb_substr($uri, $hashPos + 1);
+		} else {
+			// path, no query and hash containing question mark
+			$this->path = mb_substr($uri, 0, $questionMarkPos);
+			$this->fragment = mb_substr($uri, $hashPos + 1);
+		}
 	}
 
 	/**
@@ -264,9 +317,9 @@ trait InternalInits
 		$this->scriptName = str_replace('\\', '/', $this->globalServer['SCRIPT_NAME']);
 		$lastSlashPos = mb_strrpos($this->scriptName, '/');
 		if ($lastSlashPos !== 0) {
-			$redirectUrl = isset($this->globalServer['REDIRECT_URL']) ? $this->globalServer['REDIRECT_URL'] : '';
+			$redirectUrl = rawurldecode(isset($this->globalServer['REDIRECT_URL']) ? $this->globalServer['REDIRECT_URL'] : '');
 			$redirectUrlLength = mb_strlen($redirectUrl);
-			$requestUri = $this->globalServer['REQUEST_URI'];
+			$requestUri = rawurldecode($this->globalServer['REQUEST_URI']);
 			$questionMarkPos = mb_strpos($requestUri, '?');
 			if ($questionMarkPos !== FALSE) $requestUri = mb_substr($requestUri, 0, $questionMarkPos);
 			if ($redirectUrlLength === 0 || ($redirectUrlLength > 0 && $redirectUrl === $requestUri)) {

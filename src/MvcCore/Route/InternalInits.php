@@ -519,7 +519,10 @@ trait InternalInits
 					$lastFixedSectionContent .= ($lastCharIsSlash ? '' : '/') . '?';
 					$trailingSlash = '/?';
 				}}}
-		return '#^' . implode('', $sections) . $trailingSlash . '$#';
+		$result =  '#^' . implode('', $sections) . $trailingSlash . '$#';
+		if (preg_match('#[^\x20-\x7f]#', $result))
+			$result .= 'u'; // add UTF-8 modifier if string contains higher chars than ASCII
+		return $result;
 	}
 
 	/**
@@ -531,7 +534,7 @@ trait InternalInits
 	 * @param \string[] $propsNames,... Missing properties names.
 	 * @return void
 	 */
-	protected function throwExceptionIfKeyPropertyIsMissing (/* ...$propsNames */) {
+	protected function throwExceptionIfKeyPropertyIsMissing ($propsNames) {
 		$propsNames = func_get_args();
 		$selfClass = version_compare(PHP_VERSION, '5.5', '>') ? self::class : __CLASS__;
 		throw new \LogicException(

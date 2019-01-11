@@ -172,6 +172,18 @@ interface IController
 	public function & GetRequest ();
 
 	/**
+	 * Get requested controller name - `"dashed-controller-name"`.
+	 * @return string
+	 */
+	public function GetControllerName ();
+
+	/**
+	 * Get requested action name - `"dashed-action-name"`.
+	 * @return string
+	 */
+	public function GetActionName ();
+
+	/**
 	 * Sets up `\MvcCore\Request` object and other protected properties.
 	 * This is INTERNAL, not TEMPLATE method, internally called in
 	 * `\MvcCore::DispatchControllerAction();` before controller is dispatched.

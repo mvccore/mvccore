@@ -29,14 +29,94 @@ namespace MvcCore;
 interface IRequest
 {
 	/**
-	 * Non-secured HTTP protocol (`http:`).
+	 * Non-secured HTTP scheme (`http:`).
+	 * @see https://en.wikipedia.org/wiki/Hypertext_Transfer_Protocol
 	 */
-	const PROTOCOL_HTTP = 'http:';
+	const SCHEME_HTTP = 'http:';
 
 	/**
-	 * Secured HTTP(s) protocol (`https:`).
+	 * Secured HTTPS scheme (`https:`).
+	 * @see https://en.wikipedia.org/wiki/HTTP_Secure
 	 */
-	const PROTOCOL_HTTPS = 'https:';
+	const SCHEME_HTTPS = 'https:';
+	/**
+	 * Non-secured FTP scheme (`ftp:`).
+	 * @see https://en.wikipedia.org/wiki/File_Transfer_Protocol
+	 */
+	const SCHEME_FTP = 'ftp:';
+
+	/**
+	 * Secured FTP scheme (`ftps:`).
+	 * @see https://en.wikipedia.org/wiki/File_Transfer_Protocol
+	 */
+	const SCHEME_FTPS = 'ftps:';
+
+	/**
+	 * Non-secured IRC scheme (`irc:`).
+	 * @see https://en.wikipedia.org/wiki/Internet_Relay_Chat#URI_scheme
+	 */
+	const SCHEME_IRC = 'irc:';
+
+	/**
+	 * Secured IRC scheme (`ircs:`).
+	 * @see https://en.wikipedia.org/wiki/Internet_Relay_Chat#URI_scheme
+	 */
+	const SCHEME_IRCS = 'ircs:';
+
+	/**
+	 * Email scheme (`mailto:`).
+	 * @see https://en.wikipedia.org/wiki/Mailto
+	 */
+	const SCHEME_MAILTO = 'mailto:';
+
+	/**
+	 * File scheme (`file:`).
+	 * @see https://en.wikipedia.org/wiki/File_URI_scheme
+	 */
+	const SCHEME_FILE = 'file:';
+
+	/**
+	 * Data scheme (`data:`).
+	 * @see https://en.wikipedia.org/wiki/Data_URI_scheme
+	 */
+	const SCHEME_DATA = 'data:';
+
+	/**
+	 * Telephone scheme (`tel:`).
+	 * @see https://developer.apple.com/library/archive/featuredarticles/iPhoneURLScheme_Reference/PhoneLinks/PhoneLinks.html
+	 */
+	const SCHEME_TEL = 'tel:';
+
+	/**
+	 * Telnet scheme (`telnet:`).
+	 * @see https://en.wikipedia.org/wiki/Telnet
+	 */
+	const SCHEME_TELNET = 'telnet:';
+
+	/**
+	 * LDAP scheme (`ldap:`).
+	 * @see https://en.wikipedia.org/wiki/Lightweight_Directory_Access_Protocol
+	 */
+	const SCHEME_LDAP = 'ldap:';
+
+	/**
+	 * SSH scheme (`ssh:`).
+	 * @see https://en.wikipedia.org/wiki/Secure_Shell
+	 */
+	const SCHEME_SSH = 'ssh:';
+
+	/**
+	 * RTSP scheme (`rtsp:`).
+	 * @see https://en.wikipedia.org/wiki/Real_Time_Streaming_Protocol
+	 */
+	const SCHEME_RTSP = 'rtsp:';
+
+	/**
+	 * @see https://en.wikipedia.org/wiki/Real-time_Transport_Protocol
+	 * RTP scheme (`rtp:`).
+	 */
+	const SCHEME_RTP = 'rtp:';
+
 
 	/**
 	 * Retrieves the information or entity that is identified by the URI of the request.
@@ -72,6 +152,7 @@ interface IRequest
 	 * Requests that a set of changes described in the request entity be applied to the resource identified by the Request- URI.
 	 */
 	const METHOD_PATCH = 'PATCH';
+
 
 	/**
 	 * Lower case and upper case alphabet characters only.
@@ -143,7 +224,7 @@ interface IRequest
 	 * @param \string[] $twoSegmentTlds,... List of two-segment top-level domains without leading dot.
 	 * @return void
 	 */
-	public static function AddTwoSegmentTlds (/* ...$twoSegmentTlds */);
+	public static function AddTwoSegmentTlds ($twoSegmentTlds);
 
 	/**
 	 * Static factory to get every time new instance of http request object.
@@ -561,22 +642,22 @@ interface IRequest
 	public function GetBasePath ();
 
 	/**
-	 * Set http protocol string.
-	 * Example: `$request->SetProtocol("https:");`
+	 * Set http scheme string.
+	 * Example: `$request->SetScheme("https:");`
 	 * @param string $rawProtocol
 	 * @return \MvcCore\IRequest
 	 */
-	public function & SetProtocol ($rawProtocol);
+	public function & SetScheme ($rawProtocol);
 
 	/**
-	 * Get http protocol string.
+	 * Get http scheme string.
 	 * Example: `"http:" | "https:"`
 	 * @return string
 	 */
-	public function GetProtocol ();
+	public function GetScheme ();
 
 	/**
-	 * Get `TRUE` if http protocol is `"https:"`.
+	 * Get `TRUE` if http scheme is `"https:"`.
 	 * @return bool
 	 */
 	public function IsSecure ();

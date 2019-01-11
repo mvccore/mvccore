@@ -125,7 +125,7 @@ trait Headers
 	 * @param \string[] $disabledHeaders,...
 	 * @return \MvcCore\Response|\MvcCore\IResponse
 	 */
-	public function & SetDisabledHeaders (/* ...$disabledHeaders */) {
+	public function & SetDisabledHeaders ($disabledHeaders) {
 		/** @var $this \MvcCore\Response */
 		$this->disabledHeaders = [];
 		$args = func_get_args();
