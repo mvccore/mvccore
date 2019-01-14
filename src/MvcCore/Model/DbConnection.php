@@ -55,7 +55,8 @@ trait DbConnection
 			}
 			// Process connection string (dsn) with config replacements
 			$dsn = $conArgs->dsn;
-			foreach ((array) $cfg as $key => $value)
+			$cfgArr = array_merge($conArgs->defaults, (array) $cfg);
+			foreach ($cfgArr as $key => $value)
 				$dsn = str_replace('{'.$key.'}', $value, $dsn);
 			// If database required user and password credentials,
 			// connect with full arguments count or only with one (sqlite only)

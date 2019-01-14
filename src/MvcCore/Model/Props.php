@@ -40,31 +40,35 @@ trait Props
 	 */
 	protected static $connectionArguments = [
 		'4D'			=> [
-			'dsn'		=> '{driver}:host={host};charset=UTF-8',
+			'dsn'		=> '{driver}:host={host};user={user};password={password};dbname={database};port={port};charset={charset}',
 			'auth'		=> TRUE,
 			'fileDb'	=> FALSE,
 			'options'	=> [],
+			'defaults'	=> ['port' => 19812, 'charset' => 'UTF-8',],
 		],
 		'firebird'		=> [
-			'dsn'		=> '{driver}:host={host};dbname={database};charset=UTF8',
+			'dsn'		=> '{driver}:host={host};dbname={database};charset={charset}',
 			'auth'		=> TRUE,
 			'fileDb'	=> TRUE,
-			'options'	=> []
+			'options'	=> [],
+			'defaults'	=> ['charset' => 'UTF-8',],
 		],
 		'ibm'			=> [
-			'dsn'		=> 'ibm:DRIVER={IBM DB2 ODBC DRIVER};DATABASE={database};HOSTNAME={host};PORT={port};PROTOCOL=TCPIP;',
+			'dsn'		=> 'ibm:DRIVER={IBM DB2 ODBC DRIVER};DATABASE={database};HOSTNAME={host};PORT={port};PROTOCOL={protocol};',
 			'auth'		=> TRUE,
 			'fileDb'	=> FALSE,
 			'options'	=> [],
+			'defaults'	=> ['port' => 56789, 'protocol' => 'TCPIP',],
 		],
 		'informix'		=> [
 			'dsn'		=> '{driver}:host={host};service={service};database={database};server={server};protocol={protocol};EnableScrollableCursors=1',
 			'auth'		=> TRUE,
 			'fileDb'	=> FALSE,
 			'options'	=> [],
+			'defaults'	=> ['service' => 9800, 'protocol' => 'onsoctcp',],
 		],
 		'mysql'			=> [
-			'dsn'		=> '{driver}:host={host};dbname={database}',
+			'dsn'		=> '{driver}:host={host};dbname={database};port={port}',
 			'auth'		=> TRUE,
 			'fileDb'	=> FALSE,
 			'options'	=> [
@@ -72,24 +76,28 @@ trait Props
 				'\PDO::MYSQL_ATTR_MULTI_STATEMENTS'	=> TRUE,
 				'\PDO::MYSQL_ATTR_INIT_COMMAND'		=> "SET NAMES 'UTF8'",
 			],
+			'defaults'	=> ['port' => 3306,],
 		],
 		'sqlite'		=> [
 			'dsn'		=> '{driver}:{database}',
 			'auth'		=> FALSE,
 			'fileDb'	=> TRUE,
 			'options'	=> [],
+			'defaults'	=> [],
 		],
 		'sqlsrv'		=> [
 			'dsn'		=> '{driver}:Server={host};Database={database}',
 			'auth'		=> TRUE,
 			'fileDb'	=> FALSE,
 			'options'	=> [],
+			'defaults'	=> [],
 		],
 		'default'		=> [
 			'dsn'		=> '{driver}:host={host};dbname={database}',
 			'auth'		=> TRUE,
 			'fileDb'	=> FALSE,
 			'options'	=> [],
+			'defaults'	=> [],
 		],
 	];
 
