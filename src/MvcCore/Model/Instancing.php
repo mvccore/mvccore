@@ -30,7 +30,7 @@ trait Instancing
 	 * @param mixed $args,... unlimited OPTIONAL variables to pass into model `__construct()` method.
 	 * @return \MvcCore\Model|\MvcCore\IModel
 	 */
-	public static function & GetInstance ($args) {
+	public static function & GetInstance () {
 		// get `"ClassName"` string from this call: `ClassName::GetInstance();`
 		$staticClassName = version_compare(PHP_VERSION, '5.5', '>') ? static::class : get_called_class();
 		$args = func_get_args();
