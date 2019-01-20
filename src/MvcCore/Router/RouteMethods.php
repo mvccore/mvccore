@@ -287,6 +287,16 @@ trait RouteMethods
 			if ($errorMsgs) {
 				//var_dump($this->routes);
 				$selfClass = version_compare(PHP_VERSION, '5.5', '>') ? self::class : __CLASS__;
+				$debBack = debug_backtrace();
+				$debBackLength = count($debBack);
+				if ($debBackLength > 1) {
+					$debBackSemiFinalRec = $debBack[$debBackLength - 2];
+					$file = str_replace('\\', '/', $debBackSemiFinalRec['file']);
+					$bootstrapFilePath = '/App/Bootstrap.php';
+					if (mb_strpos($file, $bootstrapFilePath) === mb_strlen($file) - mb_strlen($bootstrapFilePath)) {
+						die('['.$selfClass.'] '.implode(' ',$errorMsgs));
+					}
+				}
 				throw new \InvalidArgumentException('['.$selfClass.'] '.implode(' ',$errorMsgs));
 			}
 		}
