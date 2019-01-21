@@ -109,13 +109,13 @@ trait Environment
 
 	/**
 	 * Second environment value setup - by system config data environment record.
-	 * @param array $rawCfgData
+	 * @param array $cfgData
 	 * @return string|NULL
 	 */
-	protected static function envDetectBySystemConfig (array & $rawCfgData = []) {
+	protected static function envDetectBySystemConfig (array & $cfgData = []) {
 		$environment = NULL;
-		if (isset($rawCfgData['environments'])) {
-			$environmentsSections = & $rawCfgData['environments'];
+		if (isset($cfgData['environments'])) {
+			$environmentsSections = & $cfgData['environments'];
 			$app = self::$app ?: self::$app = \MvcCore\Application::GetInstance();
 			$request = $app->GetRequest();
 			$clientIp = NULL;

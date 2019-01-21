@@ -42,9 +42,17 @@ trait IniRead
 		);
 		if ($rawIniData === FALSE) return FALSE;
 		$this->data = [];
-		$environment = $this->system
-			? static::envDetectBySystemConfig($rawIniData)
-			: static::$environment;
+		if ($this->system && isset($rawIniData['environments'])) {
+			$this->iniReadExpandLevelsAndReType(
+				array_merge([], $rawIniData['environments'])
+			);
+			$environmentsData =  ['environments' => array_merge([], $this->data)];
+			$environment = static::envDetectBySystemConfig($environmentsData);
+			$this->data = [];
+			$this->objectTypes = [];
+		} else {
+			$environment = static::$environment;
+		}
 		$iniData = $this->iniReadFilterEnvironmentSections($rawIniData, $environment);
 		$this->iniReadExpandLevelsAndReType($iniData);
 		foreach ($this->objectTypes as & $objectType) 
