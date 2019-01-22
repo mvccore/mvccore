@@ -42,12 +42,17 @@ trait IniRead
 		);
 		if ($rawIniData === FALSE) return FALSE;
 		$this->data = [];
-		if ($this->system && isset($rawIniData['environments'])) {
+		$envsSectionName = static::$environmentsSectionName;
+		$environmentsData = NULL;
+		if ($this->system && isset($rawIniData[$envsSectionName])) {
 			$this->iniReadExpandLevelsAndReType(
-				array_merge([], $rawIniData['environments'])
+				array_merge([], $rawIniData[$envsSectionName])
 			);
-			$environmentsData =  ['environments' => array_merge([], $this->data)];
+			$environmentsData = array_merge([], $this->data);
 			$environment = static::envDetectBySystemConfig($environmentsData);
+			foreach ($this->objectTypes as & $objectType) 
+				if ($objectType[0]) $objectType[1] = (object) $objectType[1];
+			unset($rawIniData[$envsSectionName]);
 			$this->data = [];
 			$this->objectTypes = [];
 		} else {
@@ -55,6 +60,8 @@ trait IniRead
 		}
 		$iniData = $this->iniReadFilterEnvironmentSections($rawIniData, $environment);
 		$this->iniReadExpandLevelsAndReType($iniData);
+		if ($environmentsData !== NULL)
+			$this->data[$envsSectionName] = (object) $environmentsData;
 		foreach ($this->objectTypes as & $objectType) 
 			if ($objectType[0]) $objectType[1] = (object) $objectType[1];
 		unset($this->objectTypes);

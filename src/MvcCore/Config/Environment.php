@@ -109,27 +109,24 @@ trait Environment
 
 	/**
 	 * Second environment value setup - by system config data environment record.
-	 * @param array $cfgData
+	 * @param array $environmentsSectionData
 	 * @return string|NULL
 	 */
-	protected static function envDetectBySystemConfig (array & $cfgData = []) {
+	protected static function envDetectBySystemConfig (array & $environmentsSectionData = []) {
 		$environment = NULL;
-		if (isset($cfgData['environments'])) {
-			$environmentsSections = & $cfgData['environments'];
-			$app = self::$app ?: self::$app = \MvcCore\Application::GetInstance();
-			$request = $app->GetRequest();
-			$clientIp = NULL;
-			$serverHostName = NULL;
-			$serverGlobals = NULL;
-			foreach ($environmentsSections as $environmentName => $environmentSection) {
-				$sectionData = static::envDetectParseSysConfigEnvSectionData($environmentSection);
-				$detected = static::envDetectBySystemConfigEnvSection(
-					$sectionData, $request, $clientIp, $serverHostName, $serverGlobals
-				);
-				if ($detected) {
-					$environment = $environmentName;
-					break;
-				}
+		$app = self::$app ?: self::$app = & \MvcCore\Application::GetInstance();
+		$request = $app->GetRequest();
+		$clientIp = NULL;
+		$serverHostName = NULL;
+		$serverGlobals = NULL;
+		foreach ($environmentsSectionData as $environmentName => $environmentSection) {
+			$sectionData = static::envDetectParseSysConfigEnvSectionData($environmentSection);
+			$detected = static::envDetectBySystemConfigEnvSection(
+				$sectionData, $request, $clientIp, $serverHostName, $serverGlobals
+			);
+			if ($detected) {
+				$environment = $environmentName;
+				break;
 			}
 		}
 		if ($environment && !static::$environment) 

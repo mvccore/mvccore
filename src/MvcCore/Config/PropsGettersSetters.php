@@ -22,6 +22,12 @@ trait PropsGettersSetters
 	protected static $configsCache = [];
 
 	/**
+	 * Name of system config root section with environments recognition configuration.
+	 * @var string
+	 */
+	protected static $environmentsSectionName = 'environments';
+
+	/**
 	 * Reference to singleton instance in `\MvcCore\Application::GetInstance();`.
 	 * @var \MvcCore\Application
 	 */
