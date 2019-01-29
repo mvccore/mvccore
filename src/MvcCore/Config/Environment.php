@@ -131,7 +131,7 @@ trait Environment
 		}
 		if ($environment && !static::$environment) {
 			static::SetEnvironment($environment);
-		} else if (!!static::$environment) {
+		} else if (!static::$environment) {
 			static::SetEnvironment('production');
 		}
 		return static::$environment;
