@@ -45,9 +45,8 @@ trait IniRead
 		$envsSectionName = static::$environmentsSectionName;
 		$environmentsData = NULL;
 		if ($this->system && isset($rawIniData[$envsSectionName])) {
-			$this->iniReadExpandLevelsAndReType(
-				array_merge([], $rawIniData[$envsSectionName])
-			);
+			$rawIniEnvSectionData = array_merge([], $rawIniData[$envsSectionName]);
+			$this->iniReadExpandLevelsAndReType($rawIniEnvSectionData);
 			$environmentsData = array_merge([], $this->data);
 			$environment = static::envDetectBySystemConfig($environmentsData);//production
 			foreach ($this->objectTypes as & $objectType) 
