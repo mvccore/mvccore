@@ -129,8 +129,11 @@ trait Environment
 				break;
 			}
 		}
-		if ($environment && !static::$environment) 
+		if ($environment && !static::$environment) {
 			static::SetEnvironment($environment);
+		} else if (!!static::$environment) {
+			static::SetEnvironment('production');
+		}
 		return static::$environment;
 	}
 
