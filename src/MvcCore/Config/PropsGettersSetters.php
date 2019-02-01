@@ -94,11 +94,31 @@ trait PropsGettersSetters
 	}
 
 	/**
+	 * Set system config relative path from app root.
+	 * @param string $appRootRelativePath
+	 * @param \MvcCore\IConfig $configInstance
+	 * @return \MvcCore\IConfig
+	 */
+	public static function SetConfigCache ($appRootRelativePath, \MvcCore\IConfig & $configInstance) {
+		return static::$configsCache[$appRootRelativePath] = $configInstance;
+	}
+
+	/**
 	 * Get internal array store as reference.
 	 * @return array
 	 */
 	public function & GetData () {
 		return $this->data;
+	}
+
+	/**
+	 * Set whole internal array store.
+	 * @return \MvcCore\Config|\MvcCore\IConfig
+	 */
+	public function & SetData (array $data = []) {
+		/** @var $this \MvcCore\IConfig */
+		$this->data = $data;
+		return $this;
 	}
 
 	/**

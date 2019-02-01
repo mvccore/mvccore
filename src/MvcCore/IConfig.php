@@ -95,6 +95,19 @@ interface IConfig
 	public static function SetEnvironment ($environment = \MvcCore\IConfig::ENVIRONMENT_PRODUCTION);
 
 	/**
+	 * First environment value setup - by server and client IP address.
+	 * @return string Detected environment string.
+	 */
+	public static function EnvironmentDetectByIps ();
+
+	/**
+	 * Second environment value setup - by system config data environment record.
+	 * @param array $environmentsSectionData System config environment section data part.
+	 * @return string Detected environment string.
+	 */
+	public static function EnvironmentDetectBySystemConfig (array $environmentsSectionData = []);
+
+	/**
 	 * Get system config relative path from app root.
 	 * @return string
 	 */
@@ -161,6 +174,12 @@ interface IConfig
 	 * @return array
 	 */
 	public function & GetData ();
+
+	/**
+	 * Set whole internal array store.
+	 * @return \MvcCore\IConfig
+	 */
+	public function & SetData (array $data = []);
 
 	/**
 	 * Full path, where are configuration data stored.

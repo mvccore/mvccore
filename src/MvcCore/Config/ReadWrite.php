@@ -23,9 +23,10 @@ trait ReadWrite
 	 * before it's created by MvcCore framework.
 	 * @param array $data Configuration raw data.
 	 * @param string $appRootRelativePath Relative config path from app root.
-	 * @return \MvcCore\Config
+	 * @return \MvcCore\Config|\MvcCore\IConfig
 	 */
 	public static function & CreateInstance (array $data = [], $appRootRelativePath = NULL) {
+		/** @var $instance \MvcCore\IConfig */
 		$instance = new static();
 		if ($data) $instance->data = & $data;
 		if ($appRootRelativePath) {
@@ -41,7 +42,7 @@ trait ReadWrite
 	/**
 	 * Get cached singleton system config INI file as `stdClass`es and `array`s,
 	 * placed by default in: `"/App/config.ini"`.
-	 * @return \MvcCore\Config|bool
+	 * @return \MvcCore\Config|\MvcCore\IConfig|bool
 	 */
 	public static function & GetSystem () {
 		$app = self::$app ?: self::$app = & \MvcCore\Application::GetInstance();
@@ -58,7 +59,7 @@ trait ReadWrite
 	 * Get cached config INI file as `stdClass`es and `array`s,
 	 * placed relatively from application document root.
 	 * @param string $appRootRelativePath Any config relative path like `'/%appPath%/website.ini'`.
-	 * @return \MvcCore\Config|bool
+	 * @return \MvcCore\Config|\MvcCore\IConfig|bool
 	 */
 	public static function & GetConfig ($appRootRelativePath) {
 		if (!isset(self::$configsCache[$appRootRelativePath])) {
@@ -103,7 +104,7 @@ trait ReadWrite
 	 * If config contains system data, try to detect environment.
 	 * @param string $appRootRelativePath 
 	 * @param bool $systemConfig 
-	 * @return \MvcCore\Config|bool
+	 * @return \MvcCore\Config|\MvcCore\IConfig|bool
 	 */
 	protected static function & getConfigInstance ($appRootRelativePath, $systemConfig = FALSE) {
 		$app = self::$app ?: self::$app = & \MvcCore\Application::GetInstance();

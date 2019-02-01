@@ -62,16 +62,6 @@ trait Environment
 	}
 
 	/**
-	 * Set environment name as string,
-	 * defined by constants: `\MvcCore\IConfig::ENVIRONMENT_<environment>`.
-	 * @param string $environment
-	 * @return string
-	 */
-	public static function SetEnvironment ($environment = \MvcCore\IConfig::ENVIRONMENT_PRODUCTION) {
-		return static::$environment = $environment;
-	}
-
-	/**
 	 * Get environment name as string,
 	 * defined by constants: `\MvcCore\IConfig::ENVIRONMENT_<environment>`.
 	 * @return string
@@ -82,19 +72,29 @@ trait Environment
 				if (static::GetSystem() === FALSE) 
 					// if there is no system config, recognize environment only by very 
 					// simple way - by server and client IP only
-					static::envDetectByIps();
+					static::EnvironmentDetectByIps();
 			} else {
-				static::envDetectByIps();
+				static::EnvironmentDetectByIps();
 			}
 		}
 		return static::$environment;
 	}
 
 	/**
-	 * First environment value setup - by server and client IP address.
-	 * @return void
+	 * Set environment name as string,
+	 * defined by constants: `\MvcCore\IConfig::ENVIRONMENT_<environment>`.
+	 * @param string $environment
+	 * @return string
 	 */
-	protected static function envDetectByIps () {
+	public static function SetEnvironment ($environment = \MvcCore\IConfig::ENVIRONMENT_PRODUCTION) {
+		return static::$environment = $environment;
+	}
+
+	/**
+	 * First environment value setup - by server and client IP address.
+	 * @return string Detected environment string.
+	 */
+	public static function EnvironmentDetectByIps () {
 		if (static::$environment === NULL) {
 			$request = & \MvcCore\Application::GetInstance()->GetRequest();
 			$serverAddress = $request->GetServerIp();
@@ -105,21 +105,22 @@ trait Environment
 				static::$environment = static::ENVIRONMENT_PRODUCTION;
 			}
 		}
+		return static::$environment;
 	}
 
 	/**
 	 * Second environment value setup - by system config data environment record.
-	 * @param array $environmentsSectionData
-	 * @return string|NULL
+	 * @param array $environmentsSectionData System config environment section data part.
+	 * @return string Detected environment string.
 	 */
-	protected static function envDetectBySystemConfig (array & $environmentsSectionData = []) {
+	public static function EnvironmentDetectBySystemConfig (array $environmentsSectionData = []) {
 		$environment = NULL;
 		$app = self::$app ?: self::$app = & \MvcCore\Application::GetInstance();
 		$request = $app->GetRequest();
 		$clientIp = NULL;
 		$serverHostName = NULL;
 		$serverGlobals = NULL;
-		foreach ($environmentsSectionData as $environmentName => $environmentSection) {
+		foreach ((array) $environmentsSectionData as $environmentName => $environmentSection) {
 			$sectionData = static::envDetectParseSysConfigEnvSectionData($environmentSection);
 			$detected = static::envDetectBySystemConfigEnvSection(
 				$sectionData, $request, $clientIp, $serverHostName, $serverGlobals
@@ -166,8 +167,8 @@ trait Environment
 			// if there is only string provided, value is probably only
 			// about the most and simple way - to describe client IPS:
 			static::envDetectParseSysConfigClientIps($data, $environmentSection);
-		} else if (is_array($environmentSection)) {
-			foreach ($environmentSection as $key => $value) {
+		} else if (is_array($environmentSection) || $environmentSection instanceof \stdClass) {
+			foreach ((array) $environmentSection as $key => $value) {
 				if (is_numeric($key) || $key == 'clients') {
 					// if key is only numeric key provided, value is probably
 					// only one regular expression to match client IP or 
