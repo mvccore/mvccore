@@ -138,11 +138,13 @@ trait Dispatching
 		if ($this->dispatchState > 0) return;
 		self::$allControllers[spl_object_hash($this)] = & $this;
 		if ($this->parentController === NULL && !$this->request->IsCli()) {
-			$this->application->SessionStart();
+			if ($this->autoStartSession) 
+				$this->application->SessionStart();
 			$responseContentType = $this->ajax ? 'text/javascript' : 'text/html';
 			$this->response->SetHeader('Content-Type', $responseContentType);
 		}
-		$this->autoInitProperties();
+		if ($this->autoInitProperties)
+			$this->processAutoInitProperties();
 		foreach ($this->childControllers as $controller) {
 			$controller->Init();
 			if ($controller->dispatchState == 5) break;
@@ -161,7 +163,7 @@ trait Dispatching
 	 * comment type defined by `@var` over static method `$ClassName::CreateInstance()`.
 	 * @return void
 	 */
-	protected function autoInitProperties () {
+	protected function processAutoInitProperties () {
 		$type = new \ReflectionClass($this);
 		/** @var $props \ReflectionProperty[] */
 		$props = $type->getProperties(

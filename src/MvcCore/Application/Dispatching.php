@@ -276,8 +276,10 @@ trait Dispatching
 		/** @var $this->response \MvcCore\Response */
 		$this->ProcessCustomHandlers($this->postDispatchHandlers);
 		$sessionClass = $this->sessionClass;
-		$sessionClass::SendCookie();
-		$sessionClass::Close();
+		if ($sessionClass::GetStarted()) {
+			$sessionClass::SendCookie();
+			$sessionClass::Close();
+		}
 		$this->response->Send(); // headers (if still possible) and echo
 		// exit; // Why to force exit? What if we want to do something more?
 		$this->terminated = TRUE;

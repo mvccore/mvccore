@@ -24,11 +24,24 @@ trait PropsGettersSetters
 	];
 
 	/**
+	 * Response HTTP protocol version by `$_SERVER['SERVER_PROTOCOL']`.
+	 * Example: `HTTP/1.0 | HTTP/1.1 | HTTP/2 | SPDY`
+	 * @var string|NULL
+	 */
+	protected $httpVersion = NULL;
+
+	/**
 	 * Response HTTP code.
 	 * Example: `200 | 301 | 404`
 	 * @var int|NULL
 	 */
 	protected $code = NULL;
+
+	/**
+	 * Optional response HTTP code message.
+	 * @var string|NULL
+	 */
+	protected $codeMessage = NULL;
 
 	/**
 	 * Response HTTP headers as `key => value` array.
@@ -68,15 +81,49 @@ trait PropsGettersSetters
 	 */
 	protected $disabledHeaders = [];
 
+	/**
+	 * Reference to current application request object.
+	 * @var \MvcCore\IRequest
+	 */
+	protected $request = NULL;
+
+	
+	/**
+	 * Get response protocol HTTP version by `$_SERVER['SERVER_PROTOCOL']`, 
+	 * `HTTP/1.1` by default.
+	 * @return string
+	 */
+	public function GetHttpVersion () {
+		if ($this->httpVersion === NULL) {
+			$server = & $this->request->GetGlobalCollection('server');
+			$this->httpVersion = isset($server['SERVER_PROTOCOL'])
+				? $server['SERVER_PROTOCOL']
+				: 'HTTP/1.1';
+		}
+		return $this->httpVersion;
+	}
+
+	/**
+	 * Set response protocol HTTP version - `HTTP/1.1 | HTTP/2.0`...
+	 * @param string $httpVersion
+	 * @return \MvcCore\Response|\MvcCore\IResponse
+	 */
+	public function & SetHttpVersion ($httpVersion) {
+		/** @var $this \MvcCore\Response */
+		$this->httpVersion = $httpVersion;
+		return $this;
+	}
 
 	/**
 	 * Set HTTP response code.
 	 * @param int $code
+	 * @param string|NULL $codeMessage
 	 * @return \MvcCore\Response|\MvcCore\IResponse
 	 */
-	public function & SetCode ($code) {
+	public function & SetCode ($code, $codeMessage = NULL) {
 		/** @var $this \MvcCore\Response */
 		$this->code = $code;
+		if ($codeMessage !== NULL) $this->codeMessage = $codeMessage;
 		http_response_code($code);
 		return $this;
 	}

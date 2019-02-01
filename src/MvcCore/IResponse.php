@@ -66,12 +66,28 @@ interface IResponse
 		$body = ''
 	);
 
+
 	/**
-	 * Set HTTP response code.
-	 * @param int $code `200 | 301 | 404`
+	 * Get response protocol HTTP version by `$_SERVER['SERVER_PROTOCOL']`, 
+	 * `HTTP/1.1` by default.
+	 * @return string
+	 */
+	public function GetHttpVersion ();
+
+	/**
+	 * Set response protocol HTTP version - `HTTP/1.1 | HTTP/2.0`...
+	 * @param string $httpVersion
 	 * @return \MvcCore\IResponse
 	 */
-	public function & SetCode ($code);
+	public function & SetHttpVersion ($httpVersion);
+
+	/**
+	 * Set HTTP response code.
+	 * @param int $code
+	 * @param string|NULL $codeMessage
+	 * @return \MvcCore\IResponse
+	 */
+	public function & SetCode ($code, $codeMessage = NULL);
 
 	/**
 	 * Get HTTP response code.

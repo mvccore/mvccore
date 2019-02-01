@@ -114,6 +114,18 @@ trait PropsGettersSetters
 	protected $user = NULL;
 
 	/**
+	 * If `TRUE`, start session automatically in `Init()` method.
+	 * @var bool
+	 */
+	protected $autoStartSession = TRUE;
+
+	/**
+	 * If `TRUE`, automatically initialize properties with `@autoinit` tag.
+	 * @var bool
+	 */
+	protected $autoInitProperties = TRUE;
+
+	/**
 	 * Controller lifecycle state:
 	 * - 0 => Controller has been created.
 	 * - 1 => Controller has been initialized.

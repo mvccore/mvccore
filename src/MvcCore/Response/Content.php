@@ -95,14 +95,20 @@ trait Content
 	 */
 	public function Send () {
 		if ($this->IsSent()) return;
+		$httpVersion = $this->GetHttpVersion();
 		$code = $this->GetCode();
-		$status = isset(static::$codeMessages[$code]) ? ' ' . static::$codeMessages[$code] : '';
+		$status = $this->codeMessage !== NULL
+			? ' '.$this->codeMessage
+			: (isset(static::$codeMessages[$code]) 
+				? ' '.static::$codeMessages[$code] 
+				: '');
 		if (!isset($this->headers['Content-Encoding'])) {
 			if (!$this->encoding) $this->encoding = 'utf-8';
 			$this->headers['Content-Encoding'] = $this->encoding;
 		}
 		$this->UpdateHeaders();
-		header("HTTP/1.0 $code $status");
+		header($httpVersion . ' ' . $code . $status);
+		header('Host: ' . $this->request->GetHost());
 		foreach ($this->headers as $name => $value) {
 			if ($name == 'Content-Type') {
 				$charsetMatched = FALSE;
@@ -135,7 +141,7 @@ trait Content
 	protected function addTimeAndMemoryHeader () {
 		$headerName = static::HEADER_X_MVCCORE_CPU_RAM;
 		if (isset($this->disabledHeaders[$headerName])) return;
-		$mtBegin = \MvcCore\Application::GetInstance()->GetRequest()->GetMicrotime();
+		$mtBegin = $this->request->GetMicrotime();
 		$time = number_format((microtime(TRUE) - $mtBegin) * 1000, 1, '.', ' ');
 		$ram = function_exists('memory_get_peak_usage') ? number_format(memory_get_peak_usage() / 1000000, 2, '.', ' ') : 'n/a';
 		header("$headerName: $time ms, $ram MB");

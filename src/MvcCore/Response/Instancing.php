@@ -47,5 +47,6 @@ trait Instancing
 		$this->code = $code;
 		$this->headers = $headers;
 		$this->body = $body;
+		$this->request = & \MvcCore\Application::GetInstance()->GetRequest();
 	}
 }
