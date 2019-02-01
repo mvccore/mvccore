@@ -293,9 +293,11 @@ trait InternalInits
 		if (!isset($paramsCollection[$name])) return $ifNullValue;
 		if (is_array($paramsCollection[$name])) {
 			$result = [];
-			$paramsCollection = $paramsCollection[$name];
-			foreach ($paramsCollection as $key => & $value) {
-				$cleanedKey = $this->cleanParamValue($key, $pregReplaceAllowedChars);
+			$paramsCollectionArr = $paramsCollection[$name];
+			foreach ($paramsCollectionArr as $key => $value) {
+				$cleanedKey = is_numeric($key)
+					? $key
+					: $this->cleanParamValue($key, $pregReplaceAllowedChars);
 				$result[$cleanedKey] = $this->getParamItem(
 					$value, $pregReplaceAllowedChars, $ifNullValue, $targetType
 				);
