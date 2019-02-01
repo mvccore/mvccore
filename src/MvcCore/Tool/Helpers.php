@@ -78,9 +78,9 @@ trait Helpers
 	 */
 	public static function GetSystemTmpDir () {
 		if (self::$tmpDir === NULL) {
+			$tmpDir = sys_get_temp_dir();
 			if (strtolower(substr(PHP_OS, 0, 3)) == 'win') {
 				// Windows:
-				$tmpDir = sys_get_temp_dir();
 				$sysRoot = getenv('SystemRoot');
 				// do not store anything directly in C:\Windows, use C\windows\Temp instead
 				if (!$tmpDir || $tmpDir === $sysRoot) {
@@ -95,13 +95,16 @@ trait Helpers
 						);
 				}
 				$tmpDir = str_replace('\\', '/', $tmpDir);
-			} else {
+			} else if (!$tmpDir) {
 				// Other systems
 				$tmpDir = !empty($_SERVER['TMPDIR']) 
 					? $_SERVER['TMPDIR']
 					: (!empty($_SERVER['TMP'])
 						? $_SERVER['TMP']
-						: '/tmp'
+						: (!empty(ini_get('sys_temp_dir'))
+							? ini_get('sys_temp_dir')
+							: '/tmp'
+						)
 					);
 			}
 			self::$tmpDir = $tmpDir;
@@ -215,7 +218,8 @@ trait Helpers
 			$waitingTime += $lockWaitMilliseconds;
 			if ($waitingTime > $maxLockWaitMilliseconds) {
 				throw new \Exception(
-					'Unable to create lock handle for file: `' . $fullPath 
+					'Unable to create lock handle: `' . $lockFullPath 
+					. '` for file: `' . $fullPath 
 					. '`. Lock creation timeout. Try to clear cache: `' 
 					. $tmpDir . '`'
 				);
@@ -223,7 +227,10 @@ trait Helpers
 			usleep($waitUTime);
 		}
 		if (!flock($lockHandle, LOCK_EX)) throw new \Exception(
-			'Unable to create write lock for file: `'.$lockFullPath.'`.'
+			'Unable to create lock handle: `' . $lockFullPath 
+			. '` for file: `' . $fullPath 
+			. '`. Lock creation timeout. Try to clear cache: `' 
+			. $tmpDir . '`'
 		);
 		fwrite($lockHandle, $fullPath);
 		fflush($lockHandle);
