@@ -130,11 +130,12 @@ trait Props
 	protected static $configs = NULL;
 
 	/**
-	 * Automatically initialize config, db connection and resource class.
+	 * Automatically initialize config, db connection and resource class
+	 * for classes base on "active record" pattern.
 	 * @serialize
 	 * @var bool
 	 */
-	protected $autoInit = TRUE;
+	protected $autoInit = FALSE;
 
 	/**
 	 * `\PDO` instance.
