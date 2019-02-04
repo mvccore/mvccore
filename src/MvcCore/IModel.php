@@ -72,7 +72,7 @@ interface IModel
 	public static function GetResource (
 		$args = [],
 		$modelClassName = '',
-		$resourceClassPath = '\Resource'
+		$resourceClassPath = '\\Resource'
 	);
 
 	/**
