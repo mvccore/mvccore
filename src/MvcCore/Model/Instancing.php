@@ -50,12 +50,12 @@ trait Instancing
 	 * @param string $resourceClassPath
 	 * @return \MvcCore\Model|\MvcCore\IModel
 	 */
-	public static function GetResource ($args = [], $modelClassName = '', $resourceClassPath = 's\Resource') {
+	public static function GetResource ($args = [], $modelClassName = '', $resourceClassPath = '\\Resource') {
 		$result = NULL;
 		if (!$modelClassName) 
 			$modelClassName = version_compare(PHP_VERSION, '5.5', '>') ? static::class : get_called_class();
 		// do not create resource instance in resource class (if current class name doesn't end with '_Resource' substring):
-		if (strpos($modelClassName, 's\Resource') === FALSE) {
+		if (strpos($modelClassName, '\\Resource') === FALSE) {
 			$resourceClassName = $modelClassName . $resourceClassPath;
 			// do not create resource instance if resource class doesn't exist:
 			if (class_exists($resourceClassName)) {

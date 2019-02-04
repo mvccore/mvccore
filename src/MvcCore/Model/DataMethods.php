@@ -139,4 +139,46 @@ trait DataMethods
 		}
 		return (isset($this->$name)) ? $this->$name : null;
 	}
+
+	/**
+	 * Collect all properties names to serialize them by `serialize()` method.
+	 * Collect all properties name with PHP doc comment `@serialize`, all 
+	 * instance properties declared as private, protected and public and if
+	 * there is configured in `static::$protectedProperties` anything as 
+	 * `TRUE` (under key by property name), also return those properties in 
+	 * result array.
+	 * @return \string[]
+	 */
+	public function __sleep () {
+		$result = [];
+		$type = new \ReflectionClass($this);
+		$props = $type->getProperties(
+			\ReflectionProperty::IS_PRIVATE | 
+			\ReflectionProperty::IS_PROTECTED | 
+			\ReflectionProperty::IS_PUBLIC
+		);
+		/** @var $prop \ReflectionProperty */
+		foreach ($props as $prop) {
+			if ($prop->isStatic())
+				if (mb_strpos($prop->getDocComment(), '@serialize') === FALSE) 
+					continue;
+			$propName = $prop->getName();
+			if (
+				isset(static::$protectedProperties[$propName]) && 
+				!static::$protectedProperties[$propName]
+			) continue;
+			$result[] = $propName;
+		}
+		return $result;
+	}
+
+	/**
+	 * Run `$this->Init()` method if there is `$this->autoInit` property defined 
+	 * and if the property is `TRUE`.
+	 * @return void
+	 */
+	public function __wakeup () {
+		if (property_exists($this, 'autoInit') && $this->autoInit) 
+			$this->Init();
+	}
 }

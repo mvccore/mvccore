@@ -1,4 +1,4 @@
-<?php
+f<?php
 
 /**
  * MvcCore
@@ -106,6 +106,7 @@ trait Props
 	/**
 	 * Default database connection name/index, in system config defined in section `db.default = name`.
 	 * In extended classes - use this for connection name/index of current model if different.
+	 * @serialize
 	 * @var string|int|NULL
 	 */
 	protected static $connectionName = NULL;
@@ -130,6 +131,7 @@ trait Props
 
 	/**
 	 * Automatically initialize config, db connection and resource class.
+	 * @serialize
 	 * @var bool
 	 */
 	protected $autoInit = TRUE;
@@ -155,12 +157,14 @@ trait Props
 	/**
 	 * Originally declared internal model properties to protect their
 	 * possible overwriting by `__set()` or `__get()` magic methods.
+	 * Keys are properties names, values are bools, if to serialize their values 
+	 * or not to.
 	 * @var array
 	 */
 	protected static $protectedProperties = [
-		'autoInit'	=> 1,
-		'db'		=> 1,
-		'config'	=> 1,
-		'resource'	=> 1,
+		'autoInit'	=> TRUE,
+		'db'		=> FALSE,
+		'config'	=> FALSE,
+		'resource'	=> FALSE,
 	];
 }
