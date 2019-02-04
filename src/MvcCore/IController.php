@@ -140,12 +140,15 @@ interface IController
 	public function PreDispatch ();
 
 	/**
-	 * Get param value from `$_GET` or `$_POST` or `php://input`,
-	 * filtered by characters defined in second argument through `preg_replace()`.
+	 * Get param value from `$_GET`, `$_POST` or `php://input`, filtered by
+	 * "rule to keep defined characters only", defined in second argument (by `preg_replace()`).
 	 * Place into second argument only char groups you want to keep.
-	 * @param string $name
-	 * @param string $pregReplaceAllowedChars
-	 * @return string
+	 * Shortcut for: `\MvcCore\Request::GetParam();`
+	 * @param string $name Parameter string name.
+	 * @param string|array|bool $pregReplaceAllowedChars If String - list of regular expression characters to only keep, if array - `preg_replace()` pattern and reverse, if `FALSE`, raw value is returned.
+	 * @param mixed $ifNullValue Default value returned if given param name is null.
+	 * @param string $targetType Target type to retype param value or default if-null value. If param is an array, every param item will be retyped into given target type.
+	 * @return string|string[]|mixed
 	 */
 	public function GetParam ($name = "", $pregReplaceAllowedChars = "a-zA-Z0-9_/\-\.\@");
 

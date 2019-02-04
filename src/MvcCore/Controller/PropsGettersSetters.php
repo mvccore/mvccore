@@ -182,7 +182,7 @@ trait PropsGettersSetters
 	 * Place into second argument only char groups you want to keep.
 	 * Shortcut for: `\MvcCore\Request::GetParam();`
 	 * @param string $name Parameter string name.
-	 * @param string|array $pregReplaceAllowedChars If String - list of regular expression characters to only keep, if array - `preg_replace()` pattern and reverse.
+	 * @param string|array|bool $pregReplaceAllowedChars If String - list of regular expression characters to only keep, if array - `preg_replace()` pattern and reverse, if `FALSE`, raw value is returned.
 	 * @param mixed $ifNullValue Default value returned if given param name is null.
 	 * @param string $targetType Target type to retype param value or default if-null value. If param is an array, every param item will be retyped into given target type.
 	 * @return string|string[]|mixed

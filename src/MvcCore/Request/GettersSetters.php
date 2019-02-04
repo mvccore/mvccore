@@ -756,6 +756,7 @@ trait GettersSetters
 				: (isset($this->globalServer['HTTP_X_CLIENT_IP'])
 					? $this->globalServer['HTTP_X_CLIENT_IP']
 					: ''));
+			$this->clientIp = preg_replace("#[^0-9a-zA-Z\.\:\[\]]#", '', $this->clientIp);
 		}
 		return $this->clientIp;
 	}
