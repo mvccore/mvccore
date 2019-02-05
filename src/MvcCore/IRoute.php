@@ -842,6 +842,22 @@ interface IRoute
 	public function __toString ();
 
 	/**
+	 * Collect all properties names to serialize them by `serialize()` method.
+	 * Collect all properties name with PHP doc comment `@serialize`, all 
+	 * instance properties declared as private, protected and public and if
+	 * there is not configured in `static::$protectedProperties` anything 
+	 * under property name, return those properties in result array.
+	 * @return \string[]
+	 */
+	public function __sleep ();
+
+	/**
+	 * Assign router instance to local property `$this->router;`.
+	 * @return void
+	 */
+	public function __wakeup ();
+
+	/**
 	 * Initialize all possible protected values (`match`, `reverse` etc...). This 
 	 * method is not recommended to use in production mode, it's designed mostly 
 	 * for development purposes, to see what could be inside route object.
