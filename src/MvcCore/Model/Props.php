@@ -106,7 +106,6 @@ trait Props
 	/**
 	 * Default database connection name/index, in system config defined in section `db.default = name`.
 	 * In extended classes - use this for connection name/index of current model if different.
-	 * @serialize
 	 * @var string|int|NULL
 	 */
 	protected static $connectionName = NULL;
@@ -132,7 +131,6 @@ trait Props
 	/**
 	 * Automatically initialize config, db connection and resource class
 	 * for classes base on "active record" pattern.
-	 * @serialize
 	 * @var bool
 	 */
 	protected $autoInit = FALSE;

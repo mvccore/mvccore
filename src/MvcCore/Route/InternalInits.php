@@ -574,9 +574,8 @@ trait InternalInits
 
 	/**
 	 * Collect all properties names to serialize them by `serialize()` method.
-	 * Collect all properties name with PHP doc comment `@serialize`, all 
-	 * instance properties declared as private, protected and public and if
-	 * there is not configured in `static::$protectedProperties` anything 
+	 * Collect all instance properties declared as private, protected and public 
+	 * and if there is not configured in `static::$protectedProperties` anything 
 	 * under property name, return those properties in result array.
 	 * @return \string[]
 	 */
@@ -590,9 +589,7 @@ trait InternalInits
 		$result = [];
 		/** @var $prop \ReflectionProperty */
 		foreach ($allProps as $prop) {
-			if ($prop->isStatic())
-				if (mb_strpos($prop->getDocComment(), '@serialize') === FALSE) 
-					continue;
+			if ($prop->isStatic()) continue;
 			$propName =  $prop->getName();
 			if (!isset(static::$protectedProperties[$propName]))
 				$result[] = $propName;

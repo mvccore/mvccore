@@ -221,9 +221,8 @@ interface IModel
 
 	/**
 	 * Collect all properties names to serialize them by `serialize()` method.
-	 * Collect all properties name with PHP doc comment `@serialize`, all 
-	 * instance properties declared as private, protected and public and if
-	 * there is configured in `static::$protectedProperties` anything as 
+	 * Collect all instance properties declared as private, protected and public 
+	 * and if there is configured in `static::$protectedProperties` anything as 
 	 * `TRUE` (under key by property name), also return those properties in 
 	 * result array.
 	 * @return \string[]

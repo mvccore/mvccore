@@ -102,7 +102,7 @@ trait DataMethods
 			return $this;
 		} else {
 			$selfClass = version_compare(PHP_VERSION, '5.5', '>') ? self::class : __CLASS__;
-			throw new \InvalidArgumentException('['.$selfClass."] No property with name '$name' defined.");
+			throw new \InvalidArgumentException('['.$selfClass."] No method '$rawName()' defined.");
 		}
 	}
 
@@ -142,9 +142,8 @@ trait DataMethods
 
 	/**
 	 * Collect all properties names to serialize them by `serialize()` method.
-	 * Collect all properties name with PHP doc comment `@serialize`, all 
-	 * instance properties declared as private, protected and public and if
-	 * there is configured in `static::$protectedProperties` anything as 
+	 * Collect all instance properties declared as private, protected and public 
+	 * and if there is configured in `static::$protectedProperties` anything as 
 	 * `TRUE` (under key by property name), also return those properties in 
 	 * result array.
 	 * @return \string[]
@@ -159,9 +158,7 @@ trait DataMethods
 		);
 		/** @var $prop \ReflectionProperty */
 		foreach ($props as $prop) {
-			if ($prop->isStatic())
-				if (mb_strpos($prop->getDocComment(), '@serialize') === FALSE) 
-					continue;
+			if ($prop->isStatic()) continue;
 			$propName = $prop->getName();
 			if (
 				isset(static::$protectedProperties[$propName]) && 
