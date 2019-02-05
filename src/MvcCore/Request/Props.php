@@ -30,9 +30,15 @@ trait Props
 	protected static $routerClass = NULL;
 
 	/**
+	 * Example: `cli | apache | fpm-fcgi`
+	 * @var string|NULL
+	 */
+	protected $phpSapi				= NULL;
+
+	/**
 	 * `TRUE` if PHP `php_sapi_name()` is `cli` and also 
 	 * if there is no `$_SERVER['REQUEST_URI']` defined.
-	 * @var bool'NULL
+	 * @var bool|NULL
 	 */
 	protected $cli				= NULL;
 

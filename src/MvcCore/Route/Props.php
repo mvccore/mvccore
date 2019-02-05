@@ -34,6 +34,14 @@ trait Props
 	protected static $defaultDomainConstraint = '[^\.]+';
 
 	/**
+	 * Properties names with request specific values to not serialize in cache.
+	 * @var array
+	 */
+	protected static $protectedProperties = [
+		'router' => 1, 'matchedParams' => 1,
+	];
+
+	/**
 	 * Route base pattern to complete match pattern string to match requested 
 	 * URL and to complete reverse pattern string to build back an URL address.
 	 *

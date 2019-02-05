@@ -25,11 +25,11 @@ trait DbConnection
 	public static function GetDb ($connectionNameOrConfig = NULL) {
 		if (is_array($connectionNameOrConfig)) {
 			// if first argument is database connection configuration - set it up and return new connection name
-			if (static::$configs === NULL) static::loadConfigs(FALSE);
+			if (self::$configs === NULL) static::loadConfigs(FALSE);
 			$connectionName = static::SetConfig($connectionNameOrConfig);
 		} else {
 			// if no connection index specified, try to get from class or from base model
-			if (static::$configs === NULL) static::loadConfigs(TRUE);
+			if (self::$configs === NULL) static::loadConfigs(TRUE);
 			$connectionName = $connectionNameOrConfig;
 			if ($connectionName === NULL) $connectionName = static::$connectionName;
 			if ($connectionName === NULL) $connectionName = self::$connectionName;
@@ -40,7 +40,7 @@ trait DbConnection
 			// and get predefined constructor arguments by driver value from config
 			$cfg = static::GetConfig($connectionName);
 			if ($cfg === NULL)
-				$cfg = current(static::$configs); // if still nothing - take first database record
+				$cfg = current(self::$configs); // if still nothing - take first database record
 			$conArgs = (object) self::$connectionArguments[isset(self::$connectionArguments[$cfg->driver]) ? $cfg->driver : 'default'];
 			$connection = NULL;
 			// If database is file system based, complete app root and extend
@@ -77,8 +77,8 @@ trait DbConnection
 	 * @return \stdClass[]
 	 */
 	public static function & GetConfigs () {
-		if (static::$configs === NULL) static::loadConfigs(TRUE);
-		return static::$configs;
+		if (self::$configs === NULL) static::loadConfigs(TRUE);
+		return self::$configs;
 	}
 
 	/**
@@ -113,9 +113,9 @@ trait DbConnection
 	 * @return bool
 	 */
 	public static function SetConfigs (array $configs = [], $defaultConnectionName = NULL) {
-		static::$configs = [];
-		foreach ($configs as $key => $value) static::$configs[$key] = (object) $value;
-		static::$configs = & $configs;
+		self::$configs = [];
+		foreach ($configs as $key => $value) self::$configs[$key] = (object) $value;
+		self::$configs = & $configs;
 		if ($defaultConnectionName !== NULL) self::$defaultConnectionName = $defaultConnectionName;
 		return TRUE;
 	}
@@ -127,10 +127,10 @@ trait DbConnection
 	 * @return \stdClass
 	 */
 	public static function & GetConfig ($connectionName = NULL) {
-		if (static::$configs === NULL) static::loadConfigs(TRUE);
+		if (self::$configs === NULL) static::loadConfigs(TRUE);
 		if ($connectionName === NULL) $connectionName = static::$connectionName;
 		if ($connectionName === NULL) $connectionName = self::$connectionName;
-		return static::$configs[$connectionName];
+		return self::$configs[$connectionName];
 	}
 
 	/**
@@ -164,7 +164,7 @@ trait DbConnection
 	 * @return string|int
 	 */
 	public static function SetConfig (array $config = [], $connectionName = NULL) {
-		if (static::$configs === NULL) static::loadConfigs(FALSE);
+		if (self::$configs === NULL) static::loadConfigs(FALSE);
 		if ($connectionName === NULL) {
 			if (isset($config['name'])) {
 				$connectionName = $config['name'];
@@ -173,7 +173,7 @@ trait DbConnection
 			}
 		}
 		if ($connectionName === NULL) {
-			$configNumericKeys = array_filter(array_keys(static::$configs), 'is_numeric');
+			$configNumericKeys = array_filter(array_keys(self::$configs), 'is_numeric');
 			if ($configNumericKeys) {
 				sort($configNumericKeys);
 				$connectionName = $configNumericKeys[count($configNumericKeys) - 1] + 1; // last + 1
@@ -181,13 +181,13 @@ trait DbConnection
 				$connectionName = 0;
 			}
 		}
-		static::$configs[$connectionName] = (object) $config;
+		self::$configs[$connectionName] = (object) $config;
 		return $connectionName;
 	}
 
 	/**
 	 * Initializes configuration data from system config if any
-	 * into local `static::$configs` array, keyed by connection name or index.
+	 * into local `self::$configs` array, keyed by connection name or index.
 	 * @throws \Exception
 	 * @return void
 	 */
@@ -250,6 +250,6 @@ trait DbConnection
 			}
 			self::$connectionName = $defaultConnectionName;
 		}
-		static::$configs = & $configs;
+		self::$configs = & $configs;
 	}
 }

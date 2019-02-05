@@ -25,7 +25,11 @@ trait Starting
 	 */
 	public static function Start (& $session = []) {
 		$started = static::GetStarted();
-		if ($started || \MvcCore\Application::GetInstance()->GetRequest()->IsInternalRequest() === TRUE) return;
+		if ($started) {
+			$req = self::$req ?: self::$req = & \MvcCore\Application::GetInstance()->GetRequest();
+			if ($req->IsInternalRequest() === TRUE)
+				return;
+		}
 		static::$started = session_start();
 		static::$sessionStartTime = time();
 		static::$sessionMaxTime = static::$sessionStartTime;
@@ -48,15 +52,18 @@ trait Starting
 	 */
 	public static function GetStarted () {
 		if (static::$started === NULL) {
-			$alreadyStarted = session_status() === PHP_SESSION_ACTIVE;
-			if ($alreadyStarted) {
-				// if already started but `static::$started` property is `NULL`:
-				static::$sessionStartTime = time();
-				static::$sessionMaxTime = static::$sessionStartTime;
-				static::setUpMeta();
-				static::setUpData();
+			$req = self::$req ?: self::$req = & \MvcCore\Application::GetInstance()->GetRequest();
+			if (!$req->IsCli()) {
+				$alreadyStarted = session_status() === PHP_SESSION_ACTIVE && session_id() !== '';
+				if ($alreadyStarted) {
+					// if already started but `static::$started` property is `NULL`:
+					static::$sessionStartTime = time();
+					static::$sessionMaxTime = static::$sessionStartTime;
+					static::setUpMeta();
+					static::setUpData();
+				}
+				static::$started = $alreadyStarted;
 			}
-			static::$started = $alreadyStarted;
 		}
 		return static::$started;
 	}

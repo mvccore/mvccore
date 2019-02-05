@@ -553,7 +553,6 @@ trait InternalInits
 	 */
 	public function __toString () {
 		$type = new \ReflectionClass($this);
-		/** @var $props \ReflectionProperty[] */
 		$allProps = $type->getProperties(
 			\ReflectionProperty::IS_PUBLIC | 
 			\ReflectionProperty::IS_PROTECTED | 
@@ -571,5 +570,41 @@ trait InternalInits
 			$result[] = '"' . $prop->getName() . '":"' . ($value === NULL ? 'NULL' : var_export($value)) . '"';
 		}
 		return '{'.implode(', ', $result) . '}';
+	}
+
+	/**
+	 * Collect all properties names to serialize them by `serialize()` method.
+	 * Collect all properties name with PHP doc comment `@serialize`, all 
+	 * instance properties declared as private, protected and public and if
+	 * there is not configured in `static::$protectedProperties` anything 
+	 * under property name, return those properties in result array.
+	 * @return \string[]
+	 */
+	public function __sleep () {
+		$type = new \ReflectionClass($this);
+		$allProps = $type->getProperties(
+			\ReflectionProperty::IS_PUBLIC | 
+			\ReflectionProperty::IS_PROTECTED | 
+			\ReflectionProperty::IS_PRIVATE
+		);
+		$result = [];
+		/** @var $prop \ReflectionProperty */
+		foreach ($allProps as $prop) {
+			if ($prop->isStatic())
+				if (mb_strpos($prop->getDocComment(), '@serialize') === FALSE) 
+					continue;
+			$propName =  $prop->getName();
+			if (!isset(static::$protectedProperties[$propName]))
+				$result[] = $propName;
+		}
+		return $result;
+	}
+
+	/**
+	 * Assign router instance to local property `$this->router;`.
+	 * @return void
+	 */
+	public function __wakeup () {
+		$this->router = & \MvcCore\Application::GetInstance()->GetRouter();
 	}
 }

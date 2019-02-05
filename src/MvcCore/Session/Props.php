@@ -63,4 +63,10 @@ trait Props
 	 * @var int
 	 */
 	protected static $sessionMaxTime = 0;
+
+	/**
+	 * Request instance reference.
+	 * @var \MvcCore\IRequest
+	 */
+	protected static $req = NULL;
 }
