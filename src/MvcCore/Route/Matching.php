@@ -34,8 +34,8 @@ trait Matching
 	 */
 	public function & Matches (\MvcCore\IRequest & $request) {
 		$matchedParams = NULL;
-		$pattern = & $this->matchesGetPattern();
 		$subject = $this->matchesGetSubject($request);
+		$pattern = $this->matchesGetPattern($subject);
 		preg_match_all($pattern, $subject, $matchedValues);
 		if (isset($matchedValues[0]) && count($matchedValues[0]) > 0) {
 			$matchedParams = $this->matchesParseRewriteParams($matchedValues, $this->GetDefaults());
@@ -56,17 +56,25 @@ trait Matching
 	 * initialization on `pattern` property (or on `reverse` if exists) and 
 	 * complete regular expression into `match` property and metadata about 
 	 * `reverse` property to build URL address any time later on this route.
+	 * @param string $subject		Subject to match.
 	 * @throws \LogicException Route configuration property is missing.
 	 * @throws \InvalidArgumentException Wrong route pattern format.
 	 * @return string
 	 */
-	protected function & matchesGetPattern () {
+	protected function matchesGetPattern (& $subject) {
 		if ($this->match === NULL) {
 			$this->initMatchAndReverse();
 		} else {
 			$this->initReverse();
 		}
-		return $this->match;
+		$match = $this->match;
+		// add UTF-8 modifier if subject string contains higher chars than ASCII
+		if (preg_match('#[^\x20-\x7f]#', $subject)) {
+			$lastHashPos = mb_strrpos($match, '#');
+			if (mb_strpos($match, 'u', $lastHashPos + 1) === FALSE)
+				$match .= 'u';
+		}
+		return $match;
 	}
 
 	/**
