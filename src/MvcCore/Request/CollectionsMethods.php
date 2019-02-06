@@ -136,7 +136,7 @@ trait CollectionsMethods
 			if ($onlyKeys) {
 				$result = array_intersect_key($this->params, array_flip($onlyKeys));
 			} else {
-				$result = $this->params;
+				$result = & $this->params;
 			}
 			return $result;
 		}

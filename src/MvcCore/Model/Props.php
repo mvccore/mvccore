@@ -72,7 +72,7 @@ trait Props
 			'auth'		=> TRUE,
 			'fileDb'	=> FALSE,
 			'options'	=> [
-				20		=> TRUE,				// `\PDO::ATTR_EMULATE_PREPARES`
+				20		=> FALSE,				// `\PDO::ATTR_EMULATE_PREPARES`
 				1013	=> TRUE,				// `\PDO::MYSQL_ATTR_MULTI_STATEMENTS`
 				1002	=> "SET NAMES 'UTF8'",	// `\PDO::MYSQL_ATTR_INIT_COMMAND`
 			],
