@@ -124,7 +124,7 @@ trait Handlers
 	public static function ShutdownHandler () {
 		$error = error_get_last();
 		if (isset($error['type'])) static::Exception($error);
-		if (!self::isHtmlResponse()) return;
+		if (!self::isHtmlResponse() || count(self::$dumps) === 0) return;
 		list($dumps, $lastDump) = self::formatDebugDumps();
 		echo str_replace(
 			['%mvccoreDumps%', '"%mvccoreInitArgs%"'],

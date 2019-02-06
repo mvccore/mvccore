@@ -24,12 +24,9 @@ trait Starting
 	 * @return void
 	 */
 	public static function Start (& $session = []) {
-		$started = static::GetStarted();
-		if ($started) {
-			$req = self::$req ?: self::$req = & \MvcCore\Application::GetInstance()->GetRequest();
-			if ($req->IsInternalRequest() === TRUE)
-				return;
-		}
+		if (static::GetStarted()) return;
+		$req = self::$req ?: self::$req = & \MvcCore\Application::GetInstance()->GetRequest();
+		if ($req->IsInternalRequest() === TRUE) return;
 		static::$started = session_start();
 		static::$sessionStartTime = time();
 		static::$sessionMaxTime = static::$sessionStartTime;
