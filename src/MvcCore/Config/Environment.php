@@ -210,8 +210,8 @@ trait Environment
 					explode(',', str_replace(' ', '', $rawClientIps))
 				);
 			}
-		} else if (is_array($rawClientIps)) {
-			foreach ($rawClientIps as $rawClientIpsItem) {
+		} else if (is_array($rawClientIps) || $rawClientIps instanceof \stdClass) {
+			foreach ((array) $rawClientIps as $rawClientIpsItem) {
 				if (substr($rawClientIpsItem, 0, 1) == '/') {
 					$data->clientIps->regExeps[] = $rawClientIpsItem;
 				} else {
@@ -242,8 +242,8 @@ trait Environment
 					explode(',', str_replace(' ', '', $rawHostNames))
 				);
 			}
-		} else if (is_array($rawHostNames)) {
-			foreach ($rawHostNames as $rawHostNamesItem) {
+		} else if (is_array($rawHostNames) || $rawHostNames instanceof \stdClass) {
+			foreach ((array) $rawHostNames as $rawHostNamesItem) {
 				if (substr($rawHostNamesItem, 0, 1) == '/') {
 					$data->serverHostNames->regExeps[] = $rawHostNamesItem;
 				} else {
@@ -267,8 +267,8 @@ trait Environment
 		$data->serverVariables->check = TRUE;
 		if (is_string($rawServerVariable)) {
 			$data->serverVariables->existence[] = $rawServerVariable;
-		} else if (is_array($rawServerVariable)) {
-			foreach ($rawServerVariable as $key => $value) {
+		} else if (is_array($rawServerVariable) || $rawServerVariable instanceof \stdClass) {
+			foreach ((array) $rawServerVariable as $key => $value) {
 				if (is_numeric($key)) {
 					$data->serverVariables->existence[] = $value;
 				} else if (substr($value, 0, 1) == '/') {
