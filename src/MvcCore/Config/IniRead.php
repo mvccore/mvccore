@@ -79,8 +79,8 @@ trait IniRead
 		foreach ($rawIniData as $keyOrSectionName => $valueOrSectionValues) {
 			if (is_array($valueOrSectionValues)) {
 				if (strpos($keyOrSectionName, '>') !== FALSE) {
-					list($envNameLocal, $keyOrSectionName) = explode('>', str_replace(' ', '', $keyOrSectionName));
-					if ($envNameLocal !== $environment) continue;
+					list($envNamesStrLocal, $keyOrSectionName) = explode('>', str_replace(' ', '', $keyOrSectionName));
+					if (!in_array($environment, explode(',', $envNamesStrLocal))) continue;
 				}
 				$sectionValues = [];
 				foreach ($valueOrSectionValues as $key => $value) $sectionValues[$keyOrSectionName.'.'.$key] = $value;
