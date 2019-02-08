@@ -71,11 +71,11 @@ trait InternalInits
 		if ($phpSapiCHasCli && !isset($this->globalServer['REQUEST_URI'])) {
 			$this->cli = TRUE;
 			
-			$lh = 'localhost';
+			$hostName = gethostname();
 			$this->scheme = 'file:';
 			$this->secure = FALSE;
-			$this->hostName = $lh;
-			$this->host = $lh;
+			$this->hostName = $hostName;
+			$this->host = $hostName;
 			$this->port = '';
 			$this->path = '';
 			$this->query = '';
