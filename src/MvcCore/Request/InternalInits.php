@@ -285,7 +285,7 @@ trait InternalInits
 	 * @param string|array|bool $pregReplaceAllowedChars If String - list of regular expression characters to only keep, if array - `preg_replace()` pattern and reverse, if `FALSE`, raw value is returned.
 	 * @param mixed $ifNullValue Default value returned if given param name is null.
 	 * @param string $targetType Target type to retype param value or default if-null value. If param is an array, every param item will be retyped into given target type.
-	 * @return string|string[]|mixed
+	 * @return string|\string[]|int|\int[]|bool|\bool[]|array|mixed
 	 */
 	protected function getParamFromCollection (
 		& $paramsCollection = [],
