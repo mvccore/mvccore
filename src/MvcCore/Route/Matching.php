@@ -34,9 +34,9 @@ trait Matching
 	 */
 	public function & Matches (\MvcCore\IRequest & $request) {
 		$matchedParams = NULL;
+		$pattern = $this->matchesGetPattern();
 		$subject = $this->matchesGetSubject($request);
-		$pattern = $this->matchesGetPattern($subject);
-		preg_match_all($pattern, $subject, $matchedValues);
+		$matchedValues = & $this->match($pattern, $subject);
 		if (isset($matchedValues[0]) && count($matchedValues[0]) > 0) {
 			$matchedParams = $this->matchesParseRewriteParams($matchedValues, $this->GetDefaults());
 			if (isset($matchedParams[$this->lastPatternParam])) 
@@ -56,25 +56,17 @@ trait Matching
 	 * initialization on `pattern` property (or on `reverse` if exists) and 
 	 * complete regular expression into `match` property and metadata about 
 	 * `reverse` property to build URL address any time later on this route.
-	 * @param string $subject		Subject to match.
 	 * @throws \LogicException Route configuration property is missing.
 	 * @throws \InvalidArgumentException Wrong route pattern format.
 	 * @return string
 	 */
-	protected function matchesGetPattern (& $subject) {
+	protected function matchesGetPattern () {
 		if ($this->match === NULL) {
 			$this->initMatchAndReverse();
 		} else {
 			$this->initReverse();
 		}
-		$match = $this->match;
-		// add UTF-8 modifier if subject string contains higher chars than ASCII
-		if (preg_match('#[^\x20-\x7f]#', $subject)) {
-			$lastHashPos = mb_strrpos($match, '#');
-			if (mb_strpos($match, 'u', $lastHashPos + 1) === FALSE)
-				$match .= 'u';
-		}
-		return $match;
+		return $this->match;
 	}
 
 	/**
@@ -93,6 +85,25 @@ trait Matching
 		if ($this->flags[2]) 
 			$subject .= $request->GetQuery(TRUE, TRUE);
 		return $subject;
+	}
+
+	/**
+	 * Process `preg_match_all()` by given `$pattern` on given `$subject`.
+	 * If subject contains higher characters than ASCII, add unicode modifier 
+	 * after pattern if necessary.
+	 * @param string $pattern 
+	 * @param string $subject 
+	 * @return array
+	 */
+	protected function & match ($pattern, & $subject) {
+		// add UTF-8 modifier to pattern if subject string contains higher chars than ASCII
+		if (preg_match('#[^\x20-\x7f]#', $subject)) {
+			$lastHashPos = mb_strrpos($pattern, '#');
+			if (mb_strpos($pattern, 'u', $lastHashPos + 1) === FALSE)
+				$pattern .= 'u';
+		}
+		preg_match_all($pattern, $subject, $matchedValues);
+		return $matchedValues;
 	}
 
 	/**
