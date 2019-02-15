@@ -104,6 +104,12 @@ trait Props
 	];
 
 	/**
+	 * System config database configuration root node name, `db` by default.
+	 * @var string
+	 */
+	protected static $systemConfigDbSectionName = 'db';
+
+	/**
 	 * Default database connection name/index, in system config defined in section `db.default = name`.
 	 * In extended classes - use this for connection name/index of current model if different.
 	 * @var string|int|NULL

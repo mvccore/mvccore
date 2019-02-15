@@ -23,16 +23,19 @@ trait DbConnection
 	 * @return \PDO
 	 */
 	public static function GetDb ($connectionNameOrConfig = NULL) {
-		if (is_array($connectionNameOrConfig)) {
-			// if first argument is database connection configuration - set it up and return new connection name
-			if (self::$configs === NULL) static::loadConfigs(FALSE);
-			$connectionName = static::SetConfig($connectionNameOrConfig);
-		} else {
+		if (is_string($connectionNameOrConfig)) {
 			// if no connection index specified, try to get from class or from base model
 			if (self::$configs === NULL) static::loadConfigs(TRUE);
 			$connectionName = $connectionNameOrConfig;
 			if ($connectionName === NULL) $connectionName = static::$connectionName;
 			if ($connectionName === NULL) $connectionName = self::$connectionName;
+		} else if (is_array($connectionNameOrConfig)) {
+			// if first argument is database connection configuration - set it up and return new connection name
+			if (self::$configs === NULL) static::loadConfigs(FALSE);
+			$connectionName = static::SetConfig($connectionNameOrConfig);
+		} else {
+			$selfClass = version_compare(PHP_VERSION, '5.5', '>') ? self::class : __CLASS__;
+			throw new \InvalidArgumentException("[$selfClass] No connection name or connection config specified.");
 		}
 		// if no connection exists under connection name key - connect to database
 		if (!isset(static::$connections[$connectionName])) {
@@ -208,7 +211,7 @@ trait DbConnection
 				."'db.*' found in system config.ini."
 			);
 		}
-		$systemCfgDb = & $systemCfg->db;
+		$systemCfgDb = & $systemCfg->{static::$systemConfigDbSectionName};
 		$cfgType = gettype($systemCfgDb);
 		$configs = [];
 		$defaultConnectionName = NULL;
