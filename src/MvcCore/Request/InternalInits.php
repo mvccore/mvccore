@@ -98,20 +98,12 @@ trait InternalInits
 
 			$this->method = 'GET';
 			
-			$indexFilePath = '';
-			if (isset($this->globalServer['SCRIPT_FILENAME'])) {
-				$indexFilePath = str_replace(['\\', '//'], '/', $this->globalServer['SCRIPT_FILENAME']);
-				if (preg_match("#^[a-z]\:/(.*)#", $indexFilePath))
-					$indexFilePath = ucfirst($indexFilePath);
-			}
+			// sometimes `$_SERVER['SCRIPT_FILENAME']` is missing, when script 
+			// is running in CLI or it could have relative path only
+			$backtraceItems = debug_backtrace(DEBUG_BACKTRACE_IGNORE_ARGS);
+			$indexFilePath = str_replace('\\', '/', $backtraceItems[count($backtraceItems) - 1]['file']);
 			$lastSlashPos = mb_strrpos($indexFilePath, '/');
-			if ($lastSlashPos === FALSE) {
-				// sometimes `SCRIPT_FILENAME` is missing, when script is running in CLI
-				$backtraceItems = debug_backtrace(DEBUG_BACKTRACE_IGNORE_ARGS);
-				$indexFilePath = str_replace('\\', '/', $backtraceItems[count($backtraceItems) - 1]['file']);
-				$lastSlashPos = mb_strrpos($indexFilePath, '/');
-			}
-			
+
 			$this->appRoot = mb_substr($indexFilePath, 0, $lastSlashPos);
 			$this->scriptName = mb_substr($indexFilePath, $lastSlashPos);
 
