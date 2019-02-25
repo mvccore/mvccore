@@ -45,23 +45,23 @@ trait Instancing
 
 	/**
 	 * Returns (or creates if necessary) model resource instance.
-	 * @param array  $args			  Values array with variables to pass into resource `__construct()` method.
-	 * @param string $modelClassPath
-	 * @param string $resourceClassPath
+	 * @param array|NULL	$args					Values array with variables to pass into resource `__construct()` method.
+	 * @param string		$resourceClassName		Resource class name, `Resource` string by default.
+	 * @param string|NULL	$currentModelClassName	Automatically initialized by `static::class` (or by `get_called_class()`)
 	 * @return \MvcCore\Model|\MvcCore\IModel
 	 */
-	public static function GetResource ($args = [], $modelClassName = '', $resourceClassPath = '\\Resource') {
+	public static function & GetResource ($args = [], $resourceClassName = 'Resource', $currentModelClassName = NULL) {
 		$result = NULL;
-		if (!$modelClassName) 
-			$modelClassName = version_compare(PHP_VERSION, '5.5', '>') ? static::class : get_called_class();
-		// do not create resource instance in resource class (if current class name doesn't end with '_Resource' substring):
-		if (strpos($modelClassName, '\\Resource') === FALSE) {
-			$resourceClassName = $modelClassName . $resourceClassPath;
-			// do not create resource instance if resource class doesn't exist:
-			if (class_exists($resourceClassName)) {
-				$result = call_user_func_array([$resourceClassName, 'GetInstance'], $args);
-			}
-		}
+		if ($currentModelClassName === NULL) 
+			$currentModelClassName = version_compare(PHP_VERSION, '5.5', '>') ? static::class : get_called_class();
+		$namespaceSeparator = strpos($currentModelClassName, '\\') === FALSE ? '_' : '\\';
+		// Do not create resource instance in resource class (if current class 
+		// name doesn't end with `_Resource` or `\Resource` substring):
+		if (strpos($currentModelClassName, $namespaceSeparator . $resourceClassName) === FALSE) 
+			$resourceClassName = $currentModelClassName . $namespaceSeparator . $resourceClassName;
+		// Do not create resource instance if resource class doesn't exist:
+		if (class_exists($resourceClassName)) 
+			$result = call_user_func_array([$resourceClassName, 'GetInstance'], $args ?: []);
 		return $result;
 	}
 
@@ -79,6 +79,6 @@ trait Instancing
 		if ($connectionName === NULL) $connectionName = self::$connectionName;
 		$this->db = static::GetDb($connectionName);
 		$this->config = static::GetConfig($connectionName);
-		$this->resource = static::GetResource([], get_class($this));
+		$this->resource = static::GetResource();
 	}
 }

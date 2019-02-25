@@ -64,15 +64,13 @@ interface IModel
 
 	/**
 	 * Returns (or creates if necessary) model resource instance.
-	 * @param array  $args			  Values array with variables to pass into resource `__construct()` method.
-	 * @param string $modelClassPath
-	 * @param string $resourceClassPath
-	 * @return \MvcCore\IModel
+	 * @param array|NULL	$args					Values array with variables to pass into resource `__construct()` method.
+	 * @param string		$resourceClassName		Resource class name, `Resource` string by default.
+	 * @param string|NULL	$currentModelClassName	Automatically initialized by `static::class` (or by `get_called_class()`)
+	 * @return \MvcCore\Model|\MvcCore\IModel
 	 */
 	public static function GetResource (
-		$args = [],
-		$modelClassName = '',
-		$resourceClassPath = '\\Resource'
+		$args = [], $resourceClassName = 'Resource', $currentModelClassName = NULL
 	);
 
 	/**
