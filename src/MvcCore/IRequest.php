@@ -672,7 +672,8 @@ interface IRequest
 	public function GetReferer ($rawInput = FALSE);
 
 	/**
-	 * Get timestamp of the start of the request, with microsecond precision.
+	 * Get timestamp in seconds as float, when the request has been started, 
+	 * with microsecond precision.
 	 * @return float
 	 */
 	public function GetMicrotime ();

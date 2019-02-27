@@ -236,6 +236,7 @@ trait Helpers
 		fflush($lockHandle);
 			
 		// write or append the file
+		clearstatcache(TRUE, $fullPath);
 		$handle = @fopen($fullPath, $writeMode);
 		if ($handle && !flock($handle, LOCK_EX)) 
 			$handle = FALSE;
