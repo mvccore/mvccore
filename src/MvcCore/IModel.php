@@ -88,7 +88,7 @@ interface IModel
 	 * Returns `\PDO` database connection by connection name/index,
 	 * usually by system INI config values (cached by local store)
 	 * or create new connection of no connection cached.
-	 * @param string|int|array|NULL $connectionNameOrConfig
+	 * @param string|int|array|\stdClass|NULL $connectionNameOrConfig
 	 * @return \PDO
 	 */
 	public static function GetDb ($connectionNameOrConfig = NULL);

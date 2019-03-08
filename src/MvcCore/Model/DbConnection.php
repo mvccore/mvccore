@@ -19,7 +19,7 @@ trait DbConnection
 	 * Returns `\PDO` database connection by connection name/index,
 	 * usually by system config values (cached by local store)
 	 * or create new connection of no connection cached.
-	 * @param string|int|array|NULL $connectionNameOrConfig
+	 * @param string|int|array|\stdClass|NULL $connectionNameOrConfig
 	 * @return \PDO
 	 */
 	public static function GetDb ($connectionNameOrConfig = NULL) {
@@ -29,10 +29,10 @@ trait DbConnection
 			$connectionName = $connectionNameOrConfig;
 			if ($connectionName === NULL) $connectionName = static::$connectionName;
 			if ($connectionName === NULL) $connectionName = self::$connectionName;
-		} else if (is_array($connectionNameOrConfig)) {
+		} else if (is_array($connectionNameOrConfig) || $connectionNameOrConfig instanceof \stdClass) {
 			// if first argument is database connection configuration - set it up and return new connection name
 			if (self::$configs === NULL) static::loadConfigs(FALSE);
-			$connectionName = static::SetConfig($connectionNameOrConfig);
+			$connectionName = static::SetConfig((array) $connectionNameOrConfig);
 		} else {
 			$selfClass = version_compare(PHP_VERSION, '5.5', '>') ? self::class : __CLASS__;
 			throw new \InvalidArgumentException("[$selfClass] No connection name or connection config specified.");
