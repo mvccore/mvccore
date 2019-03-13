@@ -117,6 +117,12 @@ trait Props
 	protected static $connectionName = NULL;
 
 	/**
+	 * Default database connection class name.
+	 * @var string
+	 */
+	protected static $connectionClass = '\\PDO';
+
+	/**
 	 * `\PDO` connections array, keyed by connection indexes from system config.
 	 * @var \PDO[]
 	 */

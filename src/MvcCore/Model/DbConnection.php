@@ -63,10 +63,13 @@ trait DbConnection
 				$dsn = str_replace('{'.$key.'}', $value, $dsn);
 			// If database required user and password credentials,
 			// connect with full arguments count or only with one (sqlite only)
+			$connectionClass = isset($cfg->class) && is_subclass_of($cfg->class, '\\PDO') 
+				? $cfg->class 
+				: self::$connectionClass;
 			if ($conArgs->auth) {
-				$connection = new \PDO($dsn, $cfg->user, $cfg->password, $conArgs->options);
+				$connection = new $connectionClass($dsn, $cfg->user, $cfg->password, $conArgs->options);
 			} else {
-				$connection = new \PDO($dsn);
+				$connection = new $connectionClass($dsn);
 			}
 			// store new connection under config index for all other model classes
 			static::$connections[$connectionName] = $connection;
@@ -215,14 +218,20 @@ trait DbConnection
 		$cfgType = gettype($systemCfgDb);
 		$configs = [];
 		$defaultConnectionName = NULL;
+		$defaultConnectionClass = NULL;
 		// db.defaultName - default connection index for models, where is no connection name/index defined inside class.
 		if ($cfgType == 'array') {
 			// multiple connections defined, indexed by some numbers, maybe default connection specified.
 			if (isset($systemCfgDb['defaultName'])) 
 				$defaultConnectionName = $systemCfgDb['defaultName'];
+			if (isset($systemCfgDb['defaultClass'])) 
+				$defaultConnectionClass = $systemCfgDb['defaultClass'];
 			foreach ($systemCfgDb as $key => $value) {
-				if ($key === 'defaultName') continue;
-				$configs[$key] = (object) $value;
+				if (is_scalar($value)) {
+					$configs[$key] = $value;
+				} else {
+					$configs[$key] = (object) $value;
+				}
 			}
 		} else if ($cfgType == 'object') {
 			// Multiple connections defined or single connection defined:
@@ -230,12 +239,17 @@ trait DbConnection
 			// - Multiple connections defined - indexed by strings, maybe default connection specified.
 			if (isset($systemCfgDb->defaultName)) 
 				$defaultConnectionName = $systemCfgDb->defaultName;
+			if (isset($systemCfgDb->defaultClass)) 
+				$defaultConnectionClass = $systemCfgDb->defaultClass;
 			if (isset($systemCfgDb->driver)) {
 				$configs[0] = $systemCfgDb;
 			} else {
 				foreach ($systemCfgDb as $key => $value) {
-					if ($key === 'defaultName') continue;
-					$configs[$key] = (object) $value;
+					if (is_scalar($value)) {
+						$configs[$key] = $value;
+					} else {
+						$configs[$key] = (object) $value;
+					}
 				}
 			}
 		}
@@ -253,6 +267,8 @@ trait DbConnection
 			}
 			self::$connectionName = $defaultConnectionName;
 		}
+		if ($defaultConnectionClass !== NULL && is_subclass_of($defaultConnectionClass, '\\PDO')) 
+			self::$connectionClass = $defaultConnectionClass;
 		self::$configs = & $configs;
 	}
 }
