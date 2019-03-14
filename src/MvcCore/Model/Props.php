@@ -110,6 +110,27 @@ trait Props
 	protected static $systemConfigDbSectionName = 'db';
 
 	/**
+	 * System config debug configuration root node name (`debug` by default) 
+	 * and all it's properties names.
+	 * @var string
+	 */
+	protected static $systemConfigModelProps = [
+		'sectionName'	=> 'db',			// db section root node
+		'defaultName'	=> 'defaultName',	// default db connection name
+		'defaultClass'	=> 'defaultClass',	// custom \PDO implementation full class name
+		'name'			=> 'name',			// runtime configuration definition property for connection name
+		'index'			=> 'index',			// runtime configuration definition property for connection index
+		'driver'		=> 'driver',		// connection driver
+		'host'			=> 'host',			// connection host
+		'port'			=> 'port',			// connection port
+		'user'			=> 'user',			// connection user
+		'password'		=> 'password',		// connection password
+		'database'		=> 'database',		// connection database
+		'options'		=> 'options',		// connection options
+		'class'			=> 'class',			// custom connection class full name
+	];
+
+	/**
 	 * Default database connection name/index, in system config defined in section `db.default = name`.
 	 * In extended classes - use this for connection name/index of current model if different.
 	 * @var string|int|NULL

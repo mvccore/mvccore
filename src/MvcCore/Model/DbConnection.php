@@ -20,9 +20,12 @@ trait DbConnection
 	 * usually by system config values (cached by local store)
 	 * or create new connection of no connection cached.
 	 * @param string|int|array|\stdClass|NULL $connectionNameOrConfig
+	 * @param bool $strict	If `TRUE` and no connection under given name or given 
+	 *						index found, exception is thrown. `FALSE` by default.
+	 * @throws \InvalidArgumentException
 	 * @return \PDO
 	 */
-	public static function GetDb ($connectionNameOrConfig = NULL) {
+	public static function GetDb ($connectionNameOrConfig = NULL, $strict = FALSE) {
 		if (is_string($connectionNameOrConfig)) {
 			// if no connection index specified, try to get from class or from base model
 			if (self::$configs === NULL) static::loadConfigs(TRUE);
@@ -42,9 +45,16 @@ trait DbConnection
 			// get system config 'db' data
 			// and get predefined constructor arguments by driver value from config
 			$cfg = static::GetConfig($connectionName);
+			if ($strict) throw new \InvalidArgumentException(
+				"No connection found under given name/index: `$connectionNameOrConfig`."
+			);
 			if ($cfg === NULL)
-				$cfg = current(self::$configs); // if still nothing - take first database record
-			$conArgs = (object) self::$connectionArguments[isset(self::$connectionArguments[$cfg->driver]) ? $cfg->driver : 'default'];
+				$cfg = current(self::$configs); // if nothing found under connection name - take first database record
+			$sysCfgProps = (object) static::$systemConfigModelProps;
+			$conArgsKey = isset(self::$connectionArguments[$cfg->{$sysCfgProps->driver}]) 
+				? $cfg->{$sysCfgProps->driver} 
+				: 'default';
+			$conArgs = (object) self::$connectionArguments[$conArgsKey];
 			$connection = NULL;
 			// If database is file system based, complete app root and extend
 			// relative path in $cfg->database to absolute path
@@ -54,20 +64,38 @@ trait DbConnection
 					$lastSlashPos = strrpos($appRoot, '/');
 					$appRoot = substr($appRoot, 7, $lastSlashPos - 7);
 				}
-				$cfg->database = str_replace('\\', '/', realpath($appRoot . $cfg->database));
+				$cfg->{$sysCfgProps->database} = str_replace(
+					'\\', '/', realpath($appRoot . $cfg->{$sysCfgProps->database})
+				);
 			}
 			// Process connection string (dsn) with config replacements
 			$dsn = $conArgs->dsn;
 			$cfgArr = array_merge($conArgs->defaults, (array) $cfg);
-			foreach ($cfgArr as $key => $value)
+			foreach ($cfgArr as $key => $value) {
+				if (is_numeric($key)) continue;
+				if (isset($sysCfgProps->{$key})) {
+					$prop = $sysCfgProps->{$key};
+					$value = isset($cfg->{$prop})
+						? $cfg->{$prop}
+						: $value;
+				}
 				$dsn = str_replace('{'.$key.'}', $value, $dsn);
+			}
 			// If database required user and password credentials,
 			// connect with full arguments count or only with one (sqlite only)
-			$connectionClass = isset($cfg->class)
-				? $cfg->class 
+			$connectionClass = isset($cfg->{$sysCfgProps->class})
+				? $cfg->{$sysCfgProps->class} 
 				: self::$connectionClass;
 			if ($conArgs->auth) {
-				$connection = new $connectionClass($dsn, $cfg->user, $cfg->password, $conArgs->options);
+				$options = isset($cfg->{$sysCfgProps->options})
+					? array_merge($conArgs->options, $cfg->{$sysCfgProps->options} ?: [])
+					: $conArgs->options;
+				$connection = new $connectionClass(
+					$dsn, 
+					$cfg->{$sysCfgProps->user}, 
+					$cfg->{$sysCfgProps->password}, 
+					$options
+				);
 			} else {
 				$connection = new $connectionClass($dsn);
 			}
@@ -171,11 +199,12 @@ trait DbConnection
 	 */
 	public static function SetConfig (array $config = [], $connectionName = NULL) {
 		if (self::$configs === NULL) static::loadConfigs(FALSE);
+		$sysCfgProps = (object) static::$systemConfigModelProps;
 		if ($connectionName === NULL) {
-			if (isset($config['name'])) {
-				$connectionName = $config['name'];
-			} else if (isset($config['index'])) {
-				$connectionName = $config['index'];
+			if (isset($config[$sysCfgProps->name])) {
+				$connectionName = $config[$sysCfgProps->name];
+			} else if (isset($config[$sysCfgProps->index])) {
+				$connectionName = $config[$sysCfgProps->index];
 			}
 		}
 		if ($connectionName === NULL) {
@@ -214,7 +243,8 @@ trait DbConnection
 				."'db.*' found in system config.ini."
 			);
 		}
-		$systemCfgDb = & $systemCfg->{static::$systemConfigDbSectionName};
+		$sysCfgProps = (object) static::$systemConfigModelProps;
+		$systemCfgDb = & $systemCfg->{$sysCfgProps->sectionName};
 		$cfgType = gettype($systemCfgDb);
 		$configs = [];
 		$defaultConnectionName = NULL;
@@ -222,10 +252,10 @@ trait DbConnection
 		// db.defaultName - default connection index for models, where is no connection name/index defined inside class.
 		if ($cfgType == 'array') {
 			// multiple connections defined, indexed by some numbers, maybe default connection specified.
-			if (isset($systemCfgDb['defaultName'])) 
-				$defaultConnectionName = $systemCfgDb['defaultName'];
-			if (isset($systemCfgDb['defaultClass'])) 
-				$defaultConnectionClass = $systemCfgDb['defaultClass'];
+			if (isset($systemCfgDb[$sysCfgProps->defaultName])) 
+				$defaultConnectionName = $systemCfgDb[$sysCfgProps->defaultName];
+			if (isset($systemCfgDb[$sysCfgProps->defaultClass])) 
+				$defaultConnectionClass = $systemCfgDb[$sysCfgProps->defaultClass];
 			foreach ($systemCfgDb as $key => $value) {
 				if (is_scalar($value)) {
 					$configs[$key] = $value;
@@ -237,10 +267,10 @@ trait DbConnection
 			// Multiple connections defined or single connection defined:
 			// - Single connection defined - `$systemCfg->db` contains directly record for `driver`.
 			// - Multiple connections defined - indexed by strings, maybe default connection specified.
-			if (isset($systemCfgDb->defaultName)) 
-				$defaultConnectionName = $systemCfgDb->defaultName;
-			if (isset($systemCfgDb->defaultClass)) 
-				$defaultConnectionClass = $systemCfgDb->defaultClass;
+			if (isset($systemCfgDb->{$sysCfgProps->defaultName})) 
+				$defaultConnectionName = $systemCfgDb->{$sysCfgProps->defaultName};
+			if (isset($systemCfgDb->{$sysCfgProps->defaultClass})) 
+				$defaultConnectionClass = $systemCfgDb->{$sysCfgProps->defaultClass};
 			if (isset($systemCfgDb->driver)) {
 				$configs[0] = $systemCfgDb;
 			} else {
