@@ -63,7 +63,7 @@ trait DbConnection
 				$dsn = str_replace('{'.$key.'}', $value, $dsn);
 			// If database required user and password credentials,
 			// connect with full arguments count or only with one (sqlite only)
-			$connectionClass = isset($cfg->class) && is_subclass_of($cfg->class, '\\PDO') 
+			$connectionClass = isset($cfg->class)
 				? $cfg->class 
 				: self::$connectionClass;
 			if ($conArgs->auth) {
@@ -267,7 +267,7 @@ trait DbConnection
 			}
 			self::$connectionName = $defaultConnectionName;
 		}
-		if ($defaultConnectionClass !== NULL && is_subclass_of($defaultConnectionClass, '\\PDO')) 
+		if ($defaultConnectionClass !== NULL) 
 			self::$connectionClass = $defaultConnectionClass;
 		self::$configs = & $configs;
 	}

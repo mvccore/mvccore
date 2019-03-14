@@ -128,19 +128,25 @@ trait Helpers
 	 * If the custom error handler returns `FALSE`, normal internal error handler continues.
 	 * This function is very PHP specific. It's proudly used from Nette Framework, optimized for PHP 5.4+ incl.:
 	 * https://github.com/nette/utils/blob/b623b2deec8729c8285d269ad991a97504f76bd4/src/Utils/Callback.php#L63-L84
-	 * @param string $internalFuncName 
+	 * @param string|callable $internalFnOrHandler 
 	 * @param array $args 
 	 * @param callable $onError 
 	 * @return mixed
 	 */
-	public static function Invoke ($internalFuncName, array $args, callable $onError) {
+	public static function Invoke ($internalFnOrHandler, array $args, callable $onError) {
 		$prevErrorHandler = NULL;
 		$prevErrorHandler = set_error_handler(
-			function ($errLevel, $errMessage, $errFile, $errLine, $errContext) use ($onError, & $prevErrorHandler, $internalFuncName) {
+			function ($errLevel, $errMessage, $errFile, $errLine, $errContext) use ($onError, & $prevErrorHandler, $internalFnOrHandler) {
 				if ($errFile === '' && defined('HHVM_VERSION'))  // https://github.com/facebook/hhvm/issues/4625
 					$errFile = func_get_arg(5)[1]['file'];
 				if ($errFile === __FILE__) {
-					$errMessage = preg_replace("#^$internalFuncName\(.*?\): #", '', $errMessage);
+					$funcNameStr = is_string($internalFnOrHandler)
+						? $internalFnOrHandler
+						: (is_array($internalFnOrHandler) && count($internalFnOrHandler) === 2
+							? $internalFnOrHandler[1]
+							: strval($internalFnOrHandler)
+						);
+					$errMessage = preg_replace("#^$funcNameStr\(.*?\): #", '', $errMessage);
 					if ($onError($errMessage, $errLevel, $errFile, $errLine, $errContext) !== FALSE) 
 						return TRUE;
 				}
@@ -150,7 +156,7 @@ trait Helpers
 			}
 		);
 		try {
-			return call_user_func_array($internalFuncName, $args);
+			return call_user_func_array($internalFnOrHandler, $args);
 		} catch (\Exception $e) {
 		} /* finally {
 			restore_error_handler();

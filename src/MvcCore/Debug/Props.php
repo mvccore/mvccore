@@ -17,17 +17,18 @@ trait Props
 {
 	/**
 	 * Email recipient to send information about exceptions or errors,
-	 * `"admin@localhost"` by default.
+	 * `"admin@localhost"` by default. This property is not used in core debug 
+	 * class, you need to instal extension `mvccore/ext-debug-tracy`.
 	 * @var string
 	 */
 	public static $EmailRecepient = 'admin@localhost';
 
 	/**
 	 * Relative path from app root to store any log information,
-	 * `"/Var/Logs"` by default.
+	 * `"~/Var/Logs"` by default.
 	 * @var string
 	 */
-	public static $LogDirectory = '/Var/Logs';
+	public static $LogDirectory = '~/Var/Logs';
 
 	/**
 	 * Initialize global development shorthands.
@@ -37,10 +38,42 @@ trait Props
 
 	/**
 	 * Semaphore to execute `\MvcCore\Debug::Init();` method only once.
-	 * `TRUE` if development, `FALSE` if anything else.
-	 * @var boolean
+	 * `TRUE` on `dev` environment, `FALSE` if any other environment detected.
+	 * @var bool
 	 */
-	protected static $development = NULL;
+	protected static $debugging = NULL;
+
+	/**
+	 * All PHP and user notices, warnings and errors are automatically turned 
+	 * and thrown as `\ErrorException`, initialized into `TRUE` in `Init()`
+	 * function by default.
+	 * @var bool|NULL
+	 */
+	protected static $strictExceptionsMode = NULL;
+
+	/**
+	 * Previous error handler before strict exceptions mode is defined.
+	 * @var callable|NULL
+	 */
+	protected static $prevErrorHandler = NULL;
+
+	/**
+	 * System config debug configuration root node name (`debug` by default) 
+	 * and all it's properties names.
+	 * @var string
+	 */
+	protected static $systemConfigDebugProps = [
+		'sectionName'		=> 'debug',				// debug section root node
+		'emailRecepient'	=> 'emailRecepient',	// debug email, `admin@localhost` by default
+		'logDirectory'		=> 'logDirectory',		// log directory, `/Var/Logs` by default
+		'strictExceptions'	=> 'strictExceptions',	// strict exceptions mode, `TRUE` by default
+	];
+
+	/**
+	 * Loaded system config debug section values.
+	 * @var array|NULL
+	 */
+	protected static $systemConfigDebugValues = NULL;
 
 	/**
 	 * Debugging and logging handlers, this should be customized in extended class.
@@ -91,5 +124,5 @@ trait Props
 	 * Reference to `\MvcCore\Application::GetInstance()->GetRequest()->GetMicrotime();`.
 	 * @var float
 	 */
-	protected static $requestBegin;
+	protected static $requestBegin = 0.0;
 }

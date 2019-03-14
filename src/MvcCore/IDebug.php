@@ -14,7 +14,8 @@
 namespace MvcCore;
 
 /**
- * Responsibility - any development and logging messages and exceptions printing and logging.
+ * Responsibility - any development and logging messages and exceptions 
+ * printing and logging.
  * - Printing any variable in content body.
  * - Printing any variable in browser debug bar.
  * - Caught exceptions printing.
@@ -37,8 +38,9 @@ interface IDebug
 
 	/**
 	 * Initialize debugging and logging, once only.
-	 * @param bool $forceDevelopmentMode If defined as `TRUE` or `FALSE`,
-	 *								   debug mode will be set not by config but by this value.
+	 * @param bool $forceDevelopmentMode	If defined as `TRUE` or `FALSE`,
+	 *										debugging mode will be set not 
+	 *										by config but by this value.
 	 * @return void
 	 */
 	public static function Init ($forceDevelopmentMode = NULL);
@@ -55,7 +57,8 @@ interface IDebug
 	 * In non-development mode - store dumped variable in `debug.log`.
 	 * @param  mixed  $value	Variable to dump.
 	 * @param  bool   $return	Return output instead of printing it.
-	 * @param  bool   $exit		`TRUE` for last dump call by `xxx();` method to dump and `exit;`.
+	 * @param  bool   $exit		`TRUE` for last dump call by `xxx();` method to 
+	 *							dump and `exit;`.
 	 * @return mixed			Variable itself or dumped variable string.
 	 */
 	public static function Dump ($value, $return = FALSE, $exit = FALSE);
@@ -90,8 +93,8 @@ interface IDebug
 	public static function Exception ($exception, $exit = TRUE);
 
 	/**
-	 * Print all stored dumps at the end of sent response body as browser debug bar.
-	 * This function is called from registered shutdown handler by
+	 * Print all stored dumps at the end of sent response body as browser debug 
+	 * bar. This function is called from registered shutdown handler by
 	 * `register_shutdown_function()` from `\MvcCore\Debug::initHandlers();`.
 	 * @return void
 	 */

@@ -14,7 +14,8 @@
 namespace MvcCore {
 
 	/**
-	 * Responsibility - any devel and logging messages and exceptions printing and logging.
+	 * Responsibility - any devel and logging messages and exceptions 
+	 * printing and logging.
 	 * - Printing any variable in content body.
 	 * - Printing any variable in browser debug bar.
 	 * - Caught exceptions printing.

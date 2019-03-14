@@ -33,7 +33,8 @@ trait Handlers
 	 * In non-development mode - store dumped variable in `debug.log`.
 	 * @param  mixed  $value		Variable to dump.
 	 * @param  bool   $return		Let's return output instead of printing it.
-	 * @param  bool   $exit			`TRUE` for last dump call by `xxx();` method to dump and `exit;`.
+	 * @param  bool   $exit			`TRUE` for last dump call by `xxx();` method 
+	 *								to dump and `exit;`.
 	 * @return mixed				Variable itself or dumped variable string.
 	 */
 	public static function Dump ($value, $return = FALSE, $exit = FALSE) {
@@ -45,7 +46,7 @@ trait Handlers
 			$dumpedValue = @call_user_func(static::$handlers['dump'], $value, $return);
 		}
 		if ($return) return $dumpedValue;
-		if (static::$development) {
+		if (static::$debugging) {
 			echo $dumpedValue;
 		} else {
 			static::storeLogRecord($dumpedValue, \MvcCore\IDebug::DEBUG);
@@ -65,12 +66,12 @@ trait Handlers
 	public static function BarDump ($value, $title = NULL, $options = []) {
 		if (static::$originalDebugClass) {
 			if (!isset($options['backtraceIndex'])) $options['backtraceIndex'] = 1;
-			$options['bar'] = static::$development;
+			$options['bar'] = static::$debugging;
 			$dumpedValue = static::dumpHandler($value, $title, $options);
 		} else {
 			$dumpedValue = @call_user_func_array(static::$handlers['barDump'], func_get_args());
 		}
-		if (!static::$development) 
+		if (!static::$debugging) 
 			static::storeLogRecord($dumpedValue, \MvcCore\IDebug::DEBUG);
 		return $value;
 	}
@@ -105,7 +106,7 @@ trait Handlers
 			$dumpedValue = static::dumpHandler(
 				$exception, NULL, ['bar' => !$exit, 'backtraceIndex' => 1]
 			);
-			if (static::$development) {
+			if (static::$debugging) {
 				echo $dumpedValue;
 			} else {
 				static::storeLogRecord($dumpedValue, \MvcCore\IDebug::EXCEPTION);
@@ -116,8 +117,8 @@ trait Handlers
 	}
 
 	/**
-	 * Print all stored dumps at the end of sent response body as browser debug bar.
-	 * This function is called from registered shutdown handler by
+	 * Print all stored dumps at the end of sent response body as browser debug 
+	 * bar. This function is called from registered shutdown handler by
 	 * `register_shutdown_function()` from `\MvcCore\Debug::initHandlers();`.
 	 * @return void
 	 */

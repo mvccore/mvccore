@@ -106,12 +106,12 @@ interface ITool
 	 * If the custom error handler returns `FALSE`, normal internal error handler continues.
 	 * This function is very PHP specific. It's proudly used from Nette Framework, optimized for PHP 5.4+:
 	 * https://github.com/nette/utils/blob/b623b2deec8729c8285d269ad991a97504f76bd4/src/Utils/Callback.php#L63-L84
-	 * @param string $internalFuncName 
+	 * @param string|callable $internalFnOrHandler 
 	 * @param array $args 
 	 * @param callable $onError 
 	 * @return mixed
 	 */
-	public static function Invoke ($internalFuncName, array $args, callable $onError);
+	public static function Invoke ($internalFnOrHandler, array $args, callable $onError);
 
 	/**
 	 * Write or append file content by only one single PHP process.
