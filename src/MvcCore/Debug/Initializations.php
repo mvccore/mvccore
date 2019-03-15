@@ -25,8 +25,8 @@ trait Initializations
 	public static function Init ($forceDevelopmentMode = NULL) {
 		if (static::$debugging !== NULL) return;
 
-		if (self::$strictExceptionsMode === NULL)
-			self::SetStrictExceptionsMode(TRUE);
+		if (self::$strictExceptionsMode === NULL) 
+			self::initStrictExceptionsMode(self::$strictExceptionsMode);
 		
 		$app = static::$app ?: (static::$app = & \MvcCore\Application::GetInstance());
 		static::$requestBegin = $app->GetRequest()->GetMicrotime();
@@ -54,15 +54,30 @@ trait Initializations
 	 * it's automatically assigned back, else there is only called 
 	 * `restore_error_handler()` to restore system error handler.
 	 * @param bool $strictExceptionsMode 
-	 * @return bool
+	 * @param \int[] $errorLevelsToExceptions E_ERROR, E_RECOVERABLE_ERROR, E_CORE_ERROR, E_USER_ERROR, E_WARNING, E_CORE_WARNING, E_USER_WARNING
+	 * @return bool|NULL
 	 */
-	public static function SetStrictExceptionsMode ($strictExceptionsMode) {
+	public static function SetStrictExceptionsMode ($strictExceptionsMode, array $errorLevelsToExceptions = []) {
 		if ($strictExceptionsMode && !self::$strictExceptionsMode) {
-			self::$prevErrorHandler = set_error_handler(function($errLevel, $errMessage, $errFile, $errLine, $errContext) {
-				if ($errFile === '' && defined('HHVM_VERSION'))  // https://github.com/facebook/hhvm/issues/4625
-					$errFile = func_get_arg(5)[1]['file'];
-				throw new \ErrorException($errMessage, $errLevel, $errLevel, $errFile, $errLine);
-			});
+			$errorLevels = array_fill_keys($errorLevelsToExceptions, TRUE);
+			$allLevelsToExceptions = isset($errorLevels[E_ALL]);
+			$prevErrorHandler = NULL;
+			$prevErrorHandler = set_error_handler(
+				function(
+					$errLevel, $errMessage, $errFile, $errLine, $errContext
+				) use (
+					& $prevErrorHandler, $errorLevels, $allLevelsToExceptions
+				) {
+					if ($errFile === '' && defined('HHVM_VERSION'))  // https://github.com/facebook/hhvm/issues/4625
+						$errFile = func_get_arg(5)[1]['file'];
+					if ($allLevelsToExceptions || isset($errorLevels[$errLevel]))
+						throw new \ErrorException($errMessage, $errLevel, $errLevel, $errFile, $errLine);
+					return $prevErrorHandler 
+						? call_user_func_array($prevErrorHandler, func_get_args()) 
+						: FALSE;
+				}
+			);
+			self::$prevErrorHandler = & $prevErrorHandler;
 		} else if (!$strictExceptionsMode && self::$strictExceptionsMode) {
 			if (self::$prevErrorHandler !== NULL) {
 				set_error_handler(self::$prevErrorHandler);
@@ -71,6 +86,35 @@ trait Initializations
 			}
 		}
 		return self::$strictExceptionsMode = $strictExceptionsMode;
+	}
+
+	/**
+	 * Initialize strict exceptions mode in default levels or in customized 
+	 * levels from system config.
+	 * @param bool|NULL $strictExceptionsMode 
+	 * @return bool|NULL
+	 */
+	protected static function initStrictExceptionsMode ($strictExceptionsMode) {
+		$errorLevelsToExceptions = [];
+		if ($strictExceptionsMode !== FALSE) {
+			$sysCfgDebug = static::getSystemCfgDebugSection();
+			if (isset($sysCfgDebug['strictExceptions'])) {
+				$rawStrictExceptions = $sysCfgDebug['strictExceptions'];
+				$rawStrictExceptions = is_array($rawStrictExceptions)
+					? $rawStrictExceptions
+					: explode(',', trim($rawStrictExceptions, '[]'));
+				$errorLevelsToExceptions = array_map(
+					function ($rawErrorLevel) {
+						$rawErrorLevel = trim($rawErrorLevel);
+						if (is_numeric($rawErrorLevel)) return intval($rawErrorLevel);
+						return constant($rawErrorLevel);
+					}, $rawStrictExceptions
+				);
+			} else {
+				$errorLevelsToExceptions = self::$strictExceptionsModeDefaultLevels;
+			}
+		}
+		return self::SetStrictExceptionsMode($strictExceptionsMode, $errorLevelsToExceptions);
 	}
 
 	/**
@@ -143,7 +187,7 @@ trait Initializations
 		if (isset($cfgDebug->{$cfgProps->logDirectory}))
 			$result['logDirectory'] = $cfgDebug->{$cfgProps->logDirectory};
 		if (isset($cfgDebug->{$cfgProps->strictExceptions}))
-			$result['exceptions'] = $cfgDebug->{$cfgProps->strictExceptions};
+			$result['strictExceptions'] = $cfgDebug->{$cfgProps->strictExceptions};
 		self::$systemConfigDebugValues = $result;
 		return $result;
 	}

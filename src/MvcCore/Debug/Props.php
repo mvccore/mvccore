@@ -52,6 +52,16 @@ trait Props
 	protected static $strictExceptionsMode = NULL;
 
 	/**
+	 * Error levels to turn into exceptions by default.
+	 * @var \int[]
+	 */
+	protected static $strictExceptionsModeDefaultLevels = [
+		E_ERROR, E_RECOVERABLE_ERROR, 
+		E_CORE_ERROR, E_USER_ERROR, 
+		E_WARNING, E_CORE_WARNING, E_USER_WARNING
+	];
+
+	/**
 	 * Previous error handler before strict exceptions mode is defined.
 	 * @var callable|NULL
 	 */
