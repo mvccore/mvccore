@@ -72,9 +72,9 @@ trait Props
 			'auth'		=> TRUE,
 			'fileDb'	=> FALSE,
 			'options'	=> [
-				20		=> FALSE,				// `\PDO::ATTR_EMULATE_PREPARES`
-				1013	=> TRUE,				// `\PDO::MYSQL_ATTR_MULTI_STATEMENTS`
-				1002	=> "SET NAMES 'UTF8'",	// `\PDO::MYSQL_ATTR_INIT_COMMAND`
+				'\PDO::ATTR_EMULATE_PREPARES'		=> TRUE,
+				'\PDO::MYSQL_ATTR_MULTI_STATEMENTS'	=> TRUE,
+				'\PDO::MYSQL_ATTR_INIT_COMMAND'		=> "SET NAMES 'UTF8'",
 			],
 			'defaults'	=> ['port' => 3306,],
 		],
@@ -84,7 +84,7 @@ trait Props
 			'fileDb'	=> TRUE,
 			'options'	=> [],
 			'defaults'	=> [
-				2		=> 15,	// `\PDO::ATTR_TIMEOUT`
+				'\PDO::ATTR_TIMEOUT' => 15,
 			],
 		],
 		'sqlsrv'		=> [

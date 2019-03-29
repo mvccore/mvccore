@@ -87,9 +87,18 @@ trait DbConnection
 				? $cfg->{$sysCfgProps->class} 
 				: self::$connectionClass;
 			if ($conArgs->auth) {
-				$options = isset($cfg->{$sysCfgProps->options})
+				$rawOptions = isset($cfg->{$sysCfgProps->options})
 					? array_merge($conArgs->options, $cfg->{$sysCfgProps->options} ?: [])
 					: $conArgs->options;
+				$options = [];
+				foreach ($rawOptions as $optionKey => $optionValue) {
+					if (is_string($optionKey)) {
+						if (defined($optionKey))
+							$options[constant($optionKey)] = $optionValue;
+					} else {
+						$options[$optionKey] = $optionValue;
+					}
+				}
 				$connection = new $connectionClass(
 					$dsn, 
 					$cfg->{$sysCfgProps->user}, 
