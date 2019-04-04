@@ -45,23 +45,46 @@ trait Instancing
 
 	/**
 	 * Returns (or creates if necessary) model resource instance.
-	 * @param array|NULL	$args					Values array with variables to pass into resource `__construct()` method.
-	 * @param string		$resourceClassName		Resource class name, `Resource` string by default.
-	 * @param string|NULL	$currentModelClassName	Automatically initialized by `static::class` (or by `get_called_class()`)
+	 * @param array|NULL	$args				Values array with variables to pass into resource `__construct()` method.
+	 * @param string		$resourceClassPath	Automatically initialized with string replaced with `%SELF%` by `static::class` (or by `get_called_class()`).
 	 * @return \MvcCore\Model|\MvcCore\IModel
 	 */
-	public static function & GetResource ($args = [], $resourceClassName = 'Resource', $currentModelClassName = NULL) {
+	public static function & GetResource ($args = [], $resourceClassPath = '%SELF%s\Resource') {
 		$result = NULL;
-		if ($currentModelClassName === NULL) 
-			$currentModelClassName = version_compare(PHP_VERSION, '5.5', '>') ? static::class : get_called_class();
-		$namespaceSeparator = strpos($currentModelClassName, '\\') === FALSE ? '_' : '\\';
-		// Do not create resource instance in resource class (if current class 
-		// name doesn't end with `_Resource` or `\Resource` substring):
-		if (strpos($currentModelClassName, $namespaceSeparator . $resourceClassName) === FALSE) 
-			$resourceClassName = $currentModelClassName . $namespaceSeparator . $resourceClassName;
+		$staticClassPath = version_compare(PHP_VERSION, '5.5', '>') ? static::class : get_called_class();
+		$namespaceSeparator = strpos($staticClassPath, '\\') === FALSE ? '_' : '\\';
+		$staticClassPathExpl = explode($namespaceSeparator, $staticClassPath);
+		$resourceClassPathExpl = explode($namespaceSeparator, $resourceClassPath);
+		$resourceClassPathArr = [];
+		foreach ($resourceClassPathExpl as $key => $resourceClassPathItem) {
+			$selfMatched = mb_strpos($resourceClassPathItem, '%SELF%') !== FALSE;
+			if ($selfMatched) {
+				$resourceClassPathItem = str_replace('%SELF%', $staticClassPath, $resourceClassPathItem);
+				$resourceClassPathItemExpl = explode($namespaceSeparator, $resourceClassPathItem);
+				$resourceClassPathArr = array_merge($resourceClassPathArr, $resourceClassPathItemExpl);
+			} else if ($resourceClassPathItem === '.') {
+				if ($key === 0) {
+					unset($staticClassPathExpl[count($staticClassPathExpl) - 1]);
+					$resourceClassPathArr = array_merge([], $staticClassPathExpl);
+				}
+				continue;
+			} else if ($resourceClassPathItem === '..') {
+				if ($key === 0) {
+					unset($staticClassPathExpl[count($staticClassPathExpl) - 1]);
+					$resourceClassPathArr = array_merge([], $staticClassPathExpl);
+				}
+				unset($resourceClassPathArr[count($resourceClassPathArr) - 1]);
+			} else {
+				$resourceClassPathArr[] = $resourceClassPathItem;
+			}
+		}
+		$resourceClassName = implode($namespaceSeparator, $resourceClassPathArr);
 		// Do not create resource instance if resource class doesn't exist:
-		if (class_exists($resourceClassName)) 
+		if (class_exists($resourceClassName)) {
 			$result = call_user_func_array([$resourceClassName, 'GetInstance'], $args ?: []);
+		} else {
+			throw new \InvalidArgumentException("Class `$resourceClassName` doesn't exist.");
+		}
 		return $result;
 	}
 
