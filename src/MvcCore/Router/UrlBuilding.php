@@ -52,9 +52,25 @@ trait UrlBuilding
 		$ctrlActionOrRouteNameKey = $this->urlGetCompletedCtrlActionKey(
 			$controllerActionOrRouteName
 		);
-		if ($this->anyRoutesConfigured && !($this->routeByQueryString && $ctrlActionOrRouteNameKey === static::DEFAULT_ROUTE_NAME)) {
+		if ($this->anyRoutesConfigured && !(
+			$this->routeByQueryString && 
+			$ctrlActionOrRouteNameKey === static::DEFAULT_ROUTE_NAME
+		)) {
 			// try to found URL route in global `$this->urlRoutes` store
-			if (isset($this->urlRoutes[$ctrlActionOrRouteNameKey]) && $this->urlRoutes[$ctrlActionOrRouteNameKey]->GetName() !== static::DEFAULT_ROUTE_NAME) {
+			if (
+				isset($this->urlRoutes[$controllerActionOrRouteName]) && 
+				$this->urlRoutes[$controllerActionOrRouteName]->GetName() !== static::DEFAULT_ROUTE_NAME
+			) {
+				// if there was a route under `$controllerActionOrRouteName` key already, 
+				// we can complete URL by this route
+				$result = $this->UrlByRoute(
+					$this->urlRoutes[$controllerActionOrRouteName], 
+					$params, $controllerActionOrRouteName
+				);
+			} else if (
+				isset($this->urlRoutes[$ctrlActionOrRouteNameKey]) && 
+				$this->urlRoutes[$ctrlActionOrRouteNameKey]->GetName() !== static::DEFAULT_ROUTE_NAME
+			) {
 				// if there was a route under `$ctrlActionOrRouteNameKey` key already, 
 				// we can complete URL by this route
 				$result = $this->UrlByRoute(
