@@ -37,8 +37,13 @@ trait GettersSetters
 	 */
 	public function IsInternalRequest () {
 		if ($this->appRequest === NULL) {
-			$ctrl = $this->GetControllerName();
-			$action = $this->GetActionName();
+			try {
+				$ctrl = $this->GetControllerName();
+				$action = $this->GetActionName();
+			} catch (\Exception $e) {
+				$ctrl = NULL;
+				$action = NULL;
+			}
 			if ($ctrl !== NULL && $action !== NULL) {
 				$this->appRequest = FALSE;
 				if ($ctrl === 'controller' && $action === 'asset')
