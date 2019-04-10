@@ -77,7 +77,7 @@ interface IDebug
 	/**
 	 * Logs any message or exception with log date time, in `*.log` file
 	 * by given log level, in configured logging directory.
-	 * @param  string|\Exception|\Throwable	$value
+	 * @param  mixed|\Exception|\Throwable	$value
 	 * @param  string						$priority
 	 * @return string						Logging filename full path.
 	 */

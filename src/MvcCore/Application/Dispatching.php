@@ -206,8 +206,10 @@ trait Dispatching
 			}
 			$this->controller = & $controller;
 		}
-		/** @var $this->controller \MvcCore\Controller */
-		$this->controller
+		/** @var $ctrl \MvcCore\Controller */
+		$ctrl = & $this->controller;
+		/** @var $this \MvcCore\Application */
+		$ctrl
 			->SetApplication($this)
 			->SetRequest($this->request)
 			->SetResponse($this->response)

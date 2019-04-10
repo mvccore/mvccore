@@ -94,12 +94,12 @@ trait Canonical
 			$selfUrlDomainAndBasePart !== $request->GetBaseUrl()
 		) {
 			$redirectToCanonicalUrl = TRUE;
-		} else if (mb_strlen($selfUrlPathAndQueryPart) > 0) { 
-			$path = $request->GetPath(TRUE);
+		} else if (mb_strlen($selfUrlPathAndQueryPart) > 0) {
+			$path = $request->GetPath(FALSE);
 			$requestedUrl = $path === '' ? '/' : $path ;
 			if (mb_strpos($selfUrlPathAndQueryPart, '?') !== FALSE) {
 				$selfUrlPathAndQueryPart = rawurldecode($selfUrlPathAndQueryPart);
-				$requestedUrl .= $request->GetQuery(TRUE, TRUE);
+				$requestedUrl .= $request->GetQuery(TRUE, FALSE);
 			}
 			if ($selfUrlPathAndQueryPart !== $requestedUrl) 
 				$redirectToCanonicalUrl = TRUE;
