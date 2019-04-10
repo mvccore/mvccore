@@ -62,7 +62,6 @@ trait StringCaseConversions
 	 * @return string
 	 */
 	public static function GetPascalCaseFromDashed ($dashed = '') {
-		if (is_array($dashed)) $stop();
 		$a = explode('/', $dashed);
 		foreach ($a as & $b) $b = ucfirst(str_replace('-', '', ucwords($b, '-')));
 		return ucfirst(implode('/', $a));

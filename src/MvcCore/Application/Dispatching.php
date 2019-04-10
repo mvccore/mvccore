@@ -53,10 +53,15 @@ trait Dispatching
 	 */
 	public function Run ($singleFileUrl = FALSE) {
 		if ($singleFileUrl) $this->SetCompiled(static::COMPILED_SFU);
-		$this->GetRequest(); // triggers creation
-		$this->GetResponse();// triggers creation
-		$debugClass = $this->debugClass;
-		$debugClass::Init();
+		try {
+			$this->GetRequest(); // triggers creation
+			$this->GetResponse();// triggers creation
+			$debugClass = $this->debugClass;
+			$debugClass::Init();
+		} catch (\Exception $e) {
+			$this->DispatchException($e);
+			return $this->Terminate();
+		}
 		if (!$this->ProcessCustomHandlers($this->preRouteHandlers))		return $this->Terminate();
 		if (!$this->RouteRequest())										return $this->Terminate();
 		if (!$this->ProcessCustomHandlers($this->postRouteHandlers))	return $this->Terminate();
@@ -362,7 +367,7 @@ trait Dispatching
 				$this->defaultControllerErrorActionName,
 				TRUE
 			);
-			$newParams = array_merge($this->request->GetParams('.*'), [
+			$newParams = array_merge($this->request->GetParams(FALSE), [
 				'code'		=> 500,
 				'message'	=> $exceptionMessage,
 			]);
@@ -415,7 +420,7 @@ trait Dispatching
 				$this->defaultControllerNotFoundActionName,
 				TRUE
 			);
-			$newParams = array_merge($this->request->GetParams('.*'), [
+			$newParams = array_merge($this->request->GetParams(FALSE), [
 				'code'		=> 404,
 				'message'	=> $exceptionMessage,
 			]);

@@ -72,7 +72,7 @@ trait GettersSetters
 		if ($this->controllerName === NULL) {
 			$routerClass = self::$routerClass;
 			$router = & $routerClass::GetInstance();
-			if (isset($this->globalGet[$router::URL_PARAM_CONTROLLER]))
+			if (isset($this->globalGet[$router::URL_PARAM_CONTROLLER])) 
 				$this->controllerName = $this->GetParam($router::URL_PARAM_CONTROLLER, 'a-zA-Z0-9\-_/', '', 'string');
 		}
 		return $this->controllerName;
@@ -101,7 +101,7 @@ trait GettersSetters
 		if ($this->actionName === NULL) {
 			$routerClass = self::$routerClass;
 			$router = & $routerClass::GetInstance();
-			if (isset($this->globalGet[$router::URL_PARAM_ACTION]))
+			if (isset($this->globalGet[$router::URL_PARAM_ACTION])) 
 				$this->actionName = $this->GetParam($router::URL_PARAM_ACTION, 'a-zA-Z0-9\-_', '', 'string');
 		}
 		return $this->actionName;
