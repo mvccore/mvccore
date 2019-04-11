@@ -185,8 +185,11 @@ trait RouteMethods
 						$route->SetName($routeAutoName);
 					}
 				} else {
-					if ($ctrlActionName)
+					if ($ctrlActionName) {
 						$route->SetControllerAction($routeName);
+					} else if ($route->GetName() !== $routeName && $route->GetName() === $route->GetControllerAction()) {
+						$route->SetName($routeName);
+					}
 					if ($route->GetName() === NULL) 
 						$route->SetName($routeName);
 				}
@@ -377,8 +380,9 @@ trait RouteMethods
 				unset($this->urlRoutes[$routeName]);
 			if (isset($this->urlRoutes[$controllerAction])) 
 				unset($this->urlRoutes[$controllerAction]);
-			/** @var $this->currentRoute \MvcCore\Route */
-			if ($this->currentRoute->GetName() === $result->GetName())
+			/** @var $currentRoute \MvcCore\Route */
+			$currentRoute = & $this->currentRoute;
+			if ($currentRoute->GetName() === $result->GetName())
 				$this->currentRoute = NULL;
 		}
 		if (!$this->routes && $this->preRouteMatchingHandler === NULL) 
