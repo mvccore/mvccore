@@ -129,7 +129,7 @@ interface ITool
 	 */
 	public static function SingleProcessWrite (
 		$fullPath, 
-		& $content, 
+		$content, 
 		$writeMode = 'w', 
 		$lockWaitMilliseconds = 100, 
 		$maxLockWaitMilliseconds = 5000, 

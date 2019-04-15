@@ -181,7 +181,7 @@ trait Helpers
 	 */
 	public static function SingleProcessWrite (
 		$fullPath, 
-		& $content, 
+		$content, 
 		$writeMode = 'w', 
 		$lockWaitMilliseconds = 10, 
 		$maxLockWaitMilliseconds = 5000, 
