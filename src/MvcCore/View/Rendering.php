@@ -45,6 +45,7 @@ trait Rendering
 	 * @return string
 	 */
 	public function & RenderLayoutAndContent ($relativePath = '', & $content = '') {
+		if ($relativePath === NULL) return $content; // no layout defined
 		$this->__protected['content'] = & $content;
 		return $this->Render(static::$layoutsDir, $relativePath);
 	}
