@@ -85,6 +85,30 @@ interface ITool
 	public static function DecodeJson (& $jsonStr);
 
 	/**
+	 * Recognize if given string is JSON or not without JSON parsing.
+	 * @see https://www.ietf.org/rfc/rfc4627.txt
+	 * @param string $jsonStr 
+	 * @return bool
+	 */
+	public static function IsJsonString (& $jsonStr);
+
+	/**
+	 * Recognize if given string is query string without parsing.
+	 * It recognizes query strings like:
+	 * - `key1=value1`
+	 * - `key1=value1&`
+	 * - `key1=value1&key2=value2`
+	 * - `key1=value1&key2=value2&`
+	 * - `key1=&key2=value2`
+	 * - `key1=value&key2=`
+	 * - `key1=value&key2=&key3=`
+	 * ...
+	 * @param string $jsonStr 
+	 * @return bool
+	 */
+	public static function IsQueryString (& $queryStr);
+
+	/**
 	 * Returns the OS-specific directory for temporary files.
 	 * @return string
 	 */

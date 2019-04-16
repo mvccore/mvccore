@@ -30,6 +30,12 @@ trait Props
 	protected static $routerClass = NULL;
 
 	/**
+	 * Reference to `\MvcCore\Application::GetInstance();`
+	 * @var \MvcCore\Application|NULL
+	 */
+	protected static $app = NULL;
+
+	/**
 	 * Example: `cli | apache | fpm-fcgi`
 	 * @var string|NULL
 	 */

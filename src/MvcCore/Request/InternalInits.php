@@ -255,15 +255,21 @@ trait InternalInits
 	protected function initParamsCompletePostData () {
 		$result = [];
 		$rawPhpInput = file_get_contents('php://input');
-		$decodedJsonResult = \MvcCore\Tool::DecodeJson($rawPhpInput);
-		if ($decodedJsonResult->success) {
-			$result = (array) $decodedJsonResult->data;
-		} else {
-			$rows = explode('&', $rawPhpInput);
-			foreach ($rows as $row) {
-				list($key, $value) = explode('=', $row);
-				$result[$key] = $value;
+		$app = self::$app ?: (self::$app = & \MvcCore\Application::GetInstance());
+		$toolClass = $app->GetToolClass();
+		// try first JSON decoding, then fallback to query string
+		$probablyAJsonType = !$toolClass::IsQueryString($rawPhpInput);
+		if ($probablyAJsonType) {
+			$decodedJsonResult = $toolClass::DecodeJson($rawPhpInput);
+			if ($decodedJsonResult->success) {
+				$result = (array) $decodedJsonResult->data;
+			} else {
+				$probablyAJsonType = FALSE; // fall back to query string parsing
 			}
+		}
+		if (!$probablyAJsonType) {
+			$rawPhpInput = trim($rawPhpInput, '&=');
+			parse_str($rawPhpInput, $result);
 		}
 		return $result;
 	}

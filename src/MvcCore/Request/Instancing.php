@@ -38,7 +38,8 @@ trait Instancing
 	) {
 		if (!func_get_args()) 
 			list($server, $get, $post, $cookie, $files) = [& $_SERVER, & $_GET, & $_POST, & $_COOKIE, & $_FILES];
-		$requestClass = \MvcCore\Application::GetInstance()->GetRequestClass();
+		$app = self::$app ?: (self::$app = & \MvcCore\Application::GetInstance());
+		$requestClass = $app->GetRequestClass();
 		return new $requestClass($server, $get, $post, $cookie, $files);
 	}
 
@@ -63,7 +64,8 @@ trait Instancing
 		array & $cookie = [],
 		array & $files = []
 	) {
-		self::$routerClass = self::$routerClass ?: \MvcCore\Application::GetInstance()->GetRouterClass();
+		$app = self::$app ?: (self::$app = & \MvcCore\Application::GetInstance());
+		self::$routerClass = self::$routerClass ?: $app->GetRouterClass();
 		$this->globalServer = & $server;
 		$this->globalGet = & $get;
 		$this->globalPost = & $post;

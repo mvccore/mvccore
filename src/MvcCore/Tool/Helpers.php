@@ -73,6 +73,49 @@ trait Helpers
 	}
 
 	/**
+	 * Recognize if given string is JSON or not without JSON parsing.
+	 * @see https://www.ietf.org/rfc/rfc4627.txt
+	 * @param string $jsonStr 
+	 * @return bool
+	 */
+	public static function IsJsonString (& $jsonStr) {
+		return !preg_match(
+			'#[^,:{}\[\]0-9.\\-+Eaeflnr-u \n\r\t]#',
+			preg_replace(
+				'#"(\.|[^\\"])*"#', 
+				'', 
+				(string) $jsonStr
+			)
+		);
+	}
+
+	/**
+	 * Recognize if given string is query string without parsing.
+	 * It recognizes query strings like:
+	 * - `key1=value1`
+	 * - `key1=value1&`
+	 * - `key1=value1&key2=value2`
+	 * - `key1=value1&key2=value2&`
+	 * - `key1=&key2=value2`
+	 * - `key1=value&key2=`
+	 * - `key1=value&key2=&key3=`
+	 * ...
+	 * @param string $jsonStr 
+	 * @return bool
+	 */
+	public static function IsQueryString (& $queryStr) {
+		$queryStr = trim($queryStr, '&=');
+		$apmsCount = substr_count($queryStr, '&');
+		$equalsCount = substr_count($queryStr, '=');
+		$firstAndLast = mb_substr($queryStr, 0, 1) . mb_substr($queryStr, -1, 1);
+		if ($firstAndLast === '{}' || $firstAndLast === '[]') return FALSE; // most likely a JSON
+		if ($apmsCount === 0 && $equalsCount === 0) return FALSE; // there was `nothing`
+		if ($equalsCount > 0) $equalsCount -= 1;
+		if ($equalsCount === 0) return TRUE; // there was `key=value`
+		return $apmsCount / $equalsCount >= 1; // there was `key=&key=value`
+	}
+
+	/**
 	 * Returns the OS-specific directory for temporary files.
 	 * @return string
 	 */
