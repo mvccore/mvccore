@@ -56,6 +56,15 @@ interface IModel
 	);
 
 	/**
+	 * Get touched properties from initial moment called by `SetUp()` method.
+	 * Get everything, what is different to `$this->initialValues` array.
+	 * @param bool $includeInheritProperties 
+	 * @param bool $publicOnly 
+	 * @return array Keys are class properties names, values are changed values.
+	 */
+	public function GetTouched ($includeInheritProperties = TRUE, $publicOnly = TRUE);
+
+	/**
 	 * Returns (or creates and holds) instance from local store.
 	 * @param mixed $args,... unlimited OPTIONAL variables to pass into model `__construct()` method.
 	 * @return \MvcCore\IModel

@@ -56,9 +56,14 @@ trait DataMethods
 			? $classReflector->getProperties(\ReflectionProperty::IS_PUBLIC)
 			: $classReflector->getProperties();
 		$dataKeys = $keysInsensitive ? ','.implode(',', array_keys($data)).',' : '' ;
+		/** @var $property \ReflectionProperty */
 		foreach ($properties as $property) {
-			if (!$includeInheritProperties && $property->class != $modelClassName) continue;
 			$propertyName = $property->name;
+			if (
+				$property->isStatic() ||
+				isset(static::$protectedProperties[$propertyName]) ||
+				(!$includeInheritProperties && $property->class != $modelClassName)
+			) continue;
 			if (isset($data[$propertyName])) {
 				$value = $data[$propertyName];
 			} else if ($keysInsensitive) {
@@ -73,11 +78,49 @@ trait DataMethods
 			if ($value !== NULL && preg_match('/@var\s+([^\s]+)/', $property->getDocComment(), $matches)) {
 				list(, $rawType) = $matches;
 				$types = explode('|', $rawType);
-				foreach ($types as $type) if (settype($value, $type)) break;
+				foreach ($types as $type) {
+					list($conversionResult, $targetTypeValue) = static::setUpConvertToType($value, $type);
+					if ($conversionResult) {
+						$value = $targetTypeValue;
+						break;	
+					}
+				}
 			}
 			$this->$propertyName = $value;
+			$this->initialValues[$propertyName] = $value;
 		}
 		return $this;
+	}
+
+	/**
+	 * Get touched properties from initial moment called by `SetUp()` method.
+	 * Get everything, what is different to `$this->initialValues` array.
+	 * @param bool $includeInheritProperties 
+	 * @param bool $publicOnly 
+	 * @return array Keys are class properties names, values are changed values.
+	 */
+	public function GetTouched ($includeInheritProperties = TRUE, $publicOnly = TRUE) {
+		$touchedValues = [];
+		/** @var $this \MvcCore\Model */
+		$modelClassName = get_class($this);
+		$classReflector = new \ReflectionClass($modelClassName);
+		$properties = $publicOnly
+			? $classReflector->getProperties(\ReflectionProperty::IS_PUBLIC)
+			: $classReflector->getProperties();
+		/** @var $property \ReflectionProperty */
+		foreach ($properties as $property) {
+			$propertyName = $property->name;
+			if (
+				$property->isStatic() ||
+				isset(static::$protectedProperties[$propertyName]) ||
+				(!$includeInheritProperties && $property->class != $modelClassName)
+			) continue;
+			$initialValue = $this->initialValues[$propertyName];
+			$currentValue = $this->$propertyName;
+			if ($initialValue !== $currentValue) 
+				$touchedValues[$propertyName] = $currentValue;
+		}
+		return $touchedValues;
 	}
 
 	/**
@@ -95,10 +138,15 @@ trait DataMethods
 	public function __call ($rawName, $arguments = []) {
 		$nameBegin = strtolower(substr($rawName, 0, 3));
 		$name = substr($rawName, 3);
-		if ($nameBegin == 'get' && isset($this->$name)) {
-			return $this->$name;
+		if ($nameBegin == 'get') {
+			if (property_exists($this, $name)) return $this->$name;
+			if (property_exists($this, lcfirst($name))) return $this->{lcfirst($name)};
+			return NULL;
 		} else if ($nameBegin == 'set') {
-			$this->$name = isset($arguments[0]) ? $arguments[0] : NULL;
+			if (property_exists($this, $name)) 
+				$this->$name = isset($arguments[0]) ? $arguments[0] : NULL;
+			if (property_exists($this, lcfirst($name))) 
+				$this->{lcfirst($name)} = isset($arguments[0]) ? $arguments[0] : NULL;
 			return $this;
 		} else {
 			$selfClass = version_compare(PHP_VERSION, '5.5', '>') ? self::class : __CLASS__;
@@ -120,6 +168,10 @@ trait DataMethods
 				'['.$selfClass."] It's not possible to change property: '$name' originally declared in class ".__CLASS__.'.'
 			);
 		}
+		if (property_exists($this, $name))
+			return $this->$name = $value;
+		if (property_exists($this, lcfirst($name))) 
+			return $this->{lcfirst($name)} = $value;
 		return $this->$name = $value;
 	}
 
@@ -137,7 +189,11 @@ trait DataMethods
 				'['.$selfClass."] It's not possible to get property: '$name' originally declared in this class."
 			);
 		}
-		return (isset($this->$name)) ? $this->$name : null;
+		if (property_exists($this, $name)) 
+			return $this->$name;
+		if (property_exists($this, lcfirst($name))) 
+			return $this->{lcfirst($name)};
+		return NULL;
 	}
 
 	/**
@@ -178,4 +234,42 @@ trait DataMethods
 		if (property_exists($this, 'autoInit') && $this->autoInit) 
 			$this->Init();
 	}
+
+	/**
+	 * Try to convert database value into target type.
+	 * @param mixed $rawDbValue 
+	 * @param string $typeStr 
+	 * @return array
+	 */
+	protected static function setUpConvertToType ($rawDbValue, $typeStr) {
+		$conversionResult = FALSE;
+		$typeStr = trim($typeStr, '\\');
+		if ($typeStr == 'DateTime') {
+			$dateTimeFormat = 'Y-m-d H:i:s';
+			if (is_numeric($rawDbValue)) {
+				$rawDbValueStr = str_replace(['+','-','.'], '', strval($rawDbValue));
+				$secData = mb_substr($rawDbValueStr, 0, 10);
+				$dateTimeStr = date($dateTimeFormat, intval($secData));
+				if (strlen($rawDbValueStr) > 10) 
+					$dateTimeStr .= '.' . mb_substr($rawDbValueStr, 10);
+			} else {
+				$dateTimeStr = strval($rawDbValue);
+				if (strpos($dateTimeStr, '-') === FALSE) {
+					$dateTimeFormat = substr($dateTimeFormat, 6);
+				} else if (strpos($dateTimeStr, ':') === FALSE) {
+					$dateTimeFormat = substr($dateTimeFormat, 0, 5);
+				}
+				if (strpos($dateTimeStr, '.') !== FALSE) $dateTimeFormat .= '.u';
+			}
+			$dateTime = date_create_from_format($dateTimeFormat, $dateTimeStr);
+			if ($dateTime !== FALSE) {
+				$rawDbValue = $dateTime;
+				$conversionResult = TRUE;
+			}
+		} else {
+			if (settype($rawDbValue, $typeStr)) $conversionResult = TRUE;
+		}
+		return [$conversionResult, $rawDbValue];
+	}
+
 }

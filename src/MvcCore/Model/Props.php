@@ -187,6 +187,13 @@ trait Props
 	protected $resource;
 
 	/**
+	 * Array with values initialized by `SetUp()` method.
+	 * Usefull to recognize changed values bafore `Save()`.
+	 * @var array
+	 */
+	protected $initialValues = [];
+
+	/**
 	 * Originally declared internal model properties to protect their
 	 * possible overwriting by `__set()` or `__get()` magic methods.
 	 * Keys are properties names, values are bools, if to serialize their values 
@@ -194,9 +201,10 @@ trait Props
 	 * @var array
 	 */
 	protected static $protectedProperties = [
-		'autoInit'	=> TRUE,
-		'db'		=> FALSE,
-		'config'	=> FALSE,
-		'resource'	=> FALSE,
+		'autoInit'		=> TRUE,
+		'db'			=> FALSE,
+		'config'		=> FALSE,
+		'resource'		=> FALSE,
+		'initialValues'	=> FALSE,
 	];
 }
