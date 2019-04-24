@@ -25,6 +25,62 @@ namespace MvcCore;
 interface IModel
 {
 	/**
+	 * Pass throught values with array keys conversion from underscored case
+	 * into pascal case.
+	 * @var int
+	 */
+	const KEYS_CONVERSION_UNDERSCORES_TO_PASCALCASE	= 0b00000001;
+	
+	/**
+	 * Pass throught values with array keys conversion from underscored case
+	 * into camel case.
+	 * @var int
+	 */
+	const KEYS_CONVERSION_UNDERSCORES_TO_CAMELCASE	= 0b00000010;
+	
+	/**
+	 * Pass throught values with array keys conversion from pascal case
+	 * into underscored case.
+	 * @var int
+	 */
+	const KEYS_CONVERSION_PASCALCASE_TO_UNDERSCORES	= 0b00000100;
+	
+	/**
+	 * Pass throught values with array keys conversion from pascal case
+	 * into camel case.
+	 * @var int
+	 */
+	const KEYS_CONVERSION_PASCALCASE_TO_CAMELCASE	= 0b00001000;
+
+	/**
+	 * Pass throught values with array keys conversion from camel case
+	 * into underscored case.
+	 * @var int
+	 */
+	const KEYS_CONVERSION_CAMELCASE_TO_UNDERSCORES	= 0b00010000;
+
+	/**
+	 * Pass throught values with array keys conversion from camel case
+	 * into pascal case.
+	 * @var int
+	 */
+	const KEYS_CONVERSION_CAMELCASE_TO_PASCALCASE	= 0b00100000;
+	
+	/**
+	 * Pass throught values with array keys case sensitive.
+	 * @var int
+	 */
+	const KEYS_CONVERSION_CASE_SENSITIVE			= 0b01000000;
+	
+	/**
+	 * Pass throught values with array keys case insensitive.
+	 * @var int
+	 */
+	const KEYS_CONVERSION_CASE_INSENSITIVE			= 0b10000000;
+	
+	
+
+	/**
 	 * Collect all model class public and inherit field values into array.
 	 * @param boolean $getNullValues			If `TRUE`, include also values with `NULL`s, by default - `FALSE`.
 	 * @param boolean $includeInheritProperties If `TRUE`, include only fields from current model class and from parent classes.
