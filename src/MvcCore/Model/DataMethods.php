@@ -46,7 +46,7 @@ trait DataMethods
 	 * @param int	  $keysConversionFlags		`\MvcCore\IModel::KEYS_CONVERSION_*` flags to process array keys conversion before set up into properties.
 	 * @return \MvcCore\Model|\MvcCore\IModel
 	 */
-	public function & SetUp ($data = [], $keysConversionFlags = \MvcCore\IModel::KEYS_CONVERSION_CASE_SENSITIVE) {
+	public function & SetUp ($data = [], $keysConversionFlags = NULL) {
 		/** @var $this \MvcCore\Model */
 		$type = new \ReflectionClass(get_class($this));
 		$instancePropsNames = array_map(function ($prop) {
@@ -57,7 +57,7 @@ trait DataMethods
 		));
 		$instancePropsNames = array_diff($instancePropsNames, array_keys(static::$protectedProperties));
 		$csKeysMap = ','.implode(',', $instancePropsNames).',';
-		$keyConversionsMethods = static::getKeyConversionMethods($keysConversionFlags);
+		$keyConversionsMethods = $keysConversionFlags === NULL ? [] : static::getKeyConversionMethods($keysConversionFlags);
 		$toolsClass = \MvcCore\Application::GetInstance()->GetToolClass();
 		foreach ($data as $dbKey => $value) {
 			$propertyName = $dbKey;
@@ -71,7 +71,7 @@ trait DataMethods
 				list(, $rawType) = $matches;
 				$types = explode('|', $rawType);
 				foreach ($types as $type) {
-					list($conversionResult, $targetTypeValue) = static::setUpConvertToType($value, $type);
+					list($conversionResult, $targetTypeValue) = static::convertToType($value, $type);
 					if ($conversionResult) {
 						$value = $targetTypeValue;
 						break;	
@@ -87,106 +87,6 @@ trait DataMethods
 			$this->initialValues[$propertyName] = $value;
 		}
 		return $this;
-	}
-
-	/**
-	 * Return protected static key conversion methods 
-	 * array by given conversion flag.
-	 * @param int $keysConversionFlags 
-	 * @return \string[]
-	 */
-	protected static function getKeyConversionMethods ($keysConversionFlags = \MvcCore\IModel::KEYS_CONVERSION_CASE_SENSITIVE) {
-		$flagsAndConversionMethods = [
-			$keysConversionFlags & \MvcCore\IModel::KEYS_CONVERSION_UNDERSCORES_TO_PASCALCASE   => 'keyConversionUnderscoresToPascalcase',
-			$keysConversionFlags & \MvcCore\IModel::KEYS_CONVERSION_UNDERSCORES_TO_CAMELCASE    => 'keyConversionUnderscoresToCamelcase',
-			$keysConversionFlags & \MvcCore\IModel::KEYS_CONVERSION_PASCALCASE_TO_UNDERSCORES   => 'keyConversionPascalcaseToUnderscores',
-			$keysConversionFlags & \MvcCore\IModel::KEYS_CONVERSION_PASCALCASE_TO_CAMELCASE     => 'keyConversionPascalcaseToCamelcase',
-			$keysConversionFlags & \MvcCore\IModel::KEYS_CONVERSION_CAMELCASE_TO_UNDERSCORES    => 'keyConversionCamelcaseToUnderscores',
-			$keysConversionFlags & \MvcCore\IModel::KEYS_CONVERSION_CAMELCASE_TO_PASCALCASE     => 'keyConversionCamelcaseToPascalcase',
-			/*$keysConversionFlags & \MvcCore\IModel::KEYS_CONVERSION_CASE_SENSITIVE			=> NULL,*/
-			$keysConversionFlags & \MvcCore\IModel::KEYS_CONVERSION_CASE_INSENSITIVE            => 'keyConversionCaseInsensitive',
-		];
-		unset($flagsAndConversionMethods[0]);
-		return $flagsAndConversionMethods;
-	}
-
-	/**
-	 * Return key proper case sensitive value by given case sensitive map.
-	 * @param string $key 
-	 * @param string $toolsClass 
-	 * @param string $csKeysMap 
-	 * @return string
-	 */
-	protected static function keyConversionCaseInsensitive ($key, & $toolsClass, & $csKeysMap) {
-		$keyPos = stripos($csKeysMap, ','.$key.',');
-		if ($keyPos === FALSE) return $key;
-		return substr($csKeysMap, $keyPos + 1, strlen($key));
-	}
-
-	/**
-	 * Return key proper case sensitive value by given case sensitive map.
-	 * @param string $key 
-	 * @param string $toolsClass 
-	 * @param string $csKeysMap 
-	 * @return string
-	 */
-	protected static function keyConversionUnderscoresToPascalcase ($key, & $toolsClass, & $csKeysMap) {
-		return \MvcCore\Tool::GetPascalCaseFromUnderscored($key);
-	}
-
-	/**
-	 * Return camel case key from underscore case key.
-	 * @param string $key 
-	 * @param string $toolsClass 
-	 * @param string $csKeysMap 
-	 * @return string
-	 */
-	protected static function keyConversionUnderscoresToCamelcase ($key, & $toolsClass, & $csKeysMap) {
-		return lcfirst(\MvcCore\Tool::GetPascalCaseFromUnderscored($key));
-	}
-
-	/**
-	 * Return underscore case key from pascal case key.
-	 * @param string $key 
-	 * @param string $toolsClass 
-	 * @param string $csKeysMap 
-	 * @return string
-	 */
-	protected static function keyConversionPascalcaseToUnderscores ($key, & $toolsClass, & $csKeysMap) {
-		return \MvcCore\Tool::GetUnderscoredFromPascalCase($key);
-	}
-
-	/**
-	 * Return camel case key from pascal case key.
-	 * @param string $key 
-	 * @param string $toolsClass 
-	 * @param string $csKeysMap 
-	 * @return string
-	 */
-	protected static function keyConversionPascalcaseToCamelcase ($key, & $toolsClass, & $csKeysMap) {
-		return lcfirst($key);
-	}
-
-	/**
-	 * Return underscore case key from camel case key.
-	 * @param string $key 
-	 * @param string $toolsClass 
-	 * @param string $csKeysMap 
-	 * @return string
-	 */
-	protected static function keyConversionCamelcaseToUnderscores ($key, & $toolsClass, & $csKeysMap) {
-		return \MvcCore\Tool::GetUnderscoredFromPascalCase(lcfirst($key));
-	}
-
-	/**
-	 * Return pascal case key from camel case key.
-	 * @param string $key 
-	 * @param string $toolsClass 
-	 * @param string $csKeysMap 
-	 * @return string
-	 */
-	protected static function keyConversionCamelcaseToPascalcase ($key, & $toolsClass, & $csKeysMap) {
-		return ucfirst($key);
 	}
 
 	/**
@@ -331,42 +231,4 @@ trait DataMethods
 		if (property_exists($this, 'autoInit') && $this->autoInit) 
 			$this->Init();
 	}
-
-	/**
-	 * Try to convert database value into target type.
-	 * @param mixed $rawDbValue 
-	 * @param string $typeStr 
-	 * @return array
-	 */
-	protected static function setUpConvertToType ($rawDbValue, $typeStr) {
-		$conversionResult = FALSE;
-		$typeStr = trim($typeStr, '\\');
-		if ($typeStr == 'DateTime') {
-			$dateTimeFormat = 'Y-m-d H:i:s';
-			if (is_numeric($rawDbValue)) {
-				$rawDbValueStr = str_replace(['+','-','.'], '', strval($rawDbValue));
-				$secData = mb_substr($rawDbValueStr, 0, 10);
-				$dateTimeStr = date($dateTimeFormat, intval($secData));
-				if (strlen($rawDbValueStr) > 10) 
-					$dateTimeStr .= '.' . mb_substr($rawDbValueStr, 10);
-			} else {
-				$dateTimeStr = strval($rawDbValue);
-				if (strpos($dateTimeStr, '-') === FALSE) {
-					$dateTimeFormat = substr($dateTimeFormat, 6);
-				} else if (strpos($dateTimeStr, ':') === FALSE) {
-					$dateTimeFormat = substr($dateTimeFormat, 0, 5);
-				}
-				if (strpos($dateTimeStr, '.') !== FALSE) $dateTimeFormat .= '.u';
-			}
-			$dateTime = date_create_from_format($dateTimeFormat, $dateTimeStr);
-			if ($dateTime !== FALSE) {
-				$rawDbValue = $dateTime;
-				$conversionResult = TRUE;
-			}
-		} else {
-			if (settype($rawDbValue, $typeStr)) $conversionResult = TRUE;
-		}
-		return [$conversionResult, $rawDbValue];
-	}
-
 }

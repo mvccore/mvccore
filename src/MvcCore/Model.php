@@ -28,4 +28,5 @@ class Model implements IModel
 	use \MvcCore\Model\Instancing;
 	use \MvcCore\Model\DbConnection;
 	use \MvcCore\Model\DataMethods;
+	use \MvcCore\Model\Converters;
 }

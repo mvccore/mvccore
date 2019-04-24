@@ -98,18 +98,11 @@ interface IModel
 	 * as typed properties by PHP doc comments, as properties
 	 * with the same names as `$data` array keys. Case sensitively by default.
 	 * Do not set any `$data` items, which are not declared in `$this` context.
-	 * @param array   $data					 Collection with data to set up
-	 * @param boolean $keysInsensitive			If `TRUE`, set up properties from `$data` with case insensitively.
-	 * @param boolean $includeInheritProperties If `TRUE`, include only fields from current model class and from parent classes.
-	 * @param boolean $publicOnly			   If `TRUE`, include only public model fields.
-	 * @return \MvcCore\IModel
+	 * @param array   $data						Collection with data to set up
+	 * @param int	  $keysConversionFlags		`\MvcCore\IModel::KEYS_CONVERSION_*` flags to process array keys conversion before set up into properties.
+	 * @return \MvcCore\Model|\MvcCore\IModel
 	 */
-	public function & SetUp (
-		$data = [],
-		$keysInsensitive = FALSE,
-		$includeInheritProperties = TRUE,
-		$publicOnly = TRUE
-	);
+	public function & SetUp ($data = [], $keysConversionFlags = NULL);
 
 	/**
 	 * Get touched properties from initial moment called by `SetUp()` method.
