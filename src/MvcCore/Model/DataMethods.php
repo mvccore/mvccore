@@ -48,10 +48,10 @@ trait DataMethods
 	 */
 	public function & SetUp ($data = [], $keysConversionFlags = NULL) {
 		/** @var $this \MvcCore\Model */
-		$type = new \ReflectionClass(get_class($this));
+		$classType = new \ReflectionClass(get_class($this));
 		$instancePropsNames = array_map(function ($prop) {
 			return $prop->name;
-		}, $type->getProperties(
+		}, $classType->getProperties(
 			\ReflectionProperty::IS_PUBLIC  |  \ReflectionProperty::IS_PROTECTED | 
 			\ReflectionProperty::IS_PRIVATE | !\ReflectionProperty::IS_STATIC
 		));
@@ -65,13 +65,13 @@ trait DataMethods
 				$propertyName = static::$keyConversionsMethod($propertyName, $toolsClass, $csKeysMap);
 			/** @var $prop \ReflectionProperty */
 			$isNotNull = $value !== NULL;
-			$hasProp = $type->hasProperty($propertyName);
-			$prop = $hasProp ? $type->getProperty($propertyName) : NULL;
+			$hasProp = $classType->hasProperty($propertyName);
+			$prop = $hasProp ? $classType->getProperty($propertyName) : NULL;
 			if ($isNotNull && $hasProp && preg_match('/@var\s+([^\s]+)/', $prop->getDocComment(), $matches)) {
 				list(, $rawType) = $matches;
-				$types = explode('|', $rawType);
-				foreach ($types as $type) {
-					list($conversionResult, $targetTypeValue) = static::convertToType($value, $type);
+				$typeStrings = explode('|', $rawType);
+				foreach ($typeStrings as $typeString) {
+					list($conversionResult, $targetTypeValue) = static::convertToType($value, $typeString);
 					if ($conversionResult) {
 						$value = $targetTypeValue;
 						break;	
@@ -80,7 +80,7 @@ trait DataMethods
 			}
 			if ($hasProp) {
 				if ($prop->isPrivate()) $prop->setAccessible(TRUE);
-				$prop->setValue($value);
+				$prop->setValue($this, $value);
 			} else {
 				$this->$propertyName = $value;
 			}
