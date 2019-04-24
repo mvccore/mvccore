@@ -79,7 +79,7 @@ trait DataMethods
 				}
 			}
 			if ($hasProp) {
-				if ($prop->isPrivate()) $prop->setAccessible(TRUE);
+				if (!$prop->isPublic()) $prop->setAccessible(TRUE);
 				$prop->setValue($this, $value);
 			} else {
 				$this->$propertyName = $value;
