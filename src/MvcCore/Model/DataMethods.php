@@ -70,11 +70,31 @@ trait DataMethods
 			if ($isNotNull && $hasProp && preg_match('/@var\s+([^\s]+)/', $prop->getDocComment(), $matches)) {
 				list(, $rawType) = $matches;
 				$typeStrings = explode('|', $rawType);
+				$targetTypeValue = NULL;
 				foreach ($typeStrings as $typeString) {
-					list($conversionResult, $targetTypeValue) = static::convertToType($value, $typeString);
+					if (substr($typeString, -2, 2) === '[]') {
+						if (is_array($value)) {
+							$arrayItemTypeString = substr($typeString, 0, strlen($typeString) - 2);
+							$targetTypeValue = [];
+							$conversionResult = TRUE;
+							foreach ($value as $key => $item) {
+								list($conversionResultLocal, $targetTypeValueLocal) = static::convertToType($item, $arrayItemTypeString);
+								if ($conversionResultLocal) {
+									$targetTypeValue[$key] = $targetTypeValueLocal;
+								} else {
+									$conversionResult = FALSE;
+									break;
+								}
+							}
+						} else {
+							$conversionResult = FALSE;
+						}
+					} else {
+						list($conversionResult, $targetTypeValue) = static::convertToType($value, $typeString);
+					}
 					if ($conversionResult) {
 						$value = $targetTypeValue;
-						break;	
+						break;
 					}
 				}
 			}
