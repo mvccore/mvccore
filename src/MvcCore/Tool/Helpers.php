@@ -231,17 +231,28 @@ trait Helpers
 		$oldLockMillisecondsTolerance = 30000
 	) {
 		$waitUTime = $lockWaitMilliseconds * 1000;
+		$lockHandle = NULL;
 
 		$tmpDir = self::GetSystemTmpDir();
 		$lockFullPath = $tmpDir . '/mvccore_lock_' . sha1($fullPath) . '.tmp';
 
 		// capture E_WARNINGs for `fopen()` and `filemtime()` and do not log them:
-		set_error_handler(function ($level, $msg, $file, $line, $args) use ($lockFullPath) {
+		set_error_handler(function ($level, $msg, $file, $line, $args) use (& $fullPath, & $lockFullPath, & $lockHandle) {
 			if ($level == E_WARNING) {
-				// do not log any `fopen()` `E_WARNING`s
-				if (mb_strpos($msg, 'fopen(' . $lockFullPath) === 0) return TRUE;
-				// do not log any `fopen()` `E_WARNING`s
-				if (mb_strpos($msg, 'filemtime(' . $lockFullPath) === 0) return TRUE;
+				if (
+					mb_strpos($msg, 'fopen(' . $fullPath) === 0 ||
+					mb_strpos($msg, 'filemtime(' . $fullPath) === 0 ||
+					mb_strpos($msg, 'fopen(' . $lockFullPath) === 0 ||
+					mb_strpos($msg, 'filemtime(' . $lockFullPath) === 0
+				) {
+					if ($lockHandle !== NULL) {
+						// unlock before exception
+						@flock($lockHandle, LOCK_UN);
+						fclose($lockHandle);
+						unlink($lockFullPath);
+					}
+					throw new \Exception ($msg);
+				}
 			}
 			return FALSE;
 		}, E_WARNING);
@@ -259,7 +270,6 @@ trait Helpers
 
 		// try to create lock file handle
 		$waitingTime = 0;
-		$lockHandle = NULL;
 		while (TRUE) {
 			clearstatcache(TRUE, $lockFullPath);
 			$lockHandle = @fopen($lockFullPath, 'x');
@@ -275,12 +285,17 @@ trait Helpers
 			}
 			usleep($waitUTime);
 		}
-		if (!flock($lockHandle, LOCK_EX)) throw new \Exception(
-			'Unable to create lock handle: `' . $lockFullPath 
-			. '` for file: `' . $fullPath 
-			. '`. Lock creation timeout. Try to clear cache: `' 
-			. $tmpDir . '`'
-		);
+		if (!flock($lockHandle, LOCK_EX)) {
+			// unlock before exception
+			fclose($lockHandle);
+			unlink($lockFullPath);
+			throw new \Exception(
+				'Unable to create lock handle: `' . $lockFullPath 
+				. '` for file: `' . $fullPath 
+				. '`. Lock creation timeout. Try to clear cache: `' 
+				. $tmpDir . '`'
+			);
+		}
 		fwrite($lockHandle, $fullPath);
 		fflush($lockHandle);
 			
