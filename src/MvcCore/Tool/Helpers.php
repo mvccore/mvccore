@@ -289,9 +289,15 @@ trait Helpers
 		$handle = @fopen($fullPath, $writeMode);
 		if ($handle && !flock($handle, LOCK_EX)) 
 			$handle = FALSE;
-		if (!$handle) throw new \Exception(
-			'Unable to create locked handle for file: `' . $fullPath . '`.'
-		);
+		if (!$handle) {
+			// unlock before exception
+			flock($lockHandle, LOCK_UN);
+			fclose($lockHandle);
+			unlink($lockFullPath);
+			throw new \Exception(
+				'Unable to create locked handle for file: `' . $fullPath . '`.'
+			);
+		}
 		fwrite($handle, $content);
 		fflush($handle);
 		flock($handle, LOCK_UN);
