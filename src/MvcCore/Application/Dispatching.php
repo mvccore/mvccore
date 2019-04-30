@@ -367,12 +367,14 @@ trait Dispatching
 				$this->defaultControllerErrorActionName,
 				TRUE
 			);
+			$exceptionCode = $e->getCode();
+			$exceptionCode = $exceptionCode > 0 ? $exceptionCode : 500;
 			$newParams = array_merge($this->request->GetParams(FALSE), [
-				'code'		=> 500,
+				'code'		=> $exceptionCode,
 				'message'	=> $exceptionMessage,
 			]);
 			$this->request->SetParams($newParams);
-			$this->response->SetCode(500);
+			$this->response->SetCode($exceptionCode);
 			$this->controller = NULL;
 			$this->DispatchControllerAction(
 				$defaultCtrlFullName,
@@ -381,14 +383,14 @@ trait Dispatching
 					$viewClass::GetScriptsDir(),
 					$this->request->GetControllerName() . '/' . $this->request->GetActionName()
 				),
-				function (\Exception & $e) use ($exceptionMessage, $debugClass) {
+				function (\Exception & $e2) use ($exceptionMessage, $debugClass) {
 					$this->router->RemoveRoute(\MvcCore\IRouter::DEFAULT_ROUTE_NAME_NOT_FOUND);
 					$configClass = $this->configClass;
 					if ($configClass::IsDevelopment(TRUE)) {
-						$debugClass::Exception($e);
+						$debugClass::Exception($e2);
 					} else {
-						$debugClass::Log($e, \MvcCore\IDebug::EXCEPTION);
-						$this->RenderError500PlainText($exceptionMessage . PHP_EOL . PHP_EOL . $e->getMessage());
+						$debugClass::Log($e2, \MvcCore\IDebug::EXCEPTION);
+						$this->RenderError500PlainText($exceptionMessage . PHP_EOL . PHP_EOL . $e2->getMessage());
 					}
 				}
 			);
