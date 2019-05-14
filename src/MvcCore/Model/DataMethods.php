@@ -44,9 +44,10 @@ trait DataMethods
 	 * Do not set any `$data` items, which are not declared in `$this` context.
 	 * @param array   $data						Collection with data to set up
 	 * @param int	  $keysConversionFlags		`\MvcCore\IModel::KEYS_CONVERSION_*` flags to process array keys conversion before set up into properties.
+	 * @param bool    $completeInitialValues    Complete protected array `initialValues` to be able to compare them by calling method `GetTouched()` anytime later.
 	 * @return \MvcCore\Model|\MvcCore\IModel
 	 */
-	public function & SetUp ($data = [], $keysConversionFlags = NULL) {
+	public function & SetUp ($data = [], $keysConversionFlags = NULL, $completeInitialValues = TRUE) {
 		/** @var $this \MvcCore\Model */
 		$classType = new \ReflectionClass(get_class($this));
 		$instancePropsNames = array_map(function ($prop) {
@@ -73,21 +74,19 @@ trait DataMethods
 				$targetTypeValue = NULL;
 				foreach ($typeStrings as $typeString) {
 					if (substr($typeString, -2, 2) === '[]') {
-						if (is_array($value)) {
-							$arrayItemTypeString = substr($typeString, 0, strlen($typeString) - 2);
-							$targetTypeValue = [];
-							$conversionResult = TRUE;
-							foreach ($value as $key => $item) {
-								list($conversionResultLocal, $targetTypeValueLocal) = static::convertToType($item, $arrayItemTypeString);
-								if ($conversionResultLocal) {
-									$targetTypeValue[$key] = $targetTypeValueLocal;
-								} else {
-									$conversionResult = FALSE;
-									break;
-								}
+						$valueIsArray = is_array($value);
+						if (!$valueIsArray) $value = explode(',', strval($value));
+						$arrayItemTypeString = substr($typeString, 0, strlen($typeString) - 2);
+						$targetTypeValue = [];
+						$conversionResult = TRUE;
+						foreach ($value as $key => $item) {
+							list($conversionResultLocal, $targetTypeValueLocal) = static::convertToType($item, $arrayItemTypeString);
+							if ($conversionResultLocal) {
+								$targetTypeValue[$key] = $targetTypeValueLocal;
+							} else {
+								$conversionResult = FALSE;
+								break;
 							}
-						} else {
-							$conversionResult = FALSE;
 						}
 					} else {
 						list($conversionResult, $targetTypeValue) = static::convertToType($value, $typeString);
@@ -104,7 +103,8 @@ trait DataMethods
 			} else {
 				$this->$propertyName = $value;
 			}
-			$this->initialValues[$propertyName] = $value;
+			if ($completeInitialValues)
+				$this->initialValues[$propertyName] = $value;
 		}
 		return $this;
 	}
@@ -132,7 +132,9 @@ trait DataMethods
 				isset(static::$protectedProperties[$propertyName]) ||
 				(!$includeInheritProperties && $property->class != $modelClassName)
 			) continue;
-			$initialValue = $this->initialValues[$propertyName];
+			$initialValue = array_key_exists($propertyName, $this->initialValues)
+				? $this->initialValues[$propertyName]
+				: NULL;
 			$currentValue = $this->$propertyName;
 			if ($initialValue !== $currentValue) 
 				$touchedValues[$propertyName] = $currentValue;
