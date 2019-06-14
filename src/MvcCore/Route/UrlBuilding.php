@@ -172,10 +172,13 @@ trait UrlBuilding
 					if ($sectionOffset < $paramStart)
 						$sectionResult .= mb_substr($reverse, $sectionOffset, $paramStart - $sectionOffset);
 					$paramName = $param->name;
-					$paramValue = (string) $params[$paramName];
-					if (isset($defaults[$paramName]) && $paramValue == (string) $defaults[$paramName]) 
-						$defaultValuesCount++;
-					$sectionResult .= htmlspecialchars($paramValue, ENT_QUOTES);
+					$paramValue = $params[$paramName];
+					$paramValueStr = strval($paramValue);
+					if (
+						$paramValue === NULL ||
+						(array_key_exists($paramName, $defaults) && $paramValueStr == strval($defaults[$paramName]))
+					) $defaultValuesCount++;
+					$sectionResult .= htmlspecialchars($paramValueStr, ENT_QUOTES);
 					unset($params[$paramName]);
 					$paramIndex += 1;
 					$sectionOffset = $param->reverseEnd;

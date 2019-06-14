@@ -43,6 +43,7 @@ trait InternalInits
 	 * @return void
 	 */
 	protected function initMatchAndReverse () {
+		if ($this->reverseSections !== NULL) return;
 		if ($this->pattern === NULL)
 			$this->throwExceptionIfKeyPropertyIsMissing('pattern');
 
@@ -89,7 +90,7 @@ trait InternalInits
 		$matchLength = mb_strlen($match);
 		$matchOpenPos = FALSE;
 		$matchClosePos = FALSE;
-		while ($reverseIndex < $reverseLength ) {
+		while ($reverseIndex < $reverseLength) {
 			$reverseOpenPos = mb_strpos($reverse, '[', $reverseIndex);
 			$reverseClosePos = FALSE;
 			if ($reverseOpenPos !== FALSE) {
@@ -160,6 +161,7 @@ trait InternalInits
 	 * @return void
 	 */
 	protected function initReverse () {
+		if ($this->reverseSections !== NULL) return;
 		$reverse = NULL;
 		if ($this->reverse !== NULL) {
 			$reverse = $this->reverse;
