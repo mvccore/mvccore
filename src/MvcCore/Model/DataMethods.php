@@ -74,9 +74,10 @@ trait DataMethods
 				$targetTypeValue = NULL;
 				foreach ($typeStrings as $typeString) {
 					if (substr($typeString, -2, 2) === '[]') {
-						$value = trim(strval($value));
-						$valueIsArray = is_array($value);
-						if (!$valueIsArray) $value = $value === '' ? [] : explode(',', $value);
+						if (!is_array($value)) {
+							$value = trim(strval($value));
+							$value = $value === '' ? [] : explode(',', $value);
+						}
 						$arrayItemTypeString = substr($typeString, 0, strlen($typeString) - 2);
 						$targetTypeValue = [];
 						$conversionResult = TRUE;

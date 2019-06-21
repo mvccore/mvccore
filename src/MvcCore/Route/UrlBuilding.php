@@ -173,7 +173,7 @@ trait UrlBuilding
 						$sectionResult .= mb_substr($reverse, $sectionOffset, $paramStart - $sectionOffset);
 					$paramName = $param->name;
 					$paramValue = $params[$paramName];
-					$paramValueStr = strval($paramValue);
+					$paramValueStr = is_array($paramValue) ? implode(',', $paramValue) : strval($paramValue);
 					if (
 						$paramValue === NULL ||
 						(array_key_exists($paramName, $defaults) && $paramValueStr == strval($defaults[$paramName]))

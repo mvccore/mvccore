@@ -105,22 +105,30 @@ trait Dispatching
 	public function Dispatch ($actionName = "IndexAction") {
 		ob_start();
 		// \MvcCore\Debug::Timer('dispatch');
-		$this->Init();
+
+		if ($this->dispatchState < 1) 
+			$this->Init();
 		if ($this->dispatchState == 5) return; // terminated or redirected
 		if ($this->dispatchState < 1) $this->dispatchState = 1;// for cases somebody forget to call parent init
 		// \MvcCore\Debug::Timer('dispatch');
-		$this->PreDispatch();
+
+		if ($this->dispatchState < 2) 
+			$this->PreDispatch();
 		if ($this->dispatchState == 5) return; // terminated or redirected
 		if ($this->dispatchState < 2) $this->dispatchState = 2;// for cases somebody forget to call parent pre-dispatch
 		// \MvcCore\Debug::Timer('dispatch');
-		if (method_exists($this, $actionName)) $this->$actionName();
+
+		if ($this->dispatchState < 3 && method_exists($this, $actionName)) 
+			$this->{$actionName}();
 		if ($this->dispatchState == 5) return; // terminated or redirected
 		if ($this->dispatchState < 3) $this->dispatchState = 3;
 		// \MvcCore\Debug::Timer('dispatch');
-		$this->Render(
-			$this->controllerName,	// dashed ctrl name
-			$this->actionName		// dashed action name
-		);
+		
+		if ($this->dispatchState < 4) 
+			$this->Render(
+				$this->controllerName,	// dashed ctrl name
+				$this->actionName		// dashed action name
+			);
 		// \MvcCore\Debug::Timer('dispatch');
 	}
 
