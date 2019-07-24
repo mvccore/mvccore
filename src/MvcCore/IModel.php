@@ -112,7 +112,7 @@ interface IModel
 	 * @param bool $publicOnly 
 	 * @return array Keys are class properties names, values are changed values.
 	 */
-	public function GetTouched ($includeInheritProperties = TRUE, $publicOnly = TRUE);
+	public function GetTouched ($includeInheritProperties = TRUE, $publicOnly = FALSE);
 
 	/**
 	 * Returns (or creates and holds) instance from local store.
