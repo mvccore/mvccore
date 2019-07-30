@@ -122,18 +122,17 @@ trait ViewHelpers
 			if (!static::$helpersNamespaces) self::_initHelpersNamespaces();
 			foreach (static::$helpersNamespaces as $helperClassBase) {
 				$className = $helperClassBase . ucfirst($helperName) . 'Helper';
-				if (class_exists($className)) {
-					$helperFound = TRUE;
-					$setUpViewAgain = TRUE;
-					if ($toolClass::CheckClassInterface($className, $helpersInterface, TRUE, FALSE)) {
-						$implementsIHelper = TRUE;
-						$instance = & $className::GetInstance();
-					} else {
-						$instance = new $className();
-					}
-					self::$_globalHelpers[$helperName] = [$instance, $implementsIHelper];
-					break;
+				if (!class_exists($className)) continue;
+				$helperFound = TRUE;
+				$setUpViewAgain = TRUE;
+				if ($toolClass::CheckClassInterface($className, $helpersInterface, TRUE, FALSE)) {
+					$implementsIHelper = TRUE;
+					$instance = & $className::GetInstance();
+				} else {
+					$instance = new $className();
 				}
+				self::$_globalHelpers[$helperName] = [$instance, $implementsIHelper];
+				break;
 			}
 			if (!$helperFound) {
 				$selfClass = version_compare(PHP_VERSION, '5.5', '>') ? self::class : __CLASS__;
