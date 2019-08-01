@@ -53,7 +53,7 @@ trait Rendering
 				$outputResult = $layout->RenderLayoutAndContent($this->layout, $actionResult);
 				unset($layout, $this->view);
 				// set up response only
-				$this->XmlResponse($outputResult);
+				$this->XmlResponse($outputResult, FALSE);
 			} else {
 				// return response
 				$this->dispatchState = 4;
