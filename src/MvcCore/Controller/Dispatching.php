@@ -270,16 +270,16 @@ trait Dispatching
 			} else {
 				$this->childControllers[$index] = & $controller;
 			}
-			$controller
-				->SetParentController($this)
-				->SetApplication($this->application)
-				// Method `SetRequest()` also sets `ajax`, `viewEnabled`, `controllerName` and `actionName`.
-				->SetRequest($this->request)
-				->SetResponse($this->response)
-				->SetRouter($this->router)
-				->SetLayout($this->layout)
-				->SetUser($this->user);
 		}
+		$controller
+			->SetParentController($this)
+			->SetApplication($this->application)
+			// Method `SetRequest()` also sets `ajax`, `viewEnabled`, `controllerName` and `actionName`.
+			->SetRequest($this->request)
+			->SetResponse($this->response)
+			->SetRouter($this->router)
+			->SetLayout($this->layout)
+			->SetUser($this->user);
 		return $this;
 	}
 
