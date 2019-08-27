@@ -226,7 +226,7 @@ trait Helpers
 		$fullPath, 
 		$content, 
 		$writeMode = 'w', 
-		$lockWaitMilliseconds = 10, 
+		$lockWaitMilliseconds = 100, 
 		$maxLockWaitMilliseconds = 5000, 
 		$oldLockMillisecondsTolerance = 30000
 	) {
