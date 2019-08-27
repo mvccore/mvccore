@@ -135,7 +135,7 @@ trait PropsGettersSetters
 	public function GetCode () {
 		if ($this->code === NULL) {
 			$phpCode = http_response_code();
-			$this->code = $phpCode === FALSE ? static::OK : $phpCode;
+			$this->code = $phpCode === FALSE ? \MvcCore\IResponse::OK : $phpCode;
 		}
 		return $this->code;
 	}

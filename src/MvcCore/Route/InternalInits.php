@@ -285,7 +285,8 @@ trait InternalInits
 			// and if not, move to next (or next...) section
 			$reverseClosePos += 1;
 			if ($reverseClosePos > $section->end) {
-				while (TRUE) {
+				$reverseSectionsInfoCountMinusOne = count($reverseSectionsInfo) - 1;
+				while ($sectionIndex < $reverseSectionsInfoCountMinusOne) {
 					$nextSection = $reverseSectionsInfo[$sectionIndex + 1];
 					if ($reverseClosePos > $nextSection->end) {
 						$sectionIndex += 1;
