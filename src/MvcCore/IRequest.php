@@ -704,7 +704,7 @@ interface IRequest
 	public function & SetSecondLevelDomain ($secondLevelDomain);
 	
 	/**
-	 * Get third level domain like `www` in `www.example.com`.
+	 * Get second level domain like `example` in `www.example.com`.
 	 * @return string|NULL
 	 */
 	public function GetSecondLevelDomain ();
