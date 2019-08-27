@@ -278,7 +278,11 @@ trait Routing
 			$redirectRouteName = $this->currentRoute->GetRedirect();
 			if ($redirectRouteName !== NULL) {
 				$redirectUrl = $this->Url($redirectRouteName, $this->requestedParams);
-				$this->redirect($redirectUrl, \MvcCore\IResponse::MOVED_PERMANENTLY);
+				$this->redirect(
+					$redirectUrl, 
+					\MvcCore\IResponse::MOVED_PERMANENTLY,
+					'Redirection route '
+				);
 				return FALSE;
 			}
 		}

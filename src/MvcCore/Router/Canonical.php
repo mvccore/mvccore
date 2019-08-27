@@ -66,7 +66,7 @@ trait Canonical
 		}
 		if ($redirectToCanonicalUrl) {
 			$selfCanonicalUrl = $this->UrlByQueryString($this->selfRouteName, $requestedParamsClone);
-			$this->redirect($selfCanonicalUrl, \MvcCore\IResponse::MOVED_PERMANENTLY);
+			$this->redirect($selfCanonicalUrl, \MvcCore\IResponse::MOVED_PERMANENTLY, 'Canonical URL');
 			return FALSE;
 		}
 		return TRUE;

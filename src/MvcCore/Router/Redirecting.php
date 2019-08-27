@@ -34,7 +34,9 @@ trait Redirecting
 				$this->request->GetBaseUrl()
 				. '/'
 				. $this->request->GetQuery(TRUE)
-				. $this->request->GetFragment(TRUE)
+				. $this->request->GetFragment(TRUE),
+				\MvcCore\IResponse::MOVED_PERMANENTLY,
+				'Home trailing slash added'
 			);
 		}
 		$lastPathChar = mb_substr($path, mb_strlen($path) - 1);
@@ -44,7 +46,9 @@ trait Redirecting
 				$this->request->GetBaseUrl()
 				. rtrim($path, '/')
 				. $this->request->GetQuery(TRUE)
-				. $this->request->GetFragment(TRUE)
+				. $this->request->GetFragment(TRUE),
+				\MvcCore\IResponse::MOVED_PERMANENTLY,
+				'Removed trailing slash'
 			);
 			return FALSE;
 		} else if ($lastPathChar != '/' && $this->trailingSlashBehaviour == \MvcCore\IRouter::TRAILING_SLASH_ALWAYS) {
@@ -53,7 +57,9 @@ trait Redirecting
 				$this->request->GetBaseUrl()
 				. $path . '/'
 				. $this->request->GetQuery(TRUE)
-				. $this->request->GetFragment(TRUE)
+				. $this->request->GetFragment(TRUE),
+				\MvcCore\IResponse::MOVED_PERMANENTLY,
+				'Trailing slash added'
 			);
 			return FALSE;
 		}
@@ -62,14 +68,19 @@ trait Redirecting
 
 	/**
 	 * Redirect request to given URL with optional code and terminate application.
-	 * @param string	$url New location url.
-	 * @param int		$code Http status code, 301 by default.
+	 * @param string		$url	New location url.
+	 * @param int			$code	Http status code, 301 by default.
+	 * @param string|NULL	$reason	Any optional text header for reason why.
+	 * @return void
 	 */
-	protected function redirect ($url, $code = 301) {
+	protected function redirect ($url, $code = 301, $reason = NULL) {
 		$app = \MvcCore\Application::GetInstance();
-		$app->GetResponse()
+		$response = $app->GetResponse();
+		$response
 			->SetCode($code)
 			->SetHeader('Location', $url);
+		if ($reason !== NULL)
+			$response->SetHeader('X-Reason', $reason);
 		$app->Terminate();
 	}
 }
