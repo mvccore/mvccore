@@ -88,11 +88,12 @@ interface IController
 	/**
 	 * Redirect client browser to another place by `"Location: ..."`
 	 * header and call `\MvcCore\Application::GetInstance()->Terminate();`.
-	 * @param string $location
-	 * @param int	$code
+	 * @param string		$location
+	 * @param int			$code
+	 * @param string|NULL	$reason	Any optional text header for reason why.
 	 * @return void
 	 */
-	public static function Redirect ($location = '', $code = \MvcCore\IResponse::SEE_OTHER);
+	public static function Redirect ($location = '', $code = \MvcCore\IResponse::SEE_OTHER, $reason = NULL);
 
 	/**
 	 * Dispatching controller life cycle by given action.

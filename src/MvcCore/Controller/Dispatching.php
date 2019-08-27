@@ -105,6 +105,7 @@ trait Dispatching
 	public function Dispatch ($actionName = "IndexAction") {
 		ob_start();
 		// \MvcCore\Debug::Timer('dispatch');
+		$actionNameStart = $this->actionName;
 
 		if ($this->dispatchState < 1) 
 			$this->Init();
@@ -118,6 +119,10 @@ trait Dispatching
 		if ($this->dispatchState < 2) $this->dispatchState = 2;// for cases somebody forget to call parent pre-dispatch
 		// \MvcCore\Debug::Timer('dispatch');
 
+		if ($this->actionName !== $actionNameStart) {
+			$toolClass = $this->application->GetToolClass();
+			$actionName = $toolClass::GetPascalCaseFromDashed($this->actionName) . 'Action';
+		}
 		if ($this->dispatchState < 3 && method_exists($this, $actionName)) 
 			$this->{$actionName}();
 		if ($this->dispatchState == 5) return; // terminated or redirected
@@ -297,16 +302,19 @@ trait Dispatching
 	/**
 	 * Redirect client browser to another place by `"Location: ..."`
 	 * header and call `\MvcCore\Application::GetInstance()->Terminate();`.
-	 * @param string $location
-	 * @param int	$code
+	 * @param string		$location
+	 * @param int			$code
+	 * @param string|NULL	$reason	Any optional text header for reason why.
 	 * @return void
 	 */
-	public static function Redirect ($location = '', $code = \MvcCore\IResponse::SEE_OTHER) {
+	public static function Redirect ($location = '', $code = \MvcCore\IResponse::SEE_OTHER, $reason = NULL) {
 		$app = & \MvcCore\Application::GetInstance();
-		$app->GetResponse()
+		$response = $app->GetResponse();
+		$response
 			->SetCode($code)
-			//->SetHeader('Refresh', '0;url='.$location);
 			->SetHeader('Location', $location);
+		if ($reason !== NULL)
+			$response->SetHeader('X-Reason', $reason);
 		foreach (self::$allControllers as & $controller)
 			$controller->dispatchState = 5;
 		$app->Terminate();
