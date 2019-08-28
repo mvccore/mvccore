@@ -66,7 +66,7 @@ trait Rendering
 
 	/**
 	 * Store rendered HTML output inside `\MvcCore\Controller::$response`
-	 * to send into client browser later in `MvcCore::Terminate();`.
+	 * to send into client browser later in `\MvcCore\Application::GetInstance()->Terminate();`.
 	 * @param string $output
 	 * @param bool $terminate
 	 * @return void
@@ -86,7 +86,7 @@ trait Rendering
 
 	/**
 	 * Store rendered XML output inside `\MvcCore\Controller::$response`
-	 * to send into client browser later in `MvcCore::Terminate();`.
+	 * to send into client browser later in `\MvcCore\Application::GetInstance()->Terminate();`.
 	 * @param string $output
 	 * @param bool $terminate
 	 * @return void
@@ -102,9 +102,26 @@ trait Rendering
 	}
 
 	/**
+	 * Store rendered text output inside `\MvcCore\Controller::$response`
+	 * to send into client browser later in `\MvcCore\Application::GetInstance()->Terminate();`.
+	 * @param string $output
+	 * @param bool $terminate
+	 * @return void
+	 */
+	public function TextResponse ($output = '', $terminate = TRUE) {
+		$res = & $this->response;
+		if (!$res->HasHeader('Content-Type'))
+			$res->SetHeader('Content-Type', 'text/plain');
+		$res->SetBody($output);
+		if ($res->GetCode() === NULL)
+			$res->SetCode(\MvcCore\IResponse::OK);
+		if ($terminate) $this->Terminate();
+	}
+
+	/**
 	 * Serialize any PHP value into `JSON string` and store
 	 * it inside `\MvcCore\Controller::$response` to send it
-	 * into client browser later in `MvcCore::Terminate();`.
+	 * into client browser later in `\MvcCore\Application::GetInstance()->Terminate();`.
 	 * @param mixed $data
 	 * @param bool  $terminate
 	 * @throws \Exception JSON encoding error.
@@ -130,7 +147,7 @@ trait Rendering
 	 * javascript function in target window sent as `$_GET` param under 
 	 * variable `$callbackParamName` (allowed chars: `a-zA-Z0-9\.\-_\$`) and
 	 * store it inside `\MvcCore\Controller::$response` to send it
-	 * into client browser later in `MvcCore::Terminate();`.
+	 * into client browser later in `\MvcCore\Application::GetInstance()->Terminate();`.
 	 * @param mixed $data
 	 * @param string $callbackParamName
 	 * @param bool  $terminate
