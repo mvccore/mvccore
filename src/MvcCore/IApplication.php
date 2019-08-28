@@ -423,7 +423,7 @@ interface IApplication
 	public function & SetDefaultControllerErrorActionName ($defaultControllerErrorActionName);
 
 	/**
-	 * Set default controller not found error action name. `"Not Found"` value by default.
+	 * Set default controller not found error action name. `"NotFound"` value by default.
 	 * Core configuration method.
 	 * @param string $defaultControllerNotFoundActionName
 	 * @return \MvcCore\IApplication

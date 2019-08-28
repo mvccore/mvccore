@@ -92,11 +92,12 @@ trait Rendering
 	 * @return void
 	 */
 	public function XmlResponse ($output = '', $terminate = TRUE) {
-		if (!$this->response->HasHeader('Content-Type'))
-			$this->response->SetHeader('Content-Type', 'application/xml');
-		$this->response
-			->SetCode(\MvcCore\IResponse::OK)
-			->SetBody($output);
+		$res = & $this->response;
+		if (!$res->HasHeader('Content-Type'))
+			$res->SetHeader('Content-Type', 'application/xml');
+		$res->SetBody($output);
+		if ($res->GetCode() === NULL)
+			$res->SetCode(\MvcCore\IResponse::OK);
 		if ($terminate) $this->Terminate();
 	}
 
@@ -110,15 +111,17 @@ trait Rendering
 	 * @return void
 	 */
 	public function JsonResponse ($data = NULL, $terminate = TRUE) {
+		$res = & $this->response;
 		$toolClass = $this->application->GetToolClass();
 		$output = $toolClass::EncodeJson($data);
 		ob_clean(); // remove any possible warnings to break client's `JSON.parse();`
-		if (!$this->response->HasHeader('Content-Type'))
-			$this->response->SetHeader('Content-Type', 'text/javascript');
-		$this->response
-			->SetCode(\MvcCore\IResponse::OK)
+		if (!$res->HasHeader('Content-Type'))
+			$res->SetHeader('Content-Type', 'text/javascript');
+		$res
 			->SetHeader('Content-Length', strlen($output))
 			->SetBody($output);
+		if ($res->GetCode() === NULL)
+			$res->SetCode(\MvcCore\IResponse::OK);
 		if ($terminate) $this->Terminate();
 	}
 
@@ -135,17 +138,19 @@ trait Rendering
 	 * @return void
 	 */
 	public function JsonpResponse ($data = NULL, $callbackParamName = 'callback', $terminate = TRUE) {
+		$res = & $this->response;
 		$toolClass = $this->application->GetToolClass();
 		$output = $toolClass::EncodeJson($data);
 		ob_clean(); // remove any possible warnings to break client's `JSON.parse();`
-		if (!$this->response->HasHeader('Content-Type'))
-			$this->response->SetHeader('Content-Type', 'text/javascript');
+		if (!$res->HasHeader('Content-Type'))
+			$res->SetHeader('Content-Type', 'text/javascript');
 		$callbackParam = $this->GetParam($callbackParamName, 'a-zA-Z0-9\.\-_\$', $callbackParamName, 'string');
 		$output = $callbackParam . '(' . $output . ');';
-		$this->response
-			->SetCode(\MvcCore\IResponse::OK)
+		$res
 			->SetHeader('Content-Length', strlen($output))
 			->SetBody($output);
+		if ($res->GetCode() === NULL)
+			$res->SetCode(\MvcCore\IResponse::OK);
 		if ($terminate) $this->Terminate();
 	}
 
