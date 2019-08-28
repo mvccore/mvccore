@@ -317,7 +317,7 @@ trait InternalInits
 				'name'			=> $paramName,
 				'greedy'		=> $greedyFlag,
 				'sectionIndex'	=> $sectionIndex,
-				//'length'		=> $paramLength,
+					'length'		=> $paramLength,
 				'reverseStart'	=> $reverseOpenPos,
 				'reverseEnd'	=> $reverseClosePos,
 				'matchStart'	=> $matchOpenPos,
