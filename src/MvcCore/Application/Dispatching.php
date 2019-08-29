@@ -357,7 +357,6 @@ trait Dispatching
 		$defaultCtrlFullName = $this->GetDefaultControllerIfHasAction(
 			$this->defaultControllerErrorActionName
 		);
-		xxx($this->GetRequest());
 		$exceptionMessage = $e->getMessage();
 		if (!$this->GetRequest()->IsCli() && $defaultCtrlFullName) {
 			$debugClass = $this->debugClass;
