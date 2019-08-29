@@ -55,13 +55,13 @@ interface IResponse
 	/**
 	 * No singleton, get every time new instance of configured HTTP response
 	 * class in `\MvcCore\Application::GetInstance()->GetResponseClass();`.
-	 * @param int		$code
+	 * @param int|NULL	$code
 	 * @param array		$headers
 	 * @param string	$body
 	 * @return \MvcCore\IResponse
 	 */
 	public static function CreateInstance (
-		$code = \MvcCore\IResponse::OK,
+		$code = NULL,
 		$headers = [],
 		$body = ''
 	);

@@ -133,6 +133,7 @@ trait PropsGettersSetters
 	 * @return int
 	 */
 	public function GetCode () {
+		/** @var $this \MvcCore\Response */
 		if ($this->code === NULL) {
 			$phpCode = http_response_code();
 			$this->code = $phpCode === FALSE ? \MvcCore\IResponse::OK : $phpCode;
@@ -159,6 +160,7 @@ trait PropsGettersSetters
 	 * @return string|NULL
 	 */
 	public function GetEncoding () {
+		/** @var $this \MvcCore\Response */
 		return $this->encoding;
 	}
 
@@ -167,6 +169,7 @@ trait PropsGettersSetters
 	 * @return bool
 	 */
 	public function IsRedirect () {
+		/** @var $this \MvcCore\Response */
 		return isset($this->headers['Location']);
 	}
 }

@@ -18,16 +18,17 @@ trait Instancing
 	/**
 	 * No singleton, get every time new instance of configured HTTP response
 	 * class in `\MvcCore\Application::GetInstance()->GetResponseClass();`.
-	 * @param int		$code
+	 * @param int|NULL	$code
 	 * @param array		$headers
 	 * @param string	$body
 	 * @return \MvcCore\Response|\MvcCore\IResponse
 	 */
 	public static function CreateInstance (
-		$code = \MvcCore\IResponse::OK,
+		$code = NULL,
 		$headers = [],
 		$body = ''
 	) {
+		$code = $code ?: \MvcCore\IResponse::OK;
 		$responseClass = \MvcCore\Application::GetInstance()->GetResponseClass();
 		return new $responseClass($code, $headers, $body);
 	}
@@ -40,13 +41,13 @@ trait Instancing
 	 * @return void
 	 */
 	public function __construct (
-		$code = \MvcCore\IResponse::OK,
+		$code = NULL,
 		$headers = [],
 		$body = ''
 	) {
-		$this->code = $code;
+		$this->code = $code ?: \MvcCore\IResponse::OK;
 		$this->headers = $headers;
 		$this->body = $body;
-		$this->request = & \MvcCore\Application::GetInstance()->GetRequest();
+		$this->request = & \MvcCore\Application::GetInstance()->GetRequest()
 	}
 }
