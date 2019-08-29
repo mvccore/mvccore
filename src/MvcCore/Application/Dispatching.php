@@ -357,8 +357,9 @@ trait Dispatching
 		$defaultCtrlFullName = $this->GetDefaultControllerIfHasAction(
 			$this->defaultControllerErrorActionName
 		);
+		xxx($this->GetRequest());
 		$exceptionMessage = $e->getMessage();
-		if ($defaultCtrlFullName) {
+		if (!$this->GetRequest()->IsCli() && $defaultCtrlFullName) {
 			$debugClass = $this->debugClass;
 			$viewClass = $this->viewClass;
 			$this->router->SetOrCreateDefaultRouteAsCurrent(
@@ -413,7 +414,7 @@ trait Dispatching
 		$defaultCtrlFullName = $this->GetDefaultControllerIfHasAction(
 			$this->defaultControllerNotFoundActionName
 		);
-		if ($defaultCtrlFullName) {
+		if (!$this->GetRequest()->IsCli() && $defaultCtrlFullName) {
 			$debugClass = $this->debugClass;
 			$viewClass = $this->viewClass;
 			$this->router->SetOrCreateDefaultRouteAsCurrent(
@@ -464,7 +465,7 @@ trait Dispatching
 		$responseClass = $this->responseClass;
 		$configClass = $this->configClass;
 		if (!$configClass::IsDevelopment(TRUE)) {
-			$text = 'Error 500: Internal Server Error.';
+			$text = 'Error 500: Internal Server Error.'.PHP_EOL;
 		} else {
 			$obContent = ob_get_clean();
 			if (mb_strlen($obContent) > 0)
@@ -472,7 +473,7 @@ trait Dispatching
 			if ($htmlResponse) {
 				$text = '<pre><big>Error 500</big>: '.PHP_EOL.PHP_EOL.$text.'</pre>'.$obContent;
 			} else {
-				$text = 'Error 500: '.PHP_EOL.PHP_EOL.$text.$obContent;
+				$text = 'Error 500: '.PHP_EOL.PHP_EOL.$text.PHP_EOL.$obContent;
 			}
 		}
 		$this->response = $responseClass::CreateInstance(
@@ -494,7 +495,7 @@ trait Dispatching
 		$responseClass = $this->responseClass;
 		$configClass = $this->configClass;
 		if (!$configClass::IsDevelopment(TRUE)) {
-			$text = 'Error 404: Page not found.';
+			$text = 'Error 404: Page not found.'.PHP_EOL;
 		} else {
 			$obContent = ob_get_clean();
 			if (mb_strlen($obContent) > 0)
@@ -502,7 +503,7 @@ trait Dispatching
 			if ($htmlResponse) {
 				$text = '<pre><big>Error 404</big>: '.PHP_EOL.PHP_EOL.$text.'</pre>'.$obContent;
 			} else {
-				$text = 'Error 404: '.PHP_EOL.PHP_EOL.$text.$obContent;
+				$text = 'Error 404: '.PHP_EOL.PHP_EOL.$text.PHP_EOL.$obContent;
 			}
 		}
 		$this->response = $responseClass::CreateInstance(
