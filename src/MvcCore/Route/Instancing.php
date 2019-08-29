@@ -165,11 +165,11 @@ trait Instancing
 	 */
 	protected function constructDataPatternsDefaultsConstraintsFilters (& $data) {
 		if (isset($data->pattern)) 
-			$this->pattern = utf8_encode($data->pattern);
+			$this->pattern = $data->pattern;
 		if (isset($data->match)) 
-			$this->match = utf8_encode($data->match);
+			$this->match = $data->match;
 		if (isset($data->reverse)) 
-			$this->reverse = utf8_encode($data->reverse);
+			$this->reverse = $data->reverse;
 		if (isset($data->defaults)) 
 			$this->SetDefaults($data->defaults);
 		if (isset($data->constraints)) 
@@ -249,7 +249,7 @@ trait Instancing
 	 */
 	protected function constructVarsPatternDefaultsConstraintsFilters (& $pattern, & $defaults, & $constraints, & $advCfg) {
 		if ($pattern !== NULL) 
-			$this->pattern = utf8_encode($pattern);
+			$this->pattern = $pattern;
 		if ($defaults !== NULL)
 			$this->defaults = $defaults;
 		if ($constraints !== NULL)
