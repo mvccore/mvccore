@@ -16,27 +16,37 @@ namespace MvcCore\Model;
 trait DbConnection
 {
 	/**
+	 * Set default connection name into `static::$connectionName`.
+	 * @param string $connectionName
+	 * @return string
+	 */
+	public static function SetDefaultConnectionName ($connectionName) {
+		return static::$connectionName = $connectionName;
+	}
+
+	/**
 	 * Returns `\PDO` database connection by connection name/index,
 	 * usually by system config values (cached by local store)
 	 * or create new connection of no connection cached.
 	 * @param string|int|array|\stdClass|NULL $connectionNameOrConfig
-	 * @param bool $strict	If `TRUE` and no connection under given name or given 
+	 * @param bool $strict	If `TRUE` and no connection under given name or given
 	 *						index found, exception is thrown. `FALSE` by default.
 	 * @throws \InvalidArgumentException
 	 * @return \PDO
 	 */
 	public static function GetDb ($connectionNameOrConfig = NULL, $strict = FALSE) {
-		if (is_string($connectionNameOrConfig)) {
+		if (is_array($connectionNameOrConfig) || $connectionNameOrConfig instanceof \stdClass) {
+			// if first argument is database connection configuration - set it up and return new connection name
+			if (self::$configs === NULL) static::loadConfigs(FALSE);
+			$connectionName = static::SetConfig((array) $connectionNameOrConfig);
+		} else {
 			// if no connection index specified, try to get from class or from base model
 			if (self::$configs === NULL) static::loadConfigs(TRUE);
 			$connectionName = $connectionNameOrConfig;
 			if ($connectionName === NULL) $connectionName = static::$connectionName;
 			if ($connectionName === NULL) $connectionName = self::$connectionName;
-		} else if (is_array($connectionNameOrConfig) || $connectionNameOrConfig instanceof \stdClass) {
-			// if first argument is database connection configuration - set it up and return new connection name
-			if (self::$configs === NULL) static::loadConfigs(FALSE);
-			$connectionName = static::SetConfig((array) $connectionNameOrConfig);
-		} else {
+		}
+		if ($connectionName === NULL) {
 			$selfClass = version_compare(PHP_VERSION, '5.5', '>') ? self::class : __CLASS__;
 			throw new \InvalidArgumentException("[$selfClass] No connection name or connection config specified.");
 		}
@@ -51,8 +61,8 @@ trait DbConnection
 			if ($cfg === NULL)
 				$cfg = current(self::$configs); // if nothing found under connection name - take first database record
 			$sysCfgProps = (object) static::$systemConfigModelProps;
-			$conArgsKey = isset(self::$connectionArguments[$cfg->{$sysCfgProps->driver}]) 
-				? $cfg->{$sysCfgProps->driver} 
+			$conArgsKey = isset(self::$connectionArguments[$cfg->{$sysCfgProps->driver}])
+				? $cfg->{$sysCfgProps->driver}
 				: 'default';
 			$conArgs = (object) self::$connectionArguments[$conArgsKey];
 			$connection = NULL;
@@ -84,7 +94,7 @@ trait DbConnection
 			// If database required user and password credentials,
 			// connect with full arguments count or only with one (sqlite only)
 			$connectionClass = isset($cfg->{$sysCfgProps->class})
-				? $cfg->{$sysCfgProps->class} 
+				? $cfg->{$sysCfgProps->class}
 				: self::$connectionClass;
 			if ($conArgs->auth) {
 				$rawOptions = isset($cfg->{$sysCfgProps->options})
@@ -100,9 +110,9 @@ trait DbConnection
 					}
 				}
 				$connection = new $connectionClass(
-					$dsn, 
-					$cfg->{$sysCfgProps->user}, 
-					$cfg->{$sysCfgProps->password}, 
+					$dsn,
+					$cfg->{$sysCfgProps->user},
+					$cfg->{$sysCfgProps->password},
 					$options
 				);
 			} else {
@@ -241,7 +251,7 @@ trait DbConnection
 		if ($systemCfg === FALSE && $throwExceptionIfNoSysConfig) {
 			$selfClass = version_compare(PHP_VERSION, '5.5', '>') ? self::class : __CLASS__;
 			throw new \Exception(
-				"[".$selfClass."] System config not found in '" 
+				"[".$selfClass."] System config not found in '"
 				. $configClass::GetSystemConfigPath() . "'."
 			);
 		}
@@ -261,9 +271,9 @@ trait DbConnection
 		// db.defaultName - default connection index for models, where is no connection name/index defined inside class.
 		if ($cfgType == 'array') {
 			// multiple connections defined, indexed by some numbers, maybe default connection specified.
-			if (isset($systemCfgDb[$sysCfgProps->defaultName])) 
+			if (isset($systemCfgDb[$sysCfgProps->defaultName]))
 				$defaultConnectionName = $systemCfgDb[$sysCfgProps->defaultName];
-			if (isset($systemCfgDb[$sysCfgProps->defaultClass])) 
+			if (isset($systemCfgDb[$sysCfgProps->defaultClass]))
 				$defaultConnectionClass = $systemCfgDb[$sysCfgProps->defaultClass];
 			foreach ($systemCfgDb as $key => $value) {
 				if (is_scalar($value)) {
@@ -276,9 +286,9 @@ trait DbConnection
 			// Multiple connections defined or single connection defined:
 			// - Single connection defined - `$systemCfg->db` contains directly record for `driver`.
 			// - Multiple connections defined - indexed by strings, maybe default connection specified.
-			if (isset($systemCfgDb->{$sysCfgProps->defaultName})) 
+			if (isset($systemCfgDb->{$sysCfgProps->defaultName}))
 				$defaultConnectionName = $systemCfgDb->{$sysCfgProps->defaultName};
-			if (isset($systemCfgDb->{$sysCfgProps->defaultClass})) 
+			if (isset($systemCfgDb->{$sysCfgProps->defaultClass}))
 				$defaultConnectionClass = $systemCfgDb->{$sysCfgProps->defaultClass};
 			if (isset($systemCfgDb->driver)) {
 				$configs[0] = $systemCfgDb;
@@ -292,21 +302,21 @@ trait DbConnection
 				}
 			}
 		}
-		if ($defaultConnectionName !== NULL) {
+		if ($defaultConnectionName === NULL) {
 			if ($configs) {
 				reset($configs);
 				$defaultConnectionName = key($configs);
 			}
-			if (!isset($configs[$defaultConnectionName])) {
-				$selfClass = version_compare(PHP_VERSION, '5.5', '>') ? self::class : __CLASS__;
-				throw new \Exception(
-					"[".$selfClass."] No default connection name '$defaultConnectionName'"
-					." found in 'db.*' section in system config.ini."
-				);
-			}
-			self::$connectionName = $defaultConnectionName;
 		}
-		if ($defaultConnectionClass !== NULL) 
+		if (!isset($configs[$defaultConnectionName])) {
+			$selfClass = version_compare(PHP_VERSION, '5.5', '>') ? self::class : __CLASS__;
+			throw new \Exception(
+				"[".$selfClass."] No default connection name '$defaultConnectionName'"
+				." found in 'db.*' section in system config.ini."
+			);
+		}
+		self::$connectionName = $defaultConnectionName;
+		if ($defaultConnectionClass !== NULL)
 			self::$connectionClass = $defaultConnectionClass;
 		self::$configs = & $configs;
 	}

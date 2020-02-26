@@ -27,7 +27,7 @@ trait Helpers
 	 * @throws \Exception JSON encoding error.
 	 * @return string
 	 */
-	public static function EncodeJson (& $data) {
+	public static function EncodeJson ($data) {
 		$flags = JSON_HEX_TAG | JSON_HEX_APOS | JSON_HEX_QUOT | JSON_HEX_AMP |
 			(defined('JSON_UNESCAPED_SLASHES') ? JSON_UNESCAPED_SLASHES : 0) |
 			(defined('JSON_UNESCAPED_UNICODE') ? JSON_UNESCAPED_UNICODE : 0) |
@@ -55,7 +55,7 @@ trait Helpers
 	 * @param string $jsonStr
 	 * @return object
 	 */
-	public static function DecodeJson (& $jsonStr) {
+	public static function DecodeJson ($jsonStr) {
 		$result = (object) [
 			'success'	=> TRUE,
 			'data'		=> null,
@@ -78,7 +78,7 @@ trait Helpers
 	 * @param string $jsonStr 
 	 * @return bool
 	 */
-	public static function IsJsonString (& $jsonStr) {
+	public static function IsJsonString ($jsonStr) {
 		return !preg_match(
 			'#[^,:{}\[\]0-9.\\-+Eaeflnr-u \n\r\t]#',
 			preg_replace(
@@ -103,7 +103,7 @@ trait Helpers
 	 * @param string $jsonStr 
 	 * @return bool
 	 */
-	public static function IsQueryString (& $queryStr) {
+	public static function IsQueryString ($queryStr) {
 		$queryStr = trim($queryStr, '&=');
 		$apmsCount = substr_count($queryStr, '&');
 		$equalsCount = substr_count($queryStr, '=');
