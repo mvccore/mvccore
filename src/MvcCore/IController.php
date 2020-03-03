@@ -83,7 +83,7 @@ interface IController
 	 * If no previous controller instance founded, `NULL` is returned.
 	 * @return \MvcCore\IController|NULL
 	 */
-	public static function & GetCallerControllerInstance ();
+	public static function GetCallerControllerInstance ();
 
 	/**
 	 * Redirect client browser to another place by `"Location: ..."`
@@ -157,7 +157,7 @@ interface IController
 	 * Get current application singleton instance object as reference.
 	 * @return \MvcCore\Application
 	 */
-	public function & GetApplication ();
+	public function GetApplication ();
 
 	/**
 	 * Sets up `\MvcCore\Application` singleton object.
@@ -167,13 +167,13 @@ interface IController
 	 * @param \MvcCore\Application $application
 	 * @return \MvcCore\Controller
 	 */
-	public function & SetApplication (\MvcCore\IApplication & $application);
+	public function SetApplication (\MvcCore\IApplication $application);
 
 	/**
 	 * Get current application request object as reference.
 	 * @return \MvcCore\IRequest
 	 */
-	public function & GetRequest ();
+	public function GetRequest ();
 
 	/**
 	 * Get requested controller name - `"dashed-controller-name"`.
@@ -200,13 +200,13 @@ interface IController
 	 * @param \MvcCore\IRequest $request
 	 * @return \MvcCore\IController
 	 */
-	public function & SetRequest (\MvcCore\IRequest & $request);
+	public function SetRequest (\MvcCore\IRequest $request);
 
 	/**
 	 * Get current application response object as reference.
 	 * @return \MvcCore\IResponse
 	 */
-	public function & GetResponse ();
+	public function GetResponse ();
 
 	/**
 	 * Sets up `\MvcCore\Response` object.
@@ -216,13 +216,13 @@ interface IController
 	 * @param \MvcCore\IResponse $response
 	 * @return \MvcCore\IController
 	 */
-	public function & SetResponse (\MvcCore\IResponse & $response);
+	public function SetResponse (\MvcCore\IResponse $response);
 
 	/**
 	 * Get current application router object as reference.
 	 * @return \MvcCore\IRouter
 	 */
-	public function & GetRouter ();
+	public function GetRouter ();
 
 	/**
 	 * Sets up `\MvcCore\Router` object.
@@ -232,7 +232,7 @@ interface IController
 	 * @param \MvcCore\IRouter $router
 	 * @return \MvcCore\IController
 	 */
-	public function & SetRouter (\MvcCore\IRouter & $router);
+	public function SetRouter (\MvcCore\IRouter$router);
 
 	/**
 	 * Boolean about AJAX request.
@@ -246,14 +246,14 @@ interface IController
 	 * Get user model instance. Template method.
 	 * @return \MvcCore\IModel
 	 */
-	public function & GetUser ();
+	public function GetUser ();
 
 	/**
 	 * Set user model instance. Template method.
 	 * @param \MvcCore\IModel $user
 	 * @return \MvcCore\Controller
 	 */
-	public function & SetUser (& $user);
+	public function SetUser ($user);
 
 	/**
 	 * Return current controller view object if any.
@@ -261,14 +261,14 @@ interface IController
 	 * in controller lifecycle, this property will be still `NULL`.
 	 * @return \MvcCore\IView|NULL
 	 */
-	public function & GetView ();
+	public function GetView ();
 
 	/**
 	 * Set current controller view object.
 	 * @param \MvcCore\IView $view
 	 * @return \MvcCore\IController
 	 */
-	public function & SetView (\MvcCore\IView & $view);
+	public function SetView (\MvcCore\IView $view);
 
 	/**
 	 * Get layout name to render html wrapper around rendered action view.
@@ -283,7 +283,7 @@ interface IController
 	 * @param string $layout
 	 * @return \MvcCore\IController
 	 */
-	public function & SetLayout ($layout = '');
+	public function SetLayout ($layout = '');
 	
 	/**
 	 * Get customized sub-controls template path value. `NULL` by default.
@@ -310,7 +310,7 @@ interface IController
 	 * @param string|NULL $viewScriptsPath
 	 * @return \MvcCore\IController
 	 */
-	public function & SetViewScriptsPath ($viewScriptsPath = NULL);
+	public function SetViewScriptsPath ($viewScriptsPath = NULL);
 
 	/**
 	 * Get `TRUE` if view is automatically created in base controller `PreDispatch()` 
@@ -328,7 +328,7 @@ interface IController
 	 * otherwise to not render any view. Default value is `TRUE` for all non-ajax requests.
 	 * @return \MvcCore\IController
 	 */
-	public function & SetViewEnabled ($viewEnabled = TRUE);
+	public function SetViewEnabled ($viewEnabled = TRUE);
 
 	/**
 	 * - Register child controller to process dispatching on it later.
@@ -345,7 +345,7 @@ interface IController
 	 * @param string|int $index
 	 * @return \MvcCore\IController
 	 */
-	public function AddChildController (\MvcCore\IController & $controller, $index = NULL);
+	public function AddChildController (\MvcCore\IController $controller, $index = NULL);
 
 	/**
 	 * Get parent controller instance if any.
@@ -362,7 +362,7 @@ interface IController
 	 * @param \MvcCore\IController|\MvcCore\Controller\Dispatching|NULL $parentController
 	 * @return \MvcCore\IController
 	 */
-	public function & SetParentController (\MvcCore\IController & $parentController = NULL);
+	public function SetParentController (\MvcCore\IController $parentController = NULL);
 
 	/**
 	 * Get all child controllers array, indexed by
@@ -383,7 +383,7 @@ interface IController
 	 * @param \MvcCore\IController[] $childControllers
 	 * @return \MvcCore\IController
 	 */
-	public function & SetChildControllers (array & $childControllers = []);
+	public function SetChildControllers (array $childControllers = []);
 
 	/**
 	 * Get child controller at specific index.

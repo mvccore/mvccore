@@ -26,7 +26,7 @@ trait Dispatching
 	public static function & CreateInstance () {
 		/** @var $instance \MvcCore\Controller */
 		$instance = new static();
-		self::$allControllers[spl_object_hash($instance)] = & $instance;
+		self::$allControllers[spl_object_hash($instance)] = $instance;
 		return $instance;
 	}
 
@@ -36,11 +36,11 @@ trait Dispatching
 	 * If no previous controller instance founded, `NULL` is returned.
 	 * @return \MvcCore\Controller|\MvcCore\IController|NULL
 	 */
-	public static function & GetCallerControllerInstance () {
+	public static function GetCallerControllerInstance () {
 		$result = NULL;
 		$backtraceItems = debug_backtrace(DEBUG_BACKTRACE_PROVIDE_OBJECT);
 		if (count($backtraceItems) < 3) return $result;
-		$calledClass = version_compare(PHP_VERSION, '5.5', '>') ? static::class : get_called_class();
+		$calledClass = \PHP_VERSION_ID >= 50500 ? static::class : get_called_class();
 		foreach ($backtraceItems as $backtraceItem) {
 			if (!isset($backtraceItem['object']) || !$backtraceItem['object']) continue;
 			$object = & $backtraceItem['object'];
@@ -69,10 +69,10 @@ trait Dispatching
 	 * @param \MvcCore\Request|\MvcCore\IRequest $request
 	 * @return \MvcCore\Controller
 	 */
-	public function & SetRequest (\MvcCore\IRequest & $request) {
+	public function SetRequest (\MvcCore\IRequest $request) {
 		/** @var $this \MvcCore\Controller */
 		/** @var $request \MvcCore\Request */
-		$this->request = & $request;
+		$this->request = $request;
 		$this->controllerName = ltrim($request->GetControllerName(), '/');
 		$this->actionName = $request->GetActionName();
 		$this->ajax = $request->IsAjax();
@@ -107,13 +107,13 @@ trait Dispatching
 		// \MvcCore\Debug::Timer('dispatch');
 		$actionNameStart = $this->actionName;
 
-		if ($this->dispatchState < 1) 
+		if ($this->dispatchState < 1)
 			$this->Init();
 		if ($this->dispatchState == 5) return; // terminated or redirected
 		if ($this->dispatchState < 1) $this->dispatchState = 1;// for cases somebody forget to call parent init
 		// \MvcCore\Debug::Timer('dispatch');
 
-		if ($this->dispatchState < 2) 
+		if ($this->dispatchState < 2)
 			$this->PreDispatch();
 		if ($this->dispatchState == 5) return; // terminated or redirected
 		if ($this->dispatchState < 2) $this->dispatchState = 2;// for cases somebody forget to call parent pre-dispatch
@@ -123,13 +123,13 @@ trait Dispatching
 			$toolClass = $this->application->GetToolClass();
 			$actionName = $toolClass::GetPascalCaseFromDashed($this->actionName) . 'Action';
 		}
-		if ($this->dispatchState < 3 && method_exists($this, $actionName)) 
+		if ($this->dispatchState < 3 && method_exists($this, $actionName))
 			$this->{$actionName}();
 		if ($this->dispatchState == 5) return; // terminated or redirected
 		if ($this->dispatchState < 3) $this->dispatchState = 3;
 		// \MvcCore\Debug::Timer('dispatch');
-		
-		if ($this->dispatchState < 4) 
+
+		if ($this->dispatchState < 4)
 			$this->Render(
 				$this->controllerName,	// dashed ctrl name
 				$this->actionName		// dashed action name
@@ -149,9 +149,9 @@ trait Dispatching
 	 */
 	public function Init () {
 		if ($this->dispatchState > 0) return;
-		self::$allControllers[spl_object_hash($this)] = & $this;
+		self::$allControllers[spl_object_hash($this)] = $this;
 		if ($this->parentController === NULL && !$this->request->IsCli()) {
-			if ($this->autoStartSession) 
+			if ($this->autoStartSession)
 				$this->application->SessionStart();
 			$responseContentType = $this->ajax ? 'text/javascript' : 'text/html';
 			$this->response->SetHeader('Content-Type', $responseContentType);
@@ -162,7 +162,7 @@ trait Dispatching
 			$controller->Init();
 			if ($controller->dispatchState == 5) break;
 		}
-		if ($this->dispatchState === 0) 
+		if ($this->dispatchState === 0)
 			$this->dispatchState = 1;
 	}
 
@@ -171,8 +171,8 @@ trait Dispatching
 	 * in doc comments as `@autoinit` into `\MvcCore\Controller::$controllers` array
 	 * and into member property itself. This method is always called inside
 	 * `\MvcCore\Controller::Init();` method, after session has been started.
-	 * Create every new instance by calling existing method named as 
-	 * `[_]create<PascalCasePropertyName>` and returning new instance or by doc 
+	 * Create every new instance by calling existing method named as
+	 * `[_]create<PascalCasePropertyName>` and returning new instance or by doc
 	 * comment type defined by `@var` over static method `$ClassName::CreateInstance()`.
 	 * @return void
 	 */
@@ -246,7 +246,7 @@ trait Dispatching
 			$controller->PreDispatch();
 			if ($controller->dispatchState == 5) break;
 		}
-		if ($this->dispatchState == 1) 
+		if ($this->dispatchState == 1)
 			$this->dispatchState = 2;
 	}
 
@@ -265,15 +265,15 @@ trait Dispatching
 	 * @param string|int $index
 	 * @return \MvcCore\Controller
 	 */
-	public function AddChildController (\MvcCore\IController & $controller, $index = NULL) {
+	public function AddChildController (\MvcCore\IController $controller, $index = NULL) {
 		/** @var $this \MvcCore\Controller */
 		/** @var $controller \MvcCore\Controller */
-		self::$allControllers[spl_object_hash($controller)] = & $controller;
+		self::$allControllers[spl_object_hash($controller)] = $controller;
 		if (!in_array($controller, $this->childControllers, TRUE)) {
 			if ($index === NULL) {
-				$this->childControllers[] = & $controller;
+				$this->childControllers[] = $controller;
 			} else {
-				$this->childControllers[$index] = & $controller;
+				$this->childControllers[$index] = $controller;
 			}
 		}
 		$controller
@@ -308,7 +308,7 @@ trait Dispatching
 	 * @return void
 	 */
 	public static function Redirect ($location = '', $code = \MvcCore\IResponse::SEE_OTHER, $reason = NULL) {
-		$app = & \MvcCore\Application::GetInstance();
+		$app = \MvcCore\Application::GetInstance();
 		$response = $app->GetResponse();
 		$response
 			->SetCode($code)

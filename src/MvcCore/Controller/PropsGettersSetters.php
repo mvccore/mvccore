@@ -202,7 +202,7 @@ trait PropsGettersSetters
 	 * Get current application singleton instance object as reference.
 	 * @return \MvcCore\Application
 	 */
-	public function & GetApplication () {
+	public function GetApplication () {
 		return $this->application;
 	}
 
@@ -214,8 +214,8 @@ trait PropsGettersSetters
 	 * @param \MvcCore\Application $application
 	 * @return \MvcCore\Controller|\MvcCore\Controller\PropsGettersSetters
 	 */
-	public function & SetApplication (\MvcCore\IApplication & $application) {
-		$this->application = & $application;
+	public function SetApplication (\MvcCore\IApplication $application) {
+		$this->application = $application;
 		return $this;
 	}
 
@@ -223,7 +223,7 @@ trait PropsGettersSetters
 	 * Get current application request object as reference.
 	 * @return \MvcCore\Request
 	 */
-	public function & GetRequest () {
+	public function GetRequest () {
 		return $this->request;
 	}
 
@@ -247,7 +247,7 @@ trait PropsGettersSetters
 	 * Get current application response object as reference.
 	 * @return \MvcCore\Response
 	 */
-	public function & GetResponse () {
+	public function GetResponse () {
 		return $this->response;
 	}
 
@@ -259,8 +259,8 @@ trait PropsGettersSetters
 	 * @param \MvcCore\Response $response
 	 * @return \MvcCore\Controller|\MvcCore\Controller\PropsGettersSetters
 	 */
-	public function & SetResponse (\MvcCore\IResponse & $response) {
-		$this->response = & $response;
+	public function SetResponse (\MvcCore\IResponse $response) {
+		$this->response = $response;
 		return $this;
 	}
 
@@ -268,7 +268,7 @@ trait PropsGettersSetters
 	 * Get current application router object as reference.
 	 * @return \MvcCore\Router
 	 */
-	public function & GetRouter () {
+	public function GetRouter () {
 		return $this->router;
 	}
 
@@ -280,8 +280,8 @@ trait PropsGettersSetters
 	 * @param \MvcCore\Router $router
 	 * @return \MvcCore\Controller|\MvcCore\Controller\PropsGettersSetters
 	 */
-	public function & SetRouter (\MvcCore\IRouter & $router) {
-		$this->router = & $router;
+	public function SetRouter (\MvcCore\IRouter $router) {
+		$this->router = $router;
 		return $this;
 	}
 
@@ -299,7 +299,7 @@ trait PropsGettersSetters
 	 * Get user model instance.
 	 * @return \MvcCore\Model|\MvcCore\IModel
 	 */
-	public function & GetUser () {
+	public function GetUser () {
 		return $this->user;
 	}
 
@@ -308,7 +308,7 @@ trait PropsGettersSetters
 	 * @param \MvcCore\Model|\MvcCore\IModel $user
 	 * @return \MvcCore\Controller|\MvcCore\Controller\PropsGettersSetters
 	 */
-	public function & SetUser (& $user) {
+	public function SetUser ($user) {
 		$this->user = $user;
 		return $this;
 	}
@@ -319,7 +319,7 @@ trait PropsGettersSetters
 	 * in controller lifecycle, this property will be still `NULL`.
 	 * @return \MvcCore\View|NULL
 	 */
-	public function & GetView () {
+	public function GetView () {
 		return $this->view;
 	}
 
@@ -328,7 +328,7 @@ trait PropsGettersSetters
 	 * @param \MvcCore\View $view
 	 * @return \MvcCore\Controller|\MvcCore\Controller\PropsGettersSetters
 	 */
-	public function & SetView (\MvcCore\IView & $view) {
+	public function SetView (\MvcCore\IView $view) {
 		$this->view = $view;
 		return $this;
 	}
@@ -348,7 +348,7 @@ trait PropsGettersSetters
 	 * @param string $layout
 	 * @return \MvcCore\Controller|\MvcCore\Controller\PropsGettersSetters
 	 */
-	public function & SetLayout ($layout = '') {
+	public function SetLayout ($layout = '') {
 		$this->layout = $layout;
 		return $this;
 	}
@@ -380,7 +380,7 @@ trait PropsGettersSetters
 	 * @param string|NULL $viewScriptsPath
 	 * @return \MvcCore\Controller|\MvcCore\Controller\PropsGettersSetters
 	 */
-	public function & SetViewScriptsPath ($viewScriptsPath = NULL) {
+	public function SetViewScriptsPath ($viewScriptsPath = NULL) {
 		$this->viewScriptsPath = $viewScriptsPath;
 		return $this;
 	}
@@ -403,7 +403,7 @@ trait PropsGettersSetters
 	 * otherwise to not render any view. Default value is `TRUE` for all non-ajax requests.
 	 * @return \MvcCore\Controller|\MvcCore\Controller\PropsGettersSetters
 	 */
-	public function & SetViewEnabled ($viewEnabled = TRUE) {
+	public function SetViewEnabled ($viewEnabled = TRUE) {
 		$this->viewEnabled = $viewEnabled;
 		return $this;
 	}
@@ -425,7 +425,7 @@ trait PropsGettersSetters
 	 * @param \MvcCore\Controller|\MvcCore\IController|NULL $parentController
 	 * @return \MvcCore\Controller|\MvcCore\Controller\PropsGettersSetters
 	 */
-	public function & SetParentController (\MvcCore\IController & $parentController = NULL) {
+	public function SetParentController (\MvcCore\IController $parentController = NULL) {
 		$this->parentController = $parentController;
 		return $this;
 	}
@@ -451,8 +451,8 @@ trait PropsGettersSetters
 	 * @param \MvcCore\Controller[]|\MvcCore\IController[] $childControllers
 	 * @return \MvcCore\Controller|\MvcCore\Controller\PropsGettersSetters
 	 */
-	public function & SetChildControllers (array & $childControllers = []) {
-		$this->childControllers = & $childControllers;
+	public function SetChildControllers (array $childControllers = []) {
+		$this->childControllers = $childControllers;
 		return $this;
 	}
 

@@ -92,7 +92,7 @@ trait Rendering
 	 * @return void
 	 */
 	public function XmlResponse ($output = '', $terminate = TRUE) {
-		$res = & $this->response;
+		$res = $this->response;
 		if (!$res->HasHeader('Content-Type'))
 			$res->SetHeader('Content-Type', 'application/xml');
 		$res->SetBody($output);
@@ -109,7 +109,7 @@ trait Rendering
 	 * @return void
 	 */
 	public function TextResponse ($output = '', $terminate = TRUE) {
-		$res = & $this->response;
+		$res = $this->response;
 		if (!$res->HasHeader('Content-Type'))
 			$res->SetHeader('Content-Type', 'text/plain');
 		$res->SetBody($output);
@@ -128,7 +128,7 @@ trait Rendering
 	 * @return void
 	 */
 	public function JsonResponse ($data = NULL, $terminate = TRUE) {
-		$res = & $this->response;
+		$res = $this->response;
 		$toolClass = $this->application->GetToolClass();
 		$output = $toolClass::EncodeJson($data);
 		ob_clean(); // remove any possible warnings to break client's `JSON.parse();`
@@ -155,7 +155,7 @@ trait Rendering
 	 * @return void
 	 */
 	public function JsonpResponse ($data = NULL, $callbackParamName = 'callback', $terminate = TRUE) {
-		$res = & $this->response;
+		$res = $this->response;
 		$toolClass = $this->application->GetToolClass();
 		$output = $toolClass::EncodeJson($data);
 		ob_clean(); // remove any possible warnings to break client's `JSON.parse();`
