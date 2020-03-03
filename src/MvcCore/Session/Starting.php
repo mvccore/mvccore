@@ -25,7 +25,7 @@ trait Starting
 	 */
 	public static function Start (& $session = []) {
 		if (static::GetStarted()) return;
-		$req = self::$req ?: self::$req = & \MvcCore\Application::GetInstance()->GetRequest();
+		$req = self::$req ?: self::$req = \MvcCore\Application::GetInstance()->GetRequest();
 		if ($req->IsInternalRequest() === TRUE) return;
 		static::$started = session_start();
 		static::$sessionStartTime = time();
@@ -49,7 +49,7 @@ trait Starting
 	 */
 	public static function GetStarted () {
 		if (static::$started === NULL) {
-			$req = self::$req ?: self::$req = & \MvcCore\Application::GetInstance()->GetRequest();
+			$req = self::$req ?: self::$req = \MvcCore\Application::GetInstance()->GetRequest();
 			if (!$req->IsCli()) {
 				$alreadyStarted = session_status() === PHP_SESSION_ACTIVE && session_id() !== '';
 				if ($alreadyStarted) {

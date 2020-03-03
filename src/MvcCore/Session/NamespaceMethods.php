@@ -21,16 +21,14 @@ trait NamespaceMethods
 	 * @param string $name Session namespace unique name.
 	 * @return \MvcCore\Session|\MvcCore\ISession
 	 */
-	public static function & GetNamespace (
+	public static function GetNamespace (
 		$name = \MvcCore\ISession::DEFAULT_NAMESPACE_NAME
 	) {
-		if (!static::GetStarted()) static::Start();
-		if (!isset(static::$instances[$name])) {
+		if (!static::GetStarted()) 
+			static::Start();
+		if (!isset(static::$instances[$name])) 
 			static::$instances[$name] = new static($name);
-		}
-		/** @var $result \MvcCore\Session */
-		$result = & static::$instances[$name];
-		return $result;
+		return static::$instances[$name];
 	}
 
 	/**
@@ -38,7 +36,7 @@ trait NamespaceMethods
 	 * @param int $hoops
 	 * @return \MvcCore\Session
 	 */
-	public function & SetExpirationHoops ($hoops) {
+	public function SetExpirationHoops ($hoops) {
 		/** @var $this \MvcCore\Session */
 		static::$meta->hoops[$this->__name] = $hoops;
 		return $this;
@@ -51,7 +49,7 @@ trait NamespaceMethods
 	 * @param int $seconds
 	 * @return \MvcCore\Session
 	 */
-	public function & SetExpirationSeconds ($seconds = 0) {
+	public function SetExpirationSeconds ($seconds = 0) {
 		/** @var $this \MvcCore\Session */
 		if ($seconds > 0) 
 			static::$meta->expirations[$this->__name] = static::$sessionStartTime + $seconds;
@@ -87,7 +85,7 @@ trait NamespaceMethods
 		session_destroy();
 		$_SESSION = NULL;
 		static::$started = FALSE;
-		$response = & \MvcCore\Application::GetInstance()->GetResponse();
+		$response = \MvcCore\Application::GetInstance()->GetResponse();
 		if (!$response->IsSent()) {
 			$params = (object) session_get_cookie_params();
 			$response->DeleteCookie(

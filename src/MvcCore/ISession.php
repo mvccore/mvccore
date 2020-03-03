@@ -110,14 +110,14 @@ interface ISession
 	 * @param string $name Session namespace unique name.
 	 * @return \MvcCore\ISession
 	 */
-	public static function & GetNamespace ($name = \MvcCore\ISession::DEFAULT_NAMESPACE_NAME);
+	public static function GetNamespace ($name = \MvcCore\ISession::DEFAULT_NAMESPACE_NAME);
 
 	/**
 	 * Set MvcCore session namespace expiration by page request(s) count.
 	 * @param int $hoops
 	 * @return \MvcCore\ISession
 	 */
-	public function & SetExpirationHoops ($hoops);
+	public function SetExpirationHoops ($hoops);
 
 	/**
 	 * Set MvcCore session namespace expiration by expiration seconds.
@@ -126,7 +126,7 @@ interface ISession
 	 * @param int $seconds
 	 * @return \MvcCore\ISession
 	 */
-	public function & SetExpirationSeconds ($seconds);
+	public function SetExpirationSeconds ($seconds);
 
 	/**
 	 * Send `PHPSESSID` http cookie with session id hash before response body is sent.

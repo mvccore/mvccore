@@ -42,7 +42,7 @@ trait Closing
 	public static function SendCookie () {
 		if (!static::GetStarted()) return;
 		$maxExpiration = static::GetSessionMaxTime();
-		$response = & \MvcCore\Application::GetInstance()->GetResponse();
+		$response = \MvcCore\Application::GetInstance()->GetResponse();
 		if (!$response->IsSent()) {
 			$params = (object) session_get_cookie_params();
 			$response->SetCookie(
