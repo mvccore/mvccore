@@ -11,13 +11,14 @@
  * @license  https://mvccore.github.io/docs/mvccore/5.0.0/LICENCE.md
  */
 
-if (\PHP_VERSION_ID < 50400) {
-	$m = "Startup script requires at least PHP version 5.4.0 your PHP version is: " . PHP_VERSION;
-	die($m);
-}
 call_user_func(function () {
-	error_reporting(E_ALL ^ E_NOTICE);
-	if (php_sapi_name() == 'cli') {
+	error_reporting(E_ALL);
+	if (\PHP_VERSION_ID < 50400)
+		die("MvcCore requires at least PHP version 5.4.0, your PHP version is: " . PHP_VERSION . ".");
+	$iniShirtOpenTags = @ini_get("short_open_tag");
+	if ($iniShirtOpenTags === FALSE || strtolower($iniShirtOpenTags) == 'off' || $iniShirtOpenTags == '0')
+		die("MvcCore templates require PHP short open tags enabled. Set `short_open_tag = On` in your php.ini.");
+	if (\PHP_SAPI == 'cli') {
 		$backtraceItems = debug_backtrace(DEBUG_BACKTRACE_IGNORE_ARGS);
 		$scriptFilename =  $backtraceItems[count($backtraceItems) - 1]['file'];
 	} else {
