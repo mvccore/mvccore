@@ -19,7 +19,7 @@ trait IniRead
 	 * Load config file and return `TRUE` for success or `FALSE` in failure.
 	 * - Second environment value setup:
 	 *   - Only if `\MvcCore\Config::$system` property is defined as `TRUE`.
-	 *   - By defined client IPs, server hostnames or environment variables 
+	 *   - By defined client IPs, server hostnames or environment variables
 	 *     in `environments` section. By values or regular expressions.
 	 * - Load only sections for current environment name.
 	 * - Retype all `raw string` values into `array`, `float`, `int` or `boolean` types.
@@ -32,9 +32,9 @@ trait IniRead
 		if ($this->data) return $this->data;
 		$this->fullPath = $fullPath;
 		$this->system = $systemConfig;
-		if (!$this->_iniScannerMode) 
+		if (!$this->_iniScannerMode)
 			// 1 => INI_SCANNER_RAW, 2 => INI_SCANNER_TYPED
-			$this->_iniScannerMode = version_compare(PHP_VERSION, '5.6.1', '<') ? 1 : 2;
+			$this->_iniScannerMode = \PHP_VERSION_ID < 50610 ? 1 : 2;
 		clearstatcache(TRUE, $fullPath);
 		$this->lastChanged = filemtime($fullPath);
 		$rawIniData = parse_ini_file(
@@ -49,7 +49,7 @@ trait IniRead
 			$this->iniReadExpandLevelsAndReType($rawIniEnvSectionData);
 			$environmentsData = array_merge([], $this->data);
 			$environment = static::EnvironmentDetectBySystemConfig($environmentsData);//production
-			foreach ($this->objectTypes as & $objectType) 
+			foreach ($this->objectTypes as & $objectType)
 				if ($objectType[0]) $objectType[1] = (object) $objectType[1];
 			unset($rawIniData[$envsSectionName]);
 			$this->data = [];
@@ -61,12 +61,12 @@ trait IniRead
 		$this->iniReadExpandLevelsAndReType($iniData);
 		if ($environmentsData !== NULL)
 			$this->data[$envsSectionName] = (object) $environmentsData;
-		foreach ($this->objectTypes as & $objectType) 
+		foreach ($this->objectTypes as & $objectType)
 			if ($objectType[0]) $objectType[1] = (object) $objectType[1];
 		unset($this->objectTypes);
 		return TRUE;
 	}
-	
+
 	/**
 	 * Align all raw INI data to single level array,
 	 * filtered for only current environment data items.
@@ -181,8 +181,8 @@ trait IniRead
 		} else {
 			// int or string if integer is too high (more then PHP max/min: 2147483647/-2147483647)
 			$intVal = intval($rawValue);
-			return (string) $intVal === $rawValue 
-				? $intVal 
+			return (string) $intVal === $rawValue
+				? $intVal
 				: $rawValue;
 		}
 	}

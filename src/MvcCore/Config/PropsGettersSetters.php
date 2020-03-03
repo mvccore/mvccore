@@ -115,7 +115,7 @@ trait PropsGettersSetters
 	 * Set whole internal array store.
 	 * @return \MvcCore\Config|\MvcCore\IConfig
 	 */
-	public function & SetData (array $data = []) {
+	public function SetData (array $data = []) {
 		/** @var $this \MvcCore\IConfig */
 		$this->data = $data;
 		return $this;

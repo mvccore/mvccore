@@ -25,12 +25,12 @@ trait ReadWrite
 	 * @param string $appRootRelativePath Relative config path from app root.
 	 * @return \MvcCore\Config|\MvcCore\IConfig
 	 */
-	public static function & CreateInstance (array $data = [], $appRootRelativePath = NULL) {
+	public static function CreateInstance (array $data = [], $appRootRelativePath = NULL) {
 		/** @var $instance \MvcCore\IConfig */
 		$instance = new static();
 		if ($data) $instance->data = & $data;
 		if ($appRootRelativePath) {
-			$app = self::$app ?: self::$app = & \MvcCore\Application::GetInstance();
+			$app = self::$app ?: self::$app = \MvcCore\Application::GetInstance();
 			$appRoot = self::$appRoot ?: self::$appRoot = $app->GetRequest()->GetAppRoot();
 			$instance->fullPath = $appRoot . '/' . str_replace(
 				'%appPath%', $app->GetAppDir(), ltrim($appRootRelativePath, '/')
@@ -44,12 +44,12 @@ trait ReadWrite
 	 * placed by default in: `"/App/config.ini"`.
 	 * @return \MvcCore\Config|\MvcCore\IConfig|bool
 	 */
-	public static function & GetSystem () {
-		$app = self::$app ?: self::$app = & \MvcCore\Application::GetInstance();
+	public static function GetSystem () {
+		$app = self::$app ?: self::$app = \MvcCore\Application::GetInstance();
 		$systemConfigClass = $app->GetConfigClass();
 		$appRootRelativePath = $systemConfigClass::GetSystemConfigPath();
 		if (!isset(self::$configsCache[$appRootRelativePath])) 
-			self::$configsCache[$appRootRelativePath] = & self::getConfigInstance(
+			self::$configsCache[$appRootRelativePath] = self::getConfigInstance(
 				$appRootRelativePath, TRUE
 			);
 		return self::$configsCache[$appRootRelativePath];
@@ -61,12 +61,12 @@ trait ReadWrite
 	 * @param string $appRootRelativePath Any config relative path like `'/%appPath%/website.ini'`.
 	 * @return \MvcCore\Config|\MvcCore\IConfig|bool
 	 */
-	public static function & GetConfig ($appRootRelativePath) {
+	public static function GetConfig ($appRootRelativePath) {
 		if (!isset(self::$configsCache[$appRootRelativePath])) {
-			$app = self::$app ?: self::$app = & \MvcCore\Application::GetInstance();
+			$app = self::$app ?: self::$app = \MvcCore\Application::GetInstance();
 			$systemConfigClass = $app->GetConfigClass();
 			$system = $systemConfigClass::GetSystemConfigPath() === '/' . ltrim($appRootRelativePath, '/');
-			self::$configsCache[$appRootRelativePath] = & self::getConfigInstance(
+			self::$configsCache[$appRootRelativePath] = self::getConfigInstance(
 				$appRootRelativePath, $system
 			);
 		}
@@ -82,7 +82,7 @@ trait ReadWrite
 		$rawContent = $this->Dump();
 		if ($rawContent === FALSE) 
 			throw new \Exception('Configuration data was not possible to dump.');
-		$app = self::$app ?: self::$app = & \MvcCore\Application::GetInstance();
+		$app = self::$app ?: self::$app = \MvcCore\Application::GetInstance();
 		$toolClass = $app->GetToolClass();
 		try {
 			$toolClass::SingleProcessWrite(
@@ -106,8 +106,8 @@ trait ReadWrite
 	 * @param bool $systemConfig 
 	 * @return \MvcCore\Config|\MvcCore\IConfig|bool
 	 */
-	protected static function & getConfigInstance ($appRootRelativePath, $systemConfig = FALSE) {
-		$app = self::$app ?: self::$app = & \MvcCore\Application::GetInstance();
+	protected static function getConfigInstance ($appRootRelativePath, $systemConfig = FALSE) {
+		$app = self::$app ?: self::$app = \MvcCore\Application::GetInstance();
 		$appRoot = self::$appRoot ?: self::$appRoot = $app->GetRequest()->GetAppRoot();
 		$fullPath = $appRoot . '/' . str_replace(
 			'%appPath%', $app->GetAppDir(), ltrim($appRootRelativePath, '/')

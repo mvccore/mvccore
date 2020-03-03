@@ -96,7 +96,7 @@ trait Environment
 	 */
 	public static function EnvironmentDetectByIps () {
 		if (static::$environment === NULL) {
-			$request = & \MvcCore\Application::GetInstance()->GetRequest();
+			$request = \MvcCore\Application::GetInstance()->GetRequest();
 			$serverAddress = $request->GetServerIp();
 			$remoteAddress = $request->GetClientIp();
 			if ($serverAddress == $remoteAddress) {
@@ -115,7 +115,7 @@ trait Environment
 	 */
 	public static function EnvironmentDetectBySystemConfig (array $environmentsSectionData = []) {
 		$environment = NULL;
-		$app = self::$app ?: self::$app = & \MvcCore\Application::GetInstance();
+		$app = self::$app ?: self::$app = \MvcCore\Application::GetInstance();
 		$request = $app->GetRequest();
 		$clientIp = NULL;
 		$serverHostName = NULL;

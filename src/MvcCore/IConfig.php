@@ -130,14 +130,14 @@ interface IConfig
 	 * @param string $appRootRelativePath Relative config path from app root.
 	 * @return \MvcCore\IConfig
 	 */
-	public static function & CreateInstance (array $data = [], $appRootRelativePath = NULL);
+	public static function CreateInstance (array $data = [], $appRootRelativePath = NULL);
 
 	/**
 	 * Get cached singleton system config INI file as `stdClass`es and `array`s,
 	 * placed by default in: `"/App/config.ini"`.
 	 * @return \MvcCore\IConfig|bool
 	 */
-	public static function & GetSystem ();
+	public static function GetSystem ();
 
 	/**
 	 * Get cached config INI file as `stdClass`es and `array`s,
@@ -145,7 +145,7 @@ interface IConfig
 	 * @param string $appRootRelativePath Any config relative path like `'/%appPath%/website.ini'`.
 	 * @return \MvcCore\IConfig|bool
 	 */
-	public static function & GetConfig ($appRootRelativePath);
+	public static function GetConfig ($appRootRelativePath);
 
 	/**
 	 * Load config file and return `TRUE` for success or `FALSE` in failure.
@@ -179,7 +179,7 @@ interface IConfig
 	 * Set whole internal array store.
 	 * @return \MvcCore\IConfig
 	 */
-	public function & SetData (array $data = []);
+	public function SetData (array $data = []);
 
 	/**
 	 * Full path, where are configuration data stored.
