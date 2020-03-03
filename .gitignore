@@ -52,6 +52,7 @@ Temporary Items
 .hgtags
 
 # Project files
+.vs
 *.phpproj
 *.phpproj.user
 composer.dev.json
