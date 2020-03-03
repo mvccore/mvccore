@@ -71,7 +71,7 @@ interface ITool
 	 * @throws \Exception
 	 * @return string
 	 */
-	public static function EncodeJson (& $data);
+	public static function EncodeJson ($data);
 
 	/**
 	 * Safely decode json string into php `stdClass/array`.
@@ -82,7 +82,7 @@ interface ITool
 	 * @param string $jsonStr
 	 * @return object
 	 */
-	public static function DecodeJson (& $jsonStr);
+	public static function DecodeJson ($jsonStr);
 
 	/**
 	 * Recognize if given string is JSON or not without JSON parsing.
@@ -90,7 +90,7 @@ interface ITool
 	 * @param string $jsonStr 
 	 * @return bool
 	 */
-	public static function IsJsonString (& $jsonStr);
+	public static function IsJsonString ($jsonStr);
 
 	/**
 	 * Recognize if given string is query string without parsing.
@@ -106,7 +106,7 @@ interface ITool
 	 * @param string $jsonStr 
 	 * @return bool
 	 */
-	public static function IsQueryString (& $queryStr);
+	public static function IsQueryString ($queryStr);
 
 	/**
 	 * Returns the OS-specific directory for temporary files.

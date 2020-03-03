@@ -27,14 +27,14 @@ trait Helpers
 	 * @throws \Exception JSON encoding error.
 	 * @return string
 	 */
-	public static function EncodeJson (& $data) {
+	public static function EncodeJson ($data) {
 		$flags = JSON_HEX_TAG | JSON_HEX_APOS | JSON_HEX_QUOT | JSON_HEX_AMP |
 			(defined('JSON_UNESCAPED_SLASHES') ? JSON_UNESCAPED_SLASHES : 0) |
 			(defined('JSON_UNESCAPED_UNICODE') ? JSON_UNESCAPED_UNICODE : 0) |
 			(defined('JSON_PRESERVE_ZERO_FRACTION') ? JSON_PRESERVE_ZERO_FRACTION : 0);
 		$json = json_encode($data, $flags);
 		if ($errorCode = json_last_error()) {
-			$selfClass = version_compare(PHP_VERSION, '5.5', '>') ? self::class : __CLASS__;
+			$selfClass = \PHP_VERSION_ID >= 50500 ? self::class : __CLASS__;
 			throw new \RuntimeException("[".$selfClass."] ".json_last_error_msg(), $errorCode);
 		}
 		if (PHP_VERSION_ID < 70100) {
@@ -55,7 +55,7 @@ trait Helpers
 	 * @param string $jsonStr
 	 * @return object
 	 */
-	public static function DecodeJson (& $jsonStr) {
+	public static function DecodeJson ($jsonStr) {
 		$result = (object) [
 			'success'	=> TRUE,
 			'data'		=> null,
@@ -75,15 +75,15 @@ trait Helpers
 	/**
 	 * Recognize if given string is JSON or not without JSON parsing.
 	 * @see https://www.ietf.org/rfc/rfc4627.txt
-	 * @param string $jsonStr 
+	 * @param string $jsonStr
 	 * @return bool
 	 */
-	public static function IsJsonString (& $jsonStr) {
+	public static function IsJsonString ($jsonStr) {
 		return !preg_match(
 			'#[^,:{}\[\]0-9.\\-+Eaeflnr-u \n\r\t]#',
 			preg_replace(
-				'#"(\.|[^\\"])*"#', 
-				'', 
+				'#"(\.|[^\\"])*"#',
+				'',
 				(string) $jsonStr
 			)
 		);
@@ -100,10 +100,10 @@ trait Helpers
 	 * - `key1=value&key2=`
 	 * - `key1=value&key2=&key3=`
 	 * ...
-	 * @param string $jsonStr 
+	 * @param string $jsonStr
 	 * @return bool
 	 */
-	public static function IsQueryString (& $queryStr) {
+	public static function IsQueryString ($queryStr) {
 		$queryStr = trim($queryStr, '&=');
 		$apmsCount = substr_count($queryStr, '&');
 		$equalsCount = substr_count($queryStr, '=');
@@ -127,7 +127,7 @@ trait Helpers
 				$sysRoot = getenv('SystemRoot');
 				// do not store anything directly in C:\Windows, use C\windows\Temp instead
 				if (!$tmpDir || $tmpDir === $sysRoot) {
-					$tmpDir = !empty($_SERVER['TEMP']) 
+					$tmpDir = !empty($_SERVER['TEMP'])
 						? $_SERVER['TEMP']
 						: (!empty($_SERVER['TMP'])
 							? $_SERVER['TMP']
@@ -140,7 +140,7 @@ trait Helpers
 				$tmpDir = str_replace('\\', '/', $tmpDir);
 			} else if (!$tmpDir) {
 				// Other systems
-				$tmpDir = !empty($_SERVER['TMPDIR']) 
+				$tmpDir = !empty($_SERVER['TMPDIR'])
 					? $_SERVER['TMPDIR']
 					: (!empty($_SERVER['TMP'])
 						? $_SERVER['TMP']
@@ -157,23 +157,23 @@ trait Helpers
 
 	/**
 	 * Safely invoke internal PHP function with it's own error handler.
-	 * Error handler accepts arguments: 
+	 * Error handler accepts arguments:
 	 * - `string $errMessage`	- Error message.
 	 * - `int $errLevel`		- Level of the error raised.
 	 * - `string $errFile`		- Optional, full path to error file name where error was raised.
 	 * - `int $errLine`			- Optional, The error file line number.
-	 * - `array $errContext`	- Optional, array that points to the active symbol table at the 
-	 *							  point the error occurred. In other words, `$errContext` will contain 
-	 *							  an array of every variable that existed in the scope the error 
+	 * - `array $errContext`	- Optional, array that points to the active symbol table at the
+	 *							  point the error occurred. In other words, `$errContext` will contain
+	 *							  an array of every variable that existed in the scope the error
 	 *							  was triggered in. User error handler must not modify error context.
-	 *							  Warning: This parameter has been DEPRECATED as of PHP 7.2.0. 
+	 *							  Warning: This parameter has been DEPRECATED as of PHP 7.2.0.
 	 *							  Relying on it is highly discouraged.
 	 * If the custom error handler returns `FALSE`, normal internal error handler continues.
 	 * This function is very PHP specific. It's proudly used from Nette Framework, optimized for PHP 5.4+ incl.:
 	 * https://github.com/nette/utils/blob/b623b2deec8729c8285d269ad991a97504f76bd4/src/Utils/Callback.php#L63-L84
-	 * @param string|callable $internalFnOrHandler 
-	 * @param array $args 
-	 * @param callable $onError 
+	 * @param string|callable $internalFnOrHandler
+	 * @param array $args
+	 * @param callable $onError
 	 * @return mixed
 	 */
 	public static function Invoke ($internalFnOrHandler, array $args, callable $onError) {
@@ -190,11 +190,11 @@ trait Helpers
 							: strval($internalFnOrHandler)
 						);
 					$errMessage = preg_replace("#^$funcNameStr\(.*?\): #", '', $errMessage);
-					if ($onError($errMessage, $errLevel, $errFile, $errLine, $errContext) !== FALSE) 
+					if ($onError($errMessage, $errLevel, $errFile, $errLine, $errContext) !== FALSE)
 						return TRUE;
 				}
-				return $prevErrorHandler 
-					? call_user_func_array($prevErrorHandler, func_get_args()) 
+				return $prevErrorHandler
+					? call_user_func_array($prevErrorHandler, func_get_args())
 					: FALSE;
 			}
 		);
@@ -223,11 +223,11 @@ trait Helpers
 	 * @return bool
 	 */
 	public static function SingleProcessWrite (
-		$fullPath, 
-		$content, 
-		$writeMode = 'w', 
-		$lockWaitMilliseconds = 100, 
-		$maxLockWaitMilliseconds = 5000, 
+		$fullPath,
+		$content,
+		$writeMode = 'w',
+		$lockWaitMilliseconds = 100,
+		$maxLockWaitMilliseconds = 5000,
 		$oldLockMillisecondsTolerance = 30000
 	) {
 		$waitUTime = $lockWaitMilliseconds * 1000;
@@ -257,13 +257,13 @@ trait Helpers
 			return FALSE;
 		}, E_WARNING);
 
-		// get last modification time for lock file 
+		// get last modification time for lock file
 		// if exists to prevent old locks in cache
 		clearstatcache(TRUE, $lockFullPath);
 		if (file_exists($lockFullPath)) {
 			$fileModTime = @filemtime($lockFullPath);
 			if ($fileModTime !== FALSE) {
-				if (time() > $fileModTime + $oldLockMillisecondsTolerance) 
+				if (time() > $fileModTime + $oldLockMillisecondsTolerance)
 					unlink($lockFullPath);
 			}
 		}
@@ -277,9 +277,9 @@ trait Helpers
 			$waitingTime += $lockWaitMilliseconds;
 			if ($waitingTime > $maxLockWaitMilliseconds) {
 				throw new \Exception(
-					'Unable to create lock handle: `' . $lockFullPath 
-					. '` for file: `' . $fullPath 
-					. '`. Lock creation timeout. Try to clear cache: `' 
+					'Unable to create lock handle: `' . $lockFullPath
+					. '` for file: `' . $fullPath
+					. '`. Lock creation timeout. Try to clear cache: `'
 					. $tmpDir . '`'
 				);
 			}
@@ -290,19 +290,19 @@ trait Helpers
 			fclose($lockHandle);
 			unlink($lockFullPath);
 			throw new \Exception(
-				'Unable to create lock handle: `' . $lockFullPath 
-				. '` for file: `' . $fullPath 
-				. '`. Lock creation timeout. Try to clear cache: `' 
+				'Unable to create lock handle: `' . $lockFullPath
+				. '` for file: `' . $fullPath
+				. '`. Lock creation timeout. Try to clear cache: `'
 				. $tmpDir . '`'
 			);
 		}
 		fwrite($lockHandle, $fullPath);
 		fflush($lockHandle);
-			
+
 		// write or append the file
 		clearstatcache(TRUE, $fullPath);
 		$handle = @fopen($fullPath, $writeMode);
-		if ($handle && !flock($handle, LOCK_EX)) 
+		if ($handle && !flock($handle, LOCK_EX))
 			$handle = FALSE;
 		if (!$handle) {
 			// unlock before exception
@@ -316,7 +316,7 @@ trait Helpers
 		fwrite($handle, $content);
 		fflush($handle);
 		flock($handle, LOCK_UN);
-		
+
 		// unlock
 		flock($lockHandle, LOCK_UN);
 		fclose($lockHandle);

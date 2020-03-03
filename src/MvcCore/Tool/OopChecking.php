@@ -61,12 +61,13 @@ trait OopChecking
 				}
 				// arguments compatibility in presented static method are automatically checked by PHP
 			}
-			if (!$allStaticsImplemented) $result = FALSE;
+			if (!$allStaticsImplemented)
+				$result = FALSE;
 		}
 		// return result or thrown an exception
 		if ($result) return TRUE;
 		if (!$throwException) return FALSE;
-		$selfClass = version_compare(PHP_VERSION, '5.5', '>') ? self::class : __CLASS__;
+		$selfClass = \PHP_VERSION_ID >= 50500 ? self::class : __CLASS__;
 		throw new \InvalidArgumentException("[".$selfClass."] " . $errorMsg);
 	}
 
@@ -100,12 +101,12 @@ trait OopChecking
 				}
 			}
 		}
-		if (!$result) 
+		if (!$result)
 			$errorMsg = "Class `$testClassName` doesn't implement trait `$traitName`.";
 		// return result or thrown an exception
 		if ($result) return TRUE;
 		if (!$throwException) return FALSE;
-		$selfClass = version_compare(PHP_VERSION, '5.5', '>') ? self::class : __CLASS__;
+		$selfClass = \PHP_VERSION_ID >= 50500 ? self::class : __CLASS__;
 		throw new \InvalidArgumentException("[".$selfClass."] " . $errorMsg);
 	}
 
@@ -116,19 +117,15 @@ trait OopChecking
 	 * @return array
 	 */
 	protected static function & checkClassInterfaceGetPublicStaticMethods ($interfaceName) {
-		if (!isset(static::$interfacesStaticMethodsCache[$interfaceName])) {
-			$methods = [];
-			$interfaceType = new \ReflectionClass($interfaceName);
-			$publicOrStaticMethods = $interfaceType->getMethods(\ReflectionMethod::IS_PUBLIC | \ReflectionMethod::IS_STATIC);
-			/** @var $publicOrStaticMethod \ReflectionMethod */
-			foreach ($publicOrStaticMethods as $publicOrStaticMethod) {
-				// filter methods for public and also static method only
-				if ($publicOrStaticMethod->isStatic() && $publicOrStaticMethod->isPublic()) {
-					$methods[] = $publicOrStaticMethod->getName();
-				}
-			}
-			static::$interfacesStaticMethodsCache[$interfaceName] = $methods;
-		}
+		if (!isset(static::$interfacesStaticMethodsCache[$interfaceName])) 
+			static::$interfacesStaticMethodsCache[$interfaceName] = array_map(
+				function (\ReflectionMethod $method) {
+					return $method->name;
+				},
+				(new \ReflectionClass($interfaceName))->getMethods(
+					\ReflectionMethod::IS_STATIC
+				)
+			);
 		return static::$interfacesStaticMethodsCache[$interfaceName];
 	}
 }
