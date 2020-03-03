@@ -13,8 +13,8 @@
 
 namespace MvcCore\Tool;
 
-trait Helpers
-{
+trait Helpers {
+
 	/**
 	 * Platform specific temporary directory.
 	 * @var string|NULL
@@ -24,52 +24,100 @@ trait Helpers
 	/**
 	 * Safely encode json string from php value.
 	 * @param mixed $data
-	 * @throws \Exception JSON encoding error.
+	 * @param int   $flags
+	 * JSON encoding flags used by default:
+	 *  - `JSON_HEX_TAG`:
+	 *     All < and > are converted to \u003C and \u003E. Available as of PHP 5.3.0.
+	 *  - `JSON_HEX_AMP`:
+	 *    All & are converted to \u0026. Available as of PHP 5.3.0.
+	 *  - `JSON_HEX_APOS`:
+	 *    All ' are converted to \u0027. Available as of PHP 5.3.0.
+	 *  - `JSON_HEX_QUOT`:
+	 *    All " are converted to \u0022. Available as of PHP 5.3.0.
+	 *  - `JSON_NUMERIC_CHECK`:
+	 *    Encodes numeric strings as numbers. Available as of PHP 5.3.3.
+	 *  - `JSON_UNESCAPED_SLASHES`:
+	 *    Don't escape /. Available as of PHP 5.4.0.
+	 *  - `JSON_PRESERVE_ZERO_FRACTION`:
+	 *    Ensures that float values are always encoded as a float value. Available as of PHP 5.6.6.
+	 * Possible JSON encoding flags to add:
+	 *  - `JSON_UNESCAPED_UNICODE`:
+	 *    Encode multibyte Unicode characters literally (default is to escape as \uXXXX). Available as of PHP 5.4.0.
+	 *  - `JSON_UNESCAPED_LINE_TERMINATORS`:
+	 *    The line terminators are kept unescaped when JSON_UNESCAPED_UNICODE
+	 *    is supplied. It uses the same behaviour as it was before PHP 7.1
+	 *    without this constant. Available as of PHP 7.1.0.	The following
+	 *    constants can be combined to form options for json_decode()
+	 *    and json_encode().
+	 *  - `JSON_INVALID_UTF8_IGNORE`:
+	 *    Ignore invalid UTF-8 characters. Available as of PHP 7.2.0.
+	 *  - `JSON_INVALID_UTF8_SUBSTITUTE`:
+	 *    Convert invalid UTF-8 characters to \0xfffd (Unicode Character
+	 *    'REPLACEMENT CHARACTER') Available as of PHP 7.2.0.
+	 *  - `JSON_THROW_ON_ERROR`:
+	 *    Throws JsonException if an error occurs instead of setting the global
+	 *    error state that is retrieved with json_last_error() and
+	 *    json_last_error_msg(). JSON_PARTIAL_OUTPUT_ON_ERROR takes precedence
+	 *    over JSON_THROW_ON_ERROR. Available as of PHP 7.3.0.
+	 * @param int    $depth Set the maximum depth. Must be greater than zero, default: 512.
+	 * @throws \RuntimeException|\JsonException JSON encoding error.
 	 * @return string
 	 */
-	public static function EncodeJson ($data) {
-		$flags = JSON_HEX_TAG | JSON_HEX_APOS | JSON_HEX_QUOT | JSON_HEX_AMP |
-			(defined('JSON_UNESCAPED_SLASHES') ? JSON_UNESCAPED_SLASHES : 0) |
-			(defined('JSON_UNESCAPED_UNICODE') ? JSON_UNESCAPED_UNICODE : 0) |
-			(defined('JSON_PRESERVE_ZERO_FRACTION') ? JSON_PRESERVE_ZERO_FRACTION : 0);
-		$json = json_encode($data, $flags);
-		if ($errorCode = json_last_error()) {
-			$selfClass = \PHP_VERSION_ID >= 50500 ? self::class : __CLASS__;
-			throw new \RuntimeException("[".$selfClass."] ".json_last_error_msg(), $errorCode);
+	public static function EncodeJson ($data, $flags = 0, $depth = 512) {
+		if (!defined('JSON_PRESERVE_ZERO_FRACTION'))
+			define('JSON_PRESERVE_ZERO_FRACTION', 1024);
+		$flags |= (
+			JSON_HEX_TAG | JSON_HEX_AMP | JSON_HEX_APOS | JSON_HEX_QUOT |
+			JSON_NUMERIC_CHECK | JSON_UNESCAPED_SLASHES |
+			JSON_PRESERVE_ZERO_FRACTION
+		);
+		//var_dump(decbin($flags));
+		$result = @json_encode($data, $flags, $depth);
+		$errorCode = json_last_error();
+		if ($errorCode == JSON_ERROR_NONE) {
+			if (PHP_VERSION_ID < 70100)
+				$result = strtr($result, [
+					"\xe2\x80\xa8" => '\u2028',
+					"\xe2\x80\xa9" => '\u2029',
+				]);
+			return $result;
 		}
-		if (PHP_VERSION_ID < 70100) {
-			$json = strtr($json, [
-				"\xe2\x80\xa8" => '\u2028',
-				"\xe2\x80\xa9" => '\u2029',
-			]);
-		}
-		return $json;
+		$selfClass = \PHP_VERSION_ID >= 50500 ? self::class : __CLASS__;
+		throw new \RuntimeException("[".$selfClass."] ".json_last_error_msg(), $errorCode);
 	}
 
 	/**
 	 * Safely decode json string into php `stdClass/array`.
-	 * Result has always keys:
-	 * - `"success"`	- decoding boolean success
-	 * - `"data"`		- decoded json data as stdClass/array
-	 * - `"errorData"`	- array with possible decoding error message and error code
 	 * @param string $jsonStr
+	 * @param int    $flags
+	 * - `JSON_BIGINT_AS_STRING`:
+	 *    Decodes large integers as their original string value. Available as of PHP 5.4.0.
+	 * - `JSON_OBJECT_AS_ARRAY`:
+	 *   Decodes JSON objects as PHP array. This option can be added automatically by calling json_decode() with
+	 *   the second parameter equal to TRUE. Available as of PHP 5.4.0.
+	 * - `JSON_INVALID_UTF8_IGNORE`:
+	 *   Ignore invalid UTF-8 characters. Available as of PHP 7.2.0.
+	 *  - `JSON_INVALID_UTF8_SUBSTITUTE`:
+	 *    Convert invalid UTF-8 characters to \0xfffd (Unicode Character
+	 *    'REPLACEMENT CHARACTER') Available as of PHP 7.2.0.
+	 *  - `JSON_THROW_ON_ERROR`:
+	 *    Throws JsonException if an error occurs instead of setting the global
+	 *    error state that is retrieved with json_last_error() and
+	 *    json_last_error_msg(). JSON_PARTIAL_OUTPUT_ON_ERROR takes precedence
+	 *    over JSON_THROW_ON_ERROR. Available as of PHP 7.3.0.
+	 * @param int    $depth User specified recursion depth, default: 512.
+	 * @throws \RuntimeException|\JsonException JSON decoding error.
 	 * @return object
 	 */
-	public static function DecodeJson ($jsonStr) {
-		$result = (object) [
-			'success'	=> TRUE,
-			'data'		=> null,
-			'errorData'	=> [],
-		];
-		$jsonData = @json_decode($jsonStr);
+	public static function DecodeJson ($jsonStr, $flags = 0, $depth = 512) {
+		$assoc = ($flags & JSON_OBJECT_AS_ARRAY) != 0;
+		//var_dump(decbin($flags));
+		$result = @json_decode($jsonStr, $assoc, $depth, $flags);
 		$errorCode = json_last_error();
-		if ($errorCode == JSON_ERROR_NONE) {
-			$result->data = $jsonData;
-		} else {
-			$result->success = FALSE;
-			$result->errorData = [json_last_error_msg(), $errorCode];
-		}
-		return $result;
+		if ($errorCode == JSON_ERROR_NONE)
+			return $result;
+		$selfClass = \PHP_VERSION_ID >= 50500 ? self::class : __CLASS__;
+		throw new \RuntimeException("[".$selfClass."] ".json_last_error_msg(), $errorCode);
 	}
 
 	/**
@@ -125,7 +173,7 @@ trait Helpers
 			if (strtolower(substr(PHP_OS, 0, 3)) == 'win') {
 				// Windows:
 				$sysRoot = getenv('SystemRoot');
-				// do not store anything directly in C:\Windows, use C\windows\Temp instead
+				// do not store anything directly in C:\Windows, use C:\windows\Temp instead
 				if (!$tmpDir || $tmpDir === $sysRoot) {
 					$tmpDir = !empty($_SERVER['TEMP'])
 						? $_SERVER['TEMP']
