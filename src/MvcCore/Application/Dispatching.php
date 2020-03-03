@@ -289,12 +289,17 @@ namespace MvcCore\Application {
 			if ($this->terminated) return $this;
 			/** @var $this->response \MvcCore\Response */
 			$this->ProcessCustomHandlers($this->postDispatchHandlers);
-			$sessionClass = $this->sessionClass;
-			if ($sessionClass::GetStarted()) {
-				$sessionClass::SendCookie();
-				$sessionClass::Close();
+			if (!$this->response->IsSentHeaders()) {
+				// headers (if still possible) and echo
+				$sessionClass = $this->sessionClass;
+				if ($sessionClass::GetStarted()) {
+					$sessionClass::SendCookie();
+					$sessionClass::Close();
+				}
+				$this->response->SendHeaders();
 			}
-			$this->response->Send(); // headers (if still possible) and echo
+			if (!$this->response->IsSentBody())
+				$this->response->SendBody();
 			// exit; // Why to force exit? What if we want to do something more?
 			$this->terminated = TRUE;
 			if ($this->controller) {

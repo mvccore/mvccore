@@ -27,9 +27,12 @@ trait Rendering
 	 * @param string $actionNameDashed
 	 * @return string
 	 */
-	public function Render ($controllerOrActionNameDashed = NULL, $actionNameDashed = NULL) {
-		if ($this->dispatchState == 0) $this->Init();
-		if ($this->dispatchState == 1) $this->PreDispatch();
+	public function & Render ($controllerOrActionNameDashed = NULL, $actionNameDashed = NULL) {
+		/** @var $this \MvcCore\Controller */
+		if ($this->dispatchState == 0)
+			$this->Init();
+		if ($this->dispatchState == 1)
+			$this->PreDispatch();
 		if ($this->dispatchState < 4 && $this->viewEnabled) {
 			$topMostParentCtrl = $this->parentController === NULL;
 			// if this is child controller - set up view store with parent controller view store
@@ -40,48 +43,32 @@ trait Rendering
 				if (!is_numeric($ctrlKey) && !isset($this->view->{$ctrlKey}))
 					$this->view->{$ctrlKey} = $childCtrl;
 			}
+			// render this view or view with layout by render mode:
+			if (($this->renderMode & \MvcCore\IView::RENDER_WITH_OB_FROM_ACTION_TO_LAYOUT) != 0) {
+				return $this->renderWithObFromActionToLayout(
+					$controllerOrActionNameDashed,
+					$actionNameDashed,
+					$topMostParentCtrl
+				);
+			} else /*if (($this->renderMode & \MvcCore\IView::RENDER_WITHOUT_OB_CONTINUOUSLY) != 0)*/ {
+				$sessionClass = $this->GetApplication()->GetSessionClass();
+				if ($sessionClass::GetStarted()) {
+					$sessionClass::SendCookie();
+					$sessionClass::Close();
+				}
 
-			/*
-			if ($topMostParentCtrl) {
-				// render layout view and action view inside it:
-				$viewClass = $this->application->GetViewClass();
-				/ ** @var $layout \MvcCore\View * /
-				$layout = $viewClass::CreateInstance()
-					->SetController($this)
-					->SetUpStore($this->view, TRUE);
-				$layout->RenderLayoutAndContent($this->layout, $actionResult);
-			} else {
-				// render action view:
-
+				$this->response->SendHeaders();
+				if (ob_get_length() !== FALSE) ob_end_flush();
+				return $this->renderWithoutObContinuously(
+					$controllerOrActionNameDashed,
+					$actionNameDashed,
+					$topMostParentCtrl
+				);
 			}
-			*/
-
-			
-			// complete paths
-			$viewScriptPath = $this->renderGetViewScriptPath($controllerOrActionNameDashed, $actionNameDashed);
-			// render action view into string
-			$actionResult = $this->view->RenderScript($viewScriptPath);
-			if ($topMostParentCtrl) {
-				// create top most parent layout view, set up and render to outputResult
-				$viewClass = $this->application->GetViewClass();
-				/** @var $layout \MvcCore\View */
-				$layout = $viewClass::CreateInstance()
-					->SetController($this)
-					->SetUpStore($this->view, TRUE);
-				$outputResult = $layout->RenderLayoutAndContent($this->layout, $actionResult);
-				unset($layout, $this->view);
-				// set up response only
-				$this->XmlResponse($outputResult, FALSE);
-			} else {
-				// return response
-				$this->dispatchState = 4;
-				return $actionResult;
-			}
-
-			
 		}
 		$this->dispatchState = 4;
-		return '';
+		$result = '';
+		return $result;
 	}
 
 	/**
@@ -226,7 +213,7 @@ trait Rendering
 	 * @param string $actionNameDashed
 	 * @return string
 	 */
-	protected function renderGetViewScriptPath ($controllerOrActionNameDashed = NULL, $actionNameDashed = NULL) {
+	public function GetViewScriptPath ($controllerOrActionNameDashed = NULL, $actionNameDashed = NULL) {
 		$currentCtrlIsTopMostParent = $this->parentController === NULL;
 		if ($this->viewScriptsPath !== NULL) {
 			$resultPathItems = [$this->viewScriptsPath];
@@ -265,5 +252,82 @@ trait Rendering
 		}
 		$controllerPath = str_replace(['_', '\\'], '/', $controllerNameDashed);
 		return implode('/', [$controllerPath, $actionNameDashed]);
+	}
+
+	/**
+	 * Default rendering mode.
+	 * Render action view first into output buffer, then render layout view
+	 * wrapped around rendered action view string also into output buffer.
+	 * Then set up rendered content from output buffer into response object
+	 * and then send HTTP headers and content after all.
+	 * @param string $controllerOrActionNameDashed
+	 * @param string $actionNameDashed
+	 * @param bool   $topMostParentCtrl
+	 * @return string
+	 */
+	protected function & renderWithObFromActionToLayout ($controllerOrActionNameDashed, $actionNameDashed, $topMostParentCtrl) {
+		/** @var $this \MvcCore\Controller */
+		// complete paths
+		$viewScriptPath = $this->GetViewScriptPath($controllerOrActionNameDashed, $actionNameDashed);
+		// render action view into string
+		$this->view->SetRenderArgs(
+			$this->renderMode, $controllerOrActionNameDashed, $actionNameDashed
+		);
+		$actionResult = $this->view->RenderScript($viewScriptPath);
+		if (!$topMostParentCtrl) {
+			$this->dispatchState = 4;
+			return $actionResult;
+		}
+		// create top most parent layout view, set up and render to outputResult
+		$viewClass = $this->application->GetViewClass();
+		/** @var $layout \MvcCore\View */
+		$layout = $viewClass::CreateInstance()
+			->SetController($this)
+			->SetRenderArgs(
+				$this->renderMode, $controllerOrActionNameDashed, $actionNameDashed
+			)
+			->SetUpStore($this->view, TRUE);
+		$outputResult = $layout->RenderLayoutAndContent($this->layout, $actionResult);
+		unset($layout, $this->view);
+		// set up response only
+		$this->XmlResponse($outputResult, FALSE);
+		$this->dispatchState = 4;
+		$result = '';
+		return $result;
+	}
+
+	/**
+	 * Special rendering mode to continuously sent larger data to client.
+	 * Render layout view and render action view together inside it without
+	 * output buffering. There is not used reponse object body property for
+	 * this rendering mode. Http headers are sent before view rendering.
+	 * @param string $controllerOrActionNameDashed
+	 * @param string $actionNameDashed
+	 * @param bool   $topMostParentCtrl
+	 * @return string
+	 */
+	protected function & renderWithoutObContinuously ($controllerOrActionNameDashed, $actionNameDashed, $topMostParentCtrl) {
+		/** @var $this \MvcCore\Controller */
+		if ($topMostParentCtrl) {
+			// render layout view and action view inside it:
+			$viewClass = $this->application->GetViewClass();
+			/** @var $layout \MvcCore\View */
+			$layout = $viewClass::CreateInstance()
+				->SetController($this)
+				->SetRenderArgs(
+					$this->renderMode, $controllerOrActionNameDashed, $actionNameDashed
+				)
+				->SetUpStore($this->view, TRUE);
+			// render layout continuously with action view inside
+			$layout->RenderLayout($this->layout);
+		} else {
+			// complete paths
+			$viewScriptPath = $this->GetViewScriptPath($controllerOrActionNameDashed, $actionNameDashed);
+			// render action view into string
+			$this->view->RenderScript($viewScriptPath);
+		}
+		$this->dispatchState = 4;
+		$result = '';
+		return $result;
 	}
 }

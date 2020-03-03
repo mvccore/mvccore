@@ -51,21 +51,23 @@ namespace MvcCore;
 interface IView
 {
 	/**
-	 * Default rendering mode. 
-	 * Render action view first and than wrap rendered layout view around it.
-	 * After rendering, set the content into response and send it at the end.
+	 * Default rendering mode.
+	 * Render action view first into output buffer, then render layout view
+	 * wrapped around rendered action view string also into output buffer.
+	 * Then set up rendered content from output buffer into response object
+	 * and then send HTTP headers and content after all.
 	 * @var int
 	 */
-	const RENDER_ACTION_FIRST = 0b01;
+	const RENDER_WITH_OB_FROM_ACTION_TO_LAYOUT = 0b01;
 
 	/**
-	 * Special rendering mode to continuously send content directly to client.
-	 * Start to render layout view and render action view continuously inside it.
-	 * There is not used reponse object body property for this rendering mode.
-	 * Http headers are send before view rendering.
+	 * Special rendering mode to continuously sent larger data to client.
+	 * Render layout view and render action view together inside it without
+	 * output buffering. There is not used reponse object body property for
+	 * this rendering mode. Http headers are sent before view rendering.
 	 * @var int
 	 */
-	const RENDER_LAYOUT_FIRST = 0b10;
+	const RENDER_WITHOUT_OB_CONTINUOUSLY = 0b10;
 
 	/**
 	 * View output document type HTML4.
@@ -253,6 +255,15 @@ interface IView
 	public function GetController ();
 
 	/**
+	 * Set up view rendering arguments to render layout and action view in both modes properly.
+	 * @param int $renderMode
+	 * @param string $controllerOrActionNameDashed
+	 * @param string $actionNameDashed
+	 * @return \MvcCore\IView
+	 */
+	public function SetRenderArgs ($renderMode = \MvcCore\IView::RENDER_WITH_OB_FROM_ACTION_TO_LAYOUT, $controllerOrActionNameDashed = NULL, $actionNameDashed = NULL);
+
+	/**
 	 * This is INTERNAL method, do not use it in templates.
 	 * Method is always called in the most parent controller
 	 * `\MvcCore\Controller:Render()` moment when view is rendered.
@@ -268,6 +279,7 @@ interface IView
 	 * Return rendered action template content as string reference.
 	 * You need to use this method always somewhere in layout template to
 	 * render rendered action result content.
+	 * If render mode is continuous, this method renders action view.
 	 * @return string
 	 */
 	public function & GetContent ();
@@ -333,7 +345,7 @@ interface IView
 	 * @param string $content
 	 * @return string
 	 */
-	public function & RenderLayoutAndContent ($relativePath = '', & $content = '');
+	public function & RenderLayoutAndContent ($relativePath = '', & $content = NULL);
 
 	/**
 	 * Render controller template and all necessary layout
@@ -353,7 +365,7 @@ interface IView
 	 * @param string $content
 	 * @return string
 	 */
-	public function Evaluate ($content = '');
+	public function Evaluate ($content);
 
 	/**
 	 * Generates url:

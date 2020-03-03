@@ -72,10 +72,10 @@ trait PropsGettersSetters
 	 * `TRUE` if headers or body has been sent.
 	 * @var bool
 	 */
-	protected $sent = FALSE;
+	protected $bodySent = FALSE;
 
 	/**
-	 * Disabled headers, never sent except if there is 
+	 * Disabled headers, never sent except if there is
 	 * rendered exception in development environment.
 	 * @var array
 	 */
@@ -87,9 +87,9 @@ trait PropsGettersSetters
 	 */
 	protected $request = NULL;
 
-	
+
 	/**
-	 * Get response protocol HTTP version by `$_SERVER['SERVER_PROTOCOL']`, 
+	 * Get response protocol HTTP version by `$_SERVER['SERVER_PROTOCOL']`,
 	 * `HTTP/1.1` by default.
 	 * @return string
 	 */
@@ -171,5 +171,14 @@ trait PropsGettersSetters
 	public function IsRedirect () {
 		/** @var $this \MvcCore\Response */
 		return isset($this->headers['Location']);
+	}
+
+	/**
+	 * `TRUE` if headers and body has been sent.
+	 * @return bool
+	 */
+	public function IsSent () {
+		/** @var $this \MvcCore\Response */
+		return $this->bodySent && headers_sent();
 	}
 }

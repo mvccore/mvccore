@@ -82,11 +82,11 @@ trait Content
 	}
 
 	/**
-	 * `TRUE` if headers or body has been sent.
+	 * `TRUE` if body has been sent.
 	 * @return bool
 	 */
-	public function IsSent () {
-		return $this->sent || headers_sent();
+	public function IsSentBody () {
+		return $this->bodySent;
 	}
 
 	/**
@@ -94,13 +94,22 @@ trait Content
 	 * @return void
 	 */
 	public function Send () {
-		if ($this->IsSent()) return;
+		$this->SendHeaders();
+		$this->SendBody();
+	}
+
+	/**
+	 * Send all HTTP headers.
+	 * @return void
+	 */
+	public function SendHeaders () {
+		if (headers_sent()) return;
 		$httpVersion = $this->GetHttpVersion();
 		$code = $this->GetCode();
 		$status = $this->codeMessage !== NULL
 			? ' '.$this->codeMessage
-			: (isset(static::$codeMessages[$code]) 
-				? ' '.static::$codeMessages[$code] 
+			: (isset(static::$codeMessages[$code])
+				? ' '.static::$codeMessages[$code]
 				: '');
 		if (!isset($this->headers['Content-Encoding'])) {
 			if (!$this->encoding) $this->encoding = 'utf-8';
@@ -128,10 +137,19 @@ trait Content
 		foreach ($this->disabledHeaders as $name => $b)
 			header_remove($name);
 		$this->addTimeAndMemoryHeader();
+	}
+
+	/**
+	 * Send response body.
+	 * @return void
+	 */
+	public function SendBody () {
+		if ($this->bodySent) return;
 		echo $this->body;
-		if (ob_get_level()) echo ob_get_clean();
+		if (ob_get_level())
+			ob_end_flush();
 		flush();
-		$this->sent = TRUE;
+		$this->bodySent = TRUE;
 	}
 
 	/**

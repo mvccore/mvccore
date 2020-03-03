@@ -68,7 +68,7 @@ interface IResponse
 
 
 	/**
-	 * Get response protocol HTTP version by `$_SERVER['SERVER_PROTOCOL']`, 
+	 * Get response protocol HTTP version by `$_SERVER['SERVER_PROTOCOL']`,
 	 * `HTTP/1.1` by default.
 	 * @return string
 	 */
@@ -212,16 +212,40 @@ interface IResponse
 	public function IsXmlOutput ();
 
 	/**
-	 * `TRUE` if headers or body has been sent.
+	 * `TRUE` if headers and body has been sent.
 	 * @return bool
 	 */
 	public function IsSent ();
 
 	/**
-	 * Send all http headers and send response body.
+	 * `TRUE` if headers has been sent.
+	 * @return bool
+	 */
+	public function IsSentHeaders ();
+
+	/**
+	 * `TRUE` if body has been sent.
+	 * @return bool
+	 */
+	public function IsSentBody ();
+
+	/**
+	 * Send all HTTP headers and send response body.
 	 * @return void
 	 */
 	public function Send ();
+
+	/**
+	 * Send all HTTP headers.
+	 * @return void
+	 */
+	public function SendHeaders ();
+
+	/**
+	 * Send response body.
+	 * @return void
+	 */
+	public function SendBody ();
 
 	/**
 	 * Send a cookie.
@@ -254,15 +278,15 @@ interface IResponse
 	public function DeleteCookie ($name, $path = '/', $domain = NULL, $secure = NULL);
 
 	/**
-	 * Set disabled headers, never sent except if there is 
+	 * Set disabled headers, never sent except if there is
 	 * rendered exception in development environment.
 	 * @param \string[] $disabledHeaders,...
 	 * @return \MvcCore\IResponse
 	 */
 	public function SetDisabledHeaders ($disabledHeaders);
-	
+
 	/**
-	 * Get disabled headers, never sent except if there is 
+	 * Get disabled headers, never sent except if there is
 	 * rendered exception in development environment.
 	 * @return \string[]
 	 */

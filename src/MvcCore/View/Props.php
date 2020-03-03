@@ -46,6 +46,23 @@ trait Props
 		  */
 		'helpers'			=> [],
 		/**
+		  * `0` - Rendering mode switch to render views in two ways:
+		  *     `\MvcCore\IView::RENDER_WITH_OB_FROM_ACTION_TO_LAYOUT`:
+		  *       - Render action view first into output buffer, then render layout view
+		  *         wrapped around rendered action view string also into output buffer.
+		  *         Then set up rendered content from output buffer into response object
+		  *         and then send HTTP headers and content after all.
+		  *     `\MvcCore\IView::RENDER_WITHOUT_OB_CONTINUOUSLY`:
+		  *       - Special rendering mode to continuously sent larger data to client.
+		  *         Render layout view and render action view together inside it without
+		  *         output buffering. There is not used reponse object body property for
+		  *         this rendering mode. Http headers are sent before view rendering.
+		  * `1` - `string` - controller name dashed (or action name dashed).
+		  * `2` - `string` - action name dashed.
+		  * @var int
+		  */
+		'renderArgs'		=> [\MvcCore\IView::RENDER_WITH_OB_FROM_ACTION_TO_LAYOUT, NULL, NULL],
+		/**
 		  * Currently rendered php/phtml file path(s).
 		  * @var \string[]
 		  */

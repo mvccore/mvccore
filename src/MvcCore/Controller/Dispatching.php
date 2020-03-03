@@ -104,8 +104,6 @@ trait Dispatching
 	 */
 	public function Dispatch ($actionName = "IndexAction") {
 		/** @var $this \MvcCore\Controller */
-		if (($this->renderMode & \MvcCore\IView::RENDER_ACTION_FIRST) != 0)
-			ob_start();
 
 		// \MvcCore\Debug::Timer('dispatch');
 		$actionNameStart = $this->actionName;
@@ -369,24 +367,21 @@ trait Dispatching
 		if (
 			strpos($path, static::$staticPath) !== 0 &&
 			strpos($path, static::$tmpPath) !== 0
-		) {
+		)
 			throw new \ErrorException("[".get_class($this)."] File path: '$path' is not allowed.", 500);
-		}
 		$path = $this->request->GetAppRoot() . $path;
-		if (!file_exists($path)) {
+		if (!file_exists($path)) 
 			throw new \ErrorException("[".get_class($this)."] File not found: '$path'.", 404);
-		}
 		$lastDotPos = strrpos($path, '.');
-		if ($lastDotPos !== FALSE) {
+		if ($lastDotPos !== FALSE) 
 			$ext = substr($path, $lastDotPos + 1);
-		}
-		if (isset(self::$_assetsMimeTypes[$ext])) {
+		if (isset(self::$_assetsMimeTypes[$ext])) 
 			header('Content-Type: ' . self::$_assetsMimeTypes[$ext]);
-		}
 		header_remove('X-Powered-By');
 		header('Vary: Accept-Encoding');
 		$assetMTime = @filemtime($path);
-		if ($assetMTime) header('Last-Modified: ' . gmdate('D, d M Y H:i:s T', $assetMTime));
+		if ($assetMTime) 
+			header('Last-Modified: ' . gmdate('D, d M Y H:i:s T', $assetMTime));
 		readfile($path);
 		exit;
 	}

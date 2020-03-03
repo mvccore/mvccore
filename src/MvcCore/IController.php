@@ -271,6 +271,39 @@ interface IController
 	public function SetView (\MvcCore\IView $view);
 
 	/**
+	 * Get rendering mode switch to render views in two ways:
+	 * `\MvcCore\IView::RENDER_WITH_OB_FROM_ACTION_TO_LAYOUT`:
+	 *   - Render action view first into output buffer, then render layout view
+	 *     wrapped around rendered action view string also into output buffer.
+	 *     Then set up rendered content from output buffer into response object
+	 *     and then send HTTP headers and content after all.
+	 * `\MvcCore\IView::RENDER_WITHOUT_OB_CONTINUOUSLY`:
+	 *   - Special rendering mode to continuously sent larger data to client.
+	 *     Render layout view and render action view together inside it without
+	 *     output buffering. There is not used reponse object body property for
+	 *     this rendering mode. Http headers are sent before view rendering.
+	 * @return int
+	 */
+	public function GetRenderMode ();
+
+	/**
+	 * Set rendering mode switch to render views in two ways:
+	 * `\MvcCore\IView::RENDER_WITH_OB_FROM_ACTION_TO_LAYOUT`:
+	 *   - Render action view first into output buffer, then render layout view
+	 *     wrapped around rendered action view string also into output buffer.
+	 *     Then set up rendered content from output buffer into response object
+	 *     and then send HTTP headers and content after all.
+	 * `\MvcCore\IView::RENDER_WITHOUT_OB_CONTINUOUSLY`:
+	 *   - Special rendering mode to continuously sent larger data to client.
+	 *     Render layout view and render action view together inside it without
+	 *     output buffering. There is not used reponse object body property for
+	 *     this rendering mode. Http headers are sent before view rendering.
+	 * @param int $renderMode
+	 * @return \MvcCore\IController
+	 */
+	public function SetRenderMode ($renderMode = \MvcCore\IView::RENDER_WITH_OB_FROM_ACTION_TO_LAYOUT);
+
+	/**
 	 * Get layout name to render html wrapper around rendered action view.
 	 * Example: `"front" | "admin" | "account"...`.
 	 * @return string
@@ -410,11 +443,11 @@ interface IController
 	 * - If controller has no other parent controller, render layout view around action view.
 	 * - For top most parent controller - store rendered action and layout view in response object and return empty string.
 	 * - For child controller - return rendered action view as string.
-	 * @param string $controllerDashedName
-	 * @param string $actionDashedName
+	 * @param string $controllerOrActionNameDashed
+	 * @param string $actionNameDashed
 	 * @return string
 	 */
-	public function Render ($controllerDashedName = '', $actionDashedName = '');
+	public function & Render ($controllerOrActionNameDashed = NULL, $actionNameDashed = NULL);
 
 	/**
 	 * Store rendered HTML output inside `\MvcCore\Controller::$response`

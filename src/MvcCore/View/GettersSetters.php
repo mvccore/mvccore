@@ -131,7 +131,7 @@ trait GettersSetters
 
 	/**
 	 * This is INTERNAL method, do not use it in templates.
-	 * Method is always called in the most parent controller 
+	 * Method is always called in the most parent controller
 	 * `\MvcCore\Controller:PreDispatch()` moment when view instance is created.
 	 * Method sets controller instance into view.
 	 * @param \MvcCore\Controller $controller
@@ -150,5 +150,18 @@ trait GettersSetters
 	public function GetController () {
 		/** @var $this \MvcCore\View */
 		return $this->controller;
+	}
+
+	/**
+	 * Set up view rendering arguments to render layout and action view in both modes properly.
+	 * @param int $renderMode
+	 * @param string $controllerOrActionNameDashed
+	 * @param string $actionNameDashed
+	 * @return \MvcCore\View
+	 */
+	public function SetRenderArgs ($renderMode = \MvcCore\IView::RENDER_WITH_OB_FROM_ACTION_TO_LAYOUT, $controllerOrActionNameDashed = NULL, $actionNameDashed = NULL) {
+		/** @var $this \MvcCore\View */
+		$this->__protected['renderArgs'] = func_get_args();
+		return $this;
 	}
 }

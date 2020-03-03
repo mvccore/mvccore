@@ -16,6 +16,15 @@ namespace MvcCore\Response;
 trait Headers
 {
 	/**
+	 * `TRUE` if headers has been sent.
+	 * @return bool
+	 */
+	public function IsSentHeaders () {
+		/** @var $this \MvcCore\Response */
+		return headers_sent();
+	}
+
+	/**
 	 * Set multiple HTTP response headers as `key => value` array.
 	 * All given headers are automatically merged with previously setted headers.
 	 * If you change second argument to true, all previous request object and PHP
@@ -55,7 +64,7 @@ trait Headers
 	 */
 	public function SetHeader ($name, $value) {
 		/** @var $this \MvcCore\Response */
-		if (isset($this->disabledHeaders[$name])) 
+		if (isset($this->disabledHeaders[$name]))
 			return $this;
 		header($name . ": " . $value);
 		$this->headers[$name] = $value;
@@ -79,8 +88,8 @@ trait Headers
 	 * @return string|NULL
 	 */
 	public function GetHeader ($name) {
-		return isset($this->headers[$name]) 
-			? $this->headers[$name] 
+		return isset($this->headers[$name])
+			? $this->headers[$name]
 			: NULL;
 	}
 
@@ -120,7 +129,7 @@ trait Headers
 	}
 
 	/**
-	 * Set disabled headers, never sent except if there is 
+	 * Set disabled headers, never sent except if there is
 	 * rendered exception in development environment.
 	 * @param \string[] $disabledHeaders,...
 	 * @return \MvcCore\Response|\MvcCore\IResponse
@@ -134,9 +143,9 @@ trait Headers
 			$this->disabledHeaders[$arg] = TRUE;
 		return $this;
 	}
-	
+
 	/**
-	 * Get disabled headers, never sent except if there is 
+	 * Get disabled headers, never sent except if there is
 	 * rendered exception in development environment.
 	 * @return \string[]
 	 */

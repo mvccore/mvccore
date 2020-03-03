@@ -50,7 +50,7 @@ namespace MvcCore\View {
 		 * @param string $content
 		 * @return string
 		 */
-		public function & RenderLayoutAndContent ($relativePath = '', & $content = '') {
+		public function & RenderLayoutAndContent ($relativePath = '', & $content = NULL) {
 			if ($relativePath === NULL) return $content; // no layout defined
 			$this->__protected['content'] = & $content;
 			return $this->Render(static::$layoutsDir, $relativePath);
@@ -66,7 +66,8 @@ namespace MvcCore\View {
 		 */
 		public function & Render ($typePath = '', $relativePath = '') {
 			/** @var $this \MvcCore\View */
-			if (!$typePath) $typePath = static::$scriptsDir;
+			if (!$typePath)
+				$typePath = static::$scriptsDir;
 			$result = '';
 			$relativePath = $this->correctRelativePath(
 				$typePath, $relativePath
@@ -74,20 +75,34 @@ namespace MvcCore\View {
 			$viewScriptFullPath = static::GetViewScriptFullPath($typePath, $relativePath);
 			if (!file_exists($viewScriptFullPath)) {
 				$selfClass = \PHP_VERSION_ID >= 50500 ? self::class : __CLASS__;
-				throw new \InvalidArgumentException('['.$selfClass."] Template not found in path: `$viewScriptFullPath`.");
+				throw new \InvalidArgumentException(
+					"[{$selfClass}] Template not found in path: `{$viewScriptFullPath}`."
+				);
 			}
 			$renderedFullPaths = & $this->__protected['renderedFullPaths'];
 			$renderedFullPaths[] = $viewScriptFullPath;
-
-			ob_start();
+			// get render mode
+			list($renderMode) = $this->__protected['renderArgs'];
+			$renderModeWithOb = ($renderMode & \MvcCore\IView::RENDER_WITH_OB_FROM_ACTION_TO_LAYOUT) != 0;
+			// if render mode is default - start output buffering
+			if ($renderModeWithOb)
+				ob_start();
+			// render the template with local variables from the store
 			$result = call_user_func(function ($viewPath) {
 				extract($this->__protected['store'], EXTR_SKIP);
 				include($viewPath);
 			}, $viewScriptFullPath);
-			$result = ob_get_clean();
-
-			\array_pop($renderedFullPaths); // unset last
-			return $result;
+			// if render mode is default - get result from output buffer and return the result,
+			// if render mode is continuous - result is sent to client already, so return empty string only.
+			if ($renderModeWithOb) {
+				$result = ob_get_clean();
+				\array_pop($renderedFullPaths); // unset last
+				return $result;
+			} else {
+				$result = '';
+				\array_pop($renderedFullPaths); // unset last
+				return $result;
+			}
 		}
 
 		/**
@@ -135,10 +150,34 @@ namespace MvcCore\View {
 		 * Return rendered action template content as string reference.
 		 * You need to use this method always somewhere in layout template to
 		 * render rendered action result content.
+		 * If render mode is continuous, this method renders action view.
 		 * @return string
 		 */
 		public function & GetContent () {
-			return $this->__protected['content'];
+			list(
+				$renderMode,
+				$controllerOrActionNameDashed,
+				$actionNameDashed
+			) = $this->__protected['renderArgs'];
+			$renderModeWithOb = ($renderMode & \MvcCore\IView::RENDER_WITH_OB_FROM_ACTION_TO_LAYOUT) != 0;
+			if ($renderModeWithOb) {
+				return $this->__protected['content'];
+			} else {
+				// complete paths
+				$viewScriptPath = $this->controller->GetViewScriptPath($controllerOrActionNameDashed, $actionNameDashed);
+				// render action view into string
+				$viewClass = $this->controller->GetApplication()->GetViewClass();
+				/** @var $layout \MvcCore\View */
+				$actionView = $viewClass::CreateInstance()
+					->SetController($this->controller)
+					->SetRenderArgs(
+						$renderMode, $controllerOrActionNameDashed, $actionNameDashed
+					)
+					->SetUpStore($this, TRUE);
+				$actionView->RenderScript($viewScriptPath);
+				$result = '';
+				return $result;
+			}
 		}
 
 		/**
@@ -149,7 +188,9 @@ namespace MvcCore\View {
 		 * @param string $content
 		 * @return string
 		 */
-		public function & Evaluate ($content = '') {
+		public function & Evaluate ($content) {
+			if ($content === NULL || mb_strlen(strval($content)) === 0)
+				return '';
 			ob_start();
 			try {
 				eval(' ?'.'>'.$content.'<'.'?php ');

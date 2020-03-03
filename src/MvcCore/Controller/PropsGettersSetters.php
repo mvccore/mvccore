@@ -80,13 +80,20 @@ trait PropsGettersSetters
 	protected $view = NULL;
 
 	/**
-	 * Default rendering mode.
-	 * Render action view first and than wrap rendered layout view around it.
-	 * After rendering, set the content into response and send it at the end.
+	 * Rendering mode switch to render views in two ways:
+	 * `\MvcCore\IView::RENDER_WITH_OB_FROM_ACTION_TO_LAYOUT`:
+	 *   - Render action view first into output buffer, then render layout view
+	 *     wrapped around rendered action view string also into output buffer.
+	 *     Then set up rendered content from output buffer into response object
+	 *     and then send HTTP headers and content after all.
+	 * `\MvcCore\IView::RENDER_WITHOUT_OB_CONTINUOUSLY`:
+	 *   - Special rendering mode to continuously sent larger data to client.
+	 *     Render layout view and render action view together inside it without
+	 *     output buffering. There is not used reponse object body property for
+	 *     this rendering mode. Http headers are sent before view rendering.
 	 * @var int
 	 */
-	protected $renderMode = \MvcCore\IView::RENDER_ACTION_FIRST;
-	//protected $renderMode = \MvcCore\IView::RENDER_LAYOUT_FIRST;
+	protected $renderMode = \MvcCore\IView::RENDER_WITH_OB_FROM_ACTION_TO_LAYOUT;
 
 	/**
 	 * Layout name to render html wrapper around rendered action view.
@@ -202,6 +209,7 @@ trait PropsGettersSetters
 		$ifNullValue = NULL,
 		$targetType = NULL
 	) {
+		/** @var $this \MvcCore\Controller */
 		return $this->request->GetParam(
 			$name, $pregReplaceAllowedChars, $ifNullValue, $targetType
 		);
@@ -212,6 +220,7 @@ trait PropsGettersSetters
 	 * @return \MvcCore\Application
 	 */
 	public function GetApplication () {
+		/** @var $this \MvcCore\Controller */
 		return $this->application;
 	}
 
@@ -224,6 +233,7 @@ trait PropsGettersSetters
 	 * @return \MvcCore\Controller|\MvcCore\Controller\PropsGettersSetters
 	 */
 	public function SetApplication (\MvcCore\IApplication $application) {
+		/** @var $this \MvcCore\Controller */
 		$this->application = $application;
 		return $this;
 	}
@@ -233,6 +243,7 @@ trait PropsGettersSetters
 	 * @return \MvcCore\Request
 	 */
 	public function GetRequest () {
+		/** @var $this \MvcCore\Controller */
 		return $this->request;
 	}
 
@@ -241,6 +252,7 @@ trait PropsGettersSetters
 	 * @return string
 	 */
 	public function GetControllerName () {
+		/** @var $this \MvcCore\Controller */
 		return $this->controllerName;
 	}
 
@@ -249,6 +261,7 @@ trait PropsGettersSetters
 	 * @return string
 	 */
 	public function GetActionName () {
+		/** @var $this \MvcCore\Controller */
 		return $this->actionName;
 	}
 
@@ -257,6 +270,7 @@ trait PropsGettersSetters
 	 * @return \MvcCore\Response
 	 */
 	public function GetResponse () {
+		/** @var $this \MvcCore\Controller */
 		return $this->response;
 	}
 
@@ -269,6 +283,7 @@ trait PropsGettersSetters
 	 * @return \MvcCore\Controller|\MvcCore\Controller\PropsGettersSetters
 	 */
 	public function SetResponse (\MvcCore\IResponse $response) {
+		/** @var $this \MvcCore\Controller */
 		$this->response = $response;
 		return $this;
 	}
@@ -278,6 +293,7 @@ trait PropsGettersSetters
 	 * @return \MvcCore\Router
 	 */
 	public function GetRouter () {
+		/** @var $this \MvcCore\Controller */
 		return $this->router;
 	}
 
@@ -290,6 +306,7 @@ trait PropsGettersSetters
 	 * @return \MvcCore\Controller|\MvcCore\Controller\PropsGettersSetters
 	 */
 	public function SetRouter (\MvcCore\IRouter $router) {
+		/** @var $this \MvcCore\Controller */
 		$this->router = $router;
 		return $this;
 	}
@@ -301,6 +318,7 @@ trait PropsGettersSetters
 	 * @return boolean
 	 */
 	public function IsAjax () {
+		/** @var $this \MvcCore\Controller */
 		return $this->ajax;
 	}
 
@@ -309,6 +327,7 @@ trait PropsGettersSetters
 	 * @return \MvcCore\Model|\MvcCore\IModel
 	 */
 	public function GetUser () {
+		/** @var $this \MvcCore\Controller */
 		return $this->user;
 	}
 
@@ -318,6 +337,7 @@ trait PropsGettersSetters
 	 * @return \MvcCore\Controller|\MvcCore\Controller\PropsGettersSetters
 	 */
 	public function SetUser ($user) {
+		/** @var $this \MvcCore\Controller */
 		$this->user = $user;
 		return $this;
 	}
@@ -329,6 +349,7 @@ trait PropsGettersSetters
 	 * @return \MvcCore\View|NULL
 	 */
 	public function GetView () {
+		/** @var $this \MvcCore\Controller */
 		return $this->view;
 	}
 
@@ -338,7 +359,48 @@ trait PropsGettersSetters
 	 * @return \MvcCore\Controller|\MvcCore\Controller\PropsGettersSetters
 	 */
 	public function SetView (\MvcCore\IView $view) {
+		/** @var $this \MvcCore\Controller */
 		$this->view = $view;
+		return $this;
+	}
+
+	/**
+	 * Get rendering mode switch to render views in two ways:
+	 * `\MvcCore\IView::RENDER_WITH_OB_FROM_ACTION_TO_LAYOUT`:
+	 *   - Render action view first into output buffer, then render layout view
+	 *     wrapped around rendered action view string also into output buffer.
+	 *     Then set up rendered content from output buffer into response object
+	 *     and then send HTTP headers and content after all.
+	 * `\MvcCore\IView::RENDER_WITHOUT_OB_CONTINUOUSLY`:
+	 *   - Special rendering mode to continuously sent larger data to client.
+	 *     Render layout view and render action view together inside it without
+	 *     output buffering. There is not used reponse object body property for
+	 *     this rendering mode. Http headers are sent before view rendering.
+	 * @return int
+	 */
+	public function GetRenderMode () {
+		/** @var $this \MvcCore\Controller */
+		return $this->renderMode;
+	}
+
+	/**
+	 * Set rendering mode switch to render views in two ways:
+	 * `\MvcCore\IView::RENDER_WITH_OB_FROM_ACTION_TO_LAYOUT`:
+	 *   - Render action view first into output buffer, then render layout view
+	 *     wrapped around rendered action view string also into output buffer.
+	 *     Then set up rendered content from output buffer into response object
+	 *     and then send HTTP headers and content after all.
+	 * `\MvcCore\IView::RENDER_WITHOUT_OB_CONTINUOUSLY`:
+	 *   - Special rendering mode to continuously sent larger data to client.
+	 *     Render layout view and render action view together inside it without
+	 *     output buffering. There is not used reponse object body property for
+	 *     this rendering mode. Http headers are sent before view rendering.
+	 * @param int $renderMode
+	 * @return \MvcCore\Controller|\MvcCore\Controller\PropsGettersSetters
+	 */
+	public function SetRenderMode ($renderMode = \MvcCore\IView::RENDER_WITH_OB_FROM_ACTION_TO_LAYOUT) {
+		/** @var $this \MvcCore\Controller */
+		$this->renderMode = $renderMode;
 		return $this;
 	}
 
@@ -348,6 +410,7 @@ trait PropsGettersSetters
 	 * @return string
 	 */
 	public function GetLayout () {
+		/** @var $this \MvcCore\Controller */
 		return $this->layout;
 	}
 
@@ -358,6 +421,7 @@ trait PropsGettersSetters
 	 * @return \MvcCore\Controller|\MvcCore\Controller\PropsGettersSetters
 	 */
 	public function SetLayout ($layout = '') {
+		/** @var $this \MvcCore\Controller */
 		$this->layout = $layout;
 		return $this;
 	}
@@ -374,6 +438,7 @@ trait PropsGettersSetters
 	 * @return string|NULL
 	 */
 	public function GetViewScriptsPath () {
+		/** @var $this \MvcCore\Controller */
 		return $this->viewScriptsPath;
 	}
 
@@ -390,6 +455,7 @@ trait PropsGettersSetters
 	 * @return \MvcCore\Controller|\MvcCore\Controller\PropsGettersSetters
 	 */
 	public function SetViewScriptsPath ($viewScriptsPath = NULL) {
+		/** @var $this \MvcCore\Controller */
 		$this->viewScriptsPath = $viewScriptsPath;
 		return $this;
 	}
@@ -402,6 +468,7 @@ trait PropsGettersSetters
 	 * @return bool
 	 */
 	public function GetViewEnabled () {
+		/** @var $this \MvcCore\Controller */
 		return $this->viewEnabled;
 	}
 
@@ -413,6 +480,7 @@ trait PropsGettersSetters
 	 * @return \MvcCore\Controller|\MvcCore\Controller\PropsGettersSetters
 	 */
 	public function SetViewEnabled ($viewEnabled = TRUE) {
+		/** @var $this \MvcCore\Controller */
 		$this->viewEnabled = $viewEnabled;
 		return $this;
 	}
@@ -424,6 +492,7 @@ trait PropsGettersSetters
 	 * @return \MvcCore\Controller|NULL
 	 */
 	public function GetParentController () {
+		/** @var $this \MvcCore\Controller */
 		return $this->parentController;
 	}
 
@@ -435,6 +504,7 @@ trait PropsGettersSetters
 	 * @return \MvcCore\Controller|\MvcCore\Controller\PropsGettersSetters
 	 */
 	public function SetParentController (\MvcCore\IController $parentController = NULL) {
+		/** @var $this \MvcCore\Controller */
 		$this->parentController = $parentController;
 		return $this;
 	}
@@ -446,6 +516,7 @@ trait PropsGettersSetters
 	 * @return \MvcCore\Controller[]
 	 */
 	public function GetChildControllers () {
+		/** @var $this \MvcCore\Controller */
 		return $this->childControllers;
 	}
 
@@ -461,6 +532,7 @@ trait PropsGettersSetters
 	 * @return \MvcCore\Controller|\MvcCore\Controller\PropsGettersSetters
 	 */
 	public function SetChildControllers (array $childControllers = []) {
+		/** @var $this \MvcCore\Controller */
 		$this->childControllers = $childControllers;
 		return $this;
 	}
@@ -473,6 +545,7 @@ trait PropsGettersSetters
 	 * @return \MvcCore\Controller
 	 */
 	public function GetChildController ($index = NULL) {
+		/** @var $this \MvcCore\Controller */
 		return $this->childControllers[$index];
 	}
 
@@ -495,6 +568,7 @@ trait PropsGettersSetters
 	 * @return string
 	 */
 	public function Url ($controllerActionOrRouteName = 'Index:Index', array $params = []) {
+		/** @var $this \MvcCore\Controller */
 		return $this->router->Url($controllerActionOrRouteName, $params);
 	}
 
@@ -505,6 +579,7 @@ trait PropsGettersSetters
 	 * @return string
 	 */
 	public function AssetUrl ($path = '') {
+		/** @var $this \MvcCore\Controller */
 		return $this->router->Url('Controller:Asset', ['path' => $path]);
 	}
 }
