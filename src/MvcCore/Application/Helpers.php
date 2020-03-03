@@ -87,7 +87,7 @@ trait Helpers
 	 * @throws \Exception
 	 * @return \MvcCore\Application
 	 */
-	protected function & setCoreClass ($newCoreClassName, $coreClassVar, $coreClassInterface) {
+	protected function setCoreClass ($newCoreClassName, $coreClassVar, $coreClassInterface) {
 		if (call_user_func(
 			[$this->toolClass, 'CheckClassInterface'], 
 			$newCoreClassName, $coreClassInterface, TRUE, TRUE // check static methods and throw an exception if false
@@ -103,7 +103,7 @@ trait Helpers
 	 * @param int|NULL $priorityIndex
 	 * @return \MvcCore\Application
 	 */
-	protected function & setHandler (array & $handlers, callable $handler, $priorityIndex = NULL) {
+	protected function setHandler (array & $handlers, callable $handler, $priorityIndex = NULL) {
 		// there is possible to call any `callable` as closure function in variable
 		// except forms like `'ClassName::methodName'` and `['childClassName', 'parent::methodName']`
 		// and `[$childInstance, 'parent::methodName']`.

@@ -137,7 +137,7 @@ trait PropsGettersSetters
 	 * @var \array[]
 	 */
 	protected $postDispatchHandlers = [];
-	
+
 	/**
 	 * Post terminate custom calls storage.
 	 * Every item in this array has to be `callable`.
@@ -149,7 +149,7 @@ trait PropsGettersSetters
 	 *		\MvcCore\Request & $request,
 	 *		\MvcCore\Response & $response
 	 * ) {
-	 *		// close connection by previously configured 
+	 *		// close connection by previously configured
 	 *		// header: header('Connection: close');
 	 *		// and run background process now:
 	 * });`
@@ -406,7 +406,7 @@ trait PropsGettersSetters
 	 * Returns currently used instance of protected `\MvcCore\Application::$request;`.
 	 * @return \MvcCore\Request|\MvcCore\IRequest
 	 */
-	public function & GetRequest () {
+	public function GetRequest () {
 		if ($this->request === NULL) {
 			$requestClass = $this->requestClass;
 			$this->request = $requestClass::CreateInstance();
@@ -418,7 +418,7 @@ trait PropsGettersSetters
 	 * Returns currently used instance of protected `\MvcCore\Application::response;`.
 	 * @return \MvcCore\Response|\MvcCore\IResponse
 	 */
-	public function & GetResponse () {
+	public function GetResponse () {
 		if ($this->response === NULL) {
 			$responseClass = $this->responseClass;
 			$this->response = $responseClass::CreateInstance();
@@ -430,10 +430,10 @@ trait PropsGettersSetters
 	 * Returns currently used instance of protected `\MvcCore\Application::$router;`.
 	 * @return \MvcCore\Router|\MvcCore\IRouter
 	 */
-	public function & GetRouter () {
+	public function GetRouter () {
 		if ($this->router === NULL) {
 			$routerClass = $this->routerClass;
-			$this->router = & $routerClass::GetInstance();
+			$this->router = $routerClass::GetInstance();
 		}
 		return $this->router;
 	}
@@ -442,7 +442,7 @@ trait PropsGettersSetters
 	 * Returns currently dispatched instance of protected `\MvcCore\Application::$controller;`.
 	 * @return \MvcCore\Controller|\MvcCore\IController
 	 */
-	public function & GetController () {
+	public function GetController () {
 		return $this->controller;
 	}
 
@@ -506,7 +506,7 @@ trait PropsGettersSetters
 	 * @param string $compiled
 	 * @return \MvcCore\Application
 	 */
-	public function & SetCompiled ($compiled = '') {
+	public function SetCompiled ($compiled = '') {
 		/** @var $this \MvcCore\Application */
 		$this->compiled = $compiled;
 		return $this;
@@ -521,7 +521,7 @@ trait PropsGettersSetters
 	 * @param string $configClass
 	 * @return \MvcCore\Application
 	 */
-	public function & SetConfigClass ($configClass) {
+	public function SetConfigClass ($configClass) {
 		return $this->setCoreClass($configClass, 'configClass', 'MvcCore\IConfig');
 	}
 
@@ -533,7 +533,7 @@ trait PropsGettersSetters
 	 * @param string $controllerClass
 	 * @return \MvcCore\Application
 	 */
-	public function & SetControllerClass ($controllerClass) {
+	public function SetControllerClass ($controllerClass) {
 		return $this->setCoreClass($controllerClass, 'configClass', 'MvcCore\IController');
 	}
 
@@ -544,7 +544,7 @@ trait PropsGettersSetters
 	 * @param string $debugClass
 	 * @return \MvcCore\Application
 	 */
-	public function & SetDebugClass ($debugClass) {
+	public function SetDebugClass ($debugClass) {
 		return $this->setCoreClass($debugClass, 'debugClass', 'MvcCore\IDebug');
 	}
 
@@ -555,7 +555,7 @@ trait PropsGettersSetters
 	 * @param string $requestClass
 	 * @return \MvcCore\Application
 	 */
-	public function & SetRequestClass ($requestClass) {
+	public function SetRequestClass ($requestClass) {
 		return $this->setCoreClass($requestClass, 'requestClass', 'MvcCore\IRequest');
 	}
 
@@ -566,7 +566,7 @@ trait PropsGettersSetters
 	 * @param string $responseClass
 	 * @return \MvcCore\Application
 	 */
-	public function & SetResponseClass ($responseClass) {
+	public function SetResponseClass ($responseClass) {
 		return $this->setCoreClass($responseClass, 'responseClass', 'MvcCore\IResponse');
 	}
 
@@ -578,7 +578,7 @@ trait PropsGettersSetters
 	 * @param string $routeClass
 	 * @return \MvcCore\Application
 	 */
-	public function & SetRouteClass ($routeClass) {
+	public function SetRouteClass ($routeClass) {
 		return $this->setCoreClass($routeClass, 'routerClass', 'MvcCore\IRoute');
 	}
 
@@ -589,7 +589,7 @@ trait PropsGettersSetters
 	 * @param string $routerClass
 	 * @return \MvcCore\Application
 	 */
-	public function & SetRouterClass ($routerClass) {
+	public function SetRouterClass ($routerClass) {
 		return $this->setCoreClass($routerClass, 'routerClass', 'MvcCore\IRouter');
 	}
 
@@ -600,7 +600,7 @@ trait PropsGettersSetters
 	 * @param string $sessionClass
 	 * @return \MvcCore\Application
 	 */
-	public function & SetSessionClass ($sessionClass) {
+	public function SetSessionClass ($sessionClass) {
 		return $this->setCoreClass($sessionClass, 'sessionClass', 'MvcCore\ISession');
 	}
 
@@ -611,7 +611,7 @@ trait PropsGettersSetters
 	 * @param string $toolClass
 	 * @return \MvcCore\Application
 	 */
-	public function & SetToolClass ($toolClass) {
+	public function SetToolClass ($toolClass) {
 		return $this->setCoreClass($toolClass, 'toolClass', 'MvcCore\ITool');
 	}
 
@@ -622,7 +622,7 @@ trait PropsGettersSetters
 	 * @param string $viewClass
 	 * @return \MvcCore\Application
 	 */
-	public function & SetViewClass ($viewClass) {
+	public function SetViewClass ($viewClass) {
 		return $this->setCoreClass($viewClass, 'viewClass', 'MvcCore\IView');
 	}
 
@@ -638,7 +638,7 @@ trait PropsGettersSetters
 	 * @param string $appDir
 	 * @return \MvcCore\Application
 	 */
-	public function & SetAppDir ($appDir) {
+	public function SetAppDir ($appDir) {
 		/** @var $this \MvcCore\Application */
 		$this->appDir = $appDir;
 		return $this;
@@ -649,7 +649,7 @@ trait PropsGettersSetters
 	 * @param \MvcCore\Controller|\MvcCore\IController $controller
 	 * @return \MvcCore\Application
 	 */
-	public function & SetController (\MvcCore\IController $controller = NULL) {
+	public function SetController (\MvcCore\IController $controller = NULL) {
 		/** @var $this \MvcCore\Application */
 		$this->controller = $controller;
 		return $this;
@@ -663,7 +663,7 @@ trait PropsGettersSetters
 	 * @param string $controllersDir
 	 * @return \MvcCore\Application
 	 */
-	public function & SetControllersDir ($controllersDir) {
+	public function SetControllersDir ($controllersDir) {
 		/** @var $this \MvcCore\Application */
 		$this->controllersDir = $controllersDir;
 		return $this;
@@ -677,7 +677,7 @@ trait PropsGettersSetters
 	 * @param string $viewsDir
 	 * @return \MvcCore\Application
 	 */
-	public function & SetViewsDir ($viewsDir) {
+	public function SetViewsDir ($viewsDir) {
 		/** @var $this \MvcCore\Application */
 		$this->viewsDir = $viewsDir;
 		return $this;
@@ -689,7 +689,7 @@ trait PropsGettersSetters
 	 * @param string $defaultControllerName
 	 * @return \MvcCore\Application
 	 */
-	public function & SetDefaultControllerName ($defaultControllerName) {
+	public function SetDefaultControllerName ($defaultControllerName) {
 		/** @var $this \MvcCore\Application */
 		$this->defaultControllerName = $defaultControllerName;
 		return $this;
@@ -701,7 +701,7 @@ trait PropsGettersSetters
 	 * @param string $defaultActionName
 	 * @return \MvcCore\Application
 	 */
-	public function & SetDefaultControllerDefaultActionName ($defaultActionName) {
+	public function SetDefaultControllerDefaultActionName ($defaultActionName) {
 		/** @var $this \MvcCore\Application */
 		$this->defaultControllerDefaultActionName = $defaultActionName;
 		return $this;
@@ -713,7 +713,7 @@ trait PropsGettersSetters
 	 * @param string $defaultControllerErrorActionName
 	 * @return \MvcCore\Application
 	 */
-	public function & SetDefaultControllerErrorActionName ($defaultControllerErrorActionName) {
+	public function SetDefaultControllerErrorActionName ($defaultControllerErrorActionName) {
 		/** @var $this \MvcCore\Application */
 		$this->defaultControllerErrorActionName = $defaultControllerErrorActionName;
 		return $this;
@@ -725,7 +725,7 @@ trait PropsGettersSetters
 	 * @param string $defaultControllerNotFoundActionName
 	 * @return \MvcCore\Application
 	 */
-	public function & SetDefaultControllerNotFoundActionName ($defaultControllerNotFoundActionName) {
+	public function SetDefaultControllerNotFoundActionName ($defaultControllerNotFoundActionName) {
 		/** @var $this \MvcCore\Application */
 		$this->defaultControllerNotFoundActionName = $defaultControllerNotFoundActionName;
 		return $this;
@@ -749,9 +749,9 @@ trait PropsGettersSetters
 	 * @param int|NULL $priorityIndex
 	 * @return \MvcCore\Application
 	 */
-	public function & AddPreRouteHandler (callable $handler, $priorityIndex = NULL) {
+	public function AddPreRouteHandler (callable $handler, $priorityIndex = NULL) {
 		if (!is_callable($handler)) {
-			$selfClass = version_compare(PHP_VERSION, '5.5', '>') ? self::class : __CLASS__;
+			$selfClass = \PHP_VERSION_ID >= 50500 ? self::class : __CLASS__;
 			throw new \InvalidArgumentException(
 				"[".$selfClass."] Pre route handler is not callable (handler: $handler, priorityIndex: $priorityIndex)."
 			);
@@ -778,9 +778,9 @@ trait PropsGettersSetters
 	 * @param int|NULL $priorityIndex
 	 * @return \MvcCore\Application
 	 */
-	public function & AddPostRouteHandler (callable $handler, $priorityIndex = NULL) {
+	public function AddPostRouteHandler (callable $handler, $priorityIndex = NULL) {
 		if (!is_callable($handler)) {
-			$selfClass = version_compare(PHP_VERSION, '5.5', '>') ? self::class : __CLASS__;
+			$selfClass = \PHP_VERSION_ID >= 50500 ? self::class : __CLASS__;
 			throw new \InvalidArgumentException(
 				"[".$selfClass."] Post route handler is not callable (handler: $handler, priorityIndex: $priorityIndex)."
 			);
@@ -807,9 +807,9 @@ trait PropsGettersSetters
 	 * @param int|NULL $priorityIndex
 	 * @return \MvcCore\Application
 	 */
-	public function & AddPreDispatchHandler (callable $handler, $priorityIndex = NULL) {
+	public function AddPreDispatchHandler (callable $handler, $priorityIndex = NULL) {
 		if (!is_callable($handler)) {
-			$selfClass = version_compare(PHP_VERSION, '5.5', '>') ? self::class : __CLASS__;
+			$selfClass = \PHP_VERSION_ID >= 50500 ? self::class : __CLASS__;
 			throw new \InvalidArgumentException(
 				"[".$selfClass."] Pre dispatch handler is not callable (handler: $handler, priorityIndex: $priorityIndex)."
 			);
@@ -835,9 +835,9 @@ trait PropsGettersSetters
 	 * @param int|NULL $priorityIndex
 	 * @return \MvcCore\Application
 	 */
-	public function & AddPostDispatchHandler (callable $handler, $priorityIndex = NULL) {
+	public function AddPostDispatchHandler (callable $handler, $priorityIndex = NULL) {
 		if (!is_callable($handler)) {
-			$selfClass = version_compare(PHP_VERSION, '5.5', '>') ? self::class : __CLASS__;
+			$selfClass = \PHP_VERSION_ID >= 50500 ? self::class : __CLASS__;
 			throw new \InvalidArgumentException(
 				"[".$selfClass."] Post dispatch handler is not callable (handler: $handler, priorityIndex: $priorityIndex)."
 			);
@@ -856,7 +856,7 @@ trait PropsGettersSetters
 	 *		\MvcCore\Request & $request,
 	 *		\MvcCore\Response & $response
 	 * ) {
-	 *		// close connection by previously configured 
+	 *		// close connection by previously configured
 	 *		// header: header('Connection: close');
 	 *		// and run background process now:
 	 * });`
@@ -864,9 +864,9 @@ trait PropsGettersSetters
 	 * @param int|NULL $priorityIndex
 	 * @return \MvcCore\Application
 	 */
-	public function & AddPostTerminateHandler (callable $handler, $priorityIndex = NULL) {
+	public function AddPostTerminateHandler (callable $handler, $priorityIndex = NULL) {
 		if (!is_callable($handler)) {
-			$selfClass = version_compare(PHP_VERSION, '5.5', '>') ? self::class : __CLASS__;
+			$selfClass = \PHP_VERSION_ID >= 50500 ? self::class : __CLASS__;
 			throw new \InvalidArgumentException(
 				"[".$selfClass."] Post terminate handler is not callable (handler: $handler, priorityIndex: $priorityIndex)."
 			);

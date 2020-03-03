@@ -55,7 +55,7 @@ class Application implements \MvcCore\IApplication
 	 * Returns singleton `\MvcCore\Application` instance as reference.
 	 * @return \MvcCore\Application
 	 */
-	public static function & GetInstance () {
+	public static function GetInstance () {
 		if (self::$instance === NULL) self::$instance = new static();
 		return self::$instance;
 	}
@@ -66,6 +66,5 @@ class Application implements \MvcCore\IApplication
 	 * @return \MvcCore\Application
 	 */
 	protected function __construct () {
-		self::$instance = $this;
 	}
 }

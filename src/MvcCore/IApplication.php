@@ -93,7 +93,7 @@ interface IApplication
 	 * Returns singleton `\MvcCore\Application` instance as reference.
 	 * @return \MvcCore\IApplication
 	 */
-	public static function & GetInstance ();
+	public static function GetInstance ();
 
 
 	/***********************************************************************************
@@ -189,25 +189,25 @@ interface IApplication
 	 * Returns currently used instance of protected `\MvcCore\Application::$router;`.
 	 * @return \MvcCore\IRouter
 	 */
-	public function & GetRouter ();
+	public function GetRouter ();
 
 	/**
 	 * Returns currently dispatched instance of protected `\MvcCore\Application::$controller;`.
 	 * @return \MvcCore\IController
 	 */
-	public function & GetController ();
+	public function GetController ();
 
 	/**
 	 * Returns currently used instance of protected `\MvcCore\Application::$request;`.
 	 * @return \MvcCore\IRequest
 	 */
-	public function & GetRequest ();
+	public function GetRequest ();
 
 	/**
 	 * Returns currently used instance of protected `\MvcCore\Application::response;`.
 	 * @return \MvcCore\IResponse
 	 */
-	public function & GetResponse ();
+	public function GetResponse ();
 
 	/**
 	 * Get application scripts and views directory name as `"App"` by default,
@@ -261,7 +261,7 @@ interface IApplication
 	 * @param string $compiled
 	 * @return \MvcCore\IApplication
 	 */
-	public function & SetCompiled ($compiled = '');
+	public function SetCompiled ($compiled = '');
 
 
 	/**
@@ -272,7 +272,7 @@ interface IApplication
 	 * @param string $configClass
 	 * @return \MvcCore\IApplication
 	 */
-	public function & SetConfigClass ($configClass);
+	public function SetConfigClass ($configClass);
 
 	/**
 	 * Set application controller class implementing `\MvcCore\IController`.
@@ -282,7 +282,7 @@ interface IApplication
 	 * @param string $controllerClass
 	 * @return \MvcCore\IApplication
 	 */
-	public function & SetControllerClass ($controllerClass);
+	public function SetControllerClass ($controllerClass);
 
 	/**
 	 * Set application debug class implementing `\MvcCore\IDebug`.
@@ -291,7 +291,7 @@ interface IApplication
 	 * @param string $debugClass
 	 * @return \MvcCore\IApplication
 	 */
-	public function & SetDebugClass ($debugClass);
+	public function SetDebugClass ($debugClass);
 
 	/**
 	 * Set application request class implementing `\MvcCore\IRequest`.
@@ -300,7 +300,7 @@ interface IApplication
 	 * @param string $requestClass
 	 * @return \MvcCore\IApplication
 	 */
-	public function & SetRequestClass ($requestClass);
+	public function SetRequestClass ($requestClass);
 
 	/**
 	 * Set application response class implementing `\MvcCore\IResponse`.
@@ -309,7 +309,7 @@ interface IApplication
 	 * @param string $responseClass
 	 * @return \MvcCore\IApplication
 	 */
-	public function & SetResponseClass ($responseClass);
+	public function SetResponseClass ($responseClass);
 
 	/**
 	 * Set application route class implementing `\MvcCore\IRoute`.
@@ -319,7 +319,7 @@ interface IApplication
 	 * @param string $routerClass
 	 * @return \MvcCore\IApplication
 	 */
-	public function & SetRouteClass ($routerClass);
+	public function SetRouteClass ($routerClass);
 
 	/**
 	 * Set application router class implementing `\MvcCore\IRouter`.
@@ -328,7 +328,7 @@ interface IApplication
 	 * @param string $routerClass
 	 * @return \MvcCore\IApplication
 	 */
-	public function & SetRouterClass ($routerClass);
+	public function SetRouterClass ($routerClass);
 
 	/**
 	 * Set application session class implementing `\MvcCore\ISession`.
@@ -337,7 +337,7 @@ interface IApplication
 	 * @param string $sessionClass
 	 * @return \MvcCore\IApplication
 	 */
-	public function & SetSessionClass ($sessionClass);
+	public function SetSessionClass ($sessionClass);
 
 	/**
 	 * Set application tool class implementing `\MvcCore\ITool`.
@@ -346,7 +346,7 @@ interface IApplication
 	 * @param string $toolClass
 	 * @return \MvcCore\IApplication
 	 */
-	public function & SetToolClass ($toolClass);
+	public function SetToolClass ($toolClass);
 
 	/**
 	 * Set application view class implementing `\MvcCore\IView`.
@@ -355,7 +355,7 @@ interface IApplication
 	 * @param string $viewClass
 	 * @return \MvcCore\IApplication
 	 */
-	public function & SetViewClass ($viewClass);
+	public function SetViewClass ($viewClass);
 
 
 	/**
@@ -369,14 +369,14 @@ interface IApplication
 	 * @param string $appDir
 	 * @return \MvcCore\IApplication
 	 */
-	public function & SetAppDir ($appDir);
+	public function SetAppDir ($appDir);
 
 	/**
 	 * Set currently dispatched instance of protected `\MvcCore\Application::$controller;`.
 	 * @param \MvcCore\IController $controller
 	 * @return \MvcCore\IApplication
 	 */
-	public function & SetController (\MvcCore\IController $controller = NULL);
+	public function SetController (\MvcCore\IController $controller = NULL);
 
 	/**
 	 * Set controllers directory name (`"Controllers"` by default), for all controller classes,
@@ -386,7 +386,7 @@ interface IApplication
 	 * @param string $controllersDir
 	 * @return \MvcCore\IApplication
 	 */
-	public function & SetControllersDir ($controllersDir);
+	public function SetControllersDir ($controllersDir);
 
 	/**
 	 * Set views directory name (`"views"` by default), for all view elements,
@@ -396,7 +396,7 @@ interface IApplication
 	 * @param string $viewsDir
 	 * @return \MvcCore\IApplication
 	 */
-	public function & SetViewsDir ($viewsDir);
+	public function SetViewsDir ($viewsDir);
 
 	/**
 	 * Set default controller name. `"Index"` value by default.
@@ -404,7 +404,7 @@ interface IApplication
 	 * @param string $defaultControllerName
 	 * @return \MvcCore\IApplication
 	 */
-	public function & SetDefaultControllerName ($defaultControllerName);
+	public function SetDefaultControllerName ($defaultControllerName);
 
 	/**
 	 * Set default controller default action name. `"Index"` value by default.
@@ -412,7 +412,7 @@ interface IApplication
 	 * @param string $defaultActionName
 	 * @return \MvcCore\IApplication
 	 */
-	public function & SetDefaultControllerDefaultActionName ($defaultActionName);
+	public function SetDefaultControllerDefaultActionName ($defaultActionName);
 
 	/**
 	 * Set default controller common error action name. `"Error"` value by default.
@@ -420,7 +420,7 @@ interface IApplication
 	 * @param string $defaultControllerErrorActionName
 	 * @return \MvcCore\IApplication
 	 */
-	public function & SetDefaultControllerErrorActionName ($defaultControllerErrorActionName);
+	public function SetDefaultControllerErrorActionName ($defaultControllerErrorActionName);
 
 	/**
 	 * Set default controller not found error action name. `"NotFound"` value by default.
@@ -428,7 +428,7 @@ interface IApplication
 	 * @param string $defaultControllerNotFoundActionName
 	 * @return \MvcCore\IApplication
 	 */
-	public function & SetDefaultControllerNotFoundActionName ($defaultControllerNotFoundActionName);
+	public function SetDefaultControllerNotFoundActionName ($defaultControllerNotFoundActionName);
 
 	/**
 	 * Add pre route handler into pre route handlers queue to process them after
@@ -448,7 +448,7 @@ interface IApplication
 	 * @param int|NULL $priorityIndex
 	 * @return \MvcCore\IApplication
 	 */
-	public function & AddPreRouteHandler (callable $handler, $priorityIndex = NULL);
+	public function AddPreRouteHandler (callable $handler, $priorityIndex = NULL);
 
 	/**
 	 * Add post route handler into post route handlers queue to process them after
@@ -469,7 +469,7 @@ interface IApplication
 	 * @param int|NULL $priorityIndex
 	 * @return \MvcCore\IApplication
 	 */
-	public function & AddPostRouteHandler (callable $handler, $priorityIndex = NULL);
+	public function AddPostRouteHandler (callable $handler, $priorityIndex = NULL);
 
 	/**
 	 * Add pre dispatch handler into pre dispatch handlers queue to process them after
@@ -490,7 +490,7 @@ interface IApplication
 	 * @param int|NULL $priorityIndex
 	 * @return \MvcCore\IApplication
 	 */
-	public function & AddPreDispatchHandler (callable $handler, $priorityIndex = NULL);
+	public function AddPreDispatchHandler (callable $handler, $priorityIndex = NULL);
 
 	/**
 	 * Add post dispatch handler into post dispatch handlers queue to process them
@@ -510,7 +510,7 @@ interface IApplication
 	 * @param int|NULL $priorityIndex
 	 * @return \MvcCore\IApplication
 	 */
-	public function & AddPostDispatchHandler (callable $handler, $priorityIndex = NULL);
+	public function AddPostDispatchHandler (callable $handler, $priorityIndex = NULL);
 
 	/**
 	 * Add post terminate handler into post terminate handlers queue to process them
@@ -531,7 +531,7 @@ interface IApplication
 	 * @param int|NULL $priorityIndex
 	 * @return \MvcCore\IApplication
 	 */
-	public function & AddPostTerminateHandler (callable $handler, $priorityIndex = NULL);
+	public function AddPostTerminateHandler (callable $handler, $priorityIndex = NULL);
 
 
 	/***********************************************************************************
