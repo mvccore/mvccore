@@ -57,5 +57,5 @@ class View implements IView
 	use \MvcCore\View\MagicMethods;
 	use \MvcCore\View\UrlHelpers;
 	use \MvcCore\View\ViewHelpers;
-	use \MvcCore\View\PrivateMethods;
+	use \MvcCore\View\LocalMethods;
 }

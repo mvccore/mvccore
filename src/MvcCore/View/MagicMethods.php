@@ -43,8 +43,15 @@ trait MagicMethods
 				/** @var $property \ReflectionProperty */
 				$property = $controllerType->getProperty($name);
 				if (!$property->isStatic()) {
-					if (!$property->isPublic()) $property->setAccessible (TRUE); // protected or private
-					$value = $property->getValue($this->controller);
+					if (!$property->isPublic())
+						$property->setAccessible(TRUE); // protected or private
+					$value = NULL;
+					if (PHP_VERSION_ID >= 70400 && $property->hasType()) {
+						if ($property->isInitialized($this->controller))
+							$value = $property->getValue($this->controller);
+					} else {
+						$value = $property->getValue($this->controller);
+					}
 					$store[$name] = & $value;
 					return $value;
 				}
@@ -70,10 +77,17 @@ trait MagicMethods
 				/** @var $property \ReflectionProperty */
 				$property = $controllerType->getProperty($name);
 				if (!$property->isStatic()) {
-					if (!$property->isPublic()) $property->setAccessible (TRUE); // protected or private
-					$value = $property->getValue($this->controller);
+					if (!$property->isPublic())
+						$property->setAccessible(TRUE); // protected or private
+					$value = NULL;
+					if (PHP_VERSION_ID >= 70400 && $property->hasType()) {
+						if ($property->isInitialized($this->controller))
+							$value = $property->getValue($this->controller);
+					} else {
+						$value = $property->getValue($this->controller);
+					}
 					$store[$name] = & $value;
-					return TRUE;
+					return $value !== NULL;
 				}
 			}
 		}
@@ -98,7 +112,7 @@ trait MagicMethods
 	 * @param string $currentContextObjectName Local context property name to get reflection class about.
 	 * @return \ReflectionClass|NULL
 	 */
-	protected function & getReflectionClass ($currentContextObjectName) {
+	protected function getReflectionClass ($currentContextObjectName) {
 		$privates = & $this->__protected;
 
 		$reflectionTypes = & $privates['reflectionTypes'];

@@ -227,13 +227,13 @@ interface IView
 	 * @param \MvcCore\IController $controller
 	 * @return \MvcCore\IView
 	 */
-	public function & SetController (\MvcCore\IController & $controller);
+	public function SetController (\MvcCore\IController & $controller);
 
 	/**
 	 * Get controller instance as reference.
 	 * @return \MvcCore\IController
 	 */
-	public function & GetController ();
+	public function GetController ();
 
 	/**
 	 * This is INTERNAL method, do not use it in templates.
@@ -245,7 +245,7 @@ interface IView
 	 * @param bool $overwriteExistingKeys If any property name already exist in view store, overwrite it by given value by default.
 	 * @return \MvcCore\IView
 	 */
-	public function & SetUpStore (\MvcCore\IView & $view, $overwriteExistingKeys = TRUE);
+	public function SetUpStore (\MvcCore\IView & $view, $overwriteExistingKeys = TRUE);
 
 	/**
 	 * Return rendered action template content as string reference.
@@ -386,7 +386,7 @@ interface IView
 	 * @param bool $forAllTemplates register this helper instance for all rendered views in the future.
 	 * @return \MvcCore\View|\MvcCore\IView
 	 */
-	public function & SetHelper ($helperName, & $instance, $forAllTemplates = TRUE);
+	public function SetHelper ($helperName, $instance, $forAllTemplates = TRUE);
 
 	/**
 	 * Set any value into view context internal store.

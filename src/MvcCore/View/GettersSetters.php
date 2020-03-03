@@ -137,7 +137,7 @@ trait GettersSetters
 	 * @param \MvcCore\Controller $controller
 	 * @return \MvcCore\View
 	 */
-	public function & SetController (\MvcCore\IController & $controller) {
+	public function SetController (\MvcCore\IController & $controller) {
 		/** @var $this \MvcCore\View */
 		$this->controller = $controller;
 		return $this;
@@ -147,7 +147,7 @@ trait GettersSetters
 	 * Get controller instance as reference.
 	 * @return \MvcCore\Controller
 	 */
-	public function & GetController () {
+	public function GetController () {
 		/** @var $this \MvcCore\View */
 		return $this->controller;
 	}

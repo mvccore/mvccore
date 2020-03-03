@@ -45,7 +45,7 @@ trait ViewHelpers
 	 * @return void
 	 */
 	public static function AddHelpersNamespaces ($helperNamespaces) {
-		if (!static::$helpersNamespaces) self::_initHelpersNamespaces();
+		if (!static::$helpersNamespaces) self::initHelpersNamespaces();
 		$args = func_get_args();
 		if (count($args) === 1 && is_array($args[0])) $args = $args[0];
 		foreach ($args as $arg)
@@ -84,7 +84,7 @@ trait ViewHelpers
 		if (method_exists($instance, $method)) {
 			$result = call_user_func_array([$instance, $method], $arguments);
 		} else {
-			$selfClass = version_compare(PHP_VERSION, '5.5', '>') ? self::class : __CLASS__;
+			$selfClass = \PHP_VERSION_ID >= 50500 ? self::class : __CLASS__;
 			throw new \InvalidArgumentException(
 				"[".$selfClass."] View class instance has no method '$method', no view helper found."
 			);
@@ -115,19 +115,19 @@ trait ViewHelpers
 			$setUpViewAgain = TRUE;
 		} else {
 			$helperFound = FALSE;
-			if (self::$_toolClass === NULL)
-				self::$_toolClass = \MvcCore\Application::GetInstance()->GetToolClass();
-			$toolClass = self::$_toolClass;
+			$toolClass = self::$_toolClass ?: self::$_toolClass = \MvcCore\Application::GetInstance()->GetToolClass();
 			$helpersInterface = self::HELPERS_INTERFACE_CLASS_NAME;
-			if (!static::$helpersNamespaces) self::_initHelpersNamespaces();
+			if (!static::$helpersNamespaces)
+				self::initHelpersNamespaces();
 			foreach (static::$helpersNamespaces as $helperClassBase) {
 				$className = $helperClassBase . ucfirst($helperName) . 'Helper';
-				if (!class_exists($className)) continue;
+				if (!class_exists($className))
+					continue;
 				$helperFound = TRUE;
 				$setUpViewAgain = TRUE;
 				if ($toolClass::CheckClassInterface($className, $helpersInterface, TRUE, FALSE)) {
 					$implementsIHelper = TRUE;
-					$instance = & $className::GetInstance();
+					$instance = $className::GetInstance();
 				} else {
 					$instance = new $className();
 				}
@@ -135,7 +135,7 @@ trait ViewHelpers
 				break;
 			}
 			if (!$helperFound) {
-				$selfClass = version_compare(PHP_VERSION, '5.5', '>') ? self::class : __CLASS__;
+				$selfClass = \PHP_VERSION_ID >= 50500 ? self::class : __CLASS__;
 				throw new \InvalidArgumentException(
 					"[".$selfClass."] View helper method '$helperName' is not"
 					." possible to handle by any configured view helper (View"
@@ -158,7 +158,7 @@ trait ViewHelpers
 	 * @param bool $forAllTemplates register this helper instance for all rendered views in the future.
 	 * @return \MvcCore\View|\MvcCore\IView
 	 */
-	public function & SetHelper ($helperName, & $instance, $forAllTemplates = TRUE) {
+	public function SetHelper ($helperName, $instance, $forAllTemplates = TRUE) {
 		/** @var $this \MvcCore\View */
 		$implementsIHelper = FALSE;
 		if ($forAllTemplates) {

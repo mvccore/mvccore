@@ -13,7 +13,7 @@
 
 namespace MvcCore\View;
 
-trait PrivateMethods
+trait LocalMethods
 {
 	/**
 	 * If relative path declared in view starts with `"./anything/else.phtml"`,
@@ -22,7 +22,7 @@ trait PrivateMethods
 	 * @param string $relativePath
 	 * @return string full path
 	 */
-	private function _correctRelativePath ($typePath, $relativePath) {
+	protected function correctRelativePath ($typePath, $relativePath) {
 		$result = str_replace('\\', '/', $relativePath);
 		if (substr($relativePath, 0, 2) == './') {
 			if (self::$_viewScriptsFullPathBase === NULL)
@@ -45,11 +45,11 @@ trait PrivateMethods
 	/**
 	 * Init view scripts full class string for methods:
 	 * - `\MvcCore\View::GetViewScriptFullPath();`
-	 * - `\MvcCore\View::_correctRelativePath();`
+	 * - `\MvcCore\View::correctRelativePath();`
 	 * @return void
 	 */
-	private static function _initViewScriptsFullPathBase () {
-		$app = & \MvcCore\Application::GetInstance();
+	protected static function initViewScriptsFullPathBase () {
+		$app = \MvcCore\Application::GetInstance();
 		self::$_viewScriptsFullPathBase = implode('/', [
 			$app->GetRequest()->GetAppRoot(),
 			$app->GetAppDir(),
@@ -63,8 +63,8 @@ trait PrivateMethods
 	 * by application configuration once.
 	 * @return void
 	 */
-	private static function _initHelpersNamespaces () {
-		$app = & \MvcCore\Application::GetInstance();
+	protected static function initHelpersNamespaces () {
+		$app = \MvcCore\Application::GetInstance();
 		static::$helpersNamespaces = [
 			'\\MvcCore\\Ext\\Views\Helpers\\',
 			// and '\App\Views\Helpers\' by default:
