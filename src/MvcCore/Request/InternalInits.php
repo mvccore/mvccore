@@ -255,7 +255,7 @@ trait InternalInits
 	protected function initParamsCompletePostData () {
 		$result = [];
 		$rawPhpInput = file_get_contents('php://input');
-		$app = self::$app ?: (self::$app = & \MvcCore\Application::GetInstance());
+		$app = self::$app ?: (self::$app = \MvcCore\Application::GetInstance());
 		$toolClass = $app->GetToolClass();
 		// try first JSON decoding, then fallback to query string
 		$probablyAJsonType = !$toolClass::IsQueryString($rawPhpInput);

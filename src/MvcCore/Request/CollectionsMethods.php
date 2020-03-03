@@ -35,7 +35,7 @@ trait CollectionsMethods
 	 * @param array $headers
 	 * @return \MvcCore\Request|\MvcCore\IRequest
 	 */
-	public function & SetHeaders (array & $headers = []) {
+	public function SetHeaders (array & $headers = []) {
 		/** @var $this \MvcCore\Request */
 		$this->headers = & $headers;
 		return $this;
@@ -70,7 +70,7 @@ trait CollectionsMethods
 	 * @param string|string[] $value
 	 * @return \MvcCore\Request|\MvcCore\IRequest
 	 */
-	public function & SetHeader ($name = '', $value = '') {
+	public function SetHeader ($name = '', $value = '') {
 		/** @var $this \MvcCore\Request */
 		if ($this->headers === NULL) $this->initHeaders();
 		$this->headers[$name] = $value;
@@ -117,7 +117,7 @@ trait CollectionsMethods
 	 * @param array $params
 	 * @return \MvcCore\Request|\MvcCore\IRequest
 	 */
-	public function & SetParams (array & $params = []) {
+	public function SetParams (array & $params = []) {
 		/** @var $this \MvcCore\Request */
 		$this->params = & $params;
 		return $this;
@@ -156,7 +156,7 @@ trait CollectionsMethods
 	 * @param string|string[] $value
 	 * @return \MvcCore\Request|\MvcCore\IRequest
 	 */
-	public function & SetParam ($name = '', $value = '') {
+	public function SetParam ($name = '', $value = '') {
 		/** @var $this \MvcCore\Request */
 		if ($this->params === NULL) $this->initParams();
 		$this->params[$name] = $value;
@@ -168,7 +168,7 @@ trait CollectionsMethods
 	 * @param string $name
 	 * @return \MvcCore\Request|\MvcCore\IRequest
 	 */
-	public function & RemoveParam ($name = '') {
+	public function RemoveParam ($name = '') {
 		/** @var $this \MvcCore\Request */
 		if ($this->params === NULL) $this->initParams();
 		unset($this->params[$name]);
@@ -214,7 +214,7 @@ trait CollectionsMethods
 	 * @param array $files
 	 * @return \MvcCore\Request|\MvcCore\IRequest
 	 */
-	public function & SetFiles (array & $files = []) {
+	public function SetFiles (array & $files = []) {
 		/** @var $this \MvcCore\Request */
 		$this->globalFiles = & $files;
 		return $this;
@@ -235,7 +235,7 @@ trait CollectionsMethods
 	 * @param array $data
 	 * @return \MvcCore\Request|\MvcCore\IRequest
 	 */
-	public function & SetFile ($file = '', $data = []) {
+	public function SetFile ($file = '', $data = []) {
 		/** @var $this \MvcCore\Request */
 		$this->globalFiles[$file] = $data;
 		return $this;
@@ -268,7 +268,7 @@ trait CollectionsMethods
 	 * @param array $cookies
 	 * @return \MvcCore\Request|\MvcCore\IRequest
 	 */
-	public function & SetCookies (array & $cookies = []) {
+	public function SetCookies (array & $cookies = []) {
 		/** @var $this \MvcCore\Request */
 		$this->globalCookies = & $cookies;
 		return $this;
@@ -305,7 +305,7 @@ trait CollectionsMethods
 	 * @param string|string[] $value
 	 * @return \MvcCore\Request|\MvcCore\IRequest
 	 */
-	public function & SetCookie ($name = "", $value = "") {
+	public function SetCookie ($name = "", $value = "") {
 		/** @var $this \MvcCore\Request */
 		$this->globalCookies[$name] = $value;
 		return $this;

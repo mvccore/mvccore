@@ -38,7 +38,7 @@ trait Instancing
 	) {
 		if (!func_get_args()) 
 			list($server, $get, $post, $cookie, $files) = [& $_SERVER, & $_GET, & $_POST, & $_COOKIE, & $_FILES];
-		$app = self::$app ?: (self::$app = & \MvcCore\Application::GetInstance());
+		$app = self::$app ?: (self::$app = \MvcCore\Application::GetInstance());
 		$requestClass = $app->GetRequestClass();
 		return new $requestClass($server, $get, $post, $cookie, $files);
 	}
@@ -64,7 +64,7 @@ trait Instancing
 		array & $cookie = [],
 		array & $files = []
 	) {
-		$app = self::$app ?: (self::$app = & \MvcCore\Application::GetInstance());
+		$app = self::$app ?: (self::$app = \MvcCore\Application::GetInstance());
 		self::$routerClass = self::$routerClass ?: $app->GetRouterClass();
 		$this->globalServer = & $server;
 		$this->globalGet = & $get;
@@ -82,7 +82,7 @@ trait Instancing
 	 * what could be inside request after calling any getter method.
 	 * @return \MvcCore\Request|\MvcCore\IRequest
 	 */
-	public function & InitAll () {
+	public function InitAll () {
 		/** @var $this \MvcCore\Request */
 		$this->GetScriptName();
 		$this->GetAppRoot();

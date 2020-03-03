@@ -19,7 +19,7 @@ trait GettersSetters
 	 * Add exceptional two-segment top-level domain like
 	 * `'co.jp', 'co.uk', 'co.kr', 'co.nf' ...` to parse
 	 * domain string correctly.
-	 * Example: 
+	 * Example:
 	 * `\MvcCore\Request::AddTwoSegmentTlds('co.uk', 'co.jp');`
 	 * `\MvcCore\Request::AddTwoSegmentTlds(['co.uk', 'co.jp']);`
 	 * @param \string[] $twoSegmentTlds,... List of two-segment top-level domains without leading dot.
@@ -59,13 +59,13 @@ trait GettersSetters
 	 * @param string $controllerName
 	 * @return \MvcCore\Request|\MvcCore\IRequest
 	 */
-	public function & SetControllerName ($controllerName) {
+	public function SetControllerName ($controllerName) {
 		/** @var $this \MvcCore\Request */
 		$this->controllerName = $controllerName;
 		$routerClass = self::$routerClass;
-		$router = & $routerClass::GetInstance();
+		$router = $routerClass::GetInstance();
 		$this->params[$router::URL_PARAM_CONTROLLER] = $controllerName;
-		
+
 		return $this;
 	}
 
@@ -76,8 +76,8 @@ trait GettersSetters
 	public function GetControllerName () {
 		if ($this->controllerName === NULL) {
 			$routerClass = self::$routerClass;
-			$router = & $routerClass::GetInstance();
-			if (isset($this->globalGet[$router::URL_PARAM_CONTROLLER])) 
+			$router = $routerClass::GetInstance();
+			if (isset($this->globalGet[$router::URL_PARAM_CONTROLLER]))
 				$this->controllerName = $this->GetParam($router::URL_PARAM_CONTROLLER, 'a-zA-Z0-9\-_/', '', 'string');
 		}
 		return $this->controllerName;
@@ -89,11 +89,11 @@ trait GettersSetters
 	 * @param string $actionName
 	 * @return \MvcCore\Request|\MvcCore\IRequest
 	 */
-	public function & SetActionName ($actionName) {
+	public function SetActionName ($actionName) {
 		/** @var $this \MvcCore\Request */
 		$this->actionName = $actionName;
 		$routerClass = self::$routerClass;
-		$router = & $routerClass::GetInstance();
+		$router = $routerClass::GetInstance();
 		$this->params[$router::URL_PARAM_ACTION] = $actionName;
 		return $this;
 	}
@@ -105,15 +105,15 @@ trait GettersSetters
 	public function GetActionName () {
 		if ($this->actionName === NULL) {
 			$routerClass = self::$routerClass;
-			$router = & $routerClass::GetInstance();
-			if (isset($this->globalGet[$router::URL_PARAM_ACTION])) 
+			$router = $routerClass::GetInstance();
+			if (isset($this->globalGet[$router::URL_PARAM_ACTION]))
 				$this->actionName = $this->GetParam($router::URL_PARAM_ACTION, 'a-zA-Z0-9\-_', '', 'string');
 		}
 		return $this->actionName;
 	}
 
 	/**
-	 * `TRUE` if PHP `php_sapi_name()` is `cli` and also 
+	 * `TRUE` if PHP `php_sapi_name()` is `cli` and also
 	 * if there is no `$_SERVER['REQUEST_URI']` defined.
 	 * @return bool
 	 */
@@ -127,7 +127,7 @@ trait GettersSetters
 	 * Example: `"en" | "de"`
 	 * @var string|NULL
 	 */
-	public function & SetLang ($lang) {
+	public function SetLang ($lang) {
 		$this->lang = $lang;
 		return $this;
 	}
@@ -150,7 +150,7 @@ trait GettersSetters
 	 * Example: `"US" | "UK"`
 	 * @var string|NULL
 	 */
-	public function & SetLocale ($locale) {
+	public function SetLocale ($locale) {
 		$this->locale = $locale;
 		return $this;
 	}
@@ -173,7 +173,7 @@ trait GettersSetters
 	 * Example: `"full" | "tablet" | "mobile"`
 	 * @var string|NULL
 	 */
-	public function & SetMediaSiteVersion ($mediaSiteVersion) {
+	public function SetMediaSiteVersion ($mediaSiteVersion) {
 		$this->mediaSiteVersion = $mediaSiteVersion;
 		return $this;
 	}
@@ -211,7 +211,7 @@ trait GettersSetters
 			$this->$prop = isset($arguments[0]) ? $arguments[0] : NULL;
 			return $this;
 		} else {
-			$selfClass = version_compare(PHP_VERSION, '5.5', '>') ? self::class : __CLASS__;
+			$selfClass = \PHP_VERSION_ID >= 50500 ? self::class : __CLASS__;
 			throw new \InvalidArgumentException('['.$selfClass."] No property with name '$prop' defined.");
 		}
 	}
@@ -279,7 +279,7 @@ trait GettersSetters
 	 * @param string $rawMethod
 	 * @return \MvcCore\Request|\MvcCore\IRequest
 	 */
-	public function & SetMethod ($rawMethod) {
+	public function SetMethod ($rawMethod) {
 		/** @var $this \MvcCore\Request */
 		$this->method = $rawMethod;
 		return $this;
@@ -306,7 +306,7 @@ trait GettersSetters
 	 * @param string $rawBasePath
 	 * @return \MvcCore\Request|\MvcCore\IRequest
 	 */
-	public function & SetBasePath ($rawBasePath) {
+	public function SetBasePath ($rawBasePath) {
 		/** @var $this \MvcCore\Request */
 		$this->basePath = $rawBasePath;
 		$this->baseUrl = NULL;
@@ -334,7 +334,7 @@ trait GettersSetters
 	 * @param string $rawProtocol
 	 * @return \MvcCore\Request|\MvcCore\IRequest
 	 */
-	public function & SetScheme ($rawProtocol) {
+	public function SetScheme ($rawProtocol) {
 		/** @var $this \MvcCore\Request */
 		$this->scheme = $rawProtocol;
 		$this->domainUrl = NULL;
@@ -366,7 +366,7 @@ trait GettersSetters
 	 * @return bool
 	 */
 	public function IsSecure () {
-		if ($this->secure === NULL) 
+		if ($this->secure === NULL)
 			$this->secure = in_array($this->GetScheme(), [
 				static::SCHEME_HTTPS,
 				static::SCHEME_FTPS,
@@ -399,7 +399,7 @@ trait GettersSetters
 	}
 
 	/**
-	 * Get timestamp in seconds as float, when the request has been started, 
+	 * Get timestamp in seconds as float, when the request has been started,
 	 * with microsecond precision.
 	 * @return float
 	 */
@@ -411,15 +411,15 @@ trait GettersSetters
 	/**
 	 * Set TOP level domain like `com` or `co.uk`.
 	 * Method also change server name and host record automatically.
-	 * @param string|NULL $topLevelDomain 
+	 * @param string|NULL $topLevelDomain
 	 * @return \MvcCore\Request|\MvcCore\IRequest
 	 */
-	public function & SetTopLevelDomain ($topLevelDomain) {
+	public function SetTopLevelDomain ($topLevelDomain) {
 		/** @var $this \MvcCore\Request */
 		if ($this->domainParts === NULL) $this->initDomainSegments();
 		$this->domainParts[2] = $topLevelDomain;
 		$this->hostName = trim(implode('.', $this->domainParts), '.');
-		if ($this->hostName && $this->portDefined) 
+		if ($this->hostName && $this->portDefined)
 			$this->host = $this->hostName . ':' . $this->port;
 		$this->domainUrl = NULL;
 		$this->baseUrl = NULL;
@@ -427,7 +427,7 @@ trait GettersSetters
 		$this->fullUrl = NULL;
 		return $this;
 	}
-	
+
 	/**
 	 * Set top level domain like `com` from `www.example.com`.
 	 * @return string|NULL
@@ -436,19 +436,19 @@ trait GettersSetters
 		if ($this->domainParts === NULL) $this->initDomainSegments();
 		return $this->domainParts[2];
 	}
-	
+
 	/**
 	 * Set second level domain like `example` in `www.example.com`.
 	 * Method also change server name and host record automatically.
-	 * @param string|NULL $secondLevelDomain 
+	 * @param string|NULL $secondLevelDomain
 	 * @return \MvcCore\Request|\MvcCore\IRequest
 	 */
-	public function & SetSecondLevelDomain ($secondLevelDomain) {
+	public function SetSecondLevelDomain ($secondLevelDomain) {
 		/** @var $this \MvcCore\Request */
 		if ($this->domainParts === NULL) $this->initDomainSegments();
 		$this->domainParts[1] = $secondLevelDomain;
 		$this->hostName = trim(implode('.', $this->domainParts), '.');
-		if ($this->hostName && $this->portDefined) 
+		if ($this->hostName && $this->portDefined)
 			$this->host = $this->hostName . ':' . $this->port;
 		$this->domainUrl = NULL;
 		$this->baseUrl = NULL;
@@ -456,7 +456,7 @@ trait GettersSetters
 		$this->fullUrl = NULL;
 		return $this;
 	}
-	
+
 	/**
 	 * Get second level domain like `example` in `www.example.com`.
 	 * @return string|NULL
@@ -465,19 +465,19 @@ trait GettersSetters
 		if ($this->domainParts === NULL) $this->initDomainSegments();
 		return isset($this->domainParts[1]) ? $this->domainParts[1] : NULL;
 	}
-	
+
 	/**
 	 * Set second level domain like `example` from `www.example.com`.
 	 * Method also change server name and host record automatically.
-	 * @param string|NULL $thirdLevelDomain 
+	 * @param string|NULL $thirdLevelDomain
 	 * @return \MvcCore\Request|\MvcCore\IRequest
 	 */
-	public function & SetThirdLevelDomain ($thirdLevelDomain) {
+	public function SetThirdLevelDomain ($thirdLevelDomain) {
 		/** @var $this \MvcCore\Request */
 		if ($this->domainParts === NULL) $this->initDomainSegments();
 		$this->domainParts[0] = $thirdLevelDomain;
 		$this->hostName = trim(implode('.', $this->domainParts), '.');
-		if ($this->hostName && $this->portDefined) 
+		if ($this->hostName && $this->portDefined)
 			$this->host = $this->hostName . ':' . $this->port;
 		$this->domainUrl = NULL;
 		$this->baseUrl = NULL;
@@ -485,7 +485,7 @@ trait GettersSetters
 		$this->fullUrl = NULL;
 		return $this;
 	}
-	
+
 	/**
 	 * Get third level domain like `www` from `www.example.com`.
 	 * @return string|NULL
@@ -502,7 +502,7 @@ trait GettersSetters
 	 * @param string $rawHostName
 	 * @return \MvcCore\Request|\MvcCore\IRequest
 	 */
-	public function & SetHostName ($rawHostName) {
+	public function SetHostName ($rawHostName) {
 		/** @var $this \MvcCore\Request */
 		if ($this->hostName !== $rawHostName) $this->domainParts = NULL;
 		$this->hostName = $rawHostName;
@@ -510,7 +510,7 @@ trait GettersSetters
 		$this->baseUrl = NULL;
 		$this->requestUrl = NULL;
 		$this->fullUrl = NULL;
-		if ($rawHostName && $this->portDefined) 
+		if ($rawHostName && $this->portDefined)
 			$this->host = $rawHostName . ':' . $this->port;
 		return $this;
 	}
@@ -521,7 +521,7 @@ trait GettersSetters
 	 * @return string
 	 */
 	public function GetHostName () {
-		if ($this->hostName === NULL) 
+		if ($this->hostName === NULL)
 			$this->hostName = $this->globalServer['SERVER_NAME'];
 		return $this->hostName;
 	}
@@ -533,7 +533,7 @@ trait GettersSetters
 	 * @param string $rawHost
 	 * @return \MvcCore\Request
 	 */
-	public function & SetHost ($rawHost) {
+	public function SetHost ($rawHost) {
 		$this->host = $rawHost;
 		$this->domainUrl = NULL;
 		$this->baseUrl = NULL;
@@ -568,7 +568,7 @@ trait GettersSetters
 	 * @param string $rawPort
 	 * @return \MvcCore\Request|\MvcCore\IRequest
 	 */
-	public function & SetPort ($rawPort) {
+	public function SetPort ($rawPort) {
 		/** @var $this \MvcCore\Request */
 		$this->port = $rawPort;
 		$this->domainUrl = NULL;
@@ -602,7 +602,7 @@ trait GettersSetters
 	 * @param string $rawPathValue
 	 * @return \MvcCore\Request|\MvcCore\IRequest
 	 */
-	public function & SetPath ($rawPathValue) {
+	public function SetPath ($rawPathValue) {
 		/** @var $this \MvcCore\Request */
 		$this->path = $rawPathValue;
 		$this->requestUrl = NULL;
@@ -618,7 +618,7 @@ trait GettersSetters
 	 * @return string
 	 */
 	public function GetPath ($rawInput = FALSE) {
-		if ($this->path === NULL) 
+		if ($this->path === NULL)
 			$this->initUrlSegments();
 		return $rawInput ? $this->path : static::HtmlSpecialChars($this->path);
 	}
@@ -629,7 +629,7 @@ trait GettersSetters
 	 * @param string $rawQuery
 	 * @return \MvcCore\Request|\MvcCore\IRequest
 	 */
-	public function & SetQuery ($rawQuery) {
+	public function SetQuery ($rawQuery) {
 		/** @var $this \MvcCore\Request */
 		$this->query = ltrim($rawQuery, '?');
 		$this->fullUrl = NULL;
@@ -649,7 +649,7 @@ trait GettersSetters
 	 * @return string
 	 */
 	public function GetQuery ($withQuestionMark = FALSE, $rawInput = FALSE) {
-		if ($this->query === NULL) 
+		if ($this->query === NULL)
 			$this->initUrlSegments();
 		$result = ($withQuestionMark && mb_strlen($this->query) > 0)
 			? '?' . $this->query
@@ -676,7 +676,7 @@ trait GettersSetters
 	 * @return string
 	 */
 	public function GetDomainUrl () {
-		if ($this->domainUrl === NULL) 
+		if ($this->domainUrl === NULL)
 			$this->domainUrl = $this->GetScheme() . '//' . $this->GetHost();
 		return $this->domainUrl;
 	}
@@ -687,7 +687,7 @@ trait GettersSetters
 	 * @return string
 	 */
 	public function GetBaseUrl () {
-		if ($this->baseUrl === NULL) 
+		if ($this->baseUrl === NULL)
 			$this->baseUrl = $this->GetDomainUrl() . $this->GetBasePath();
 		return $this->baseUrl;
 	}
@@ -699,7 +699,7 @@ trait GettersSetters
 	 * @return string
 	 */
 	public function GetRequestUrl ($rawInput = FALSE) {
-		if ($this->requestUrl === NULL) 
+		if ($this->requestUrl === NULL)
 			$this->requestUrl = $this->GetBaseUrl() . $this->GetPath(TRUE);
 		return $rawInput ? $this->requestUrl : $this->HtmlSpecialChars($this->requestUrl);
 	}
@@ -711,7 +711,7 @@ trait GettersSetters
 	 * @return string
 	 */
 	public function GetFullUrl ($rawInput = FALSE) {
-		if ($this->fullUrl === NULL) 
+		if ($this->fullUrl === NULL)
 			$this->fullUrl = $this->GetRequestUrl(TRUE) . $this->GetQuery(TRUE, TRUE) . $this->GetFragment(TRUE, TRUE);
 		return $rawInput ? $this->fullUrl : static::HtmlSpecialChars($this->fullUrl);
 	}
@@ -728,7 +728,7 @@ trait GettersSetters
 	 * @return string
 	 */
 	public function GetFragment ($withHash = FALSE, $rawInput = FALSE) {
-		if ($this->fragment === NULL) 
+		if ($this->fragment === NULL)
 			$this->initUrlSegments();
 		$result = ($withHash && mb_strlen($this->fragment) > 0)
 			? '?' . $this->fragment
@@ -801,7 +801,7 @@ trait GettersSetters
 	/**
 	 * Convert special characters to HTML entities except ampersand `&`.
 	 * @see http://php.net/manual/en/function.htmlspecialchars.php
-	 * @param string $str 
+	 * @param string $str
 	 * @return string
 	 */
 	public static function HtmlSpecialChars ($str) {

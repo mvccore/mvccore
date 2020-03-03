@@ -266,7 +266,7 @@ interface IRequest
 	 * @param array $headers
 	 * @return \MvcCore\IRequest
 	 */
-	public function & SetHeaders (array & $headers = []);
+	public function SetHeaders (array & $headers = []);
 
 	/**
 	 * Get directly all raw http headers at once (with/without conversion).
@@ -287,7 +287,7 @@ interface IRequest
 	 * @param string|string[] $value
 	 * @return \MvcCore\IRequest
 	 */
-	public function & SetHeader ($name = '', $value = '');
+	public function SetHeader ($name = '', $value = '');
 
 	/**
 	 * Get http header value filtered by "rule to keep defined characters only",
@@ -321,7 +321,7 @@ interface IRequest
 	 * @param array $params
 	 * @return \MvcCore\IRequest
 	 */
-	public function & SetParams (array & $params = []);
+	public function SetParams (array & $params = []);
 
 	/**
 	 * Get directly all raw parameters at once (with/without conversion).
@@ -339,14 +339,14 @@ interface IRequest
 	 * @param string|string[] $value
 	 * @return \MvcCore\IRequest
 	 */
-	public function & SetParam ($name = '', $value = '');
+	public function SetParam ($name = '', $value = '');
 
 	/**
 	 * Remove parameter by name.
 	 * @param string $name
 	 * @return \MvcCore\IRequest
 	 */
-	public function & RemoveParam ($name = '');
+	public function RemoveParam ($name = '');
 
 	/**
 	 * Get param value from `$_GET`, `$_POST` or `php://input`, filtered by
@@ -379,7 +379,7 @@ interface IRequest
 	 * @param array $files
 	 * @return \MvcCore\IRequest
 	 */
-	public function & SetFiles (array & $files = []);
+	public function SetFiles (array & $files = []);
 
 	/**
 	 * Return reference to configured global `$_FILES`
@@ -394,7 +394,7 @@ interface IRequest
 	 * @param array $data
 	 * @return \MvcCore\IRequest
 	 */
-	public function & SetFile ($file = '', $data = []);
+	public function SetFile ($file = '', $data = []);
 
 	/**
 	 * Return item by file name from referenced global `$_FILES`
@@ -417,7 +417,7 @@ interface IRequest
 	 * @param array $cookies
 	 * @return \MvcCore\IRequest
 	 */
-	public function & SetCookies (array & $cookies = []);
+	public function SetCookies (array & $cookies = []);
 
 	/**
 	 * Get directly all raw global `$_COOKIE`s at once (with/without conversion).
@@ -434,7 +434,7 @@ interface IRequest
 	 * @param string|string[] $value
 	 * @return \MvcCore\IRequest
 	 */
-	public function & SetCookie ($name = '', $value = '');
+	public function SetCookie ($name = '', $value = '');
 
 	/**
 	 * Get request cookie value from referenced global `$_COOKIE` variable,
@@ -470,7 +470,7 @@ interface IRequest
 	 * what could be inside request after calling any getter method.
 	 * @return \MvcCore\IRequest
 	 */
-	public function & InitAll ();
+	public function InitAll ();
 
 	/**
 	 * Return `TRUE` boolean flag if request targets `Controller:Asset`.
@@ -484,7 +484,7 @@ interface IRequest
 	 * @param string $controllerName
 	 * @return \MvcCore\IRequest
 	 */
-	public function & SetControllerName ($controllerName);
+	public function SetControllerName ($controllerName);
 
 	/**
 	 * Return cleaned requested controller name from `\MvcCore\Request::$params['controller'];`.
@@ -498,7 +498,7 @@ interface IRequest
 	 * @param string $actionName
 	 * @return \MvcCore\IRequest
 	 */
-	public function & SetActionName ($actionName);
+	public function SetActionName ($actionName);
 
 	/**
 	 * Return cleaned requested action name from `\MvcCore\Request::$params['action'];`.
@@ -519,7 +519,7 @@ interface IRequest
 	 * Example: `"en" | "de"`
 	 * @var string|NULL
 	 */
-	public function & SetLang ($lang);
+	public function SetLang ($lang);
 
 	/**
 	 * Get language international code, lower case, not used by default.
@@ -536,7 +536,7 @@ interface IRequest
 	 * Example: `"US" | "UK"`
 	 * @var string|NULL
 	 */
-	public function & SetLocale ($locale);
+	public function SetLocale ($locale);
 
 	/**
 	 * Get country/locale code, upper case, not used by default.
@@ -553,7 +553,7 @@ interface IRequest
 	 * Example: `"full" | "tablet" | "mobile"`
 	 * @var string|NULL
 	 */
-	public function & SetMediaSiteVersion ($mediaSiteVersion);
+	public function SetMediaSiteVersion ($mediaSiteVersion);
 
 	/**
 	 * Get media site version - `"full" | "tablet" | "mobile"`.
@@ -614,7 +614,7 @@ interface IRequest
 	 * @param string $rawMethod
 	 * @return \MvcCore\IRequest
 	 */
-	public function & SetMethod ($rawMethod);
+	public function SetMethod ($rawMethod);
 
 	/**
 	 * Get upper cased http method from global `$_SERVER['REQUEST_METHOD']`.
@@ -632,7 +632,7 @@ interface IRequest
 	 * @param string $rawBasePath
 	 * @return \MvcCore\IRequest
 	 */
-	public function & SetBasePath ($rawBasePath);
+	public function SetBasePath ($rawBasePath);
 
 	/**
 	 * Get base app directory path after domain,
@@ -650,7 +650,7 @@ interface IRequest
 	 * @param string $rawProtocol
 	 * @return \MvcCore\IRequest
 	 */
-	public function & SetScheme ($rawProtocol);
+	public function SetScheme ($rawProtocol);
 
 	/**
 	 * Get http scheme string.
@@ -687,7 +687,7 @@ interface IRequest
 	 * @param string|NULL $topLevelDomain 
 	 * @return \MvcCore\IRequest
 	 */
-	public function & SetTopLevelDomain ($topLevelDomain);
+	public function SetTopLevelDomain ($topLevelDomain);
 	
 	/**
 	 * Set top level domain like `com` from `www.example.com`.
@@ -701,7 +701,7 @@ interface IRequest
 	 * @param string|NULL $secondLevelDomain 
 	 * @return \MvcCore\IRequest
 	 */
-	public function & SetSecondLevelDomain ($secondLevelDomain);
+	public function SetSecondLevelDomain ($secondLevelDomain);
 	
 	/**
 	 * Get second level domain like `example` in `www.example.com`.
@@ -715,7 +715,7 @@ interface IRequest
 	 * @param string|NULL $thirdLevelDomain 
 	 * @return \MvcCore\IRequest
 	 */
-	public function & SetThirdLevelDomain ($thirdLevelDomain);
+	public function SetThirdLevelDomain ($thirdLevelDomain);
 	
 	/**
 	 * Get third level domain like `www` from `www.example.com`.
@@ -730,7 +730,7 @@ interface IRequest
 	 * @param string $rawHostName
 	 * @return \MvcCore\IRequest
 	 */
-	public function & SetHostName ($rawHostName);
+	public function SetHostName ($rawHostName);
 
 	/**
 	 * Get application server name - domain without any port.
@@ -746,7 +746,7 @@ interface IRequest
 	 * @param string $rawHost
 	 * @return \MvcCore\IRequest
 	 */
-	public function & SetHost ($rawHost);
+	public function SetHost ($rawHost);
 
 	/**
 	 * Get application host with port if there is any.
@@ -762,7 +762,7 @@ interface IRequest
 	 * @param string $rawPort
 	 * @return \MvcCore\IRequest
 	 */
-	public function & SetPort ($rawPort);
+	public function SetPort ($rawPort);
 
 	/**
 	 * Get http port defined in requested URL if any, parsed by `parse_url().
@@ -778,7 +778,7 @@ interface IRequest
 	 * @param string $rawPathValue
 	 * @return \MvcCore\IRequest
 	 */
-	public function & SetPath ($rawPathValue);
+	public function SetPath ($rawPathValue);
 
 	/**
 	 * Get requested path in from application root (if `mod_rewrite` enabled), never with query string.
@@ -794,7 +794,7 @@ interface IRequest
 	 * @param string $rawQuery
 	 * @return \MvcCore\IRequest
 	 */
-	public function & SetQuery ($rawQuery);
+	public function SetQuery ($rawQuery);
 
 	/**
 	 * Get URL query string (without question mark character by default).
