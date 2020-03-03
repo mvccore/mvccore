@@ -284,14 +284,14 @@ interface IController
 	 * @return \MvcCore\IController
 	 */
 	public function SetLayout ($layout = '');
-	
+
 	/**
 	 * Get customized sub-controls template path value. `NULL` by default.
-	 * You need to set into this property any custom string as relative path to 
-	 * your template file placed somewhere in `/App/Views/Scripts/`. 
+	 * You need to set into this property any custom string as relative path to
+	 * your template file placed somewhere in `/App/Views/Scripts/`.
 	 * For example if you want to render template file placed in:
 	 * `/App/Views/Scripts/something/completely/custom.phtml`, you need to set
-	 * up this property to value `something/completely` and then there is 
+	 * up this property to value `something/completely` and then there is
 	 * necessary to render your template only by calling controller rendering by:
 	 * `$subcontrollerInstance->Render('custom');`
 	 * @return string|NULL
@@ -300,11 +300,11 @@ interface IController
 
 	/**
 	 * Get customized sub-controls template path value. `NULL` by default.
-	 * You need to set into this property any custom string as relative path to 
-	 * your template file placed somewhere in `/App/Views/Scripts/`. 
+	 * You need to set into this property any custom string as relative path to
+	 * your template file placed somewhere in `/App/Views/Scripts/`.
 	 * For example if you want to render template file placed in:
 	 * `/App/Views/Scripts/something/completely/custom.phtml`, you need to set
-	 * up this property to value `something/completely` and then there is 
+	 * up this property to value `something/completely` and then there is
 	 * necessary to render your template only by calling controller rendering by:
 	 * `$subcontrollerInstance->Render('custom');`
 	 * @param string|NULL $viewScriptsPath
@@ -313,9 +313,9 @@ interface IController
 	public function SetViewScriptsPath ($viewScriptsPath = NULL);
 
 	/**
-	 * Get `TRUE` if view is automatically created in base controller `PreDispatch()` 
-	 * method and if view is automatically rendered with wrapping layout view 
-	 * around after controller action is called. Or get `FALSE` if no view 
+	 * Get `TRUE` if view is automatically created in base controller `PreDispatch()`
+	 * method and if view is automatically rendered with wrapping layout view
+	 * around after controller action is called. Or get `FALSE` if no view
 	 * automatically rendered. Default value is `TRUE` for all non-ajax requests.
 	 * @return bool
 	 */
@@ -324,7 +324,7 @@ interface IController
 	/**
 	 * Set `TRUE` if view object will be automatically created in base controller
 	 * `PreDispatch()` method and if view will be automatically rendered with wrapping
-	 * layout view around after controller action is called. Or set `FALSE` 
+	 * layout view around after controller action is called. Or set `FALSE`
 	 * otherwise to not render any view. Default value is `TRUE` for all non-ajax requests.
 	 * @return \MvcCore\IController
 	 */
@@ -456,7 +456,7 @@ interface IController
 
 	/**
 	 * Serialize any PHP value into `JSON string`, wrap around prepared public
-	 * javascript function in target window sent as `$_GET` param under 
+	 * javascript function in target window sent as `$_GET` param under
 	 * variable `$callbackParamName` (allowed chars: `a-zA-Z0-9\.\-_\$`) and
 	 * store it inside `\MvcCore\Controller::$response` to send it
 	 * into client browser later in `\MvcCore\Application::GetInstance()->Terminate();`.

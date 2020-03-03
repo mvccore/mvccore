@@ -31,19 +31,37 @@ trait Rendering
 		if ($this->dispatchState == 0) $this->Init();
 		if ($this->dispatchState == 1) $this->PreDispatch();
 		if ($this->dispatchState < 4 && $this->viewEnabled) {
-			$currentCtrlIsTopMostParent = $this->parentController === NULL;
-			if (!$currentCtrlIsTopMostParent) {
+			$topMostParentCtrl = $this->parentController === NULL;
+			// if this is child controller - set up view store with parent controller view store
+			if (!$topMostParentCtrl)
 				$this->view->SetUpStore($this->parentController->GetView(), FALSE);
-			}
+			// set up child controllers into view if any of them is named by string index
 			foreach ($this->childControllers as $ctrlKey => $childCtrl) {
-				if (!is_numeric($ctrlKey) && !isset($this->view->$ctrlKey))
-					$this->view->$ctrlKey = $childCtrl;
+				if (!is_numeric($ctrlKey) && !isset($this->view->{$ctrlKey}))
+					$this->view->{$ctrlKey} = $childCtrl;
 			}
+
+			/*
+			if ($topMostParentCtrl) {
+				// render layout view and action view inside it:
+				$viewClass = $this->application->GetViewClass();
+				/ ** @var $layout \MvcCore\View * /
+				$layout = $viewClass::CreateInstance()
+					->SetController($this)
+					->SetUpStore($this->view, TRUE);
+				$layout->RenderLayoutAndContent($this->layout, $actionResult);
+			} else {
+				// render action view:
+
+			}
+			*/
+
+			
 			// complete paths
 			$viewScriptPath = $this->renderGetViewScriptPath($controllerOrActionNameDashed, $actionNameDashed);
-			// render content string
+			// render action view into string
 			$actionResult = $this->view->RenderScript($viewScriptPath);
-			if ($currentCtrlIsTopMostParent) {
+			if ($topMostParentCtrl) {
 				// create top most parent layout view, set up and render to outputResult
 				$viewClass = $this->application->GetViewClass();
 				/** @var $layout \MvcCore\View */
@@ -59,6 +77,8 @@ trait Rendering
 				$this->dispatchState = 4;
 				return $actionResult;
 			}
+
+			
 		}
 		$this->dispatchState = 4;
 		return '';
@@ -144,7 +164,7 @@ trait Rendering
 
 	/**
 	 * Serialize any PHP value into `JSON string`, wrap around prepared public
-	 * javascript function in target window sent as `$_GET` param under 
+	 * javascript function in target window sent as `$_GET` param under
 	 * variable `$callbackParamName` (allowed chars: `a-zA-Z0-9\.\-_\$`) and
 	 * store it inside `\MvcCore\Controller::$response` to send it
 	 * into client browser later in `\MvcCore\Application::GetInstance()->Terminate();`.
@@ -223,7 +243,7 @@ trait Rendering
 			} else {
 				// if controller is child controller - translate class name
 				// without default controllers directory into dashed name
-				$ctrlsDefaultNamespace = $this->application->GetAppDir() . '\\' 
+				$ctrlsDefaultNamespace = $this->application->GetAppDir() . '\\'
 					. $this->application->GetControllersDir();
 				$currentCtrlClassName = get_class($this);
 				if (mb_strpos($currentCtrlClassName, $ctrlsDefaultNamespace) === 0)

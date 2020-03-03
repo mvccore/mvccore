@@ -51,6 +51,23 @@ namespace MvcCore;
 interface IView
 {
 	/**
+	 * Default rendering mode. 
+	 * Render action view first and than wrap rendered layout view around it.
+	 * After rendering, set the content into response and send it at the end.
+	 * @var int
+	 */
+	const RENDER_ACTION_FIRST = 0b01;
+
+	/**
+	 * Special rendering mode to continuously send content directly to client.
+	 * Start to render layout view and render action view continuously inside it.
+	 * There is not used reponse object body property for this rendering mode.
+	 * Http headers are send before view rendering.
+	 * @var int
+	 */
+	const RENDER_LAYOUT_FIRST = 0b10;
+
+	/**
 	 * View output document type HTML4.
 	 * @var string
 	 */
@@ -218,10 +235,10 @@ interface IView
 	 * @return string
 	 */
 	public static function GetViewScriptFullPath ($typePath = '', $corectedRelativePath = '');
-	
+
 	/**
 	 * This is INTERNAL method, do not use it in templates.
-	 * Method is always called in the most parent controller 
+	 * Method is always called in the most parent controller
 	 * `\MvcCore\Controller:PreDispatch()` moment when view instance is created.
 	 * Method sets controller instance into view.
 	 * @param \MvcCore\IController $controller
@@ -237,7 +254,7 @@ interface IView
 
 	/**
 	 * This is INTERNAL method, do not use it in templates.
-	 * Method is always called in the most parent controller 
+	 * Method is always called in the most parent controller
 	 * `\MvcCore\Controller:Render()` moment when view is rendered.
 	 * Set up all from given view object variables store into current store,
 	 * if there is any already existing key - overwrite it.
@@ -245,7 +262,7 @@ interface IView
 	 * @param bool $overwriteExistingKeys If any property name already exist in view store, overwrite it by given value by default.
 	 * @return \MvcCore\IView
 	 */
-	public function SetUpStore (\MvcCore\IView & $view, $overwriteExistingKeys = TRUE);
+	public function SetUpStore (\MvcCore\IView $view, $overwriteExistingKeys = TRUE);
 
 	/**
 	 * Return rendered action template content as string reference.
@@ -398,7 +415,7 @@ interface IView
 
 	/**
 	 * Get any value by given name existing in local store. If there is no value
-	 * in local store by given name, try to get result value into store by 
+	 * in local store by given name, try to get result value into store by
 	 * controller reflection class from controller instance property.
 	 * @param string $name
 	 * @return mixed
@@ -406,7 +423,7 @@ interface IView
 	public function __get ($name);
 
 	/**
-	 * Get `TRUE` if any value by given name exists in 
+	 * Get `TRUE` if any value by given name exists in
 	 * local view store or in local controller instance.
 	 * @param string $name
 	 * @return bool

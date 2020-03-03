@@ -80,6 +80,15 @@ trait PropsGettersSetters
 	protected $view = NULL;
 
 	/**
+	 * Default rendering mode.
+	 * Render action view first and than wrap rendered layout view around it.
+	 * After rendering, set the content into response and send it at the end.
+	 * @var int
+	 */
+	protected $renderMode = \MvcCore\IView::RENDER_ACTION_FIRST;
+	//protected $renderMode = \MvcCore\IView::RENDER_LAYOUT_FIRST;
+
+	/**
 	 * Layout name to render html wrapper around rendered action view.
 	 * @var string
 	 */
@@ -87,11 +96,11 @@ trait PropsGettersSetters
 
 	/**
 	 * This property is to customize sub-controls template path. `NULL` by default.
-	 * You need to set into this property any custom string as relative path to 
-	 * your template file placed somewhere in `/App/Views/Scripts/`. 
+	 * You need to set into this property any custom string as relative path to
+	 * your template file placed somewhere in `/App/Views/Scripts/`.
 	 * For example if you want to render template file placed in:
 	 * `/App/Views/Scripts/something/completely/custom.phtml`, you need to set
-	 * up this property to value `something/completely` and then there is 
+	 * up this property to value `something/completely` and then there is
 	 * necessary to render your template only by calling controller rendering by:
 	 * `$subcontrollerInstance->Render('custom');`
 	 * @var string|NULL
@@ -174,7 +183,7 @@ trait PropsGettersSetters
 		'otf'	=> 'font/opentype',
 		'woff'	=> 'application/x-font-woff',
 	];
-	
+
 
 	/**
 	 * Get param value from `$_GET`, `$_POST` or `php://input`, filtered by
@@ -355,11 +364,11 @@ trait PropsGettersSetters
 
 	/**
 	 * Get customized sub-controls template path value. `NULL` by default.
-	 * You need to set into this property any custom string as relative path to 
-	 * your template file placed somewhere in `/App/Views/Scripts/`. 
+	 * You need to set into this property any custom string as relative path to
+	 * your template file placed somewhere in `/App/Views/Scripts/`.
 	 * For example if you want to render template file placed in:
 	 * `/App/Views/Scripts/something/completely/custom.phtml`, you need to set
-	 * up this property to value `something/completely` and then there is 
+	 * up this property to value `something/completely` and then there is
 	 * necessary to render your template only by calling controller rendering by:
 	 * `$subcontrollerInstance->Render('custom');`
 	 * @return string|NULL
@@ -370,11 +379,11 @@ trait PropsGettersSetters
 
 	/**
 	 * Get customized sub-controls template path value. `NULL` by default.
-	 * You need to set into this property any custom string as relative path to 
-	 * your template file placed somewhere in `/App/Views/Scripts/`. 
+	 * You need to set into this property any custom string as relative path to
+	 * your template file placed somewhere in `/App/Views/Scripts/`.
 	 * For example if you want to render template file placed in:
 	 * `/App/Views/Scripts/something/completely/custom.phtml`, you need to set
-	 * up this property to value `something/completely` and then there is 
+	 * up this property to value `something/completely` and then there is
 	 * necessary to render your template only by calling controller rendering by:
 	 * `$subcontrollerInstance->Render('custom');`
 	 * @param string|NULL $viewScriptsPath
@@ -386,9 +395,9 @@ trait PropsGettersSetters
 	}
 
 	/**
-	 * Get `TRUE` if view is automatically created in base controller `PreDispatch()` 
-	 * method and if view is automatically rendered with wrapping layout view 
-	 * around after controller action is called. Or get `FALSE` if no view 
+	 * Get `TRUE` if view is automatically created in base controller `PreDispatch()`
+	 * method and if view is automatically rendered with wrapping layout view
+	 * around after controller action is called. Or get `FALSE` if no view
 	 * automatically rendered. Default value is `TRUE` for all non-ajax requests.
 	 * @return bool
 	 */
@@ -399,7 +408,7 @@ trait PropsGettersSetters
 	/**
 	 * Set `TRUE` if view object will be automatically created in base controller
 	 * `PreDispatch()` method and if view will be automatically rendered with wrapping
-	 * layout view around after controller action is called. Or set `FALSE` 
+	 * layout view around after controller action is called. Or set `FALSE`
 	 * otherwise to not render any view. Default value is `TRUE` for all non-ajax requests.
 	 * @return \MvcCore\Controller|\MvcCore\Controller\PropsGettersSetters
 	 */

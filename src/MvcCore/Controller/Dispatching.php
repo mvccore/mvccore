@@ -103,7 +103,10 @@ trait Dispatching
 	 * @return void
 	 */
 	public function Dispatch ($actionName = "IndexAction") {
-		ob_start();
+		/** @var $this \MvcCore\Controller */
+		if (($this->renderMode & \MvcCore\IView::RENDER_ACTION_FIRST) != 0)
+			ob_start();
+
 		// \MvcCore\Debug::Timer('dispatch');
 		$actionNameStart = $this->actionName;
 
@@ -177,6 +180,7 @@ trait Dispatching
 	 * @return void
 	 */
 	protected function processAutoInitProperties () {
+		/** @var $this \MvcCore\Controller */
 		$type = new \ReflectionClass($this);
 		/** @var $props \ReflectionProperty[] */
 		$props = $type->getProperties(
@@ -185,9 +189,11 @@ trait Dispatching
 			\ReflectionProperty::IS_PRIVATE
 		);
 		$toolsClass = $this->application->GetToolClass();
+		$phpWithTypes = PHP_VERSION_ID >= 70400;
 		foreach ($props as $prop) {
 			$docComment = $prop->getDocComment();
-			if (mb_strpos($docComment, '@autoinit') === FALSE) continue;
+			if (mb_strpos($docComment, '@autoinit') === FALSE)
+				continue;
 			$propName = $prop->getName();
 			$methodName = 'create' . ucfirst($propName);
 			$hasMethod = $type->hasMethod($methodName);
@@ -201,18 +207,32 @@ trait Dispatching
 				$instance = $method->invoke($this);
 				$implementsController = $instance instanceof \MvcCore\IController;
 			} else {
-				$pos = mb_strpos($docComment, '@var ');
-				if ($pos === FALSE) continue;
-				$docComment = str_replace(["\r","\n","\t", "*/"], " ", mb_substr($docComment, $pos + 5));
-				$pos = mb_strpos($docComment, ' ');
-				if ($pos === FALSE) continue;
-				$className = trim(mb_substr($docComment, 0, $pos));
+				$className = NULL;
+				if ($phpWithTypes && $prop->hasType()) {
+					$refType = $prop->getType();
+					if ($refType !== NULL)
+						$className = $refType->getName();
+				} else {
+					$pos = mb_strpos($docComment, '@var ');
+					if ($pos !== FALSE) {
+						$docComment = str_replace(["\r","\n","\t", "*/"], " ", mb_substr($docComment, $pos + 5));
+						$pos = mb_strpos($docComment, ' ');
+						if ($pos === FALSE) {
+							$className = trim(mb_substr($docComment, 0, $pos));
+							$pos = mb_strpos($className, '|');
+							if ($pos !== FALSE)
+								$className = mb_substr($className, 0, $pos);
+						}
+					}
+				}
+				if ($className === NULL)
+					continue;
 				if (!@class_exists($className)) {
 					$className = $prop->getDeclaringClass()->getNamespaceName() . '\\' . $className;
 					if (!@class_exists($className)) continue;
 				}
 				$implementsController = $toolsClass::CheckClassInterface(
-					$className, 'MvcCore\IController', FALSE, FALSE
+					$className, 'MvcCore\\IController', FALSE, FALSE
 				);
 				if ($implementsController) {
 					$instance = $className::CreateInstance();
