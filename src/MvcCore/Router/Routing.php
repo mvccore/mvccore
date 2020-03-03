@@ -71,7 +71,7 @@ trait Routing
 		$toolClass = self::$toolClass;
 		$ctrlNameDc = NULL;
 		$actionNameDc = NULL;
-		$currentRoute = & $this->currentRoute;
+		$currentRoute = $this->currentRoute;
 		$currentRouteMatched = $currentRoute instanceof \MvcCore\IRoute;
 		$matchedParams = $currentRouteMatched ? $currentRoute->GetMatchedParams() : [];
 		$controllerNamePcNotNull = $controllerNamePc !== NULL;
@@ -156,10 +156,10 @@ trait Routing
 	 * @param bool $fallbackCall `FALSE` by default. If `TRUE`, this function is called from error rendering fallback, self route name is not changed.
 	 * @return \MvcCore\Route|\MvcCore\IRoute
 	 */
-	public function & SetOrCreateDefaultRouteAsCurrent ($routeName, $controllerPc, $actionPc, $fallbackCall = FALSE) {
+	public function SetOrCreateDefaultRouteAsCurrent ($routeName, $controllerPc, $actionPc, $fallbackCall = FALSE) {
 		$controllerPc = strtr($controllerPc, '/', '\\');
 		$ctrlActionRouteName = $controllerPc.':'. $actionPc;
-		$request = & $this->request;
+		$request = $this->request;
 		if (isset($this->routes[$ctrlActionRouteName])) {
 			$defaultRoute = $this->routes[$ctrlActionRouteName];
 		} else if (isset($this->routes[$routeName])) {
@@ -211,7 +211,7 @@ trait Routing
 	 * @return array
 	 */
 	protected function routeDetectStrategy () {
-		$request = & $this->request;
+		$request = $this->request;
 		$requestCtrlName = $request->GetControllerName();
 		$requestActionName = $request->GetActionName();
 		if ($this->routeByQueryString === NULL) {
@@ -303,7 +303,7 @@ trait Routing
 	protected function routeSetUpDefaultForHomeIfNoMatch () {
 		/** @var $this \MvcCore\Router */
 		if ($this->currentRoute === NULL) {
-			$request = & $this->request;
+			$request = $this->request;
 			if ($this->routeToDefaultIfNotMatch) {
 				$requestIsHome = (
 					trim($request->GetPath(), '/') == '' || 

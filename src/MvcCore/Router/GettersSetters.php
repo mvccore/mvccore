@@ -23,7 +23,7 @@ trait GettersSetters
 	 *   sub-methods.
 	 * @return \MvcCore\Request|\MvcCore\IRequest
 	 */
-	public function & GetRequest () {
+	public function GetRequest () {
 		/** @var $this \MvcCore\Router */
 		return $this->request;
 	}
@@ -39,9 +39,9 @@ trait GettersSetters
 	 * @param \MvcCore\Request|\MvcCore\IRequest $request
 	 * @return \MvcCore\Router|\MvcCore\IRouter
 	 */
-	public function & SetRequest (\MvcCore\IRequest & $request) {
+	public function SetRequest (\MvcCore\IRequest $request) {
 		/** @var $this \MvcCore\Router */
-		$this->request = & $request;
+		$this->request = $request;
 		return $this;
 	}
 
@@ -54,7 +54,7 @@ trait GettersSetters
 	 * @param bool|NULL $routeByQueryString 
 	 * @return \MvcCore\Router|\MvcCore\IRouter
 	 */
-	public function & SetRouteByQueryString ($routeByQueryString = TRUE) {
+	public function SetRouteByQueryString ($routeByQueryString = TRUE) {
 		/** @var $this \MvcCore\Router */
 		$this->routeByQueryString = $routeByQueryString;
 		return $this;
@@ -89,7 +89,7 @@ trait GettersSetters
 	 * @param bool $enable
 	 * @return \MvcCore\Router|\MvcCore\IRouter
 	 */
-	public function & SetRouteToDefaultIfNotMatch ($enable = TRUE) {
+	public function SetRouteToDefaultIfNotMatch ($enable = TRUE) {
 		/** @var $this \MvcCore\Router */
 		$this->routeToDefaultIfNotMatch = $enable;
 		return $this;
@@ -147,7 +147,7 @@ trait GettersSetters
 	 * @param int $trailingSlashBehaviour
 	 * @return \MvcCore\Router|\MvcCore\IRouter
 	 */
-	public function & SetTrailingSlashBehaviour ($trailingSlashBehaviour = -1) {
+	public function SetTrailingSlashBehaviour ($trailingSlashBehaviour = -1) {
 		/** @var $this \MvcCore\Router */
 		$this->trailingSlashBehaviour = $trailingSlashBehaviour;
 		return $this;
@@ -172,7 +172,7 @@ trait GettersSetters
 	 * @param bool $autoCanonizeRequests 
 	 * @return \MvcCore\Router|\MvcCore\IRouter
 	 */
-	public function & SetAutoCanonizeRequests ($autoCanonizeRequests = TRUE) {
+	public function SetAutoCanonizeRequests ($autoCanonizeRequests = TRUE) {
 		/** @var $this \MvcCore\Router */
 		$this->autoCanonizeRequests = $autoCanonizeRequests;
 		return $this;
@@ -200,7 +200,7 @@ trait GettersSetters
 	 * @param callable $preRouteMatchingHandler 
 	 * @return \MvcCore\Router|\MvcCore\IRouter
 	 */
-	public function & SetPreRouteMatchingHandler (callable $preRouteMatchingHandler = NULL) {
+	public function SetPreRouteMatchingHandler (callable $preRouteMatchingHandler = NULL) {
 		/** @var $this \MvcCore\Router */
 		$this->preRouteMatchingHandler = $preRouteMatchingHandler;
 		if ($preRouteMatchingHandler === NULL)
@@ -252,7 +252,7 @@ trait GettersSetters
 	 * @param callable $preRouteMatchingHandler 
 	 * @return \MvcCore\Router|\MvcCore\IRouter
 	 */
-	public function & SetPreRouteUrlBuildingHandler (callable $preRouteUrlBuildingHandler = NULL) {
+	public function SetPreRouteUrlBuildingHandler (callable $preRouteUrlBuildingHandler = NULL) {
 		/** @var $this \MvcCore\Router */
 		$this->preRouteUrlBuildingHandler = $preRouteUrlBuildingHandler;
 		return $this;

@@ -69,17 +69,17 @@ trait Instancing
 	 *				routes etc.
 	 * @return \MvcCore\Router|\MvcCore\IRouter
 	 */
-	public static function & GetInstance (array $routes = [], $autoInitialize = TRUE) {
+	public static function GetInstance (array $routes = [], $autoInitialize = TRUE) {
 		if (!self::$instance) {
 			/** @var $app \MvcCore\Application */
-			$app = & \MvcCore\Application::GetInstance();
+			$app = \MvcCore\Application::GetInstance();
 			self::$routeClass = $app->GetRouteClass();
 			self::$routerClass = $app->GetRouterClass();
 			self::$toolClass = $app->GetToolClass();
 			$routerClass = $app->GetRouterClass();
 			$instance = new $routerClass($routes, $autoInitialize);
-			$instance->application = & $app;
-			self::$instance = & $instance;
+			$instance->application = $app;
+			self::$instance = $instance;
 		}
 		return self::$instance;
 	}

@@ -37,10 +37,10 @@ trait RewriteRouting
 	 * @return void
 	 */
 	protected function rewriteRouting ($requestCtrlName, $requestActionName) {
-		$request = & $this->request;
+		$request = $this->request;
 		$requestedPathFirstWord = $this->rewriteRoutingGetReqPathFirstWord();
 		$this->rewriteRoutingProcessPreHandler($requestedPathFirstWord);
-		$routes = & $this->rewriteRoutingGetRoutesToMatch($requestedPathFirstWord);
+		$routes = $this->rewriteRoutingGetRoutesToMatch($requestedPathFirstWord);
 		$requestMethod = $request->GetMethod();
 		foreach ($routes as & $route) {
 			/** @var $route \MvcCore\Route */
@@ -94,11 +94,11 @@ trait RewriteRouting
 	 * @param string $firstPathWord 
 	 * @return array|\MvcCore\IRoute[]
 	 */
-	protected function & rewriteRoutingGetRoutesToMatch ($firstPathWord) {
+	protected function rewriteRoutingGetRoutesToMatch ($firstPathWord) {
 		if (isset($this->routesGroups[$firstPathWord])) {
-			$routes = & $this->routesGroups[$firstPathWord];
+			$routes = $this->routesGroups[$firstPathWord];
 		} else if (isset($this->routesGroups[''])) {
-			$routes = & $this->routesGroups[''];
+			$routes = $this->routesGroups[''];
 		} else {
 			$routes = [];
 		}
@@ -152,7 +152,7 @@ trait RewriteRouting
 		// or route specified values from configuration already, under keys `controller` and 
 		// `action`, always with a value, never with `NULL`
 		/** @var $request \MvcCore\Request */
-		$request = & $this->request;
+		$request = $this->request;
 		$rawQueryParams = array_merge([], $request->GetParams(FALSE));
 		// complete controller and action from any possible source
 		list($ctrlDfltNamePc, $actionDfltNamePc) = $this->application->GetDefaultControllerAndActionNames();
@@ -214,7 +214,7 @@ trait RewriteRouting
 	 * @return bool
 	 */
 	protected function rewriteRoutingSetRequestParams (array & $allMatchedParams) {
-		$request = & $this->request;
+		$request = $this->request;
 		$defaultParamsBefore = array_merge([], $this->defaultParams);
 		$requestParams = array_merge([], $this->defaultParams);
 		// filter request params
@@ -243,7 +243,7 @@ trait RewriteRouting
 	 * @return void
 	 */
 	protected function rewriteRoutingSetUpCurrentRouteByRequest () {
-		$request = & $this->request;
+		$request = $this->request;
 		$toolClass = self::$toolClass;
 		$this->currentRoute
 			->SetController(str_replace(['/', '\\\\'], ['\\', '//'],
