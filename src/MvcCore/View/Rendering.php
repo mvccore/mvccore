@@ -78,11 +78,14 @@ namespace MvcCore\View {
 			}
 			$renderedFullPaths = & $this->__protected['renderedFullPaths'];
 			$renderedFullPaths[] = $viewScriptFullPath;
+
 			ob_start();
-
-			include($viewScriptFullPath);
-
+			$result = call_user_func(function ($viewPath) {
+				extract($this->__protected['store'], EXTR_SKIP);
+				include($viewPath);
+			}, $viewScriptFullPath);
 			$result = ob_get_clean();
+
 			\array_pop($renderedFullPaths); // unset last
 			return $result;
 		}
@@ -114,7 +117,7 @@ namespace MvcCore\View {
 		 * @param bool $overwriteExistingKeys If any property name already exist in view store, overwrite it by given value by default.
 		 * @return \MvcCore\View
 		 */
-		public function SetUpStore (\MvcCore\IView & $view, $overwriteExistingKeys = TRUE) {
+		public function SetUpStore (\MvcCore\IView $view, $overwriteExistingKeys = TRUE) {
 			/** @var $this \MvcCore\View */
 			$currentStore = & $this->__protected['store'];
 			$viewStore = & $view->__protected['store'];
@@ -150,8 +153,7 @@ namespace MvcCore\View {
 			ob_start();
 			try {
 				eval(' ?'.'>'.$content.'<'.'?php ');
-			}
-			catch (\Throwable $e) {
+			} catch (\Throwable $e) {
 				throw $e;
 			}
 			$content = ob_get_clean();
