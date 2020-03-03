@@ -33,7 +33,7 @@ trait Handlers
 	 * In non-development mode - store dumped variable in `debug.log`.
 	 * @param  mixed  $value		Variable to dump.
 	 * @param  bool   $return		Let's return output instead of printing it.
-	 * @param  bool   $exit			`TRUE` for last dump call by `xxx();` method 
+	 * @param  bool   $exit			`TRUE` for last dump call by `xxx();` method
 	 *								to dump and `exit;`.
 	 * @return mixed				Variable itself or dumped variable string.
 	 */
@@ -71,7 +71,7 @@ trait Handlers
 		} else {
 			$dumpedValue = @call_user_func_array(static::$handlers['barDump'], func_get_args());
 		}
-		if (!static::$debugging) 
+		if (!static::$debugging)
 			static::storeLogRecord($dumpedValue, \MvcCore\IDebug::DEBUG);
 		return $value;
 	}
@@ -117,7 +117,7 @@ trait Handlers
 	}
 
 	/**
-	 * Print all stored dumps at the end of sent response body as browser debug 
+	 * Print all stored dumps at the end of sent response body as browser debug
 	 * bar. This function is called from registered shutdown handler by
 	 * `register_shutdown_function()` from `\MvcCore\Debug::initHandlers();`.
 	 * @return void
@@ -151,7 +151,7 @@ trait Handlers
 	 * Dump any variable as string with output buffering and return dumped string.
 	 * If given `$options` array contains record about `bar` boolean - to render
 	 * dumped string in debug bar - store the dump record for HTML response later
-	 * rendering in shutdown handler or render dumped string directly in HTTP 
+	 * rendering in shutdown handler or render dumped string directly in HTTP
 	 * header for AJAX response, before any output body.
 	 * @param  mixed	$value		Variable to dump.
 	 * @param  string	$title		Optional title.
@@ -196,14 +196,14 @@ trait Handlers
 	}
 
 	/**
-	 * Format all dump records into single string with source PHP script file 
+	 * Format all dump records into single string with source PHP script file
 	 * link element and remove all useless new lines in PHP dumps.
 	 * @return array An array with formatted dumps string and boolean about last dump before script exit.
 	 */
 	protected static function formatDebugDumps () {
 		$dumps = '';
 		$lastDump = FALSE;
-		$app = static::$app ?: (static::$app = & \MvcCore\Application::GetInstance());
+		$app = static::$app ?: (static::$app = \MvcCore\Application::GetInstance());
 		$appRoot = $app->GetRequest()->GetAppRoot();
 		foreach (self::$dumps as $values) {
 			list($dumpResult, $lastDumpLocal) = self::formatDebugDump($values, $appRoot);
@@ -214,22 +214,22 @@ trait Handlers
 	}
 
 	/**
-	 * Format one dump record into single string with source PHP script file 
+	 * Format one dump record into single string with source PHP script file
 	 * link element and remove all useless new lines in PHP dumps.
 	 * @param array $dumpRecord Dump record from `self::$dumps` with items under indexes: `0` => dump string, `1` => title, `2` => options.
-	 * @param string|NULL $appRoot 
+	 * @param string|NULL $appRoot
 	 * @return array An array with formatted dump string and boolean about last dump before script exit.
 	 */
 	protected static function formatDebugDump ($dumpRecord, $appRoot = NULL) {
 		$result = '';
 		$lastDump = FALSE;
 		if ($appRoot === NULL) {
-			$app = static::$app ?: (static::$app = & \MvcCore\Application::GetInstance());
+			$app = static::$app ?: (static::$app = \MvcCore\Application::GetInstance());
 			$appRoot = $app->GetRequest()->GetAppRoot();
 		}
 		$options = $dumpRecord[2];
 		$result .= '<div class="item">';
-		if ($dumpRecord[1] !== NULL) 
+		if ($dumpRecord[1] !== NULL)
 			$result .= '<pre class="title">'.$dumpRecord[1].'</pre>';
 		$file = $options['file'];
 		$line = $options['line'];
@@ -254,7 +254,7 @@ trait Handlers
 				str_replace("<required>","&lt;required&gt;",$link.$dump)
 			)
 			.'</div></div>';
-		if (isset($dumpRecord[2]['lastDump']) && $dumpRecord[2]['lastDump']) 
+		if (isset($dumpRecord[2]['lastDump']) && $dumpRecord[2]['lastDump'])
 			$lastDump = TRUE;
 		return [$result, $lastDump];
 	}
@@ -268,16 +268,16 @@ trait Handlers
 	 */
 	protected static function sendDumpInAjaxHeader ($value, $title, $options) {
 		static $ajaxHeadersIndex = 0;
-		$app = static::$app ?: (static::$app = & \MvcCore\Application::GetInstance());
-		$response = & $app->GetResponse();
+		$app = static::$app ?: (static::$app = \MvcCore\Application::GetInstance());
+		$response = $app->GetResponse();
 		list ($dumpStr,) = self::formatDebugDump(
 			[$value, $title, $options],
 			$app->GetRequest()->GetAppRoot()
 		);
 		$dumpStr64Arr = str_split(base64_encode($dumpStr), 5000);
-		foreach ($dumpStr64Arr as $key => $base64Item) 
+		foreach ($dumpStr64Arr as $key => $base64Item)
 			$response->SetHeader(
-				'X-MvcCore-Debug-' . $ajaxHeadersIndex . '-' . $key, 
+				'X-MvcCore-Debug-' . $ajaxHeadersIndex . '-' . $key,
 				$base64Item
 			);
 		$ajaxHeadersIndex += 1;
@@ -289,10 +289,10 @@ trait Handlers
 	 * @return bool
 	 */
 	protected static function isHtmlResponse () {
-		$app = static::$app ?: (static::$app = & \MvcCore\Application::GetInstance());
-		$request = & $app->GetRequest();
+		$app = static::$app ?: (static::$app = \MvcCore\Application::GetInstance());
+		$request = $app->GetRequest();
 		if ($request->IsInternalRequest()) return FALSE;
-		$response = & $app->GetResponse();
+		$response = $app->GetResponse();
 		return $response->HasHeader('Content-Type') && $response->IsHtmlOutput();
 	}
 }

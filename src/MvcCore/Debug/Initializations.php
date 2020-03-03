@@ -18,19 +18,19 @@ trait Initializations
 	/**
 	 * Initialize debugging and logging, once only.
 	 * @param bool $forceDevelopmentMode	If defined as `TRUE` or `FALSE`,
-	 *										debugging mode will be set not 
+	 *										debugging mode will be set not
 	 *										by config but by this value.
 	 * @return void
 	 */
 	public static function Init ($forceDevelopmentMode = NULL) {
 		if (static::$debugging !== NULL) return;
 
-		if (self::$strictExceptionsMode === NULL) 
+		if (self::$strictExceptionsMode === NULL)
 			self::initStrictExceptionsMode(self::$strictExceptionsMode);
-		
-		$app = static::$app ?: (static::$app = & \MvcCore\Application::GetInstance());
+
+		$app = static::$app ?: (static::$app = \MvcCore\Application::GetInstance());
 		static::$requestBegin = $app->GetRequest()->GetMicrotime();
-		
+
 		if (gettype($forceDevelopmentMode) == 'boolean') {
 			static::$debugging = $forceDevelopmentMode;
 		} else {
@@ -41,7 +41,7 @@ trait Initializations
 		// do not initialize log directory here every time, initialize log
 		// directory only if there is necessary to log something - later.
 
-		$selfClass = version_compare(PHP_VERSION, '5.5', '>') ? self::class : __CLASS__;
+		$selfClass = \PHP_VERSION_ID >= 50500 ? self::class : __CLASS__;
 		static::$originalDebugClass = ltrim($app->GetDebugClass(), '\\') == $selfClass;
 		static::initHandlers();
 		$initGlobalShortHandsHandler = static::$InitGlobalShortHands;
@@ -51,9 +51,9 @@ trait Initializations
 	/**
 	 * Configure strict exceptions mode, mode is enabled by default.
 	 * If mode is configured to `FALSE` and any previous error handler exists,
-	 * it's automatically assigned back, else there is only called 
+	 * it's automatically assigned back, else there is only called
 	 * `restore_error_handler()` to restore system error handler.
-	 * @param bool $strictExceptionsMode 
+	 * @param bool $strictExceptionsMode
 	 * @param \int[] $errorLevelsToExceptions E_ERROR, E_RECOVERABLE_ERROR, E_CORE_ERROR, E_USER_ERROR, E_WARNING, E_CORE_WARNING, E_USER_WARNING
 	 * @return bool|NULL
 	 */
@@ -72,8 +72,8 @@ trait Initializations
 						$errFile = func_get_arg(5)[1]['file'];
 					if ($allLevelsToExceptions || isset($errorLevels[$errLevel]))
 						throw new \ErrorException($errMessage, $errLevel, $errLevel, $errFile, $errLine);
-					return $prevErrorHandler 
-						? call_user_func_array($prevErrorHandler, func_get_args()) 
+					return $prevErrorHandler
+						? call_user_func_array($prevErrorHandler, func_get_args())
 						: FALSE;
 				}
 			);
@@ -89,9 +89,9 @@ trait Initializations
 	}
 
 	/**
-	 * Initialize strict exceptions mode in default levels or in customized 
+	 * Initialize strict exceptions mode in default levels or in customized
 	 * levels from system config.
-	 * @param bool|NULL $strictExceptionsMode 
+	 * @param bool|NULL $strictExceptionsMode
 	 * @return bool|NULL
 	 */
 	protected static function initStrictExceptionsMode ($strictExceptionsMode) {
@@ -122,7 +122,7 @@ trait Initializations
 	 * @return void
 	 */
 	protected static function initHandlers () {
-		$className = version_compare(PHP_VERSION, '5.5', '>') ? static::class : get_called_class();
+		$className = \PHP_VERSION_ID >= 50500 ? static::class : get_called_class();
 		foreach (static::$handlers as $key => $value) {
 			static::$handlers[$key] = [$className, $value];
 		}
@@ -136,11 +136,11 @@ trait Initializations
 	protected static function initLogDirectory () {
 		//if (static::$logDirectoryInitialized) return;
 		$sysCfgDebug = static::getSystemCfgDebugSection();
-		$logDirConfiguredPath = isset($sysCfgDebug['logDirectory']) 
-			? $sysCfgDebug['logDirectory'] 
+		$logDirConfiguredPath = isset($sysCfgDebug['logDirectory'])
+			? $sysCfgDebug['logDirectory']
 			: static::$LogDirectory;
 		if (mb_substr($logDirConfiguredPath, 0, 1) === '~') {
-			$app = static::$app ?: (static::$app = & \MvcCore\Application::GetInstance());
+			$app = static::$app ?: (static::$app = \MvcCore\Application::GetInstance());
 			$logDirAbsPath = $app->GetRequest()->GetAppRoot() . '/' . ltrim(mb_substr($logDirConfiguredPath, 1), '/');
 		} else {
 			$logDirAbsPath = $logDirConfiguredPath;
@@ -148,7 +148,7 @@ trait Initializations
 		static::$LogDirectory = $logDirAbsPath;
 		try {
 			if (!is_dir($logDirAbsPath)) {
-				$selfClass = version_compare(PHP_VERSION, '5.5', '>') ? self::class : __CLASS__;
+				$selfClass = \PHP_VERSION_ID >= 50500 ? self::class : __CLASS__;
 				if (!mkdir($logDirAbsPath, 0777, TRUE))
 					throw new \RuntimeException(
 						'['.$selfClass."] It was not possible to create log directory: `".$logDirAbsPath."`."
@@ -160,7 +160,7 @@ trait Initializations
 						);
 			}
 		} catch (\Exception $e) {
-			$selfClass = version_compare(PHP_VERSION, '5.5', '>') ? self::class : __CLASS__;
+			$selfClass = \PHP_VERSION_ID >= 50500 ? self::class : __CLASS__;
 			die('['.$selfClass.'] ' . $e->getMessage());
 		}
 		static::$logDirectoryInitialized = TRUE;
@@ -168,14 +168,14 @@ trait Initializations
 	}
 
 	/**
-	 * Try to load system config by configured config class and try to find and 
+	 * Try to load system config by configured config class and try to find and
 	 * read `debug` section as associative array (or return an empty array).
 	 * @return array
 	 */
 	protected static function getSystemCfgDebugSection () {
 		if (self::$systemConfigDebugValues !== NULL) return self::$systemConfigDebugValues;
 		$result = [];
-		$app = static::$app ?: (static::$app = & \MvcCore\Application::GetInstance());
+		$app = static::$app ?: (static::$app = \MvcCore\Application::GetInstance());
 		$configClass = $app->GetConfigClass();
 		$cfg = $configClass::GetSystem();
 		if ($cfg === FALSE) return $result;
