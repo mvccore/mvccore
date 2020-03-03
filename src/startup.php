@@ -11,7 +11,7 @@
  * @license  https://mvccore.github.io/docs/mvccore/5.0.0/LICENCE.md
  */
 
-if (version_compare(PHP_VERSION, '5.4.0', "<")) {
+if (\PHP_VERSION_ID < 50400) {
 	$m = "Startup script requires at least PHP version 5.4.0 your PHP version is: " . PHP_VERSION;
 	die($m);
 }
