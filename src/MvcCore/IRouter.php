@@ -179,7 +179,7 @@ interface IRouter
 	 *				routes etc.
 	 * @return \MvcCore\IRouter
 	 */
-	public static function & GetInstance (array $routes = [], $autoInitialize = TRUE);
+	public static function GetInstance (array $routes = [], $autoInitialize = TRUE);
 
 	/**
 	 * Clear all possible previously configured routes
@@ -239,7 +239,7 @@ interface IRouter
 	 *				could be useful to restore cached routes etc.
 	 * @return \MvcCore\IRouter
 	 */
-	public function & SetRoutes ($routes = [], $autoInitialize = TRUE);
+	public function SetRoutes ($routes = [], $autoInitialize = TRUE);
 
 	/**
 	 * Append or prepend new request routes.
@@ -297,7 +297,7 @@ interface IRouter
 	 *			   `FALSE` old route is over-written by new one.
 	 * @return \MvcCore\IRouter
 	 */
-	public function & AddRoutes (array $routes = [], $prepend = FALSE, $throwExceptionForDuplication = TRUE);
+	public function AddRoutes (array $routes = [], $prepend = FALSE, $throwExceptionForDuplication = TRUE);
 
 	/**
 	 * Append or prepend new request route.
@@ -352,7 +352,7 @@ interface IRouter
 	 *			   `FALSE` old route is over-written by new one.
 	 * @return \MvcCore\IRouter
 	 */
-	public function & AddRoute ($routeCfgOrRoute, $groupName = NULL, $prepend = FALSE, $throwExceptionForDuplication = TRUE);
+	public function AddRoute ($routeCfgOrRoute, $groupName = NULL, $prepend = FALSE, $throwExceptionForDuplication = TRUE);
 
 	/**
 	 * Get `TRUE` if router has any route by given route name or `FALSE` if not.
@@ -374,7 +374,7 @@ interface IRouter
 	 * `NULL` if no route presented.
 	 * @return \MvcCore\IRoute|NULL
 	 */
-	public function & GetRoute ($routeName);
+	public function GetRoute ($routeName);
 
 	/**
 	 * Get all configured route(s) as `\MvcCore\Route` instances.
@@ -386,7 +386,7 @@ interface IRouter
 	 *				all routes from all groups.
 	 * @return \MvcCore\IRoute[]
 	 */
-	public function & GetRoutes ();
+	public function GetRoutes ();
 
 	/**
 	 * Get `\MvcCore\Request` object as reference, used internally for:
@@ -396,7 +396,7 @@ interface IRouter
 	 *   sub-methods.
 	 * @return \MvcCore\IRequest
 	 */
-	public function & GetRequest ();
+	public function GetRequest ();
 
 	/**
 	 * Sets up `\MvcCore\Request` object as reference to use it internally for:
@@ -409,7 +409,7 @@ interface IRouter
 	 * @param \MvcCore\IRequest $request
 	 * @return \MvcCore\IRouter
 	 */
-	public function & SetRequest (\MvcCore\IRequest & $request);
+	public function SetRequest (\MvcCore\IRequest $request);
 
 	/**
 	 * Set hardly routing strategy. If this method is configures with `TRUE` 
@@ -420,7 +420,7 @@ interface IRouter
 	 * @param bool|NULL $routeByQueryString 
 	 * @return \MvcCore\IRouter
 	 */
-	public function & SetRouteByQueryString ($routeByQueryString = TRUE);
+	public function SetRouteByQueryString ($routeByQueryString = TRUE);
 
 	/**
 	 * Get routing strategy. `TRUE` means that there was automatically or 
@@ -437,7 +437,7 @@ interface IRouter
 	 * @param \MvcCore\IRoute $currentRoute
 	 * @return \MvcCore\IRouter
 	 */
-	public function & SetCurrentRoute (\MvcCore\IRoute $currentRoute);
+	public function SetCurrentRoute (\MvcCore\IRoute $currentRoute);
 
 	/**
 	 * Get matched route instance reference for given request object
@@ -445,7 +445,7 @@ interface IRouter
 	 * matched route is always assigned internally in that method.
 	 * @return \MvcCore\IRoute
 	 */
-	public function & GetCurrentRoute ();
+	public function GetCurrentRoute ();
 
 	/**
 	 * Get `TRUE` if request has to be automatically dispatched as default
@@ -464,7 +464,7 @@ interface IRouter
 	 * @param bool $enable
 	 * @return \MvcCore\IRouter
 	 */
-	public function & SetRouteToDefaultIfNotMatch ($enable = TRUE);
+	public function SetRouteToDefaultIfNotMatch ($enable = TRUE);
 
 	/**
 	 * Get default request params - default params to build URL with possibility
@@ -512,7 +512,7 @@ interface IRouter
 	 * @param int $trailingSlashBehaviour
 	 * @return \MvcCore\IRouter
 	 */
-	public function & SetTrailingSlashBehaviour ($trailingSlashBehaviour = -1);
+	public function SetTrailingSlashBehaviour ($trailingSlashBehaviour = -1);
 
 	/**
 	 * Get boolean info about if router does automatic check for canonical URL 
@@ -531,7 +531,7 @@ interface IRouter
 	 * @param bool $autoCanonizeRequests 
 	 * @return \MvcCore\IRouter
 	 */
-	public function & SetAutoCanonizeRequests ($autoCanonizeRequests = TRUE);
+	public function SetAutoCanonizeRequests ($autoCanonizeRequests = TRUE);
 
 	/**
 	 * Set up pre-route matching handler. This handler will be executed every 
@@ -555,7 +555,7 @@ interface IRouter
 	 * @param callable $preRouteMatchingHandler 
 	 * @return \MvcCore\IRouter
 	 */
-	public function & SetPreRouteMatchingHandler (callable $preRouteMatchingHandler = NULL);
+	public function SetPreRouteMatchingHandler (callable $preRouteMatchingHandler = NULL);
 
 	/**
 	 * Get pre-route matching handler. This handler is always executed every 
@@ -599,7 +599,7 @@ interface IRouter
 	 * @param callable $preRouteMatchingHandler 
 	 * @return \MvcCore\IRouter
 	 */
-	public function & SetPreRouteUrlBuildingHandler (callable $preRouteUrlBuildingHandler = NULL);
+	public function SetPreRouteUrlBuildingHandler (callable $preRouteUrlBuildingHandler = NULL);
 
 	/**
 	 * Get handler executed before building URL by rewrite routes. This 
@@ -768,5 +768,5 @@ interface IRouter
 	 * @param bool $fallbackCall `FALSE` by default. If `TRUE`, this function is called from error rendering fallback, self route name is not changed.
 	 * @return \MvcCore\IRoute
 	 */
-	public function & SetOrCreateDefaultRouteAsCurrent ($routeName, $controllerPc, $actionPc, $fallbackCall = FALSE);
+	public function SetOrCreateDefaultRouteAsCurrent ($routeName, $controllerPc, $actionPc, $fallbackCall = FALSE);
 }
