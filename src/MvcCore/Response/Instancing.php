@@ -48,6 +48,6 @@ trait Instancing
 		$this->code = $code ?: \MvcCore\IResponse::OK;
 		$this->headers = $headers;
 		$this->body = $body;
-		$this->request = & \MvcCore\Application::GetInstance()->GetRequest();
+		$this->request = \MvcCore\Application::GetInstance()->GetRequest();
 	}
 }

@@ -108,7 +108,7 @@ trait PropsGettersSetters
 	 * @param string $httpVersion
 	 * @return \MvcCore\Response|\MvcCore\IResponse
 	 */
-	public function & SetHttpVersion ($httpVersion) {
+	public function SetHttpVersion ($httpVersion) {
 		/** @var $this \MvcCore\Response */
 		$this->httpVersion = $httpVersion;
 		return $this;
@@ -120,7 +120,7 @@ trait PropsGettersSetters
 	 * @param string|NULL $codeMessage
 	 * @return \MvcCore\Response|\MvcCore\IResponse
 	 */
-	public function & SetCode ($code, $codeMessage = NULL) {
+	public function SetCode ($code, $codeMessage = NULL) {
 		/** @var $this \MvcCore\Response */
 		$this->code = $code;
 		if ($codeMessage !== NULL) $this->codeMessage = $codeMessage;
@@ -147,7 +147,7 @@ trait PropsGettersSetters
 	 * @param string $encoding
 	 * @return \MvcCore\Response|\MvcCore\IResponse
 	 */
-	public function & SetEncoding ($encoding = 'utf-8') {
+	public function SetEncoding ($encoding = 'utf-8') {
 		/** @var $this \MvcCore\Response */
 		$this->encoding = $encoding;
 		$this->headers['Content-Encoding'] = $encoding;

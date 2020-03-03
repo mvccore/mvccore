@@ -79,7 +79,7 @@ interface IResponse
 	 * @param string $httpVersion
 	 * @return \MvcCore\IResponse
 	 */
-	public function & SetHttpVersion ($httpVersion);
+	public function SetHttpVersion ($httpVersion);
 
 	/**
 	 * Set HTTP response code.
@@ -87,7 +87,7 @@ interface IResponse
 	 * @param string|NULL $codeMessage
 	 * @return \MvcCore\IResponse
 	 */
-	public function & SetCode ($code, $codeMessage = NULL);
+	public function SetCode ($code, $codeMessage = NULL);
 
 	/**
 	 * Get HTTP response code.
@@ -110,7 +110,7 @@ interface IResponse
 	 *								 set by PHP `header()` or by this object will be removed.
 	 * @return \MvcCore\IResponse
 	 */
-	public function & SetHeaders (array $headers = []);
+	public function SetHeaders (array $headers = []);
 
 	/**
 	 * Set HTTP response header.
@@ -123,7 +123,7 @@ interface IResponse
 	 * @param string $value
 	 * @return \MvcCore\IResponse
 	 */
-	public function & SetHeader ($name, $value);
+	public function SetHeader ($name, $value);
 
 	/**
 	 * Get HTTP response header by name.
@@ -149,7 +149,7 @@ interface IResponse
 	 * @param string $encoding
 	 * @return \MvcCore\IResponse
 	 */
-	public function & SetEncoding ($encoding = 'utf-8');
+	public function SetEncoding ($encoding = 'utf-8');
 
 	/**
 	 * Get HTTP response content encoding.
@@ -163,21 +163,21 @@ interface IResponse
 	 * @param string $body
 	 * @return \MvcCore\IResponse
 	 */
-	public function & SetBody ($body);
+	public function SetBody ($body);
 
 	/**
 	 * Prepend HTTP response body.
 	 * @param string $body
 	 * @return \MvcCore\IResponse
 	 */
-	public function & PrependBody ($body);
+	public function PrependBody ($body);
 
 	/**
 	 * Append HTTP response body.
 	 * @param string $body
 	 * @return \MvcCore\IResponse
 	 */
-	public function & AppendBody ($body);
+	public function AppendBody ($body);
 
 	/**
 	 * Get HTTP response body.
@@ -259,7 +259,7 @@ interface IResponse
 	 * @param \string[] $disabledHeaders,...
 	 * @return \MvcCore\IResponse
 	 */
-	public function & SetDisabledHeaders ($disabledHeaders);
+	public function SetDisabledHeaders ($disabledHeaders);
 	
 	/**
 	 * Get disabled headers, never sent except if there is 

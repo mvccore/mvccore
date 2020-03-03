@@ -30,7 +30,7 @@ trait Headers
 	 *								 set by PHP `header()` or by this object will be removed.
 	 * @return \MvcCore\Response|\MvcCore\IResponse
 	 */
-	public function & SetHeaders (array $headers = [], $cleanAllPrevious = FALSE) {
+	public function SetHeaders (array $headers = [], $cleanAllPrevious = FALSE) {
 		/** @var $this \MvcCore\Response */
 		if ($cleanAllPrevious) {
 			header_remove();
@@ -53,7 +53,7 @@ trait Headers
 	 * @param string $value
 	 * @return \MvcCore\Response|\MvcCore\IResponse
 	 */
-	public function & SetHeader ($name, $value) {
+	public function SetHeader ($name, $value) {
 		/** @var $this \MvcCore\Response */
 		if (isset($this->disabledHeaders[$name])) 
 			return $this;
@@ -125,7 +125,7 @@ trait Headers
 	 * @param \string[] $disabledHeaders,...
 	 * @return \MvcCore\Response|\MvcCore\IResponse
 	 */
-	public function & SetDisabledHeaders ($disabledHeaders) {
+	public function SetDisabledHeaders ($disabledHeaders) {
 		/** @var $this \MvcCore\Response */
 		$this->disabledHeaders = [];
 		$args = func_get_args();

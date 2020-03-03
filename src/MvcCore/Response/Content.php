@@ -20,7 +20,7 @@ trait Content
 	 * @param string $body
 	 * @return \MvcCore\Response|\MvcCore\IResponse
 	 */
-	public function & SetBody ($body) {
+	public function SetBody ($body) {
 		/** @var $this \MvcCore\Response */
 		$this->body = & $body;
 		return $this;
@@ -31,7 +31,7 @@ trait Content
 	 * @param string $body
 	 * @return \MvcCore\Response|\MvcCore\IResponse
 	 */
-	public function & PrependBody ($body) {
+	public function PrependBody ($body) {
 		/** @var $this \MvcCore\Response */
 		$this->body = $body . $this->body;
 		return $this;
@@ -42,7 +42,7 @@ trait Content
 	 * @param string $body
 	 * @return \MvcCore\Response|\MvcCore\IResponse
 	 */
-	public function & AppendBody ($body) {
+	public function AppendBody ($body) {
 		/** @var $this \MvcCore\Response */
 		$this->body .= $body;
 		return $this;

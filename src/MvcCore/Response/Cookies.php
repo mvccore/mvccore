@@ -33,7 +33,7 @@ trait Cookies
 		$domain = NULL, $secure = NULL, $httpOnly = TRUE
 	) {
 		if ($this->IsSent()) {
-			$selfClass = version_compare(PHP_VERSION, '5.5', '>') ? self::class : __CLASS__;
+			$selfClass = \PHP_VERSION_ID >= 50500 ? self::class : __CLASS__;
 			throw new \RuntimeException(
 				"[".$selfClass."] Cannot set cookie after HTTP headers have been sent."
 			);
