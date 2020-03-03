@@ -30,21 +30,21 @@ interface IModel
 	 * @var int
 	 */
 	const KEYS_CONVERSION_UNDERSCORES_TO_PASCALCASE	= 0b00000001;
-	
+
 	/**
 	 * Pass throught values with array keys conversion from underscored case
 	 * into camel case.
 	 * @var int
 	 */
 	const KEYS_CONVERSION_UNDERSCORES_TO_CAMELCASE	= 0b00000010;
-	
+
 	/**
 	 * Pass throught values with array keys conversion from pascal case
 	 * into underscored case.
 	 * @var int
 	 */
 	const KEYS_CONVERSION_PASCALCASE_TO_UNDERSCORES	= 0b00000100;
-	
+
 	/**
 	 * Pass throught values with array keys conversion from pascal case
 	 * into camel case.
@@ -65,26 +65,26 @@ interface IModel
 	 * @var int
 	 */
 	const KEYS_CONVERSION_CAMELCASE_TO_PASCALCASE	= 0b00100000;
-	
+
 	/**
 	 * Pass throught values with array keys case sensitive.
 	 * @var int
 	 */
 	const KEYS_CONVERSION_CASE_SENSITIVE			= 0b01000000;
-	
+
 	/**
 	 * Pass throught values with array keys case insensitive.
 	 * @var int
 	 */
 	const KEYS_CONVERSION_CASE_INSENSITIVE			= 0b10000000;
-	
-	
+
+
 
 	/**
 	 * Collect all model class public and inherit field values into array.
-	 * @param boolean $getNullValues			If `TRUE`, include also values with `NULL`s, by default - `FALSE`.
-	 * @param boolean $includeInheritProperties If `TRUE`, include only fields from current model class and from parent classes.
-	 * @param boolean $publicOnly			   If `TRUE`, include only public model fields.
+	 * @param bool $getNullValues			 If `TRUE`, include also values with `NULL`s, default - `FALSE`.
+	 * @param bool $includeInheritProperties If `TRUE`, include fields from current and all parent classes, if `FALSE`, include fields only from current model class, default - `TRUE`.
+	 * @param bool $publicOnly			     If `TRUE`, include only public instance fields, if `FALSE`, include all instance fields, default - `TRUE`.
 	 * @return array
 	 */
 	public function GetValues (
@@ -103,13 +103,13 @@ interface IModel
 	 * @param bool    $completeInitialValues    Complete protected array `initialValues` to be able to compare them by calling method `GetTouched()` anytime later.
 	 * @return \MvcCore\Model|\MvcCore\IModel
 	 */
-	public function & SetUp ($data = [], $keysConversionFlags = NULL);
+	public function SetUp ($data = [], $keysConversionFlags = NULL);
 
 	/**
 	 * Get touched properties from initial moment called by `SetUp()` method.
 	 * Get everything, what is different to `$this->initialValues` array.
-	 * @param bool $includeInheritProperties 
-	 * @param bool $publicOnly 
+	 * @param bool $includeInheritProperties If `TRUE`, include fields from current and all parent classes, if `FALSE`, include fields only from current model class, default - `TRUE`.
+	 * @param bool $publicOnly			     If `TRUE`, include only public instance fields, if `FALSE`, include all instance fields, default - `TRUE`.
 	 * @return array Keys are class properties names, values are changed values.
 	 */
 	public function GetTouched ($includeInheritProperties = TRUE, $publicOnly = FALSE);
@@ -119,7 +119,7 @@ interface IModel
 	 * @param mixed $args,... unlimited OPTIONAL variables to pass into model `__construct()` method.
 	 * @return \MvcCore\IModel
 	 */
-	public static function & GetInstance ();
+	public static function GetInstance ();
 
 	/**
 	 * Returns (or creates if necessary) model resource instance.
@@ -147,7 +147,7 @@ interface IModel
 	 * usually by system config values (cached by local store)
 	 * or create new connection of no connection cached.
 	 * @param string|int|array|\stdClass|NULL $connectionNameOrConfig
-	 * @param bool $strict	If `TRUE` and no connection under given name or given 
+	 * @param bool $strict	If `TRUE` and no connection under given name or given
 	 *						index found, exception is thrown. `FALSE` by default.
 	 * @throws \InvalidArgumentException
 	 * @return \PDO
@@ -255,8 +255,8 @@ interface IModel
 	 * This method returns custom value for get and `\MvcCore\IModel` instance for set.
 	 * @param string $rawName
 	 * @param array  $arguments
-	 * @throws \Exception
-	 * @return mixed|\MvcCore\IModel
+	 * @throws \InvalidArgumentException If `strtolower($rawName)` doesn't begin with `"get"` or with `"set"`.
+	 * @return mixed|\MvcCore\Model|\MvcCore\IModel
 	 */
 	public function __call ($rawName, $arguments = []);
 
@@ -280,16 +280,16 @@ interface IModel
 
 	/**
 	 * Collect all properties names to serialize them by `serialize()` method.
-	 * Collect all instance properties declared as private, protected and public 
-	 * and if there is configured in `static::$protectedProperties` anything as 
-	 * `TRUE` (under key by property name), also return those properties in 
+	 * Collect all instance properties declared as private, protected and public
+	 * and if there is configured in `static::$protectedProperties` anything as
+	 * `TRUE` (under key by property name), also return those properties in
 	 * result array.
 	 * @return \string[]
 	 */
 	public function __sleep ();
 
 	/**
-	 * Run `$this->Init()` method if there is `$this->autoInit` property defined 
+	 * Run `$this->Init()` method if there is `$this->autoInit` property defined
 	 * and if the property is `TRUE`.
 	 * @return void
 	 */

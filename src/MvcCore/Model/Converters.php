@@ -17,8 +17,8 @@ trait Converters
 {
 	/**
 	 * Try to convert database value into target type.
-	 * @param mixed $rawValue 
-	 * @param string $typeStr 
+	 * @param mixed $rawValue
+	 * @param string $typeStr
 	 * @return array
 	 */
 	protected static function convertToType ($rawValue, $typeStr) {
@@ -30,7 +30,7 @@ trait Converters
 				$rawValueStr = str_replace(['+','-','.'], '', strval($rawValue));
 				$secData = mb_substr($rawValueStr, 0, 10);
 				$dateTimeStr = date($dateTimeFormat, intval($secData));
-				if (strlen($rawValueStr) > 10) 
+				if (strlen($rawValueStr) > 10)
 					$dateTimeStr .= '.' . mb_substr($rawValueStr, 10);
 			} else {
 				$dateTimeStr = strval($rawValue);
@@ -53,9 +53,9 @@ trait Converters
 	}
 
 	/**
-	 * Return protected static key conversion methods 
+	 * Return protected static key conversion methods
 	 * array by given conversion flag.
-	 * @param int $keysConversionFlags 
+	 * @param int $keysConversionFlags
 	 * @return \string[]
 	 */
 	protected static function getKeyConversionMethods ($keysConversionFlags = \MvcCore\IModel::KEYS_CONVERSION_CASE_SENSITIVE) {
@@ -75,12 +75,12 @@ trait Converters
 
 	/**
 	 * Return key proper case sensitive value by given case sensitive map.
-	 * @param string $key 
-	 * @param string $toolsClass 
-	 * @param string $csKeysMap 
+	 * @param string $key
+	 * @param string $toolsClass
+	 * @param string $csKeysMap
 	 * @return string
 	 */
-	protected static function keyConversionCaseInsensitive ($key, & $toolsClass, & $csKeysMap) {
+	protected static function keyConversionCaseInsensitive ($key, $toolsClass, $csKeysMap) {
 		$keyPos = stripos($csKeysMap, ','.$key.',');
 		if ($keyPos === FALSE) return $key;
 		return substr($csKeysMap, $keyPos + 1, strlen($key));
@@ -88,67 +88,67 @@ trait Converters
 
 	/**
 	 * Return key proper case sensitive value by given case sensitive map.
-	 * @param string $key 
-	 * @param string $toolsClass 
-	 * @param string $csKeysMap 
+	 * @param string $key
+	 * @param string $toolsClass
+	 * @param string $csKeysMap
 	 * @return string
 	 */
-	protected static function keyConversionUnderscoresToPascalcase ($key, & $toolsClass, & $csKeysMap) {
-		return \MvcCore\Tool::GetPascalCaseFromUnderscored($key);
+	protected static function keyConversionUnderscoresToPascalcase ($key, $toolsClass, $csKeysMap) {
+		return $toolsClass::GetPascalCaseFromUnderscored($key);
 	}
 
 	/**
 	 * Return camel case key from underscore case key.
-	 * @param string $key 
-	 * @param string $toolsClass 
-	 * @param string $csKeysMap 
+	 * @param string $key
+	 * @param string $toolsClass
+	 * @param string $csKeysMap
 	 * @return string
 	 */
-	protected static function keyConversionUnderscoresToCamelcase ($key, & $toolsClass, & $csKeysMap) {
-		return lcfirst(\MvcCore\Tool::GetPascalCaseFromUnderscored($key));
+	protected static function keyConversionUnderscoresToCamelcase ($key, $toolsClass, $csKeysMap) {
+		return lcfirst($toolsClass::GetPascalCaseFromUnderscored($key));
 	}
 
 	/**
 	 * Return underscore case key from pascal case key.
-	 * @param string $key 
-	 * @param string $toolsClass 
-	 * @param string $csKeysMap 
+	 * @param string $key
+	 * @param string $toolsClass
+	 * @param string $csKeysMap
 	 * @return string
 	 */
-	protected static function keyConversionPascalcaseToUnderscores ($key, & $toolsClass, & $csKeysMap) {
-		return \MvcCore\Tool::GetUnderscoredFromPascalCase($key);
+	protected static function keyConversionPascalcaseToUnderscores ($key, $toolsClass, $csKeysMap) {
+		return $toolsClass::GetUnderscoredFromPascalCase($key);
 	}
 
 	/**
 	 * Return camel case key from pascal case key.
-	 * @param string $key 
-	 * @param string $toolsClass 
-	 * @param string $csKeysMap 
+	 * @param string $key
+	 * @param string $toolsClass
+	 * @param string $csKeysMap
 	 * @return string
 	 */
-	protected static function keyConversionPascalcaseToCamelcase ($key, & $toolsClass, & $csKeysMap) {
+	protected static function keyConversionPascalcaseToCamelcase ($key, $toolsClass, $csKeysMap) {
 		return lcfirst($key);
 	}
 
 	/**
 	 * Return underscore case key from camel case key.
-	 * @param string $key 
-	 * @param string $toolsClass 
-	 * @param string $csKeysMap 
+	 * @param string $key
+	 * @param string $toolsClass
+	 * @param string $csKeysMap
 	 * @return string
 	 */
-	protected static function keyConversionCamelcaseToUnderscores ($key, & $toolsClass, & $csKeysMap) {
-		return \MvcCore\Tool::GetUnderscoredFromPascalCase(lcfirst($key));
+	protected static function keyConversionCamelcaseToUnderscores ($key, $toolsClass, $csKeysMap) {
+		return $toolsClass::GetUnderscoredFromPascalCase(lcfirst($key));
 	}
 
 	/**
 	 * Return pascal case key from camel case key.
-	 * @param string $key 
-	 * @param string $toolsClass 
-	 * @param string $csKeysMap 
+	 * @param string $key
+	 * @param string $toolsClass
+	 * @param string $csKeysMap
 	 * @return string
 	 */
-	protected static function keyConversionCamelcaseToPascalcase ($key, & $toolsClass, & $csKeysMap) {
+	protected static function keyConversionCamelcaseToPascalcase ($key, $toolsClass, $csKeysMap) {
 		return ucfirst($key);
 	}
 }

@@ -30,9 +30,9 @@ trait Instancing
 	 * @param mixed $args,... unlimited OPTIONAL variables to pass into model `__construct()` method.
 	 * @return \MvcCore\Model|\MvcCore\IModel
 	 */
-	public static function & GetInstance () {
+	public static function GetInstance () {
 		// get `"ClassName"` string from this call: `ClassName::GetInstance();`
-		$staticClassName = version_compare(PHP_VERSION, '5.5', '>') ? static::class : get_called_class();
+		$staticClassName = \PHP_VERSION_ID >= 50500 ? static::class : get_called_class();
 		$args = func_get_args();
 		$instanceIndex = str_replace('\\', '_', $staticClassName) . '#' . serialize($args);
 		if (!isset(self::$instances[$instanceIndex])) {
@@ -49,9 +49,9 @@ trait Instancing
 	 * @param string		$resourceClassPath	Automatically initialized with string replaced with `%SELF%` by `static::class` (or by `get_called_class()`).
 	 * @return \MvcCore\Model|\MvcCore\IModel
 	 */
-	public static function & GetResource ($args = [], $resourceClassPath = '%SELF%s\Resource') {
+	public static function GetResource ($args = [], $resourceClassPath = '%SELF%s\Resource') {
 		$result = NULL;
-		$staticClassPath = version_compare(PHP_VERSION, '5.5', '>') ? static::class : get_called_class();
+		$staticClassPath = \PHP_VERSION_ID >= 50500 ? static::class : get_called_class();
 		$namespaceSeparator = strpos($staticClassPath, '\\') === FALSE ? '_' : '\\';
 		$staticClassPathExpl = explode($namespaceSeparator, $staticClassPath);
 		$resourceClassPathExpl = explode($namespaceSeparator, $resourceClassPath);

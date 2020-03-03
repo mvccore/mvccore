@@ -17,22 +17,37 @@ trait DataMethods
 {
 	/**
 	 * Collect all model class public and inherit field values into array.
-	 * @param boolean $getNullValues			If `TRUE`, include also values with `NULL`s, by default - `FALSE`.
-	 * @param boolean $includeInheritProperties If `TRUE`, include only fields from current model class and from parent classes.
-	 * @param boolean $publicOnly			   If `TRUE`, include only public model fields.
+	 * @param bool $getNullValues			 If `TRUE`, include also values with `NULL`s, default - `FALSE`.
+	 * @param bool $includeInheritProperties If `TRUE`, include fields from current and all parent classes, if `FALSE`, include fields only from current model class, default - `TRUE`.
+	 * @param bool $publicOnly			     If `TRUE`, include only public instance fields, if `FALSE`, include all instance fields, default - `TRUE`.
 	 * @return array
 	 */
 	public function GetValues ($getNullValues = FALSE, $includeInheritProperties = TRUE, $publicOnly = TRUE) {
+		/** @var $this \MvcCore\Model */
 		$data = [];
-		$modelClassName = get_class($this);
-		$classReflector = new \ReflectionClass($modelClassName);
-		$properties = $publicOnly ? $classReflector->getProperties(\ReflectionProperty::IS_PUBLIC) : $classReflector->getProperties();
-		foreach ($properties as $property) {
-			if (!$includeInheritProperties && $property->class != $modelClassName) continue;
-			$propertyName = $property->name;
-			if (isset(static::$protectedProperties[$propertyName])) continue;
-			if (!$getNullValues && $this->$propertyName === NULL) continue;
-			$data[$propertyName] = $this->$propertyName;
+		$properties = $publicOnly
+			? static::__getPropsNamesAll()
+			: static::__getPropsNamesPublic();
+		$phpWithTypes = PHP_VERSION_ID >= 70400;
+		/** @var $prop \ReflectionProperty */
+		foreach ($properties as $propertyName => list($ownedByCurrent, $accessMod, $types, $prop)) {
+			if (!$includeInheritProperties && !$ownedByCurrent)
+				continue;
+			$propValue = NULL;
+			if ($accessMod == 4) { // private
+				//$prop->setAccessible(TRUE);
+				if ($phpWithTypes) {
+					if ($prop->isInitialized($this))
+						$propValue = $this->getValue($this, $propertyName);
+				} else if (isset($this->{$propertyName})) {
+					$propValue = $this->getValue($this, $propertyName);
+				}
+			} else {
+				$propValue = $this->{$propertyName};
+			}
+			if (!$getNullValues && $propValue === NULL)
+				continue;
+			$data[$propertyName] = $propValue;
 		}
 		return $data;
 	}
@@ -47,30 +62,28 @@ trait DataMethods
 	 * @param bool    $completeInitialValues    Complete protected array `initialValues` to be able to compare them by calling method `GetTouched()` anytime later.
 	 * @return \MvcCore\Model|\MvcCore\IModel
 	 */
-	public function & SetUp ($data = [], $keysConversionFlags = NULL, $completeInitialValues = TRUE) {
+	public function SetUp ($data = [], $keysConversionFlags = NULL, $completeInitialValues = TRUE) {
 		/** @var $this \MvcCore\Model */
-		$classType = new \ReflectionClass(get_class($this));
-		$instancePropsNames = array_map(function ($prop) {
-			return $prop->name;
-		}, $classType->getProperties(
-			\ReflectionProperty::IS_PUBLIC  |  \ReflectionProperty::IS_PROTECTED | 
-			\ReflectionProperty::IS_PRIVATE | !\ReflectionProperty::IS_STATIC
-		));
-		$instancePropsNames = array_diff($instancePropsNames, array_keys(static::$protectedProperties));
-		$csKeysMap = ','.implode(',', $instancePropsNames).',';
-		$keyConversionsMethods = $keysConversionFlags === NULL ? [] : static::getKeyConversionMethods($keysConversionFlags);
+		$propsData = static::__getPropsData();
+		$caseSensitiveKeysMap = ','.implode(',', array_keys($propsData)).',';
+		$keyConversionsMethods = $keysConversionFlags !== NULL
+			? static::getKeyConversionMethods($keysConversionFlags)
+			: [];
 		$toolsClass = \MvcCore\Application::GetInstance()->GetToolClass();
 		foreach ($data as $dbKey => $value) {
 			$propertyName = $dbKey;
 			foreach ($keyConversionsMethods as $keyConversionsMethod)
-				$propertyName = static::$keyConversionsMethod($propertyName, $toolsClass, $csKeysMap);
-			/** @var $prop \ReflectionProperty */
+				$propertyName = static::$keyConversionsMethod(
+					$propertyName, $toolsClass, $caseSensitiveKeysMap
+				);
 			$isNotNull = $value !== NULL;
-			$hasProp = $classType->hasProperty($propertyName);
-			$prop = $hasProp ? $classType->getProperty($propertyName) : NULL;
-			if ($isNotNull && $hasProp && preg_match('/@var\s+([^\s]+)/', $prop->getDocComment(), $matches)) {
-				list(, $rawType) = $matches;
-				$typeStrings = explode('|', $rawType);
+			if ($isNotNull && isset($propsData[$propertyName])) {
+				/**
+				 * @var $accessMod \int
+				 * @var $typeStrings \string[]
+				 * @var $prop \ReflectionProperty
+				 */
+				list(, $accessMod, $typeStrings, $prop) = $propsData[$propertyName];
 				$targetTypeValue = NULL;
 				foreach ($typeStrings as $typeString) {
 					if (substr($typeString, -2, 2) === '[]') {
@@ -99,11 +112,11 @@ trait DataMethods
 					}
 				}
 			}
-			if ($hasProp) {
-				if (!$prop->isPublic()) $prop->setAccessible(TRUE);
+			if ($accessMod == 4) { // private
+				//$prop->setAccessible(TRUE);
 				$prop->setValue($this, $value);
 			} else {
-				$this->$propertyName = $value;
+				$this->{$propertyName} = $value;
 			}
 			if ($completeInitialValues)
 				$this->initialValues[$propertyName] = $value;
@@ -114,32 +127,39 @@ trait DataMethods
 	/**
 	 * Get touched properties from initial moment called by `SetUp()` method.
 	 * Get everything, what is different to `$this->initialValues` array.
-	 * @param bool $includeInheritProperties 
-	 * @param bool $publicOnly 
+	 * @param bool $includeInheritProperties If `TRUE`, include fields from current and all parent classes, if `FALSE`, include fields only from current model class, default - `TRUE`.
+	 * @param bool $publicOnly			     If `TRUE`, include only public instance fields, if `FALSE`, include all instance fields, default - `TRUE`.
 	 * @return array Keys are class properties names, values are changed values.
 	 */
 	public function GetTouched ($includeInheritProperties = TRUE, $publicOnly = FALSE) {
-		$touchedValues = [];
 		/** @var $this \MvcCore\Model */
-		$modelClassName = get_class($this);
-		$classReflector = new \ReflectionClass($modelClassName);
+		$touchedValues = [];
 		$properties = $publicOnly
-			? $classReflector->getProperties(\ReflectionProperty::IS_PUBLIC)
-			: $classReflector->getProperties();
-		/** @var $property \ReflectionProperty */
-		foreach ($properties as $property) {
-			$propertyName = $property->name;
-			if (
-				$property->isStatic() ||
-				isset(static::$protectedProperties[$propertyName]) ||
-				(!$includeInheritProperties && $property->class != $modelClassName)
-			) continue;
-			$initialValue = array_key_exists($propertyName, $this->initialValues)
-				? $this->initialValues[$propertyName]
-				: NULL;
-			$currentValue = $this->$propertyName;
-			if ($initialValue !== $currentValue) 
-				$touchedValues[$propertyName] = $currentValue;
+			? static::__getPropsNamesAll()
+			: static::__getPropsNamesPublic();
+		$phpWithTypes = PHP_VERSION_ID >= 70400;
+		/** @var $prop \ReflectionProperty */
+		foreach ($properties as $propertyName => list($ownedByCurrent, $accessMod, $types, $prop)) {
+			if (!$includeInheritProperties && !$ownedByCurrent)
+				continue;
+			$initialValue = NULL;
+			$currentValue = NULL;
+			if (array_key_exists($propertyName, $this->initialValues))
+				$initialValue = & $this->initialValues[$propertyName];
+			$currentValue = NULL;
+			if ($accessMod == 4) { // private
+				//$prop->setAccessible(TRUE);
+				if ($phpWithTypes) {
+					if ($prop->isInitialized($this))
+						$currentValue = $this->getValue($this, $propertyName);
+				} else {
+					$currentValue = $this->getValue($this, $propertyName);
+				}
+			} else if (isset($this->{$propertyName})) {
+				$currentValue = & $this->{$propertyName};
+			}
+			if ($initialValue !== $currentValue)
+				$touchedValues[$propertyName] = & $this->{$propertyName};
 		}
 		return $touchedValues;
 	}
@@ -157,21 +177,22 @@ trait DataMethods
 	 * @return mixed|\MvcCore\Model|\MvcCore\IModel
 	 */
 	public function __call ($rawName, $arguments = []) {
+		/** @var $this \MvcCore\Model */
 		$nameBegin = strtolower(substr($rawName, 0, 3));
 		$name = substr($rawName, 3);
 		if ($nameBegin == 'get') {
-			if (property_exists($this, $name)) return $this->$name;
 			if (property_exists($this, lcfirst($name))) return $this->{lcfirst($name)};
+			if (property_exists($this, $name)) return $this->$name;
 			return NULL;
 		} else if ($nameBegin == 'set') {
-			if (property_exists($this, $name)) 
-				$this->$name = isset($arguments[0]) ? $arguments[0] : NULL;
-			if (property_exists($this, lcfirst($name))) 
+			if (property_exists($this, lcfirst($name)))
 				$this->{lcfirst($name)} = isset($arguments[0]) ? $arguments[0] : NULL;
+			if (property_exists($this, $name))
+				$this->$name = isset($arguments[0]) ? $arguments[0] : NULL;
 			return $this;
 		} else {
-			$selfClass = version_compare(PHP_VERSION, '5.5', '>') ? self::class : __CLASS__;
-			throw new \InvalidArgumentException('['.$selfClass."] No method '$rawName()' defined.");
+			$selfClass = \PHP_VERSION_ID >= 50500 ? self::class : __CLASS__;
+			throw new \InvalidArgumentException("[{$selfClass}] No method `{$rawName}()` defined.");
 		}
 	}
 
@@ -183,17 +204,16 @@ trait DataMethods
 	 * @return bool
 	 */
 	public function __set ($name, $value) {
+		/** @var $this \MvcCore\Model */
 		if (isset(static::$protectedProperties[$name])) {
-			$selfClass = version_compare(PHP_VERSION, '5.5', '>') ? self::class : __CLASS__;
+			$selfClass = \PHP_VERSION_ID >= 50500 ? self::class : __CLASS__;
 			throw new \InvalidArgumentException(
-				'['.$selfClass."] It's not possible to change property: '$name' originally declared in class ".__CLASS__.'.'
+				"[{$selfClass}] It's not possible to change property: `{$name}` originally declared in this class."
 			);
 		}
-		if (property_exists($this, $name))
-			return $this->$name = $value;
-		if (property_exists($this, lcfirst($name))) 
+		if (property_exists($this, lcfirst($name)))
 			return $this->{lcfirst($name)} = $value;
-		return $this->$name = $value;
+		return $this->{$name} = $value;
 	}
 
 	/**
@@ -204,55 +224,129 @@ trait DataMethods
 	 * @return mixed
 	 */
 	public function __get ($name) {
+		/** @var $this \MvcCore\Model */
 		if (isset(static::$protectedProperties[$name])) {
-			$selfClass = version_compare(PHP_VERSION, '5.5', '>') ? self::class : __CLASS__;
+			$selfClass = \PHP_VERSION_ID >= 50500 ? self::class : __CLASS__;
 			throw new \InvalidArgumentException(
-				'['.$selfClass."] It's not possible to get property: '$name' originally declared in this class."
+				"[{$selfClass}] It's not possible to get property: `{$name}` originally declared in this class."
 			);
 		}
-		if (property_exists($this, $name)) 
-			return $this->$name;
-		if (property_exists($this, lcfirst($name))) 
+		if (isset($this->{lcfirst($name)}))
 			return $this->{lcfirst($name)};
+		if (isset($this->{$name}))
+			return $this->{$name};
 		return NULL;
 	}
 
 	/**
 	 * Collect all properties names to serialize them by `serialize()` method.
-	 * Collect all instance properties declared as private, protected and public 
-	 * and if there is configured in `static::$protectedProperties` anything as 
-	 * `TRUE` (under key by property name), also return those properties in 
+	 * Collect all instance properties declared as private, protected and public
+	 * and if there is configured in `static::$protectedProperties` anything as
+	 * `TRUE` (under key by property name), also return those properties in
 	 * result array.
 	 * @return \string[]
 	 */
 	public function __sleep () {
-		$result = [];
-		$type = new \ReflectionClass($this);
-		$props = $type->getProperties(
-			\ReflectionProperty::IS_PRIVATE | 
-			\ReflectionProperty::IS_PROTECTED | 
-			\ReflectionProperty::IS_PUBLIC
-		);
-		/** @var $prop \ReflectionProperty */
-		foreach ($props as $prop) {
-			if ($prop->isStatic()) continue;
-			$propName = $prop->getName();
-			if (
-				isset(static::$protectedProperties[$propName]) && 
-				!static::$protectedProperties[$propName]
-			) continue;
-			$result[] = $propName;
-		}
-		return $result;
+		/** @var $this \MvcCore\Model */
+		$props = array_keys((array) $this);
+		foreach (static::$protectedProperties as $propName => $serialize)
+			if ($serialize)
+				unset($props[$propName]);
+		return $props;
 	}
 
 	/**
-	 * Run `$this->Init()` method if there is `$this->autoInit` property defined 
+	 * Run `$this->Init()` method if there is `$this->autoInit` property defined
 	 * and if the property is `TRUE`.
 	 * @return void
 	 */
 	public function __wakeup () {
-		if (property_exists($this, 'autoInit') && $this->autoInit) 
+		/** @var $this \MvcCore\Model */
+		if (property_exists($this, 'autoInit') && $this->autoInit)
 			$this->Init();
+	}
+
+	/**
+	 * Return cached array about properties in current class to not create reflection object every time.
+	 * Every key in array is property name, every value in array is array with following values:
+	 * - `bool` - for property defined in current class
+	 * - `int` - property access modified  (`1` public, `2` protected and `4` private)
+	 * - `string[]` - property types from code or from doc comments
+	 * - `\ReflectionProperty|NULL` - reflection property object
+	 * @return array
+	 */
+	private static function __getPropsData () {
+		/** @var $this \MvcCore\Model */
+		static $__propsData = NULL;
+		if ($__propsData == NULL) {
+			$calledClassFullName = get_called_class();
+			$props = (new \ReflectionClass($calledClassFullName))->getProperties(
+				\ReflectionProperty::IS_PUBLIC |
+				\ReflectionProperty::IS_PROTECTED |
+				\ReflectionProperty::IS_PRIVATE
+			);
+			$__propsData = [];
+			$phpWithTypes = PHP_VERSION_ID >= 70400;
+			foreach ($props as $prop){
+				$propName = $prop->getName();
+				if (isset(static::$protectedProperties[$propName])) continue;
+				$types = [];
+				if ($phpWithTypes && $prop->hasType()) {
+					$refType = $prop->getType();
+					if ($refType !== NULL)
+						$types = [$refType->getName()];
+				} else {
+					preg_match('/@var\s+([^\s]+)/', $prop->getDocComment(), $matches);
+					if ($matches) {
+						list(, $rawType) = $matches;
+						$types = explode('|', $rawType);
+					}
+				}
+				$accessMod = $prop->getModifiers();
+				$prop->setAccessible(TRUE);
+				$__propsData[$propName] = [
+					$prop->class == $calledClassFullName,
+					$accessMod, // 1 public, 2 protected, 4 private
+					$types,
+					$accessMod == 4 || $phpWithTypes ? $prop : NULL
+				];
+			}
+		}
+		return $__propsData;
+	}
+
+	/**
+	 * Return array with keys representing all instance properties names
+	 * and boolean values representing if property is defined in current class or not.
+	 * @return array
+	 */
+	private static function __getPropsNamesAll () {
+		/** @var $this \MvcCore\Model */
+		static $__allPropsNames = NULL;
+		if ($__allPropsNames == NULL) {
+			$propsData = static::__getPropsData();
+			$__allPropsNames = [];
+			foreach ($propsData as $propName => list($ownedByCurrent))
+				$__allPropsNames[$propName] = $ownedByCurrent;
+		}
+		return $__allPropsNames;
+	}
+
+	/**
+	 * Return array with keys representing public only instance properties names
+	 * and boolean values representing if property is defined in current class or not.
+	 * @return array
+	 */
+	private static function __getPropsNamesPublic () {
+		/** @var $this \MvcCore\Model */
+		static $__publicPropsNames = NULL;
+		if ($__publicPropsNames == NULL) {
+			$propsData = static::__getPropsData();
+			$__publicPropsNames = [];
+			foreach ($propsData as $propName => list($ownedByCurrent, $accessMod))
+				if ($accessMod == 1)
+					$__publicPropsNames[$propName] = $ownedByCurrent;
+		}
+		return $__publicPropsNames;
 	}
 }
