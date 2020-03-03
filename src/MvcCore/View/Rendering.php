@@ -88,10 +88,10 @@ namespace MvcCore\View {
 			if ($renderModeWithOb)
 				ob_start();
 			// render the template with local variables from the store
-			$result = call_user_func(function ($viewPath) {
+			$result = call_user_func(function ($viewPath, $controller) {
 				extract($this->__protected['store'], EXTR_SKIP);
 				include($viewPath);
-			}, $viewScriptFullPath);
+			}, $viewScriptFullPath, $this->controller);
 			// if render mode is default - get result from output buffer and return the result,
 			// if render mode is continuous - result is sent to client already, so return empty string only.
 			if ($renderModeWithOb) {
