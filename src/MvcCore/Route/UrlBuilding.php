@@ -29,7 +29,7 @@ trait UrlBuilding
 			return [TRUE, $params];
 		list($closureCalling, $handler) = $this->filters[$direction];
 		try {
-			$req = & \MvcCore\Application::GetInstance()->GetRequest();
+			$req = \MvcCore\Application::GetInstance()->GetRequest();
 			if ($closureCalling) {
 				$newParams = $handler($params, $defaultParams, $req);
 			} else {
@@ -271,7 +271,7 @@ trait UrlBuilding
 	protected function urlReplaceDomainReverseParams (\MvcCore\IRequest & $request, & $resultUrl, & $domainParams, $domainParamsFlag) {
 		$replacements = [];
 		$values = [];
-		$router = & $this->router;
+		$router = $this->router;
 		if ($domainParamsFlag == static::FLAG_HOST_HOST) {
 			$hostParamName = $router::URL_PARAM_HOST;
 			$replacements[] = static::PLACEHOLDER_HOST;
@@ -345,7 +345,7 @@ trait UrlBuilding
 		$doubleSlashPos = $doubleSlashPos === FALSE
 			? 0
 			: $doubleSlashPos + 2;
-		$router = & $this->router;
+		$router = $this->router;
 		$basePathPlaceHolderPos = mb_strpos($resultUrl, static::PLACEHOLDER_BASEPATH, $doubleSlashPos);
 		if ($basePathPlaceHolderPos === FALSE) {
 			return $this->urlAbsPartAndSplitByRequestedBasePath(
@@ -460,7 +460,7 @@ trait UrlBuilding
 	 *							path part with query string.
 	 */
 	protected function urlAbsPartAndSplitByGlobalSwitchOrBasePath (\MvcCore\IRequest & $request, $resultUrl, & $domainParams, $domainParamsFlag, $splitUrl) {
-		$router = & $this->router;
+		$router = $this->router;
 		$basePathParamName = $router::URL_PARAM_BASEPATH;
 		$basePart = isset($domainParams[$basePathParamName])
 			? isset($domainParams[$basePathParamName])
@@ -499,7 +499,7 @@ trait UrlBuilding
 	protected function urlGetAndRemoveDomainPercentageParams (array & $params = []) {
 		static $domainPercentageParams = [];
 		$absolute = FALSE;
-		$router = & $this->router;
+		$router = $this->router;
 		$absoluteParamName = $router::URL_PARAM_ABSOLUTE;
 		$result = [];
 		if (!$domainPercentageParams) {

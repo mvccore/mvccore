@@ -62,7 +62,7 @@ trait GettersSetters
 	 * @param string|array $pattern
 	 * @return \MvcCore\Route
 	 */
-	public function & SetPattern ($pattern) {
+	public function SetPattern ($pattern) {
 		/** @var $this \MvcCore\Route */
 		$this->pattern = $pattern;
 		return $this;
@@ -113,7 +113,7 @@ trait GettersSetters
 	 * @param string|array $match
 	 * @return \MvcCore\Route
 	 */
-	public function & SetMatch ($match) {
+	public function SetMatch ($match) {
 		/** @var $this \MvcCore\Route */
 		$this->match = $match;
 		return $this;
@@ -166,7 +166,7 @@ trait GettersSetters
 	 * @param string|array $reverse
 	 * @return \MvcCore\Route
 	 */
-	public function & SetReverse ($reverse) {
+	public function SetReverse ($reverse) {
 		/** @var $this \MvcCore\Route */
 		$this->reverse = $reverse;
 		return $this;
@@ -199,7 +199,7 @@ trait GettersSetters
 	 * @param string|NULL $name
 	 * @return \MvcCore\Route
 	 */
-	public function & SetName ($name) {
+	public function SetName ($name) {
 		/** @var $this \MvcCore\Route */
 		$this->name = $name;
 		return $this;
@@ -258,7 +258,7 @@ trait GettersSetters
 	 * @param string|NULL $controller
 	 * @return \MvcCore\Route
 	 */
-	public function & SetController ($controller) {
+	public function SetController ($controller) {
 		/** @var $this \MvcCore\Route */
 		$this->controller = $controller;
 		return $this;
@@ -297,7 +297,7 @@ trait GettersSetters
 	 * @param string|NULL $action
 	 * @return \MvcCore\Route
 	 */
-	public function & SetAction ($action) {
+	public function SetAction ($action) {
 		/** @var $this \MvcCore\Route */
 		$this->action = $action;
 		return $this;
@@ -325,7 +325,7 @@ trait GettersSetters
 	 * Example: `"Products:List" | "\Front\Business\Products:Gallery"`
 	 * @return \MvcCore\Route
 	 */
-	public function & SetControllerAction ($controllerAction) {
+	public function SetControllerAction ($controllerAction) {
 		/** @var $this \MvcCore\Route */
 		list($ctrl, $action) = explode(':', $controllerAction);
 		if ($ctrl)		$this->controller = $ctrl;
@@ -354,7 +354,7 @@ trait GettersSetters
 	 * @param array|\array[] $defaults
 	 * @return \MvcCore\Route
 	 */
-	public function & SetDefaults ($defaults = []) {
+	public function SetDefaults ($defaults = []) {
 		/** @var $this \MvcCore\Route */
 		$this->defaults = $defaults;
 		return $this;
@@ -385,7 +385,7 @@ trait GettersSetters
 	 * @param array|\array[] $constraints
 	 * @return \MvcCore\Route
 	 */
-	public function & SetConstraints ($constraints = []) {
+	public function SetConstraints ($constraints = []) {
 		/** @var $this \MvcCore\Route */
 		$this->constraints = $constraints;
 		foreach ($constraints as $key => $value)
@@ -444,7 +444,7 @@ trait GettersSetters
 	 * @param array|\callable[] $filters 
 	 * @return \MvcCore\Route
 	 */
-	public function & SetFilters (array $filters = []) {
+	public function SetFilters (array $filters = []) {
 		foreach ($filters as $direction => $handler) 
 			$this->SetFilter($handler, $direction);
 		/** @var $this \MvcCore\Route */
@@ -499,7 +499,7 @@ trait GettersSetters
 	 * @param string $direction
 	 * @return \MvcCore\Route
 	 */
-	public function & SetFilter ($handler, $direction = \MvcCore\IRoute::CONFIG_FILTER_IN) {
+	public function SetFilter ($handler, $direction = \MvcCore\IRoute::CONFIG_FILTER_IN) {
 		// there is possible to call any `callable` as closure function in variable
 		// except forms like `'ClassName::methodName'` and `['childClassName', 'parent::methodName']`
 		// and `[$childInstance, 'parent::methodName']`.
@@ -531,7 +531,7 @@ trait GettersSetters
 	 * @param string|NULL $method
 	 * @return \MvcCore\Route
 	 */
-	public function & SetMethod ($method = NULL) {
+	public function SetMethod ($method = NULL) {
 		/** @var $this \MvcCore\Route */
 		$this->method = strtoupper($method);
 		return $this;
@@ -558,7 +558,7 @@ trait GettersSetters
 	 * @param string|NULL $redirectRouteName 
 	 * @return \MvcCore\Route
 	 */
-	public function & SetRedirect ($redirectRouteName = NULL) {
+	public function SetRedirect ($redirectRouteName = NULL) {
 		/** @var $this \MvcCore\Route */
 		$this->redirect = $redirectRouteName;
 		return $this;
@@ -582,7 +582,7 @@ trait GettersSetters
 	 * @param bool $absolute 
 	 * @return \MvcCore\Route
 	 */
-	public function & SetAbsolute ($absolute = TRUE) {
+	public function SetAbsolute ($absolute = TRUE) {
 		/** @var $this \MvcCore\Route */
 		$this->absolute = $absolute;
 		return $this;
@@ -607,7 +607,7 @@ trait GettersSetters
 	 * @param string|NULL $groupName 
 	 * @return \MvcCore\Route
 	 */
-	public function & SetGroupName ($groupName) {
+	public function SetGroupName ($groupName) {
 		/** @var $this \MvcCore\Route */
 		$this->groupName = $groupName;
 		return $this;
@@ -634,7 +634,7 @@ trait GettersSetters
 	 * @param array $matchedParams
 	 * @return \MvcCore\Route
 	 */
-	public function & SetMatchedParams ($matchedParams = []) {
+	public function SetMatchedParams ($matchedParams = []) {
 		/** @var $this \MvcCore\Route */
 		$this->matchedParams = $matchedParams;
 		return $this;
@@ -656,7 +656,7 @@ trait GettersSetters
 	 * Get router instance reference, used mostly in route URL building process.
 	 * @return \MvcCore\Router|\MvcCore\IRouter
 	 */
-	public function & GetRouter () {
+	public function GetRouter () {
 		return $this->router;
 	}
 	
@@ -665,9 +665,9 @@ trait GettersSetters
 	 * @param \MvcCore\Router|\MvcCore\IRouter $router 
 	 * @return \MvcCore\Route
 	 */
-	public function & SetRouter (\MvcCore\IRouter & $router) {
+	public function SetRouter (\MvcCore\IRouter $router) {
 		/** @var $this \MvcCore\Route */
-		$this->router = & $router;
+		$this->router = $router;
 		return $this;
 	}
 

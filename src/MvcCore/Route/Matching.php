@@ -206,7 +206,7 @@ trait Matching
 	protected function & matchesParseRewriteParams (& $matchedValues, & $defaults) {
 		$toolClass = \MvcCore\Application::GetInstance()->GetToolClass();
 		$matchedParams = [];
-		$router = & $this->router;
+		$router = $this->router;
 		if ($this->controller !== NULL) 
 			$matchedParams[$router::URL_PARAM_CONTROLLER] = $toolClass::GetDashedFromPascalCase(
 				str_replace(['_', '\\'], '/', $this->controller)

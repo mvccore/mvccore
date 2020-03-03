@@ -21,10 +21,10 @@ trait Instancing
 	 * - `\MvcCore\Router::AddRoutes();`
 	 * - `\MvcCore\Router::AddRoute();`
 	 * - `\MvcCore\Router::SetOrCreateDefaultRouteAsCurrent();`
-	 * This method is the best place where to implement custom route init for 
-	 * configured core class. First argument could be configuration array with 
-	 * all necessary constructor values or all separated arguments - first is 
-	 * route pattern value to parse into match and reverse values, then 
+	 * This method is the best place where to implement custom route init for
+	 * configured core class. First argument could be configuration array with
+	 * all necessary constructor values or all separated arguments - first is
+	 * route pattern value to parse into match and reverse values, then
 	 * controller with action, params default values and constraints.
 	 * Example:
 	 * `new Route([
@@ -50,22 +50,22 @@ trait Instancing
 	 *		"defaults"		=> ["name" => "default-name",	"color" => "red"],
 	 * ]);`
 	 * @param string|array	$patternOrConfig
-	 *						Required, configuration array or route pattern value 
+	 *						Required, configuration array or route pattern value
 	 *						to parse into match and reverse patterns.
-	 * @param string		$controllerAction		
-	 *						Optional, controller and action name in pascal case 
+	 * @param string		$controllerAction
+	 *						Optional, controller and action name in pascal case
 	 *						like: `"Products:List"`.
 	 * @param array			$defaults
-	 *						Optional, default param values like: 
+	 *						Optional, default param values like:
 	 *						`["name" => "default-name", "page" => 1]`.
 	 * @param array			$constraints
 	 *						Optional, params regular expression constraints for
-	 *						regular expression match function if no `"match"` 
+	 *						regular expression match function if no `"match"`
 	 *						property in config array as first argument defined.
 	 * @param array			$advancedConfiguration
-	 *						Optional, http method to only match requests by this 
-	 *						method. If `NULL` (by default), request with any http 
-	 *						method could be matched by this route. Given value is 
+	 *						Optional, http method to only match requests by this
+	 *						method. If `NULL` (by default), request with any http
+	 *						method could be matched by this route. Given value is
 	 *						automatically converted to upper case.
 	 * @return \MvcCore\Route
 	 */
@@ -76,15 +76,15 @@ trait Instancing
 		$constraints = [],
 		$advancedConfiguration = []
 	) {
-		$className = version_compare(PHP_VERSION, '5.5', '>') ? static::class : get_called_class();
+		$className = \PHP_VERSION_ID >= 50500 ? static::class : get_called_class();
 		return (new \ReflectionClass($className))
 			->newInstanceArgs(func_get_args());
 	}
 
 	/**
-	 * Create new route instance. First argument could be configuration array 
-	 * with all necessary constructor values or all separated arguments - first  
-	 * is route pattern value to parse into match and reverse values, then 
+	 * Create new route instance. First argument could be configuration array
+	 * with all necessary constructor values or all separated arguments - first
+	 * is route pattern value to parse into match and reverse values, then
 	 * controller with action, params default values and constraints.
 	 * Example:
 	 * `new Route([
@@ -110,22 +110,22 @@ trait Instancing
 	 *		"defaults"		=> ["name" => "default-name",	"color" => "red"],
 	 * ]);`
 	 * @param string|array	$patternOrConfig
-	 *						Required, configuration array or route pattern value 
+	 *						Required, configuration array or route pattern value
 	 *						to parse into match and reverse patterns.
-	 * @param string		$controllerAction		
-	 *						Optional, controller and action name in pascal case 
+	 * @param string		$controllerAction
+	 *						Optional, controller and action name in pascal case
 	 *						like: `"Products:List"`.
 	 * @param array			$defaults
-	 *						Optional, default param values like: 
+	 *						Optional, default param values like:
 	 *						`["name" => "default-name", "page" => 1]`.
 	 * @param array			$constraints
 	 *						Optional, params regular expression constraints for
 	 *						regular expression match function no `"match"` record
 	 *						in configuration array as first argument defined.
 	 * @param array			$advancedConfiguration
-	 *						Optional, http method to only match requests by this 
-	 *						method. If `NULL` (by default), request with any http 
-	 *						method could be matched by this route. Given value is 
+	 *						Optional, http method to only match requests by this
+	 *						method. If `NULL` (by default), request with any http
+	 *						method could be matched by this route. Given value is
 	 *						automatically converted to upper case.
 	 * @return void
 	 */
@@ -155,34 +155,34 @@ trait Instancing
 	}
 
 	/**
-	 * If route is initialized by single array argument with all data, 
-	 * initialize following properties if those exist in given object: 
-	 * `pattern`, `match` and `reverse`. If properties `defaults`, `constraints` 
+	 * If route is initialized by single array argument with all data,
+	 * initialize following properties if those exist in given object:
+	 * `pattern`, `match` and `reverse`. If properties `defaults`, `constraints`
 	 * and `filters` exist in given object, initialize them by setter methods.
-	 * @param \stdClass $data	Object containing properties `pattern`, 
+	 * @param \stdClass $data	Object containing properties `pattern`,
 	 *							`match`, `reverse`, `filters` and `defaults`.
 	 * @return void
 	 */
 	protected function constructDataPatternsDefaultsConstraintsFilters (& $data) {
-		if (isset($data->pattern)) 
+		if (isset($data->pattern))
 			$this->pattern = $data->pattern;
-		if (isset($data->match)) 
+		if (isset($data->match))
 			$this->match = $data->match;
-		if (isset($data->reverse)) 
+		if (isset($data->reverse))
 			$this->reverse = $data->reverse;
-		if (isset($data->defaults)) 
+		if (isset($data->defaults))
 			$this->SetDefaults($data->defaults);
-		if (isset($data->constraints)) 
+		if (isset($data->constraints))
 			$this->SetConstraints($data->constraints);
-		if (isset($data->filters) && is_array($data->filters)) 
+		if (isset($data->filters) && is_array($data->filters))
 			$this->SetFilters($data->filters);
 	}
-	
+
 	/**
-	 * If route is initialized by single array argument with all data, 
-	 * initialize following properties if those exist in given object: 
+	 * If route is initialized by single array argument with all data,
+	 * initialize following properties if those exist in given object:
 	 * `controller`, `action` (or `controllerAction`) and `name`.
-	 * @param \stdClass $data	Object containing properties `controller`,  
+	 * @param \stdClass $data	Object containing properties `controller`,
 	 *							`action` (or `controllerAction`) and `name`.
 	 * @return void
 	 */
@@ -208,21 +208,21 @@ trait Instancing
 			}
 		}
 	}
-	
+
 	/**
-	 * If route is initialized by single array argument with all data, 
-	 * initialize following properties if those exist in given object: 
+	 * If route is initialized by single array argument with all data,
+	 * initialize following properties if those exist in given object:
 	 * `method`, `redirect` and `absolute`.
-	 * @param \stdClass $data	Object containing properties `method`, 
+	 * @param \stdClass $data	Object containing properties `method`,
 	 *							`redirect` and `absolute`.
 	 * @return void
 	 */
 	protected function constructDataAdvConf (& $data) {
 		$methodParam = static::CONFIG_METHOD;
-		if (isset($data->{$methodParam})) 
+		if (isset($data->{$methodParam}))
 			$this->method = strtoupper((string) $data->{$methodParam});
 		$redirectParam = static::CONFIG_REDIRECT;
-		if (isset($data->{$redirectParam})) 
+		if (isset($data->{$redirectParam}))
 			$this->redirect = (string) $data->{$redirectParam};
 		$absoluteParam = static::CONFIG_ABSOLUTE;
 		if (isset($data->{$absoluteParam}))
@@ -230,25 +230,25 @@ trait Instancing
 	}
 
 	/**
-	 * If route is initialized by each constructor function arguments, 
-	 * initialize `pattern` and `defaults`, if those are not `NULL` and 
-	 * initialize constraints by setter if not `NULL` and initialize filter in 
-	 * and filter out by filter setter from `$advCfg` array if there are those 
+	 * If route is initialized by each constructor function arguments,
+	 * initialize `pattern` and `defaults`, if those are not `NULL` and
+	 * initialize constraints by setter if not `NULL` and initialize filter in
+	 * and filter out by filter setter from `$advCfg` array if there are those
 	 * filter keys found.
 	 * @param string|NULL	$pattern		Route pattern string.
-	 * @param array|NULL	$defaults		Route defaults array, keys are param 
+	 * @param array|NULL	$defaults		Route defaults array, keys are param
 	 *										names, values are default values.
-	 * @param array|NULL	$constraints	Route params regular expression 
-	 *										constraints array, keys are param 
-	 *										names, values are allowed regular 
+	 * @param array|NULL	$constraints	Route params regular expression
+	 *										constraints array, keys are param
+	 *										names, values are allowed regular
 	 *										expression rules.
-	 * @param array			$advCfg			An array with possible keys `in` and 
-	 *										`out` to define route filter in and 
+	 * @param array			$advCfg			An array with possible keys `in` and
+	 *										`out` to define route filter in and
 	 *										filter out callable.
 	 * @return void
 	 */
 	protected function constructVarsPatternDefaultsConstraintsFilters (& $pattern, & $defaults, & $constraints, & $advCfg) {
-		if ($pattern !== NULL) 
+		if ($pattern !== NULL)
 			$this->pattern = $pattern;
 		if ($defaults !== NULL)
 			$this->defaults = $defaults;
@@ -263,10 +263,10 @@ trait Instancing
 	}
 
 	/**
-	 * If route is initialized by each constructor function arguments, 
+	 * If route is initialized by each constructor function arguments,
 	 * initialize `controller` and `action`, if any of them is defined in given
-	 * argument `$ctrlAction`. 
-	 * @param string|NULL $ctrlAction	Controller and action combination 
+	 * argument `$ctrlAction`.
+	 * @param string|NULL $ctrlAction	Controller and action combination
 	 *									definition, it could be `"Products:List"`
 	 *									or only `"Products:"` etc.
 	 * @return void
@@ -280,9 +280,9 @@ trait Instancing
 	}
 
 	/**
-	 * If route is initialized by each constructor function arguments, 
+	 * If route is initialized by each constructor function arguments,
 	 * initialize `method`, `redirect` and `absolute`.
-	 * @param array $advCfg An array with possible keys `method`, 
+	 * @param array $advCfg An array with possible keys `method`,
 	 *						`redirect` and `absolute`.
 	 * @return void
 	 */
@@ -304,7 +304,7 @@ trait Instancing
 	 * function is called to initialize `controller` and `action` properties if
 	 * those are still `NULL`. Function tries to initialize those properties
 	 * from route `action` property`, if it contains colon char `:`.
-	 * @param array $advCfg An array with possible keys `method`, 
+	 * @param array $advCfg An array with possible keys `method`,
 	 *						`redirect` and `absolute`.
 	 * @return void
 	 */

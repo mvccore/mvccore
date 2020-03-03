@@ -249,7 +249,7 @@ interface IRoute
 	 * @param string|array $pattern
 	 * @return \MvcCore\IRoute
 	 */
-	public function & SetPattern ($pattern);
+	public function SetPattern ($pattern);
 
 	/**
 	 * Get route match pattern in raw form (to use it as it is) to match requested
@@ -294,7 +294,7 @@ interface IRoute
 	 * @param string|array $match
 	 * @return \MvcCore\IRoute
 	 */
-	public function & SetMatch ($match);
+	public function SetMatch ($match);
 
 	/**
 	 * Get route reverse address replacements pattern to build url.
@@ -341,7 +341,7 @@ interface IRoute
 	 * @param string|array $reverse
 	 * @return \MvcCore\IRoute
 	 */
-	public function & SetReverse ($reverse);
+	public function SetReverse ($reverse);
 
 	/**
 	 * Get route name is your custom keyword/term or pascal case combination of 
@@ -368,7 +368,7 @@ interface IRoute
 	 * @param string|NULL $name
 	 * @return \MvcCore\IRoute
 	 */
-	public function & SetName ($name);
+	public function SetName ($name);
 
 	/**
 	 * Get controller name/path to dispatch, in pascal case. This property is not 
@@ -421,7 +421,7 @@ interface IRoute
 	 * @param string|NULL $controller
 	 * @return \MvcCore\IRoute
 	 */
-	public function & SetController ($controller);
+	public function SetController ($controller);
 
 	/**
 	 * Get action name to call in dispatched controller, in pascal case. This 
@@ -454,7 +454,7 @@ interface IRoute
 	 * @param string|NULL $action
 	 * @return \MvcCore\IRoute
 	 */
-	public function & SetAction ($action);
+	public function SetAction ($action);
 
 	/**
 	 * Get target controller name/path and controller action name together in 
@@ -476,7 +476,7 @@ interface IRoute
 	 * Example: `"Products:List" | "\Front\Business\Products:Gallery"`
 	 * @return \MvcCore\IRoute
 	 */
-	public function & SetControllerAction ($controllerAction);
+	public function SetControllerAction ($controllerAction);
 	
 	/**
 	 * Get route rewrite params default values and also any other query string 
@@ -497,7 +497,7 @@ interface IRoute
 	 * @param array|\array[] $defaults
 	 * @return \MvcCore\IRoute
 	 */
-	public function & SetDefaults ($defaults = []);
+	public function SetDefaults ($defaults = []);
 
 	/**
 	 * Get array with param names and their custom regular expression matching 
@@ -522,7 +522,7 @@ interface IRoute
 	 * @param array|\array[] $constraints
 	 * @return \MvcCore\IRoute
 	 */
-	public function & SetConstraints ($constraints = []);
+	public function SetConstraints ($constraints = []);
 
 	/**
 	 * Get URL address params filters to filter URL params in and out. By route 
@@ -569,7 +569,7 @@ interface IRoute
 	 * @param array|\callable[] $filters 
 	 * @return \MvcCore\IRoute
 	 */
-	public function & SetFilters (array $filters = []);
+	public function SetFilters (array $filters = []);
 
 	/**
 	 * Get URL address params filter to filter URL params in and out. By route 
@@ -615,7 +615,7 @@ interface IRoute
 	 * @param string $direction
 	 * @return \MvcCore\Route
 	 */
-	public function & SetFilter ($handler, $direction = \MvcCore\IRoute::CONFIG_FILTER_IN);
+	public function SetFilter ($handler, $direction = \MvcCore\IRoute::CONFIG_FILTER_IN);
 
 	/**
 	 * Get http method to only match requests with this defined method. If `NULL`, 
@@ -634,7 +634,7 @@ interface IRoute
 	 * @param string|NULL $method
 	 * @return \MvcCore\Route
 	 */
-	public function & SetMethod ($method = NULL);
+	public function SetMethod ($method = NULL);
 
 	/**
 	 * Get other route unique name to redirect request to. To this target route are 
@@ -655,7 +655,7 @@ interface IRoute
 	 * @param string|NULL $redirectRouteName 
 	 * @return \MvcCore\IRoute
 	 */
-	public function & SetRedirect ($redirectRouteName = NULL);
+	public function SetRedirect ($redirectRouteName = NULL);
 
 	/**
 	 * Return `TRUE` if route `pattern` (or `reverse`) contains domain part with 
@@ -673,7 +673,7 @@ interface IRoute
 	 * @param bool $absolute 
 	 * @return \MvcCore\IRoute
 	 */
-	public function & SetAbsolute ($absolute = TRUE);
+	public function SetAbsolute ($absolute = TRUE);
 
 	/**
 	 * Get route group name to belongs to. Group name is always first word parsed
@@ -692,7 +692,7 @@ interface IRoute
 	 * @param string|NULL $groupName 
 	 * @return \MvcCore\IRoute
 	 */
-	public function & SetGroupName ($groupName);
+	public function SetGroupName ($groupName);
 
 	/**
 	 * Return only reverse params names as `string`s array. Reverse params array
@@ -711,7 +711,7 @@ interface IRoute
 	 * @param array $matchedParams
 	 * @return \MvcCore\IRoute
 	 */
-	public function & SetMatchedParams ($matchedParams = []);
+	public function SetMatchedParams ($matchedParams = []);
 
 	/**
 	 * Get matched params from rewrite route matching process into current route 
@@ -727,14 +727,14 @@ interface IRoute
 	 * Get router instance reference, used mostly in route URL building process.
 	 * @return \MvcCore\IRouter
 	 */
-	public function & GetRouter ();
+	public function GetRouter ();
 	
 	/**
 	 * Set router instance reference, used mostly in route URL building process.
 	 * @param \MvcCore\Router|\MvcCore\IRouter $router 
 	 * @return \MvcCore\IRoute
 	 */
-	public function & SetRouter (\MvcCore\IRouter & $router);
+	public function SetRouter (\MvcCore\IRouter $router);
 
 	/**
 	 * Get any special advanced configuration property from route constructor.
@@ -834,33 +834,10 @@ interface IRoute
 	public function Url (\MvcCore\IRequest & $request, array & $params = [], array & $defaultUrlParams = [], $queryStringParamsSepatator = '&', $splitUrl = FALSE);
 
 	/**
-	 * This method serve only for debug and development purposes. It renders all 
-	 * instance properties values into string, to print whole route in logic 
-	 * exception message about what property is missing.
-	 * @return string
-	 */
-	public function __toString ();
-
-	/**
-	 * Collect all properties names to serialize them by `serialize()` method.
-	 * Collect all instance properties declared as private, protected and public 
-	 * and if there is not configured in `static::$protectedProperties` anything 
-	 * under property name, return those properties in result array.
-	 * @return \string[]
-	 */
-	public function __sleep ();
-
-	/**
-	 * Assign router instance to local property `$this->router;`.
-	 * @return void
-	 */
-	public function __wakeup ();
-
-	/**
 	 * Initialize all possible protected values (`match`, `reverse` etc...). This 
 	 * method is not recommended to use in production mode, it's designed mostly 
 	 * for development purposes, to see what could be inside route object.
 	 * @return \MvcCore\IRoute
 	 */
-	public function & InitAll ();
+	public function InitAll ();
 }
