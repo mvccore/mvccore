@@ -439,8 +439,8 @@ interface IApplication
 	 *	- `\MvcCore\Response`
 	 * Example:
 	 * `\MvcCore\Application::GetInstance()->AddPreRouteHandler(function(
-	 *		\MvcCore\Request & $request,
-	 *		\MvcCore\Response & $response
+	 *		\MvcCore\Request $request,
+	 *		\MvcCore\Response $response
 	 * ) {
 	 *		$request->customVar = 'custom_value';
 	 * });`
@@ -460,8 +460,8 @@ interface IApplication
 	 *	- `\MvcCore\Response`
 	 * Example:
 	 * `\MvcCore\Application::GetInstance()->AddPostRouteHandler(function(
-	 *		\MvcCore\Request & $request,
-	 *		\MvcCore\Response & $response
+	 *		\MvcCore\Request $request,
+	 *		\MvcCore\Response $response
 	 * ) {
 	 *		$request->customVar = 'custom_value';
 	 * });`
@@ -481,8 +481,8 @@ interface IApplication
 	 *	- `\MvcCore\Response`
 	 * Example:
 	 * `\MvcCore\Application::GetInstance()->AddPreDispatchHandler(function(
-	 *		\MvcCore\Request & $request,
-	 *		\MvcCore\Response & $response
+	 *		\MvcCore\Request $request,
+	 *		\MvcCore\Response $response
 	 * ) {
 	 *		$request->customVar = 'custom_value';
 	 * });`
@@ -501,8 +501,8 @@ interface IApplication
 	 *	- `\MvcCore\Response`
 	 * Example:
 	 * `\MvcCore\Application::GetInstance()->AddPostDispatchHandler(function(
-	 *		\MvcCore\Request & $request,
-	 *		\MvcCore\Response & $response
+	 *		\MvcCore\Request $request,
+	 *		\MvcCore\Response $response
 	 * ) {
 	 *		$request->customVar = 'custom_value';
 	 * });`
@@ -520,8 +520,8 @@ interface IApplication
 	 *	- `\MvcCore\Response`
 	 * Example:
 	 * `\MvcCore\Application::GetInstance()->AddPostTerminateHandler(function(
-	 *		\MvcCore\Request & $request,
-	 *		\MvcCore\Response & $response
+	 *		\MvcCore\Request $request,
+	 *		\MvcCore\Response $response
 	 * ) {
 	 *		// close connection by previously configured 
 	 *		// header: header('Connection: close');

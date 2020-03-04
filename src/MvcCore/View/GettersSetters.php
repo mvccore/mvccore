@@ -137,7 +137,7 @@ trait GettersSetters
 	 * @param \MvcCore\Controller $controller
 	 * @return \MvcCore\View
 	 */
-	public function SetController (\MvcCore\IController & $controller) {
+	public function SetController (\MvcCore\IController $controller) {
 		/** @var $this \MvcCore\View */
 		$this->controller = $controller;
 		return $this;

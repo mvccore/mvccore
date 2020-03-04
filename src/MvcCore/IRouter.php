@@ -726,7 +726,7 @@ interface IRouter
 	 * @param string $urlParamRouteName
 	 * @return string
 	 */
-	public function UrlByRoute (\MvcCore\IRoute & $route, array & $params = [], $urlParamRouteName = NULL);
+	public function UrlByRoute (\MvcCore\IRoute $route, array & $params = [], $urlParamRouteName = NULL);
 
 	/**
 	 * THIS METHOD IS MOSTLY USED INTERNALLY.

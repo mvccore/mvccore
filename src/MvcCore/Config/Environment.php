@@ -304,7 +304,7 @@ trait Environment
 	 * @param array|NULL		$serverGlobals 
 	 * @return bool If `TRUE`, environment has been detected and detection procedure could stop.
 	 */
-	protected static function envDetectBySystemConfigEnvSection (& $data, & $req, & $clientIp, & $serverHostName, & $serverGlobals) {
+	protected static function envDetectBySystemConfigEnvSection (& $data, $req, & $clientIp, & $serverHostName, & $serverGlobals) {
 		if ($data->clientIps->check) {
 			// try to recognize environment by any configured client IP address value
 			$clientIp = $clientIp ?: $req->GetClientIp();

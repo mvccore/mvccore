@@ -246,7 +246,7 @@ interface IView
 	 * @param \MvcCore\IController $controller
 	 * @return \MvcCore\IView
 	 */
-	public function SetController (\MvcCore\IController & $controller);
+	public function SetController (\MvcCore\IController $controller);
 
 	/**
 	 * Get controller instance as reference.
@@ -358,8 +358,8 @@ interface IView
 	public function & Render ($typePath = '', $relativePath = '');
 
 	/**
-	 * Evaluate given code as PHP code by `eval()` in current view context,
-	 * any `$this` keyword will be used as current view context.
+	 * Evaluate given template code as PHP code by `eval()` in current view
+	 * context, any `$this` keyword will be used as current view context.
 	 * Returned result is content from output buffer as string reference.
 	 * Evaluated code is wrapped into `try/catch` automatically.
 	 * @param string $content

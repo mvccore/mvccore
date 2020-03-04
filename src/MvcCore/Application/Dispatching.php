@@ -184,7 +184,7 @@ namespace MvcCore\Application {
 				$controllerName,
 				$actionName,
 				$viewScriptFullPath,
-				function (\Throwable & $e) {
+				function (\Throwable $e) {
 					return $this->DispatchException($e);
 				}
 			);
@@ -395,7 +395,7 @@ namespace MvcCore\Application {
 						$viewClass::GetScriptsDir(),
 						$this->request->GetControllerName() . '/' . $this->request->GetActionName()
 					),
-					function (\Throwable & $e2) use ($exceptionMessage, $debugClass) {
+					function (\Throwable $e2) use ($exceptionMessage, $debugClass) {
 						$this->router->RemoveRoute(\MvcCore\IRouter::DEFAULT_ROUTE_NAME_NOT_FOUND);
 						$configClass = $this->configClass;
 						if ($configClass::IsDevelopment(TRUE)) {
@@ -448,7 +448,7 @@ namespace MvcCore\Application {
 						$viewClass::GetScriptsDir(),
 						$this->request->GetControllerName() . '/' . $this->request->GetActionName()
 					),
-					function (\Throwable & $e) use ($exceptionMessage, $debugClass) {
+					function (\Throwable $e) use ($exceptionMessage, $debugClass) {
 						$this->router->RemoveRoute(\MvcCore\IRouter::DEFAULT_ROUTE_NAME_NOT_FOUND);
 						$configClass = $this->configClass;
 						if ($configClass::IsDevelopment(TRUE)) {

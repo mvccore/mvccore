@@ -32,7 +32,7 @@ trait Matching
 	 * @return array Matched and params array, keys are matched
 	 *				 params or controller and action params.
 	 */
-	public function & Matches (\MvcCore\IRequest & $request) {
+	public function & Matches (\MvcCore\IRequest $request) {
 		$matchedParams = NULL;
 		$pattern = $this->matchesGetPattern();
 		$subject = $this->matchesGetSubject($request);
@@ -79,7 +79,7 @@ trait Matching
 	 * @param \MvcCore\IRequest $request 
 	 * @return string
 	 */
-	protected function matchesGetSubject (\MvcCore\IRequest & $request) {
+	protected function matchesGetSubject (\MvcCore\IRequest $request) {
 		$subject = $this->matchesGetSubjectHostAndBase($request) 
 			. $request->GetPath(TRUE);
 		if ($this->flags[2]) 
@@ -117,7 +117,7 @@ trait Matching
 	 * @param \MvcCore\IRequest $request 
 	 * @return string
 	 */
-	protected function matchesGetSubjectHostAndBase (\MvcCore\IRequest & $request) {
+	protected function matchesGetSubjectHostAndBase (\MvcCore\IRequest $request) {
 		$schemeFlag = $this->flags[0];
 		$basePathDefined = FALSE;
 		$basePath = '';
@@ -168,7 +168,7 @@ trait Matching
 	 * @param int $hostFlag 
 	 * @return string
 	 */
-	protected function matchesGetSubjectHost (\MvcCore\IRequest & $request, & $hostFlag) {
+	protected function matchesGetSubjectHost (\MvcCore\IRequest $request, & $hostFlag) {
 		$hostPart = '';
 		if ($hostFlag == static::FLAG_HOST_NO /* 0 */) {
 			$hostPart = $request->GetHostName();

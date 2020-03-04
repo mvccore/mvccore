@@ -768,7 +768,7 @@ interface IRoute
 	 * @return array Matched and params array, keys are matched
 	 *				 params or controller and action params.
 	 */
-	public function & Matches (\MvcCore\IRequest & $request);
+	public function & Matches (\MvcCore\IRequest $request);
 
 	/**
 	 * Filter given `array $params` by configured `"in" | "out"` filter `callable`.
@@ -831,7 +831,7 @@ interface IRoute
 	 *							in two parts - domain part with base path and 
 	 *							path part with query string.
 	 */
-	public function Url (\MvcCore\IRequest & $request, array & $params = [], array & $defaultUrlParams = [], $queryStringParamsSepatator = '&', $splitUrl = FALSE);
+	public function Url (\MvcCore\IRequest $request, array & $params = [], array & $defaultUrlParams = [], $queryStringParamsSepatator = '&', $splitUrl = FALSE);
 
 	/**
 	 * Initialize all possible protected values (`match`, `reverse` etc...). This 

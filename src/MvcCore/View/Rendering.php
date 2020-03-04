@@ -181,8 +181,8 @@ namespace MvcCore\View {
 		}
 
 		/**
-		 * Evaluate given code as PHP code by `eval()` in current view context,
-		 * any `$this` keyword will be used as current view context.
+		 * Evaluate given template code as PHP code by `eval()` in current view
+		 * context, any `$this` keyword will be used as current view context.
 		 * Returned result is content from output buffer as string reference.
 		 * Evaluated code is wrapped into `try/catch` automatically.
 		 * @param string $content

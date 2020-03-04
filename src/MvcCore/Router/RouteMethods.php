@@ -325,7 +325,7 @@ trait RouteMethods
 	 * @param bool				$prepend	IF `TRUE`, prepend route instance, `FALSE` otherwise.
 	 * @return void
 	 */
-	protected function addRouteToGroup (\MvcCore\IRoute & $route, $routeName, $groupName, $prepend) {
+	protected function addRouteToGroup (\MvcCore\IRoute $route, $routeName, $groupName, $prepend) {
 		if ($groupName === NULL) {
 			$routesGroupsKey = '';
 		} else {
@@ -398,7 +398,7 @@ trait RouteMethods
 	 * @param string $routeName
 	 * @return void
 	 */
-	protected function removeRouteFromGroup (\MvcCore\IRoute & $route, $routeName) {
+	protected function removeRouteFromGroup (\MvcCore\IRoute $route, $routeName) {
 		$routeGroup = $route->GetGroupName();
 		$groupRoutesKey = $routeGroup ?: '';
 		if (isset($this->routesGroups[$groupRoutesKey]))

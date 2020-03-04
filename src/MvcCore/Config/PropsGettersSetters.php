@@ -99,7 +99,7 @@ trait PropsGettersSetters
 	 * @param \MvcCore\IConfig $configInstance
 	 * @return \MvcCore\IConfig
 	 */
-	public static function SetConfigCache ($appRootRelativePath, \MvcCore\IConfig & $configInstance) {
+	public static function SetConfigCache ($appRootRelativePath, \MvcCore\IConfig $configInstance) {
 		return static::$configsCache[$appRootRelativePath] = $configInstance;
 	}
 

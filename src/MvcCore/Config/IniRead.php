@@ -57,7 +57,7 @@ trait IniRead
 		} else {
 			$environment = static::$environment;
 		}
-		$iniData = $this->iniReadFilterEnvironmentSections($rawIniData, $environment);
+		$iniData = & $this->iniReadFilterEnvironmentSections($rawIniData, $environment);
 		$this->iniReadExpandLevelsAndReType($iniData);
 		if ($environmentsData !== NULL)
 			$this->data[$envsSectionName] = (object) $environmentsData;

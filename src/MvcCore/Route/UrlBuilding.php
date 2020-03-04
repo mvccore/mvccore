@@ -94,7 +94,7 @@ trait UrlBuilding
 	 *							in two parts - domain part with base path and 
 	 *							path part with query string.
 	 */
-	public function Url (\MvcCore\IRequest & $request, array & $params = [], array & $defaultUrlParams = [], $queryStringParamsSepatator = '&', $splitUrl = FALSE) {
+	public function Url (\MvcCore\IRequest $request, array & $params = [], array & $defaultUrlParams = [], $queryStringParamsSepatator = '&', $splitUrl = FALSE) {
 		// check reverse initialization
 		if ($this->reverseParams === NULL) $this->initReverse();
 		// complete and filter all params to build reverse pattern
@@ -224,7 +224,7 @@ trait UrlBuilding
 	 *							in two parts - domain part with base path and 
 	 *							path part with query string.
 	 */
-	protected function urlAbsPartAndSplit (\MvcCore\IRequest & $request, $resultUrl, & $domainParams, $splitUrl) {
+	protected function urlAbsPartAndSplit (\MvcCore\IRequest $request, $resultUrl, & $domainParams, $splitUrl) {
 		$domainParamsFlag = $this->flags[1];
 		$basePathInReverse = FALSE;
 		if ($domainParamsFlag >= static::FLAG_HOST_BASEPATH) {
@@ -268,7 +268,7 @@ trait UrlBuilding
 	 *												percentage replacements was
 	 *												contained in reverse pattern.
 	 */
-	protected function urlReplaceDomainReverseParams (\MvcCore\IRequest & $request, & $resultUrl, & $domainParams, $domainParamsFlag) {
+	protected function urlReplaceDomainReverseParams (\MvcCore\IRequest $request, & $resultUrl, & $domainParams, $domainParamsFlag) {
 		$replacements = [];
 		$values = [];
 		$router = $this->router;
@@ -340,7 +340,7 @@ trait UrlBuilding
 	 *							in two parts - domain part with base path and 
 	 *							path part with query string.
 	 */
-	protected function urlAbsPartAndSplitByReverseBasePath (\MvcCore\IRequest & $request, $resultUrl, & $domainParams, $splitUrl) {
+	protected function urlAbsPartAndSplitByReverseBasePath (\MvcCore\IRequest $request, $resultUrl, & $domainParams, $splitUrl) {
 		$doubleSlashPos = mb_strpos($resultUrl, '//');
 		$doubleSlashPos = $doubleSlashPos === FALSE
 			? 0
@@ -389,7 +389,7 @@ trait UrlBuilding
 	 *							in two parts - domain part with base path and 
 	 *							path part with query string.
 	 */
-	protected function urlAbsPartAndSplitByRequestedBasePath (\MvcCore\IRequest & $request, $resultUrl, $splitUrl) {
+	protected function urlAbsPartAndSplitByRequestedBasePath (\MvcCore\IRequest $request, $resultUrl, $splitUrl) {
 		$doubleSlashPos = mb_strpos($resultUrl, '//');
 		$doubleSlashPos = $doubleSlashPos === FALSE
 			? 0
@@ -459,7 +459,7 @@ trait UrlBuilding
 	 *							in two parts - domain part with base path and 
 	 *							path part with query string.
 	 */
-	protected function urlAbsPartAndSplitByGlobalSwitchOrBasePath (\MvcCore\IRequest & $request, $resultUrl, & $domainParams, $domainParamsFlag, $splitUrl) {
+	protected function urlAbsPartAndSplitByGlobalSwitchOrBasePath (\MvcCore\IRequest $request, $resultUrl, & $domainParams, $domainParamsFlag, $splitUrl) {
 		$router = $this->router;
 		$basePathParamName = $router::URL_PARAM_BASEPATH;
 		$basePart = isset($domainParams[$basePathParamName])

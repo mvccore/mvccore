@@ -41,7 +41,7 @@ trait OopChecking
 		if (in_array($interfaceName, $testClassType->getInterfaceNames(), TRUE)) {
 			$result = TRUE;
 		} else {
-			$errorMsg = "Class `$testClassName` doesn't implement interface `$interfaceName`.";
+			$errorMsg = "Class `{$testClassName}` doesn't implement interface `{$interfaceName}`.";
 		}
 		if ($result && $checkStaticMethods) {
 			// check given test class for all implemented static methods by given interface
@@ -50,13 +50,13 @@ trait OopChecking
 			foreach ($interfaceMethods as $methodName) {
 				if (!$testClassType->hasMethod($methodName)) {
 					$allStaticsImplemented = FALSE;
-					$errorMsg = "Class `$testClassName` doesn't implement static method `$methodName` from interface `$interfaceName`.";
+					$errorMsg = "Class `{$testClassName}` doesn't implement static method `{$methodName}` from interface `{$interfaceName}`.";
 					break;
 				}
 				$testClassStaticMethod = $testClassType->getMethod($methodName);
 				if (!$testClassStaticMethod->isStatic()) {
 					$allStaticsImplemented = FALSE;
-					$errorMsg = "Class `$testClassName` doesn't implement static method `$methodName` from interface `$interfaceName`, method is not static.";
+					$errorMsg = "Class `{$testClassName}` doesn't implement static method `{$methodName}` from interface `{$interfaceName}`, method is not static.";
 					break;
 				}
 				// arguments compatibility in presented static method are automatically checked by PHP
@@ -102,7 +102,7 @@ trait OopChecking
 			}
 		}
 		if (!$result)
-			$errorMsg = "Class `$testClassName` doesn't implement trait `$traitName`.";
+			$errorMsg = "Class `{$testClassName}` doesn't implement trait `{$traitName}`.";
 		// return result or thrown an exception
 		if ($result) return TRUE;
 		if (!$throwException) return FALSE;
@@ -117,7 +117,7 @@ trait OopChecking
 	 * @return array
 	 */
 	protected static function & checkClassInterfaceGetPublicStaticMethods ($interfaceName) {
-		if (!isset(static::$interfacesStaticMethodsCache[$interfaceName])) 
+		if (!isset(static::$interfacesStaticMethodsCache[$interfaceName]))
 			static::$interfacesStaticMethodsCache[$interfaceName] = array_map(
 				function (\ReflectionMethod $method) {
 					return $method->name;

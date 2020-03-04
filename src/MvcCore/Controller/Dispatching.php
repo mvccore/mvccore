@@ -23,7 +23,7 @@ trait Dispatching
 	 * before it's created by MvcCore framework to dispatch it.
 	 * @return \MvcCore\Controller|\MvcCore\IController
 	 */
-	public static function & CreateInstance () {
+	public static function CreateInstance () {
 		/** @var $instance \MvcCore\Controller */
 		$instance = new static();
 		self::$allControllers[spl_object_hash($instance)] = $instance;
@@ -43,13 +43,13 @@ trait Dispatching
 		$calledClass = \PHP_VERSION_ID >= 50500 ? static::class : get_called_class();
 		foreach ($backtraceItems as $backtraceItem) {
 			if (!isset($backtraceItem['object']) || !$backtraceItem['object']) continue;
-			$object = & $backtraceItem['object'];
-			$class = & $backtraceItem['class'];
+			$object = $backtraceItem['object'];
+			$class = $backtraceItem['class'];
 			if (
 				$object instanceof \MvcCore\IController &&
 				$class !== $calledClass
 			) {
-				$result = & $object;
+				$result = $object;
 				break;
 			}
 		}

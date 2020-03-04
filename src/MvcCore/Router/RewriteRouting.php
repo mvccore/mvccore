@@ -115,7 +115,7 @@ trait RewriteRouting
 	 * @param array $additionalInfo 
 	 * @return bool
 	 */
-	protected function rewriteRoutingCheckRoute (\MvcCore\IRoute & $route, array $additionalInfo) {
+	protected function rewriteRoutingCheckRoute (\MvcCore\IRoute $route, array $additionalInfo) {
 		list ($requestMethod,) = $additionalInfo;
 		$routeMethod = $route->GetMethod();
 		if ($routeMethod !== NULL && $routeMethod !== $requestMethod) return TRUE;
