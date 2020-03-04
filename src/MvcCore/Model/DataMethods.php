@@ -30,7 +30,8 @@ trait DataMethods
 			: static::__getPropsNamesPublic();
 		$phpWithTypes = PHP_VERSION_ID >= 70400;
 		/** @var $prop \ReflectionProperty */
-		foreach ($properties as $propertyName => list($ownedByCurrent, $accessMod, $types, $prop)) {
+		foreach ($properties as $propertyName => $propData) {
+			list($ownedByCurrent, $accessMod, $types, $prop) = $propData;
 			if (!$includeInheritProperties && !$ownedByCurrent)
 				continue;
 			$propValue = NULL;
@@ -140,7 +141,8 @@ trait DataMethods
 			: static::__getPropsNamesPublic();
 		$phpWithTypes = PHP_VERSION_ID >= 70400;
 		/** @var $prop \ReflectionProperty */
-		foreach ($properties as $propertyName => list($ownedByCurrent, $accessMod, $types, $prop)) {
+		foreach ($properties as $propertyName => $propData) {
+			list($ownedByCurrent, $accessMod, $types, $prop) = $propData;
 			if (!$includeInheritProperties && !$ownedByCurrent)
 				continue;
 			$initialValue = NULL;
@@ -205,7 +207,7 @@ trait DataMethods
 	 */
 	public function __set ($name, $value) {
 		/** @var $this \MvcCore\Model */
-		if (isset(static::$protectedProperties[$name])) 
+		if (isset(static::$protectedProperties[$name]))
 			throw new \InvalidArgumentException(
 				"[".get_class()."] It's not possible to change property: `{$name}` originally declared in this class."
 			);
@@ -223,7 +225,7 @@ trait DataMethods
 	 */
 	public function __get ($name) {
 		/** @var $this \MvcCore\Model */
-		if (isset(static::$protectedProperties[$name])) 
+		if (isset(static::$protectedProperties[$name]))
 			throw new \InvalidArgumentException(
 				"[".get_class()."] It's not possible to get property: `{$name}` originally declared in this class."
 			);
@@ -322,8 +324,8 @@ trait DataMethods
 		if ($__allPropsNames == NULL) {
 			$propsData = static::__getPropsData();
 			$__allPropsNames = [];
-			foreach ($propsData as $propName => list($ownedByCurrent))
-				$__allPropsNames[$propName] = $ownedByCurrent;
+			foreach ($propsData as $propName => $propData)
+				$__allPropsNames[$propName] = $propData[0];
 		}
 		return $__allPropsNames;
 	}
@@ -339,9 +341,11 @@ trait DataMethods
 		if ($__publicPropsNames == NULL) {
 			$propsData = static::__getPropsData();
 			$__publicPropsNames = [];
-			foreach ($propsData as $propName => list($ownedByCurrent, $accessMod))
+			foreach ($propsData as $propName => $propData) {
+				list($ownedByCurrent, $accessMod) = $propData;
 				if ($accessMod == 1)
 					$__publicPropsNames[$propName] = $ownedByCurrent;
+			}
 		}
 		return $__publicPropsNames;
 	}

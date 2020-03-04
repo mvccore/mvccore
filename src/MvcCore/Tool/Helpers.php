@@ -72,7 +72,11 @@ trait Helpers {
 			JSON_PRESERVE_ZERO_FRACTION
 		);
 		//var_dump(decbin($flags));
-		$result = @json_encode($data, $flags, $depth);
+		if (\PHP_VERSION_ID >= 50500) {
+			$result = @json_encode($data, $flags, $depth);
+		} else {
+			$result = @json_encode($data, $flags);
+		}
 		$errorCode = json_last_error();
 		if ($errorCode == JSON_ERROR_NONE) {
 			if (PHP_VERSION_ID < 70100)
@@ -82,7 +86,9 @@ trait Helpers {
 				]);
 			return $result;
 		}
-		throw new \RuntimeException("[".get_class()."] ".json_last_error_msg(), $errorCode);
+		throw new \RuntimeException(
+			"[".get_class()."] ".static::getJsonLastErrorMessage($errorCode), $errorCode
+		);
 	}
 
 	/**
@@ -115,7 +121,30 @@ trait Helpers {
 		$errorCode = json_last_error();
 		if ($errorCode == JSON_ERROR_NONE)
 			return $result;
-		throw new \RuntimeException("[".get_class()."] ".json_last_error_msg(), $errorCode);
+		throw new \RuntimeException(
+			"[".get_class()."] ".static::getJsonLastErrorMessage($errorCode), $errorCode
+		);
+	}
+
+	/**
+	 * Return last JSON encode/decode error message, optionally by error code for PHP 5.4.
+	 * @param int $jsonErrorCode 
+	 * @return string
+	 */
+	protected static function getJsonLastErrorMessage ($jsonErrorCode) {
+		if (function_exists('json_last_error_msg')) {
+			return json_last_error_msg();
+		} else {
+			// errors before PHP 5.5:
+			static $__jsonErrorMessages = array(
+				JSON_ERROR_DEPTH			=> 'The maximum stack depth has been exceeded.',
+				JSON_ERROR_STATE_MISMATCH	=> 'Occurs with underflow or with the modes mismatch.',
+				JSON_ERROR_CTRL_CHAR		=> 'Control character error, possibly incorrectly encoded.',
+				JSON_ERROR_SYNTAX			=> 'Syntax error.',
+				JSON_ERROR_UTF8				=> 'Malformed UTF-8 characters, possibly incorrectly encoded.'
+			);
+			return $__jsonErrorMessages[$jsonErrorCode];
+		}
 	}
 
 	/**
