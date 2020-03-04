@@ -192,8 +192,7 @@ trait DataMethods
 				$this->$name = isset($arguments[0]) ? $arguments[0] : NULL;
 			return $this;
 		} else {
-			$selfClass = \PHP_VERSION_ID >= 50500 ? self::class : __CLASS__;
-			throw new \InvalidArgumentException("[{$selfClass}] No method `{$rawName}()` defined.");
+			throw new \InvalidArgumentException("[".get_class()."] No method `{$rawName}()` defined.");
 		}
 	}
 
@@ -206,12 +205,10 @@ trait DataMethods
 	 */
 	public function __set ($name, $value) {
 		/** @var $this \MvcCore\Model */
-		if (isset(static::$protectedProperties[$name])) {
-			$selfClass = \PHP_VERSION_ID >= 50500 ? self::class : __CLASS__;
+		if (isset(static::$protectedProperties[$name])) 
 			throw new \InvalidArgumentException(
-				"[{$selfClass}] It's not possible to change property: `{$name}` originally declared in this class."
+				"[".get_class()."] It's not possible to change property: `{$name}` originally declared in this class."
 			);
-		}
 		if (property_exists($this, lcfirst($name)))
 			return $this->{lcfirst($name)} = $value;
 		return $this->{$name} = $value;
@@ -226,12 +223,10 @@ trait DataMethods
 	 */
 	public function __get ($name) {
 		/** @var $this \MvcCore\Model */
-		if (isset(static::$protectedProperties[$name])) {
-			$selfClass = \PHP_VERSION_ID >= 50500 ? self::class : __CLASS__;
+		if (isset(static::$protectedProperties[$name])) 
 			throw new \InvalidArgumentException(
-				"[{$selfClass}] It's not possible to get property: `{$name}` originally declared in this class."
+				"[".get_class()."] It's not possible to get property: `{$name}` originally declared in this class."
 			);
-		}
 		if (isset($this->{lcfirst($name)}))
 			return $this->{lcfirst($name)};
 		if (isset($this->{$name}))

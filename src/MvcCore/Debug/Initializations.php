@@ -41,8 +41,7 @@ trait Initializations
 		// do not initialize log directory here every time, initialize log
 		// directory only if there is necessary to log something - later.
 
-		$selfClass = \PHP_VERSION_ID >= 50500 ? self::class : __CLASS__;
-		static::$originalDebugClass = ltrim($app->GetDebugClass(), '\\') == $selfClass;
+		static::$originalDebugClass = ltrim($app->GetDebugClass(), '\\') == get_class();
 		static::initHandlers();
 		$initGlobalShortHandsHandler = static::$InitGlobalShortHands;
 		$initGlobalShortHandsHandler(static::$debugging);
@@ -122,7 +121,7 @@ trait Initializations
 	 * @return void
 	 */
 	protected static function initHandlers () {
-		$className = \PHP_VERSION_ID >= 50500 ? static::class : get_called_class();
+		$className = get_called_class();
 		foreach (static::$handlers as $key => $value) {
 			static::$handlers[$key] = [$className, $value];
 		}
@@ -148,20 +147,18 @@ trait Initializations
 		static::$LogDirectory = $logDirAbsPath;
 		try {
 			if (!is_dir($logDirAbsPath)) {
-				$selfClass = \PHP_VERSION_ID >= 50500 ? self::class : __CLASS__;
 				if (!mkdir($logDirAbsPath, 0777, TRUE))
 					throw new \RuntimeException(
-						'['.$selfClass."] It was not possible to create log directory: `".$logDirAbsPath."`."
+						'['.get_class()."] It was not possible to create log directory: `".$logDirAbsPath."`."
 					);
 				if (!is_writable($logDirAbsPath))
 					if (!chmod($logDirAbsPath, 0777))
 						throw new \RuntimeException(
-							'['.$selfClass."] It was not possible to setup privileges to log directory: `".$logDirAbsPath."` to writeable mode 0777."
+							'['.get_class()."] It was not possible to setup privileges to log directory: `".$logDirAbsPath."` to writeable mode 0777."
 						);
 			}
 		} catch (\Exception $e) {
-			$selfClass = \PHP_VERSION_ID >= 50500 ? self::class : __CLASS__;
-			die('['.$selfClass.'] ' . $e->getMessage());
+			die('['.get_class().'] ' . $e->getMessage());
 		}
 		static::$logDirectoryInitialized = TRUE;
 		return $logDirAbsPath;

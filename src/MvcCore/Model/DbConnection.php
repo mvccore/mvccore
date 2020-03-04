@@ -37,17 +37,16 @@ trait DbConnection
 			if ($connectionName === NULL) $connectionName = static::$connectionName;
 			if ($connectionName === NULL) $connectionName = self::$connectionName;
 		}
-		if ($connectionName === NULL) {
-			$selfClass = \PHP_VERSION_ID >= 50500 ? self::class : __CLASS__;
-			throw new \InvalidArgumentException("[$selfClass] No connection name or connection config specified.");
-		}
+		if ($connectionName === NULL) throw new \InvalidArgumentException(
+			"[".get_class()."] No connection name or connection config specified."
+		);
 		// if no connection exists under connection name key - connect to database
 		if (!isset(static::$connections[$connectionName])) {
 			// get system config 'db' data
 			// and get predefined constructor arguments by driver value from config
 			$cfg = static::GetConfig($connectionName);
 			if ($strict) throw new \InvalidArgumentException(
-				"No connection found under given name/index: `$connectionNameOrConfig`."
+				"No connection found under given name/index: `{$connectionNameOrConfig}`."
 			);
 			if ($cfg === NULL)
 				$cfg = current(self::$configs); // if nothing found under connection name - take first database record
@@ -239,20 +238,16 @@ trait DbConnection
 	protected static function loadConfigs ($throwExceptionIfNoSysConfig = TRUE) {
 		$configClass = \MvcCore\Application::GetInstance()->GetConfigClass();
 		$systemCfg = $configClass::GetSystem();
-		if ($systemCfg === FALSE && $throwExceptionIfNoSysConfig) {
-			$selfClass =\PHP_VERSION_ID >= 50500 ? self::class : __CLASS__;
+		if ($systemCfg === FALSE && $throwExceptionIfNoSysConfig) 
 			throw new \Exception(
-				"[".$selfClass."] System config not found in '"
+				"[".get_class()."] System config not found in '"
 				. $configClass::GetSystemConfigPath() . "'."
 			);
-		}
-		if (!isset($systemCfg->db) && $throwExceptionIfNoSysConfig) {
-			$selfClass = \PHP_VERSION_ID >= 50500 ? self::class : __CLASS__;
+		if (!isset($systemCfg->db) && $throwExceptionIfNoSysConfig) 
 			throw new \Exception(
-				"[".$selfClass."] No [db] section and no records matched "
+				"[".get_class()."] No [db] section and no records matched "
 				."'db.*' found in system config.ini."
 			);
-		}
 		$sysCfgProps = (object) static::$systemConfigModelProps;
 		$systemCfgDb = & $systemCfg->{$sysCfgProps->sectionName};
 		$cfgType = gettype($systemCfgDb);
@@ -299,13 +294,11 @@ trait DbConnection
 				$defaultConnectionName = key($configs);
 			}
 		}
-		if (!isset($configs[$defaultConnectionName])) {
-			$selfClass = \PHP_VERSION_ID >= 50500 ? self::class : __CLASS__;
+		if (!isset($configs[$defaultConnectionName])) 
 			throw new \Exception(
-				"[".$selfClass."] No default connection name '$defaultConnectionName'"
+				"[".get_class()."] No default connection name '{$defaultConnectionName}'"
 				." found in 'db.*' section in system config.ini."
 			);
-		}
 		self::$connectionName = $defaultConnectionName;
 		if ($defaultConnectionClass !== NULL)
 			self::$connectionClass = $defaultConnectionClass;

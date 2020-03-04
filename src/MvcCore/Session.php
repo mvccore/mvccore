@@ -30,7 +30,6 @@ namespace MvcCore;
 class Session extends \ArrayObject implements ISession
 {
 	use \MvcCore\Session\Props;
-	use \MvcCore\Session\Instancing;
 	use \MvcCore\Session\Starting;
 	use \MvcCore\Session\MetaData;
 	use \MvcCore\Session\Closing;

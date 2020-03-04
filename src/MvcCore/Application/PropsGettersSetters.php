@@ -750,12 +750,10 @@ trait PropsGettersSetters
 	 * @return \MvcCore\Application
 	 */
 	public function AddPreRouteHandler (callable $handler, $priorityIndex = NULL) {
-		if (!is_callable($handler)) {
-			$selfClass = \PHP_VERSION_ID >= 50500 ? self::class : __CLASS__;
+		if (!is_callable($handler))
 			throw new \InvalidArgumentException(
-				"[".$selfClass."] Pre route handler is not callable (handler: $handler, priorityIndex: $priorityIndex)."
+				"[".get_class()."] Pre route handler is not callable (handler: {$handler}, priorityIndex: {$priorityIndex})."
 			);
-		}
 		return $this->setHandler($this->preRouteHandlers, $handler, $priorityIndex);
 	}
 
@@ -779,12 +777,10 @@ trait PropsGettersSetters
 	 * @return \MvcCore\Application
 	 */
 	public function AddPostRouteHandler (callable $handler, $priorityIndex = NULL) {
-		if (!is_callable($handler)) {
-			$selfClass = \PHP_VERSION_ID >= 50500 ? self::class : __CLASS__;
+		if (!is_callable($handler)) 
 			throw new \InvalidArgumentException(
-				"[".$selfClass."] Post route handler is not callable (handler: $handler, priorityIndex: $priorityIndex)."
+				"[".get_class()."] Post route handler is not callable (handler: {$handler}, priorityIndex: {$priorityIndex})."
 			);
-		}
 		return $this->setHandler($this->postRouteHandlers, $handler, $priorityIndex);
 	}
 
@@ -808,12 +804,10 @@ trait PropsGettersSetters
 	 * @return \MvcCore\Application
 	 */
 	public function AddPreDispatchHandler (callable $handler, $priorityIndex = NULL) {
-		if (!is_callable($handler)) {
-			$selfClass = \PHP_VERSION_ID >= 50500 ? self::class : __CLASS__;
+		if (!is_callable($handler)) 
 			throw new \InvalidArgumentException(
-				"[".$selfClass."] Pre dispatch handler is not callable (handler: $handler, priorityIndex: $priorityIndex)."
+				"[".get_class()."] Pre dispatch handler is not callable (handler: {$handler}, priorityIndex: {$priorityIndex})."
 			);
-		}
 		return $this->setHandler($this->preDispatchHandlers, $handler, $priorityIndex);
 	}
 
@@ -836,12 +830,10 @@ trait PropsGettersSetters
 	 * @return \MvcCore\Application
 	 */
 	public function AddPostDispatchHandler (callable $handler, $priorityIndex = NULL) {
-		if (!is_callable($handler)) {
-			$selfClass = \PHP_VERSION_ID >= 50500 ? self::class : __CLASS__;
+		if (!is_callable($handler)) 
 			throw new \InvalidArgumentException(
-				"[".$selfClass."] Post dispatch handler is not callable (handler: $handler, priorityIndex: $priorityIndex)."
+				"[".get_class()."] Post dispatch handler is not callable (handler: {$handler}, priorityIndex: {$priorityIndex})."
 			);
-		}
 		return $this->setHandler($this->postDispatchHandlers, $handler, $priorityIndex);
 	}
 
@@ -865,12 +857,10 @@ trait PropsGettersSetters
 	 * @return \MvcCore\Application
 	 */
 	public function AddPostTerminateHandler (callable $handler, $priorityIndex = NULL) {
-		if (!is_callable($handler)) {
-			$selfClass = \PHP_VERSION_ID >= 50500 ? self::class : __CLASS__;
+		if (!is_callable($handler)) 
 			throw new \InvalidArgumentException(
-				"[".$selfClass."] Post terminate handler is not callable (handler: $handler, priorityIndex: $priorityIndex)."
+				"[".get_class()."] Post terminate handler is not callable (handler: {$handler}, priorityIndex: {$priorityIndex})."
 			);
-		}
 		return $this->setHandler($this->postTerminateHandlers, $handler, $priorityIndex);
 	}
 }

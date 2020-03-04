@@ -523,7 +523,7 @@ interface IApplication
 	 *		\MvcCore\Request $request,
 	 *		\MvcCore\Response $response
 	 * ) {
-	 *		// close connection by previously configured 
+	 *		// close connection by previously configured
 	 *		// header: header('Connection: close');
 	 *		// and run background process now:
 	 * });`
@@ -682,7 +682,7 @@ interface IApplication
 	 * @param \Exception $e
 	 * @return bool
 	 */
-	public function RenderError (\Exception $e);
+	public function RenderError (\Throwable $e);
 
 	/**
 	 * Render error by configured default controller and not found error action,

@@ -82,8 +82,7 @@ trait Helpers {
 				]);
 			return $result;
 		}
-		$selfClass = \PHP_VERSION_ID >= 50500 ? self::class : __CLASS__;
-		throw new \RuntimeException("[".$selfClass."] ".json_last_error_msg(), $errorCode);
+		throw new \RuntimeException("[".get_class()."] ".json_last_error_msg(), $errorCode);
 	}
 
 	/**
@@ -116,8 +115,7 @@ trait Helpers {
 		$errorCode = json_last_error();
 		if ($errorCode == JSON_ERROR_NONE)
 			return $result;
-		$selfClass = \PHP_VERSION_ID >= 50500 ? self::class : __CLASS__;
-		throw new \RuntimeException("[".$selfClass."] ".json_last_error_msg(), $errorCode);
+		throw new \RuntimeException("[".get_class()."] ".json_last_error_msg(), $errorCode);
 	}
 
 	/**
@@ -188,12 +186,13 @@ trait Helpers {
 				$tmpDir = str_replace('\\', '/', $tmpDir);
 			} else if (!$tmpDir) {
 				// Other systems
+				$iniSysTempDir = @ini_get('sys_temp_dir');
 				$tmpDir = !empty($_SERVER['TMPDIR'])
 					? $_SERVER['TMPDIR']
 					: (!empty($_SERVER['TMP'])
 						? $_SERVER['TMP']
-						: (!empty(ini_get('sys_temp_dir'))
-							? ini_get('sys_temp_dir')
+						: (!empty($iniSysTempDir)
+							? $iniSysTempDir
 							: '/tmp'
 						)
 					);

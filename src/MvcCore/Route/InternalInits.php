@@ -351,13 +351,11 @@ trait InternalInits
 		$sectionIsLast = NULL;
 		// check greedy param specifics
 		if ($greedyFlag) {
-			if ($greedyFlag && $greedyCaught) {
-				$selfClass = \PHP_VERSION_ID >= 50500 ? self::class : __CLASS__;
+			if ($greedyFlag && $greedyCaught) 
 				throw new \InvalidArgumentException(
-					"[".$selfClass."] Route pattern definition can have only one greedy `<param_name*>` "
-					." with star (to include everything - all characters and slashes . `.*`) ($this)."
+					"[".get_class()."] Route pattern definition can have only one greedy `<param_name*>` "
+					." with star (to include everything - all characters and slashes . `.*`) ({$this})."
 				);
-			}
 			$reverseSectionsCount = count($reverseSectionsInfo);
 			$sectionIndexPlusOne = $sectionIndex + 1;
 			if (// next section is optional
@@ -370,14 +368,12 @@ trait InternalInits
 				$greedyReal = !$constraintDefined || ($constraintDefined && (
 					mb_strpos($constraint, '.*') !== FALSE || mb_strpos($constraint, '.+') !== FALSE
 				));
-				if ($greedyReal) {
-					$selfClass = \PHP_VERSION_ID >= 50500 ? self::class : __CLASS__;
+				if ($greedyReal) 
 					throw new \InvalidArgumentException(
-						"[".$selfClass."] Route pattern definition can not have greedy `<param_name*>` with star "
+						"[".get_class()."] Route pattern definition can not have greedy `<param_name*>` with star "
 						."(to include everything - all characters and slashes . `.*`) immediately before optional "
-						."section ($this)."
+						."section ({$this})."
 					);
-				}
 			}
 			$greedyCaught = TRUE;
 			$paramName = str_replace('*', '', $paramName);
@@ -451,7 +447,7 @@ trait InternalInits
 		$defaultPathConstraint = static::$defaultPathConstraint;
 		$defaultDomainConstraint = static::$defaultDomainConstraint;
 		$schemeFlag = $this->flags[0];
-		$matchIsAbsolute = boolval($schemeFlag);
+		$matchIsAbsolute = (bool) $schemeFlag;
 		$firstPathSlashPos = 0;
 		if ($matchIsAbsolute) {
 			$matchIsAbsolute = TRUE;
@@ -539,12 +535,11 @@ trait InternalInits
 	 */
 	protected function throwExceptionIfKeyPropertyIsMissing ($propsNames) {
 		$propsNames = func_get_args();
-		$selfClass = \PHP_VERSION_ID >= 50500 ? self::class : __CLASS__;
 		throw new \LogicException(
-			"[".$selfClass."] Route configuration property/properties is/are"
+			"[".get_class()."] Route configuration property/properties is/are"
 			." missing: `" . implode("`, `", $propsNames) . "`, to parse and"
 			." complete key properties `match` and/or `reverse` to route"
-			." or build URL correctly ($this)."
+			." or build URL correctly ({$this})."
 		);
 	}
 

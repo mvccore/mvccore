@@ -40,7 +40,7 @@ trait Dispatching
 		$result = NULL;
 		$backtraceItems = debug_backtrace(DEBUG_BACKTRACE_PROVIDE_OBJECT);
 		if (count($backtraceItems) < 3) return $result;
-		$calledClass = \PHP_VERSION_ID >= 50500 ? static::class : get_called_class();
+		$calledClass = get_called_class();
 		foreach ($backtraceItems as $backtraceItem) {
 			if (!isset($backtraceItem['object']) || !$backtraceItem['object']) continue;
 			$object = $backtraceItem['object'];
@@ -370,17 +370,17 @@ trait Dispatching
 		)
 			throw new \ErrorException("[".get_class($this)."] File path: '$path' is not allowed.", 500);
 		$path = $this->request->GetAppRoot() . $path;
-		if (!file_exists($path)) 
+		if (!file_exists($path))
 			throw new \ErrorException("[".get_class($this)."] File not found: '$path'.", 404);
 		$lastDotPos = strrpos($path, '.');
-		if ($lastDotPos !== FALSE) 
+		if ($lastDotPos !== FALSE)
 			$ext = substr($path, $lastDotPos + 1);
-		if (isset(self::$_assetsMimeTypes[$ext])) 
+		if (isset(self::$_assetsMimeTypes[$ext]))
 			header('Content-Type: ' . self::$_assetsMimeTypes[$ext]);
 		header_remove('X-Powered-By');
 		header('Vary: Accept-Encoding');
 		$assetMTime = @filemtime($path);
-		if ($assetMTime) 
+		if ($assetMTime)
 			header('Last-Modified: ' . gmdate('D, d M Y H:i:s T', $assetMTime));
 		readfile($path);
 		exit;

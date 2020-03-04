@@ -24,10 +24,17 @@ trait NamespaceMethods
 	public static function GetNamespace (
 		$name = \MvcCore\ISession::DEFAULT_NAMESPACE_NAME
 	) {
-		if (!static::GetStarted()) 
+		if (!static::GetStarted())
 			static::Start();
-		if (!isset(static::$instances[$name])) 
-			static::$instances[$name] = new static($name);
+		if (!isset(static::$instances[$name])) {
+			/** @var $instance \MvcCore\Session */
+			$instance = new static();
+			$instance->__name = $name;
+			static::$meta->names[$name] = 1;
+			if (!isset($_SESSION[$name]))
+				$_SESSION[$name] = [];
+			static::$instances[$name] = $instance;
+		}
 		return static::$instances[$name];
 	}
 
@@ -51,12 +58,12 @@ trait NamespaceMethods
 	 */
 	public function SetExpirationSeconds ($seconds = 0) {
 		/** @var $this \MvcCore\Session */
-		if ($seconds > 0) 
+		if ($seconds > 0)
 			static::$meta->expirations[$this->__name] = static::$sessionStartTime + $seconds;
 		return $this;
 	}
 
-	
+
 
 	/**
 	 * Destroy whole session namespace in `$_SESSION` storage

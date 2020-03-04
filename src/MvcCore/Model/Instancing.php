@@ -32,7 +32,7 @@ trait Instancing
 	 */
 	public static function GetInstance () {
 		// get `"ClassName"` string from this call: `ClassName::GetInstance();`
-		$staticClassName = \PHP_VERSION_ID >= 50500 ? static::class : get_called_class();
+		$staticClassName = get_called_class();
 		$args = func_get_args();
 		$instanceIndex = str_replace('\\', '_', $staticClassName) . '#' . serialize($args);
 		if (!isset(self::$instances[$instanceIndex])) {
@@ -51,7 +51,7 @@ trait Instancing
 	 */
 	public static function GetResource ($args = [], $resourceClassPath = '%SELF%s\Resource') {
 		$result = NULL;
-		$staticClassPath = \PHP_VERSION_ID >= 50500 ? static::class : get_called_class();
+		$staticClassPath = get_called_class();
 		$namespaceSeparator = strpos($staticClassPath, '\\') === FALSE ? '_' : '\\';
 		$staticClassPathExpl = explode($namespaceSeparator, $staticClassPath);
 		$resourceClassPathExpl = explode($namespaceSeparator, $resourceClassPath);

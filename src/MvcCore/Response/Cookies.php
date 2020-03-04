@@ -33,12 +33,10 @@ trait Cookies
 		$domain = NULL, $secure = NULL, $httpOnly = TRUE
 	) {
 		/** @var $this \MvcCore\Response */
-		if ($this->IsSentHeaders()) {
-			$selfClass = \PHP_VERSION_ID >= 50500 ? self::class : __CLASS__;
+		if ($this->IsSentHeaders()) 
 			throw new \RuntimeException(
-				"[".$selfClass."] Cannot set cookie after HTTP headers have been sent."
+				"[".get_class()."] Cannot set cookie after HTTP headers have been sent."
 			);
-		}
 		$request = \MvcCore\Application::GetInstance()->GetRequest();
 		return \setcookie(
 			$name, $value,

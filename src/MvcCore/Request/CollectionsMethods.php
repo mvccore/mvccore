@@ -52,7 +52,7 @@ trait CollectionsMethods
 	 */
 	public function & GetHeaders ($pregReplaceAllowedChars = ['#[\<\>\'"]#' => '']) {
 		if ($this->headers === NULL) $this->initHeaders();
-		if ($pregReplaceAllowedChars === FALSE || $pregReplaceAllowedChars === '' || $pregReplaceAllowedChars === '.*') 
+		if ($pregReplaceAllowedChars === FALSE || $pregReplaceAllowedChars === '' || $pregReplaceAllowedChars === '.*')
 			return $this->headers;
 		$cleanedHeaders = [];
 		foreach ($this->headers as $key => & $value) {
@@ -380,7 +380,7 @@ trait CollectionsMethods
 			} else if (is_array($rawValue)) {
 				// if there is something in target collection and it's an array
 				$result = [];
-				foreach ((array) $rawValue as $key => & $value) {
+				foreach ((array) $rawValue as $key => $value) {
 					$cleanedKey = $this->cleanParamValue($key, $pregReplaceAllowedChars);
 					$result[$cleanedKey] = $this->getParamItem(
 						$value, $pregReplaceAllowedChars, $ifNullValue, $targetType

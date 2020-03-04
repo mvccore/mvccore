@@ -67,8 +67,7 @@ trait OopChecking
 		// return result or thrown an exception
 		if ($result) return TRUE;
 		if (!$throwException) return FALSE;
-		$selfClass = \PHP_VERSION_ID >= 50500 ? self::class : __CLASS__;
-		throw new \InvalidArgumentException("[".$selfClass."] " . $errorMsg);
+		throw new \InvalidArgumentException("[".get_class()."] " . $errorMsg);
 	}
 
 	/**
@@ -106,8 +105,7 @@ trait OopChecking
 		// return result or thrown an exception
 		if ($result) return TRUE;
 		if (!$throwException) return FALSE;
-		$selfClass = \PHP_VERSION_ID >= 50500 ? self::class : __CLASS__;
-		throw new \InvalidArgumentException("[".$selfClass."] " . $errorMsg);
+		throw new \InvalidArgumentException("[".get_class()."] " . $errorMsg);
 	}
 
 	/**

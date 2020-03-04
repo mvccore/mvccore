@@ -571,7 +571,7 @@ trait GettersSetters
 	 * @return bool
 	 */
 	public function GetAbsolute () {
-		return $this->absolute || (isset($this->flags[0]) && boolval($this->flags[0]));
+		return $this->absolute || (isset($this->flags[0]) && ((bool)$this->flags[0]));
 	}
 
 	/**

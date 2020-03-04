@@ -119,7 +119,7 @@ trait IniDump
 	protected function dumpRecursive ($levelKey, & $data, & $rawData) {
 		if (is_object($data) || is_array($data)) {
 			if (strlen($levelKey) > 0) $levelKey .= '.';
-			foreach ((array) $data as $key => & $value) {
+			foreach ((array) $data as $key => $value) {
 				$this->dumpRecursive($levelKey . $key, $value, $rawData);
 			}
 		} else {

@@ -212,10 +212,9 @@ trait RouteMethods
 					$groupName, $prepend, $throwExceptionForDuplication
 				);
 			} else {
-				$selfClass = \PHP_VERSION_ID >= 50500 ? self::class : __CLASS__;
 				throw new \InvalidArgumentException (
-					"[".$selfClass."] Route is not possible to assign"
-					." (key: \"$routeName\", value: " . serialize($route) . ")."
+					"[".get_class()."] Route is not possible to assign"
+					." (key: `{$routeName}`, value: `" . serialize($route) . "`)."
 				);
 			}
 		}
@@ -289,18 +288,16 @@ trait RouteMethods
 				$errorMsgs[] = 'Route with `Controller:Action` combination: `'.$controllerAction.'` has already been defined between router routes.';
 			if ($errorMsgs) {
 				//var_dump($this->routes);
-				$selfClass = \PHP_VERSION_ID >= 50500 ? self::class : __CLASS__;
 				$debBack = debug_backtrace();
 				$debBackLength = count($debBack);
 				if ($debBackLength > 1) {
 					$debBackSemiFinalRec = $debBack[$debBackLength - 2];
 					$file = str_replace('\\', '/', $debBackSemiFinalRec['file']);
 					$bootstrapFilePath = '/App/Bootstrap.php';
-					if (mb_strpos($file, $bootstrapFilePath) === mb_strlen($file) - mb_strlen($bootstrapFilePath)) {
-						die('['.$selfClass.'] '.implode(' ',$errorMsgs));
-					}
+					if (mb_strpos($file, $bootstrapFilePath) === mb_strlen($file) - mb_strlen($bootstrapFilePath)) 
+						die('['.get_class().'] '.implode(' ',$errorMsgs));
 				}
-				throw new \InvalidArgumentException('['.$selfClass.'] '.implode(' ',$errorMsgs));
+				throw new \InvalidArgumentException('['.get_class().'] '.implode(' ',$errorMsgs));
 			}
 		}
 		$this->urlRoutes[$routeName] = $instance;
