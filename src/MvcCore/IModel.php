@@ -137,10 +137,14 @@ interface IModel
 	 * config by connection name defined first in `static::$connectionName`
 	 * and if there is nothing, return connection config by connection name
 	 * defined in `\MvcCore\Model::$connectionName`.
-	 * @param string|int|NULL $connectionName Optional. If not set, there is used value from `static::$connectionName`.
+	 * @param string|int|bool $args... Optional.
+	 * If there is any `string` or `int`, it's used as connection name or index.
+	 * If there is any `bool`, it's used as boolean to initialize resource or not.
+	 * If there is no connection name or index, i't used from `static::$connectionName`.
+	 * If there is not boolean, resource class is not initialized by default.
 	 * @return void
 	 */
-	public function Init ($connectionName = NULL);
+	public function Init ($args = []);
 
 	/**
 	 * Returns `\PDO` database connection by connection name/index,

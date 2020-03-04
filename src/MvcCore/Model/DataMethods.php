@@ -77,6 +77,7 @@ trait DataMethods
 					$propertyName, $toolsClass, $caseSensitiveKeysMap
 				);
 			$isNotNull = $value !== NULL;
+			$accessMod = 1;
 			if ($isNotNull && isset($propsData[$propertyName])) {
 				/**
 				 * @var $accessMod \int

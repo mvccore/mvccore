@@ -83,7 +83,7 @@ trait Instancing
 		if (class_exists($resourceClassName)) {
 			$result = call_user_func_array([$resourceClassName, 'GetInstance'], $args ?: []);
 		} else {
-			throw new \InvalidArgumentException("Class `$resourceClassName` doesn't exist.");
+			throw new \InvalidArgumentException("Class `{$resourceClassName}` doesn't exist.");
 		}
 		return $result;
 	}
@@ -94,14 +94,29 @@ trait Instancing
 	 * config by connection name defined first in `static::$connectionName`
 	 * and if there is nothing, return connection config by connection name
 	 * defined in `\MvcCore\Model::$connectionName`.
-	 * @param string|int|NULL $connectionName Optional. If not set, there is used value from `static::$connectionName`.
+	 * @param string|int|bool $args... Optional.
+	 * If there is any `string` or `int`, it's used as connection name or index.
+	 * If there is any `bool`, it's used as boolean to initialize resource or not.
+	 * If there is no connection name or index, i't used from `static::$connectionName`.
+	 * If there is not boolean, resource class is not initialized by default.
 	 * @return void
 	 */
-	public function Init ($connectionName = NULL) {
+	public function Init ($args = []) {
+		$connectionName = NULL;
+		$initResource = FALSE;
+		$args = func_get_args();
+		foreach ($args as $arg) {
+			if (is_bool($arg)) {
+				$initResource = $arg;
+			} else if (is_string($arg) || is_int($arg)) {
+				$connectionName = $arg;
+			}
+		}
 		if ($connectionName === NULL) $connectionName = static::$connectionName;
 		if ($connectionName === NULL) $connectionName = self::$connectionName;
-		$this->db = static::GetDb($connectionName);
 		$this->config = static::GetConfig($connectionName);
-		$this->resource = static::GetResource();
+		$this->db = static::GetDb($connectionName);
+		if ($initResource)
+			$this->resource = static::GetResource();
 	}
 }
