@@ -258,7 +258,8 @@ trait Dispatching
 		// check if view is still `NULL`, because it could be created by some parent class
 		if ($this->viewEnabled && $this->view === NULL) {
 			$viewClass = $this->application->GetViewClass();
-			$this->view = $viewClass::CreateInstance()->SetController($this);
+			$this->view = $viewClass::CreateInstance()
+				->SetController($this);
 		}
 		foreach ($this->childControllers as $controller) {
 			$controller->PreDispatch();

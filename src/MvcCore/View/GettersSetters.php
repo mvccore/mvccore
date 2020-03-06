@@ -154,14 +154,46 @@ trait GettersSetters
 
 	/**
 	 * Set up view rendering arguments to render layout and action view in both modes properly.
+	 * Set up view instance helpers before rendering.
 	 * @param int $renderMode
 	 * @param string $controllerOrActionNameDashed
 	 * @param string $actionNameDashed
 	 * @return \MvcCore\View
 	 */
-	public function SetRenderArgs ($renderMode = \MvcCore\IView::RENDER_WITH_OB_FROM_ACTION_TO_LAYOUT, $controllerOrActionNameDashed = NULL, $actionNameDashed = NULL) {
+	public function SetUpRender ($renderMode = \MvcCore\IView::RENDER_WITH_OB_FROM_ACTION_TO_LAYOUT, $controllerOrActionNameDashed = NULL, $actionNameDashed = NULL) {
 		/** @var $this \MvcCore\View */
 		$this->__protected['renderArgs'] = func_get_args();
+		// initialize helpers before rendering:
+		$helpers = & $this->__protected['helpers'];
+		if (!isset($helpers['url'])) {
+			$router = $this->controller->GetRouter();
+			$helpers['url'] = function ($controllerActionOrRouteName = 'Index:Index', array $params = []) use (& $router) {
+				return $router->Url($controllerActionOrRouteName, $params);
+			};
+		}
+		if (!isset($helpers['assetUrl'])) {
+			$controller = $this->controller;
+			$helpers['assetUrl'] = function ($path = '') use (& $controller) {
+				return $this->controller->AssetUrl($path);
+			};
+		}
+		foreach (self::$_globalHelpers as $helperNamePascalCase => $helperRecord) {
+			$helperNameCamelCase = lcfirst($helperNamePascalCase);
+			if (isset($helpers[$helperNameCamelCase])) continue;
+			//list($instance, $implementsIHelper, $needsClosureFn) = $helperRecord;
+			$instance = & $helperRecord[0];
+			$implementsIHelper = $helperRecord[1];
+			$needsClosureFn = $helperRecord[2];
+			if ($implementsIHelper)
+				$instance->SetView($this);
+			if ($needsClosureFn) {
+				$helpers[$helperNameCamelCase] = function () use (& $instance, $helperNamePascalCase) {
+					return call_user_func_array([$instance, $helperNamePascalCase], func_get_args());
+				};
+			} else {
+				$helpers[$helperNameCamelCase] = & $instance;
+			}
+		}
 		return $this;
 	}
 }

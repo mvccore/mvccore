@@ -56,7 +56,7 @@ trait InternalInits
 		list($this->reverseSections, $matchSections) = $this->initSectionsInfoForMatchAndReverse(
 			$reverse, $match
 		);
-		$this->reverse = & $reverse;
+		$this->reverse = $reverse;
 		$this->reverseParams = $this->initReverseParams(
 			$reverse, $this->reverseSections, $this->constraints, $match
 		);

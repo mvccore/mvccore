@@ -255,13 +255,14 @@ interface IView
 	public function GetController ();
 
 	/**
-	 * Set up view rendering arguments to render layout and action view in both modes properly.
+	 * Set up view rendering arguments  to render layout and action view in both modes properly.
+	 * Set up view instance helpers before rendering.
 	 * @param int $renderMode
 	 * @param string $controllerOrActionNameDashed
 	 * @param string $actionNameDashed
 	 * @return \MvcCore\IView
 	 */
-	public function SetRenderArgs ($renderMode = \MvcCore\IView::RENDER_WITH_OB_FROM_ACTION_TO_LAYOUT, $controllerOrActionNameDashed = NULL, $actionNameDashed = NULL);
+	public function SetUpRender ($renderMode = \MvcCore\IView::RENDER_WITH_OB_FROM_ACTION_TO_LAYOUT, $controllerOrActionNameDashed = NULL, $actionNameDashed = NULL);
 
 	/**
 	 * This is INTERNAL method, do not use it in templates.
@@ -400,22 +401,22 @@ interface IView
 	 * Try to get view helper.
 	 * If view helper doesn't exist in global helpers store - create new helper instance.
 	 * If helper already exists in global helpers store - do not create it again - use instance from the store.
-	 * Example: `echo $this->GetHelper('Facebook')->RenderSomeSpecialWidgetMethod();`
-	 * @param string $helperName View helper method name in pascal case.
+	 * Example: `echo $this->GetHelper('facebook')->RenderSomeSpecialWidgetMethod();`
+	 * @param string $helperNameCamelCase View helper method name in camel case.
 	 * @throws \InvalidArgumentException If view doesn't exist in configured namespaces.
 	 * @return mixed View helper instance, always as `\MvcCore\Ext\Views\Helpers\AbstractHelper|\MvcCore\Ext\Views\Helpers\IHelper` instance.
 	 */
-	public function & GetHelper ($helperName);
+	public function & GetHelper ($helperNameCamelCase);
 
 	/**
 	 * Set view helper for current template or for all templates globally by default.
 	 * If view helper already exist in global helpers store - it's overwritten.
-	 * @param string $helperName View helper method name in pascal case.
-	 * @param mixed $instance View helper instance, always as `\MvcCore\Ext\Views\Helpers\AbstractHelper|\MvcCore\Ext\Views\Helpers\IHelper` instance.
+	 * @param string $helperNameCamelCase View helper method name in camel case.
+	 * @param mixed $instance View helper instance, always as `\MvcCore\Ext\Views\Helpers\AbstractHelper|\MvcCore\Ext\Views\Helpers\IHelper` instance or `\Closure`.
 	 * @param bool $forAllTemplates register this helper instance for all rendered views in the future.
-	 * @return \MvcCore\View|\MvcCore\IView
+	 * @return \MvcCore\IView
 	 */
-	public function SetHelper ($helperName, $instance, $forAllTemplates = TRUE);
+	public function SetHelper ($helperNameCamelCase, $instance, $forAllTemplates = TRUE);
 
 	/**
 	 * Set any value into view context internal store.

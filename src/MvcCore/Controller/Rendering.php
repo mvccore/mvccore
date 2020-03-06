@@ -270,7 +270,7 @@ trait Rendering
 		// complete paths
 		$viewScriptPath = $this->GetViewScriptPath($controllerOrActionNameDashed, $actionNameDashed);
 		// render action view into string
-		$this->view->SetRenderArgs(
+		$this->view->SetUpRender(
 			$this->renderMode, $controllerOrActionNameDashed, $actionNameDashed
 		);
 		$actionResult = $this->view->RenderScript($viewScriptPath);
@@ -283,10 +283,10 @@ trait Rendering
 		/** @var $layout \MvcCore\View */
 		$layout = $viewClass::CreateInstance()
 			->SetController($this)
-			->SetRenderArgs(
+			->SetUpStore($this->view, TRUE)
+			->SetUpRender(
 				$this->renderMode, $controllerOrActionNameDashed, $actionNameDashed
-			)
-			->SetUpStore($this->view, TRUE);
+			);
 		$outputResult = $layout->RenderLayoutAndContent($this->layout, $actionResult);
 		unset($layout, $this->view);
 		// set up response only
@@ -314,10 +314,10 @@ trait Rendering
 			/** @var $layout \MvcCore\View */
 			$layout = $viewClass::CreateInstance()
 				->SetController($this)
-				->SetRenderArgs(
+				->SetUpStore($this->view, TRUE)
+				->SetUpRender(
 					$this->renderMode, $controllerOrActionNameDashed, $actionNameDashed
-				)
-				->SetUpStore($this->view, TRUE);
+				);
 			// render layout continuously with action view inside
 			$layout->RenderLayout($this->layout);
 		} else {

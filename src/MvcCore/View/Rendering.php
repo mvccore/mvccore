@@ -81,10 +81,12 @@ trait Rendering
 		if ($renderModeWithOb)
 			ob_start();
 		// render the template with local variables from the store
-		$result = call_user_func(function ($viewPath, $controller) {
+		$result = call_user_func(function ($viewPath, $controller, $helpers) {
+			extract($helpers, EXTR_SKIP);
+			unset($helpers);
 			extract($this->__protected['store'], EXTR_SKIP);
 			include($viewPath);
-		}, $viewScriptFullPath, $this->controller);
+		}, $viewScriptFullPath, $this->controller, $this->__protected['helpers']);
 		// if render mode is default - get result from output buffer and return the result,
 		// if render mode is continuous - result is sent to client already, so return empty string only.
 		if ($renderModeWithOb) {
@@ -96,6 +98,7 @@ trait Rendering
 			\array_pop($renderedFullPaths); // unset last
 			return $result;
 		}
+
 	}
 
 	/**
@@ -163,10 +166,10 @@ trait Rendering
 			/** @var $layout \MvcCore\View */
 			$actionView = $viewClass::CreateInstance()
 				->SetController($this->controller)
-				->SetRenderArgs(
+				->SetUpStore($this, TRUE)
+				->SetUpRender(
 					$renderMode, $controllerOrActionNameDashed, $actionNameDashed
-				)
-				->SetUpStore($this, TRUE);
+				);
 			$actionView->RenderScript($viewScriptPath);
 			$result = '';
 			return $result;
