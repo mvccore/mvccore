@@ -35,7 +35,7 @@ trait Initializations
 			static::$debugging = $forceDevelopmentMode;
 		} else {
 			$configClass = $app->GetConfigClass();
-			static::$debugging = $configClass::IsDevelopment(TRUE) || $configClass::IsAlpha(TRUE);
+			static::$debugging = !$configClass::IsProduction(TRUE);
 		}
 
 		// do not initialize log directory here every time, initialize log

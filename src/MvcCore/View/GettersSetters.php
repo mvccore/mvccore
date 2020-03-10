@@ -165,18 +165,15 @@ trait GettersSetters
 		$this->__protected['renderArgs'] = func_get_args();
 		// initialize helpers before rendering:
 		$helpers = & $this->__protected['helpers'];
-		if (!isset($helpers['url'])) {
-			$router = $this->controller->GetRouter();
+		$router = $this->controller->GetRouter();
+		if (!isset($helpers['url'])) 
 			$helpers['url'] = function ($controllerActionOrRouteName = 'Index:Index', array $params = []) use (& $router) {
 				return $router->Url($controllerActionOrRouteName, $params);
 			};
-		}
-		if (!isset($helpers['assetUrl'])) {
-			$controller = $this->controller;
-			$helpers['assetUrl'] = function ($path = '') use (& $controller) {
-				return $this->controller->AssetUrl($path);
+		if (!isset($helpers['assetUrl'])) 
+			$helpers['assetUrl'] = function ($path = '') use (& $router) {
+				return $router->Url('Controller:Asset', ['path' => $path]);
 			};
-		}
 		foreach (self::$_globalHelpers as $helperNamePascalCase => $helperRecord) {
 			$helperNameCamelCase = lcfirst($helperNamePascalCase);
 			if (isset($helpers[$helperNameCamelCase])) continue;
