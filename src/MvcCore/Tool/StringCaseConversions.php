@@ -63,7 +63,11 @@ trait StringCaseConversions
 	 */
 	public static function GetPascalCaseFromDashed ($dashed = '') {
 		$a = explode('/', $dashed);
-		foreach ($a as & $b) $b = ucfirst(str_replace('-', '', ucwords($b, '-')));
+		if (PHP_VERSION_ID < 50432) {
+			foreach ($a as & $b) $b = ucfirst(str_replace('-', '', static::upperCaseWords($b, '-')));
+		} else {
+			foreach ($a as & $b) $b = ucfirst(str_replace('-', '', ucwords($b, '-')));
+		}
 		return ucfirst(implode('/', $a));
 	}
 
@@ -114,7 +118,21 @@ trait StringCaseConversions
 	 */
 	public static function GetPascalCaseFromUnderscored ($underscored = '') {
 		$a = explode('/', $underscored);
-		foreach ($a as & $b) $b = ucfirst(str_replace('_', '', ucwords($b, '_')));
+		if (PHP_VERSION_ID < 50432) {
+			foreach ($a as & $b) $b = ucfirst(str_replace('_', '', static::upperCaseWords($b, '_')));
+		} else {
+			foreach ($a as & $b) $b = ucfirst(str_replace('_', '', ucwords($b, '_')));
+		}
 		return ucfirst(implode('/', $a));
+	}
+	
+	/**
+	 * PHP < 5.4.32 compatible method.
+	 */
+	protected static function upperCaseWords ($str, $delimiter) {
+		$words = explode($delimiter, $str);
+		foreach ($words as $index => $word) 
+			$words[$index] = mb_strtoupper(mb_substr($word, 0, 1)) . mb_substr($word, 1);
+		return implode($delimiter, $words);
 	}
 }

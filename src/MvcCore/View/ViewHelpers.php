@@ -116,7 +116,7 @@ trait ViewHelpers
 		} else if (isset(self::$_globalHelpers[$helperNamePascalCase])) {
 			$globalHelpersRecord = & self::$_globalHelpers[$helperNamePascalCase];
 			$instance = & $globalHelpersRecord[0];
-			$result = & $instance;
+			//$result = & $instance;
 			$setUpView = $globalHelpersRecord[1];
 			$needsClosureFn = $globalHelpersRecord[2];
 		} else {
