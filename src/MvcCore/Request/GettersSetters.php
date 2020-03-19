@@ -202,16 +202,22 @@ trait GettersSetters
 	 * @throws \InvalidArgumentException
 	 * @return mixed|\MvcCore\Request
 	 */
-	public function __call ($name, $arguments = []) {
-		$nameBegin = strtolower(substr($name, 0, 3));
-		$prop = lcfirst(substr($name, 3));
-		if ($nameBegin == 'get' && isset($this->$prop)) {
-			return $this->$prop;
+	public function __call ($rawName, $arguments = []) {
+		/** @var $this \MvcCore\Request */
+		$nameBegin = strtolower(substr($rawName, 0, 3));
+		$name = substr($rawName, 3);
+		if ($nameBegin == 'get') {
+			if (property_exists($this, lcfirst($name))) return $this->{lcfirst($name)};
+			if (property_exists($this, $name)) return $this->$name;
+			return NULL;
 		} else if ($nameBegin == 'set') {
-			$this->$prop = isset($arguments[0]) ? $arguments[0] : NULL;
+			if (property_exists($this, lcfirst($name)))
+				$this->{lcfirst($name)} = isset($arguments[0]) ? $arguments[0] : NULL;
+			if (property_exists($this, $name))
+				$this->$name = isset($arguments[0]) ? $arguments[0] : NULL;
 			return $this;
 		} else {
-			throw new \InvalidArgumentException("[".get_class()."] No property with name '{$prop}' defined.");
+			throw new \InvalidArgumentException("[".get_class()."] No method `{$rawName}()` defined.");
 		}
 	}
 
@@ -221,7 +227,12 @@ trait GettersSetters
 	 * @return mixed
 	 */
 	public function __get ($name) {
-		return isset($this->$name) ? $this->$name : NULL ;
+		/** @var $this \MvcCore\Request */
+		if (isset($this->{lcfirst($name)}))
+			return $this->{lcfirst($name)};
+		if (isset($this->{$name}))
+			return $this->{$name};
+		return NULL;
 	}
 
 	/**
@@ -232,8 +243,9 @@ trait GettersSetters
 	 */
 	public function __set ($name, $value) {
 		/** @var $this \MvcCore\Request */
-		$this->$name = $value;
-		return $this;
+		if (property_exists($this, lcfirst($name)))
+			return $this->{lcfirst($name)} = $value;
+		return $this->{$name} = $value;
 	}
 
 

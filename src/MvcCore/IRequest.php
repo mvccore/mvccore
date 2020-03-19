@@ -571,12 +571,12 @@ interface IRequest
 	 * Throws exception if no property defined by get call or if virtual call
 	 * begins with anything different from `Set` or `Get`.
 	 * This method returns custom value for get and `\MvcCore\Request` instance for set.
-	 * @param string $name
+	 * @param string $rawName
 	 * @param array  $arguments
 	 * @throws \InvalidArgumentException
 	 * @return \MvcCore\IRequest
 	 */
-	public function __call ($name, $arguments = []);
+	public function __call ($rawName, $arguments = []);
 
 	/**
 	 * Universal getter, if property not defined, `NULL` is returned.
