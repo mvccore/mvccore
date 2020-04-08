@@ -56,81 +56,70 @@ trait InternalInits
 	}
 
 	/**
-	 * If request is processed via CLI, initialize most of request properties 
+	 * If request is processed via CLI, initialize most of request properties
 	 * with empty values and parse CLI params into params array.
 	 * @return void
 	 */
-	protected function initCli () {
-		$this->phpSapi = php_sapi_name();
-		$phpSapiCHasCli = FALSE;
-		if (substr($this->phpSapi, 0, 3) === 'cli') {
-			$this->phpSapi = 'cli';
-			$phpSapiCHasCli = TRUE;
-		}
-		$this->cli = FALSE;
-		if ($phpSapiCHasCli && !isset($this->globalServer['REQUEST_URI'])) {
-			$this->cli = TRUE;
-			
-			$hostName = gethostname();
-			$this->scheme = 'file:';
-			$this->secure = FALSE;
-			$this->hostName = $hostName;
-			$this->host = $hostName;
-			$this->port = '';
-			$this->path = '';
-			$this->query = '';
-			$this->fragment = '';
-			$this->ajax = FALSE;
+	protected function initCli ($inputStream) {
+		$hostName = gethostname();
+		$this->scheme = 'file:';
+		$this->secure = FALSE;
+		$this->hostName = $hostName;
+		$this->host = $hostName;
+		$this->port = '';
+		$this->path = '';
+		$this->query = '';
+		$this->fragment = '';
+		$this->ajax = FALSE;
 
-			$this->basePath = '';
-			$this->requestPath = '';
-			$this->domainUrl = '';
-			$this->baseUrl = '';
-			$this->requestUrl = '';
-			$this->fullUrl = '';
-			$this->referer = '';
-			$this->serverIp = '127.0.0.1';
-			$this->clientIp = $this->serverIp;
-			$this->contentLength = 0;
-			$this->headers = [];
-			$this->params = [];
-			$this->appRequest = FALSE;
+		$this->basePath = '';
+		$this->requestPath = '';
+		$this->domainUrl = '';
+		$this->baseUrl = '';
+		$this->requestUrl = '';
+		$this->fullUrl = '';
+		$this->referer = '';
+		$this->serverIp = '127.0.0.1';
+		$this->clientIp = $this->serverIp;
+		$this->contentLength = 0;
+		$this->headers = [];
+		$this->params = [];
+		$this->appRequest = FALSE;
 
-			$this->method = 'GET';
-			
-			// sometimes `$_SERVER['SCRIPT_FILENAME']` is missing, when script 
-			// is running in CLI or it could have relative path only
-			$backtraceItems = debug_backtrace(DEBUG_BACKTRACE_IGNORE_ARGS);
-			$indexFilePath = str_replace('\\', '/', $backtraceItems[count($backtraceItems) - 1]['file']);
-			$lastSlashPos = mb_strrpos($indexFilePath, '/');
+		$this->method = 'GET';
 
-			$this->appRoot = mb_substr($indexFilePath, 0, $lastSlashPos);
-			$this->scriptName = mb_substr($indexFilePath, $lastSlashPos);
+		// sometimes `$_SERVER['SCRIPT_FILENAME']` is missing, when script
+		// is running in CLI or it could have relative path only
+		$backtraceItems = debug_backtrace(DEBUG_BACKTRACE_IGNORE_ARGS);
+		$indexFilePath = str_replace('\\', '/', $backtraceItems[count($backtraceItems) - 1]['file']);
+		$lastSlashPos = mb_strrpos($indexFilePath, '/');
 
-			$args = $this->globalServer['argv'];
-			array_shift($args);
-			$params = [];
-			if ($args) {
-				foreach ($args as $arg) {
-					parse_str($arg, $paramsLocal);
-					if (!$paramsLocal) continue;
-					foreach ($paramsLocal as $paramName => $paramValue) {
-						if (is_array($paramValue)) {
-							$params = array_merge(
-								$params, 
-								[$paramName => array_merge(
-									$params[$paramName] ?: [], $paramValue
-								)]
-							);
-						} else {
-							$params[$paramName] = $paramValue;
-						}
+		$this->appRoot = mb_substr($indexFilePath, 0, $lastSlashPos);
+		$this->scriptName = mb_substr($indexFilePath, $lastSlashPos);
+
+		$args = $this->globalServer['argv'];
+		array_shift($args);
+		$params = [];
+		if ($args) {
+			foreach ($args as $arg) {
+				parse_str($arg, $paramsLocal);
+				if (!$paramsLocal) continue;
+				foreach ($paramsLocal as $paramName => $paramValue) {
+					if (is_array($paramValue)) {
+						$params = array_merge(
+							$params,
+							[$paramName => array_merge(
+								$params[$paramName] ?: [], $paramValue
+							)]
+						);
+					} else {
+						$params[$paramName] = $paramValue;
 					}
 				}
 			}
-			$this->params = $params;
-			$this->globalGet = $params;
 		}
+		$this->params = $params;
+		$this->globalGet = $params;
 	}
 
 	/**
@@ -156,9 +145,9 @@ trait InternalInits
 		}
 
 		$firstColonPos = mb_strpos($uri, ':');
-		if ($firstColonPos !== FALSE) 
+		if ($firstColonPos !== FALSE)
 			$uri = mb_substr($uri, $firstColonPos + 1);
-		
+
 		if (mb_substr($uri, 0, 2) === '//') {
 			$nextSlashPos = mb_strpos($uri, '/', 2);
 			if ($nextSlashPos !== FALSE) {
@@ -168,7 +157,7 @@ trait InternalInits
 				if ($colonsCount === 1) {
 					$colonPos = mb_strpos($authority, ':');
 					$this->port = mb_substr($authority, $colonPos + 1);
-					if ($this->port !== '') 
+					if ($this->port !== '')
 						$this->portDefined = TRUE;
 				}
 			} else {
@@ -178,7 +167,7 @@ trait InternalInits
 
 		$basePath = $this->GetBasePath();
 		$uri = mb_substr($uri, mb_strlen($basePath));
-		
+
 		$questionMarkPos = mb_strpos($uri, '?');
 		$hashPos = mb_strpos($uri, '#');
 		$questionMarkContained = $questionMarkPos !== FALSE;
@@ -236,40 +225,74 @@ trait InternalInits
 	 */
 	protected function initParams () {
 		$params = array_merge($this->globalGet);
-		if ($this->GetMethod() == self::METHOD_POST) {
+		$method = $this->GetMethod();
+		if ($method == self::METHOD_POST || $method == self::METHOD_PUT) {
 			$postValues = [];
+			$contentValues = [];
+			$postHasBeenSerialized = FALSE;
 			if (count($this->globalPost) > 0) {
 				$postValues = $this->globalPost;
-			} else {
-				$postValues = $this->initParamsCompletePostData();
+				$postHasBeenSerialized = TRUE;
 			}
-			$params = array_merge($params, $postValues);
+			$contentType = $this->GetHeader('Content-Type', ' \-/;_=a-zA-Z0-9', '');
+			$multiPartHeader = 'multipart/form-data';
+			$multiPartContent = mb_strpos($contentType, $multiPartHeader) !== FALSE;
+			// @see https://stackoverflow.com/a/37046109/7032987
+			if (!$postHasBeenSerialized && !$multiPartContent) {
+				if ($this->body === NULL)
+					$this->initBody();
+				$contentValues = $this->parseBodyParams($contentType);
+			}
+			$params = array_merge($params, $postValues, $contentValues);
 		}
 		$this->params = $params;
 	}
 
 	/**
-	 * Read and return direct php `POST` input from `php://input`.
+	 * Read and return direct php `POST` input from `php://input` or `php://stdin`.
+	 * @return void
+	 */
+	protected function initBody () {
+		$this->body = file_get_contents($this->inputStream);
+	}
+
+	/**
+	 * Parse direct PHP input (`php://input`) by Content-Type header.
+	 * @param string $contentType
 	 * @return array
 	 */
-	protected function initParamsCompletePostData () {
+	protected function parseBodyParams ($contentType) {
 		$result = [];
-		$rawPhpInput = file_get_contents('php://input');
 		$app = self::$app ?: (self::$app = \MvcCore\Application::GetInstance());
 		$toolClass = $app->GetToolClass();
-		// try first JSON decoding, then fallback to query string
-		$probablyAJsonType = !$toolClass::IsQueryString($rawPhpInput);
-		if ($probablyAJsonType) {
-			$decodedJsonResult = $toolClass::DecodeJson($rawPhpInput);
-			if ($decodedJsonResult->success) {
-				$result = (array) $decodedJsonResult->data;
+		$urlEncType = mb_strpos($contentType, 'application/x-www-form-url-encoded') !== FALSE;
+		if ($urlEncType) {
+			parse_str(trim($this->body, '&='), $result);
+		} else {
+			$jsonType = (
+				mb_strpos($contentType, 'application/json') !== FALSE ||
+				mb_strpos($contentType, 'text/javascript') !== FALSE ||
+				mb_strpos($contentType, 'application/ld+json') !== FALSE
+			);
+			if ($jsonType) {
+				try {
+					$result = $toolClass::DecodeJson($this->body);
+				} catch (\Exception $e) {
+				}
 			} else {
-				$probablyAJsonType = FALSE; // fall back to query string parsing
+				// if content type header is not recognized,
+				// try JSON decoding first, then fallback to query string:
+				$probablyAJsonType = !$toolClass::IsQueryString($this->body);
+				if ($probablyAJsonType) {
+					try {
+						$result = $toolClass::DecodeJson($this->body);
+					} catch (\Exception $e) {
+						$probablyAJsonType = FALSE; // fall back to query string parsing
+					}
+				}
+				if (!$probablyAJsonType)
+					parse_str(trim($this->body, '&='), $result);
 			}
-		}
-		if (!$probablyAJsonType) {
-			$rawPhpInput = trim($rawPhpInput, '&=');
-			parse_str($rawPhpInput, $result);
 		}
 		return $result;
 	}
@@ -296,7 +319,7 @@ trait InternalInits
 		if (!isset($paramsCollection[$name])) return $ifNullValue;
 		if (is_array($paramsCollection[$name])) {
 			if ($targetType !== NULL && $targetType !== 'array') throw new \InvalidArgumentException(
-				"`$name` must be a `$targetType`, not an `array`."
+				"Collection member `{$name}` is not an `array`."
 			);
 			$result = [];
 			$paramsCollectionArr = $paramsCollection[$name];
@@ -360,7 +383,7 @@ trait InternalInits
 		} else {
 			$languagesAndLocales = static::ParseHttpAcceptLang($rawUaLanguages);
 			$langAndLocaleArr = current($languagesAndLocales);
-			if (is_array($langAndLocaleArr)) 
+			if (is_array($langAndLocaleArr))
 				$langAndLocaleArr = current($langAndLocaleArr);
 		}
 		if ($langAndLocaleArr[0] === NULL) $langAndLocaleArr[0] = '';
@@ -372,7 +395,7 @@ trait InternalInits
 	 * Initialize domain parts from server name property.
 	 * If you need to add exceptional top-level domain names, use method
 	 * `\MvcCore\Request::AddTwoSegmentTlds('co.uk');`
-	 * Example: 
+	 * Example:
 	 * `'any.content.example.co.uk' => ['any.content', 'example', 'co.uk']`
 	 * @return void
 	 */

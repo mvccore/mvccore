@@ -65,7 +65,6 @@ trait GettersSetters
 		$routerClass = self::$routerClass;
 		$router = $routerClass::GetInstance();
 		$this->params[$router::URL_PARAM_CONTROLLER] = $controllerName;
-
 		return $this;
 	}
 
@@ -125,9 +124,11 @@ trait GettersSetters
 	 * Set language international code.
 	 * Use this lang storage by your own decision.
 	 * Example: `"en" | "de"`
-	 * @var string|NULL
+	 * @param string|NULL $lang
+	 * @return \MvcCore\Request|\MvcCore\IRequest
 	 */
 	public function SetLang ($lang) {
+		/** @var $this \MvcCore\Request */
 		$this->lang = $lang;
 		return $this;
 	}
@@ -137,7 +138,7 @@ trait GettersSetters
 	 * To use this variable - install  `\MvcCore\Router` extension `\MvcCore\Ext\Router\Lang`
 	 * Or use this variable by your own decision.
 	 * Example: `"en" | "de"`
-	 * @var string|NULL
+	 * @return string|NULL
 	 */
 	public function GetLang () {
 		if ($this->lang === NULL) $this->initLangAndLocale();
@@ -148,9 +149,11 @@ trait GettersSetters
 	 * Set country/locale code, upper case.
 	 * Use this locale storage by your own decision.
 	 * Example: `"US" | "UK"`
-	 * @var string|NULL
+	 * @param string|NULL $locale
+	 * @return \MvcCore\Request|\MvcCore\IRequest
 	 */
 	public function SetLocale ($locale) {
+		/** @var $this \MvcCore\Request */
 		$this->locale = $locale;
 		return $this;
 	}
@@ -160,7 +163,7 @@ trait GettersSetters
 	 * To use this variable - install `\MvcCore\Router` extension `\MvcCore\Ext\Router\Lang`
 	 * Or use this variable by your own decision.
 	 * Example: `"US" | "UK"`
-	 * @var string|NULL
+	 * @return string|NULL
 	 */
 	public function GetLocale () {
 		if ($this->locale === NULL) $this->initLangAndLocale();
@@ -171,9 +174,11 @@ trait GettersSetters
 	 * Set media site version - `"full" | "tablet" | "mobile"`.
 	 * Use this media site version storage by your own decision.
 	 * Example: `"full" | "tablet" | "mobile"`
-	 * @var string|NULL
+	 * @param string|NULL $mediaSiteVersion
+	 * @return \MvcCore\Request|\MvcCore\IRequest
 	 */
 	public function SetMediaSiteVersion ($mediaSiteVersion) {
+		/** @var $this \MvcCore\Request */
 		$this->mediaSiteVersion = $mediaSiteVersion;
 		return $this;
 	}
@@ -183,7 +188,7 @@ trait GettersSetters
 	 * To use this variable - install `\MvcCore\Router` extension `\MvcCore\Ext\Routers\Media`
 	 * Or use this variable by your own decision.
 	 * Example: `"full" | "tablet" | "mobile"`
-	 * @var string|NULL
+	 * @return string|NULL
 	 */
 	public function GetMediaSiteVersion () {
 		return $this->mediaSiteVersion;
@@ -200,7 +205,7 @@ trait GettersSetters
 	 * @param string $name
 	 * @param array  $arguments
 	 * @throws \InvalidArgumentException
-	 * @return mixed|\MvcCore\Request
+	 * @return mixed|\MvcCore\Request|\MvcCore\IRequest
 	 */
 	public function __call ($rawName, $arguments = []) {
 		/** @var $this \MvcCore\Request */
@@ -257,15 +262,6 @@ trait GettersSetters
 	public function GetScriptName () {
 		if ($this->scriptName === NULL) $this->initScriptNameAndBasePath();
 		return $this->scriptName;
-	}
-
-	/**
-	 * Get `php_sapi_name();` result string
-	 * Example: `"" | "cli"`
-	 * @return string
-	 */
-	public function GetPhpSapi () {
-		return $this->phpSapi;
 	}
 
 	/**
@@ -712,7 +708,7 @@ trait GettersSetters
 	public function GetRequestUrl ($rawInput = FALSE) {
 		if ($this->requestUrl === NULL)
 			$this->requestUrl = $this->GetBaseUrl() . $this->GetPath(TRUE);
-		return $rawInput ? $this->requestUrl : $this->HtmlSpecialChars($this->requestUrl);
+		return $rawInput ? $this->requestUrl : static::HtmlSpecialChars($this->requestUrl);
 	}
 
 	/**
@@ -786,17 +782,22 @@ trait GettersSetters
 	 */
 	public function IsAjax () {
 		if ($this->ajax === NULL) {
-			$this->ajax = (
+			if (
 				isset($this->globalServer['HTTP_X_REQUESTED_WITH']) &&
 				strlen($this->globalServer['HTTP_X_REQUESTED_WITH']) > 0
-			);
+			) {
+				$this->ajax =TRUE;
+			} else {
+				$rawHeader = $this->GetHeader('X-Requested-With', '\-\. _a-zA-Z0-9', '');
+				$this->ajax = strlen($rawHeader) > 0;
+			}
 		}
 		return $this->ajax;
 	}
 
 	/**
-	 * Get integer value from global `$_SERVER['CONTENT_LENGTH']`,
-	 * If no value, `NULL` is returned.
+	 * Get integer value from global `$_SERVER['CONTENT_LENGTH']`
+	 * or from http header `Content-Length`, if no value, `NULL` is returned.
 	 * @return int|NULL
 	 */
 	public function GetContentLength () {
@@ -804,9 +805,25 @@ trait GettersSetters
 			if (
 				isset($this->globalServer['CONTENT_LENGTH']) &&
 				ctype_digit($this->globalServer['CONTENT_LENGTH'])
-			) $this->contentLength = intval($this->globalServer['CONTENT_LENGTH']);
+			) {
+				$this->contentLength = intval($this->globalServer['CONTENT_LENGTH']);
+			} else {
+				$rawHeader = $this->GetHeader('Content-Length', '0-9', '');
+				if ($rawHeader)
+					$this->contentLength = intval($rawHeader);
+			}
 		}
 		return $this->contentLength;
+	}
+
+	/**
+	 * Raw request body, usually from `file_get_contents('php://input');`.
+	 * Use this method only for non-standard application inputs like: XML, binary data, etc...
+	 * @return string
+	 */
+	public function GetBody () {
+		if ($this->body === NULL) $this->initBody();
+		return $this->body;
 	}
 
 	/**

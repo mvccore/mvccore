@@ -175,29 +175,29 @@ interface IRequest
 	const PARAM_FILTER_ALPHABETS_DIGITS = 'a-zA-Z0-9';
 
 	/**
-	 * Lower case and upper case alphabet characters and punctuation characters: 
+	 * Lower case and upper case alphabet characters and punctuation characters:
 	 * - . , SPACE ; ` " ' : ? !
 	 */
 	const PARAM_FILTER_ALPHABETS_PUNCT = 'a-zA-Z\-\.\, ;`"\'\:\?\!';
 
 	/**
-	 * Lower case and upper case alphabet characters, digits with dot, comma, minus 
+	 * Lower case and upper case alphabet characters, digits with dot, comma, minus
 	 * and plus sign and punctuation characters: - . , SPACE ; ` " ' : ? !
 	 */
 	const PARAM_FILTER_ALPHABETS_NUMERICS_PUNCT = 'a-zA-Z0-9\+\-\.\, ;`"\'\:\?\!';
 
 	/**
-	 * Lower case and upper case alphabet characters, digits with dot, comma, minus 
+	 * Lower case and upper case alphabet characters, digits with dot, comma, minus
 	 * and plus sign, punctuation characters: - . , SPACE ; ` " ' : ? !
 	 * and special characters: % _ / @ ~ # & $ [ ] ( ) { } | = * ^
 	 */
 	const PARAM_FILTER_ALPHABETS_NUMERICS_PUNCT_SPECIAL = 'a-zA-Z0-9\+\-\.\, ;`"\'\:\?\!%_/@~\#\&\$\[\]\(\)\{\}\|\=\*\^';
-	
+
 	/**
 	 * Punctuation characters only: - . , SPACE ; ` " ' : ? !
 	 */
 	const PARAM_FILTER_PUNCT = '\-\.\, ;`"\'\:\?\!';
-	
+
 	/**
 	 * Special characters only: % _ / @ ~ # & $ [ ] ( ) { } | = * ^
 	 */
@@ -218,7 +218,7 @@ interface IRequest
 	 * Add exceptional two-segment top-level domain like
 	 * `'co.jp', 'co.uk', 'co.kr', 'co.nf' ...` to parse
 	 * domain string correctly.
-	 * Example: 
+	 * Example:
 	 * `\MvcCore\Request::AddTwoSegmentTlds('co.uk', 'co.jp');`
 	 * `\MvcCore\Request::AddTwoSegmentTlds(['co.uk', 'co.jp']);`
 	 * @param \string[] $twoSegmentTlds,... List of two-segment top-level domains without leading dot.
@@ -507,7 +507,7 @@ interface IRequest
 	public function GetActionName ();
 
 	/**
-	 * `TRUE` if PHP `php_sapi_name()` is `cli` and also 
+	 * `TRUE` if PHP `php_sapi_name()` is `cli` and also
 	 * if there is no `$_SERVER['REQUEST_URI']` defined.
 	 * @return bool
 	 */
@@ -517,7 +517,8 @@ interface IRequest
 	 * Set language international code.
 	 * Use this lang storage by your own decision.
 	 * Example: `"en" | "de"`
-	 * @var string|NULL
+	 * @param string|NULL $lang
+	 * @return \MvcCore\IRequest
 	 */
 	public function SetLang ($lang);
 
@@ -526,7 +527,7 @@ interface IRequest
 	 * To use this variable - install  `\MvcCore\Router` extension `\MvcCore\Ext\Router\Lang`
 	 * Or use this variable by your own decision.
 	 * Example: `"en" | "de"`
-	 * @var string|NULL
+	 * @return string|NULL
 	 */
 	public function GetLang ();
 
@@ -534,7 +535,8 @@ interface IRequest
 	 * Set country/locale code, upper case.
 	 * Use this locale storage by your own decision.
 	 * Example: `"US" | "UK"`
-	 * @var string|NULL
+	 * @param string|NULL $locale
+	 * @return \MvcCore\IRequest
 	 */
 	public function SetLocale ($locale);
 
@@ -543,7 +545,7 @@ interface IRequest
 	 * To use this variable - install `\MvcCore\Router` extension `\MvcCore\Ext\Router\Lang`
 	 * Or use this variable by your own decision.
 	 * Example: `"US" | "UK"`
-	 * @var string|NULL
+	 * @return string|NULL
 	 */
 	public function GetLocale ();
 
@@ -551,7 +553,8 @@ interface IRequest
 	 * Set media site version - `"full" | "tablet" | "mobile"`.
 	 * Use this media site version storage by your own decision.
 	 * Example: `"full" | "tablet" | "mobile"`
-	 * @var string|NULL
+	 * @param string|NULL $mediaSiteVersion
+	 * @return \MvcCore\IRequest
 	 */
 	public function SetMediaSiteVersion ($mediaSiteVersion);
 
@@ -560,7 +563,7 @@ interface IRequest
 	 * To use this variable - install `\MvcCore\Router` extension `\MvcCoreExt\Router\Media`
 	 * Or use this variable by your own decision.
 	 * Example: `"full" | "tablet" | "mobile"`
-	 * @var string|NULL
+	 * @return string|NULL
 	 */
 	public function GetMediaSiteVersion ();
 
@@ -574,7 +577,7 @@ interface IRequest
 	 * @param string $rawName
 	 * @param array  $arguments
 	 * @throws \InvalidArgumentException
-	 * @return \MvcCore\IRequest
+	 * @return mixed|\MvcCore\IRequest
 	 */
 	public function __call ($rawName, $arguments = []);
 
@@ -675,7 +678,7 @@ interface IRequest
 	public function GetReferer ($rawInput = FALSE);
 
 	/**
-	 * Get timestamp in seconds as float, when the request has been started, 
+	 * Get timestamp in seconds as float, when the request has been started,
 	 * with microsecond precision.
 	 * @return float
 	 */
@@ -684,39 +687,39 @@ interface IRequest
 	/**
 	 * Set TOP level domain like `com` or `co.uk`.
 	 * Method also change server name and host record automatically.
-	 * @param string|NULL $topLevelDomain 
+	 * @param string|NULL $topLevelDomain
 	 * @return \MvcCore\IRequest
 	 */
 	public function SetTopLevelDomain ($topLevelDomain);
-	
+
 	/**
 	 * Set top level domain like `com` from `www.example.com`.
 	 * @return string|NULL
 	 */
 	public function GetTopLevelDomain ();
-	
+
 	/**
 	 * Set second level domain like `example` in `www.example.com`.
 	 * Method also change server name and host record automatically.
-	 * @param string|NULL $secondLevelDomain 
+	 * @param string|NULL $secondLevelDomain
 	 * @return \MvcCore\IRequest
 	 */
 	public function SetSecondLevelDomain ($secondLevelDomain);
-	
+
 	/**
 	 * Get second level domain like `example` in `www.example.com`.
 	 * @return string|NULL
 	 */
 	public function GetSecondLevelDomain ();
-	
+
 	/**
 	 * Set second level domain like `example` from `www.example.com`.
 	 * Method also change server name and host record automatically.
-	 * @param string|NULL $thirdLevelDomain 
+	 * @param string|NULL $thirdLevelDomain
 	 * @return \MvcCore\IRequest
 	 */
 	public function SetThirdLevelDomain ($thirdLevelDomain);
-	
+
 	/**
 	 * Get third level domain like `www` from `www.example.com`.
 	 * @return string|NULL
@@ -881,16 +884,23 @@ interface IRequest
 	public function IsAjax ();
 
 	/**
-	 * Get integer value from global `$_SERVER['CONTENT_LENGTH']`,
-	 * If no value, `NULL` is returned.
+	 * Get integer value from global `$_SERVER['CONTENT_LENGTH']`
+	 * or from http header `Content-Length`, if no value, `NULL` is returned.
 	 * @return int|NULL
 	 */
 	public function GetContentLength ();
 
 	/**
+	 * Raw request body, usually from `file_get_contents('php://input');`.
+	 * Use this method only for non-standard application inputs like: XML, binary data, etc...
+	 * @return string
+	 */
+	public function GetBody ();
+
+	/**
 	 * Convert special characters to HTML entities except ampersand `&`.
 	 * @see http://php.net/manual/en/function.htmlspecialchars.php
-	 * @param string $str 
+	 * @param string $str
 	 * @return string
 	 */
 	public static function HtmlSpecialChars ($str);

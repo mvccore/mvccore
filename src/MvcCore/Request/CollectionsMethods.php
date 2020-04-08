@@ -278,7 +278,7 @@ trait CollectionsMethods
 	 * Get directly all raw global `$_COOKIE`s at once (with/without conversion).
 	 * Cookies are returned as `key => value` array.
 	 * @param string|array|bool $pregReplaceAllowedChars If String - list of regular expression characters to only keep, if array - `preg_replace()` pattern and reverse, if `FALSE`, raw value is returned.
-	 * @return array
+	 * @param array $onlyKeys Array with keys to get only. If empty (by default), all possible cookies are returned.
 	 * @return array
 	 */
 	public function & GetCookies ($pregReplaceAllowedChars = ['#[\<\>\'"]#' => ''], $onlyKeys = []) {

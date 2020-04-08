@@ -27,6 +27,7 @@ trait Instancing
 	 * @param array $post
 	 * @param array $cookie
 	 * @param array $files
+	 * @param string|NULL $inputStream
 	 * @return \MvcCore\Request|\MvcCore\IRequest
 	 */
 	public static function CreateInstance (
@@ -34,13 +35,14 @@ trait Instancing
 		array & $get = [],
 		array & $post = [],
 		array & $cookie = [],
-		array & $files = []
+		array & $files = [],
+		$inputStream = NULL
 	) {
-		if (!func_get_args()) 
+		if (!func_get_args())
 			list($server, $get, $post, $cookie, $files) = [& $_SERVER, & $_GET, & $_POST, & $_COOKIE, & $_FILES];
 		$app = self::$app ?: (self::$app = \MvcCore\Application::GetInstance());
 		$requestClass = $app->GetRequestClass();
-		return new $requestClass($server, $get, $post, $cookie, $files);
+		return new $requestClass($server, $get, $post, $cookie, $files, $inputStream);
 	}
 
 	/**
@@ -55,6 +57,7 @@ trait Instancing
 	 * @param array $post
 	 * @param array $cookie
 	 * @param array $files
+	 * @param string|NULL $inputStream
 	 * @return void
 	 */
 	public function __construct (
@@ -62,7 +65,8 @@ trait Instancing
 		array & $get = [],
 		array & $post = [],
 		array & $cookie = [],
-		array & $files = []
+		array & $files = [],
+		$inputStream = NULL
 	) {
 		$app = self::$app ?: (self::$app = \MvcCore\Application::GetInstance());
 		self::$routerClass = self::$routerClass ?: $app->GetRouterClass();
@@ -71,7 +75,15 @@ trait Instancing
 		$this->globalPost = & $post;
 		$this->globalCookies = & $cookie;
 		$this->globalFiles = & $files;
-		$this->initCli();
+		$this->cli = php_sapi_name() == 'cli';
+		$inputStreamDefault = $this->cli
+			? STDIN
+			: 'php://input';
+		$this->inputStream = $inputStream !== NULL
+			? $inputStream
+			: $inputStreamDefault;
+		if ($this->cli)
+			$this->initCli();
 	}
 
 	/**

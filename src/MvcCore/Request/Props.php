@@ -36,13 +36,14 @@ trait Props
 	protected static $app = NULL;
 
 	/**
-	 * Example: `cli | apache | fpm-fcgi`
-	 * @var string|NULL
+	 * String name or resource for request input stream.
+	 * Example: `'php://input' | STDIN`
+	 * @var string|resource|NULL
 	 */
-	protected $phpSapi				= NULL;
+	protected $inputStream		= NULL;
 
 	/**
-	 * `TRUE` if PHP `php_sapi_name()` is `cli` and also 
+	 * `TRUE` if PHP `php_sapi_name()` is `cli` and also
 	 * if there is no `$_SERVER['REQUEST_URI']` defined.
 	 * @var bool|NULL
 	 */
@@ -260,6 +261,12 @@ trait Props
 	 * @var array|NULL
 	 */
 	protected $headers			= NULL;
+
+	/**
+	 * Raw request body, usually from `file_get_contents('php://input');`.
+	 * @var string|NULL
+	 */
+	protected $body				= NULL;
 
 	/**
 	 * Raw request params array, with keys defined in route or by query string,
