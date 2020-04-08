@@ -91,19 +91,20 @@ trait Content
 
 	/**
 	 * Send all HTTP headers and send response body.
-	 * @return void
+	 * @return \MvcCore\Response|\MvcCore\IResponse
 	 */
 	public function Send () {
-		$this->SendHeaders();
-		$this->SendBody();
+		return $this
+			->SendHeaders()
+			->SendBody();
 	}
 
 	/**
 	 * Send all HTTP headers.
-	 * @return void
+	 * @return \MvcCore\Response|\MvcCore\IResponse
 	 */
 	public function SendHeaders () {
-		if (headers_sent()) return;
+		if (headers_sent()) return $this;
 		$httpVersion = $this->GetHttpVersion();
 		$code = $this->GetCode();
 		$status = $this->codeMessage !== NULL
@@ -111,11 +112,9 @@ trait Content
 			: (isset(static::$codeMessages[$code])
 				? ' '.static::$codeMessages[$code]
 				: '');
-		if (!isset($this->headers['Content-Encoding'])) {
-			if (!$this->encoding) $this->encoding = 'utf-8';
-			$this->headers['Content-Encoding'] = $this->encoding;
-		}
 		$this->UpdateHeaders();
+		if (!isset($this->headers['Content-Encoding'])) 
+			$this->headers['Content-Encoding'] = $this->GetEncoding();
 		header($httpVersion . ' ' . $code . $status);
 		header('Host: ' . $this->request->GetHost());
 		foreach ($this->headers as $name => $value) {
@@ -137,19 +136,21 @@ trait Content
 		foreach ($this->disabledHeaders as $name => $b)
 			header_remove($name);
 		$this->addTimeAndMemoryHeader();
+		return $this;
 	}
 
 	/**
 	 * Send response body.
-	 * @return void
+	 * @return \MvcCore\Response|\MvcCore\IResponse
 	 */
 	public function SendBody () {
-		if ($this->bodySent) return;
+		if ($this->bodySent) return $this;
 		echo $this->body;
 		if (ob_get_level())
 			ob_end_flush();
 		flush();
 		$this->bodySent = TRUE;
+		return $this;
 	}
 
 	/**

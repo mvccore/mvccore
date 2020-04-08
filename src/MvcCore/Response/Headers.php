@@ -33,7 +33,7 @@ trait Headers
 	 * `Content-Type` header, if contains any `charset=...`.
 	 * There is automatically set response encoding from value for
 	 * `Content-Encoding` header.
-	 * Example: `$request->SetHeader(array('Content-Type' => 'text/plain; charset=utf-8'));`
+	 * Example: `$response->SetHeader(array('Content-Type' => 'text/plain; charset=utf-8'));`
 	 * @param array $headers
 	 * @param bool $cleanAllPrevious `FALSE` by default. If `TRUE`, all previous headers
 	 *								 set by PHP `header()` or by this object will be removed.
@@ -57,7 +57,7 @@ trait Headers
 	 * `Content-Type` header, if contains any `charset=...`.
 	 * There is automatically set response encoding from value for
 	 * `Content-Encoding` header.
-	 * Example: `$request->SetHeader('Content-Type', 'text/plain; charset=utf-8');`
+	 * Example: `$response->SetHeader('Content-Type', 'text/plain; charset=utf-8');`
 	 * @param string $name
 	 * @param string $value
 	 * @return \MvcCore\Response|\MvcCore\IResponse
@@ -77,17 +77,18 @@ trait Headers
 				);
 			}
 		}
-		if ($name === 'Content-Encoding') $this->encoding = $value;
+		if ($name === 'Content-Encoding') $this->SetEncoding($value);
 		return $this;
 	}
 
 	/**
 	 * Get HTTP response header by name. If header doesn't exists, null is returned.
-	 * Example: `$request->GetHeader('Content-Type'); // returns 'text/plain; charset=utf-8'`
+	 * Example: `$response->GetHeader('Content-Type'); // returns 'text/plain; charset=utf-8'`
 	 * @param string $name
 	 * @return string|NULL
 	 */
 	public function GetHeader ($name) {
+		$this->UpdateHeaders();
 		return isset($this->headers[$name])
 			? $this->headers[$name]
 			: NULL;
@@ -96,19 +97,20 @@ trait Headers
 	/**
 	 * Get if response has any HTTP response header by given `$name`.
 	 * Example:
-	 *	`$request->GetHeader('Content-Type'); // returns TRUE if there is header 'Content-Type'
-	 *	`$request->GetHeader('content-type'); // returns FALSE if there is header 'Content-Type'
+	 *	`$response->GetHeader('Content-Type'); // returns TRUE if there is header 'Content-Type'
+	 *	`$response->GetHeader('content-type'); // returns FALSE if there is header 'Content-Type'
 	 * @param string $name
 	 * @return bool
 	 */
 	public function HasHeader ($name) {
+		$this->UpdateHeaders();
 		return isset($this->headers[$name]);
 	}
 
 	/**
 	 * Consolidate all headers from PHP response
 	 * by calling `headers_list()` into local headers list.
-	 * @return void
+	 * @return \MvcCore\Response|\MvcCore\IResponse
 	 */
 	public function UpdateHeaders () {
 		$rawHeaders = headers_list();
@@ -126,6 +128,7 @@ trait Headers
 			if (!isset($this->disabledHeaders[$name]))
   				$this->headers[$name] = $value;
 		}
+		return $this;
 	}
 
 	/**

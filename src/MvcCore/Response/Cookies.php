@@ -49,8 +49,7 @@ trait Cookies
 	}
 
 	/**
-	 * Delete cookie - set value to empty string and
-	 * set expiration to "until the browser is closed".
+	 * Delete cookie - set value to empty string and set expiration to past time.
 	 * @param string $name			Cookie name. Assuming the name is `cookiename`, this value is retrieved through `$_COOKIE['cookiename']`.
 	 * @param string $path			The path on the server in which the cookie will be available on. If set to '/', the cookie will be available within the entire domain.
 	 * @param string $domain		If not set, value is completed by `\MvcCore\Application::GetInstance()->GetRequest()->GetHostName();` .
@@ -59,6 +58,6 @@ trait Cookies
 	 * @return bool					True if cookie has been set.
 	 */
 	public function DeleteCookie ($name, $path = '/', $domain = NULL, $secure = NULL) {
-		return $this->SetCookie($name, '', 0, $path, $domain, $secure);
+		return $this->SetCookie($name, '',  -3600, $path, $domain, $secure);
 	}
 }

@@ -188,7 +188,7 @@ interface IResponse
 	/**
 	 * Consolidate all headers from PHP response
 	 * by calling `headers_list()` into local headers list.
-	 * @return void
+	 * @return \MvcCore\IResponse
 	 */
 	public function UpdateHeaders ();
 
@@ -231,19 +231,19 @@ interface IResponse
 
 	/**
 	 * Send all HTTP headers and send response body.
-	 * @return void
+	 * @return \MvcCore\IResponse
 	 */
 	public function Send ();
 
 	/**
 	 * Send all HTTP headers.
-	 * @return void
+	 * @return \MvcCore\IResponse
 	 */
 	public function SendHeaders ();
 
 	/**
 	 * Send response body.
-	 * @return void
+	 * @return \MvcCore\IResponse
 	 */
 	public function SendBody ();
 
@@ -266,8 +266,7 @@ interface IResponse
 	);
 
 	/**
-	 * Delete cookie - set value to empty string and
-	 * set expiration to "until the browser is closed".
+	 * Delete cookie - set value to empty string and set expiration to past time.
 	 * @param string $name		Cookie name. Assuming the name is `cookiename`, this value is retrieved through `$_COOKIE['cookiename']`.
 	 * @param string $path		The path on the server in which the cookie will be available on. If set to '/', the cookie will be available within the entire domain.
 	 * @param string $domain	  If not set, value is completed by `\MvcCore\Application::GetInstance()->GetRequest()->GetHostName();` .

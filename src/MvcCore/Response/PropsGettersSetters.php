@@ -151,6 +151,7 @@ trait PropsGettersSetters
 		/** @var $this \MvcCore\Response */
 		$this->encoding = $encoding;
 		$this->headers['Content-Encoding'] = $encoding;
+		header('Content-Encoding: ' . $value);
 		return $this;
 	}
 
@@ -161,6 +162,21 @@ trait PropsGettersSetters
 	 */
 	public function GetEncoding () {
 		/** @var $this \MvcCore\Response */
+		if ($this->encoding === NULL) {
+			if (isset($this->headers['Content-Encoding'])) {
+				$this->encoding = $this->headers['Content-Encoding'];
+			} else if (isset($this->headers['Content-Type'])) {
+				$value = $this->headers['Content-Type'];
+				$charsetPos = strpos($value, 'charset');
+				if ($charsetPos !== FALSE) {
+					$equalPos = strpos($value, '=', $charsetPos);
+					if ($equalPos !== FALSE) 
+						$this->encoding = trim(substr($value, $equalPos + 1));
+				}
+			}
+			if (!$this->encoding)
+				$this->encoding = 'utf-8';
+		}
 		return $this->encoding;
 	}
 
