@@ -16,351 +16,214 @@ namespace MvcCore\Config;
 trait Environment
 {
 	/**
-	 * Environment name. Usual values:
-	 * - `"dev"`			- Development environment.
-	 * - `"beta"`			- Common team testing environment.
-	 * - `"alpha"`			- Release testing environment.
-	 * - `"production"`		- Release environment.
-	 * @var string|NULL
+	 * Name of system config root section with environments recognition configuration.
+	 * @var string
 	 */
-	protected static $environment = NULL;
+	protected static $systemEnvironmentsSectionName = 'environments';
 
 	/**
-	 * Return `TRUE` if environment is `"dev"`.
-	 * @param bool $autoloadSystemConfig If `TRUE`, environment will be detected by loaded system config.
-	 * @return bool
+	 * Key value for configuration data common for all environments.
+	 * @var string
 	 */
-	public static function IsDevelopment ($autoloadSystemConfig = TRUE) {
-		return static::GetEnvironment($autoloadSystemConfig) === static::ENVIRONMENT_DEVELOPMENT;
-	}
+	protected static $commonEnvironmentDataKey = '';
 
 	/**
-	 * Return `TRUE` if environment is `"beta"`.
-	 * @param bool $autoloadSystemConfig If `TRUE`, environment will be detected by loaded system config.
-	 * @return bool
+	 * Return environment configuration data from system config. Environment
+	 * configuration data are always stored under root level section `[environments]`.
+	 * @param \MvcCore\Config|\MvcCore\IConfig $config
+	 * @return array|\stdClass
 	 */
-	public static function IsBeta ($autoloadSystemConfig = TRUE) {
-		return static::GetEnvironment($autoloadSystemConfig) === static::ENVIRONMENT_BETA;
-	}
-
-	/**
-	 * Return `TRUE` if environment is `"alpha"`.
-	 * @param bool $autoloadSystemConfig If `TRUE`, environment will be detected by loaded system config.
-	 * @return bool
-	 */
-	public static function IsAlpha ($autoloadSystemConfig = TRUE) {
-		return static::GetEnvironment($autoloadSystemConfig) === static::ENVIRONMENT_ALPHA;
-	}
-
-	/**
-	 * Return `TRUE` if environment is `"production"`.
-	 * @param bool $autoloadSystemConfig If `TRUE`, environment will be detected by loaded system config.
-	 * @return bool
-	 */
-	public static function IsProduction ($autoloadSystemConfig = TRUE) {
-		return static::GetEnvironment($autoloadSystemConfig) === static::ENVIRONMENT_PRODUCTION;
-	}
-
-	/**
-	 * Get environment name as string,
-	 * defined by constants: `\MvcCore\IConfig::ENVIRONMENT_<environment>`.
-	 * @return string
-	 */
-	public static function GetEnvironment ($autoloadSystemConfig = FALSE) {
-		if (static::$environment === NULL) {
-			if ($autoloadSystemConfig) {
-				if (static::GetSystem() === FALSE) 
-					// if there is no system config, recognize environment only by very 
-					// simple way - by server and client IP only
-					static::EnvironmentDetectByIps();
-			} else {
-				static::EnvironmentDetectByIps();
+	public static function & GetEnvironmentDetectionData (\MvcCore\IConfig $config) {
+		$envConfData = [];
+		if (!$config->system)
+			return $envConfData;
+		$commonEnvDataKey = static::$commonEnvironmentDataKey;
+		$someEnvironmentData = [];
+		if (count($config->mergedData) > 0) {
+			// Config is probably loaded from cache:
+			$firstEnvironmentName = key($config->mergedData);
+			$someEnvironmentData = & $config->mergedData[$firstEnvironmentName];
+		} else if (isset($config->envData[$commonEnvDataKey])) {
+			// Config is read and loaded from HDD:
+			$someEnvironmentData = & $config->envData[$commonEnvDataKey];
+		}
+		if ($someEnvironmentData) {
+			$sysEnvSectionName = static::$systemEnvironmentsSectionName;
+			if (is_object($someEnvironmentData)) {
+				if (isset($someEnvironmentData->{$sysEnvSectionName}))
+					$envConfData = & $someEnvironmentData->{$sysEnvSectionName};
+			} else /*if (is_array($someEnvironmentData))*/ {
+				if (isset($someEnvironmentData[$sysEnvSectionName]))
+					$envConfData = & $someEnvironmentData[$sysEnvSectionName];
 			}
 		}
-		return static::$environment;
+		return $envConfData;
 	}
 
 	/**
-	 * Set environment name as string,
-	 * defined by constants: `\MvcCore\IConfig::ENVIRONMENT_<environment>`.
-	 * @param string $environment
-	 * @return string
+	 * Set up config with current environment data immediately after
+	 * environment name is detected. This method is used INTERNALLY!
+	 * @param \MvcCore\Config|\MvcCore\IConfig $config
+	 * @param string $environmentName
+	 * @return void
 	 */
-	public static function SetEnvironment ($environment = \MvcCore\IConfig::ENVIRONMENT_PRODUCTION) {
-		return static::$environment = $environment;
-	}
-
-	/**
-	 * First environment value setup - by server and client IP address.
-	 * @return string Detected environment string.
-	 */
-	public static function EnvironmentDetectByIps () {
-		if (static::$environment === NULL) {
-			$request = \MvcCore\Application::GetInstance()->GetRequest();
-			$serverAddress = $request->GetServerIp();
-			$remoteAddress = $request->GetClientIp();
-			if ($serverAddress == $remoteAddress) {
-				static::$environment = static::ENVIRONMENT_DEVELOPMENT;
+	public static function SetUpEnvironmentData (\MvcCore\IConfig $config, $environmentName) {
+		if ($config->mergedData) return;
+		// Serialized into cache is always only `$config->mergedData` collection.
+		if (array_key_exists($environmentName, $config->mergedData)) {
+			// 1. If there are data in `$config->mergedData` (config from cache), complete
+			// `$config->currentData` collection from `$config->mergedData[$environmentName]`.
+			$config->currentData = $config->mergedData[$environmentName];
+		} else {
+			// 2. If there are not data in `$config->mergedData` (loaded config), complete
+			// `$config->currentData` collection from `$config->envData[$environmentName]`.
+			$commonEnvDataKey = static::$commonEnvironmentDataKey;
+			$envCommonData = [];
+			$envSpecificData = [];
+			if (isset($config->envData[$commonEnvDataKey]))
+				$envCommonData = & $config->envData[$commonEnvDataKey];
+			if (isset($config->envData[$environmentName]))
+				$envSpecificData = & $config->envData[$environmentName];
+			$envCommonDataEmpty = count((array) $envCommonData) === 0;
+			$envSpecificDataEmpty = count((array) $envSpecificData) === 0;
+			if ($envCommonDataEmpty) {
+				$config->currentData = $envSpecificData;
+			} else if ($envSpecificDataEmpty) {
+				$config->currentData = $envCommonData;
 			} else {
-				static::$environment = static::ENVIRONMENT_PRODUCTION;
+				$commonDataType = gettype($envCommonData);
+				$specificDataType = gettype($envSpecificData);
+				if ($commonDataType != $specificDataType)
+					settype($envSpecificData, $commonDataType);
+				$config->currentData = $config->mergeRecursive(
+					$envCommonData, $envSpecificData
+				);
 			}
+			$config->mergedData[$environmentName] = & $config->currentData;
 		}
-		return static::$environment;
+		$config->envData = []; // frees memory.
 	}
 
 	/**
-	 * Second environment value setup - by system config data environment record.
-	 * @param array $environmentsSectionData System config environment section data part.
-	 * @return string Detected environment string.
+	 * Get internal array store as reference.
+	 * @param string|NULL $environmentName Return configuration data only for specific
+	 *									   environment name. If `NULL`, there are
+	 *									   returned data for current environment.
+	 * @return array
 	 */
-	public static function EnvironmentDetectBySystemConfig (array $environmentsSectionData = []) {
-		$environment = NULL;
+	public function & GetData ($environmentName = NULL) {
+		/** @var $this \MvcCore\Config */
+		$result = [];
+		if ($environmentName === NULL) {
+			if ($this->currentData) {
+				// most often usage:
+				$result = & $this->currentData;
+			} else {
+				$app = self::$app ?: (self::$app = \MvcCore\Application::GetInstance());
+				$currentEnvName = $app->GetEnvironment()->GetName();
+				if ($currentEnvName && array_key_exists($currentEnvName, $this->mergedData))
+					$result = & $this->mergedData[$currentEnvName];
+			}
+		} else if (array_key_exists($environmentName, $this->mergedData)) {
+			$result = & $this->mergedData[$environmentName];
+		}
+		return $result;
+	}
+
+	/**
+	 * Set whole internal array store.
+	 * @param array $data Data to set into configuration store(s). If second
+	 *					  param is `NULL`, there are set data for current envirnment.
+	 * @param string|NULL $environmentName Set configuration data for specific
+	 *									   environment name. If `NULL`, there are
+	 *									   set data for current environment.
+	 * @return \MvcCore\Config|\MvcCore\IConfig
+	 */
+	public function SetData (array $data = [], $environmentName = NULL) {
+		/** @var $this \MvcCore\Config */
 		$app = self::$app ?: self::$app = \MvcCore\Application::GetInstance();
-		$request = $app->GetRequest();
-		$clientIp = NULL;
-		$serverHostName = NULL;
-		$serverGlobals = NULL;
-		foreach ((array) $environmentsSectionData as $environmentName => $environmentSection) {
-			$sectionData = static::envDetectParseSysConfigEnvSectionData($environmentSection);
-			$detected = static::envDetectBySystemConfigEnvSection(
-				$sectionData, $request, $clientIp, $serverHostName, $serverGlobals
-			);
-			if ($detected) {
-				$environment = $environmentName;
-				break;
-			}
+		$currentEnvName = $app->GetEnvironment()->GetName();
+		if ($environmentName === NULL) {
+			$this->currentData = & $data;
+			$this->mergedData[$currentEnvName] = & $data;
+		} else {
+			if ($environmentName === $currentEnvName)
+				$this->currentData = & $data;
+			$this->mergedData[$environmentName] = & $data;
 		}
-		if ($environment && !static::$environment) {
-			static::SetEnvironment($environment);
-		} else if (!static::$environment) {
-			static::SetEnvironment('production');
-		}
-		return static::$environment;
+		return $this;
 	}
 
 	/**
-	 * Parse system config environment section data from various declarations 
-	 * into specific detection structure.
-	 * @param mixed $environmentSection 
-	 * @return \stdClass
+	 * Recursively merge two `\stdClass|array` objects and returns a resulting object.
+	 * @param \stdClass|array $commonEnvData The base object.
+	 * @param \stdClass|array $specificEnvData The merge object.
+	 * @return \stdClass|array The merged object
 	 */
-	protected static function envDetectParseSysConfigEnvSectionData ($environmentSection) {
-		$data = (object) [
-			'clientIps' => (object) [
-				'check'		=> FALSE,
-				'values'	=> [], 
-				'regExeps'	=> []
-			],
-			'serverHostNames' => (object) [
-				'check'		=> FALSE,
-				'values'	=> [], 
-				'regExeps'	=> []
-			],
-			'serverVariables' => (object) [
-				'check'		=> FALSE,
-				'existence'	=> [], 
-				'values'	=> [], 
-				'regExeps'	=> []
-			]
-		];
-		if (is_string($environmentSection) && strlen($environmentSection) > 0) {
-			// if there is only string provided, value is probably only
-			// about the most and simple way - to describe client IPS:
-			static::envDetectParseSysConfigClientIps($data, $environmentSection);
-		} else if (is_array($environmentSection) || $environmentSection instanceof \stdClass) {
-			foreach ((array) $environmentSection as $key => $value) {
-				if (is_numeric($key) || $key == 'clients') {
-					// if key is only numeric key provided, value is probably
-					// only one regular expression to match client IP or 
-					// the strings list with the most and simple way - to describe client IPS:
-					// of if key has `clients` value, there could be list of clients IPs
-					// or list of clients IPs regular expressions
-					static::envDetectParseSysConfigClientIps($data, $value);
-				} else if ($key == 'servers') {
-					// if key is `servers`, there could be string with single regular
-					// expression to match hostname or string with comma separated hostnames
-					// or list with hostnames and hostname regular expressions
-					static::envDetectParseSysConfigServerNames($data, $value);
-				} else if ($key == 'variables') {
-					// if key is `variables`, there could be string with `$_SERVER` variable
-					// names to check if they exists or key => value object with variable
-					// name and value, which could be also regular expression to match
-					static::envDetectParseSysConfigVariables($data, $value);
-				}
-			}
-		}
-		return $data;
+	protected function mergeRecursive ($commonEnvData, $specificEnvData) {
+		$commonEnvDataClone = $this->_mergeArrayClone((array) $commonEnvData);
+		$this->_mergeArraysOrObjectsRecursive($commonEnvDataClone, $specificEnvData);
+		return $commonEnvDataClone;
 	}
 
 	/**
-	 * Parse system config environment section data from various declarations 
-	 * about client IP addresses into specific detection structure. 
-	 * @param \stdClass $data 
-	 * @param mixed $rawClientIps 
-	 * @return void
+	 * Recursively clone and return given `array`.
+	 * @param array $array
+	 * @return array
 	 */
-	protected static function envDetectParseSysConfigClientIps (& $data, $rawClientIps) {
-		$data->clientIps->check = TRUE;
-		if (is_string($rawClientIps)) {
-			if (substr($rawClientIps, 0, 1) == '/') {
-				$data->clientIps->regExeps[] = $rawClientIps;
-			} else {
-				$data->clientIps->values = array_merge(
-					$data->clientIps->values, 
-					explode(',', str_replace(' ', '', $rawClientIps))
+	private function _mergeArrayClone ($array) {
+		return array_map(function($element) {
+			return is_array($element)
+				? $this->_mergeArrayClone($element)
+				: (is_object($element)
+					? clone $element
+					: $element
 				);
-			}
-		} else if (is_array($rawClientIps) || $rawClientIps instanceof \stdClass) {
-			foreach ((array) $rawClientIps as $rawClientIpsItem) {
-				if (substr($rawClientIpsItem, 0, 1) == '/') {
-					$data->clientIps->regExeps[] = $rawClientIpsItem;
-				} else {
-					$data->clientIps->values = array_merge(
-						$data->clientIps->values, 
-						explode(',', str_replace(' ', '', $rawClientIpsItem))
-					);
-				}
-			}
-		}
+		}, $array);
 	}
 
 	/**
-	 * Parse system config environment section data from various declarations 
-	 * about server host names into specific detection structure. 
-	 * @param \stdClass $data 
-	 * @param mixed $rawHostNames 
+	 * Recursively merge two `\stdClass|array` objects and returns a resulting object.
+	 * First object will be changed.
+	 * @param \stdClass|array $commonEnvData The base object.
+	 * @param \stdClass|array $specificEnvData The merge object.
 	 * @return void
 	 */
-	protected static function envDetectParseSysConfigServerNames (& $data, $rawHostNames) {
-		$data->serverHostNames->check = TRUE;
-		if (is_string($rawHostNames)) {
-			if (substr($rawHostNames, 0, 1) == '/') {
-				$data->serverHostNames->regExeps[] = $rawHostNames;
-			} else {
-				$data->serverHostNames->values = array_merge(
-					$data->serverHostNames->values, 
-					explode(',', str_replace(' ', '', $rawHostNames))
-				);
-			}
-		} else if (is_array($rawHostNames) || $rawHostNames instanceof \stdClass) {
-			foreach ((array) $rawHostNames as $rawHostNamesItem) {
-				if (substr($rawHostNamesItem, 0, 1) == '/') {
-					$data->serverHostNames->regExeps[] = $rawHostNamesItem;
+	private function _mergeArraysOrObjectsRecursive (& $commonEnvData, & $specificEnvData) {
+		if (is_object($specificEnvData)) {
+			$specificEnvKeys = array_keys(get_object_vars($specificEnvData));
+			foreach ($specificEnvKeys as $key) {
+				$commonEnvValue = & $commonEnvData->{$key};
+				$specificEnvValue = & $specificEnvData->{$key};
+				if (!is_scalar($specificEnvValue) && $specificEnvValue !== NULL) {
+					if (!isset($commonEnvData->{$key})) {
+						$commonEnvData->{$key} = $specificEnvValue;
+					} else {
+						$this->_mergeArraysOrObjectsRecursive(
+							$commonEnvValue, $specificEnvValue
+						);
+					}
 				} else {
-					$data->serverHostNames->values = array_merge(
-						$data->serverHostNames->values, 
-						explode(',', str_replace(' ', '', $rawHostNamesItem))
-					);
+					$commonEnvValue = $specificEnvValue;
+				}
+			}
+		} else if (is_array($specificEnvData)) {
+			$specificEnvKeys = array_keys($specificEnvData);
+			foreach ($specificEnvKeys as $key) {
+				$commonEnvValue = & $commonEnvData[$key];
+				$specificEnvValue = & $specificEnvData[$key];
+				if (!is_scalar($specificEnvValue) && $specificEnvValue !== NULL) {
+					if ($commonEnvValue === NULL) {
+						$commonEnvData[$key] = $specificEnvValue;
+					} else {
+						$this->_mergeArraysOrObjectsRecursive(
+							$commonEnvValue, $specificEnvValue
+						);
+					}
+				} else {
+					$commonEnvValue = $specificEnvValue;
 				}
 			}
 		}
-	}
-	
-	/**
-	 * Parse system config environment section data from various declarations 
-	 * about server environment variables into specific detection structure. 
-	 * @param \stdClass $data 
-	 * @param mixed $rawServerVariable 
-	 * @return void
-	 */
-	protected static function envDetectParseSysConfigVariables (& $data, $rawServerVariable) {
-		$data->serverVariables->check = TRUE;
-		if (is_string($rawServerVariable)) {
-			$data->serverVariables->existence[] = $rawServerVariable;
-		} else if (is_array($rawServerVariable) || $rawServerVariable instanceof \stdClass) {
-			foreach ((array) $rawServerVariable as $key => $value) {
-				if (is_numeric($key)) {
-					$data->serverVariables->existence[] = $value;
-				} else if (substr($value, 0, 1) == '/') {
-					$data->serverVariables->regExeps[$key] = $value;
-				} else {
-					$data->serverVariables->values[$key] = $value;
-				}
-			}
-		}
-	}
-
-	/**
-	 * Detect environment by specifically parsed environment configuration data.
-	 * This method is called for all founded environments in system config in 
-	 * order by system config and it tries to detect environment by following 
-	 * order: 
-	 *	- by client IP address (if defined)
-	 *		- by IPs list (if defined)
-	 *		- by regular expression (if defined)
-	 *	- by server hostname (if defined)
-	 *		- by host names list (if defined)
-	 *		- by regular expression (if defined)
-	 *	- by server variable(s) (if defined)
-	 *		- by existence (if defined)
-	 *		- by value (if defined)
-	 *		- by regular expression (if defined)
-	 * Method returns `TRUE` to stop environment detection or `FALSE`, if 
-	 * environment was not detected by given data.
-	 * @param \stdClass			$data 
-	 * @param \MvcCore\IRequest	$req 
-	 * @param string|NULL		$clientIp 
-	 * @param string|NULL		$serverHostName 
-	 * @param array|NULL		$serverGlobals 
-	 * @return bool If `TRUE`, environment has been detected and detection procedure could stop.
-	 */
-	protected static function envDetectBySystemConfigEnvSection (& $data, $req, & $clientIp, & $serverHostName, & $serverGlobals) {
-		if ($data->clientIps->check) {
-			// try to recognize environment by any configured client IP address value
-			$clientIp = $clientIp ?: $req->GetClientIp();
-			if ($data->clientIps->values) {
-				$clientIpToMatch = ',' . $clientIp . ',';
-				$clientIpsToMatch = ',' . implode(',', $data->clientIps->values) . ',';
-				if (strpos($clientIpsToMatch, $clientIpToMatch) !== FALSE) 
-					return TRUE;
-			}
-			// try to recognize environment by any configured client IP address regular expression
-			if ($data->clientIps->regExeps) 
-				foreach ($data->clientIps->regExeps as $regExep) 
-					if (preg_match($regExep, $clientIp)) 
-						return TRUE;
-		}
-		if ($data->serverHostNames->check) {
-			$serverHostName = $serverHostName ?: gethostname();
-			// try to recognize environment by any configured internal server hostname value 
-			// (value from `/etc/hostname` or Windows computer name)
-			if ($data->serverHostNames->values) {
-				$serverHostNamesToMatch = ','.implode(',', $data->serverHostNames->values).',';
-				if (strpos($serverHostNamesToMatch, ','.$serverHostName.',') !== FALSE) 
-					return TRUE;
-			}
-			// try to recognize environment by any configured internal server hostname value 
-			// regular expression (value from `/etc/hostname` or Windows computer name)
-			if ($data->serverHostNames->regExeps) 
-				foreach ($data->serverHostNames->regExeps as $regExep) 
-					if (preg_match($regExep, $serverHostName)) 
-						return TRUE;
-		}
-		if ($data->serverVariables->check) {
-			$serverGlobals = $serverGlobals ?: $req->GetGlobalCollection('server');
-			// try to recognize environment by any configured existing record in 
-			// super global variable `$_SERVER` by PHP function `array_key_exists()`
-			if ($data->serverVariables->existence) 
-				foreach ($data->serverVariables->existence as $serverVariableName) 
-					if (array_key_exists($serverVariableName, $serverGlobals)) 
-						return TRUE;
-			// try to recognize environment by configured specific value
-			// presented in super global variable `$_SERVER` 
-			if ($data->serverVariables->values) 
-				foreach ($data->serverVariables->values as $serverVariableName => $serverVariableValue) 
-					if (
-						isset($serverGlobals[$serverVariableName]) && 
-						$serverGlobals[$serverVariableName] === $serverVariableValue
-					) return TRUE;
-			// try to recognize environment by configured specific value
-			// presented in super global variable `$_SERVER` by regular expression
-			if ($data->serverVariables->regExeps) 
-				foreach ($data->serverVariables->regExeps as $serverVariableName => $serverVariableRegExp) 
-					if (
-						isset($serverGlobals[$serverVariableName]) && 
-						preg_match($serverVariableRegExp, (string) $serverGlobals[$serverVariableName])
-					) return TRUE;
-		}
-		return FALSE;
 	}
 }

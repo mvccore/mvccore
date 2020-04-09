@@ -17,7 +17,7 @@ trait Props
 {
 	/**
 	 * Email recipient to send information about exceptions or errors,
-	 * `"admin@localhost"` by default. This property is not used in core debug 
+	 * `"admin@localhost"` by default. This property is not used in core debug
 	 * class, you need to instal extension `mvccore/ext-debug-tracy`.
 	 * @var string
 	 */
@@ -44,7 +44,7 @@ trait Props
 	protected static $debugging = NULL;
 
 	/**
-	 * All PHP and user notices, warnings and errors are automatically turned 
+	 * All PHP and user notices, warnings and errors are automatically turned
 	 * and thrown as `\ErrorException`, initialized into `TRUE` in `Init()`
 	 * function by default.
 	 * @var bool|NULL
@@ -56,8 +56,8 @@ trait Props
 	 * @var \int[]
 	 */
 	protected static $strictExceptionsModeDefaultLevels = [
-		E_ERROR, E_RECOVERABLE_ERROR, 
-		E_CORE_ERROR, E_USER_ERROR, 
+		E_ERROR, E_RECOVERABLE_ERROR,
+		E_CORE_ERROR, E_USER_ERROR,
 		E_WARNING, E_CORE_WARNING, E_USER_WARNING
 	];
 
@@ -68,7 +68,7 @@ trait Props
 	protected static $prevErrorHandler = NULL;
 
 	/**
-	 * System config debug configuration root node name (`debug` by default) 
+	 * System config debug configuration root node name (`debug` by default)
 	 * and all it's properties names.
 	 * @var string
 	 */
@@ -131,7 +131,7 @@ trait Props
 	protected static $app = NULL;
 
 	/**
-	 * Reference to `\MvcCore\Application::GetInstance()->GetRequest()->GetMicrotime();`.
+	 * Reference to `\MvcCore\Application::GetInstance()->GetRequest()->GetStartTime();`.
 	 * @var float
 	 */
 	protected static $requestBegin = 0.0;

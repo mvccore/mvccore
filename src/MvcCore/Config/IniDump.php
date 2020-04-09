@@ -25,8 +25,8 @@ trait IniDump
 	 * data for different environment stays there.
 	 * @return string
 	 */
-	public function Dump () {
-		$environment = static::GetEnvironment(TRUE);
+	protected function dump () {
+		$environment = static::GetEnvironment(TRUE);// toto dříve načetlo konfig.
 		list($sections, $envSpecifics) = $this->dumpSectionsInfo();
 		$levelKey = '';
 		$basicData = [];

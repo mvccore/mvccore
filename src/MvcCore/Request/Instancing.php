@@ -107,7 +107,7 @@ trait Instancing
 		$this->GetRequestPath();
 		$this->GetFullUrl();
 		$this->GetReferer();
-		$this->GetMicrotime();
+		$this->GetStartTime();
 		$this->IsAjax();
 		if ($this->port === NULL) $this->initUrlSegments();
 		if ($this->headers === NULL) $this->initHeaders();

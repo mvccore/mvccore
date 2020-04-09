@@ -57,6 +57,19 @@ trait Dispatching
 	}
 
 	/**
+	 * Set environment object to detect and manage environment name.
+	 * This is INTERNAL, not TEMPLATE method.
+	 * @param \MvcCore\Environment|\MvcCore\IEnvironment $environment
+	 * @return \MvcCore\Controller
+	 */
+	public function SetEnvironment (\MvcCore\IEnvironment $environment) {
+		/** @var $this \MvcCore\Controller */
+		$this->environment = $environment;
+		return $this;
+	}
+
+
+	/**
 	 * Sets up `\MvcCore\Request` object and other protected properties.
 	 * This is INTERNAL, not TEMPLATE method, internally called in
 	 * `\MvcCore\Application::DispatchControllerAction();` before controller is dispatched.
@@ -71,13 +84,13 @@ trait Dispatching
 	 */
 	public function SetRequest (\MvcCore\IRequest $request) {
 		/** @var $this \MvcCore\Controller */
-		/** @var $request \MvcCore\Request */
 		$this->request = $request;
 		$this->controllerName = ltrim($request->GetControllerName(), '/');
 		$this->actionName = $request->GetActionName();
 		$this->ajax = $request->IsAjax();
 		if ($this->ajax || (
-			$this->controllerName == 'controller' && $this->actionName == 'asset'
+			$this->controllerName == 'controller' &&
+			$this->actionName == 'asset'
 		)) $this->SetViewEnabled(FALSE);
 		return $this;
 	}
@@ -215,7 +228,7 @@ trait Dispatching
 					if ($pos !== FALSE) {
 						$docComment = str_replace(["\r","\n","\t", "*/"], " ", mb_substr($docComment, $pos + 5));
 						$pos = mb_strpos($docComment, ' ');
-						if ($pos === FALSE) {
+						if ($pos !== FALSE) {
 							$className = trim(mb_substr($docComment, 0, $pos));
 							$pos = mb_strpos($className, '|');
 							if ($pos !== FALSE)
@@ -298,6 +311,7 @@ trait Dispatching
 		$controller
 			->SetParentController($this)
 			->SetApplication($this->application)
+			->SetEnvironment($this->environment)
 			// Method `SetRequest()` also sets `ajax`, `viewEnabled`, `controllerName` and `actionName`.
 			->SetRequest($this->request)
 			->SetResponse($this->response)
@@ -352,6 +366,7 @@ trait Dispatching
 	 */
 	public function Terminate () {
 		$this->dispatchState = 5;
+		self::$allControllers = [];
 		$this->application->Terminate();
 	}
 

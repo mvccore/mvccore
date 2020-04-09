@@ -102,6 +102,7 @@ interface IController
 	 * Call this immediately after calling controller methods:
 	 * - `\MvcCore\Controller::__construct()`
 	 * - `\MvcCore\Controller::SetApplication($application)`
+	 * - `\MvcCore\Controller::SetEnvironment($environment)`
 	 * - `\MvcCore\Controller::SetRequest($request)`
 	 * - `\MvcCore\Controller::SetResponse($response)`
 	 * - `\MvcCore\Controller::SetRouter($router)`
@@ -170,6 +171,12 @@ interface IController
 	public function SetApplication (\MvcCore\IApplication $application);
 
 	/**
+	 * Get environment object to detect and manage environment name.
+	 * @return \MvcCore\IEnvironment
+	 */
+	public function GetEnvironment();
+
+	/**
 	 * Get current application request object as reference.
 	 * @return \MvcCore\IRequest
 	 */
@@ -186,6 +193,14 @@ interface IController
 	 * @return string
 	 */
 	public function GetActionName ();
+
+	/**
+	 * Set environment object to detect and manage environment name.
+	 * This is INTERNAL, not TEMPLATE method.
+	 * @param \MvcCore\IEnvironment $environment
+	 * @return \MvcCore\IController
+	 */
+	public function SetEnvironment (\MvcCore\IEnvironment $environment);
 
 	/**
 	 * Sets up `\MvcCore\Request` object and other protected properties.

@@ -34,6 +34,12 @@ trait PropsGettersSetters
 	protected $application;
 
 	/**
+	 * Environment object to detect and manage environment name.
+	 * @var \MvcCore\Environment|\MvcCore\IEnvironment
+	 */
+	protected $environment;
+
+	/**
 	 * Request object - parsed URI, query params, app paths...
 	 * @var \MvcCore\Request|\MvcCore\IRequest
 	 */
@@ -236,6 +242,15 @@ trait PropsGettersSetters
 		/** @var $this \MvcCore\Controller */
 		$this->application = $application;
 		return $this;
+	}
+
+	/**
+	 * Get environment object to detect and manage environment name.
+	 * @return \MvcCore\Environment
+	 */
+	public function GetEnvironment() {
+		/** @var $this \MvcCore\Controller */
+		return $this->environment;
 	}
 
 	/**

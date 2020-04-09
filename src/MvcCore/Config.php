@@ -14,27 +14,22 @@
 namespace MvcCore;
 
 /**
- * Responsibility - reading/writing config file(s), 
- *					detecting environment in system config.
+ * Responsibility - reading/writing config file(s).
  * - Config file(s) reading:
  *   - Reading any `config.ini` file by relative path.
  *   - Parsing and typing INI data into `stdClass|array` by key types or typing
  *	   INI values into `int|float|bool|string` for all other detected primitives.
  * - Config file(s) writing:
- *   - Dumping `stdClass`es and `array`s into INI syntax string with 
+ *   - Dumping `stdClass`es and `array`s into INI syntax string with
  *     all other environment records.
  *   - Storing serialized config data in single process.
- * - Environment management and detection by:
- *   - comparing server and client IP, by value or regular expression.
- *   - comparing server hostname or IP, by value or regular expression.
- *   - checking system environment variable existence, value or by regular exp.
  */
-class Config extends \ArrayObject implements IConfig
+class Config implements \Iterator, \ArrayAccess, \Countable, IConfig
 {
 	use \MvcCore\Config\PropsGettersSetters;
 	use \MvcCore\Config\ReadWrite;
-	use \MvcCore\Config\Environment;
 	use \MvcCore\Config\MagicMethods;
+	use \MvcCore\Config\Environment;
 	use \MvcCore\Config\IniProps;
 	use \MvcCore\Config\IniRead;
 	use \MvcCore\Config\IniDump;

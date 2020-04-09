@@ -410,7 +410,7 @@ trait GettersSetters
 	 * with microsecond precision.
 	 * @return float
 	 */
-	public function GetMicrotime () {
+	public function GetStartTime () {
 		if ($this->microtime === NULL) $this->microtime = $this->globalServer['REQUEST_TIME_FLOAT'];
 		return $this->microtime;
 	}

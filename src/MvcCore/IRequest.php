@@ -682,7 +682,7 @@ interface IRequest
 	 * with microsecond precision.
 	 * @return float
 	 */
-	public function GetMicrotime ();
+	public function GetStartTime ();
 
 	/**
 	 * Set TOP level domain like `com` or `co.uk`.

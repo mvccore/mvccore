@@ -15,7 +15,7 @@ namespace MvcCore\Application;
 
 /**
  * Trait as partial class for `\MvcCore\Application`:
- * - Processing application run (`\MvcCore\Application::Run();`):
+ * - Dispatching application http request/response (`\MvcCore\Application::Dispatch();`):
  *   - Completing request and response.
  *   - Calling pre/post handlers.
  *   - Controller/action dispatching.
@@ -28,9 +28,9 @@ trait Dispatching
 	 **************************************************************************/
 
 	/**
-	 * Run application.
+	 * Dispatch http request/response.
 	 * - 1. Complete and init:
-	 *	  - `\MvcCore\Application::$compiled` flag.
+	 *	  - Complete describing environment object `\MvcCore\Request`.
 	 *	  - Complete describing request object `\MvcCore\Request`.
 	 *	  - Complete response storage object `\MvcCore\Response`.
 	 *	  - Init debugging and logging by `\MvcCore\Debug::Init();`.
@@ -47,19 +47,17 @@ trait Dispatching
 	 *	  - (Process post-dispatch handlers queue.)
 	 *	  - Write session in `register_shutdown_function()` handler.
 	 *	  - Send response headers if possible and echo response body.
-	 * @param bool $singleFileUrl Set 'Single File Url' mode to `TRUE` to compile and test
-	 *							all assets and everything before compilation processing.
 	 * @return \MvcCore\Application
 	 */
-	public function Run ($singleFileUrl = FALSE) {
-		if ($singleFileUrl) $this->SetCompiled(static::COMPILED_SFU);
+	public function Dispatch () {
 		try {
-			$this->GetRequest(); // triggers creation
-			$this->GetResponse();// triggers creation
+			// all 3 getters triggers creation:
+			$this->GetEnvironment();
+			$this->GetRequest();
+			$this->GetResponse();
 			$debugClass = $this->debugClass;
 			$debugClass::Init();
-		}
-		catch (\Throwable $e) {
+		} catch (\Throwable $e) {
 			$this->DispatchException($e);
 			return $this->Terminate();
 		}
@@ -95,10 +93,10 @@ trait Dispatching
 		$router = $this->GetRouter()->SetRequest($this->GetRequest());
 		try {
 			/**
-				* `Route()` method could throws those exceptions:
-				* @throws \LogicException Route configuration property is missing.
-				* @throws \InvalidArgumentException Wrong route pattern format.
-				*/
+			 * `Route()` method could throws those exceptions:
+			 * @throws \LogicException Route configuration property is missing.
+			 * @throws \InvalidArgumentException Wrong route pattern format.
+			 */
 			$result = $router->Route();
 		} catch (\Throwable $e) {
 			$this->DispatchException($e);
@@ -338,11 +336,10 @@ trait Dispatching
 			}
 		}
 		$debugClass = $this->debugClass;
-		$configClass = $this->configClass;
 		if ($exception->getCode() == 404) {
 			$debugClass::Log($exception->getMessage().": ".$this->request->GetFullUrl(), \MvcCore\IDebug::INFO);
 			return $this->RenderNotFound($exception->getMessage());
-		} else if ($configClass::IsDevelopment(TRUE)) {
+		} else if ($this->environment->IsDevelopment()) {
 			$debugClass::Exception($exception);
 			return FALSE;
 		} else {
@@ -391,8 +388,7 @@ trait Dispatching
 				),
 				function (\Throwable $e2) use ($exceptionMessage, $debugClass) {
 					$this->router->RemoveRoute(\MvcCore\IRouter::DEFAULT_ROUTE_NAME_NOT_FOUND);
-					$configClass = $this->configClass;
-					if ($configClass::IsDevelopment(TRUE)) {
+					if ($this->environment->IsDevelopment()) {
 						$debugClass::Exception($e2);
 					} else {
 						$debugClass::Log($e2, \MvcCore\IDebug::EXCEPTION);
@@ -444,8 +440,7 @@ trait Dispatching
 				),
 				function (\Throwable $e) use ($exceptionMessage, $debugClass) {
 					$this->router->RemoveRoute(\MvcCore\IRouter::DEFAULT_ROUTE_NAME_NOT_FOUND);
-					$configClass = $this->configClass;
-					if ($configClass::IsDevelopment(TRUE)) {
+					if ($this->environment->IsDevelopment()) {
 						$debugClass::Exception($e);
 					} else {
 						$debugClass::Log($e, \MvcCore\IDebug::EXCEPTION);
@@ -468,8 +463,7 @@ trait Dispatching
 	public function RenderError500PlainText ($text = '') {
 		$htmlResponse = FALSE;
 		$responseClass = $this->responseClass;
-		$configClass = $this->configClass;
-		if (!$configClass::IsDevelopment(TRUE)) {
+		if (!$this->environment->IsDevelopment()) {
 			$text = 'Error 500: Internal Server Error.'.PHP_EOL;
 		} else {
 			$obContent = ob_get_clean();
@@ -498,8 +492,7 @@ trait Dispatching
 	public function RenderError404PlainText ($text = '') {
 		$htmlResponse = FALSE;
 		$responseClass = $this->responseClass;
-		$configClass = $this->configClass;
-		if (!$configClass::IsDevelopment(TRUE)) {
+		if (!$this->environment->IsDevelopment()) {
 			$text = 'Error 404: Page not found.'.PHP_EOL;
 		} else {
 			$obContent = ob_get_clean();

@@ -29,13 +29,13 @@ trait Initializations
 			self::initStrictExceptionsMode(self::$strictExceptionsMode);
 
 		$app = static::$app ?: (static::$app = \MvcCore\Application::GetInstance());
-		static::$requestBegin = $app->GetRequest()->GetMicrotime();
+		static::$requestBegin = $app->GetRequest()->GetStartTime();
 
 		if (gettype($forceDevelopmentMode) == 'boolean') {
 			static::$debugging = $forceDevelopmentMode;
 		} else {
-			$configClass = $app->GetConfigClass();
-			static::$debugging = !$configClass::IsProduction(TRUE);
+			$environment = $app->GetEnvironment();
+			static::$debugging = !$environment->IsProduction(TRUE);
 		}
 
 		// do not initialize log directory here every time, initialize log

@@ -16,16 +16,22 @@ namespace MvcCore\Config;
 trait PropsGettersSetters
 {
 	/**
+	 * Replace filter for environment names in INI sections.
+	 * @var string
+	 */
+	protected static $environmentNamesFilter = "#[^,_a-zA-Z0-9]#";
+
+	/**
+	 * Replace filter for INI sections names.
+	 * @var string
+	 */
+	protected static $sectionNamesFilter = "#[^_a-zA-Z0-9]#";
+
+	/**
 	 * Loaded configurations array cache.
 	 * @var array
 	 */
 	protected static $configsCache = [];
-
-	/**
-	 * Name of system config root section with environments recognition configuration.
-	 * @var string
-	 */
-	protected static $environmentsSectionName = 'environments';
 
 	/**
 	 * Reference to singleton instance in `\MvcCore\Application::GetInstance();`.
@@ -40,11 +46,31 @@ trait PropsGettersSetters
 	protected static $appRoot;
 
 	/**
-	 * Temporary variable used when INI file is parsed and loaded
-	 * to store complete result to return.
+	 * All environments specfic data. Each key in this array is environment
+	 * name. Empty key is record with common data for all environments. This
+	 * collection is always used as reading semi-result content, not serialized.
 	 * @var array
 	 */
-	protected $data = [];
+	protected $envData = [];
+
+	/**
+	 * Configuration data for all read environments (merged with common).
+	 * Each key is environment name, each record is specific environment
+	 * data collection with common environment data.
+	 * This collection is always used as pre-computed cached content,
+	 * where is necessary to have all configurations for all requested
+	 * environments. Because environment on the same machine could be
+	 * changed only by client specific ip. This collection is serialized.
+	 * @var array
+	 */
+	protected $mergedData = [];
+
+	/**
+	 * Current environment data merged with common environment data.
+	 * This collection is always used for current request dispatching.
+	 * @var array
+	 */
+	protected $currentData = [];
 
 	/**
 	 * Full path, where are configuration data stored.
@@ -64,61 +90,35 @@ trait PropsGettersSetters
 	 */
 	protected $system = FALSE;
 
-	/**
-	 * Temporary variable used when INI file is parsed and loaded,
-	 * to store information about final retyping. Keys are addresses
-	 * into result level to be retyped or not, values are arrays.
-	 * First index in values is boolean to define if result level will
-	 * be retyped into `\stdClass` or not, second index in values is reference
-	 * link to object retyped at the end or not.
-	 * @var array
-	 */
-	protected $objectTypes = [];
-
 
 	/**
 	 * Get system config relative path from app root.
 	 * @return string
 	 */
 	public static function GetSystemConfigPath () {
+		/** @var $this \MvcCore\Config */
 		return static::$systemConfigPath;
 	}
-	
+
 	/**
 	 * Set system config relative path from app root.
 	 * @param string $systemConfigPath
 	 * @return string
 	 */
 	public static function SetSystemConfigPath ($systemConfigPath) {
+		/** @var $this \MvcCore\Config */
 		return static::$systemConfigPath = $systemConfigPath;
 	}
 
 	/**
 	 * Set system config relative path from app root.
 	 * @param string $appRootRelativePath
-	 * @param \MvcCore\IConfig $configInstance
-	 * @return \MvcCore\IConfig
-	 */
-	public static function SetConfigCache ($appRootRelativePath, \MvcCore\IConfig $configInstance) {
-		return static::$configsCache[$appRootRelativePath] = $configInstance;
-	}
-
-	/**
-	 * Get internal array store as reference.
-	 * @return array
-	 */
-	public function & GetData () {
-		return $this->data;
-	}
-
-	/**
-	 * Set whole internal array store.
+	 * @param \MvcCore\Config|\MvcCore\IConfig $config
 	 * @return \MvcCore\Config|\MvcCore\IConfig
 	 */
-	public function SetData (array $data = []) {
-		/** @var $this \MvcCore\IConfig */
-		$this->data = $data;
-		return $this;
+	public static function SetConfigCache ($appRootRelativePath, \MvcCore\IConfig $config) {
+		/** @var $this \MvcCore\Config */
+		return static::$configsCache[$appRootRelativePath] = $config;
 	}
 
 	/**
@@ -126,6 +126,7 @@ trait PropsGettersSetters
 	 * @return string
 	 */
 	public function GetFullPath () {
+		/** @var $this \MvcCore\Config */
 		return $this->fullPath;
 	}
 
@@ -134,6 +135,7 @@ trait PropsGettersSetters
 	 * @return int
 	 */
 	public function GetLastChanged () {
+		/** @var $this \MvcCore\Config */
 		return $this->lastChanged;
 	}
 
@@ -142,6 +144,7 @@ trait PropsGettersSetters
 	 * @return bool
 	 */
 	public function IsSystem () {
+		/** @var $this \MvcCore\Config */
 		return $this->system;
 	}
 }

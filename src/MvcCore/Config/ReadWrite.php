@@ -26,49 +26,64 @@ trait ReadWrite
 	 * @return \MvcCore\Config|\MvcCore\IConfig
 	 */
 	public static function CreateInstance (array $data = [], $appRootRelativePath = NULL) {
-		/** @var $instance \MvcCore\IConfig */
-		$instance = new static();
-		if ($data) $instance->data = & $data;
+		/** @var $config \MvcCore\Config */
+		$config = new static();
+		if ($data) $config->data = & $data;
 		if ($appRootRelativePath) {
 			$app = self::$app ?: self::$app = \MvcCore\Application::GetInstance();
 			$appRoot = self::$appRoot ?: self::$appRoot = $app->GetRequest()->GetAppRoot();
-			$instance->fullPath = $appRoot . '/' . str_replace(
+			$config->fullPath = $appRoot . '/' . str_replace(
 				'%appPath%', $app->GetAppDir(), ltrim($appRootRelativePath, '/')
 			);
 		}
-		return $instance;
+		return $config;
 	}
 
 	/**
-	 * Get cached singleton system config INI file as `stdClass`es and `array`s,
+	 * Get (optionally cached) system config INI file as `stdClass` or `array`,
 	 * placed by default in: `"/App/config.ini"`.
-	 * @return \MvcCore\Config|\MvcCore\IConfig|bool
+	 * @return \MvcCore\Config|\MvcCore\IConfig|NULL
 	 */
 	public static function GetSystem () {
+		/** @var $config \MvcCore\Config */
 		$app = self::$app ?: self::$app = \MvcCore\Application::GetInstance();
 		$systemConfigClass = $app->GetConfigClass();
 		$appRootRelativePath = $systemConfigClass::GetSystemConfigPath();
-		if (!isset(self::$configsCache[$appRootRelativePath])) 
-			self::$configsCache[$appRootRelativePath] = self::getConfigInstance(
+		if (!array_key_exists($appRootRelativePath, self::$configsCache)) {
+			$config = self::getConfigInstance(
 				$appRootRelativePath, TRUE
 			);
+			if ($config) {
+				$environment = $app->GetEnvironment();
+				if ($environment->IsDetected())
+					static::SetUpEnvironmentData($config, $environment->GetName());
+			}
+			self::$configsCache[$appRootRelativePath] = $config;
+		}
 		return self::$configsCache[$appRootRelativePath];
 	}
 
 	/**
-	 * Get cached config INI file as `stdClass`es and `array`s,
+	 * Get (optionally cached) config INI file as `stdClass` or `array`,
 	 * placed relatively from application document root.
 	 * @param string $appRootRelativePath Any config relative path like `'/%appPath%/website.ini'`.
-	 * @return \MvcCore\Config|\MvcCore\IConfig|bool
+	 * @return \MvcCore\Config|\MvcCore\IConfig|NULL
 	 */
 	public static function GetConfig ($appRootRelativePath) {
-		if (!isset(self::$configsCache[$appRootRelativePath])) {
+		/** @var $config \MvcCore\Config */
+		if (!array_key_exists($appRootRelativePath, self::$configsCache)) {
 			$app = self::$app ?: self::$app = \MvcCore\Application::GetInstance();
 			$systemConfigClass = $app->GetConfigClass();
-			$system = $systemConfigClass::GetSystemConfigPath() === '/' . ltrim($appRootRelativePath, '/');
-			self::$configsCache[$appRootRelativePath] = self::getConfigInstance(
-				$appRootRelativePath, $system
+			$isSystem = $systemConfigClass::GetSystemConfigPath() === '/' . ltrim($appRootRelativePath, '/');
+			$config = self::getConfigInstance(
+				$appRootRelativePath, $isSystem
 			);
+			if ($config) {
+				$environment = $app->GetEnvironment();
+				if ($environment->IsDetected())
+					static::SetUpEnvironmentData($config, $environment->GetName());
+			}
+			self::$configsCache[$appRootRelativePath] = $config;
 		}
 		return self::$configsCache[$appRootRelativePath];
 	}
@@ -80,14 +95,14 @@ trait ReadWrite
 	 */
 	public function Save () {
 		$rawContent = $this->Dump();
-		if ($rawContent === FALSE) 
+		if ($rawContent === FALSE)
 			throw new \Exception('Configuration data was not possible to dump.');
 		$app = self::$app ?: self::$app = \MvcCore\Application::GetInstance();
 		$toolClass = $app->GetToolClass();
 		try {
 			$toolClass::SingleProcessWrite(
-				$this->fullPath, 
-				$rawContent, 
+				$this->fullPath,
+				$rawContent,
 				'w',	// Open for writing only; place pointer at the beginning and truncate to zero length. If file doesn't exist, create it.
 				10,		// Milliseconds to wait before next lock file existence is checked in `while()` cycle.
 				5000,	// Maximum milliseconds time to wait before thrown an exception about not possible write.
@@ -102,24 +117,26 @@ trait ReadWrite
 	/**
 	 * Try to load and parse config file by app root relative path.
 	 * If config contains system data, try to detect environment.
-	 * @param string $appRootRelativePath 
-	 * @param bool $systemConfig 
+	 * @param string $appRootRelativePath
+	 * @param bool $systemConfig
 	 * @return \MvcCore\Config|\MvcCore\IConfig|bool
 	 */
 	protected static function getConfigInstance ($appRootRelativePath, $systemConfig = FALSE) {
+		/** @var $config \MvcCore\Config */
 		$app = self::$app ?: self::$app = \MvcCore\Application::GetInstance();
 		$appRoot = self::$appRoot ?: self::$appRoot = $app->GetRequest()->GetAppRoot();
 		$fullPath = $appRoot . '/' . str_replace(
 			'%appPath%', $app->GetAppDir(), ltrim($appRootRelativePath, '/')
 		);
 		if (!file_exists($fullPath)) {
-			$result = FALSE;
+			$config = NULL;
 		} else {
 			$systemConfigClass = $app->GetConfigClass();
-			$result = $systemConfigClass::CreateInstance();
-			if (!$result->Read($fullPath, $systemConfig)) 
-				$result = FALSE;
+			$config = $systemConfigClass::CreateInstance();
+			$config->system = $systemConfig;
+			if (!$config->read($fullPath))
+				$config = NULL;
 		}
-		return $result;
+		return $config;
 	}
 }

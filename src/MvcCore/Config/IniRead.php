@@ -25,13 +25,12 @@ trait IniRead
 	 * - Retype all `raw string` values into `array`, `float`, `int` or `boolean` types.
 	 * - Retype whole values level into `\stdClass`, if there are no numeric keys.
 	 * @param string $fullPath
-	 * @param bool $systemConfig
 	 * @return bool
 	 */
-	public function Read ($fullPath, $systemConfig = FALSE) {
-		if ($this->data) return $this->data;
+	protected function read ($fullPath) {
+		/** @var $this \MvcCore\Config */
+		if ($this->envData) return TRUE;
 		$this->fullPath = $fullPath;
-		$this->system = $systemConfig;
 		if (!$this->_iniScannerMode)
 			// 1 => INI_SCANNER_RAW, 2 => INI_SCANNER_TYPED
 			$this->_iniScannerMode = \PHP_VERSION_ID < 50610 ? 1 : 2;
@@ -41,69 +40,81 @@ trait IniRead
 			$this->fullPath, TRUE, $this->_iniScannerMode
 		);
 		if ($rawIniData === FALSE) return FALSE;
-		$this->data = [];
-		$envsSectionName = static::$environmentsSectionName;
-		$environmentsData = NULL;
-		if ($this->system && isset($rawIniData[$envsSectionName])) {
-			$rawIniEnvSectionData = array_merge([], $rawIniData[$envsSectionName]);
-			$this->iniReadExpandLevelsAndReType($rawIniEnvSectionData);
-			$environmentsData = array_merge([], $this->data);
-			$environment = static::EnvironmentDetectBySystemConfig($environmentsData);//production
-			foreach ($this->objectTypes as & $objectType)
-				if ($objectType[0]) $objectType[1] = (object) $objectType[1];
-			unset($rawIniData[$envsSectionName]);
-			$this->data = [];
-			$this->objectTypes = [];
-		} else {
-			$environment = static::$environment;
+		$this->envData = [];
+		$this->mergedData = [];
+		$this->currentData = [];
+		$allEnvIniDataPlain = $this->iniReadAllEnvironmentsSections($rawIniData);
+		foreach ($allEnvIniDataPlain as $envName => $envIniData) {
+			list($data, $objectTypes) = $this->iniReadExpandLevelsAndReType(
+				$envIniData
+			);
+			foreach ($objectTypes as & $objectType)
+				if ($objectType[0])
+					$objectType[1] = (object) $objectType[1];
+			$this->envData[$envName] = $data;
 		}
-		$iniData = & $this->iniReadFilterEnvironmentSections($rawIniData, $environment);
-		$this->iniReadExpandLevelsAndReType($iniData);
-		if ($environmentsData !== NULL)
-			$this->data[$envsSectionName] = (object) $environmentsData;
-		foreach ($this->objectTypes as & $objectType)
-			if ($objectType[0]) $objectType[1] = (object) $objectType[1];
-		unset($this->objectTypes);
 		return TRUE;
 	}
 
 	/**
-	 * Align all raw INI data to single level array,
-	 * filtered for only current environment data items.
-	 * @param array  $rawIniData
-	 * @param string $environment
+	 * Explode all possible sections into environment ini data collections,
+	 * keyed by environment name. Data, not targeted into any environment,
+	 * explode into default ini data collection keyed under empty string.
+	 * @param array $rawIniData
 	 * @return array
 	 */
-	protected function & iniReadFilterEnvironmentSections (array & $rawIniData, $environment) {
-		$iniData = [];
+	protected function & iniReadAllEnvironmentsSections (array & $rawIniData) {
+		/** @var $this \MvcCore\Config */
+		$allEnvsIniData = [];
+		$commonEnvDataKey = static::$commonEnvironmentDataKey;
+		$environmentNamesFilter = static::$environmentNamesFilter;
+		$sectionNamesFilter = static::$sectionNamesFilter;
 		foreach ($rawIniData as $keyOrSectionName => $valueOrSectionValues) {
+			$parsedEnvNames = [];
 			if (is_array($valueOrSectionValues)) {
-				if (strpos($keyOrSectionName, '>') !== FALSE) {
-					list($envNamesStrLocal, $keyOrSectionName) = explode('>', str_replace(' ', '', $keyOrSectionName));
-					if (!in_array($environment, explode(',', $envNamesStrLocal))) continue;
+				$pos = mb_strpos($keyOrSectionName, '>');
+				if ($pos === FALSE) {
+					$key = $keyOrSectionName;
+				} else {
+					$envNames = mb_substr($keyOrSectionName, 0, $pos);
+					$envNames = preg_replace($environmentNamesFilter, '', $envNames);
+					$key = mb_substr($keyOrSectionName, $pos + 1);
+					$key = preg_replace($sectionNamesFilter, '', $key);
+					$parsedEnvNames = explode(',', $envNames);
 				}
-				$sectionValues = [];
-				foreach ($valueOrSectionValues as $key => $value) $sectionValues[$keyOrSectionName.'.'.$key] = $value;
-				$iniData = array_merge($iniData, $sectionValues);
+				$newValues = [];
+				foreach ($valueOrSectionValues as $subKey => $subValue)
+					$newValues[$key.'.'.$subKey] = $subValue;
 			} else {
-				$iniData[$keyOrSectionName] = $valueOrSectionValues;
+				$newValues = [$keyOrSectionName => $valueOrSectionValues];
+			}
+			if (!$parsedEnvNames)
+				$parsedEnvNames = [$commonEnvDataKey];
+			foreach ($parsedEnvNames as $parsedEnvName) {
+				if (!array_key_exists($parsedEnvName, $allEnvsIniData))
+					$allEnvsIniData[$parsedEnvName] = [];
+				$allEnvsIniData[$parsedEnvName] = array_merge($allEnvsIniData[$parsedEnvName], $newValues);
 			}
 		}
-		return $iniData;
+		return $allEnvsIniData;
 	}
+
 
 	/**
 	 * Process single level array with dotted keys into tree structure
 	 * and complete object type switches about tree records
 	 * to complete journal about final `\stdClass`es or `array`s types.
 	 * @param array $iniData
-	 * @return void
+	 * @return array
 	 */
 	protected function iniReadExpandLevelsAndReType (array & $iniData) {
-		//$this->objectTypes[''] = [0, & $this->data];
+		/** @var $this \MvcCore\Config */
+		$result = [];
+		$objectTypes = [];
+		//$objectTypes[''] = [0, & $result];
 		$oldIniScannerMode = $this->_iniScannerMode === 1;
 		foreach ($iniData as $rawKey => $rawValue) {
-			$current = & $this->data;
+			$current = & $result;
 			// prepare keys to build levels and configure stdClass/array types
 			$rawKeys = [];
 			$lastRawKey = $rawKey;
@@ -120,9 +131,9 @@ trait IniRead
 				$levelKey .= ($levelKey ? '.' : '') . $key;
 				if (!isset($current[$key])) {
 					$current[$key] = [];
-					$this->objectTypes[$levelKey] = [1, & $current[$key]]; // object type switch -> object by default
-					if (is_numeric($key) && isset($this->objectTypes[$prevLevelKey])) {
-						$this->objectTypes[$prevLevelKey][0] = 0; // object type switch -> set array if it was object
+					$objectTypes[$levelKey] = [1, & $current[$key]]; // object type switch -> object by default
+					if (is_numeric($key) && isset($objectTypes[$prevLevelKey])) {
+						$objectTypes[$prevLevelKey][0] = 0; // object type switch -> set array if it was object
 					}
 				}
 				$current = & $current[$key];
@@ -135,16 +146,17 @@ trait IniRead
 			}
 			if (isset($current[$lastRawKey])) {
 				$current[$lastRawKey][] = $typedValue;
-				$this->objectTypes[$levelKey ? $levelKey : $lastRawKey][0] = 0; // object type switch -> set array
+				$objectTypes[$levelKey ? $levelKey : $lastRawKey][0] = 0; // object type switch -> set array
 			} else {
 				if (!is_array($current)) {
 					$current = [$current];
-					$this->objectTypes[$levelKey] = [0, & $current]; // object type switch -> set array
+					$objectTypes[$levelKey] = [0, & $current]; // object type switch -> set array
 				}
 				$current[$lastRawKey] = $typedValue;
-				if (is_numeric($lastRawKey)) $this->objectTypes[$levelKey][0] = 0; // object type switch -> set array
+				if (is_numeric($lastRawKey)) $objectTypes[$levelKey][0] = 0; // object type switch -> set array
 			}
 		}
+		return [$result, $objectTypes];
 	}
 
 	/**
@@ -154,6 +166,7 @@ trait IniRead
 	 * @return array|float|int|string
 	 */
 	protected function getTypedValue ($rawValue) {
+		/** @var $this \MvcCore\Config */
 		if (gettype($rawValue) == "array") {
 			foreach ($rawValue as $key => $value) {
 				$rawValue[$key] = $this->getTypedValue($value);
@@ -176,6 +189,7 @@ trait IniRead
 	 * @return float|int|string
 	 */
 	protected function getTypedValueFloatOrInt ($rawValue) {
+		/** @var $this \MvcCore\Config */
 		if (strpos($rawValue, '.') !== FALSE || strpos($rawValue, 'e') !== FALSE || strpos($rawValue, 'E') !== FALSE) {
 			return floatval($rawValue); // float
 		} else {
@@ -193,6 +207,7 @@ trait IniRead
 	 * @return bool|NULL|string
 	 */
 	protected function getTypedSpecialValueOrString ($rawValue) {
+		/** @var $this \MvcCore\Config */
 		$lowerRawValue = strtolower($rawValue);
 		if (isset(static::$specialValues[$lowerRawValue])) {
 			return static::$specialValues[$lowerRawValue]; // bool or null

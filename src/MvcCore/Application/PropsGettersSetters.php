@@ -45,6 +45,12 @@ trait PropsGettersSetters
 	protected $compiled = NULL;
 
 	/**
+	 * Environment detection instance.
+	 * @var \MvcCore\Environment|\MvcCore\IEnvironment
+	 */
+	protected $environment = NULL;
+
+	/**
 	 * Top most parent controller instance currently dispatched by application.
 	 * @var \MvcCore\Controller|\MvcCore\IController
 	 */
@@ -85,7 +91,6 @@ trait PropsGettersSetters
 	 * @var \array[]
 	 */
 	protected $preRouteHandlers = [];
-
 
 	/**
 	 * Post route custom closure calls storage.
@@ -159,7 +164,13 @@ trait PropsGettersSetters
 
 
 	/**
-	 * Class to load and parse (system) config(s) and manage environment string.
+	 * Class to detect and manage environment name.
+	 * @var string
+	 */
+	protected $environmentClass = '\MvcCore\Environment';
+
+	/**
+	 * Class to load and parse (system) config(s).
 	 * @var string
 	 */
 	protected $configClass = '\MvcCore\Config';
@@ -311,9 +322,18 @@ trait PropsGettersSetters
 
 
 	/**
+	 * Get application environment class implementing `\MvcCore\IEnvironment`.
+	 * Class to detect and manage environment name.
+	 * @return \MvcCore\Environment|string
+	 */
+	public function GetEnvironmentClass () {
+		return $this->environmentClass;
+	}
+
+	/**
 	 * Get application config class implementing `\MvcCore\IConfig`.
-	 * Class to load and parse (system) config(s) and manage environment string.
-	 * @return string
+	 * Class to load and parse (system) config(s).
+	 * @return \MvcCore\Config|string
 	 */
 	public function GetConfigClass () {
 		return $this->configClass;
@@ -323,7 +343,7 @@ trait PropsGettersSetters
 	 * Get application controller class implementing `\MvcCore\IController`.
 	 * Class to create default controller for request targeting views only
 	 * and to handle small assets inside packed application.
-	 * @return string
+	 * @return \MvcCore\Controller|string
 	 */
 	public function GetControllerClass () {
 		return $this->controllerClass;
@@ -332,7 +352,7 @@ trait PropsGettersSetters
 	/**
 	 * Get application debug class implementing `\MvcCore\IDebug`.
 	 * Class to handle any application error to render the error in browser or log in HDD.
-	 * @return string
+	 * @return \MvcCore\Debug|string
 	 */
 	public function GetDebugClass () {
 		return $this->debugClass;
@@ -341,7 +361,7 @@ trait PropsGettersSetters
 	/**
 	 * Get application request class implementing `\MvcCore\IRequest`.
 	 * Class to create describing HTTP request object.
-	 * @return string
+	 * @return \MvcCore\Request|string
 	 */
 	public function GetRequestClass () {
 		return $this->requestClass;
@@ -350,7 +370,7 @@ trait PropsGettersSetters
 	/**
 	 * Get application response class implementing `\MvcCore\IResponse`.
 	 * Class to create HTTP response object to store response headers and response content.
-	 * @return string
+	 * @return \MvcCore\Response|string
 	 */
 	public function GetResponseClass () {
 		return $this->responseClass;
@@ -360,7 +380,7 @@ trait PropsGettersSetters
 	 * Get application route class implementing `\MvcCore\IRoute`.
 	 * Class to describe single route with match and replace pattern,
 	 * controller, action, params default values and params constraints.
-	 * @return string
+	 * @return \MvcCore\Route|string
 	 */
 	public function GetRouteClass () {
 		return $this->routeClass;
@@ -369,7 +389,7 @@ trait PropsGettersSetters
 	/**
 	 * Get application router class implementing `\MvcCore\IRouter`.
 	 * Class to store all routes, dispatch request by routes and generate URL addresses by routes.
-	 * @return string
+	 * @return \MvcCore\Router|string
 	 */
 	public function GetRouterClass () {
 		return $this->routerClass;
@@ -378,7 +398,7 @@ trait PropsGettersSetters
 	/**
 	 * Get application session class implementing `\MvcCore\ISession`.
 	 * Class to configure session namespaces, session opening, writing and expirations.
-	 * @return string
+	 * @return \MvcCore\Session|string
 	 */
 	public function GetSessionClass () {
 		return $this->sessionClass;
@@ -387,7 +407,7 @@ trait PropsGettersSetters
 	/**
 	 * Get application tool class implementing `\MvcCore\ITool`.
 	 * Class to handle helper calls from MvcCore core modules.
-	 * @return string
+	 * @return \MvcCore\Tool|string
 	 */
 	public function GetToolClass () {
 		return $this->toolClass;
@@ -396,14 +416,34 @@ trait PropsGettersSetters
 	/**
 	 * Get application view class implementing `\MvcCore\IView`.
 	 * Class to prepare and render controller view, sub-views and wrapper layout.
-	 * @return string
+	 * @return \MvcCore\View|string
 	 */
 	public function GetViewClass () {
 		return $this->viewClass;
 	}
 
 	/**
-	 * Returns currently used instance of protected `\MvcCore\Application::$request;`.
+	 * Returns environment detection instance.
+	 * @var \MvcCore\Environment|\MvcCore\IEnvironment
+	 */
+	public function GetEnvironment () {
+		if ($this->environment === NULL) {
+			$environmentClass = $this->environmentClass;
+			$this->environment = $environmentClass::CreateInstance();
+		}
+		return $this->environment;
+	}
+
+	/**
+	 * Returns currently dispatched controller instance.
+	 * @return \MvcCore\Controller|\MvcCore\IController
+	 */
+	public function GetController () {
+		return $this->controller;
+	}
+
+	/**
+	 * Returns currently used request instance.
 	 * @return \MvcCore\Request|\MvcCore\IRequest
 	 */
 	public function GetRequest () {
@@ -415,7 +455,7 @@ trait PropsGettersSetters
 	}
 
 	/**
-	 * Returns currently used instance of protected `\MvcCore\Application::response;`.
+	 * Returns currently used response instance.
 	 * @return \MvcCore\Response|\MvcCore\IResponse
 	 */
 	public function GetResponse () {
@@ -427,7 +467,7 @@ trait PropsGettersSetters
 	}
 
 	/**
-	 * Returns currently used instance of protected `\MvcCore\Application::$router;`.
+	 * Returns currently used router instance.
 	 * @return \MvcCore\Router|\MvcCore\IRouter
 	 */
 	public function GetRouter () {
@@ -436,14 +476,6 @@ trait PropsGettersSetters
 			$this->router = $routerClass::GetInstance();
 		}
 		return $this->router;
-	}
-
-	/**
-	 * Returns currently dispatched instance of protected `\MvcCore\Application::$controller;`.
-	 * @return \MvcCore\Controller|\MvcCore\IController
-	 */
-	public function GetController () {
-		return $this->controller;
 	}
 
 	/**
@@ -514,14 +546,26 @@ trait PropsGettersSetters
 
 
 	/**
+	 * Set application environment class implementing `\MvcCore\IEnvironment`.
+	 * Class to detect and manage environment name.
+	 * Core configuration method.
+	 * @param string $environmentClass
+	 * @return \MvcCore\Application
+	 */
+	public function SetEnvironmentClass ($environmentClass) {
+		/** @var $this \MvcCore\Application */
+		return $this->setCoreClass($environmentClass, 'environmentClass', 'MvcCore\IEnvironment');
+	}
+
+	/**
 	 * Set application config class implementing `\MvcCore\IConfig`.
-	 * Class to create default controller for request targeting views only
-	 * and to handle small assets inside packed application.
+	 * Class to load and parse (system) config(s).
 	 * Core configuration method.
 	 * @param string $configClass
 	 * @return \MvcCore\Application
 	 */
 	public function SetConfigClass ($configClass) {
+		/** @var $this \MvcCore\Application */
 		return $this->setCoreClass($configClass, 'configClass', 'MvcCore\IConfig');
 	}
 
@@ -534,7 +578,8 @@ trait PropsGettersSetters
 	 * @return \MvcCore\Application
 	 */
 	public function SetControllerClass ($controllerClass) {
-		return $this->setCoreClass($controllerClass, 'configClass', 'MvcCore\IController');
+		/** @var $this \MvcCore\Application */
+		return $this->setCoreClass($controllerClass, 'controllerClass', 'MvcCore\IController');
 	}
 
 	/**
@@ -545,6 +590,7 @@ trait PropsGettersSetters
 	 * @return \MvcCore\Application
 	 */
 	public function SetDebugClass ($debugClass) {
+		/** @var $this \MvcCore\Application */
 		return $this->setCoreClass($debugClass, 'debugClass', 'MvcCore\IDebug');
 	}
 
@@ -556,6 +602,7 @@ trait PropsGettersSetters
 	 * @return \MvcCore\Application
 	 */
 	public function SetRequestClass ($requestClass) {
+		/** @var $this \MvcCore\Application */
 		return $this->setCoreClass($requestClass, 'requestClass', 'MvcCore\IRequest');
 	}
 
@@ -567,6 +614,7 @@ trait PropsGettersSetters
 	 * @return \MvcCore\Application
 	 */
 	public function SetResponseClass ($responseClass) {
+		/** @var $this \MvcCore\Application */
 		return $this->setCoreClass($responseClass, 'responseClass', 'MvcCore\IResponse');
 	}
 
@@ -579,7 +627,8 @@ trait PropsGettersSetters
 	 * @return \MvcCore\Application
 	 */
 	public function SetRouteClass ($routeClass) {
-		return $this->setCoreClass($routeClass, 'routerClass', 'MvcCore\IRoute');
+		/** @var $this \MvcCore\Application */
+		return $this->setCoreClass($routeClass, 'routeClass', 'MvcCore\IRoute');
 	}
 
 	/**
@@ -590,6 +639,7 @@ trait PropsGettersSetters
 	 * @return \MvcCore\Application
 	 */
 	public function SetRouterClass ($routerClass) {
+		/** @var $this \MvcCore\Application */
 		return $this->setCoreClass($routerClass, 'routerClass', 'MvcCore\IRouter');
 	}
 
@@ -601,6 +651,7 @@ trait PropsGettersSetters
 	 * @return \MvcCore\Application
 	 */
 	public function SetSessionClass ($sessionClass) {
+		/** @var $this \MvcCore\Application */
 		return $this->setCoreClass($sessionClass, 'sessionClass', 'MvcCore\ISession');
 	}
 
@@ -612,6 +663,7 @@ trait PropsGettersSetters
 	 * @return \MvcCore\Application
 	 */
 	public function SetToolClass ($toolClass) {
+		/** @var $this \MvcCore\Application */
 		return $this->setCoreClass($toolClass, 'toolClass', 'MvcCore\ITool');
 	}
 
@@ -623,6 +675,7 @@ trait PropsGettersSetters
 	 * @return \MvcCore\Application
 	 */
 	public function SetViewClass ($viewClass) {
+		/** @var $this \MvcCore\Application */
 		return $this->setCoreClass($viewClass, 'viewClass', 'MvcCore\IView');
 	}
 
@@ -641,17 +694,6 @@ trait PropsGettersSetters
 	public function SetAppDir ($appDir) {
 		/** @var $this \MvcCore\Application */
 		$this->appDir = $appDir;
-		return $this;
-	}
-
-	/**
-	 * Set currently dispatched instance of protected `\MvcCore\Application::$controller;`.
-	 * @param \MvcCore\Controller|\MvcCore\IController $controller
-	 * @return \MvcCore\Application
-	 */
-	public function SetController (\MvcCore\IController $controller = NULL) {
-		/** @var $this \MvcCore\Application */
-		$this->controller = $controller;
 		return $this;
 	}
 
@@ -750,6 +792,7 @@ trait PropsGettersSetters
 	 * @return \MvcCore\Application
 	 */
 	public function AddPreRouteHandler (callable $handler, $priorityIndex = NULL) {
+		/** @var $this \MvcCore\Application */
 		if (!is_callable($handler))
 			throw new \InvalidArgumentException(
 				"[".get_class()."] Pre route handler is not callable (handler: {$handler}, priorityIndex: {$priorityIndex})."
@@ -777,7 +820,8 @@ trait PropsGettersSetters
 	 * @return \MvcCore\Application
 	 */
 	public function AddPostRouteHandler (callable $handler, $priorityIndex = NULL) {
-		if (!is_callable($handler)) 
+		/** @var $this \MvcCore\Application */
+		if (!is_callable($handler))
 			throw new \InvalidArgumentException(
 				"[".get_class()."] Post route handler is not callable (handler: {$handler}, priorityIndex: {$priorityIndex})."
 			);
@@ -804,7 +848,8 @@ trait PropsGettersSetters
 	 * @return \MvcCore\Application
 	 */
 	public function AddPreDispatchHandler (callable $handler, $priorityIndex = NULL) {
-		if (!is_callable($handler)) 
+		/** @var $this \MvcCore\Application */
+		if (!is_callable($handler))
 			throw new \InvalidArgumentException(
 				"[".get_class()."] Pre dispatch handler is not callable (handler: {$handler}, priorityIndex: {$priorityIndex})."
 			);
@@ -830,7 +875,8 @@ trait PropsGettersSetters
 	 * @return \MvcCore\Application
 	 */
 	public function AddPostDispatchHandler (callable $handler, $priorityIndex = NULL) {
-		if (!is_callable($handler)) 
+		/** @var $this \MvcCore\Application */
+		if (!is_callable($handler))
 			throw new \InvalidArgumentException(
 				"[".get_class()."] Post dispatch handler is not callable (handler: {$handler}, priorityIndex: {$priorityIndex})."
 			);
@@ -857,7 +903,8 @@ trait PropsGettersSetters
 	 * @return \MvcCore\Application
 	 */
 	public function AddPostTerminateHandler (callable $handler, $priorityIndex = NULL) {
-		if (!is_callable($handler)) 
+		/** @var $this \MvcCore\Application */
+		if (!is_callable($handler))
 			throw new \InvalidArgumentException(
 				"[".get_class()."] Post terminate handler is not callable (handler: {$handler}, priorityIndex: {$priorityIndex})."
 			);
