@@ -28,7 +28,8 @@ trait ReadWrite
 	public static function CreateInstance (array $data = [], $appRootRelativePath = NULL) {
 		/** @var $config \MvcCore\Config */
 		$config = new static();
-		if ($data) $config->data = & $data;
+		if ($data)
+			$config->data = & $data;
 		if ($appRootRelativePath) {
 			$app = self::$app ?: self::$app = \MvcCore\Application::GetInstance();
 			$appRoot = self::$appRoot ?: self::$appRoot = $app->GetRequest()->GetAppRoot();
@@ -124,18 +125,18 @@ trait ReadWrite
 	protected static function getConfigInstance ($appRootRelativePath, $systemConfig = FALSE) {
 		/** @var $config \MvcCore\Config */
 		$app = self::$app ?: self::$app = \MvcCore\Application::GetInstance();
-		$appRoot = self::$appRoot ?: self::$appRoot = $app->GetRequest()->GetAppRoot();
-		$fullPath = $appRoot . '/' . str_replace(
-			'%appPath%', $app->GetAppDir(), ltrim($appRootRelativePath, '/')
-		);
-		if (!file_exists($fullPath)) {
+		$systemConfigClass = $app->GetConfigClass();
+		$config = $systemConfigClass::CreateInstance();
+		if (!file_exists($config->fullPath)) {
 			$config = NULL;
 		} else {
-			$systemConfigClass = $app->GetConfigClass();
-			$config = $systemConfigClass::CreateInstance();
 			$config->system = $systemConfig;
-			if (!$config->read($fullPath))
+			if ($config->read()) {
+				$config->mergedData = [];
+				$config->currentData = [];
+			} else {
 				$config = NULL;
+			}
 		}
 		return $config;
 	}

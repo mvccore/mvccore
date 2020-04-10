@@ -161,25 +161,9 @@ trait Environment
 	 * @return \stdClass|array The merged object
 	 */
 	protected function mergeRecursive ($commonEnvData, $specificEnvData) {
-		$commonEnvDataClone = $this->_mergeArrayClone((array) $commonEnvData);
+		$commonEnvDataClone = unserialize(serialize($commonEnvData));
 		$this->_mergeArraysOrObjectsRecursive($commonEnvDataClone, $specificEnvData);
 		return $commonEnvDataClone;
-	}
-
-	/**
-	 * Recursively clone and return given `array`.
-	 * @param array $array
-	 * @return array
-	 */
-	private function _mergeArrayClone ($array) {
-		return array_map(function($element) {
-			return is_array($element)
-				? $this->_mergeArrayClone($element)
-				: (is_object($element)
-					? clone $element
-					: $element
-				);
-		}, $array);
 	}
 
 	/**

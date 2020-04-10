@@ -24,25 +24,21 @@ trait IniRead
 	 * - Load only sections for current environment name.
 	 * - Retype all `raw string` values into `array`, `float`, `int` or `boolean` types.
 	 * - Retype whole values level into `\stdClass`, if there are no numeric keys.
-	 * @param string $fullPath
 	 * @return bool
 	 */
-	protected function read ($fullPath) {
+	protected function read () {
 		/** @var $this \MvcCore\Config */
 		if ($this->envData) return TRUE;
-		$this->fullPath = $fullPath;
 		if (!$this->_iniScannerMode)
 			// 1 => INI_SCANNER_RAW, 2 => INI_SCANNER_TYPED
 			$this->_iniScannerMode = \PHP_VERSION_ID < 50610 ? 1 : 2;
-		clearstatcache(TRUE, $fullPath);
-		$this->lastChanged = filemtime($fullPath);
+		clearstatcache(TRUE, $this->fullPath);
+		$this->lastChanged = filemtime($this->fullPath);
 		$rawIniData = parse_ini_file(
 			$this->fullPath, TRUE, $this->_iniScannerMode
 		);
 		if ($rawIniData === FALSE) return FALSE;
 		$this->envData = [];
-		$this->mergedData = [];
-		$this->currentData = [];
 		$allEnvIniDataPlain = $this->iniReadAllEnvironmentsSections($rawIniData);
 		foreach ($allEnvIniDataPlain as $envName => $envIniData) {
 			list($data, $objectTypes) = $this->iniReadExpandLevelsAndReType(
