@@ -27,7 +27,7 @@ namespace MvcCore;
  *   - Variables expiration by seconds.
  *   - Variables expiration by request hoops.
  */
-class Session extends \ArrayObject implements ISession
+class Session implements \Iterator, \ArrayAccess, \Countable, ISession
 {
 	use \MvcCore\Session\Props;
 	use \MvcCore\Session\Starting;

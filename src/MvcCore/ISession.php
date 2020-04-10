@@ -150,20 +150,6 @@ interface ISession
 	public static function DestroyAll ();
 
 	/**
-	 * Magic function triggered by: `isset(\MvcCore\ISession->key);`.
-	 * @param string $key
-	 * @return bool
-	 */
-	public function __isset ($key);
-
-	/**
-	 * Magic function triggered by: `unset(\MvcCore\ISession->key);`.
-	 * @param string $key
-	 * @return void
-	 */
-	public function __unset ($key);
-
-	/**
 	 * Magic function triggered by: `$value = \MvcCore\ISession->key;`.
 	 * @param string $key
 	 * @return mixed
@@ -179,47 +165,16 @@ interface ISession
 	public function __set ($key, $value);
 
 	/**
-	 * Magic `\ArrayObject` function triggered by: `count(\MvcCore\ISession);`.
-	 * @return int
+	 * Magic function triggered by: `isset(\MvcCore\ISession->key);`.
+	 * @param string $key
+	 * @return bool
 	 */
-	public function count ();
+	public function __isset ($key);
 
 	/**
-	 * Return new iterator from the internal data store 
-	 * to use session namespace instance in for each cycle.
-	 * Example: `foreach ($sessionNamespace as $key => $value) { var_dump([$key, $value]); }`
-	 * @return \ArrayIterator|\Traversable
+	 * Magic function triggered by: `unset(\MvcCore\ISession->key);`.
+	 * @param string $key
+	 * @return void
 	 */
-	public function getIterator ();
-
-	/**
-	 * Set the value at the specified index.
-	 * Example: `$sessionNamespace['any'] = 'thing';`
-	 * @param mixed $offset 
-	 * @param mixed $value 
-	 */
-	public function offsetSet ($offset, $value);
-
-	/**
-	 * Get the value at the specified index.
-	 * Example: `$thing = $sessionNamespace['any'];`
-	 * @param mixed $offset 
-	 * @param mixed $value 
-	 */
-    public function offsetGet ($offset);
-
-    /**
-     * Return whether the requested index exists.
-	 * Example: `isset($sessionNamespace['any']);`
-     * @param mixed $offset 
-     * @return bool
-     */
-    public function offsetExists ($offset);
-
-    /**
-     * Unset the value at the specified index.
-	 * Example: `unset($sessionNamespace['any']);`
-     * @param mixed $offset 
-     */
-    public function offsetUnset ($offset);
+	public function __unset ($key);
 }

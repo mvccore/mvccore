@@ -76,7 +76,7 @@ trait MagicMethods
 		];
 	}
 
-	
+
 	/** \Countable interface **************************************************/
 
 	/**
@@ -88,16 +88,47 @@ trait MagicMethods
 		return count((array) $_SESSION[$this->__name]);
 	}
 
-	/** \IteratorAggregate interface ******************************************/
+
+	/** \Iterator interface ***************************************************/
 
 	/**
-	 * Return new iterator from the internal data store 
-	 * to use session namespace instance in for each cycle.
-	 * Example: `foreach ($sessionNamespace as $key => $value) { var_dump([$key, $value]); }`
-	 * @return \ArrayIterator|\Traversable
+	 * Return the current element.
+	 * @return mixed
 	 */
-	public function getIterator () {
-        return new \ArrayIterator($_SESSION[$this->__name]);
+	public function current () {
+        return current($_SESSION[$this->__name]);
+    }
+
+	/**
+	 * Return the key of the current element.
+	 * @return string|int
+	 */
+    public function key () {
+        return key($_SESSION[$this->__name]);
+    }
+
+	/**
+	 * Move forward to next element.
+	 * @return void
+	 */
+    public function next () {
+        return next($_SESSION[$this->__name]);
+    }
+
+	/**
+	 * Rewind the Iterator to the first element.
+	 * @return void
+	 */
+    public function rewind () {
+        reset($_SESSION[$this->__name]);
+    }
+
+	/**
+	 * Checks if current position is valid.
+	 * @return bool
+	 */
+    public function valid () {
+        return key($_SESSION[$this->__name]) !== NULL;
     }
 
 
@@ -106,8 +137,8 @@ trait MagicMethods
 	/**
 	 * Set the value at the specified index.
 	 * Example: `$sessionNamespace['any'] = 'thing';`
-	 * @param mixed $offset 
-	 * @param mixed $value 
+	 * @param mixed $offset
+	 * @param mixed $value
 	 */
 	public function offsetSet ($offset, $value) {
 		$data = & $_SESSION[$this->__name];
@@ -121,8 +152,8 @@ trait MagicMethods
 	/**
 	 * Get the value at the specified index.
 	 * Example: `$thing = $sessionNamespace['any'];`
-	 * @param mixed $offset 
-	 * @param mixed $value 
+	 * @param mixed $offset
+	 * @param mixed $value
 	 */
     public function offsetGet ($offset) {
 		$data = & $_SESSION[$this->__name];
@@ -132,7 +163,7 @@ trait MagicMethods
     /**
      * Return whether the requested index exists.
 	 * Example: `isset($sessionNamespace['any']);`
-     * @param mixed $offset 
+     * @param mixed $offset
      * @return bool
      */
     public function offsetExists ($offset) {
@@ -142,7 +173,7 @@ trait MagicMethods
     /**
      * Unset the value at the specified index.
 	 * Example: `unset($sessionNamespace['any']);`
-     * @param mixed $offset 
+     * @param mixed $offset
      */
     public function offsetUnset ($offset) {
         unset($_SESSION[$this->__name][$offset]);
