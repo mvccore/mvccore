@@ -22,21 +22,16 @@ trait ReadWrite
 	 * This is place where to customize any config creation process,
 	 * before it's created by MvcCore framework.
 	 * @param array $data Configuration raw data.
-	 * @param string $appRootRelativePath Relative config path from app root.
+	 * @param string $configFullPath Config absolute path.
 	 * @return \MvcCore\Config|\MvcCore\IConfig
 	 */
-	public static function CreateInstance (array $data = [], $appRootRelativePath = NULL) {
+	public static function CreateInstance (array $data = [], $configFullPath = NULL) {
 		/** @var $config \MvcCore\Config */
 		$config = new static();
 		if ($data)
 			$config->data = & $data;
-		if ($appRootRelativePath) {
-			$app = self::$app ?: self::$app = \MvcCore\Application::GetInstance();
-			$appRoot = self::$appRoot ?: self::$appRoot = $app->GetRequest()->GetAppRoot();
-			$config->fullPath = $appRoot . '/' . str_replace(
-				'%appPath%', $app->GetAppDir(), ltrim($appRootRelativePath, '/')
-			);
-		}
+		if ($configFullPath)
+			$config->fullPath = $configFullPath;
 		return $config;
 	}
 
@@ -50,18 +45,20 @@ trait ReadWrite
 		$app = self::$app ?: self::$app = \MvcCore\Application::GetInstance();
 		$systemConfigClass = $app->GetConfigClass();
 		$appRootRelativePath = $systemConfigClass::GetSystemConfigPath();
-		if (!array_key_exists($appRootRelativePath, self::$configsCache)) {
-			$config = self::getConfigInstance(
-				$appRootRelativePath, TRUE
-			);
+		$appRoot = self::$appRoot ?: self::$appRoot = $app->GetRequest()->GetAppRoot();
+		$configFullPath = $appRoot . '/' . str_replace(
+			'%appPath%', $app->GetAppDir(), ltrim($appRootRelativePath, '/')
+		);
+		if (!array_key_exists($configFullPath, self::$configsCache)) {
+			$config = self::getConfigInstance($configFullPath, $systemConfigClass, TRUE);
 			if ($config) {
 				$environment = $app->GetEnvironment();
 				if ($environment->IsDetected())
 					static::SetUpEnvironmentData($config, $environment->GetName());
 			}
-			self::$configsCache[$appRootRelativePath] = $config;
+			self::$configsCache[$configFullPath] = $config;
 		}
-		return self::$configsCache[$appRootRelativePath];
+		return self::$configsCache[$configFullPath];
 	}
 
 	/**
@@ -72,21 +69,24 @@ trait ReadWrite
 	 */
 	public static function GetConfig ($appRootRelativePath) {
 		/** @var $config \MvcCore\Config */
-		if (!array_key_exists($appRootRelativePath, self::$configsCache)) {
-			$app = self::$app ?: self::$app = \MvcCore\Application::GetInstance();
+		$appRootRelativePath = ltrim($appRootRelativePath, '/');
+		$app = self::$app ?: self::$app = \MvcCore\Application::GetInstance();
+		$appRoot = self::$appRoot ?: self::$appRoot = $app->GetRequest()->GetAppRoot();
+		$configFullPath = $appRoot . '/' . str_replace(
+			'%appPath%', $app->GetAppDir(), $appRootRelativePath
+		);
+		if (!array_key_exists($configFullPath, self::$configsCache)) {
 			$systemConfigClass = $app->GetConfigClass();
-			$isSystem = $systemConfigClass::GetSystemConfigPath() === '/' . ltrim($appRootRelativePath, '/');
-			$config = self::getConfigInstance(
-				$appRootRelativePath, $isSystem
-			);
+			$isSystem = $systemConfigClass::GetSystemConfigPath() === '/' . $appRootRelativePath;
+			$config = self::getConfigInstance($configFullPath, $systemConfigClass, $isSystem);
 			if ($config) {
 				$environment = $app->GetEnvironment();
 				if ($environment->IsDetected())
 					static::SetUpEnvironmentData($config, $environment->GetName());
 			}
-			self::$configsCache[$appRootRelativePath] = $config;
+			self::$configsCache[$configFullPath] = $config;
 		}
-		return self::$configsCache[$appRootRelativePath];
+		return self::$configsCache[$configFullPath];
 	}
 
 	/**
@@ -96,7 +96,7 @@ trait ReadWrite
 	 */
 	public function Save () {
 		$rawContent = $this->Dump();
-		if ($rawContent === FALSE)
+		if ($rawContent === NULL)
 			throw new \Exception('Configuration data was not possible to dump.');
 		$app = self::$app ?: self::$app = \MvcCore\Application::GetInstance();
 		$toolClass = $app->GetToolClass();
@@ -118,20 +118,19 @@ trait ReadWrite
 	/**
 	 * Try to load and parse config file by app root relative path.
 	 * If config contains system data, try to detect environment.
-	 * @param string $appRootRelativePath
+	 * @param string $configFullPath
+	 * @param string $systemConfigClass
 	 * @param bool $systemConfig
 	 * @return \MvcCore\Config|\MvcCore\IConfig|bool
 	 */
-	protected static function getConfigInstance ($appRootRelativePath, $systemConfig = FALSE) {
+	protected static function getConfigInstance ($configFullPath, $systemConfigClass, $systemConfig = FALSE) {
 		/** @var $config \MvcCore\Config */
-		$app = self::$app ?: self::$app = \MvcCore\Application::GetInstance();
-		$systemConfigClass = $app->GetConfigClass();
-		$config = $systemConfigClass::CreateInstance();
-		if (!file_exists($config->fullPath)) {
+		$config = $systemConfigClass::CreateInstance([], $configFullPath);
+		if (!file_exists($configFullPath)) {
 			$config = NULL;
 		} else {
 			$config->system = $systemConfig;
-			if ($config->read()) {
+			if ($config->Read()) {
 				$config->mergedData = [];
 				$config->currentData = [];
 			} else {

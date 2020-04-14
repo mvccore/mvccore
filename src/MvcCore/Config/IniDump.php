@@ -16,124 +16,345 @@ namespace MvcCore\Config;
 trait IniDump
 {
 	/**
-	 * Dump configuration data in INI syntax with originally loaded sections and 
-	 * environment dependency support. This method try to load original INI file 
-	 * if exists and creates INI sections by original file. Or all data are 
-	 * rendered in plain structure without any section. If there is in original 
-	 * config file any section for different environment, this method dumps that
-	 * section content immediately after current environment section, so all 
-	 * data for different environment stays there.
+	 * Dump configuration data (for all environments) into INI configuration
+	 * syntax with environment specific sections and data.
 	 * @return string
 	 */
-	protected function dump () {
-		$environment = static::GetEnvironment(TRUE);// toto dříve načetlo konfig.
-		list($sections, $envSpecifics) = $this->dumpSectionsInfo();
-		$levelKey = '';
-		$basicData = [];
-		$sectionsData = [];
-		foreach ($this->data as $key => & $value) {
-			if (is_object($value) || is_array($value)) {
-				if ($sectionsData) $sectionsData[] = '';
-				$sectionType = isset($sections[$key]) ? $sections[$key] : 0;
-				$environmentSpecificSection = $sectionType === 3;
-				if ($sectionType) {
-					unset($sections[$key]);
-					$sectionsData[] = ($environmentSpecificSection 
-						? '[' . $environment . ' > ' . $key . ']'
-						: '[' . $key . ']');
-					$levelKey = '';
-				} else {
-					$levelKey = (string) $key;
-				}
-				$this->dumpRecursive($levelKey, $value, $sectionsData);
-				if ($environmentSpecificSection && isset($envSpecifics[$key])) {
-					foreach ($envSpecifics[$key] as $envName => $sectionLines) {
-						if ($envName === $environment) continue;
-						$sectionsData[] = '';
-						foreach ($sectionLines as $sectionLine)
-							$sectionsData[] = $sectionLine;
-					}
-				}
-			} else {
-				$basicData[] = $key . ' = ' . $this->dumpScalarValue($value);
-			}
-		}
-		$result = '';
-		if ($basicData) $result = implode(PHP_EOL, $basicData);
-		if ($sectionsData) $result .= PHP_EOL . PHP_EOL . implode(PHP_EOL, $sectionsData);
+	public function Dump () {
+		/** @var $this \MvcCore\Config */
+		$environmentNames = array_keys($this->mergedData);
+		// Split merged data into environment specific and common environment collections:
+		static::dumpSplitData($this, $environmentNames);
+		// Dump data into INI syntax with environment sections:
+		$result = static::dumpRenderEnvData($this, $environmentNames);
+		$this->envData = []; // frees memory
 		return $result;
 	}
 
 	/**
-	 * Try to load original config INI file and parse it. Complete all section 
-	 * names and all sections for different environments against current 
-	 * environment and return two variables - `$sections, $envSpecifics`.
-	 * First is array with keys as string section names and values as integers
-	 * about if section is dependent on environment or not. The second result 
-	 * item is environment specific section data keyed by section name and 
-	 * values as array keyed by environment and values as section raw values.
-	 * @return \array[]
+	 * Render splitted data from environment specific collections (`$config->envData`)
+	 * into INI syntax with environment specific sections, optionally grouped.
+	 * @param \MvcCore\IConfig $config           Config instance.
+	 * @param array            $environmentNames All detected environment names in merged configuration data.
+	 * @return string
 	 */
-	protected function dumpSectionsInfo () {
-		$sections = [];
-		$envSpecifics = [];
-		if (file_exists($this->fullPath)) {
-			$rawIniLines = file($this->fullPath, FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES);
-			// detect current environment sections and foreign sections
-			$contentFilling = [];
-			foreach ($rawIniLines as $rawIniLine) {
-				$rawIniLine = trim($rawIniLine);
-				$firstChar = mb_substr($rawIniLine, 0, 1);
-				if ($firstChar === ';') continue;
-				$rawSection =  NULL;
-				if ($firstChar == '[' && mb_substr($rawIniLine, -1, 1) == ']') 
-					$rawSection =  mb_substr($rawIniLine, 1, -1);
-				if ($rawSection) {
-					if (strpos($rawSection, '>') !== FALSE) {
-						list($envNameLocal, $sectionName) = explode('>', str_replace(' ', '', $rawSection));
-						$sections[$sectionName] = 3;
-						if (!isset($envSpecifics[$sectionName]))
-							$envSpecifics[$sectionName] = [];
-						$envSpecifics[$sectionName][$envNameLocal] = [];
-						$contentFilling = & $envSpecifics[$sectionName][$envNameLocal];
-					} else {
-						$sections[$rawSection] = 2;
-						$contentFilling = [];
+	protected static function dumpRenderEnvData (\MvcCore\IConfig $config, array & $environmentNames) {
+		$commonEnvDataKey = static::$commonEnvironmentDataKey;
+		$commonEnvData = & $config->envData[$commonEnvDataKey];
+		$renderSections = static::dumpDetectSections($config, $environmentNames);
+		if ($renderSections) {
+			$environmentSpecificSections = FALSE;
+			$renderedSections = [];
+			$allEnvSectionsNames = [];
+			foreach ($environmentNames as $envName) {
+				if (isset($config->mergedData[$envName])) {
+					$envKeys = array_keys($config->mergedData[$envName]);
+					$allEnvSectionsNames = array_unique($allEnvSectionsNames + $envKeys);
+				}
+			}
+			foreach ($allEnvSectionsNames as $sectionName) {
+				if (array_key_exists($sectionName, $commonEnvData)) {
+					$sectionCommonData = $commonEnvData[$sectionName];
+					$renderedSection = ['['.$sectionName.']'];
+					static::dumpRenderRecursive(
+						$renderedSection, $sectionCommonData, 1
+					);
+				}
+				// try to get the same section also from another environments,
+				// compare it's values if they are the same and render it:
+				$envSectionsData = static::dumpGroupEnvSectionData(
+					$config, $sectionName, $environmentNames
+				);
+				if ($envSectionsData) {
+					$environmentSpecificSections = TRUE;
+					foreach ($envSectionsData as $envNames => $groupedEnvSectionData) {
+						$renderedSection[] = PHP_EOL . '['.$envNames . ' > '.$sectionName.']';
+						static::dumpRenderRecursive(
+							$renderedSection, $groupedEnvSectionData, 1
+						);
 					}
 				}
-				$contentFilling[] = $rawIniLine;
+				$renderedSections[] = implode(PHP_EOL, $renderedSection);
 			}
+			$sectionsGlue = $environmentSpecificSections
+				? PHP_EOL . PHP_EOL . PHP_EOL
+				: PHP_EOL . PHP_EOL;
+			$result = implode($sectionsGlue, $renderedSections);
 		} else {
-			$sections = array_fill_keys(array_keys($this->data), 1); // all sections will be new
+			$rawIniData = [];
+			static::dumpRenderRecursive(
+				$rawIniData, $commonEnvData, 0
+			);
+			$result = implode(PHP_EOL, $rawIniData);
 		}
-		return [$sections, $envSpecifics];
+		return $result;
+	}
+
+	/**
+	 * Split data into environment specific collections from `$config->mergedData`.
+	 * @param \MvcCore\IConfig $config           Config instance.
+	 * @param array            $environmentNames All detected environment names in merged configuration data.
+	 * @return void
+	 */
+	protected static function dumpSplitData (\MvcCore\IConfig $config, array & $environmentNames) {
+		$mergedDataArr = static::dumpCastToArrayRecursive($config->mergedData);
+		$commonEnvDataKey = static::$commonEnvironmentDataKey;
+		if (count($environmentNames) == 1) {
+			$singleEnvName = $environmentNames[0];
+			$config->envData[$commonEnvDataKey] = $mergedDataArr[$singleEnvName];
+			return;
+		}
+		// Split merged data into environment-specific
+		// collections and into common data collection:
+		$currentMerged = new \stdClass;
+		$currentSeparated = new \stdClass;
+		foreach ($environmentNames as $envName) {
+			$config->envData[$envName] = [];
+			$currentMerged->{$envName} = & $mergedDataArr[$envName];
+			$currentSeparated->{$envName} = & $config->envData[$envName];
+		}
+		$config->envData[$commonEnvDataKey] = [];
+		$currentSeparated->{$commonEnvDataKey} = & $config->envData[$commonEnvDataKey];
+		static::dumpSplitDataRecursive(
+			$currentMerged, $currentSeparated, $environmentNames
+		);
+	}
+
+	/**
+	 * Split data into nevironment specific collections from `$config->mergedData` recursively.
+	 * @param \stdClass $currentMerged Collection with all detected environments and it's recursive level for merged collection.
+	 * @param \stdClass $currentSeparated Collection with all detected environments and it's recursive level for splited collections.
+	 * @param array $allEnvNames All detected environments in configuration.
+	 * @return void
+	 */
+	protected static function dumpSplitDataRecursive (\stdClass $currentMerged, \stdClass $currentSeparated, array & $allEnvNames) {
+		$commonEnvDataKey = static::$commonEnvironmentDataKey;
+		// get common level keys (keys existing in all environments)
+		// and specific level keys (keys existing only in some environments).
+		list($allCommonKeys, $allSpecificKeys) = static::dumpSplitDataKeys(
+			$currentMerged, $allEnvNames
+		);
+		// comparing and separating values under common level keys:
+		foreach ($allCommonKeys as $commonKey) {
+			$compareValues = [];
+			$childrenMerged = new \stdClass;
+			$childrenSeparated = new \stdClass;
+			foreach ($allEnvNames as $envName) {
+				$compareValue = & $currentMerged->{$envName}[$commonKey];
+				$compareValues[] = & $compareValue;
+				$childrenMerged->{$envName} = & $compareValue;
+			}
+			// Compare values in current level:
+			list (
+				$commonValue,
+				$valuesAreEqual,
+				$valuesAreScalars
+			) = static::dumpSplitDataCompareValues(
+				$compareValues, $allEnvNames
+			);
+			if ($valuesAreEqual) {
+				// All environments values are equal - assign it into common values collection:
+				$commonEnvDataCollection = & $currentSeparated->{$commonEnvDataKey};
+				$commonEnvDataCollection[$commonKey] = $commonValue;
+			} else if ($valuesAreScalars) {
+				// All environments values are NOT equal - assign it into specific environments collections:
+				foreach ($allEnvNames as $envName) {
+					$separatedCollection = & $currentSeparated->{$envName};
+					$separatedCollection[$commonKey] = $childrenMerged->{$envName};
+				}
+			} else {
+				// Values are collections - move collections into sublevel and process recursion:
+				foreach ($allEnvNames as $envName) {
+					$separatedCollection = & $currentSeparated->{$envName};
+					$separatedCollection[$commonKey] = [];
+					$childrenSeparated->{$envName} = & $separatedCollection[$commonKey];
+				}
+				$commonCollection = & $currentSeparated->{$commonEnvDataKey};
+				$commonCollection[$commonKey] = [];
+				$childrenSeparated->{$commonEnvDataKey} = & $commonCollection[$commonKey];
+				static::dumpSplitDataRecursive(
+					$childrenMerged, $childrenSeparated, $allEnvNames
+				);
+				// If common collection is empty - unset it:
+				if (count($commonCollection[$commonKey]) === 0)
+					unset($commonCollection[$commonKey]);
+			}
+		}
+		// assign specific level keys:
+		foreach ($allSpecificKeys as $envName => $specificKeys) {
+			$separatedCollection = & $currentSeparated->{$envName};
+			$mergedCollection = & $currentMerged->{$envName};
+			foreach ($specificKeys as $specificKey)
+				$separatedCollection[$specificKey] = $mergedCollection[$specificKey];
+		}
+	}
+
+	/**
+	 * Return common keys and environment specific keys for all nevironment values levels.
+	 * @param \stdClass $currentMerged    Recursive level of values from `$config->mergedData`.
+	 * @param \string[] $environmentNames Environment names found in configuration.
+	 * @return array [all common environment keys, environment specific keys]
+	 */
+	protected static function dumpSplitDataKeys (\stdClass $currentMerged, array & $environmentNames) {
+		$allEnvKeys = [];
+		$allSeparatedKeys = [];
+		foreach ($environmentNames as $envName) {
+			if (isset($currentMerged->{$envName})) {
+				$envKeys = array_keys($currentMerged->{$envName});
+				$allSeparatedKeys[$envName] = $envKeys;
+				$allEnvKeys = array_unique($allEnvKeys + $envKeys);
+			} else {
+				$allSeparatedKeys[$envName] = [];
+			}
+		}
+		// buggy with very simple arrays:
+		//$intersectArgs += array_values($allSeparatedKeys);
+		$intersectArgs = [$allEnvKeys];
+		foreach ($allSeparatedKeys as $allSeparatedKeysItem)
+			$intersectArgs[] = $allSeparatedKeysItem;
+		$allCommonKeys = call_user_func_array('array_intersect', $intersectArgs);
+		$allSpecificKeys = [];
+		foreach ($environmentNames as $envName) {
+			if (isset($allSeparatedKeys[$envName])) {
+				$allSpecificKeys[$envName] = array_values(
+					array_diff($allSeparatedKeys[$envName], $allCommonKeys)
+				);
+			}
+		}
+		return [$allCommonKeys, $allSpecificKeys];
+	}
+
+	/**
+	 * Compare given values for all environments
+	 * and return specific info about comparison.
+	 * @param mixed[]   $compareValues
+	 * @param \string[] $environmentNames Environment names found in configuration.
+	 * @return array [common env. value, boolean about if all env. values are the same, boolean about if values are scalar]
+	 */
+	protected static function dumpSplitDataCompareValues (& $compareValues, & $environmentNames) {
+		$baseValue = $compareValues[0];
+		$valuesAreEqual = TRUE;
+		$valuesAreScalars = is_scalar($baseValue);
+		$i = 1;
+		$l = count($environmentNames);
+		while ($i < $l) {
+			$compareValue = & $compareValues[$i++];
+			if (!$valuesAreScalars && is_scalar($compareValue))
+				$valuesAreScalars = TRUE;
+			if ($baseValue !== $compareValue) {
+				$valuesAreEqual = FALSE;
+				break;
+			}
+		}
+		return [$baseValue, $valuesAreEqual, $valuesAreScalars];
+	}
+
+	/**
+	 * Cast any `\stdClass` in configuration structure into array recursively.
+	 * @param \stdClass|array $obj
+	 * @return array
+	 */
+	protected static function dumpCastToArrayRecursive ($obj) {
+		$array = $obj instanceof \stdClass
+			? (array) $obj
+			: $obj;
+		foreach ($array as $key => $value)
+			if (is_array($value) || $value instanceof \stdClass)
+				$array[$key] = static::dumpCastToArrayRecursive($value);
+		return $array;
+	}
+
+	/**
+	 * Detect if protected collection `$config->envData` needs sections.
+	 * @param \MvcCore\IConfig $config           Config instance.
+	 * @param array            $environmentNames All detected environment names in merged configuration data.
+	 * @return bool
+	 */
+	protected static function dumpDetectSections (\MvcCore\IConfig $config, array & $environmentNames) {
+		$result = NULL;
+		// Check if there are any environment specific data:
+		foreach ($environmentNames as $envName) {
+			if (
+				array_key_exists($envName, $config->envData) &&
+				count($config->envData[$envName]) > 0
+			) {
+				// Some environment specific section found:
+				$result = TRUE;
+				break;
+			}
+		}
+		if (!$result) {
+			$twoLevelsDetected = FALSE;
+			// Check if there is better to render sections,
+			// because there are a lot data levels (but no numeric arrays in second level):
+			foreach ($config->envData as $envName => $envRootData) {
+				//$break1 = FALSE;
+				foreach ($envRootData as $rootKey => $secondLevel) {
+					if (is_numeric($rootKey)) {
+						$result = FALSE;
+						break 2; // section name can NOT be numeric:
+					}
+					if (is_array($secondLevel)) {
+						$twoLevelsDetected = TRUE;
+						foreach ($secondLevel as $secondLevelKey => $secondLevelValue) {
+							if (is_numeric($secondLevelKey)) {
+								$result = FALSE;
+								break 3; // first key under section can NOT be numeric
+							}
+						}
+					}
+				}
+			}
+			if ($result === NULL && $twoLevelsDetected)
+				$result = TRUE;
+		}
+		return $result;
 	}
 
 	/**
 	 * Dump recursive with dot syntax any PHP object/array data into INI syntax.
-	 * @param string $levelKey 
-	 * @param mixed  $data 
-	 * @param mixed  $rawData 
+	 * @param \string[]   $rawData
+	 * @param array       $data
+	 * @param int         $level
+	 * @param string      $levelKey
+	 * @param boolean     $sequentialKeys
 	 * @return void
 	 */
-	protected function dumpRecursive ($levelKey, & $data, & $rawData) {
+	protected static function dumpRenderRecursive (& $rawData, & $data, $level, $levelKey = '', $sequentialKeys = FALSE) {
 		if (is_object($data) || is_array($data)) {
-			if (strlen($levelKey) > 0) $levelKey .= '.';
-			foreach ((array) $data as $key => $value) {
-				$this->dumpRecursive($levelKey . $key, $value, $rawData);
+			$sequentialKeys = array_keys($data) === range(0, count($data) - 1);
+			$levelKeyHasParent = mb_strlen($levelKey) > 0;
+			if ($sequentialKeys) {
+				if ($levelKeyHasParent)
+					$levelKey .= '[';
+				foreach ($data as $key => $value)
+					static::dumpRenderRecursive(
+						$rawData, $value, $level + 1, $levelKey, TRUE
+					);
+			} else {
+				if ($levelKeyHasParent)
+					$levelKey .= '.';
+				foreach ($data as $key => $value)
+					static::dumpRenderRecursive(
+						$rawData, $value, $level + 1, $levelKey . $key, FALSE
+					);
 			}
 		} else {
-			$rawData[] = $levelKey . ' = ' . $this->dumpScalarValue($data);
+			$nextRow = $levelKey;
+			if ($sequentialKeys)
+				$nextRow .= ']';
+			$nextRow .= ' = ' . static::dumpRenderScalar($data);
+			$rawData[] = $nextRow;
 		}
 	}
-	
+
 	/**
-	 * Dump any PHP scalar value into INI syntax by special local static 
+	 * Dump any scalar value into INI syntax by special local static
 	 * configuration array.
-	 * @param mixed $value 
+	 * @param mixed $value
 	 * @return string
 	 */
-	protected function dumpScalarValue ($value) {
+	protected static function dumpRenderScalar ($value) {
 		if (is_numeric($value)) {
 			return (string) $value;
 		} else if (is_bool($value)) {
@@ -143,7 +364,7 @@ trait IniDump
 		} else {
 			static $specialChars = [
 				'=', '/', '.', '#', '&', '!', '?', '-', '@', "'", '"', '*', '^',
-				'[', ']', '(', ')', '{', '}', '<', '>', '\n', '\r', 
+				'[', ']', '(', ')', '{', '}', '<', '>', '\n', '\r',
 			];
 			$valueStr = (string) $value;
 			$specialCharCaught = FALSE;
@@ -159,5 +380,52 @@ trait IniDump
 				return $valueStr;
 			}
 		}
+	}
+
+	/**
+	 * Try to found the same configuration records accross all environment specific data collections.
+	 * @param \MvcCore\IConfig $config
+	 * @param string           $sectionName
+	 * @param \string[]        $environmentNames
+	 * @return array
+	 */
+	protected static function dumpGroupEnvSectionData (\MvcCore\IConfig $config, $sectionName, $environmentNames) {
+		$result = [];
+		$sectionValues = [];
+		foreach ($environmentNames as $envName) {
+			if (array_key_exists($envName, $config->envData)) {
+				$sectionData = & $config->envData[$envName];
+				if (array_key_exists($sectionName, $sectionData))
+					$sectionValues[$envName] = & $sectionData[$sectionName];
+			}
+		}
+		if (!$sectionValues)
+			return $result;
+		$processedEnvNames = array_combine(
+			array_keys($sectionValues),
+			array_fill(0, count($sectionValues), FALSE)
+		);
+		foreach ($processedEnvNames as $envName => $processed) {
+			$theSameKeys = [];
+			if ($processedEnvNames[$envName]) continue;
+			$envValue = & $sectionValues[$envName];
+			foreach ($processedEnvNames as $nextEnvName => $nextEnvProcessed) {
+				if ($nextEnvProcessed || $envName == $nextEnvName) continue;
+				$nextEnvValue = $sectionValues[$nextEnvName];
+				if ($envValue === $nextEnvValue) {
+					$theSameKeys[] = $nextEnvName;
+					$processedEnvNames[$nextEnvName] = TRUE;
+				}
+			}
+			if ($theSameKeys) {
+				array_unshift($theSameKeys, $envName);
+				$resultKey = implode(',', $theSameKeys);
+				$result[$resultKey] = & $envValue;
+			} else {
+				$result[$envName] = & $envValue;
+			}
+			$processedEnvNames[$envName] = TRUE;
+		}
+		return $result;
 	}
 }

@@ -22,10 +22,10 @@ namespace MvcCore;
  */
 interface IEnvironment
 {
-    /**
-	 * Development environment.
+	/**
+	 * Release environment.
 	 */
-	const DEVELOPMENT = 'dev';
+	const PRODUCTION = 'production';
 
 	/**
 	 * Common team testing environment.
@@ -37,10 +37,10 @@ interface IEnvironment
 	 */
 	const BETA = 'beta';
 
-	/**
-	 * Release environment.
+    /**
+	 * Development environment.
 	 */
-	const PRODUCTION = 'production';
+	const DEVELOPMENT = 'dev';
 
 
 	/**

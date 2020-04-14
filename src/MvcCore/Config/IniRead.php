@@ -17,32 +17,33 @@ trait IniRead
 {
 	/**
 	 * Load config file and return `TRUE` for success or `FALSE` in failure.
-	 * - Second environment value setup:
-	 *   - Only if `\MvcCore\Config::$system` property is defined as `TRUE`.
-	 *   - By defined client IPs, server hostnames or environment variables
-	 *     in `environments` section. By values or regular expressions.
-	 * - Load only sections for current environment name.
-	 * - Retype all `raw string` values into `array`, `float`, `int` or `boolean` types.
-	 * - Retype whole values level into `\stdClass`, if there are no numeric keys.
+	 * - Load all sections for all environment names into `$this->envData` collection.
+	 * - Retype all raw string values into `float`, `int` or `boolean` types.
+	 * - Retype collections into `\stdClass`, if there are no numeric keys.
 	 * @return bool
 	 */
-	protected function read () {
+	public function Read () {
 		/** @var $this \MvcCore\Config */
 		if ($this->envData) return TRUE;
-		if (!$this->_iniScannerMode)
-			// 1 => INI_SCANNER_RAW, 2 => INI_SCANNER_TYPED
-			$this->_iniScannerMode = \PHP_VERSION_ID < 50610 ? 1 : 2;
+		/**
+		 * INI scanner mode. For old PHP versions, lower than `5.6.1`
+		 * is automatically set to `1`, for higher, where is possible to
+		 * get INI data automatically type, is set to `2`.
+		 * Possible values: `1 => INI_SCANNER_RAW, 2 => INI_SCANNER_TYPED`.
+		 * @var int
+		 */
+		$iniScannerMode = \PHP_VERSION_ID < 50610 ? 1 : 2;
 		clearstatcache(TRUE, $this->fullPath);
 		$this->lastChanged = filemtime($this->fullPath);
 		$rawIniData = parse_ini_file(
-			$this->fullPath, TRUE, $this->_iniScannerMode
+			$this->fullPath, TRUE, $iniScannerMode
 		);
 		if ($rawIniData === FALSE) return FALSE;
 		$this->envData = [];
-		$allEnvIniDataPlain = $this->iniReadAllEnvironmentsSections($rawIniData);
+		$allEnvIniDataPlain = static::readAllEnvironmentsSections($rawIniData);
 		foreach ($allEnvIniDataPlain as $envName => $envIniData) {
-			list($data, $objectTypes) = $this->iniReadExpandLevelsAndReType(
-				$envIniData
+			list($data, $objectTypes) = static::readExpandLevelsAndReType(
+				$envIniData, $iniScannerMode
 			);
 			foreach ($objectTypes as & $objectType)
 				if ($objectType[0])
@@ -59,7 +60,7 @@ trait IniRead
 	 * @param array $rawIniData
 	 * @return array
 	 */
-	protected function & iniReadAllEnvironmentsSections (array & $rawIniData) {
+	protected static function & readAllEnvironmentsSections (array & $rawIniData) {
 		/** @var $this \MvcCore\Config */
 		$allEnvsIniData = [];
 		$commonEnvDataKey = static::$commonEnvironmentDataKey;
@@ -95,20 +96,20 @@ trait IniRead
 		return $allEnvsIniData;
 	}
 
-
 	/**
 	 * Process single level array with dotted keys into tree structure
 	 * and complete object type switches about tree records
 	 * to complete journal about final `\stdClass`es or `array`s types.
 	 * @param array $iniData
+	 * @param int   $iniScannerMode
 	 * @return array
 	 */
-	protected function iniReadExpandLevelsAndReType (array & $iniData) {
+	protected static function readExpandLevelsAndReType (array & $iniData, $iniScannerMode) {
 		/** @var $this \MvcCore\Config */
 		$result = [];
 		$objectTypes = [];
 		//$objectTypes[''] = [0, & $result];
-		$oldIniScannerMode = $this->_iniScannerMode === 1;
+		$oldIniScannerMode = $iniScannerMode === 1;// 1 => INI_SCANNER_RAW
 		foreach ($iniData as $rawKey => $rawValue) {
 			$current = & $result;
 			// prepare keys to build levels and configure stdClass/array types
@@ -136,7 +137,7 @@ trait IniRead
 			}
 			// set up value into levels structure and configure type into array if necessary
 			if ($oldIniScannerMode) {
-				$typedValue = $this->getTypedValue($rawValue);
+				$typedValue = static::readTypedValue($rawValue);
 			} else {
 				$typedValue = $rawValue;
 			}
@@ -161,21 +162,21 @@ trait IniRead
 	 * @param string|array $rawValue
 	 * @return array|float|int|string
 	 */
-	protected function getTypedValue ($rawValue) {
+	protected static function readTypedValue ($rawValue) {
 		/** @var $this \MvcCore\Config */
 		if (gettype($rawValue) == "array") {
 			foreach ($rawValue as $key => $value) {
-				$rawValue[$key] = $this->getTypedValue($value);
+				$rawValue[$key] = static::readTypedValue($value);
 			}
 			return $rawValue; // array
 		} else if (mb_strlen($rawValue) > 0) {
 			if (is_numeric($rawValue)) {
-				return $this->getTypedValueFloatOrInt($rawValue);
+				return static::readTypedValueFloatOrInt($rawValue);
 			} else {
-				return $this->getTypedSpecialValueOrString($rawValue);
+				return static::readTypedSpecialValueOrString($rawValue);
 			}
 		} else {
-			return $this->getTypedSpecialValueOrString($rawValue);
+			return static::readTypedSpecialValueOrString($rawValue);
 		}
 	}
 
@@ -184,7 +185,7 @@ trait IniRead
 	 * @param string $rawValue
 	 * @return float|int|string
 	 */
-	protected function getTypedValueFloatOrInt ($rawValue) {
+	protected static function readTypedValueFloatOrInt ($rawValue) {
 		/** @var $this \MvcCore\Config */
 		if (strpos($rawValue, '.') !== FALSE || strpos($rawValue, 'e') !== FALSE || strpos($rawValue, 'E') !== FALSE) {
 			return floatval($rawValue); // float
@@ -202,7 +203,7 @@ trait IniRead
 	 * @param string $rawValue
 	 * @return bool|NULL|string
 	 */
-	protected function getTypedSpecialValueOrString ($rawValue) {
+	protected static function readTypedSpecialValueOrString ($rawValue) {
 		/** @var $this \MvcCore\Config */
 		$lowerRawValue = strtolower($rawValue);
 		if (isset(static::$specialValues[$lowerRawValue])) {

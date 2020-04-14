@@ -443,6 +443,21 @@ interface IController
 	public function GetChildController ($index = NULL);
 
 	/**
+	 * Get (optionally cached) config INI file as `stdClass` or `array`,
+	 * placed relatively from application document root.
+	 * @param string $appRootRelativePath Any config relative path like `'/%appPath%/website.ini'`.
+	 * @return \MvcCore\IConfig|NULL
+	 */
+	public function GetConfig ($appRootRelativePath);
+
+	/**
+	 * Get (optionally cached) system config INI file as `stdClass` or `array`,
+	 * placed by default in: `"/App/config.ini"`.
+	 * @return \MvcCore\IConfig|NULL
+	 */
+	public function GetSystemConfig ();
+
+	/**
 	 * Return small assets content with proper headers
 	 * in single file application mode and immediately exit.
 	 * @throws \Exception If file path is not allowed (500) or file not found (404).

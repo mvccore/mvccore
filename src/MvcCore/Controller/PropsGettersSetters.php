@@ -565,6 +565,27 @@ trait PropsGettersSetters
 	}
 
 	/**
+	 * Get (optionally cached) config INI file as `stdClass` or `array`,
+	 * placed relatively from application document root.
+	 * @param string $appRootRelativePath Any config relative path like `'/%appPath%/website.ini'`.
+	 * @return \MvcCore\IConfig|NULL
+	 */
+	public function GetConfig ($appRootRelativePath) {
+		$configClass = $this->application->GetConfigClass();
+		return $configClass::GetConfig($appRootRelativePath);
+	}
+
+	/**
+	 * Get (optionally cached) system config INI file as `stdClass` or `array`,
+	 * placed by default in: `"/App/config.ini"`.
+	 * @return \MvcCore\IConfig|NULL
+	 */
+	public function GetSystemConfig () {
+		$configClass = $this->application->GetConfigClass();
+		return $configClass::GetSystem();
+	}
+
+	/**
 	 * Generates url:
 	 * - By `"Controller:Action"` name and params array
 	 *   (for routes configuration when routes array has keys with `"Controller:Action"` strings

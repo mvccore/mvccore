@@ -68,7 +68,6 @@ trait Environment
 	 * @return void
 	 */
 	public static function SetUpEnvironmentData (\MvcCore\IConfig $config, $environmentName) {
-		if ($config->mergedData) return;
 		// Serialized into cache is always only `$config->mergedData` collection.
 		if (array_key_exists($environmentName, $config->mergedData)) {
 			// 1. If there are data in `$config->mergedData` (config from cache), complete
@@ -77,28 +76,9 @@ trait Environment
 		} else {
 			// 2. If there are not data in `$config->mergedData` (loaded config), complete
 			// `$config->currentData` collection from `$config->envData[$environmentName]`.
-			$commonEnvDataKey = static::$commonEnvironmentDataKey;
-			$envCommonData = [];
-			$envSpecificData = [];
-			if (isset($config->envData[$commonEnvDataKey]))
-				$envCommonData = & $config->envData[$commonEnvDataKey];
-			if (isset($config->envData[$environmentName]))
-				$envSpecificData = & $config->envData[$environmentName];
-			$envCommonDataEmpty = count((array) $envCommonData) === 0;
-			$envSpecificDataEmpty = count((array) $envSpecificData) === 0;
-			if ($envCommonDataEmpty) {
-				$config->currentData = $envSpecificData;
-			} else if ($envSpecificDataEmpty) {
-				$config->currentData = $envCommonData;
-			} else {
-				$commonDataType = gettype($envCommonData);
-				$specificDataType = gettype($envSpecificData);
-				if ($commonDataType != $specificDataType)
-					settype($envSpecificData, $commonDataType);
-				$config->currentData = $config->mergeRecursive(
-					$envCommonData, $envSpecificData
-				);
-			}
+			static::mergeEnvironmentData(
+				$config, $config->currentData, $environmentName
+			);
 			$config->mergedData[$environmentName] = & $config->currentData;
 		}
 		$config->envData = []; // frees memory.
@@ -125,6 +105,11 @@ trait Environment
 					$result = & $this->mergedData[$currentEnvName];
 			}
 		} else if (array_key_exists($environmentName, $this->mergedData)) {
+			$result = & $this->mergedData[$environmentName];
+		} else {
+			static::mergeEnvironmentData(
+				$this, $this->mergedData[$environmentName], $environmentName
+			);
 			$result = & $this->mergedData[$environmentName];
 		}
 		return $result;
@@ -155,14 +140,45 @@ trait Environment
 	}
 
 	/**
+	 * Merge data from `$config->envData` array (-> common end env. specific records)
+	 * into given result collection.
+	 * @param array $resultCollection
+	 * @param string $environmentName
+	 */
+	protected static function mergeEnvironmentData (& $config, & $resultCollection, $environmentName) {
+		$commonEnvDataKey = static::$commonEnvironmentDataKey;
+		$envCommonData = [];
+		$envSpecificData = [];
+		if (isset($config->envData[$commonEnvDataKey]))
+			$envCommonData = & $config->envData[$commonEnvDataKey];
+		if (isset($config->envData[$environmentName]))
+			$envSpecificData = & $config->envData[$environmentName];
+		$envCommonDataEmpty = count((array) $envCommonData) === 0;
+		$envSpecificDataEmpty = count((array) $envSpecificData) === 0;
+		if ($envCommonDataEmpty) {
+			$resultCollection = $envSpecificData;
+		} else if ($envSpecificDataEmpty) {
+			$resultCollection = $envCommonData;
+		} else {
+			$commonDataType = gettype($envCommonData);
+			$specificDataType = gettype($envSpecificData);
+			if ($commonDataType != $specificDataType)
+				settype($envSpecificData, $commonDataType);
+			$resultCollection = static::mergeRecursive(
+				$envCommonData, $envSpecificData
+			);
+		}
+	}
+
+	/**
 	 * Recursively merge two `\stdClass|array` objects and returns a resulting object.
 	 * @param \stdClass|array $commonEnvData The base object.
 	 * @param \stdClass|array $specificEnvData The merge object.
 	 * @return \stdClass|array The merged object
 	 */
-	protected function mergeRecursive ($commonEnvData, $specificEnvData) {
+	protected static function mergeRecursive ($commonEnvData, $specificEnvData) {
 		$commonEnvDataClone = unserialize(serialize($commonEnvData));
-		$this->_mergeArraysOrObjectsRecursive($commonEnvDataClone, $specificEnvData);
+		static::_mergeArraysOrObjectsRecursive($commonEnvDataClone, $specificEnvData);
 		return $commonEnvDataClone;
 	}
 
@@ -173,7 +189,7 @@ trait Environment
 	 * @param \stdClass|array $specificEnvData The merge object.
 	 * @return void
 	 */
-	private function _mergeArraysOrObjectsRecursive (& $commonEnvData, & $specificEnvData) {
+	private static function _mergeArraysOrObjectsRecursive (& $commonEnvData, & $specificEnvData) {
 		if (is_object($specificEnvData)) {
 			$specificEnvKeys = array_keys(get_object_vars($specificEnvData));
 			foreach ($specificEnvKeys as $key) {
@@ -183,7 +199,7 @@ trait Environment
 					if (!isset($commonEnvData->{$key})) {
 						$commonEnvData->{$key} = $specificEnvValue;
 					} else {
-						$this->_mergeArraysOrObjectsRecursive(
+						static::_mergeArraysOrObjectsRecursive(
 							$commonEnvValue, $specificEnvValue
 						);
 					}
@@ -200,7 +216,7 @@ trait Environment
 					if ($commonEnvValue === NULL) {
 						$commonEnvData[$key] = $specificEnvValue;
 					} else {
-						$this->_mergeArraysOrObjectsRecursive(
+						static::_mergeArraysOrObjectsRecursive(
 							$commonEnvValue, $specificEnvValue
 						);
 					}

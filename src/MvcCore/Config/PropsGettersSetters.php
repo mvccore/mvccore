@@ -67,7 +67,8 @@ trait PropsGettersSetters
 
 	/**
 	 * Current environment data merged with common environment data.
-	 * This collection is always used for current request dispatching.
+	 * This collection is always used for current request dispatching
+	 * and this collection is not serialized.
 	 * @var array
 	 */
 	protected $currentData = [];

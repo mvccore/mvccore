@@ -21,9 +21,6 @@ trait IniProps
 	 * @var string
 	 */
 	protected static $systemConfigPath = '/%appPath%/config.ini';
-	//protected static $systemConfigPath = '/%appPath%/config_object.ini';
-	//protected static $systemConfigPath = '/%appPath%/config_array.ini';
-	//protected static $systemConfigPath = '/%appPath%/config_simple.ini';
 
 	/**
 	 * INI special values to type into `bool` or `NULL`.
@@ -39,12 +36,4 @@ trait IniProps
 		'none'	=> FALSE,
 		'null'	=> NULL,
 	];
-
-	/**
-	 * INI scanner mode. For old PHP versions, lower than `5.6.1`
-	 * is automatically set to `1`, for higher, where is possible to
-	 * get INI data automatically type, is set to `2`.
-	 * @var int
-	 */
-	private $_iniScannerMode = 0;
 }
