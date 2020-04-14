@@ -79,9 +79,11 @@ trait Rendering
 	 * @return void
 	 */
 	public function HtmlResponse ($output = '', $terminate = TRUE) {
+		/** @var $this \MvcCore\Controller */
 		if (!$this->response->HasHeader('Content-Type')) {
+			$viewClass = $this->application->GetViewClass();
 			$contentTypeHeaderValue = strpos(
-				\MvcCore\View::GetDoctype(), \MvcCore\View::DOCTYPE_XHTML
+				$viewClass::GetDoctype(), \MvcCore\IView::DOCTYPE_XHTML
 			) !== FALSE ? 'application/xhtml+xml' : 'text/html' ;
 			$this->response->SetHeader('Content-Type', $contentTypeHeaderValue);
 		}

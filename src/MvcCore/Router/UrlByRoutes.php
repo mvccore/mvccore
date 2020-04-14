@@ -16,8 +16,8 @@ namespace MvcCore\Router;
 trait UrlByRoutes
 {
 	/**
-	 * Complete optionally absolute, non-localized URL by route instance reverse 
-	 * pattern and given `$params` array. If any param required by reverse 
+	 * Complete optionally absolute, non-localized URL by route instance reverse
+	 * pattern and given `$params` array. If any param required by reverse
 	 * pattern is missing in params, there is used router default params
 	 * completed in routing process.
 	 * Example:
@@ -37,7 +37,7 @@ trait UrlByRoutes
 	 * @return string
 	 */
 	public function UrlByRoute (\MvcCore\IRoute $route, array & $params = [], $urlParamRouteName = NULL) {
-		if ($urlParamRouteName == 'self') 
+		if ($urlParamRouteName == 'self')
 			$params = array_merge($this->requestedParams ?: [], $params);
 		$defaultParams = $this->GetDefaultParams() ?: [];
 		list ($resultUrl) = $route->Url(
@@ -47,23 +47,25 @@ trait UrlByRoutes
 	}
 
 	/**
-	 * Return XML query string separator `&amp;`, if response has any 
-	 * `Content-Type` header with `xml` substring inside or return XML query 
-	 * string separator `&amp;` if `\MvcCore\View::GetDoctype()` is has any 
-	 * `XML` or any `XHTML` substring inside. Otherwise return HTML query 
+	 * Return XML query string separator `&amp;`, if response has any
+	 * `Content-Type` header with `xml` substring inside or return XML query
+	 * string separator `&amp;` if `\MvcCore\View::GetDoctype()` is has any
+	 * `XML` or any `XHTML` substring inside. Otherwise return HTML query
 	 * string separator `&`.
 	 * @return string
 	 */
 	protected function getQueryStringParamsSepatator () {
+		/** @var $this \MvcCore\Router */
 		if ($this->queryParamsSepatator === NULL) {
 			$response = \MvcCore\Application::GetInstance()->GetResponse();
 			if ($response->HasHeader('Content-Type')) {
 				$this->queryParamsSepatator = $response->IsXmlOutput() ? '&amp;' : '&';
 			} else {
-				$viewDocType = \MvcCore\View::GetDoctype();
+				$viewClass = $this->application->GetViewClass();
+				$viewDocType = $viewClass::GetDoctype();
 				$this->queryParamsSepatator = (
-					strpos($viewDocType, \MvcCore\View::DOCTYPE_XML) !== FALSE ||
-					strpos($viewDocType, \MvcCore\View::DOCTYPE_XHTML) !== FALSE
+					strpos($viewDocType, \MvcCore\IView::DOCTYPE_XML) !== FALSE ||
+					strpos($viewDocType, \MvcCore\IView::DOCTYPE_XHTML) !== FALSE
 				) ? '&amp;' : '&';
 			}
 		}

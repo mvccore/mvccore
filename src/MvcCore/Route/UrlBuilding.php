@@ -19,13 +19,13 @@ trait UrlBuilding
 	 * Filter given `array $params` by configured `"in" | "out"` filter `callable`.
 	 * This function return `array` with first item as `bool` about successful
 	 * filter processing in `try/catch` and second item as filtered params `array`.
-	 * @param array		$params 
+	 * @param array		$params
 	 * @param array		$defaultParams
-	 * @param string	$direction 
+	 * @param string	$direction
 	 * @return array	Filtered params array.
 	 */
 	public function Filter (array & $params = [], array & $defaultParams = [], $direction = \MvcCore\IRoute::CONFIG_FILTER_IN) {
-		if (!$this->filters || !isset($this->filters[$direction])) 
+		if (!$this->filters || !isset($this->filters[$direction]))
 			return [TRUE, $params];
 		list($closureCalling, $handler) = $this->filters[$direction];
 		try {
@@ -37,7 +37,8 @@ trait UrlBuilding
 			}
 			$success = TRUE;
 		} catch (\RuntimeException $e) {
-			\MvcCore\Debug::Log($e, \MvcCore\IDebug::ERROR);
+			$debugClass = \MvcCore\Application::GetInstance()->GetDebugClass();
+			$debugClass::Log($e, \MvcCore\IDebug::ERROR);
 			$success = FALSE;
 			$newParams = $params;
 		}
@@ -45,13 +46,13 @@ trait UrlBuilding
 	}
 
 	/**
-	 * Complete route URL by given params array and route internal reverse 
-	 * replacements pattern string. If there are more given params in first 
+	 * Complete route URL by given params array and route internal reverse
+	 * replacements pattern string. If there are more given params in first
 	 * argument than total count of replacement places in reverse pattern,
-	 * then create URL with query string params after reverse pattern, 
+	 * then create URL with query string params after reverse pattern,
 	 * containing that extra record(s) value(s). Returned is an array with only
 	 * one string as result URL or it could be returned for extended classes
-	 * an array with two strings - result URL in two parts - first part as scheme, 
+	 * an array with two strings - result URL in two parts - first part as scheme,
 	 * domain and base path and second as path and query string.
 	 * Example:
 	 *	Input (`$params`):
@@ -66,32 +67,32 @@ trait UrlBuilding
 	 *		`["/any/app/base/path/products-list/cool-product-name/blue?variant[]=L&amp;variant[]=XL"]`
 	 *		or:
 	 *		`[
-	 *			"/any/app/base/path", 
+	 *			"/any/app/base/path",
 	 *			"/products-list/cool-product-name/blue?variant[]=L&amp;variant[]=XL"
 	 *		]`
-	 * @param \MvcCore\Request	$request 
+	 * @param \MvcCore\Request	$request
 	 *							Currently requested request object.
 	 * @param array				$params
-	 *							URL params from application point completed 
+	 *							URL params from application point completed
 	 *							by developer.
-	 * @param array				$defaultUrlParams 
-	 *							Requested URL route params and query string 
-	 *							params without escaped HTML special chars: 
+	 * @param array				$defaultUrlParams
+	 *							Requested URL route params and query string
+	 *							params without escaped HTML special chars:
 	 *							`< > & " ' &`.
-	 * @param string			$queryStringParamsSepatator 
-	 *							Query params separator, `&` by default. Always 
+	 * @param string			$queryStringParamsSepatator
+	 *							Query params separator, `&` by default. Always
 	 *							automatically completed by router instance.
 	 * @param bool				$splitUrl
 	 *							Boolean value about to split completed result URL
-	 *							into two parts or not. Default is FALSE to return 
-	 *							a string array with only one record - the result 
-	 *							URL. If `TRUE`, result url is split into two 
+	 *							into two parts or not. Default is FALSE to return
+	 *							a string array with only one record - the result
+	 *							URL. If `TRUE`, result url is split into two
 	 *							parts and function return array with two items.
-	 * @return \string[]		Result URL address in array. If last argument is 
-	 *							`FALSE` by default, this function returns only 
-	 *							single item array with result URL. If last 
-	 *							argument is `TRUE`, function returns result URL 
-	 *							in two parts - domain part with base path and 
+	 * @return \string[]		Result URL address in array. If last argument is
+	 *							`FALSE` by default, this function returns only
+	 *							single item array with result URL. If last
+	 *							argument is `TRUE`, function returns result URL
+	 *							in two parts - domain part with base path and
 	 *							path part with query string.
 	 */
 	public function Url (\MvcCore\IRequest $request, array & $params = [], array & $defaultUrlParams = [], $queryStringParamsSepatator = '&', $splitUrl = FALSE) {
@@ -103,8 +104,8 @@ trait UrlBuilding
 		} else {// complete params with necessary values to build reverse pattern (and than query string)
 			$emptyReverseParams = array_fill_keys(array_keys($this->reverseParams), '');
 			$allMergedParams = array_merge($this->defaults, $defaultUrlParams, $params);
-			// all params clone contains only keys necessary to build reverse 
-			// pattern for this route and all given `$params` keys, nothing more 
+			// all params clone contains only keys necessary to build reverse
+			// pattern for this route and all given `$params` keys, nothing more
 			// from currently requested URL
 			$allParamsClone = array_merge(
 				$emptyReverseParams, array_intersect_key($allMergedParams, $emptyReverseParams), $params
@@ -116,10 +117,10 @@ trait UrlBuilding
 		$domainParams = $this->urlGetAndRemoveDomainPercentageParams($filteredParams);
 		// build reverse pattern
 		$result = $this->urlComposeByReverseSectionsAndParams(
-			$this->reverse, 
-			$this->reverseSections, 
-			$this->reverseParams, 
-			$filteredParams, 
+			$this->reverse,
+			$this->reverseSections,
+			$this->reverseParams,
+			$filteredParams,
 			$this->defaults
 		);
 		// add all remaining params to query string
@@ -132,21 +133,21 @@ trait UrlBuilding
 	}
 
 	/**
-	 * Compose URL by reverse pattern value, by reverse (fixed or variable) 
+	 * Compose URL by reverse pattern value, by reverse (fixed or variable)
 	 * sections info, by reverse params info (start, end, length), by given
-	 * params array with final values and by default params values defined by 
+	 * params array with final values and by default params values defined by
 	 * route object. Unset all applied params from given `$params` array to not
 	 * render them again in possible query string later.
-	 * @param string		$reverse			A route reverse string without brackets defining 
+	 * @param string		$reverse			A route reverse string without brackets defining
 	 *											URL variable sections.
 	 * @param \stdClass[]	$reverseSections	Reverse sections info, where each item contains
 	 *											data about if section is fixed or not, start,
 	 *											length and end of section.
-	 * @param array			$reverseParams		An array with keys as param names and values as  
+	 * @param array			$reverseParams		An array with keys as param names and values as
 	 *											`\stdClass` objects with data about each reverse param.
-	 * @param array			$params				An array with keys as param names and values as  
+	 * @param array			$params				An array with keys as param names and values as
 	 *											param final values.
-	 * @param array			$defaults			An array with keys as param names and values as  
+	 * @param array			$defaults			An array with keys as param names and values as
 	 *											param default values defined in route object.
 	 * @return string
 	 */
@@ -200,28 +201,28 @@ trait UrlBuilding
 	}
 
 	/**
-	 * After final URL is completed, split result URL into two parts. First part 
-	 * as scheme, domain part and base path and second part as application 
+	 * After final URL is completed, split result URL into two parts. First part
+	 * as scheme, domain part and base path and second part as application
 	 * request path and query string.
 	 * @param \MvcCore\IRequest $request
 	 *							A request object.
 	 * @param string			$resultUrl
-	 *							Result URL to split. REsult URL still could 
+	 *							Result URL to split. REsult URL still could
 	 *							contain domain part or base path replacements.
 	 * @param array				$domainParams
-	 *							Array with params for first URL part (scheme, 
+	 *							Array with params for first URL part (scheme,
 	 *							domain, base path).
 	 * @param bool				$splitUrl
 	 *							Boolean value about to split completed result URL
-	 *							into two parts or not. Default is FALSE to return 
-	 *							a string array with only one record - the result 
-	 *							URL. If `TRUE`, result url is split into two 
+	 *							into two parts or not. Default is FALSE to return
+	 *							a string array with only one record - the result
+	 *							URL. If `TRUE`, result url is split into two
 	 *							parts and function return array with two items.
-	 * @return \string[]		Result URL address in array. If last argument is 
-	 *							`FALSE` by default, this function returns only 
-	 *							single item array with result URL. If last 
-	 *							argument is `TRUE`, function returns result URL 
-	 *							in two parts - domain part with base path and 
+	 * @return \string[]		Result URL address in array. If last argument is
+	 *							`FALSE` by default, this function returns only
+	 *							single item array with result URL. If last
+	 *							argument is `TRUE`, function returns result URL
+	 *							in two parts - domain part with base path and
 	 *							path part with query string.
 	 */
 	protected function urlAbsPartAndSplit (\MvcCore\IRequest $request, $resultUrl, & $domainParams, $splitUrl) {
@@ -242,7 +243,7 @@ trait UrlBuilding
 				return $this->urlAbsPartAndSplitByRequestedBasePath($request, $resultUrl, $splitUrl);
 			}
 		} else {
-			// route is not defined as absolute, there could be only flag 
+			// route is not defined as absolute, there could be only flag
 			// in domain params array to complete absolute URL by developer
 			// and there could be also `basePath` param defined.
 			return $this->urlAbsPartAndSplitByGlobalSwitchOrBasePath(
@@ -252,19 +253,19 @@ trait UrlBuilding
 	}
 
 	/**
-	 * Replace all domain params percentage replacements in finally completed 
-	 * URL by given `$domainParams` array values. If there is founded any 
+	 * Replace all domain params percentage replacements in finally completed
+	 * URL by given `$domainParams` array values. If there is founded any
 	 * percentage replacement which is not presented in `$domainParams` array,
 	 * there is used value from request object.
 	 * @param \MvcCore\IRequest $request			A request object.
-	 * @param string			$resultUrl			Result URL to split. REsult URL 
-	 *												still could contain domain part 
+	 * @param string			$resultUrl			Result URL to split. REsult URL
+	 *												still could contain domain part
 	 *												or base path replacements.
-	 * @param array				$domainParams		Array with params for first URL 
+	 * @param array				$domainParams		Array with params for first URL
 	 *												part (scheme, domain, base path).
-	 * @param mixed				$domainParamsFlag	Second route flag about domain 
+	 * @param mixed				$domainParamsFlag	Second route flag about domain
 	 *												without value about base path.
-	 *												This value contains info what 
+	 *												This value contains info what
 	 *												percentage replacements was
 	 *												contained in reverse pattern.
 	 */
@@ -315,29 +316,29 @@ trait UrlBuilding
 
 	/**
 	 * After final URL is completed, split result URL into two parts if there
-	 * is contained domain part and base path in reverse, what is base material 
-	 * to complete result URL. If there is found base path percentage 
-	 * replacement in result url, split url after that percentage replacement 
-	 * and replace that part with domain param value or request base path value. 
+	 * is contained domain part and base path in reverse, what is base material
+	 * to complete result URL. If there is found base path percentage
+	 * replacement in result url, split url after that percentage replacement
+	 * and replace that part with domain param value or request base path value.
 	 * @param \MvcCore\IRequest $request
 	 *							A request object.
 	 * @param string			$resultUrl
-	 *							Result URL to split. Result URL still could 
+	 *							Result URL to split. Result URL still could
 	 *							contain domain part or base path replacements.
 	 * @param array				$domainParams
-	 *							Array with params for first URL part (scheme, 
+	 *							Array with params for first URL part (scheme,
 	 *							domain, base path).
 	 * @param bool				$splitUrl
 	 *							Boolean value about to split completed result URL
-	 *							into two parts or not. Default is FALSE to return 
-	 *							a string array with only one record - the result 
-	 *							URL. If `TRUE`, result url is split into two 
+	 *							into two parts or not. Default is FALSE to return
+	 *							a string array with only one record - the result
+	 *							URL. If `TRUE`, result url is split into two
 	 *							parts and function return array with two items.
-	 * @return \string[]		Result URL address in array. If last argument is 
-	 *							`FALSE` by default, this function returns only 
-	 *							single item array with result URL. If last 
-	 *							argument is `TRUE`, function returns result URL 
-	 *							in two parts - domain part with base path and 
+	 * @return \string[]		Result URL address in array. If last argument is
+	 *							`FALSE` by default, this function returns only
+	 *							single item array with result URL. If last
+	 *							argument is `TRUE`, function returns result URL
+	 *							in two parts - domain part with base path and
 	 *							path part with query string.
 	 */
 	protected function urlAbsPartAndSplitByReverseBasePath (\MvcCore\IRequest $request, $resultUrl, & $domainParams, $splitUrl) {
@@ -367,26 +368,26 @@ trait UrlBuilding
 
 	/**
 	 * After final URL is completed, split result URL into two parts if there
-	 * is contained domain part and base path in reverse, what is base material 
-	 * to complete result URL. Try to found the point in result URL, where is 
-	 * base path end and application request path begin. By that point split and 
+	 * is contained domain part and base path in reverse, what is base material
+	 * to complete result URL. Try to found the point in result URL, where is
+	 * base path end and application request path begin. By that point split and
 	 * return result URL.
 	 * @param \MvcCore\IRequest $request
 	 *							A request object.
 	 * @param string			$resultUrl
-	 *							Result URL to split. Result URL still could 
+	 *							Result URL to split. Result URL still could
 	 *							contain domain part or base path replacements.
 	 * @param bool				$splitUrl
 	 *							Boolean value about to split completed result URL
-	 *							into two parts or not. Default is FALSE to return 
-	 *							a string array with only one record - the result 
-	 *							URL. If `TRUE`, result url is split into two 
+	 *							into two parts or not. Default is FALSE to return
+	 *							a string array with only one record - the result
+	 *							URL. If `TRUE`, result url is split into two
 	 *							parts and function return array with two items.
-	 * @return \string[]		Result URL address in array. If last argument is 
-	 *							`FALSE` by default, this function returns only 
-	 *							single item array with result URL. If last 
-	 *							argument is `TRUE`, function returns result URL 
-	 *							in two parts - domain part with base path and 
+	 * @return \string[]		Result URL address in array. If last argument is
+	 *							`FALSE` by default, this function returns only
+	 *							single item array with result URL. If last
+	 *							argument is `TRUE`, function returns result URL
+	 *							in two parts - domain part with base path and
 	 *							path part with query string.
 	 */
 	protected function urlAbsPartAndSplitByRequestedBasePath (\MvcCore\IRequest $request, $resultUrl, $splitUrl) {
@@ -408,8 +409,8 @@ trait UrlBuilding
 			$nextSlashPos = mb_strpos($resultUrl, '/', $doubleSlashPos);
 			if ($nextSlashPos === FALSE) {
 				$queryStringPos = mb_strpos($resultUrl, '?', $doubleSlashPos);
-				$baseUrlPartEndPos = $queryStringPos === FALSE 
-					? mb_strlen($resultUrl) 
+				$baseUrlPartEndPos = $queryStringPos === FALSE
+					? mb_strlen($resultUrl)
 					: $queryStringPos;
 			} else {
 				$baseUrlPartEndPos = $nextSlashPos;
@@ -418,7 +419,7 @@ trait UrlBuilding
 			$basePathLength = mb_strlen($requestedBasePath);
 			if ($basePathLength > 0) {
 				$basePathPos = mb_strpos($resultUrl, $requestedBasePath, $baseUrlPartEndPos);
-				if ($basePathPos === $baseUrlPartEndPos) 
+				if ($basePathPos === $baseUrlPartEndPos)
 					$baseUrlPartEndPos += $basePathLength;
 			}
 			$basePart = mb_substr($resultUrl, 0, $baseUrlPartEndPos);
@@ -430,33 +431,33 @@ trait UrlBuilding
 	}
 
 	/**
-	 * After final URL is completed and if there is contained no scheme, no 
+	 * After final URL is completed and if there is contained no scheme, no
 	 * domain part and no base path part in route pattern (or reverse), then make
-	 * checks if it needs scheme part, domain part or base path part by global 
+	 * checks if it needs scheme part, domain part or base path part by global
 	 * route flag property `absolute` or by given params. Then complete absolute
-	 * part and return result URL as single array record or split result URL by 
+	 * part and return result URL as single array record or split result URL by
 	 * base path end point.
 	 * @param \MvcCore\IRequest $request
 	 *							A request object.
 	 * @param string			$resultUrl
-	 *							Result URL to split. Result URL still could 
+	 *							Result URL to split. Result URL still could
 	 *							contain domain part or base path replacements.
 	 * @param array				$domainParams
-	 *							Array with params for first URL part (scheme, 
+	 *							Array with params for first URL part (scheme,
 	 *							domain, base path).
 	 * @param bool				$domainParamsFlag
 	 *							Route second int flag value without base path.
 	 * @param bool				$splitUrl
 	 *							Boolean value about to split completed result URL
-	 *							into two parts or not. Default is FALSE to return 
-	 *							a string array with only one record - the result 
-	 *							URL. If `TRUE`, result url is split into two 
+	 *							into two parts or not. Default is FALSE to return
+	 *							a string array with only one record - the result
+	 *							URL. If `TRUE`, result url is split into two
 	 *							parts and function return array with two items.
-	 * @return \string[]		Result URL address in array. If last argument is 
-	 *							`FALSE` by default, this function returns only 
-	 *							single item array with result URL. If last 
-	 *							argument is `TRUE`, function returns result URL 
-	 *							in two parts - domain part with base path and 
+	 * @return \string[]		Result URL address in array. If last argument is
+	 *							`FALSE` by default, this function returns only
+	 *							single item array with result URL. If last
+	 *							argument is `TRUE`, function returns result URL
+	 *							in two parts - domain part with base path and
 	 *							path part with query string.
 	 */
 	protected function urlAbsPartAndSplitByGlobalSwitchOrBasePath (\MvcCore\IRequest $request, $resultUrl, & $domainParams, $domainParamsFlag, $splitUrl) {
@@ -480,7 +481,7 @@ trait UrlBuilding
 		if (
 			$this->absolute || (
 				isset($domainParams[$absoluteParamName]) && $domainParams[$absoluteParamName]
-			) 
+			)
 		)
 			$basePart = $request->GetDomainUrl() . $basePart;
 		$resultUrl = str_replace('//', '/', $resultUrl);
@@ -490,10 +491,10 @@ trait UrlBuilding
 
 	/**
 	 * Return `TRUE` if there are any domain params or `absolute` boolean flag
-	 * found in given `$params` array. All those domain params and possible 
+	 * found in given `$params` array. All those domain params and possible
 	 * `absolute` flag unset from given `$params` array and return it in result
 	 * array as domain params. Keys as param name, values as domain param value.
-	 * @param array $params 
+	 * @param array $params
 	 * @return array
 	 */
 	protected function urlGetAndRemoveDomainPercentageParams (array & $params = []) {
@@ -528,8 +529,8 @@ trait UrlBuilding
 	}
 
 	/**
-	 * Correct last character in path element completed in `Url()` method by 
-	 * cached router configuration protected property 
+	 * Correct last character in path element completed in `Url()` method by
+	 * cached router configuration protected property
 	 * `\MvcCore\Router::$trailingSlashBehaviour;`.
 	 * @param string $urlPath
 	 * @return string
@@ -545,7 +546,7 @@ trait UrlBuilding
 		} else if ($lastCharIsSlash && $trailingSlashBehaviour === \MvcCore\IRouter::TRAILING_SLASH_REMOVE) {
 			$urlPath = mb_substr($urlPath, 0, $urlPathLength - 1);
 		}
-		if ($urlPath === '') 
+		if ($urlPath === '')
 			$urlPath = '/';
 		return $urlPath;
 	}
