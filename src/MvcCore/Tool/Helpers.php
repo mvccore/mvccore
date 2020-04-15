@@ -128,7 +128,7 @@ trait Helpers {
 
 	/**
 	 * Return last JSON encode/decode error message, optionally by error code for PHP 5.4.
-	 * @param int $jsonErrorCode 
+	 * @param int $jsonErrorCode
 	 * @return string
 	 */
 	protected static function getJsonLastErrorMessage ($jsonErrorCode) {
@@ -402,4 +402,25 @@ trait Helpers {
 
 		return $success;
 	}
+
+	/**
+	 * PHP `realpath()` function without checking file/directory existence.
+	 * @see https://www.php.net/manual/en/function.realpath.php
+	 * @param string $path
+	 * @return string
+	 */
+	protected static function RealPathVirtual ($path) {
+        $path = str_replace(['/', '\\'], '/', $path);
+        $parts = array_filter(explode('/', $path), 'strlen');
+        $items = [];
+        foreach ($parts as $part) {
+            if ('.' == $part) continue;
+            if ('..' == $part) {
+                array_pop($items);
+            } else {
+                $items[] = $part;
+            }
+        }
+        return implode('/', $items);
+    }
 }

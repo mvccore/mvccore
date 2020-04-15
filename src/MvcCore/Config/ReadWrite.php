@@ -43,18 +43,19 @@ trait ReadWrite
 	public static function GetSystem () {
 		/** @var $config \MvcCore\Config */
 		$app = self::$app ?: self::$app = \MvcCore\Application::GetInstance();
-		$systemConfigClass = $app->GetConfigClass();
-		$appRootRelativePath = $systemConfigClass::GetSystemConfigPath();
+		$configClass = $app->GetConfigClass();
+		$toolClass = $app->GetToolClass();
+		$appRootRelativePath = $configClass::GetSystemConfigPath();
 		$appRoot = self::$appRoot ?: self::$appRoot = $app->GetRequest()->GetAppRoot();
-		$configFullPath = $appRoot . '/' . str_replace(
+		$configFullPath = $toolClass::RealPathVirtual($appRoot . '/' . str_replace(
 			'%appPath%', $app->GetAppDir(), ltrim($appRootRelativePath, '/')
-		);
+		));
 		if (!array_key_exists($configFullPath, self::$configsCache)) {
-			$config = self::getConfigInstance($configFullPath, $systemConfigClass, TRUE);
+			$config = $configClass::getConfigInstance($configFullPath, $configClass, TRUE);
 			if ($config) {
 				$environment = $app->GetEnvironment();
 				if ($environment->IsDetected())
-					static::SetUpEnvironmentData($config, $environment->GetName());
+					$configClass::SetUpEnvironmentData($config, $environment->GetName());
 			}
 			self::$configsCache[$configFullPath] = $config;
 		}
@@ -72,17 +73,18 @@ trait ReadWrite
 		$appRootRelativePath = ltrim($appRootRelativePath, '/');
 		$app = self::$app ?: self::$app = \MvcCore\Application::GetInstance();
 		$appRoot = self::$appRoot ?: self::$appRoot = $app->GetRequest()->GetAppRoot();
-		$configFullPath = $appRoot . '/' . str_replace(
+		$toolClass = $app->GetToolClass();
+		$configFullPath = $toolClass::RealPathVirtual($appRoot . '/' . str_replace(
 			'%appPath%', $app->GetAppDir(), $appRootRelativePath
-		);
+		));
 		if (!array_key_exists($configFullPath, self::$configsCache)) {
 			$systemConfigClass = $app->GetConfigClass();
 			$isSystem = $systemConfigClass::GetSystemConfigPath() === '/' . $appRootRelativePath;
-			$config = self::getConfigInstance($configFullPath, $systemConfigClass, $isSystem);
+			$config = $systemConfigClass::getConfigInstance($configFullPath, $systemConfigClass, $isSystem);
 			if ($config) {
 				$environment = $app->GetEnvironment();
 				if ($environment->IsDetected())
-					static::SetUpEnvironmentData($config, $environment->GetName());
+					$systemConfigClass::SetUpEnvironmentData($config, $environment->GetName());
 			}
 			self::$configsCache[$configFullPath] = $config;
 		}
@@ -120,16 +122,16 @@ trait ReadWrite
 	 * If config contains system data, try to detect environment.
 	 * @param string $configFullPath
 	 * @param string $systemConfigClass
-	 * @param bool $systemConfig
+	 * @param bool   $isSystemConfig
 	 * @return \MvcCore\Config|\MvcCore\IConfig|bool
 	 */
-	protected static function getConfigInstance ($configFullPath, $systemConfigClass, $systemConfig = FALSE) {
+	protected static function getConfigInstance ($configFullPath, $systemConfigClass, $isSystemConfig = FALSE) {
 		/** @var $config \MvcCore\Config */
 		$config = $systemConfigClass::CreateInstance([], $configFullPath);
 		if (!file_exists($configFullPath)) {
 			$config = NULL;
 		} else {
-			$config->system = $systemConfig;
+			$config->system = $isSystemConfig;
 			if ($config->Read()) {
 				$config->mergedData = [];
 				$config->currentData = [];
