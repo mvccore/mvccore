@@ -215,6 +215,7 @@ trait Dispatching
 		/** @var $this \MvcCore\Application */
 		$ctrl
 			->SetApplication($this)
+			->SetEnvironment($this->environment)
 			->SetRequest($this->request)
 			->SetResponse($this->response)
 			->SetRouter($this->router);

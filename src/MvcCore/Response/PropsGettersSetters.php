@@ -151,7 +151,7 @@ trait PropsGettersSetters
 		/** @var $this \MvcCore\Response */
 		$this->encoding = $encoding;
 		$this->headers['Content-Encoding'] = $encoding;
-		header('Content-Encoding: ' . $value);
+		header('Content-Encoding: ' . $encoding);
 		return $this;
 	}
 
@@ -170,7 +170,7 @@ trait PropsGettersSetters
 				$charsetPos = strpos($value, 'charset');
 				if ($charsetPos !== FALSE) {
 					$equalPos = strpos($value, '=', $charsetPos);
-					if ($equalPos !== FALSE) 
+					if ($equalPos !== FALSE)
 						$this->encoding = trim(substr($value, $equalPos + 1));
 				}
 			}

@@ -681,6 +681,18 @@ trait PropsGettersSetters
 
 
 	/**
+	 * Set currently dispatched controller instance.
+	 * @param \MvcCore\Controller|\MvcCore\IController $controller
+	 * @return \MvcCore\Application
+	 */
+	public function SetController (\MvcCore\IController $controller) {
+		/** @var $this \MvcCore\Application */
+		$this->controller = $controller;
+		return $this;
+	}
+
+
+	/**
 	 * Set application scripts and views directory name (`"App"` by default),
 	 * where are following subdirectories by default:
 	 * - `/App/Controllers`

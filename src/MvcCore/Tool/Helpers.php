@@ -409,7 +409,7 @@ trait Helpers {
 	 * @param string $path
 	 * @return string
 	 */
-	protected static function RealPathVirtual ($path) {
+	public static function RealPathVirtual ($path) {
         $path = str_replace(['/', '\\'], '/', $path);
         $parts = array_filter(explode('/', $path), 'strlen');
         $items = [];

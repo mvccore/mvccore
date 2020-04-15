@@ -87,7 +87,7 @@ interface ITool
 	/**
 	 * Recognize if given string is JSON or not without JSON parsing.
 	 * @see https://www.ietf.org/rfc/rfc4627.txt
-	 * @param string $jsonStr 
+	 * @param string $jsonStr
 	 * @return bool
 	 */
 	public static function IsJsonString ($jsonStr);
@@ -103,7 +103,7 @@ interface ITool
 	 * - `key1=value&key2=`
 	 * - `key1=value&key2=&key3=`
 	 * ...
-	 * @param string $jsonStr 
+	 * @param string $jsonStr
 	 * @return bool
 	 */
 	public static function IsQueryString ($queryStr);
@@ -116,23 +116,23 @@ interface ITool
 
 	/**
 	 * Safely invoke internal PHP function with it's own error handler.
-	 * Error handler accepts arguments: 
+	 * Error handler accepts arguments:
 	 * - `string $errMessage`	- Error message.
 	 * - `int $errLevel`		- Level of the error raised.
 	 * - `string $errFile`		- Optional, full path to error file name where error was raised.
 	 * - `int $errLine`			- Optional, The error file line number.
-	 * - `array $errContext`	- Optional, array that points to the active symbol table at the 
-	 *							  point the error occurred. In other words, `$errContext` will contain 
-	 *							  an array of every variable that existed in the scope the error 
+	 * - `array $errContext`	- Optional, array that points to the active symbol table at the
+	 *							  point the error occurred. In other words, `$errContext` will contain
+	 *							  an array of every variable that existed in the scope the error
 	 *							  was triggered in. User error handler must not modify error context.
-	 *							  Warning: This parameter has been DEPRECATED as of PHP 7.2.0. 
+	 *							  Warning: This parameter has been DEPRECATED as of PHP 7.2.0.
 	 *							  Relying on it is highly discouraged.
 	 * If the custom error handler returns `FALSE`, normal internal error handler continues.
 	 * This function is very PHP specific. It's proudly used from Nette Framework, optimized for PHP 5.4+:
 	 * https://github.com/nette/utils/blob/b623b2deec8729c8285d269ad991a97504f76bd4/src/Utils/Callback.php#L63-L84
-	 * @param string|callable $internalFnOrHandler 
-	 * @param array $args 
-	 * @param callable $onError 
+	 * @param string|callable $internalFnOrHandler
+	 * @param array $args
+	 * @param callable $onError
 	 * @return mixed
 	 */
 	public static function Invoke ($internalFnOrHandler, array $args, callable $onError);
@@ -152,13 +152,21 @@ interface ITool
 	 * @return bool
 	 */
 	public static function SingleProcessWrite (
-		$fullPath, 
-		$content, 
-		$writeMode = 'w', 
-		$lockWaitMilliseconds = 100, 
-		$maxLockWaitMilliseconds = 5000, 
+		$fullPath,
+		$content,
+		$writeMode = 'w',
+		$lockWaitMilliseconds = 100,
+		$maxLockWaitMilliseconds = 5000,
 		$oldLockMillisecondsTolerance = 30000
 	);
+
+	/**
+	 * PHP `realpath()` function without checking file/directory existence.
+	 * @see https://www.php.net/manual/en/function.realpath.php
+	 * @param string $path
+	 * @return string
+	 */
+	public static function RealPathVirtual ($path);
 
 	/**
 	 * Check if given class implements given interface, else throw an exception.
