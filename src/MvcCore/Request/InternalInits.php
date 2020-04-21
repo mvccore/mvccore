@@ -60,7 +60,7 @@ trait InternalInits
 	 * with empty values and parse CLI params into params array.
 	 * @return void
 	 */
-	protected function initCli ($inputStream) {
+	protected function initCli () {
 		$hostName = gethostname();
 		$this->scheme = 'file:';
 		$this->secure = FALSE;
