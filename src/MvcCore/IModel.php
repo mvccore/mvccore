@@ -152,11 +152,13 @@ interface IModel
 	 * or create new connection of no connection cached.
 	 * @param string|int|array|\stdClass|NULL $connectionNameOrConfig
 	 * @param bool $strict	If `TRUE` and no connection under given name or given
-	 *						index found, exception is thrown. `FALSE` by default.
+	 *						index found, exception is thrown. `TRUE` by default.
+	 *						If `FALSE`, there could be returned connection by 
+	 *						first available configuration.
 	 * @throws \InvalidArgumentException
 	 * @return \PDO
 	 */
-	public static function GetDb ($connectionNameOrConfig = NULL);
+	public static function GetDb ($connectionNameOrConfig = NULL, $strict = TRUE);
 
 	/**
 	 * Get all known database connection config records as indexed/named array with `\stdClass` objects.
@@ -168,44 +170,33 @@ interface IModel
 	/**
 	 * Set all known configuration at once, optionally set default connection name/index.
 	 * Example:
-	 *	`\MvcCore\Model::SetConfigs(array(
+	 *	`\MvcCore\Model::SetConfigs([
 	 *		// connection name: 'mysql-cdcol':
-	 *		'mysql-cdcol'	=> array(
-	 *			'driver'	=> 'mysql',
-	 *			'host'		=> 'localhost',
-	 *			'user'		=> 'root',
-	 *			'password'	=> '1234',
-	 *			'database'	=> 'cdcol',
-	 *		),
+	 *		'mysql-cdcol'	=> [
+	 *			'driver'	=> 'mysql',		'host'		=> 'localhost',
+	 *			'user'		=> 'root',		'password'	=> '1234',		'database' => 'cdcol',
+	 *		],
 	 *		// connection name: 'mssql-tests':
-	 *		'mssql-tests' => array(
-	 *			'driver'	=> 'sqlsrv',
-	 *			'host'		=> '.\SQLEXPRESS',
-	 *			'user'		=> 'sa',
-	 *			'password'	=> '1234',
-	 *			'database'	=> 'tests',
-	 *		)
-	 *	);`
+	 *		'mssql-tests'	=> [
+	 *			'driver'	=> 'sqlsrv',	'host'		=> '.\SQLEXPRESS',
+	 *			'user'		=> 'sa',		'password'	=> '1234',		'database' => 'tests',
+	 *		]
+	 *	]);`
 	 * or:
-	 *	`\MvcCore\Model::SetConfigs(array(
+	 *	`\MvcCore\Model::SetConfigs([
 	 *		// connection index: 0:
-	 *		array(
-	 *			'driver'	=> 'mysql',
-	 *			'host'		=> 'localhost',
-	 *			'user'		=> 'root',
-	 *			'password'	=> '1234',
-	 *			'database'	=> 'cdcol',
-	 *		),
+	 *		[
+	 *			'driver'	=> 'mysql',		'host'		=> 'localhost',
+	 *			'user'		=> 'root',		'password'	=> '1234',		'database' => 'cdcol',
+	 *		],
 	 *		// connection index: 1:
-	 *		array(
-	 *			'driver'	=> 'sqlsrv',
-	 *			'host'		=> '.\SQLEXPRESS',
-	 *			'user'		=> 'sa',
-	 *			'password'	=> '1234',
-	 *			'database'	=> 'tests',
-	 *		)
-	 *	);`
-	 * @param \stdClass[]|array[] $configs Configuration array with `\stdClass` objects or arrays with configuration data.
+	 *		[
+	 *			'driver'	=> 'sqlsrv',	'host'		=> '.\SQLEXPRESS',
+	 *			'user'		=> 'sa',		'password'	=> '1234',		'database' => 'tests',
+	 *		]
+	 *	]);`
+	 * @param \stdClass[]|array[] $configs               Configuration array with `\stdClass` objects or arrays with configuration data.
+	 * @param string|int          $defaultConnectionName
 	 * @return bool
 	 */
 	public static function SetConfigs (array $configs = []);

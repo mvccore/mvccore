@@ -21,11 +21,13 @@ trait DbConnection
 	 * or create new connection of no connection cached.
 	 * @param string|int|array|\stdClass|NULL $connectionNameOrConfig
 	 * @param bool $strict	If `TRUE` and no connection under given name or given
-	 *						index found, exception is thrown. `FALSE` by default.
+	 *						index found, exception is thrown. `TRUE` by default.
+	 *						If `FALSE`, there could be returned connection by
+	 *						first available configuration.
 	 * @throws \InvalidArgumentException
 	 * @return \PDO
 	 */
-	public static function GetDb ($connectionNameOrConfig = NULL, $strict = FALSE) {
+	public static function GetDb ($connectionNameOrConfig = NULL, $strict = TRUE) {
 		if (is_array($connectionNameOrConfig) || $connectionNameOrConfig instanceof \stdClass) {
 			// if first argument is database connection configuration - set it up and return new connection name
 			if (self::$configs === NULL) static::loadConfigs(FALSE);
@@ -36,6 +38,7 @@ trait DbConnection
 			$connectionName = $connectionNameOrConfig;
 			if ($connectionName === NULL) $connectionName = static::$connectionName;
 			if ($connectionName === NULL) $connectionName = self::$connectionName;
+			if ($connectionName === NULL) $connectionName = self::$defaultConnectionName;
 		}
 		if ($connectionName === NULL) throw new \InvalidArgumentException(
 			"[".get_class()."] No connection name or connection config specified."
@@ -45,11 +48,19 @@ trait DbConnection
 			// get system config 'db' data
 			// and get predefined constructor arguments by driver value from config
 			$cfg = static::GetConfig($connectionName);
-			if ($strict) throw new \InvalidArgumentException(
+			$cfgIsNull = $cfg === NULL;
+			if ($strict && $cfgIsNull) throw new \InvalidArgumentException(
 				"No connection found under given name/index: `{$connectionNameOrConfig}`."
 			);
-			if ($cfg === NULL)
-				$cfg = current(self::$configs); // if nothing found under connection name - take first database record
+			if ($cfgIsNull) {
+				// if nothing found under connection name - take first database record
+				foreach (self::$configs as $key => $value) {
+					if (is_object($value)) {
+						$cfg = $value;
+						break;
+					}
+				}
+			}
 			$sysCfgProps = (object) static::$systemConfigModelProps;
 			$conArgsKey = isset(self::$connectionArguments[$cfg->{$sysCfgProps->driver}])
 				? $cfg->{$sysCfgProps->driver}
@@ -85,7 +96,7 @@ trait DbConnection
 			// connect with full arguments count or only with one (sqlite only)
 			$connectionClass = isset($cfg->{$sysCfgProps->class})
 				? $cfg->{$sysCfgProps->class}
-				: self::$connectionClass;
+				: self::$defaultConnectionClass;
 			if ($conArgs->auth) {
 				$rawOptions = isset($cfg->{$sysCfgProps->options})
 					? array_merge($conArgs->options, $cfg->{$sysCfgProps->options} ?: [])
@@ -127,39 +138,41 @@ trait DbConnection
 	/**
 	 * Set all known configuration at once, optionally set default connection name/index.
 	 * Example:
-	 *	`\MvcCore\Model::SetConfigs(array(
+	 *	`\MvcCore\Model::SetConfigs([
 	 *		// connection name: 'mysql-cdcol':
-	 *		'mysql-cdcol'	=> array(
-	 *			'driver'	=> 'mysql',	'host'		=> 'localhost',
-	 *			'user'		=> 'root',	'password'	=> '1234',		'database' => 'cdcol',
-	 *		),
+	 *		'mysql-cdcol'	=> [
+	 *			'driver'	=> 'mysql',		'host'		=> 'localhost',
+	 *			'user'		=> 'root',		'password'	=> '1234',		'database' => 'cdcol',
+	 *		],
 	 *		// connection name: 'mssql-tests':
-	 *		'mssql-tests' => array(
-	 *			'driver'	=> 'sqlsrv',	'host' => '.\SQLEXPRESS',
-	 *			'user'		=> 'sa',	'password' => '1234', 'database' => 'tests',
-	 *		)
-	 *	);`
+	 *		'mssql-tests'	=> [
+	 *			'driver'	=> 'sqlsrv',	'host'		=> '.\SQLEXPRESS',
+	 *			'user'		=> 'sa',		'password'	=> '1234',		'database' => 'tests',
+	 *		]
+	 *	]);`
 	 * or:
-	 *	`\MvcCore\Model::SetConfigs(array(
+	 *	`\MvcCore\Model::SetConfigs([
 	 *		// connection index: 0:
-	 *		array(
-	 *			'driver'	=> 'mysql',	'host'		=> 'localhost',
-	 *			'user'		=> 'root',	'password'	=> '1234',		'database' => 'cdcol',
-	 *		),
+	 *		[
+	 *			'driver'	=> 'mysql',		'host'		=> 'localhost',
+	 *			'user'		=> 'root',		'password'	=> '1234',		'database' => 'cdcol',
+	 *		],
 	 *		// connection index: 1:
-	 *		array(
-	 *			'driver'	=> 'sqlsrv',	'host' => '.\SQLEXPRESS',
-	 *			'user'		=> 'sa',	'password' => '1234', 'database' => 'tests',
-	 *		)
-	 *	);`
-	 * @param \stdClass[]|array[] $configs Configuration array with `\stdClass` objects or arrays with configuration data.
+	 *		[
+	 *			'driver'	=> 'sqlsrv',	'host'		=> '.\SQLEXPRESS',
+	 *			'user'		=> 'sa',		'password'	=> '1234',		'database' => 'tests',
+	 *		]
+	 *	]);`
+	 * @param \stdClass[]|array[] $configs               Configuration array with `\stdClass` objects or arrays with configuration data.
+	 * @param string|int          $defaultConnectionName
 	 * @return bool
 	 */
 	public static function SetConfigs (array $configs = [], $defaultConnectionName = NULL) {
 		self::$configs = [];
 		foreach ($configs as $key => $value) self::$configs[$key] = (object) $value;
 		self::$configs = & $configs;
-		if ($defaultConnectionName !== NULL) self::$defaultConnectionName = $defaultConnectionName;
+		if ($defaultConnectionName !== NULL)
+			self::$defaultConnectionName = $defaultConnectionName;
 		return TRUE;
 	}
 
@@ -173,6 +186,7 @@ trait DbConnection
 		if (self::$configs === NULL) static::loadConfigs(TRUE);
 		if ($connectionName === NULL) $connectionName = static::$connectionName;
 		if ($connectionName === NULL) $connectionName = self::$connectionName;
+		if ($connectionName === NULL) $connectionName = self::$defaultConnectionName;
 		return self::$configs[$connectionName];
 	}
 
@@ -238,70 +252,55 @@ trait DbConnection
 	protected static function loadConfigs ($throwExceptionIfNoSysConfig = TRUE) {
 		$configClass = \MvcCore\Application::GetInstance()->GetConfigClass();
 		$systemCfg = $configClass::GetSystem();
-		if ($systemCfg === FALSE && $throwExceptionIfNoSysConfig) 
+		if ($systemCfg === NULL && $throwExceptionIfNoSysConfig)
 			throw new \Exception(
-				"[".get_class()."] System config not found in '"
-				. $configClass::GetSystemConfigPath() . "'."
-			);
-		if (!isset($systemCfg->db) && $throwExceptionIfNoSysConfig) 
-			throw new \Exception(
-				"[".get_class()."] No [db] section and no records matched "
-				."'db.*' found in system config.ini."
+				"[".get_class()."] System config not found in `"
+				. $configClass::GetSystemConfigPath() . "`."
 			);
 		$sysCfgProps = (object) static::$systemConfigModelProps;
-		$systemCfgDb = & $systemCfg->{$sysCfgProps->sectionName};
-		$cfgType = gettype($systemCfgDb);
+		$dbSectionName = $sysCfgProps->sectionName;
+		if (!isset($systemCfg->{$dbSectionName}) && $throwExceptionIfNoSysConfig)
+			throw new \Exception(
+				"[".get_class()."] No [" . $dbSectionName . "] section and no records matched "
+				."`" . $dbSectionName . ".*` found in system config in: `" . $configClass::GetSystemConfigPath() . "`."
+			);
+		$systemCfgDb = (object) $systemCfg->{$dbSectionName};
 		$configs = [];
 		$defaultConnectionName = NULL;
 		$defaultConnectionClass = NULL;
-		// db.defaultName - default connection index for models, where is no connection name/index defined inside class.
-		if ($cfgType == 'array') {
-			// multiple connections defined, indexed by some numbers, maybe default connection specified.
-			if (isset($systemCfgDb[$sysCfgProps->defaultName]))
-				$defaultConnectionName = $systemCfgDb[$sysCfgProps->defaultName];
-			if (isset($systemCfgDb[$sysCfgProps->defaultClass]))
-				$defaultConnectionClass = $systemCfgDb[$sysCfgProps->defaultClass];
+		$configsConnectionsNames = [];
+		// `db.defaultName` - default connection index for models,
+		// where is no connection name/index defined inside class.
+		if (isset($systemCfgDb->{$sysCfgProps->defaultName}))
+			$defaultConnectionName = $systemCfgDb->{$sysCfgProps->defaultName};
+		// `db.defaultClass` - default connection class for all models extended from `\PDO`.
+		if (isset($systemCfgDb->{$sysCfgProps->defaultClass}))
+			$defaultConnectionClass = $systemCfgDb->{$sysCfgProps->defaultClass};
+		if (isset($systemCfgDb->driver)) {
+			$configs[0] = $systemCfgDb;
+			$configsConnectionsNames[] = '0';
+		} else {
 			foreach ($systemCfgDb as $key => $value) {
 				if (is_scalar($value)) {
 					$configs[$key] = $value;
 				} else {
 					$configs[$key] = (object) $value;
-				}
-			}
-		} else if ($cfgType == 'object') {
-			// Multiple connections defined or single connection defined:
-			// - Single connection defined - `$systemCfg->db` contains directly record for `driver`.
-			// - Multiple connections defined - indexed by strings, maybe default connection specified.
-			if (isset($systemCfgDb->{$sysCfgProps->defaultName}))
-				$defaultConnectionName = $systemCfgDb->{$sysCfgProps->defaultName};
-			if (isset($systemCfgDb->{$sysCfgProps->defaultClass}))
-				$defaultConnectionClass = $systemCfgDb->{$sysCfgProps->defaultClass};
-			if (isset($systemCfgDb->driver)) {
-				$configs[0] = $systemCfgDb;
-			} else {
-				foreach ($systemCfgDb as $key => $value) {
-					if (is_scalar($value)) {
-						$configs[$key] = $value;
-					} else {
-						$configs[$key] = (object) $value;
-					}
+					$configsConnectionsNames[] = (string) $key;
 				}
 			}
 		}
-		if ($defaultConnectionName === NULL) {
-			if ($configs) {
-				reset($configs);
-				$defaultConnectionName = key($configs);
-			}
-		}
-		if (!isset($configs[$defaultConnectionName])) 
+		if ($defaultConnectionName === NULL)
+			if ($configs && count($configsConnectionsNames) > 0)
+				$defaultConnectionName = $configsConnectionsNames[0];
+		if (!isset($configs[$defaultConnectionName]))
 			throw new \Exception(
 				"[".get_class()."] No default connection name '{$defaultConnectionName}'"
 				." found in 'db.*' section in system config.ini."
 			);
-		self::$connectionName = $defaultConnectionName;
+		if ($defaultConnectionName !== NULL)
+			self::$defaultConnectionName = $defaultConnectionName;
 		if ($defaultConnectionClass !== NULL)
-			self::$connectionClass = $defaultConnectionClass;
+			self::$defaultConnectionClass = $defaultConnectionClass;
 		self::$configs = & $configs;
 	}
 }

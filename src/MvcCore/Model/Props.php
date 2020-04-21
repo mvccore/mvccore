@@ -110,7 +110,7 @@ trait Props
 	protected static $systemConfigDbSectionName = 'db';
 
 	/**
-	 * System config debug configuration root node name (`debug` by default) 
+	 * System config debug configuration root node name (`debug` by default)
 	 * and all it's properties names.
 	 * @var string
 	 */
@@ -141,7 +141,7 @@ trait Props
 	 * Default database connection class name.
 	 * @var string
 	 */
-	protected static $connectionClass = '\\PDO';
+	protected static $defaultConnectionClass = '\\PDO';
 
 	/**
 	 * `\PDO` connections array, keyed by connection indexes from system config.
@@ -196,7 +196,7 @@ trait Props
 	/**
 	 * Originally declared internal model properties to protect their
 	 * possible overwriting by `__set()` or `__get()` magic methods.
-	 * Keys are properties names, values are bools, if to serialize their values 
+	 * Keys are properties names, values are bools, if to serialize their values
 	 * or not to.
 	 * @var array
 	 */
