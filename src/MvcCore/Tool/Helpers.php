@@ -298,7 +298,7 @@ trait Helpers {
 	 * @throws \Exception
 	 * @return bool
 	 */
-	public static function SingleProcessWrite (
+	public static function AtomicWrite (
 		$fullPath,
 		$content,
 		$writeMode = 'w',
