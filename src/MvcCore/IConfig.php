@@ -70,11 +70,11 @@ interface IConfig
 	 * Always called from `\MvcCore\IConfig::GetSystem()` before system config is read.
 	 * This is place where to customize any config creation process,
 	 * before it's created by MvcCore framework.
-	 * @param array $data Configuration raw data.
+	 * @param array $mergedData Configuration data for all environments.
 	 * @param string $appRootRelativePath Relative config path from app root.
 	 * @return \MvcCore\IConfig
 	 */
-	public static function CreateInstance (array $data = [], $appRootRelativePath = NULL);
+	public static function CreateInstance (array $mergedData = [], $appRootRelativePath = NULL);
 
 	/**
 	 * Get (optionally cached) system config INI file as `stdClass` or `array`,

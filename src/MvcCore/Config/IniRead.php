@@ -121,16 +121,21 @@ trait IniRead
 				$lastRawKey = substr($rawKey, $lastDotPos + 1);
 			}
 			// prepare levels structure and configure stdClass or array type change where necessary
-			$levelKey = '';
-			$prevLevelKey = '';
+			$absoluteKey = '';
+			$prevAbsoluteKey = '';
 			foreach ($rawKeys as $key) {
-				$prevLevelKey = $levelKey;
-				$levelKey .= ($levelKey ? '.' : '') . $key;
+				$prevAbsoluteKey = $absoluteKey;
+				$absoluteKey .= ($absoluteKey ? '.' : '') . $key;
 				if (!isset($current[$key])) {
+					$keyIsNumeric = is_numeric($key);
 					$current[$key] = [];
-					$objectTypes[$levelKey] = [1, & $current[$key]]; // object type switch -> object by default
-					if (is_numeric($key) && isset($objectTypes[$prevLevelKey])) {
-						$objectTypes[$prevLevelKey][0] = 0; // object type switch -> set array if it was object
+					// object type switch -> array by default:
+					$objectTypes[$absoluteKey] = [0, & $current[$key]];
+					if (isset($objectTypes[$prevAbsoluteKey])) {
+						$objTypesRec = & $objectTypes[$prevAbsoluteKey];
+						if (!$keyIsNumeric && !$objTypesRec[0])
+							// object type switch -> not array anymore:
+							$objTypesRec[0] = 1;
 					}
 				}
 				$current = & $current[$key];
@@ -143,15 +148,13 @@ trait IniRead
 			}
 			if (isset($current[$lastRawKey])) {
 				$current[$lastRawKey][] = $typedValue;
-				$objectTypes[$levelKey ? $levelKey : $lastRawKey][0] = 0; // object type switch -> set array
 			} else {
-				if (!is_array($current)) {
+				if (!is_array($current)) 
 					$current = [$current];
-					$objectTypes[$levelKey] = [0, & $current]; // object type switch -> set array
-				}
 				$current[$lastRawKey] = $typedValue;
-				if (is_numeric($lastRawKey)) $objectTypes[$levelKey][0] = 0; // object type switch -> set array
 			}
+			if (!is_numeric($lastRawKey))
+				$objectTypes[$absoluteKey][0] = 1;
 		}
 		return [$result, $objectTypes];
 	}

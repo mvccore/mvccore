@@ -21,15 +21,15 @@ trait ReadWrite
 	 * Always called from `\MvcCore\Config::GetSystem()` before system config is read.
 	 * This is place where to customize any config creation process,
 	 * before it's created by MvcCore framework.
-	 * @param array $data Configuration raw data.
+	 * @param array $mergedData Configuration data for all environments.
 	 * @param string $configFullPath Config absolute path.
 	 * @return \MvcCore\Config|\MvcCore\IConfig
 	 */
-	public static function CreateInstance (array $data = [], $configFullPath = NULL) {
+	public static function CreateInstance (array $mergedData = [], $configFullPath = NULL) {
 		/** @var $config \MvcCore\Config */
 		$config = new static();
-		if ($data)
-			$config->data = & $data;
+		if ($mergedData)
+			$config->mergedData = & $mergedData;
 		if ($configFullPath)
 			$config->fullPath = $configFullPath;
 		return $config;
@@ -103,7 +103,7 @@ trait ReadWrite
 		$app = self::$app ?: self::$app = \MvcCore\Application::GetInstance();
 		$toolClass = $app->GetToolClass();
 		try {
-			$toolClass::SingleProcessWrite(
+			$toolClass::AtomicWrite(
 				$this->fullPath,
 				$rawContent,
 				'w',	// Open for writing only; place pointer at the beginning and truncate to zero length. If file doesn't exist, create it.
@@ -118,8 +118,7 @@ trait ReadWrite
 	}
 
 	/**
-	 * Try to load and parse config file by app root relative path.
-	 * If config contains system data, try to detect environment.
+	 * Try to load and parse config file by absolute path.
 	 * @param string $configFullPath
 	 * @param string $systemConfigClass
 	 * @param bool   $isSystemConfig
