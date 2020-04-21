@@ -40,13 +40,14 @@ trait Detection
 		$name = NULL;
 		$app = self::$app ?: self::$app = \MvcCore\Application::GetInstance();
 		$request = $app->GetRequest();
-		$clientIp = NULL;
+		$clientIp = $request->GetClientIp();
+		$appRoot = NULL;
 		$serverHostName = NULL;
 		$serverGlobals = NULL;
 		foreach ($environmentsSectionData as $environmentName => $environmentSection) {
-			$sectionData = static::detectByConfigSectionData($environmentSection);
+			$sectionData = static::detectByConfigSectionData($environmentSection, $clientIp);
 			$detected = static::detectByConfigSection(
-				$sectionData, $request, $clientIp, $serverHostName, $serverGlobals
+				$sectionData, $request, $clientIp, $appRoot, $serverHostName, $serverGlobals
 			);
 			if ($detected) {
 				$name = $environmentName;
@@ -62,31 +63,38 @@ trait Detection
 	 * Parse system config environment section data from various declarations
 	 * into specific detection structure.
 	 * @param mixed $environmentSection
+	 * @param string|NULL $clientIp
 	 * @return \stdClass
 	 */
-	protected static function detectByConfigSectionData ($environmentSection) {
+	protected static function detectByConfigSectionData ($environmentSection, $clientIp) {
 		$data = (object) [
-			'clientIps' => (object) [
-				'check'		=> FALSE,
-				'values'	=> [],
-				'regExeps'	=> []
+			'clientIps'			=> (object) [
+				'check'			=> FALSE,
+				'values'		=> [],
+				'regExeps'		=> []
 			],
-			'serverHostNames' => (object) [
-				'check'		=> FALSE,
-				'values'	=> [],
-				'regExeps'	=> []
+			'paths'				=> (object) [
+				'check'			=> FALSE,
+				'values'		=> [],
+				'regExeps'		=> []
 			],
-			'serverVariables' => (object) [
-				'check'		=> FALSE,
-				'existence'	=> [],
-				'values'	=> [],
-				'regExeps'	=> []
+			'serverHostNames'	=> (object) [
+				'check'			=> FALSE,
+				'values'		=> [],
+				'regExeps'		=> []
+			],
+			'serverVariables'	=> (object) [
+				'check'			=> FALSE,
+				'existence'		=> [],
+				'values'		=> [],
+				'regExeps'		=> []
 			]
 		];
 		if (is_string($environmentSection) && strlen($environmentSection) > 0) {
 			// if there is only string provided, value is probably only
 			// about the most and simple way - to describe client IPS:
-			static::detectByConfigClientIps($data, $environmentSection);
+			if ($clientIp !== NULL)
+				static::detectByConfigClientIps($data, $environmentSection);
 		} else if (is_array($environmentSection) || $environmentSection instanceof \stdClass) {
 			foreach ((array) $environmentSection as $key => $value) {
 				if (is_numeric($key) || $key == 'clients') {
@@ -95,7 +103,12 @@ trait Detection
 					// the strings list with the most and simple way - to describe client IPS:
 					// of if key has `clients` value, there could be list of clients IPs
 					// or list of clients IPs regular expressions
-					static::detectByConfigClientIps($data, $value);
+					if ($clientIp !== NULL)
+						static::detectByConfigClientIps($data, $value);
+				} else if ($key == 'paths') {
+					// if key is `paths`, there could be string(s) or regular
+					// expression(s) to match application document root
+					static::detectByConfigPaths($data, $value);
 				} else if ($key == 'servers') {
 					// if key is `servers`, there could be string with single regular
 					// expression to match hostname or string with comma separated hostnames
@@ -122,7 +135,7 @@ trait Detection
 	protected static function detectByConfigClientIps (& $data, $rawClientIps) {
 		$data->clientIps->check = TRUE;
 		if (is_string($rawClientIps)) {
-			if (substr($rawClientIps, 0, 1) == '/') {
+			if (static::detectRegExpCheck($rawClientIps)) {
 				$data->clientIps->regExeps[] = $rawClientIps;
 			} else {
 				$data->clientIps->values = array_merge(
@@ -132,12 +145,44 @@ trait Detection
 			}
 		} else if (is_array($rawClientIps) || $rawClientIps instanceof \stdClass) {
 			foreach ((array) $rawClientIps as $rawClientIpsItem) {
-				if (substr($rawClientIpsItem, 0, 1) == '/') {
+				if (static::detectRegExpCheck($rawClientIpsItem)) {
 					$data->clientIps->regExeps[] = $rawClientIpsItem;
 				} else {
 					$data->clientIps->values = array_merge(
 						$data->clientIps->values,
 						explode(',', str_replace(' ', '', $rawClientIpsItem))
+					);
+				}
+			}
+		}
+	}
+
+	/**
+	 * Parse system config environment section data from various declarations
+	 * about application document root path into specific detection structure.
+	 * @param \stdClass $data
+	 * @param mixed $rawPaths
+	 * @return void
+	 */
+	protected static function detectByConfigPaths (& $data, $rawPaths) {
+		$data->paths->check = TRUE;
+		if (is_string($rawPaths)) {
+			if (static::detectRegExpCheck($rawPaths)) {
+				$data->paths->regExeps[] = $rawPaths;
+			} else {
+				$data->paths->values = array_merge(
+					$data->paths->values,
+					explode(',', str_replace(' ', '', $rawPaths))
+				);
+			}
+		} else if (is_array($rawPaths) || $rawPaths instanceof \stdClass) {
+			foreach ((array) $rawPaths as $rawPathsItem) {
+				if (static::detectRegExpCheck($rawPathsItem)) {
+					$data->paths->regExeps[] = $rawPathsItem;
+				} else {
+					$data->paths->values = array_merge(
+						$data->paths->values,
+						explode(',', str_replace(' ', '', $rawPathsItem))
 					);
 				}
 			}
@@ -154,7 +199,7 @@ trait Detection
 	protected static function detectByConfigServerNames (& $data, $rawHostNames) {
 		$data->serverHostNames->check = TRUE;
 		if (is_string($rawHostNames)) {
-			if (substr($rawHostNames, 0, 1) == '/') {
+			if (static::detectRegExpCheck($rawHostNames)) {
 				$data->serverHostNames->regExeps[] = $rawHostNames;
 			} else {
 				$data->serverHostNames->values = array_merge(
@@ -164,7 +209,7 @@ trait Detection
 			}
 		} else if (is_array($rawHostNames) || $rawHostNames instanceof \stdClass) {
 			foreach ((array) $rawHostNames as $rawHostNamesItem) {
-				if (substr($rawHostNamesItem, 0, 1) == '/') {
+				if (static::detectRegExpCheck($rawHostNamesItem)) {
 					$data->serverHostNames->regExeps[] = $rawHostNamesItem;
 				} else {
 					$data->serverHostNames->values = array_merge(
@@ -191,7 +236,7 @@ trait Detection
 			foreach ((array) $rawServerVariable as $key => $value) {
 				if (is_numeric($key)) {
 					$data->serverVariables->existence[] = $value;
-				} else if (substr($value, 0, 1) == '/') {
+				} else if (static::detectRegExpCheck($value)) {
 					$data->serverVariables->regExeps[$key] = $value;
 				} else {
 					$data->serverVariables->values[$key] = $value;
@@ -220,11 +265,12 @@ trait Detection
 	 * @param \stdClass			$data
 	 * @param \MvcCore\IRequest	$req
 	 * @param string|NULL		$clientIp
+	 * @param string|NULL		$appRoot
 	 * @param string|NULL		$serverHostName
 	 * @param array|NULL		$serverGlobals
 	 * @return bool If `TRUE`, environment has been detected and detection procedure could stop.
 	 */
-	protected static function detectByConfigSection (& $data, $req, & $clientIp, & $serverHostName, & $serverGlobals) {
+	protected static function detectByConfigSection (& $data, $req, & $clientIp, & $appRoot, & $serverHostName, & $serverGlobals) {
 		if ($data->clientIps->check) {
 			// try to recognize environment by any configured client IP address value
 			$clientIp = $clientIp ?: $req->GetClientIp();
@@ -235,10 +281,29 @@ trait Detection
 					return TRUE;
 			}
 			// try to recognize environment by any configured client IP address regular expression
-			if ($data->clientIps->regExeps)
-				foreach ($data->clientIps->regExeps as $regExep)
+			if ($data->clientIps->regExeps) {
+				foreach ($data->clientIps->regExeps as $rawRegExep) {
+					$regExep = static::detectRegExpConvert($rawRegExep);
 					if (preg_match($regExep, $clientIp))
 						return TRUE;
+				}
+			}
+		}
+		if ($data->paths->check) {
+			// try to recognize environment by any configured application document root path match
+			$appRoot = $appRoot ?: $req->GetAppRoot();
+			if ($data->paths->values)
+				foreach ($data->paths->values as $pathToMatch)
+					if (mb_strpos($appRoot, $pathToMatch) !== FALSE)
+						return TRUE;
+			// try to recognize environment by any configured application document root path regular expression match
+			if ($data->paths->regExeps) {
+				foreach ($data->paths->regExeps as $rawRegExep) {
+					$regExep = static::detectRegExpConvert($rawRegExep);
+					if (preg_match($regExep, $appRoot))
+						return TRUE;
+				}
+			}
 		}
 		if ($data->serverHostNames->check) {
 			$serverHostName = $serverHostName ?: gethostname();
@@ -251,13 +316,16 @@ trait Detection
 			}
 			// try to recognize environment by any configured internal server hostname value
 			// regular expression (value from `/etc/hostname` or Windows computer name)
-			if ($data->serverHostNames->regExeps)
-				foreach ($data->serverHostNames->regExeps as $regExep)
+			if ($data->serverHostNames->regExeps) {
+				foreach ($data->serverHostNames->regExeps as $rawRegExep) {
+					$regExep = static::detectRegExpConvert($rawRegExep);
 					if (preg_match($regExep, $serverHostName))
 						return TRUE;
+				}
+			}
 		}
 		if ($data->serverVariables->check) {
-			$serverGlobals = $serverGlobals ?: $req->GetGlobalCollection('server');
+			$serverGlobals = $serverGlobals ?: array_merge(getenv(), $req->GetGlobalCollection('server'));
 			// try to recognize environment by any configured existing record in
 			// super global variable `$_SERVER` by PHP function `array_key_exists()`
 			if ($data->serverVariables->existence)
@@ -270,17 +338,38 @@ trait Detection
 				foreach ($data->serverVariables->values as $serverVariableName => $serverVariableValue)
 					if (
 						isset($serverGlobals[$serverVariableName]) &&
-						$serverGlobals[$serverVariableName] === $serverVariableValue
+						$serverGlobals[$serverVariableName] == $serverVariableValue
 					) return TRUE;
 			// try to recognize environment by configured specific value
 			// presented in super global variable `$_SERVER` by regular expression
-			if ($data->serverVariables->regExeps)
-				foreach ($data->serverVariables->regExeps as $serverVariableName => $serverVariableRegExp)
+			if ($data->serverVariables->regExeps) {
+				foreach ($data->serverVariables->regExeps as $serverVariableName => $rawRegExep) {
+					$serverVariableRegExp = static::detectRegExpConvert($rawRegExep);
 					if (
 						isset($serverGlobals[$serverVariableName]) &&
 						preg_match($serverVariableRegExp, (string) $serverGlobals[$serverVariableName])
 					) return TRUE;
+				}
+			}
 		}
 		return FALSE;
+	}
+
+	/**
+	 * Check if given string is PHP regular expression syntax.
+	 * @param string $rawValue
+	 * @return bool
+	 */
+	protected static function detectRegExpCheck ($rawValue) {
+		return (bool) preg_match("#^/(.+)/([imsxADSUXJu]*)$#", $rawValue);
+	}
+
+	/**
+	 * Convert given regular expression into hash trailing characters form.
+	 * @param string $regExpWithTrailingSlashes
+	 * @return string
+	 */
+	protected static function detectRegExpConvert ($regExpWithTrailingSlashes) {
+		return preg_replace("#^/(.+)/([imsxADSUXJu]*)$#", "#$1#$2", $regExpWithTrailingSlashes);
 	}
 }

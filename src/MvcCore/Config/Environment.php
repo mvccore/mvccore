@@ -144,8 +144,9 @@ trait Environment
 	 * into given result collection.
 	 * @param array $resultCollection
 	 * @param string $environmentName
+	 * @return void
 	 */
-	protected static function mergeEnvironmentData (& $config, & $resultCollection, $environmentName) {
+	protected static function mergeEnvironmentData (\MvcCore\IConfig $config, & $resultCollection, $environmentName) {
 		$commonEnvDataKey = static::$commonEnvironmentDataKey;
 		$envCommonData = [];
 		$envSpecificData = [];

@@ -51,6 +51,7 @@ interface IEnvironment
 
 	/**
 	 * Set `TRUE`, if environment is necessary to detected by loaded system config, `FALSE` otherwise.
+	 * @param boolean $detectionBySystemConfig `TRUE` by default.
 	 * @return boolean
 	 */
 	public static function SetDetectionBySystemConfig ($detectionBySystemConfig = TRUE);
