@@ -135,7 +135,7 @@ trait Props
 	 * In extended classes - use this for connection name/index of current model if different.
 	 * @var string|int|NULL
 	 */
-	protected static $connectionName = NULL;
+	protected static $defaultConnectionName = NULL;
 
 	/**
 	 * Default database connection class name.
