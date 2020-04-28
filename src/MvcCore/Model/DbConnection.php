@@ -27,7 +27,7 @@ trait DbConnection
 	 * @throws \InvalidArgumentException
 	 * @return \PDO
 	 */
-	public static function GetDb ($connectionNameOrConfig = NULL, $strict = TRUE) {
+	public static function GetConnection ($connectionNameOrConfig = NULL, $strict = TRUE) {
 		if (is_array($connectionNameOrConfig) || $connectionNameOrConfig instanceof \stdClass) {
 			// if first argument is database connection configuration - set it up and return new connection name
 			if (self::$configs === NULL) static::loadConfigs(FALSE);

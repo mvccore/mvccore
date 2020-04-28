@@ -172,7 +172,7 @@ trait Props
 	 * `\PDO` instance.
 	 * @var \PDO
 	 */
-	protected $db;
+	protected $connection;
 
 	/**
 	 * System config section for database under called connection index in constructor.
@@ -202,7 +202,7 @@ trait Props
 	 */
 	protected static $protectedProperties = [
 		'autoInit'		=> TRUE,
-		'db'			=> FALSE,
+		'connection'	=> FALSE,
 		'config'		=> FALSE,
 		'resource'		=> FALSE,
 		'initialValues'	=> FALSE,

@@ -153,12 +153,12 @@ interface IModel
 	 * @param string|int|array|\stdClass|NULL $connectionNameOrConfig
 	 * @param bool $strict	If `TRUE` and no connection under given name or given
 	 *						index found, exception is thrown. `TRUE` by default.
-	 *						If `FALSE`, there could be returned connection by 
+	 *						If `FALSE`, there could be returned connection by
 	 *						first available configuration.
 	 * @throws \InvalidArgumentException
 	 * @return \PDO
 	 */
-	public static function GetDb ($connectionNameOrConfig = NULL, $strict = TRUE);
+	public static function GetConnection ($connectionNameOrConfig = NULL, $strict = TRUE);
 
 	/**
 	 * Get all known database connection config records as indexed/named array with `\stdClass` objects.

@@ -115,7 +115,7 @@ trait Instancing
 		if ($connectionName === NULL) $connectionName = static::$connectionName;
 		if ($connectionName === NULL) $connectionName = self::$connectionName;
 		$this->config = static::GetConfig($connectionName);
-		$this->db = static::GetDb($connectionName);
+		$this->connection = static::GetConnection($connectionName);
 		if ($initResource)
 			$this->resource = static::GetResource();
 	}
