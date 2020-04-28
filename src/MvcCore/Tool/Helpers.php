@@ -410,8 +410,11 @@ trait Helpers {
 	 * @return string
 	 */
 	public static function RealPathVirtual ($path) {
-        $path = str_replace(['/', '\\'], '/', $path);
-        $parts = array_filter(explode('/', $path), 'strlen');
+        $path = str_replace('\\', '/', $path);
+        $rawParts = explode('/', $path);
+        $parts = array_filter($rawParts, 'strlen');
+		if ($rawParts[0] == '' && mb_substr($path, 0, 1) == '/')
+			array_unshift($parts, '');
         $items = [];
         foreach ($parts as $part) {
             if ('.' == $part) continue;
