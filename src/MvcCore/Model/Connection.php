@@ -13,7 +13,7 @@
 
 namespace MvcCore\Model;
 
-trait DbConnection
+trait Connection
 {
 	/**
 	 * Returns `\PDO` database connection by connection name/index,

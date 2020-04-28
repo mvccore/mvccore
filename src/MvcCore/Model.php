@@ -26,7 +26,7 @@ class Model implements IModel
 {
 	use \MvcCore\Model\Props;
 	use \MvcCore\Model\Instancing;
-	use \MvcCore\Model\DbConnection;
+	use \MvcCore\Model\Connection;
 	use \MvcCore\Model\DataMethods;
 	use \MvcCore\Model\Converters;
 }
