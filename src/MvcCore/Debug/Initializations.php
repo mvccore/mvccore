@@ -35,9 +35,9 @@ trait Initializations
 			static::$debugging = $forceDevelopmentMode;
 		} else {
 			$environment = $app->GetEnvironment();
-			static::$debugging = !$environment->IsProduction(TRUE);
+			static::$debugging = !$environment->IsProduction();
 		}
-
+		
 		// do not initialize log directory here every time, initialize log
 		// directory only if there is necessary to log something - later.
 
