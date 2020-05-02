@@ -82,16 +82,12 @@ interface IModel
 
 	/**
 	 * Collect all model class public and inherit field values into array.
-	 * @param bool $getNullValues			 If `TRUE`, include also values with `NULL`s, default - `FALSE`.
 	 * @param bool $includeInheritProperties If `TRUE`, include fields from current and all parent classes, if `FALSE`, include fields only from current model class, default - `TRUE`.
 	 * @param bool $publicOnly			     If `TRUE`, include only public instance fields, if `FALSE`, include all instance fields, default - `TRUE`.
+	 * @param bool $getNullValues			 If `TRUE`, include also values with `NULL`s, default - `FALSE`.
 	 * @return array
 	 */
-	public function GetValues (
-		$getNullValues = FALSE,
-		$includeInheritProperties = TRUE,
-		$publicOnly = TRUE
-	);
+	public function GetValues ($includeInheritProperties = TRUE, $publicOnly = TRUE, $getNullValues = FALSE);
 
 	/**
 	 * Set up given `$data` items into `$this` instance context
