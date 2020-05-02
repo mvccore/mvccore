@@ -37,6 +37,12 @@ trait PropsGettersSetters
 	 */
 	protected $name = NULL;
 
+	/**
+	 * Boolean values for all detected environments.
+	 * @var array
+	 */
+	protected $values = [];
+
 
 	/**
 	 * Get all available nevironment names.
@@ -73,7 +79,8 @@ trait PropsGettersSetters
 	 * @return bool
 	 */
 	public function IsDevelopment () {
-		return $this->GetName() === static::DEVELOPMENT;
+		if ($this->name === NULL) $this->GetName();
+		return $this->values[\MvcCore\IEnvironment::DEVELOPMENT];
 	}
 
 	/**
@@ -81,7 +88,8 @@ trait PropsGettersSetters
 	 * @return bool
 	 */
 	public function IsBeta () {
-		return $this->GetName() === static::BETA;
+		if ($this->name === NULL) $this->GetName();
+		return $this->values[\MvcCore\IEnvironment::BETA];
 	}
 
 	/**
@@ -89,7 +97,8 @@ trait PropsGettersSetters
 	 * @return bool
 	 */
 	public function IsAlpha () {
-		return $this->GetName() === static::ALPHA;
+		if ($this->name === NULL) $this->GetName();
+		return $this->values[\MvcCore\IEnvironment::ALPHA];
 	}
 
 	/**
@@ -97,7 +106,8 @@ trait PropsGettersSetters
 	 * @return bool
 	 */
 	public function IsProduction () {
-		return $this->GetName() === static::PRODUCTION;
+		if ($this->name === NULL) $this->GetName();
+		return $this->values[\MvcCore\IEnvironment::PRODUCTION];
 	}
 
 	/**
@@ -115,7 +125,11 @@ trait PropsGettersSetters
 	 * @return string
 	 */
 	public function SetName ($name = \MvcCore\IEnvironment::PRODUCTION) {
-		return $this->name = $name;
+		$this->name = $name;
+		foreach (static::GetAllNames() as $envName)
+			$this->values[$envName] = FALSE;
+		$this->values[$this->name] = TRUE;
+		return $name;
 	}
 
 	/**
@@ -142,6 +156,9 @@ trait PropsGettersSetters
 			} else {
 				$this->name = static::DetectByIps();
 			}
+			foreach (static::GetAllNames() as $envName)
+				$this->values[$envName] = FALSE;
+			$this->values[$this->name] = TRUE;
 		}
 		return $this->name;
 	}
