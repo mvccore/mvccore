@@ -265,7 +265,8 @@ trait InternalInits
 		$result = [];
 		$app = self::$app ?: (self::$app = \MvcCore\Application::GetInstance());
 		$toolClass = $app->GetToolClass();
-		$urlEncType = mb_strpos($contentType, 'application/x-www-form-url-encoded') !== FALSE;
+
+		$urlEncType = mb_strpos($contentType, 'application/x-www-form-urlencoded') !== FALSE;
 		if ($urlEncType) {
 			parse_str(trim($this->body, '&='), $result);
 		} else {
