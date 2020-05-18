@@ -36,8 +36,8 @@ trait Connection
 			// if no connection index specified, try to get from class or from base model
 			if (self::$configs === NULL) static::loadConfigs(TRUE);
 			$connectionName = $connectionNameOrConfig;
-			if ($connectionName === NULL) $connectionName = static::$connectionName;
-			if ($connectionName === NULL) $connectionName = self::$connectionName;
+			if ($connectionName === NULL && isset(static::$connectionName)) $connectionName = static::$connectionName;
+			if ($connectionName === NULL && isset(self::$connectionName)) $connectionName = self::$connectionName;
 			if ($connectionName === NULL) $connectionName = self::$defaultConnectionName;
 		}
 		if ($connectionName === NULL) throw new \InvalidArgumentException(
@@ -184,8 +184,8 @@ trait Connection
 	 */
 	public static function & GetConfig ($connectionName = NULL) {
 		if (self::$configs === NULL) static::loadConfigs(TRUE);
-		if ($connectionName === NULL) $connectionName = static::$connectionName;
-		if ($connectionName === NULL) $connectionName = self::$connectionName;
+		if ($connectionName === NULL && isset(static::$connectionName)) $connectionName = static::$connectionName;
+		if ($connectionName === NULL && isset(self::$connectionName)) $connectionName = self::$connectionName;
 		if ($connectionName === NULL) $connectionName = self::$defaultConnectionName;
 		return self::$configs[$connectionName];
 	}

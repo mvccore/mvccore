@@ -98,6 +98,10 @@ trait UrlBuilding
 	public function Url (\MvcCore\IRequest $request, array & $params = [], array & $defaultUrlParams = [], $queryStringParamsSepatator = '&', $splitUrl = FALSE) {
 		// check reverse initialization
 		if ($this->reverseParams === NULL) $this->initReverse();
+		// unset all params with the same values as route defaults configuration
+		foreach ($params as $paramName => $paramValue) 
+			if (isset($this->defaults[$paramName]) && $this->defaults[$paramName] == $paramValue)
+				unset($params[$paramName]);
 		// complete and filter all params to build reverse pattern
 		if (count($this->reverseParams) === 0) {
 			$allParamsClone = array_merge([], $params);

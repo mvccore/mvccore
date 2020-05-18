@@ -39,8 +39,9 @@ trait Converters
 				} else if (strpos($dateTimeStr, ':') === FALSE) {
 					$dateTimeFormat = substr($dateTimeFormat, 0, 5);
 				}
-				if (strpos($dateTimeStr, '.') !== FALSE) $dateTimeFormat .= '.u';
 			}
+			if (strpos($dateTimeStr, '.') !== FALSE) 
+				$dateTimeFormat .= '.u';
 			$dateTime = date_create_from_format($dateTimeFormat, $dateTimeStr);
 			if ($dateTime !== FALSE) {
 				$rawValue = $dateTime;

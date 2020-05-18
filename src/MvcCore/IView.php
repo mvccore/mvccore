@@ -403,10 +403,11 @@ interface IView
 	 * If helper already exists in global helpers store - do not create it again - use instance from the store.
 	 * Example: `echo $this->GetHelper('facebook')->RenderSomeSpecialWidgetMethod();`
 	 * @param string $helperNameCamelCase View helper method name in camel case.
+	 * @param bool $asClosure Get View helper prepared as closure function, `FALSE` by default.
 	 * @throws \InvalidArgumentException If view doesn't exist in configured namespaces.
 	 * @return mixed View helper instance, always as `\MvcCore\Ext\Views\Helpers\AbstractHelper|\MvcCore\Ext\Views\Helpers\IHelper` instance.
 	 */
-	public function & GetHelper ($helperNameCamelCase);
+	public function & GetHelper ($helperNameCamelCase, $asClosure = FALSE);
 
 	/**
 	 * Set view helper for current template or for all templates globally by default.

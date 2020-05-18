@@ -119,6 +119,7 @@ trait DataMethods
 					$propertyName, $toolsClass, $caseSensitiveKeysMap
 				);
 			$isNotNull = $value !== NULL;
+			$isPrivate = NULL;
 			if ($isNotNull && isset($propsData[$propertyName])) {
 				list(/*$ownedByCurrent*/, $types, $prop, $isPrivate) = $propsData[$propertyName];
 				$targetTypeValue = NULL;
