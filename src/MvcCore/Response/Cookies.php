@@ -33,19 +33,35 @@ trait Cookies
 		$domain = NULL, $secure = NULL, $httpOnly = TRUE
 	) {
 		/** @var $this \MvcCore\Response */
-		if ($this->IsSentHeaders()) 
+		if ($this->IsSentHeaders())
 			throw new \RuntimeException(
 				"[".get_class()."] Cannot set cookie after HTTP headers have been sent."
 			);
 		$request = \MvcCore\Application::GetInstance()->GetRequest();
-		return \setcookie(
-			$name, $value,
-			$lifetime === 0 ? 0 : time() + $lifetime,
-			$path,
-			$domain === NULL ? $request->GetHostName() : $domain,
-			$secure === NULL ? $request->IsSecure() : $secure,
-			$httpOnly
-		);
+		$expires = $lifetime === 0 ? 0 : time() + $lifetime;
+		$domain = ($domain === NULL ? $request->GetHostName() : (string) $domain);
+		$secure = $secure === NULL ? $request->IsSecure() : $secure;
+		if (PHP_VERSION_ID < 70300) {
+			return \setcookie(
+				$name, $value,
+				$expires,
+				$path,
+				$domain . '; SameSite=Strict', // https://stackoverflow.com/questions/39750906/php-setcookie-samesite-strict
+				$secure,
+				$httpOnly
+			);
+		} else {
+			return \setcookie(
+				$name, $value, [
+				    'expires'	=> $expires,
+					'path'		=> $path,
+					'domain'	=> $domain,
+					'secure'	=> $secure,
+					'httponly'	=> $httpOnly,
+					'samesite'	=> 'Strict',
+				]
+			);
+		}
 	}
 
 	/**

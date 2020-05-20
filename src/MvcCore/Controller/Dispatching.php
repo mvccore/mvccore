@@ -162,6 +162,7 @@ trait Dispatching
 	 * @return void
 	 */
 	public function Init () {
+		/** @var $this \MvcCore\Controller */
 		if ($this->dispatchState > 0) return;
 		self::$allControllers[spl_object_hash($this)] = $this;
 		if ($this->parentController === NULL && !$this->request->IsCli()) {

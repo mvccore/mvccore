@@ -77,6 +77,7 @@ trait Dispatching
 	 * @return void
 	 */
 	public function SessionStart () {
+		/** @var $sessionClass \MvcCore\Session */
 		$sessionClass = $this->sessionClass;
 		$sessionClass::Start();
 	}

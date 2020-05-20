@@ -388,7 +388,7 @@ trait InternalInits
 				$langAndLocaleArr = current($langAndLocaleArr);
 		}
 		if ($langAndLocaleArr[0] === NULL) $langAndLocaleArr[0] = '';
-		if (count($langAndLocaleArr) > 1 && $langAndLocaleArr[1] === NULL) $langAndLocaleArr[1] = '';
+		if (!isset($langAndLocaleArr[1])) $langAndLocaleArr[1] = '';
 		list($this->lang, $this->locale) = $langAndLocaleArr;
 	}
 
