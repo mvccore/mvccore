@@ -56,7 +56,6 @@ trait Rendering
 					$sessionClass::SendCookie();
 					$sessionClass::Close();
 				}
-
 				$this->response->SendHeaders();
 				if (ob_get_length() !== FALSE) ob_end_flush();
 				return $this->renderWithoutObContinuously(
@@ -221,7 +220,9 @@ trait Rendering
 			$resultPathItems = [$this->viewScriptsPath];
 			if ($controllerOrActionNameDashed !== NULL) $resultPathItems[] = $controllerOrActionNameDashed;
 			if ($actionNameDashed !== NULL) $resultPathItems[] = $actionNameDashed;
-			return str_replace(['_', '\\'], '/', implode('/', $resultPathItems));
+			$viewScriptPath = str_replace(['_', '\\'], '/', implode('/', $resultPathItems));
+			$viewScriptPath = preg_replace("#//+#", '/', $viewScriptPath);
+			return $viewScriptPath;
 		}
 		if ($actionNameDashed !== NULL) { // if action defined - take first argument controller
 			$controllerNameDashed = $controllerOrActionNameDashed;
