@@ -211,15 +211,20 @@ trait GettersSetters
 		/** @var $this \MvcCore\Request */
 		$nameBegin = strtolower(substr($rawName, 0, 3));
 		$name = substr($rawName, 3);
+		$lcName = lcfirst($name);
 		if ($nameBegin == 'get') {
-			if (property_exists($this, lcfirst($name))) return $this->{lcfirst($name)};
-			if (property_exists($this, $name)) return $this->$name;
+			if (property_exists($this, $lcName)) 
+				return $this->{$lcName};
+			if (property_exists($this, $name)) 
+				return $this->$name;
 			return NULL;
 		} else if ($nameBegin == 'set') {
-			if (property_exists($this, lcfirst($name)))
-				$this->{lcfirst($name)} = isset($arguments[0]) ? $arguments[0] : NULL;
-			if (property_exists($this, $name))
-				$this->$name = isset($arguments[0]) ? $arguments[0] : NULL;
+			$value = isset($arguments[0]) ? $arguments[0] : NULL;
+			if (property_exists($this, $name)) {
+				$this->{$name} = $value;
+			} else {
+				$this->{$lcName} = $value;
+			}
 			return $this;
 		} else {
 			throw new \InvalidArgumentException("[".get_class()."] No method `{$rawName}()` defined.");
@@ -233,8 +238,9 @@ trait GettersSetters
 	 */
 	public function __get ($name) {
 		/** @var $this \MvcCore\Request */
-		if (isset($this->{lcfirst($name)}))
-			return $this->{lcfirst($name)};
+		$lcPropName = lcfirst($name);
+		if (isset($this->{$lcPropName}))
+			return $this->{$lcPropName};
 		if (isset($this->{$name}))
 			return $this->{$name};
 		return NULL;
@@ -248,8 +254,9 @@ trait GettersSetters
 	 */
 	public function __set ($name, $value) {
 		/** @var $this \MvcCore\Request */
-		if (property_exists($this, lcfirst($name)))
-			return $this->{lcfirst($name)} = $value;
+		$lcPropName = lcfirst($name);
+		if (property_exists($this, $lcPropName))
+			return $this->{$lcPropName} = $value;
 		return $this->{$name} = $value;
 	}
 
