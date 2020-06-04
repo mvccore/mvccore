@@ -90,6 +90,7 @@ trait Connection
 						? $cfg->{$prop}
 						: $value;
 				}
+				if ($key == 'options') continue;
 				$dsn = str_replace('{'.$key.'}', $value, $dsn);
 			}
 			// If database required user and password credentials,

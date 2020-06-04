@@ -373,8 +373,14 @@ trait InternalInits
 	/**
 	 * Initialize language code and locale code from global `$_SERVER['HTTP_ACCEPT_LANGUAGE']`
 	 * if any, by `Intl` extension function `locale_accept_from_http()` or by custom parsing.
+	 * @return void
 	 */
 	protected function initLangAndLocale () {
+		if (!isset($this->globalServer['HTTP_ACCEPT_LANGUAGE'])) {
+			$this->lang = '';
+			$this->locale = '';
+			return;
+		}
 		$rawUaLanguages = $this->globalServer['HTTP_ACCEPT_LANGUAGE'];
 		if (extension_loaded('Intl')) {
 			$langAndLocaleStr = \locale_accept_from_http($rawUaLanguages);
