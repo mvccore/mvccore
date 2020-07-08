@@ -152,6 +152,8 @@ trait PropsGettersSetters
 		$this->encoding = $encoding;
 		$this->headers['Content-Encoding'] = $encoding;
 		header('Content-Encoding: ' . $encoding);
+		if (isset($this->headers['Content-Type'])) 
+			header('Content-Type: ' . $this->headers['Content-Type'] . '; charset=' . $encoding);
 		return $this;
 	}
 

@@ -68,7 +68,8 @@ trait Headers
 			return $this;
 		header($name . ": " . $value);
 		$this->headers[$name] = $value;
-		if ($name === 'Content-Type') {
+		$nameLower = mb_strtolower($name);
+		if ($nameLower === 'content-type') {
 			$charsetPos = strpos($value, 'charset');
 			if ($charsetPos !== FALSE) {
 				$equalPos = strpos($value, '=', $charsetPos);
@@ -77,7 +78,8 @@ trait Headers
 				);
 			}
 		}
-		if ($name === 'Content-Encoding') $this->SetEncoding($value);
+		if ($nameLower === 'content-encoding') 
+			$this->SetEncoding($value);
 		return $this;
 	}
 
@@ -88,6 +90,7 @@ trait Headers
 	 * @return string|NULL
 	 */
 	public function GetHeader ($name) {
+		/** @var $this \MvcCore\Response */
 		$this->UpdateHeaders();
 		return isset($this->headers[$name])
 			? $this->headers[$name]
@@ -103,6 +106,7 @@ trait Headers
 	 * @return bool
 	 */
 	public function HasHeader ($name) {
+		/** @var $this \MvcCore\Response */
 		$this->UpdateHeaders();
 		return isset($this->headers[$name]);
 	}
@@ -113,6 +117,7 @@ trait Headers
 	 * @return \MvcCore\Response|\MvcCore\IResponse
 	 */
 	public function UpdateHeaders () {
+		/** @var $this \MvcCore\Response */
 		$rawHeaders = headers_list();
 		$name = '';
 		$value = '';
@@ -153,6 +158,7 @@ trait Headers
 	 * @return \string[]
 	 */
 	public function GetDisabledHeaders () {
+		/** @var $this \MvcCore\Response */
 		return array_keys($this->disabledHeaders);
 	}
 }
