@@ -27,7 +27,7 @@ trait Rendering
 	 * @param string $actionNameDashed
 	 * @return string
 	 */
-	public function & Render ($controllerOrActionNameDashed = NULL, $actionNameDashed = NULL) {
+	public function Render ($controllerOrActionNameDashed = NULL, $actionNameDashed = NULL) {
 		/** @var $this \MvcCore\Controller */
 		if ($this->dispatchState == 0)
 			$this->Init();

@@ -41,6 +41,8 @@ trait Helpers {
 	 *  - `JSON_PRESERVE_ZERO_FRACTION`:
 	 *    Ensures that float values are always encoded as a float value. Available as of PHP 5.6.6.
 	 * Possible JSON encoding flags to add:
+	 *  - `JSON_PRETTY_PRINT`:
+	 *    Encode JSON into pretty print syntax, Available as of PHP 5.4.0.
 	 *  - `JSON_UNESCAPED_UNICODE`:
 	 *    Encode multibyte Unicode characters literally (default is to escape as \uXXXX). Available as of PHP 5.4.0.
 	 *  - `JSON_UNESCAPED_LINE_TERMINATORS`:

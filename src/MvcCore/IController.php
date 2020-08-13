@@ -477,7 +477,7 @@ interface IController
 	 * @param string $actionNameDashed
 	 * @return string
 	 */
-	public function & Render ($controllerOrActionNameDashed = NULL, $actionNameDashed = NULL);
+	public function Render ($controllerOrActionNameDashed = NULL, $actionNameDashed = NULL);
 
 	/**
 	 * Store rendered HTML output inside `\MvcCore\Controller::$response`
