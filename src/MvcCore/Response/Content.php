@@ -121,6 +121,7 @@ trait Content
 		$this->UpdateHeaders();
 		if (!isset($this->headers['Content-Encoding']))
 			$this->headers['Content-Encoding'] = $this->GetEncoding();
+		//http_response_code($code);
 		header($httpVersion . ' ' . $code . $status);
 		header('Host: ' . $this->request->GetHost());
 		foreach ($this->headers as $name => $value) {
