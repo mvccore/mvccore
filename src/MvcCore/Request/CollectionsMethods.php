@@ -24,6 +24,7 @@ trait CollectionsMethods
 	 * @return array
 	 */
 	public function & GetGlobalCollection ($type) {
+		/** @var $this \MvcCore\Request */
 		$collection = 'global'.ucfirst(strtolower($type));
 		return $this->{$collection};
 	}
@@ -51,6 +52,7 @@ trait CollectionsMethods
 	 * @return array
 	 */
 	public function & GetHeaders ($pregReplaceAllowedChars = ['#[\<\>\'"]#' => '']) {
+		/** @var $this \MvcCore\Request */
 		if ($this->headers === NULL) $this->initHeaders();
 		if ($pregReplaceAllowedChars === FALSE || $pregReplaceAllowedChars === '' || $pregReplaceAllowedChars === '.*')
 			return $this->headers;
@@ -95,6 +97,7 @@ trait CollectionsMethods
 		$ifNullValue = NULL,
 		$targetType = NULL
 	) {
+		/** @var $this \MvcCore\Request */
 		if ($this->headers === NULL) $this->initHeaders();
 		return $this->getParamFromCollection(
 			$this->headers, $name, $pregReplaceAllowedChars, $ifNullValue, $targetType
@@ -107,6 +110,7 @@ trait CollectionsMethods
 	 * @return bool
 	 */
 	public function HasHeader ($name = '') {
+		/** @var $this \MvcCore\Request */
 		if ($this->headers === NULL) $this->initHeaders();
 		return isset($this->headers[$name]);
 	}
@@ -132,6 +136,7 @@ trait CollectionsMethods
 	 * @return array
 	 */
 	public function & GetParams ($pregReplaceAllowedChars = ['#[\<\>\'"]#' => ''], $onlyKeys = []) {
+		/** @var $this \MvcCore\Request */
 		if ($this->params === NULL) $this->initParams();
 		if ($pregReplaceAllowedChars === FALSE || $pregReplaceAllowedChars === '' || $pregReplaceAllowedChars === '.*') {
 			if ($onlyKeys) {
@@ -192,6 +197,7 @@ trait CollectionsMethods
 		$ifNullValue = NULL,
 		$targetType = NULL
 	) {
+		/** @var $this \MvcCore\Request */
 		if ($this->params === NULL) $this->initParams();
 		return $this->getParamFromCollection(
 			$this->params, $name, $pregReplaceAllowedChars, $ifNullValue, $targetType
@@ -204,6 +210,7 @@ trait CollectionsMethods
 	 * @return bool
 	 */
 	public function HasParam ($name = '') {
+		/** @var $this \MvcCore\Request */
 		if ($this->params === NULL) $this->initParams();
 		return isset($this->params[$name]);
 	}
@@ -226,6 +233,7 @@ trait CollectionsMethods
 	 * @return array
 	 */
 	public function & GetFiles () {
+		/** @var $this \MvcCore\Request */
 		return $this->globalFiles;
 	}
 
@@ -259,6 +267,7 @@ trait CollectionsMethods
 	 * @return bool
 	 */
 	public function HasFile ($file = '') {
+		/** @var $this \MvcCore\Request */
 		return isset($this->globalFiles[$file]);
 	}
 
@@ -282,6 +291,7 @@ trait CollectionsMethods
 	 * @return array
 	 */
 	public function & GetCookies ($pregReplaceAllowedChars = ['#[\<\>\'"]#' => ''], $onlyKeys = []) {
+		/** @var $this \MvcCore\Request */
 		if ($pregReplaceAllowedChars === FALSE || $pregReplaceAllowedChars === '' || $pregReplaceAllowedChars === '.*') {
 			if ($onlyKeys) {
 				$result = array_intersect_key($this->paglobalCookiesrams, array_flip($onlyKeys));
@@ -328,6 +338,7 @@ trait CollectionsMethods
 		$ifNullValue = NULL,
 		$targetType = NULL
 	) {
+		/** @var $this \MvcCore\Request */
 		return $this->getParamFromCollection(
 			$this->globalCookies, $name, $pregReplaceAllowedChars, $ifNullValue, $targetType
 		);
@@ -339,6 +350,7 @@ trait CollectionsMethods
 	 * @return bool
 	 */
 	public function HasCookie ($name = '') {
+		/** @var $this \MvcCore\Request */
 		return isset($this->globalCookies[$name]);
 	}
 
@@ -356,6 +368,7 @@ trait CollectionsMethods
 		$ifNullValue = NULL,
 		$targetType = NULL
 	) {
+		/** @var $this \MvcCore\Request */
 		if ($rawValue === NULL) {
 			// if there is NULL in target collection
 			if ($targetType === NULL) return $ifNullValue;
@@ -404,6 +417,7 @@ trait CollectionsMethods
 	 * @return string
 	 */
 	protected function cleanParamValue ($rawValue, $pregReplaceAllowedChars = "a-zA-Z0-9_;, /\-\@\:") {
+		/** @var $this \MvcCore\Request */
 		if ($pregReplaceAllowedChars === FALSE) {
 			return $rawValue;
 		} else if (is_array($pregReplaceAllowedChars)) {
