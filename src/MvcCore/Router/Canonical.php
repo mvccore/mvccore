@@ -24,6 +24,7 @@ trait Canonical
 	 * @return bool
 	 */
 	protected function canonicalRedirectIfAny () {
+		/** @var $request \MvcCore\Router */
 		if (
 			$this->internalRequest || !$this->autoCanonizeRequests || 
 			$this->request->GetMethod() !== \MvcCore\IRequest::METHOD_GET
@@ -45,7 +46,7 @@ trait Canonical
 	 * @return bool
 	 */
 	protected function canonicalRedirectQueryStringStrategy () {
-		/** @var $request \MvcCore\Request */
+		/** @var $request \MvcCore\Router */
 		$request = $this->request;
 		$redirectToCanonicalUrl = FALSE;
 		$requestGlobalGet = & $request->GetGlobalCollection('get');
@@ -80,7 +81,7 @@ trait Canonical
 	 * @return bool
 	 */
 	protected function canonicalRedirectRewriteRoutesStrategy () {
-		/** @var $request \MvcCore\Request */
+		/** @var $request \MvcCore\Router */
 		$request = $this->request;
 		$redirectToCanonicalUrl = FALSE;
 		$defaultParams =  $this->GetDefaultParams() ?: [];
@@ -106,7 +107,7 @@ trait Canonical
 		}
 		if ($redirectToCanonicalUrl) {
 			$selfCanonicalUrl = $this->Url($this->selfRouteName, $this->requestedParams);
-			$this->redirect($selfCanonicalUrl, \MvcCore\IResponse::MOVED_PERMANENTLY);
+			$this->redirect($selfCanonicalUrl, \MvcCore\IResponse::MOVED_PERMANENTLY, 'Canonical url');
 			return FALSE;
 		}
 		return TRUE;
