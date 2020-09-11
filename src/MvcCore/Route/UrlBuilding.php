@@ -358,7 +358,13 @@ trait UrlBuilding
 			);
 		}
 		$pathPart = mb_substr($resultUrl, $basePathPlaceHolderPos + mb_strlen(static::PLACEHOLDER_BASEPATH));
-		$pathPart = str_replace('//', '/', $pathPart);
+		$questionMarkPos = mb_strpos($pathPart, '?');
+		if ($questionMarkPos === FALSE) {
+			$pathPart = str_replace('//', '/', $pathPart);	
+		} else {
+			$pathPart = str_replace('//', '/', mb_substr($pathPart, 0, $questionMarkPos))
+				. mb_substr($pathPart, $questionMarkPos);
+		}
 		$basePart = mb_substr($resultUrl, 0, $basePathPlaceHolderPos);
 		$basePathParamName = $router::URL_PARAM_BASEPATH;
 		$basePart .= isset($domainParams[$basePathParamName])
@@ -429,7 +435,14 @@ trait UrlBuilding
 			$basePart = mb_substr($resultUrl, 0, $baseUrlPartEndPos);
 			if ($this->flags[0] === static::FLAG_SCHEME_ANY)
 				$basePart = $request->GetScheme() . $basePart;
-			$pathAndQueryPart = str_replace('//', '/', mb_substr($resultUrl, $baseUrlPartEndPos));
+			$pathAndQueryPart = mb_substr($resultUrl, $baseUrlPartEndPos);
+			$questionMarkPos = mb_strpos($pathAndQueryPart, '?');
+			if ($questionMarkPos === FALSE) {
+				$pathAndQueryPart = str_replace('//', '/', $pathAndQueryPart);	
+			} else {
+				$pathAndQueryPart = str_replace('//', '/', mb_substr($pathAndQueryPart, 0, $questionMarkPos))
+					. mb_substr($pathAndQueryPart, $questionMarkPos);
+			}
 			return [$basePart, $pathAndQueryPart];
 		}
 	}
@@ -488,7 +501,13 @@ trait UrlBuilding
 			)
 		)
 			$basePart = $request->GetDomainUrl() . $basePart;
-		$resultUrl = str_replace('//', '/', $resultUrl);
+		$questionMarkPos = mb_strpos($resultUrl, '?');
+		if ($questionMarkPos === FALSE) {
+			$resultUrl = str_replace('//', '/', $resultUrl);	
+		} else {
+			$resultUrl = str_replace('//', '/', mb_substr($resultUrl, 0, $questionMarkPos))
+				. mb_substr($resultUrl, $questionMarkPos);
+		}
 		if ($splitUrl) return [$basePart, $resultUrl];
 		return [$basePart . $resultUrl];
 	}
