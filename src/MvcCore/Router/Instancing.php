@@ -140,6 +140,7 @@ trait Instancing
 	 * @return void
 	 */
 	public function __construct (array $routes = [], $autoInitialize = TRUE) {
+		/** @var $this \MvcCore\Router */
 		if ($routes) $this->SetRoutes($routes, NULL, $autoInitialize);
 	}
 }

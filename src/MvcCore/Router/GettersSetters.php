@@ -67,6 +67,7 @@ trait GettersSetters
 	 * @return bool|NULL
 	 */
 	public function GetRouteByQueryString () {
+		/** @var $this \MvcCore\Router */
 		return $this->routeByQueryString;
 	}
 
@@ -78,6 +79,7 @@ trait GettersSetters
 	 * @return bool
 	 */
 	public function GetRouteToDefaultIfNotMatch () {
+		/** @var $this \MvcCore\Router */
 		return $this->routeToDefaultIfNotMatch;
 	}
 
@@ -102,6 +104,7 @@ trait GettersSetters
 	 * @return array
 	 */
 	public function & GetDefaultParams () {
+		/** @var $this \MvcCore\Router */
 		return $this->defaultParams;
 	}
 
@@ -111,6 +114,7 @@ trait GettersSetters
 	 * @return array
 	 */
 	public function & GetRequestedParams () {
+		/** @var $this \MvcCore\Router */
 		return $this->requestedParams;
 	}
 
@@ -129,6 +133,7 @@ trait GettersSetters
 	 * @return int
 	 */
 	public function GetTrailingSlashBehaviour () {
+		/** @var $this \MvcCore\Router */
 		return $this->trailingSlashBehaviour;
 	}
 
@@ -160,6 +165,7 @@ trait GettersSetters
 	 * @return bool
 	 */
 	public function GetAutoCanonizeRequests () {
+		/** @var $this \MvcCore\Router */
 		return $this->autoCanonizeRequests;
 	}
 
@@ -221,6 +227,7 @@ trait GettersSetters
 	 * @return callable|NULL
 	 */
 	public function GetPreRouteMatchingHandler () {
+		/** @var $this \MvcCore\Router */
 		return $this->preRouteMatchingHandler;
 	}
 
@@ -277,6 +284,7 @@ trait GettersSetters
 	 * @return callable|NULL
 	 */
 	public function GetPreRouteUrlBuildingHandler () {
+		/** @var $this \MvcCore\Router */
 		return $this->preRouteUrlBuildingHandler;
 	}
 }

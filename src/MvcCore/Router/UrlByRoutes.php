@@ -37,6 +37,7 @@ trait UrlByRoutes
 	 * @return string
 	 */
 	public function UrlByRoute (\MvcCore\IRoute $route, array & $params = [], $urlParamRouteName = NULL) {
+		/** @var $this \MvcCore\Router */
 		if ($urlParamRouteName == 'self')
 			$params = array_merge($this->requestedParams ?: [], $params);
 		$defaultParams = $this->GetDefaultParams() ?: [];

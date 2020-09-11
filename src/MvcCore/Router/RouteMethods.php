@@ -323,6 +323,7 @@ trait RouteMethods
 	 * @return void
 	 */
 	protected function addRouteToGroup (\MvcCore\IRoute $route, $routeName, $groupName, $prepend) {
+		/** @var $this \MvcCore\Router */
 		if ($groupName === NULL) {
 			$routesGroupsKey = '';
 		} else {
@@ -349,6 +350,7 @@ trait RouteMethods
 	 * @return bool
 	 */
 	public function HasRoute ($routeOrRouteName) {
+		/** @var $this \MvcCore\Router */
 		if (is_string($routeOrRouteName)) {
 			return isset($this->routes[$routeOrRouteName]);
 		} else /*if ($routeOrRouteName instance of \MvcCore\IRoute)*/ {
@@ -367,6 +369,7 @@ trait RouteMethods
 	 * @return \MvcCore\Route|\MvcCore\IRoute|NULL
 	 */
 	public function RemoveRoute ($routeName) {
+		/** @var $this \MvcCore\Router */
 		$result = NULL;
 		if (isset($this->routes[$routeName])) {
 			$result = $this->routes[$routeName];
@@ -396,6 +399,7 @@ trait RouteMethods
 	 * @return void
 	 */
 	protected function removeRouteFromGroup (\MvcCore\IRoute $route, $routeName) {
+		/** @var $this \MvcCore\Router */
 		$routeGroup = $route->GetGroupName();
 		$groupRoutesKey = $routeGroup ?: '';
 		if (isset($this->routesGroups[$groupRoutesKey]))
@@ -413,6 +417,7 @@ trait RouteMethods
 	 * @return \MvcCore\Route[]|\MvcCore\IRoute[]
 	 */
 	public function GetRoutes ($groupName = NULL) {
+		/** @var $this \MvcCore\Router */
 		if ($groupName !== NULL)
 			return $this->routesGroups[$groupName];
 		return $this->routes;
@@ -424,6 +429,7 @@ trait RouteMethods
 	 * @return \MvcCore\Route|\MvcCore\IRoute|NULL
 	 */
 	public function GetRoute ($routeName) {
+		/** @var $this \MvcCore\Router */
 		if (isset($this->routes[$routeName]))
 			return $this->routes[$routeName];
 		return NULL;
@@ -449,6 +455,7 @@ trait RouteMethods
 	 * @return \MvcCore\Route|\MvcCore\IRoute
 	 */
 	public function GetCurrentRoute () {
+		/** @var $this \MvcCore\Router */
 		return $this->currentRoute;
 	}
 

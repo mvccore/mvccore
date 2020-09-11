@@ -48,6 +48,7 @@ trait UrlBuilding
 	 * @return string
 	 */
 	public function Url ($controllerActionOrRouteName = 'Index:Index', array $params = []) {
+		/** @var $this \MvcCore\Router */
 		$result = '';
 		$ctrlActionOrRouteNameKey = $this->urlGetCompletedCtrlActionKey(
 			$controllerActionOrRouteName
@@ -136,6 +137,7 @@ trait UrlBuilding
 	 * @return mixed
 	 */
 	protected function urlGetCompletedCtrlActionKey ($controllerActionOrRouteName) {
+		/** @var $this \MvcCore\Router */
 		$result = $controllerActionOrRouteName;
 		if (strpos($controllerActionOrRouteName, ':') !== FALSE) {
 			list($ctrlPc, $actionPc) = explode(':', $controllerActionOrRouteName);
@@ -149,7 +151,7 @@ trait UrlBuilding
 				$toolClass = self::$toolClass;
 				$actionPc = $toolClass::GetPascalCaseFromDashed($this->request->GetActionName());
 			}
-			$result = "$ctrlPc:$actionPc";
+			$result = "{$ctrlPc}:{$actionPc}";
 		} else if ($controllerActionOrRouteName == 'self') {
 			$result = $this->selfRouteName;
 		}
