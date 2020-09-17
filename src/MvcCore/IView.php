@@ -38,8 +38,6 @@ namespace MvcCore;
  *
  * MvcCore view properties and helpers:
  * @property-read \MvcCore\Controller $controller Currently dispatched controller instance.
- * @method string Url($controllerActionOrRouteName = 'Index:Index', array $params = []) Generates url by `"Controller:Action"` name and params array or generate url by route name and params array.
- * @method string AssetUrl($path = '') Return asset path or single file mode URL for small assets handled by internal controller action `"Controller:Asset"`.
  * @method \MvcCore\Ext\Views\Helpers\Css Css(string $groupName = self::GROUP_NAME_DEFAULT) Get css helper instance by group name. To use this method, you need to install extension `mvccore/ext-view-helper-assets`.
  * @method \MvcCore\Ext\Views\Helpers\Js Js(string $groupName = self::GROUP_NAME_DEFAULT) Get js helper instance by group name. To use this method, you need to install extension `mvccore/ext-view-helper-assets`.
  * @method string FormatDate(\DateTime|\IntlCalendar|int $dateTimeOrTimestamp = NULL, int|string $dateTypeOrFormatMask = NULL, int $timeType = NULL, string|\IntlTimeZone|\DateTimeZone $timeZone = NULL, int $calendar = NULL) Format given date time by `Intl` extension or by `strftime()` as fallback. To use this method, you need to install extension `mvccore/ext-view-helper-formatdatetime`.
@@ -398,6 +396,71 @@ interface IView
 	 * @return string
 	 */
 	public function AssetUrl ($path = '');
+
+	/**
+	 * Escape string for use inside HTML/XHTML/HTML5 
+	 * node as text content.
+	 * @param string	$str 
+	 * @param bool		$double 
+	 * @param string	$encoding 
+	 * @return string
+	 */
+	public function Escape ($str, $encoding = 'UTF-8');
+	
+	/**
+	 * Escape string for use inside HTML/XHTML/HTML5 
+	 * node between `<` and `>` for attributes definitions.
+	 * @param string	$str 
+	 * @param bool		$double 
+	 * @param string	$encoding 
+	 * @return string
+	 */
+	public function EscapeHtml ($str, $encoding = 'UTF-8');
+	
+	/**
+	 * Escape string for use inside HTML/XHTML/HTML5 attribute.
+	 * @param string	$str 
+	 * @param bool		$double 
+	 * @param string	$encoding 
+	 * @return string
+	 */
+	public function EscapeAttr ($str, $double = TRUE, $encoding = 'UTF-8');
+	
+	/**
+	 * Escape string for use inside XML template.
+	 * XML 1.0:	\x09 \x0A \x0D and C1 allowed directly, C0 forbidden
+	 * XML 1.1:	\x00 forbidden directly and as a character reference,
+	 * 		\x09 \x0A \x0D \x85 allowed directly, C0, C1 and \x7F allowed as character references
+	 * @param string $str 
+	 * @param string $encoding 
+	 * @return string
+	 */
+	public function EscapeXml ($str, $encoding = 'UTF-8');
+	
+	/**
+	 * Escape string for use inside JS context, including trailing double quotes.
+	 * @param string	$str 
+	 * @param int		$flags 
+	 * @param int		$depth 
+	 * @return string
+	 */
+	public function EscapeJs ($str, $flags = 0, $depth = 512);
+	
+	/**
+	 * Escape string for use inside CSS context.
+	 * @see http://www.w3.org/TR/2006/WD-CSS21-20060411/syndata.html#q6
+	 * @param string $str 
+	 * @return string
+	 */
+	public function EscapeCss ($str);
+	
+	/**
+	 * Escape string for use inside iCal template.
+	 * @see https://www.ietf.org/rfc/rfc5545.txt
+	 * @param string $str 
+	 * @return string
+	 */
+	public function EscapeICal ($str);
 
 	/**
 	 * Try to get view helper.

@@ -15,37 +15,73 @@ namespace MvcCore\View;
 
 trait Escaping
 {
+	/**
+	 * Escape string for use inside HTML/XHTML/HTML5 
+	 * node as text content.
+	 * @param string	$str 
+	 * @param bool		$double 
+	 * @param string	$encoding 
+	 * @return string
+	 */
+	public function Escape ($str, $encoding = 'UTF-8') {
+		return htmlspecialchars(
+			(string) $str, $this->escapeGetFlags(ENT_QUOTES), $encoding
+		);
+	}
+	
+	/**
+	 * Escape string for use inside HTML/XHTML/HTML5 
+	 * node between `<` and `>` for attributes definitions.
+	 * @param string	$str 
+	 * @param bool		$double 
+	 * @param string	$encoding 
+	 * @return string
+	 */
 	public function EscapeHtml ($str, $encoding = 'UTF-8') {
 		return htmlspecialchars(
-			(string) $str, $this->escapeGetFlags(ENT_QUOTES | ENT_SUBSTITUTE), $encoding
+			(string) $str, $this->escapeGetFlags(ENT_NOQUOTES), $encoding
 		);
 	}
 	
-	public function EscapeHtmlText ($str, $encoding = 'UTF-8') {
-		return htmlspecialchars(
-			(string) $str, $this->escapeGetFlags(ENT_NOQUOTES | ENT_SUBSTITUTE), $encoding
-		);
-	}
-	
-	public function EscapeHtmlAttr ($str, $double = TRUE, $encoding = 'UTF-8') {
+	/**
+	 * Escape string for use inside HTML/XHTML/HTML5 attribute.
+	 * @param string	$str 
+	 * @param bool		$double 
+	 * @param string	$encoding 
+	 * @return string
+	 */
+	public function EscapeAttr ($str, $double = TRUE, $encoding = 'UTF-8') {
 		$str = (string) $str;
 		if (mb_strpos($str, '`') !== FALSE && strpbrk($str, ' <>"\'') === FALSE) 
 			$str .= ' '; // protection against innerHTML mXSS vulnerability
 		return htmlspecialchars(
-			$str, $this->escapeGetFlags(ENT_QUOTES | ENT_SUBSTITUTE), $encoding, $double
+			$str, $this->escapeGetFlags(ENT_QUOTES), $encoding, $double
 		);
 	}
 	
+	/**
+	 * Escape string for use inside XML template.
+	 * XML 1.0:	\x09 \x0A \x0D and C1 allowed directly, C0 forbidden
+	 * XML 1.1:	\x00 forbidden directly and as a character reference,
+	 * 		\x09 \x0A \x0D \x85 allowed directly, C0, C1 and \x7F allowed as character references
+	 * @param string $str 
+	 * @param string $encoding 
+	 * @return string
+	 */
 	public function EscapeXml ($str, $encoding = 'UTF-8') {
-		// XML 1.0:	\x09 \x0A \x0D and C1 allowed directly, C0 forbidden
-		// XML 1.1:	\x00 forbidden directly and as a character reference,
-		//			\x09 \x0A \x0D \x85 allowed directly, C0, C1 and \x7F allowed as character references
 		$str = preg_replace('#[\x00-\x08\x0B\x0C\x0E-\x1F]#', "\u{FFFD}", (string) $str);
 		return htmlspecialchars(
-			$str, $this->escapeGetFlags(ENT_QUOTES | ENT_SUBSTITUTE), $encoding
+			$str, $this->escapeGetFlags(ENT_XML1 | ENT_QUOTES), $encoding
 		);
 	}
 	
+	/**
+	 * Escape string for use inside JS context, including trailing double quotes.
+	 * @param string	$str 
+	 * @param int		$flags 
+	 * @param int		$depth 
+	 * @return string
+	 */
 	public function EscapeJs ($str, $flags = 0, $depth = 512) {
 		$toolClass = \MvcCore\Application::GetInstance()->GetToolClass();
 		$json = $toolClass::EncodeJson($str, JSON_UNESCAPED_UNICODE);
@@ -53,6 +89,7 @@ trait Escaping
 	}
 	
 	/**
+	 * Escape string for use inside CSS context.
 	 * @see http://www.w3.org/TR/2006/WD-CSS21-20060411/syndata.html#q6
 	 * @param string $str 
 	 * @return string
@@ -61,11 +98,20 @@ trait Escaping
 		return addcslashes((string) $str, "\x00..\x1F!\"#$%&'()*+,./:;<=>?@[\\]^`{|}~");
 	}
 	
-	public function EscapeICal ($str, $encoding = 'UTF-8') {
-		
+	/**
+	 * Escape string for use inside iCal template.
+	 * @see https://www.ietf.org/rfc/rfc5545.txt
+	 * @param string $str 
+	 * @return string
+	 */
+	public function EscapeICal ($str) {
+		$str = str_replace("\r", '', (string) $str);
+		$str = preg_replace('#[\x00-\x08\x0B-\x1F]#', "\u{FFFD}", $str);
+		return addcslashes($str, "\";\\,:\n");
 	}
 
 	/**
+	 * Complete flags for `htmlspecialchars()` by view type.
 	 * @param int $flagsToAdd
 	 * @return int
 	 */
@@ -76,8 +122,10 @@ trait Escaping
 			\MvcCore\IView::DOCTYPE_HTML5	=> ENT_HTML5,
 			\MvcCore\IView::DOCTYPE_XML		=> ENT_XML1,
 		];
-		return isset($allEscapeFlags[static::$doctype])
-			? $allEscapeFlags[static::$doctype] | $flagsToAdd
-			: ENT_QUOTES | $flagsToAdd;
+		$doctype = static::$doctype;
+		$flags = isset($allEscapeFlags[$doctype])
+			? $allEscapeFlags[$doctype]
+			: ENT_QUOTES;
+		return $flags | ENT_SUBSTITUTE | $flagsToAdd;
 	}
 }

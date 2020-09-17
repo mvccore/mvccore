@@ -242,61 +242,34 @@ trait Rendering
 	 */
 	protected function setUpRenderBuildInHelpers (& $helpers) {
 		$router = $this->controller->GetRouter();
-		$helpers = $helpers + [
+		$helpers += [
 			'url' => function ($controllerActionOrRouteName = 'Index:Index', array $params = []) use (& $router) {
 				return $router->Url($controllerActionOrRouteName, $params);
 			},
 			'assetUrl' => function ($path = '') use (& $router) {
 				return $router->Url('Controller:Asset', ['path' => $path]);
 			},
-			'escapeHtml' => function ($str, $encoding) {
+			'escapeHtml' => function ($str, $encoding = 'UTF-8') {
 				return $this->EscapeHtml($str, $encoding);
 			},
-			'escapeHtmlText' => function ($str, $encoding) {
+			'escapeHtmlText' => function ($str, $encoding = 'UTF-8') {
 				return $this->EscapeHtmlText($str, $encoding);
 			},
-			'escapeHtmlAttr' => function ($str, $double, $encoding) {
+			'escapeHtmlAttr' => function ($str, $double = TRUE, $encoding = 'UTF-8') {
 				return $this->EscapeHtmlAttr($str, $double, $encoding);
 			},
-			'escapeXml' => function ($str, $encoding) {
+			'escapeXml' => function ($str, $encoding = 'UTF-8') {
 				return $this->EscapeXml($str, $encoding);
 			},
-			'escapeJs' => function ($str, $flags, $depth) {
+			'escapeJs' => function ($str, $flags = 0, $depth = 512) {
 				return $this->EscapeJs($str, $flags, $depth);
 			},
 			'escapeCss' => function ($str) {
 				return $this->EscapeCss($str);
 			},
-			'escapeICal' => function ($str, $encoding) {
-				return $this->EscapeICal($str, $encoding);
+			'escapeICal' => function ($str) {
+				return $this->EscapeICal($str);
 			},
 		];
-		/*$helpers['url'] = function ($controllerActionOrRouteName = 'Index:Index', array $params = []) use (& $router) {
-			return $router->Url($controllerActionOrRouteName, $params);
-		};
-		$helpers['assetUrl'] = function ($path = '') use (& $router) {
-			return $router->Url('Controller:Asset', ['path' => $path]);
-		};
-		$helpers['escapeHtml'] = function ($str, $encoding) {
-			return $this->EscapeHtml($str, $encoding);
-		};
-		$helpers['escapeHtmlText'] = function ($str, $encoding) {
-			return $this->EscapeHtmlText($str, $encoding);
-		};
-		$helpers['escapeHtmlAttr'] = function ($str, $double, $encoding) {
-			return $this->EscapeHtmlAttr($str, $double, $encoding);
-		};
-		$helpers['escapeXml'] = function ($str, $encoding) {
-			return $this->EscapeXml($str, $encoding);
-		};
-		$helpers['escapeJs'] = function ($str, $encoding) {
-			return $this->EscapeJs($str, $encoding);
-		};
-		$helpers['escapeCss'] = function ($str, $encoding) {
-			return $this->EscapeCss($str, $encoding);
-		};
-		$helpers['escapeICal'] = function ($str, $encoding) {
-			return $this->EscapeICal($str, $encoding);
-		};*/
 	}
 }
