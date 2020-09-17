@@ -24,20 +24,32 @@ trait LocalMethods
 	 */
 	protected function correctRelativePath ($typePath, $relativePath) {
 		$result = str_replace('\\', '/', $relativePath);
-		if (substr($relativePath, 0, 2) == './') {
+		// if relative path starts with dot:
+		if (mb_substr($relativePath, 0, 1) === '.') {
 			if (self::$_viewScriptsFullPathBase === NULL)
 				self::_initViewScriptsFullPathBase();
 			$typedViewDirFullPath = implode('/', [
 				self::$_viewScriptsFullPathBase, $typePath
 			]);
+			// get current view script full path:
 			$renderedFullPaths = & $this->__protected['renderedFullPaths'];
 			$lastRenderedFullPath = $renderedFullPaths[count($renderedFullPaths) - 1];
-			$renderedRelPath = substr($lastRenderedFullPath, strlen($typedViewDirFullPath));
-			$renderedRelPathLastSlashPos = strrpos($renderedRelPath, '/');
-			if ($renderedRelPathLastSlashPos !== FALSE) {
-				$result = substr($renderedRelPath, 0, $renderedRelPathLastSlashPos + 1).substr($relativePath, 2);
-				$result = ltrim($result, '/');
+			// create `$renderedRelPath` by cutting directory with typed view scripts:
+			$renderedRelPath = mb_substr($lastRenderedFullPath, mb_strlen($typedViewDirFullPath));
+			// set how many dots is at `$relativePath` string start:
+			$startingDotsCount = mb_substr($relativePath, 1, 1) === '.' ? 2 : 1;
+			// cut so many slash steps from `$renderedRelPath` start, 
+			// how many dots is at the `$relativePath` string start:
+			$slashSteps = 0;
+			while ($slashSteps++ < $startingDotsCount) {
+				$renderedRelPathLastSlashPos = mb_strrpos($renderedRelPath, '/');
+				if ($renderedRelPathLastSlashPos !== FALSE) 
+					$renderedRelPath = mb_substr($renderedRelPath, 0, $renderedRelPathLastSlashPos);
 			}
+			// trim relative path for starting dots:
+			$relativePath = mb_substr($relativePath, $startingDotsCount);
+			// complete result from corected relative path and given path:
+			$result = ltrim($renderedRelPath . $relativePath, '/');
 		}
 		return $result;
 	}
