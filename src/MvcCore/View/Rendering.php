@@ -51,6 +51,44 @@ trait Rendering
 	}
 
 	/**
+	 * Set up view rendering arguments to render layout and action view in both modes properly.
+	 * Set up view instance helpers before rendering.
+	 * @param int $renderMode
+	 * @param string $controllerOrActionNameDashed
+	 * @param string $actionNameDashed
+	 * @return \MvcCore\View
+	 */
+	public function SetUpRender ($renderMode = \MvcCore\IView::RENDER_WITH_OB_FROM_ACTION_TO_LAYOUT, $controllerOrActionNameDashed = NULL, $actionNameDashed = NULL) {
+		/** @var $this \MvcCore\View */
+		$this->__protected['renderArgs'] = func_get_args();
+		// initialize helpers before rendering:
+		$helpers = & $this->__protected['helpers'];
+		$buildInHelpersInit = & $this->__protected['buildInHelpersInit'];
+		if (!$buildInHelpersInit) {
+			$buildInHelpersInit = TRUE;
+			$this->setUpRenderBuildInHelpers($helpers);
+		}
+		foreach (self::$_globalHelpers as $helperNamePascalCase => $helperRecord) {
+			$helperNameCamelCase = lcfirst($helperNamePascalCase);
+			if (isset($helpers[$helperNameCamelCase])) continue;
+			//list($instance, $implementsIHelper, $needsClosureFn) = $helperRecord;
+			$instance = & $helperRecord[0];
+			$implementsIHelper = $helperRecord[1];
+			$needsClosureFn = $helperRecord[2];
+			if ($implementsIHelper)
+				$instance->SetView($this);
+			if ($needsClosureFn) {
+				$helpers[$helperNameCamelCase] = function () use (& $instance, $helperNamePascalCase) {
+					return call_user_func_array([$instance, $helperNamePascalCase], func_get_args());
+				};
+			} else {
+				$helpers[$helperNameCamelCase] = & $instance;
+			}
+		}
+		return $this;
+	}
+
+	/**
 	 * Render controller template and all necessary layout
 	 * templates and return rendered result as string reference.
 	 * @param string $typePath By default: `"Layouts" | "Scripts"`. It could be `"Forms" | "Forms/Fields"` etc...
@@ -195,5 +233,70 @@ trait Rendering
 		}
 		$content = ob_get_clean();
 		return $content;
+	}
+
+	/**
+	 * Set up build in view instance helpers before rendering.
+	 * @param array $helpers 
+	 * @return void
+	 */
+	protected function setUpRenderBuildInHelpers (& $helpers) {
+		$router = $this->controller->GetRouter();
+		$helpers = $helpers + [
+			'url' => function ($controllerActionOrRouteName = 'Index:Index', array $params = []) use (& $router) {
+				return $router->Url($controllerActionOrRouteName, $params);
+			},
+			'assetUrl' => function ($path = '') use (& $router) {
+				return $router->Url('Controller:Asset', ['path' => $path]);
+			},
+			'escapeHtml' => function ($str, $encoding) {
+				return $this->EscapeHtml($str, $encoding);
+			},
+			'escapeHtmlText' => function ($str, $encoding) {
+				return $this->EscapeHtmlText($str, $encoding);
+			},
+			'escapeHtmlAttr' => function ($str, $double, $encoding) {
+				return $this->EscapeHtmlAttr($str, $double, $encoding);
+			},
+			'escapeXml' => function ($str, $encoding) {
+				return $this->EscapeXml($str, $encoding);
+			},
+			'escapeJs' => function ($str, $flags, $depth) {
+				return $this->EscapeJs($str, $flags, $depth);
+			},
+			'escapeCss' => function ($str) {
+				return $this->EscapeCss($str);
+			},
+			'escapeICal' => function ($str, $encoding) {
+				return $this->EscapeICal($str, $encoding);
+			},
+		];
+		/*$helpers['url'] = function ($controllerActionOrRouteName = 'Index:Index', array $params = []) use (& $router) {
+			return $router->Url($controllerActionOrRouteName, $params);
+		};
+		$helpers['assetUrl'] = function ($path = '') use (& $router) {
+			return $router->Url('Controller:Asset', ['path' => $path]);
+		};
+		$helpers['escapeHtml'] = function ($str, $encoding) {
+			return $this->EscapeHtml($str, $encoding);
+		};
+		$helpers['escapeHtmlText'] = function ($str, $encoding) {
+			return $this->EscapeHtmlText($str, $encoding);
+		};
+		$helpers['escapeHtmlAttr'] = function ($str, $double, $encoding) {
+			return $this->EscapeHtmlAttr($str, $double, $encoding);
+		};
+		$helpers['escapeXml'] = function ($str, $encoding) {
+			return $this->EscapeXml($str, $encoding);
+		};
+		$helpers['escapeJs'] = function ($str, $encoding) {
+			return $this->EscapeJs($str, $encoding);
+		};
+		$helpers['escapeCss'] = function ($str, $encoding) {
+			return $this->EscapeCss($str, $encoding);
+		};
+		$helpers['escapeICal'] = function ($str, $encoding) {
+			return $this->EscapeICal($str, $encoding);
+		};*/
 	}
 }

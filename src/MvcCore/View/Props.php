@@ -46,6 +46,11 @@ trait Props
 		  */
 		'helpers'			=> [],
 		/**
+		  * Boolean about if build in helpers are initialized.
+		  * @var boolean
+		  */
+		'buildInHelpersInit'=> FALSE,
+		/**
 		  * `0` - Rendering mode switch to render views in two ways:
 		  *     `\MvcCore\IView::RENDER_WITH_OB_FROM_ACTION_TO_LAYOUT`:
 		  *       - Render action view first into output buffer, then render layout view

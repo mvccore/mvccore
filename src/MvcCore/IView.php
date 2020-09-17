@@ -38,6 +38,8 @@ namespace MvcCore;
  *
  * MvcCore view properties and helpers:
  * @property-read \MvcCore\Controller $controller Currently dispatched controller instance.
+ * @method string Url($controllerActionOrRouteName = 'Index:Index', array $params = []) Generates url by `"Controller:Action"` name and params array or generate url by route name and params array.
+ * @method string AssetUrl($path = '') Return asset path or single file mode URL for small assets handled by internal controller action `"Controller:Asset"`.
  * @method \MvcCore\Ext\Views\Helpers\Css Css(string $groupName = self::GROUP_NAME_DEFAULT) Get css helper instance by group name. To use this method, you need to install extension `mvccore/ext-view-helper-assets`.
  * @method \MvcCore\Ext\Views\Helpers\Js Js(string $groupName = self::GROUP_NAME_DEFAULT) Get js helper instance by group name. To use this method, you need to install extension `mvccore/ext-view-helper-assets`.
  * @method string FormatDate(\DateTime|\IntlCalendar|int $dateTimeOrTimestamp = NULL, int|string $dateTypeOrFormatMask = NULL, int $timeType = NULL, string|\IntlTimeZone|\DateTimeZone $timeZone = NULL, int $calendar = NULL) Format given date time by `Intl` extension or by `strftime()` as fallback. To use this method, you need to install extension `mvccore/ext-view-helper-formatdatetime`.
