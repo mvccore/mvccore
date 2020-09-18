@@ -25,6 +25,7 @@ trait UrlBuilding
 	 * @return array	Filtered params array.
 	 */
 	public function Filter (array & $params = [], array & $defaultParams = [], $direction = \MvcCore\IRoute::CONFIG_FILTER_IN) {
+		/** @var $this \MvcCore\Route */
 		if (!$this->filters || !isset($this->filters[$direction]))
 			return [TRUE, $params];
 		list($closureCalling, $handler) = $this->filters[$direction];
@@ -96,6 +97,7 @@ trait UrlBuilding
 	 *							path part with query string.
 	 */
 	public function Url (\MvcCore\IRequest $request, array & $params = [], array & $defaultUrlParams = [], $queryStringParamsSepatator = '&', $splitUrl = FALSE) {
+		/** @var $this \MvcCore\Route */
 		// check reverse initialization
 		if ($this->reverseParams === NULL) $this->initReverse();
 		// unset all params with the same values as route defaults configuration
@@ -106,7 +108,7 @@ trait UrlBuilding
 		if (count($this->reverseParams) === 0) {
 			$allParamsClone = array_merge([], $params);
 		} else {// complete params with necessary values to build reverse pattern (and than query string)
-			$emptyReverseParams = array_fill_keys(array_keys($this->reverseParams), '');
+			$emptyReverseParams = array_fill_keys(array_keys($this->reverseParams), NULL);
 			$allMergedParams = array_merge($this->defaults, $defaultUrlParams, $params);
 			// all params clone contains only keys necessary to build reverse
 			// pattern for this route and all given `$params` keys, nothing more
@@ -156,6 +158,7 @@ trait UrlBuilding
 	 * @return string
 	 */
 	protected function urlComposeByReverseSectionsAndParams (& $reverse, & $reverseSections, & $reverseParams, & $params, & $defaults) {
+		/** @var $this \MvcCore\Route */
 		$sections = [];
 		$paramIndex = 0;
 		$reverseParamsKeys = array_keys($reverseParams);
@@ -170,23 +173,25 @@ trait UrlBuilding
 				$defaultValuesCount = 0;
 				while ($paramIndex < $paramsCount) {
 					$paramKey = $reverseParamsKeys[$paramIndex];
-					$param = $reverseParams[$paramKey];
-					if ($param->sectionIndex !== $sectionIndex) break;
+					$reverseParam = $reverseParams[$paramKey];
+					if ($reverseParam->sectionIndex !== $sectionIndex) break;
 					$sectionParamsCount++;
-					$paramStart = $param->reverseStart;
+					$paramStart = $reverseParam->reverseStart;
 					if ($sectionOffset < $paramStart)
 						$sectionResult .= mb_substr($reverse, $sectionOffset, $paramStart - $sectionOffset);
-					$paramName = $param->name;
+					$paramName = $reverseParam->name;
 					$paramValue = $params[$paramName];
 					$paramValueStr = is_array($paramValue) ? implode(',', $paramValue) : strval($paramValue);
 					if (
-						$paramValue === NULL ||
-						(array_key_exists($paramName, $defaults) && $paramValueStr == strval($defaults[$paramName]))
+						$paramValue === NULL || (
+							array_key_exists($paramName, $defaults) && 
+							$paramValueStr == strval($defaults[$paramName])
+						)
 					) $defaultValuesCount++;
 					$sectionResult .= htmlspecialchars($paramValueStr, ENT_QUOTES);
 					unset($params[$paramName]);
 					$paramIndex += 1;
-					$sectionOffset = $param->reverseEnd;
+					$sectionOffset = $reverseParam->reverseEnd;
 				}
 				$sectionEnd = $section->end;
 				if (!$fixed && $sectionParamsCount === $defaultValuesCount) {
@@ -230,6 +235,7 @@ trait UrlBuilding
 	 *							path part with query string.
 	 */
 	protected function urlAbsPartAndSplit (\MvcCore\IRequest $request, $resultUrl, & $domainParams, $splitUrl) {
+		/** @var $this \MvcCore\Route */
 		$domainParamsFlag = $this->flags[1];
 		$basePathInReverse = FALSE;
 		if ($domainParamsFlag >= static::FLAG_HOST_BASEPATH) {
@@ -274,6 +280,7 @@ trait UrlBuilding
 	 *												contained in reverse pattern.
 	 */
 	protected function urlReplaceDomainReverseParams (\MvcCore\IRequest $request, & $resultUrl, & $domainParams, $domainParamsFlag) {
+		/** @var $this \MvcCore\Route */
 		$replacements = [];
 		$values = [];
 		$router = $this->router;
@@ -346,6 +353,7 @@ trait UrlBuilding
 	 *							path part with query string.
 	 */
 	protected function urlAbsPartAndSplitByReverseBasePath (\MvcCore\IRequest $request, $resultUrl, & $domainParams, $splitUrl) {
+		/** @var $this \MvcCore\Route */
 		$doubleSlashPos = mb_strpos($resultUrl, '//');
 		$doubleSlashPos = $doubleSlashPos === FALSE
 			? 0
@@ -401,6 +409,7 @@ trait UrlBuilding
 	 *							path part with query string.
 	 */
 	protected function urlAbsPartAndSplitByRequestedBasePath (\MvcCore\IRequest $request, $resultUrl, $splitUrl) {
+		/** @var $this \MvcCore\Route */
 		$doubleSlashPos = mb_strpos($resultUrl, '//');
 		$doubleSlashPos = $doubleSlashPos === FALSE
 			? 0
@@ -478,6 +487,7 @@ trait UrlBuilding
 	 *							path part with query string.
 	 */
 	protected function urlAbsPartAndSplitByGlobalSwitchOrBasePath (\MvcCore\IRequest $request, $resultUrl, & $domainParams, $domainParamsFlag, $splitUrl) {
+		/** @var $this \MvcCore\Route */
 		$router = $this->router;
 		$basePathParamName = $router::URL_PARAM_BASEPATH;
 		$basePart = isset($domainParams[$basePathParamName])
@@ -521,6 +531,7 @@ trait UrlBuilding
 	 * @return array
 	 */
 	protected function urlGetAndRemoveDomainPercentageParams (array & $params = []) {
+		/** @var $this \MvcCore\Route */
 		static $domainPercentageParams = [];
 		$absolute = FALSE;
 		$router = $this->router;
@@ -559,6 +570,7 @@ trait UrlBuilding
 	 * @return string
 	 */
 	protected function & urlCorrectTrailingSlashBehaviour (& $urlPath) {
+		/** @var $this \MvcCore\Route */
 		$trailingSlashBehaviour = $this->_trailingSlashBehaviour ?: (
 			$this->_trailingSlashBehaviour = $this->router->GetTrailingSlashBehaviour()
 		);
