@@ -37,6 +37,7 @@ trait GettersSetters
 	 * @return string|array|NULL
 	 */
 	public function GetPattern () {
+		/** @var $this \MvcCore\Route */
 		return $this->pattern;
 	}
 
@@ -89,6 +90,7 @@ trait GettersSetters
 	 * @return string|array|NULL
 	 */
 	public function GetMatch () {
+		/** @var $this \MvcCore\Route */
 		return $this->match;
 	}
 
@@ -141,6 +143,7 @@ trait GettersSetters
 	 * @return string|array|NULL
 	 */
 	public function GetReverse () {
+		/** @var $this \MvcCore\Route */
 		return $this->reverse;
 	}
 
@@ -184,6 +187,7 @@ trait GettersSetters
 	 * @return string|NULL
 	 */
 	public function GetName () {
+		/** @var $this \MvcCore\Route */
 		return $this->name;
 	}
 
@@ -230,6 +234,7 @@ trait GettersSetters
 	 * @return string
 	 */
 	public function GetController () {
+		/** @var $this \MvcCore\Route */
 		return $this->controller;
 	}
 
@@ -279,6 +284,7 @@ trait GettersSetters
 	 * @return string
 	 */
 	public function GetAction () {
+		/** @var $this \MvcCore\Route */
 		return $this->action;
 	}
 
@@ -313,6 +319,7 @@ trait GettersSetters
 	 * @return string
 	 */
 	public function GetControllerAction () {
+		/** @var $this \MvcCore\Route */
 		return $this->controller . ':' . $this->action;
 	}
 
@@ -342,6 +349,7 @@ trait GettersSetters
 	 * @return array|\array[]
 	 */
 	public function & GetDefaults () {
+		/** @var $this \MvcCore\Route */
 		return $this->defaults;
 	}
 
@@ -371,6 +379,7 @@ trait GettersSetters
 	 * @return array|\array[]
 	 */
 	public function GetConstraints () {
+		/** @var $this \MvcCore\Route */
 		return $this->constraints;
 	}
 
@@ -416,6 +425,7 @@ trait GettersSetters
 	 * @return array|\callable[]
 	 */
 	public function & GetFilters () {
+		/** @var $this \MvcCore\Route */
 		$filters = [];
 		foreach ($this->filters as $direction => $handler) 
 			$filters[$direction] = $handler[1];
@@ -445,9 +455,9 @@ trait GettersSetters
 	 * @return \MvcCore\Route
 	 */
 	public function SetFilters (array $filters = []) {
+		/** @var $this \MvcCore\Route */
 		foreach ($filters as $direction => $handler) 
 			$this->SetFilter($handler, $direction);
-		/** @var $this \MvcCore\Route */
 		return $this;
 	}
 
@@ -472,6 +482,7 @@ trait GettersSetters
 	 * @return \callable|NULL
 	 */
 	public function GetFilter ($direction = \MvcCore\IRoute::CONFIG_FILTER_IN) {
+		/** @var $this \MvcCore\Route */
 		return isset($this->filters[$direction])
 			? $this->filters[$direction]
 			: NULL;
@@ -500,6 +511,7 @@ trait GettersSetters
 	 * @return \MvcCore\Route
 	 */
 	public function SetFilter ($handler, $direction = \MvcCore\IRoute::CONFIG_FILTER_IN) {
+		/** @var $this \MvcCore\Route */
 		// there is possible to call any `callable` as closure function in variable
 		// except forms like `'ClassName::methodName'` and `['childClassName', 'parent::methodName']`
 		// and `[$childInstance, 'parent::methodName']`.
@@ -507,7 +519,6 @@ trait GettersSetters
 			(is_string($handler) && strpos($handler, '::') !== FALSE) ||
 			(is_array($handler) && strpos($handler[1], '::') !== FALSE)
 		) ? FALSE : TRUE;
-		/** @var $this \MvcCore\Route */
 		$this->filters[$direction] = [$closureCalling, $handler];
 		return $this;
 	}
@@ -520,6 +531,7 @@ trait GettersSetters
 	 * @return string|NULL
 	 */
 	public function GetMethod () {
+		/** @var $this \MvcCore\Route */
 		return $this->method;
 	}
 
@@ -546,6 +558,7 @@ trait GettersSetters
 	 * @return string|NULL
 	 */
 	public function GetRedirect () {
+		/** @var $this \MvcCore\Route */
 		return $this->redirect;
 	}
 
@@ -571,6 +584,7 @@ trait GettersSetters
 	 * @return bool
 	 */
 	public function GetAbsolute () {
+		/** @var $this \MvcCore\Route */
 		return $this->absolute || (isset($this->flags[0]) && ((bool)$this->flags[0]));
 	}
 
@@ -596,6 +610,7 @@ trait GettersSetters
 	 * @return string|NULL
 	 */
 	public function GetGroupName () {
+		/** @var $this \MvcCore\Route */
 		return $this->groupName;
 	}
 
@@ -620,6 +635,7 @@ trait GettersSetters
 	 * @return \string[]|NULL
 	 */
 	public function GetReverseParams () {
+		/** @var $this \MvcCore\Route */
 		return $this->reverseParams !== NULL 
 			? array_keys($this->reverseParams)
 			: [];
@@ -649,6 +665,7 @@ trait GettersSetters
 	 * @return array|NULL
 	 */
 	public function & GetMatchedParams () {
+		/** @var $this \MvcCore\Route */
 		return $this->matchedParams;
 	}
 	
@@ -657,6 +674,7 @@ trait GettersSetters
 	 * @return \MvcCore\Router|\MvcCore\IRouter
 	 */
 	public function GetRouter () {
+		/** @var $this \MvcCore\Route */
 		return $this->router;
 	}
 	
@@ -685,6 +703,7 @@ trait GettersSetters
 	 * @return mixed
 	 */
 	public function GetAdvancedConfigProperty ($propertyName) {
+		/** @var $this \MvcCore\Route */
 		$result = NULL;
 		if (isset($this->config[$propertyName]))
 			$result = $this->config[$propertyName];

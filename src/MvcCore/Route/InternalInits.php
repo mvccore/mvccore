@@ -43,6 +43,7 @@ trait InternalInits
 	 * @return void
 	 */
 	protected function initMatchAndReverse () {
+		/** @var $this \MvcCore\Route */
 		if ($this->reverseSections !== NULL) return;
 		if ($this->pattern === NULL)
 			$this->throwExceptionIfKeyPropertyIsMissing('pattern');
@@ -82,6 +83,7 @@ trait InternalInits
 	 * @return \stdClass[][] Two arrays with array with `\stdClass` objects.
 	 */
 	protected function initSectionsInfoForMatchAndReverse (& $match, & $reverse) {
+		/** @var $this \MvcCore\Route */
 		$matchInfo = [];
 		$reverseInfo = [];
 		$reverseIndex = 0;
@@ -161,6 +163,7 @@ trait InternalInits
 	 * @return void
 	 */
 	protected function initReverse () {
+		/** @var $this \MvcCore\Route */
 		if ($this->reverseSections !== NULL) return;
 		$reverse = NULL;
 		if ($this->reverse !== NULL) {
@@ -204,6 +207,7 @@ trait InternalInits
 	 * @return \stdClass[][] An array with `\stdClass` objects.
 	 */
 	protected function & initSectionsInfo (& $pattern) {
+		/** @var $this \MvcCore\Route */
 		$result = [];
 		$index = 0;
 		$length = mb_strlen($pattern);
@@ -260,6 +264,7 @@ trait InternalInits
 	 *						`\stdClass` objects with data about each reverse param.
 	 */
 	protected function & initReverseParams (& $reverse, & $reverseSectionsInfo, & $constraints, & $match = NULL) {
+		/** @var $this \MvcCore\Route */
 		$result = [];
 		$completeMatch = $match !== NULL;
 		$reverseIndex = 0;
@@ -346,6 +351,7 @@ trait InternalInits
 	 *						second could be `NULL`
 	 */
 	protected function initReverseParamsGetGreedyInfo (& $reverseSectionsInfo, & $constraints, & $paramName, & $sectionIndex, & $greedyCaught) {
+		/** @var $this \MvcCore\Route */
 		// complete greedy flag by star character inside param name
 		$greedyFlag = mb_strpos($paramName, '*') !== FALSE;
 		$sectionIsLast = NULL;
@@ -391,6 +397,7 @@ trait InternalInits
 	 * @return void
 	 */
 	protected function initFlagsByPatternOrReverse ($pattern) {
+		/** @var $this \MvcCore\Route */
 		$scheme = static::FLAG_SCHEME_NO;
 		if (mb_strpos($pattern, '//') === 0) {
 			$scheme = static::FLAG_SCHEME_ANY;
@@ -439,6 +446,7 @@ trait InternalInits
 	 * @return string
 	 */
 	protected function initMatchComposeRegex (& $match, & $matchSectionsInfo, & $reverseParams, & $constraints) {
+		/** @var $this \MvcCore\Route */
 		$sections = [];
 		$paramIndex = 0;
 		$reverseParamsKeys = array_keys($reverseParams);
@@ -534,6 +542,7 @@ trait InternalInits
 	 * @return void
 	 */
 	protected function throwExceptionIfKeyPropertyIsMissing ($propsNames) {
+		/** @var $this \MvcCore\Route */
 		$propsNames = func_get_args();
 		throw new \LogicException(
 			"[".get_class()."] Route configuration property/properties is/are"
@@ -550,6 +559,7 @@ trait InternalInits
 	 * @return string
 	 */
 	public function __toString () {
+		/** @var $this \MvcCore\Route */
 		$type = new \ReflectionClass($this);
 		$allProps = $type->getProperties(
 			\ReflectionProperty::IS_PUBLIC |
@@ -611,6 +621,7 @@ trait InternalInits
 	 * @return void
 	 */
 	public function __wakeup () {
+		/** @var $this \MvcCore\Route */
 		$this->router = \MvcCore\Application::GetInstance()->GetRouter();
 	}
 }
