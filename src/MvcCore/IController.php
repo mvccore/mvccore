@@ -68,6 +68,36 @@ namespace MvcCore;
 interface IController
 {
 	/**
+	 * Initial value after controller has been instantiated.
+	 */
+	const DISPATCH_STATE_CREATED			= 0;
+
+	/**
+	 * Value after executing the `Init()` method.
+	 */
+	const DISPATCH_STATE_INITIALIZED		= 1;
+	
+	/**
+	 * Value after executing the `PreDispatch()` method.
+	 */
+	const DISPATCH_STATE_PRE_DISPATCHED		= 2;
+	
+	/**
+	 * Value after executing the action method.
+	 */
+	const DISPATCH_STATE_ACTION_EXECUTED	= 3;
+	
+	/**
+	 * Value after executing the `Render ()` method.
+	 */
+	const DISPATCH_STATE_RENDERED			= 4;
+	
+	/**
+	 * Value after executing the `Terminate()` or `Redirect()` method.
+	 */
+	const DISPATCH_STATE_TERMINATED			= 5;
+
+	/**
 	 * Return always new instance of statically called class, no singleton.
 	 * Always called from `\MvcCore::DispatchControllerAction()` before controller is dispatched,
 	 * or always called in `\MvcCore\Controller::autoInitMembers();` in base controller initialization.
@@ -464,6 +494,12 @@ interface IController
 	 * @return void
 	 */
 	public function AssetAction ();
+	
+	/**
+	 * Rendering process alias for `\MvcCore\Controller::Render();`.
+	 * @return string
+	 */
+	public function __toString ();
 
 	/**
 	 * - This method is called INTERNALLY in lifecycle dispatching process,

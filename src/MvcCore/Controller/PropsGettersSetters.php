@@ -152,12 +152,12 @@ trait PropsGettersSetters
 	 * - 0 => Controller has been created.
 	 * - 1 => Controller has been initialized.
 	 * - 2 => Controller has been pre-dispatched.
-	 * - 3 => controller has been action dispatched.
+	 * - 3 => controller has been action executed.
 	 * - 4 => Controller has been rendered.
 	 * - 5 => Controller has been redirected.
 	 * @var int
 	 */
-	protected $dispatchState = 0;
+	protected $dispatchState = \MvcCore\IController::DISPATCH_STATE_CREATED;
 
 	/**
 	 * Parent controller instance if any.

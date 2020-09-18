@@ -300,7 +300,9 @@ trait Dispatching
 			$ctrlType = new \ReflectionClass($this->controller);
 			$dispatchStateProperty = $ctrlType->getProperty('dispatchState');
 			$dispatchStateProperty->setAccessible(TRUE);
-			$dispatchStateProperty->setValue($this->controller, 5);
+			$dispatchStateProperty->setValue(
+				$this->controller, \MvcCore\IController::DISPATCH_STATE_TERMINATED
+			);
 		}
 		$this->ProcessCustomHandlers($this->postTerminateHandlers);
 		return $this;

@@ -16,6 +16,14 @@ namespace MvcCore\Controller;
 trait Rendering
 {
 	/**
+	 * Rendering process alias for `\MvcCore\Controller::Render();`.
+	 * @return string
+	 */
+	public function __toString () {
+		return $this->Render();
+	}
+
+	/**
 	 * - This method is called INTERNALLY in lifecycle dispatching process,
 	 *   but you can use it sooner or in any different time for custom render purposes.
 	 * - Render prepared controller/action view in path by default:
@@ -29,11 +37,11 @@ trait Rendering
 	 */
 	public function Render ($controllerOrActionNameDashed = NULL, $actionNameDashed = NULL) {
 		/** @var $this \MvcCore\Controller */
-		if ($this->dispatchState == 0)
+		if ($this->dispatchState < \MvcCore\IController::DISPATCH_STATE_INITIALIZED)
 			$this->Init();
-		if ($this->dispatchState == 1)
+		if ($this->dispatchState < \MvcCore\IController::DISPATCH_STATE_PRE_DISPATCHED)
 			$this->PreDispatch();
-		if ($this->dispatchState < 4 && $this->viewEnabled) {
+		if ($this->dispatchState < \MvcCore\IController::DISPATCH_STATE_RENDERED && $this->viewEnabled) {
 			$topMostParentCtrl = $this->parentController === NULL;
 			// if this is child controller - set up view store with parent controller view store
 			if (!$topMostParentCtrl)
@@ -65,7 +73,7 @@ trait Rendering
 				);
 			}
 		}
-		$this->dispatchState = 4;
+		$this->dispatchState = \MvcCore\IController::DISPATCH_STATE_RENDERED;
 		$result = '';
 		return $result;
 	}
@@ -278,7 +286,7 @@ trait Rendering
 		);
 		$actionResult = $this->view->RenderScript($viewScriptPath);
 		if (!$topMostParentCtrl) {
-			$this->dispatchState = 4;
+			$this->dispatchState = \MvcCore\IController::DISPATCH_STATE_RENDERED;
 			return $actionResult;
 		}
 		// create top most parent layout view, set up and render to outputResult
@@ -294,7 +302,7 @@ trait Rendering
 		unset($layout, $this->view);
 		// set up response only
 		$this->XmlResponse($outputResult, FALSE);
-		$this->dispatchState = 4;
+		$this->dispatchState = \MvcCore\IController::DISPATCH_STATE_RENDERED;
 		$result = '';
 		return $result;
 	}
@@ -329,7 +337,7 @@ trait Rendering
 			// render action view into string
 			$this->view->RenderScript($viewScriptPath);
 		}
-		$this->dispatchState = 4;
+		$this->dispatchState = \MvcCore\IController::DISPATCH_STATE_RENDERED;
 		$result = '';
 		return $result;
 	}
