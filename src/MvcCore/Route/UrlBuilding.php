@@ -119,6 +119,7 @@ trait UrlBuilding
 		}
 		// filter params
 		list(,$filteredParams) = $this->Filter($allParamsClone, $defaultUrlParams, \MvcCore\IRoute::CONFIG_FILTER_OUT);
+		$filteredParams = $filteredParams ?: [];
 		// split params into domain params array and into path and query params array
 		$domainParams = $this->urlGetAndRemoveDomainPercentageParams($filteredParams);
 		// build reverse pattern
