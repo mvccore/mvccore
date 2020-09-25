@@ -38,8 +38,8 @@ namespace MvcCore;
  *
  * MvcCore view properties and helpers:
  * @property-read \MvcCore\Controller $controller Currently dispatched controller instance.
- * @method \MvcCore\Ext\Views\Helpers\Css Css(string $groupName = self::GROUP_NAME_DEFAULT) Get css helper instance by group name. To use this method, you need to install extension `mvccore/ext-view-helper-assets`.
- * @method \MvcCore\Ext\Views\Helpers\Js Js(string $groupName = self::GROUP_NAME_DEFAULT) Get js helper instance by group name. To use this method, you need to install extension `mvccore/ext-view-helper-assets`.
+ * @method \MvcCore\Ext\Views\Helpers\CssHelper Css(string $groupName = self::GROUP_NAME_DEFAULT) Get css helper instance by group name. To use this method, you need to install extension `mvccore/ext-view-helper-assets`.
+ * @method \MvcCore\Ext\Views\Helpers\JsHelper Js(string $groupName = self::GROUP_NAME_DEFAULT) Get js helper instance by group name. To use this method, you need to install extension `mvccore/ext-view-helper-assets`.
  * @method string FormatDate(\DateTime|\IntlCalendar|int $dateTimeOrTimestamp = NULL, int|string $dateTypeOrFormatMask = NULL, int $timeType = NULL, string|\IntlTimeZone|\DateTimeZone $timeZone = NULL, int $calendar = NULL) Format given date time by `Intl` extension or by `strftime()` as fallback. To use this method, you need to install extension `mvccore/ext-view-helper-formatdatetime`.
  * @method string FormatNumber(float|int $number = 0.0, int $decimals = 0, string $dec_point = NULL , string $thousands_sep = NULL) To use this method, you need to install extension `mvccore/ext-view-helper-formatnumber`.
  * @method string FormatMoney(float|int$number = 0.0, int $decimals = 0, string $dec_point = NULL , string $thousands_sep = NULL) To use this method, you need to install extension `mvccore/ext-view-helper-formatmoney`.
