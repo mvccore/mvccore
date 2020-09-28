@@ -34,8 +34,6 @@ trait Helpers {
 	 *    All ' are converted to \u0027. Available as of PHP 5.3.0.
 	 *  - `JSON_HEX_QUOT`:
 	 *    All " are converted to \u0022. Available as of PHP 5.3.0.
-	 *  - `JSON_NUMERIC_CHECK`:
-	 *    Encodes numeric strings as numbers. Available as of PHP 5.3.3.
 	 *  - `JSON_UNESCAPED_SLASHES`:
 	 *    Don't escape /. Available as of PHP 5.4.0.
 	 *  - `JSON_PRESERVE_ZERO_FRACTION`:
@@ -43,6 +41,8 @@ trait Helpers {
 	 * Possible JSON encoding flags to add:
 	 *  - `JSON_PRETTY_PRINT`:
 	 *    Encode JSON into pretty print syntax, Available as of PHP 5.4.0.
+	 *  - `JSON_NUMERIC_CHECK`:
+	 *    Encodes numeric strings as numbers (be carefull for phone numbers). Available as of PHP 5.3.3.
 	 *  - `JSON_UNESCAPED_UNICODE`:
 	 *    Encode multibyte Unicode characters literally (default is to escape as \uXXXX). Available as of PHP 5.4.0.
 	 *  - `JSON_UNESCAPED_LINE_TERMINATORS`:
@@ -70,8 +70,7 @@ trait Helpers {
 			define('JSON_PRESERVE_ZERO_FRACTION', 1024);
 		$flags |= (
 			JSON_HEX_TAG | JSON_HEX_AMP | JSON_HEX_APOS | JSON_HEX_QUOT |
-			JSON_NUMERIC_CHECK | JSON_UNESCAPED_SLASHES |
-			JSON_PRESERVE_ZERO_FRACTION
+			JSON_UNESCAPED_SLASHES | JSON_PRESERVE_ZERO_FRACTION
 		);
 		//var_dump(decbin($flags));
 		if (\PHP_VERSION_ID >= 50500) {

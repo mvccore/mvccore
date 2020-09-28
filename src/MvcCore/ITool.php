@@ -78,8 +78,6 @@ interface ITool
 	 *    All ' are converted to \u0027. Available as of PHP 5.3.0.
 	 *  - `JSON_HEX_QUOT`:
 	 *    All " are converted to \u0022. Available as of PHP 5.3.0.
-	 *  - `JSON_NUMERIC_CHECK`:
-	 *    Encodes numeric strings as numbers. Available as of PHP 5.3.3.
 	 *  - `JSON_UNESCAPED_SLASHES`:
 	 *    Don't escape /. Available as of PHP 5.4.0.
 	 *  - `JSON_PRESERVE_ZERO_FRACTION`:
@@ -87,6 +85,8 @@ interface ITool
 	 * Possible JSON encoding flags to add:
 	 *  - `JSON_PRETTY_PRINT`:
 	 *    Encode JSON into pretty print syntax, Available as of PHP 5.4.0.
+	 *  - `JSON_NUMERIC_CHECK`:
+	 *    Encodes numeric strings as numbers (be carefull for phone numbers). Available as of PHP 5.3.3.
 	 *  - `JSON_UNESCAPED_UNICODE`:
 	 *    Encode multibyte Unicode characters literally (default is to escape as \uXXXX). Available as of PHP 5.4.0.
 	 *  - `JSON_UNESCAPED_LINE_TERMINATORS`:
