@@ -19,7 +19,7 @@ trait Converters
 	 * Try to convert database value into target type.
 	 * @param mixed $rawValue
 	 * @param string $typeStr
-	 * @return array
+	 * @return array First item is conversion boolean success, second item is converted result.
 	 */
 	protected static function convertToType ($rawValue, $typeStr) {
 		$conversionResult = FALSE;
