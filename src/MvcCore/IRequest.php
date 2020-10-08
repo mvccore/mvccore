@@ -153,6 +153,11 @@ interface IRequest
 	 */
 	const METHOD_PATCH = 'PATCH';
 
+	/**
+	 * Requests that performs a message loop-back test along the path to the target resource, providing a useful debugging mechanism.
+	 */
+	const METHOD_TRACE = 'TRACE';
+
 
 	/**
 	 * Lower case and upper case alphabet characters only.

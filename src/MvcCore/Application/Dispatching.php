@@ -292,7 +292,10 @@ trait Dispatching
 			}
 			$this->response->SendHeaders();
 		}
-		if (!$this->response->IsSentBody())
+		if (
+			!$this->response->IsSentBody() &&
+			!$this->request->GetMethod() !== \MvcCore\IRequest::METHOD_HEAD
+		)
 			$this->response->SendBody();
 		// exit; // Why to force exit? What if we want to do something more?
 		$this->terminated = TRUE;

@@ -65,6 +65,10 @@ trait Rendering
 					$sessionClass::Close();
 				}
 				$this->response->SendHeaders();
+				if ($this->request->GetMethod() === \MvcCore\IRequest::METHOD_HEAD) {
+					$this->Terminate();
+					return '';
+				}
 				if (ob_get_length() !== FALSE) ob_end_flush();
 				return $this->renderWithoutObContinuously(
 					$controllerOrActionNameDashed,
