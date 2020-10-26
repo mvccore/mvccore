@@ -258,7 +258,7 @@ trait UrlBuilding
 			// in domain params array to complete absolute URL by developer
 			// and there could be also `basePath` param defined.
 			return $this->urlAbsPartAndSplitByGlobalSwitchOrBasePath(
-				$request, $resultUrl, $domainParams, $domainParamsFlag, $splitUrl
+				$request, $resultUrl, $domainParams, (bool) $domainParamsFlag, $splitUrl
 			);
 		}
 	}

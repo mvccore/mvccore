@@ -169,7 +169,7 @@ trait Dispatching
 					// if view exists - change controller name to core controller, if not let it go to exception
 					$controllerName = $this->controllerClass;
 				} else {
-					return $this->DispatchException("Controller class `$controllerName` doesn't exist.", 404);
+					return $this->DispatchException("Controller class `{$controllerName}` doesn't exist.", 404);
 				}
 			}
 		}
