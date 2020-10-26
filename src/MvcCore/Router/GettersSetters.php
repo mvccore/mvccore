@@ -209,8 +209,11 @@ trait GettersSetters
 	public function SetPreRouteMatchingHandler (callable $preRouteMatchingHandler = NULL) {
 		/** @var $this \MvcCore\Router */
 		$this->preRouteMatchingHandler = $preRouteMatchingHandler;
-		if ($preRouteMatchingHandler === NULL)
+		if ($preRouteMatchingHandler !== NULL) {
+			$this->anyRoutesConfigured = TRUE;
+		} else {
 			$this->anyRoutesConfigured = count($this->routes) > 0;
+		}
 		return $this;
 	}
 
