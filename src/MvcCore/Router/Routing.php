@@ -225,6 +225,7 @@ trait Routing
 			$requestCtrlAndAlsoAction = $requestCtrlNameNotNull && $requestActionNameNotNull;
 			$requestCtrlOrAction = $requestCtrlNameNotNull || $requestActionNameNotNull;
 			$this->routeByQueryString = (
+				$this->anyRoutesConfigured !== TRUE ||
 				$requestCtrlAndAlsoAction ||
 				($requestCtrlOrAction && (
 					$reqScriptName === $reqPath || 
