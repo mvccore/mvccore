@@ -48,6 +48,14 @@ interface IConfig
 	public static function SetConfigCache ($appRootRelativePath, \MvcCore\IConfig $config);
 
 	/**
+	 * Clear configs memory cache by relative path from app root 
+	 * or clear whole configs memory cache if `NULL` specified.
+	 * @param string|NULL $appRootRelativePath
+	 * @return bool
+	 */
+	public static function ClearConfigCache ($appRootRelativePath = NULL);
+
+	/**
 	 * Return environment configuration data from system config. Environment
 	 * configuration data are always stored under root level section `[environments]`.
 	 * @param \MvcCore\IConfig $config

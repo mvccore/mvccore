@@ -123,6 +123,22 @@ trait PropsGettersSetters
 	}
 
 	/**
+	 * Clear configs memory cache by relative path from app root 
+	 * or clear whole configs memory cache if `NULL` specified.
+	 * @param string|NULL $appRootRelativePath
+	 * @return bool
+	 */
+	public static function ClearConfigCache ($appRootRelativePath = NULL) {
+		/** @var $this \MvcCore\Config */
+		if ($appRootRelativePath === NULL) {
+			static::$configsCache = [];
+		} else {
+			unset(static::$configsCache[$appRootRelativePath]);
+		}
+		return TRUE;
+	}
+
+	/**
 	 * Full path, where are configuration data stored.
 	 * @return string
 	 */
