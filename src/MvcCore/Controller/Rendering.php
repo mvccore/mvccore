@@ -53,11 +53,12 @@ trait Rendering
 			}
 			// render this view or view with layout by render mode:
 			if (($this->renderMode & \MvcCore\IView::RENDER_WITH_OB_FROM_ACTION_TO_LAYOUT) != 0) {
-				return $this->renderWithObFromActionToLayout(
+				$this->renderWithObFromActionToLayout(
 					$controllerOrActionNameDashed,
 					$actionNameDashed,
 					$topMostParentCtrl
 				);
+				return '';
 			} else /*if (($this->renderMode & \MvcCore\IView::RENDER_WITHOUT_OB_CONTINUOUSLY) != 0)*/ {
 				$sessionClass = $this->GetApplication()->GetSessionClass();
 				if ($sessionClass::GetStarted()) {
@@ -69,12 +70,14 @@ trait Rendering
 					$this->Terminate();
 					return '';
 				}
-				if (ob_get_length() !== FALSE) ob_end_flush();
-				return $this->renderWithoutObContinuously(
+				if (ob_get_length() !== FALSE) // flush out any previous content
+					while (ob_get_level() > 0) ob_end_flush();
+				$this->renderWithoutObContinuously(
 					$controllerOrActionNameDashed,
 					$actionNameDashed,
 					$topMostParentCtrl
 				);
+				return '';
 			}
 		}
 		$this->dispatchState = \MvcCore\IController::DISPATCH_STATE_RENDERED;
@@ -278,9 +281,9 @@ trait Rendering
 	 * @param string $controllerOrActionNameDashed
 	 * @param string $actionNameDashed
 	 * @param bool   $topMostParentCtrl
-	 * @return string
+	 * @return void
 	 */
-	protected function & renderWithObFromActionToLayout ($controllerOrActionNameDashed, $actionNameDashed, $topMostParentCtrl) {
+	protected function renderWithObFromActionToLayout ($controllerOrActionNameDashed, $actionNameDashed, $topMostParentCtrl) {
 		/** @var $this \MvcCore\Controller */
 		// complete paths
 		$viewScriptPath = $this->GetViewScriptPath($controllerOrActionNameDashed, $actionNameDashed);
@@ -291,7 +294,7 @@ trait Rendering
 		$actionResult = $this->view->RenderScript($viewScriptPath);
 		if (!$topMostParentCtrl) {
 			$this->dispatchState = \MvcCore\IController::DISPATCH_STATE_RENDERED;
-			return $actionResult;
+			return;
 		}
 		// create top most parent layout view, set up and render to outputResult
 		$viewClass = $this->application->GetViewClass();
@@ -307,8 +310,6 @@ trait Rendering
 		// set up response only
 		$this->XmlResponse($outputResult, FALSE);
 		$this->dispatchState = \MvcCore\IController::DISPATCH_STATE_RENDERED;
-		$result = '';
-		return $result;
 	}
 
 	/**
@@ -319,9 +320,9 @@ trait Rendering
 	 * @param string $controllerOrActionNameDashed
 	 * @param string $actionNameDashed
 	 * @param bool   $topMostParentCtrl
-	 * @return string
+	 * @return void
 	 */
-	protected function & renderWithoutObContinuously ($controllerOrActionNameDashed, $actionNameDashed, $topMostParentCtrl) {
+	protected function renderWithoutObContinuously ($controllerOrActionNameDashed, $actionNameDashed, $topMostParentCtrl) {
 		/** @var $this \MvcCore\Controller */
 		if ($topMostParentCtrl) {
 			// render layout view and action view inside it:
@@ -342,7 +343,5 @@ trait Rendering
 			$this->view->RenderScript($viewScriptPath);
 		}
 		$this->dispatchState = \MvcCore\IController::DISPATCH_STATE_RENDERED;
-		$result = '';
-		return $result;
 	}
 }
