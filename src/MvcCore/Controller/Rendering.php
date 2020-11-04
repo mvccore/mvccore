@@ -61,7 +61,7 @@ trait Rendering
 				return '';
 			} else /*if (($this->renderMode & \MvcCore\IView::RENDER_WITHOUT_OB_CONTINUOUSLY) != 0)*/ {
 				$sessionClass = $this->GetApplication()->GetSessionClass();
-				if ($sessionClass::GetStarted()) {
+				if ($sessionClass::GetStarted() && !$this->response->IsSentHeaders()) {
 					$sessionClass::SendCookie();
 					$sessionClass::Close();
 				}
