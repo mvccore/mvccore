@@ -70,8 +70,8 @@ trait Rendering
 					$this->Terminate();
 					return '';
 				}
-				if (ob_get_length() !== FALSE) // flush out any previous content
-					while (ob_get_level() > 0) ob_end_flush();
+				//if (ob_get_length() !== FALSE) // flush out any previous content
+				//	while (ob_get_level() > 0) ob_end_flush();
 				$this->renderWithoutObContinuously(
 					$controllerOrActionNameDashed,
 					$actionNameDashed,
@@ -294,6 +294,7 @@ trait Rendering
 		$actionResult = $this->view->RenderScript($viewScriptPath);
 		if (!$topMostParentCtrl) {
 			$this->dispatchState = \MvcCore\IController::DISPATCH_STATE_RENDERED;
+			unset($actionResult, $this->view);
 			return;
 		}
 		// create top most parent layout view, set up and render to outputResult
@@ -309,6 +310,7 @@ trait Rendering
 		unset($layout, $this->view);
 		// set up response only
 		$this->XmlResponse($outputResult, FALSE);
+		unset($outputResult);
 		$this->dispatchState = \MvcCore\IController::DISPATCH_STATE_RENDERED;
 	}
 
@@ -336,11 +338,13 @@ trait Rendering
 				);
 			// render layout continuously with action view inside
 			$layout->RenderLayout($this->layout);
+			unset($layout, $this->view);
 		} else {
 			// complete paths
 			$viewScriptPath = $this->GetViewScriptPath($controllerOrActionNameDashed, $actionNameDashed);
 			// render action view into string
 			$this->view->RenderScript($viewScriptPath);
+			unset($this->view);
 		}
 		$this->dispatchState = \MvcCore\IController::DISPATCH_STATE_RENDERED;
 	}

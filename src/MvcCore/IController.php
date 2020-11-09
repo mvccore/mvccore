@@ -195,8 +195,8 @@ interface IController
 	 * This is INTERNAL, not TEMPLATE method, internally called in
 	 * `\MvcCore::DispatchControllerAction()` before controller is dispatched.
 	 * Usually call this as soon as possible after controller creation.
-	 * @param \MvcCore\Application $application
-	 * @return \MvcCore\Controller
+	 * @param \MvcCore\IApplication $application
+	 * @return \MvcCore\IController
 	 */
 	public function SetApplication (\MvcCore\IApplication $application);
 
@@ -219,10 +219,24 @@ interface IController
 	public function GetControllerName ();
 
 	/**
+	 * Set requested controller name - `"dashed-controller-name"`.
+	 * @param string $controllerName 
+	 * @return \MvcCore\IController
+	 */
+	public function SetControllerName ($controllerName);
+
+	/**
 	 * Get requested action name - `"dashed-action-name"`.
 	 * @return string
 	 */
 	public function GetActionName ();
+
+	/**
+	 * Set requested action name - `"dashed-action-name"`.
+	 * @param string $actionName
+	 * @return \MvcCore\IController
+	 */
+	public function SetActionName ($actionName);
 
 	/**
 	 * Set environment object to detect and manage environment name.
@@ -280,12 +294,21 @@ interface IController
 	public function SetRouter (\MvcCore\IRouter$router);
 
 	/**
-	 * Boolean about AJAX request.
+	 * Get boolean about AJAX request.
 	 * `TRUE` if request is requested from browser by `XmlHttpRequest` object
 	 * with http header: `X-Requested-With: AnyJavascriptFrameworkName`, `FALSE` otherwise.
 	 * @return boolean
 	 */
 	public function IsAjax ();
+	
+	/**
+	 * Set boolean about AJAX request.
+	 * `TRUE` if request is requested from browser by `XmlHttpRequest` object
+	 * with http header: `X-Requested-With: AnyJavascriptFrameworkName`, `FALSE` otherwise.
+	 * @param boolean $ajax 
+	 * @return \MvcCore\IController
+	 */
+	public function SetIsAjax ($ajax);
 
 	/**
 	 * Get user model instance. Template method.
@@ -296,7 +319,7 @@ interface IController
 	/**
 	 * Set user model instance. Template method.
 	 * @param \MvcCore\IModel $user
-	 * @return \MvcCore\Controller
+	 * @return \MvcCore\IController
 	 */
 	public function SetUser ($user);
 
@@ -364,7 +387,7 @@ interface IController
 	public function SetLayout ($layout = '');
 
 	/**
-	 * Get customized sub-controls template path value. `NULL` by default.
+	 * Get customized sub-controllers template path value. `NULL` by default.
 	 * You need to set into this property any custom string as relative path to
 	 * your template file placed somewhere in `/App/Views/Scripts/`.
 	 * For example if you want to render template file placed in:
@@ -377,7 +400,7 @@ interface IController
 	public function GetViewScriptsPath ();
 
 	/**
-	 * Get customized sub-controls template path value. `NULL` by default.
+	 * Get customized sub-controllers template path value. `NULL` by default.
 	 * You need to set into this property any custom string as relative path to
 	 * your template file placed somewhere in `/App/Views/Scripts/`.
 	 * For example if you want to render template file placed in:
@@ -437,7 +460,7 @@ interface IController
 	 * Set parent controller instance
 	 * or `NULL` for "top most parent" controller.
 	 * Method for child controllers.
-	 * @param \MvcCore\IController|\MvcCore\Controller\Dispatching|NULL $parentController
+	 * @param \MvcCore\IController|NULL $parentController
 	 * @return \MvcCore\IController
 	 */
 	public function SetParentController (\MvcCore\IController $parentController = NULL);

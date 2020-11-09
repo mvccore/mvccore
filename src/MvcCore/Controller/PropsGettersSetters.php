@@ -108,7 +108,7 @@ trait PropsGettersSetters
 	protected $layout = 'layout';
 
 	/**
-	 * This property is to customize sub-controls template path. `NULL` by default.
+	 * This property is to customize sub-controllers template path. `NULL` by default.
 	 * You need to set into this property any custom string as relative path to
 	 * your template file placed somewhere in `/App/Views/Scripts/`.
 	 * For example if you want to render template file placed in:
@@ -235,8 +235,8 @@ trait PropsGettersSetters
 	 * This is INTERNAL, not TEMPLATE method, internally called in
 	 * `\MvcCore\Application::DispatchControllerAction()` before controller is dispatched.
 	 * Usually call this as soon as possible after controller creation.
-	 * @param \MvcCore\Application $application
-	 * @return \MvcCore\Controller|\MvcCore\Controller\PropsGettersSetters
+	 * @param \MvcCore\Application|\MvcCore\IApplication $application
+	 * @return \MvcCore\Controller
 	 */
 	public function SetApplication (\MvcCore\IApplication $application) {
 		/** @var $this \MvcCore\Controller */
@@ -254,12 +254,46 @@ trait PropsGettersSetters
 	}
 
 	/**
+	 * Set environment object to detect and manage environment name.
+	 * This is INTERNAL, not TEMPLATE method.
+	 * @param \MvcCore\Environment|\MvcCore\IEnvironment $environment
+	 * @return \MvcCore\Controller
+	 */
+	public function SetEnvironment (\MvcCore\IEnvironment $environment) {
+		/** @var $this \MvcCore\Controller */
+		$this->environment = $environment;
+		return $this;
+	}
+
+	/**
 	 * Get current application request object as reference.
 	 * @return \MvcCore\Request
 	 */
 	public function GetRequest () {
 		/** @var $this \MvcCore\Controller */
 		return $this->request;
+	}
+
+	/**
+	 * Sets up `\MvcCore\Request` object and other protected properties.
+	 * This is INTERNAL, not TEMPLATE method, internally called in
+	 * `\MvcCore\Application::DispatchControllerAction();` before controller is dispatched.
+	 * Usually call this as soon as possible after controller creation
+	 * to set up following controller properties:
+	 * - `\MvcCore\Controller::$request`
+	 * - `\MvcCore\Controller::$controllerName`
+	 * - `\MvcCore\Controller::$actionName`
+	 * - `\MvcCore\Controller::$ajax`
+	 * @param \MvcCore\Request|\MvcCore\IRequest $request
+	 * @return \MvcCore\Controller
+	 */
+	public function SetRequest (\MvcCore\IRequest $request) {
+		/** @var $this \MvcCore\Controller */
+		$this->request = $request;
+		$this->controllerName = ltrim($request->GetControllerName(), '/');
+		$this->actionName = $request->GetActionName();
+		$this->ajax = $request->IsAjax();
+		return $this;
 	}
 
 	/**
@@ -272,12 +306,34 @@ trait PropsGettersSetters
 	}
 
 	/**
+	 * Set requested controller name - `"dashed-controller-name"`.
+	 * @param string $controllerName 
+	 * @return \MvcCore\Controller
+	 */
+	public function SetControllerName ($controllerName) {
+		/** @var $this \MvcCore\Controller */
+		$this->controllerName = $controllerName;
+		return $this;
+	}
+
+	/**
 	 * Get requested action name - `"dashed-action-name"`.
 	 * @return string
 	 */
 	public function GetActionName () {
 		/** @var $this \MvcCore\Controller */
 		return $this->actionName;
+	}
+
+	/**
+	 * Set requested action name - `"dashed-action-name"`.
+	 * @param string $actionName
+	 * @return \MvcCore\Controller
+	 */
+	public function SetActionName ($actionName) {
+		/** @var $this \MvcCore\Controller */
+		$this->actionName = $actionName;
+		return $this;
 	}
 
 	/**
@@ -295,7 +351,7 @@ trait PropsGettersSetters
 	 * `\MvcCore::DispatchControllerAction()` before controller is dispatched.
 	 * Usually call this as soon as possible after controller creation.
 	 * @param \MvcCore\Response $response
-	 * @return \MvcCore\Controller|\MvcCore\Controller\PropsGettersSetters
+	 * @return \MvcCore\Controller
 	 */
 	public function SetResponse (\MvcCore\IResponse $response) {
 		/** @var $this \MvcCore\Controller */
@@ -318,7 +374,7 @@ trait PropsGettersSetters
 	 * `\MvcCore::DispatchControllerAction()` before controller is dispatched.
 	 * Usually call this as soon as possible after controller creation.
 	 * @param \MvcCore\Router $router
-	 * @return \MvcCore\Controller|\MvcCore\Controller\PropsGettersSetters
+	 * @return \MvcCore\Controller
 	 */
 	public function SetRouter (\MvcCore\IRouter $router) {
 		/** @var $this \MvcCore\Controller */
@@ -327,7 +383,7 @@ trait PropsGettersSetters
 	}
 
 	/**
-	 * Boolean about AJAX request.
+	 * Get boolean about AJAX request.
 	 * `TRUE` if request is requested from browser by `XmlHttpRequest` object
 	 * with http header: `X-Requested-With: AnyJavascriptFrameworkName`, `FALSE` otherwise.
 	 * @return boolean
@@ -335,6 +391,19 @@ trait PropsGettersSetters
 	public function IsAjax () {
 		/** @var $this \MvcCore\Controller */
 		return $this->ajax;
+	}
+	
+	/**
+	 * Set boolean about AJAX request.
+	 * `TRUE` if request is requested from browser by `XmlHttpRequest` object
+	 * with http header: `X-Requested-With: AnyJavascriptFrameworkName`, `FALSE` otherwise.
+	 * @param boolean $ajax 
+	 * @return \MvcCore\Controller
+	 */
+	public function SetIsAjax ($ajax) {
+		/** @var $this \MvcCore\Controller */
+		$this->ajax = $ajax;
+		return $this;
 	}
 
 	/**
@@ -349,7 +418,7 @@ trait PropsGettersSetters
 	/**
 	 * Set user model instance.
 	 * @param \MvcCore\Model|\MvcCore\IModel $user
-	 * @return \MvcCore\Controller|\MvcCore\Controller\PropsGettersSetters
+	 * @return \MvcCore\Controller
 	 */
 	public function SetUser ($user) {
 		/** @var $this \MvcCore\Controller */
@@ -371,7 +440,7 @@ trait PropsGettersSetters
 	/**
 	 * Set current controller view object.
 	 * @param \MvcCore\View $view
-	 * @return \MvcCore\Controller|\MvcCore\Controller\PropsGettersSetters
+	 * @return \MvcCore\Controller
 	 */
 	public function SetView (\MvcCore\IView $view) {
 		/** @var $this \MvcCore\Controller */
@@ -411,7 +480,7 @@ trait PropsGettersSetters
 	 *     output buffering. There is not used reponse object body property for
 	 *     this rendering mode. Http headers are sent before view rendering.
 	 * @param int $renderMode
-	 * @return \MvcCore\Controller|\MvcCore\Controller\PropsGettersSetters
+	 * @return \MvcCore\Controller
 	 */
 	public function SetRenderMode ($renderMode = \MvcCore\IView::RENDER_WITH_OB_FROM_ACTION_TO_LAYOUT) {
 		/** @var $this \MvcCore\Controller */
@@ -433,7 +502,7 @@ trait PropsGettersSetters
 	 * Set layout name to render html wrapper around rendered action view.
 	 * Example: `"front" | "admin" | "account"...`.
 	 * @param string $layout
-	 * @return \MvcCore\Controller|\MvcCore\Controller\PropsGettersSetters
+	 * @return \MvcCore\Controller
 	 */
 	public function SetLayout ($layout = '') {
 		/** @var $this \MvcCore\Controller */
@@ -442,7 +511,7 @@ trait PropsGettersSetters
 	}
 
 	/**
-	 * Get customized sub-controls template path value. `NULL` by default.
+	 * Get customized sub-controllers template path value. `NULL` by default.
 	 * You need to set into this property any custom string as relative path to
 	 * your template file placed somewhere in `/App/Views/Scripts/`.
 	 * For example if you want to render template file placed in:
@@ -458,7 +527,7 @@ trait PropsGettersSetters
 	}
 
 	/**
-	 * Get customized sub-controls template path value. `NULL` by default.
+	 * Get customized sub-controllers template path value. `NULL` by default.
 	 * You need to set into this property any custom string as relative path to
 	 * your template file placed somewhere in `/App/Views/Scripts/`.
 	 * For example if you want to render template file placed in:
@@ -467,7 +536,7 @@ trait PropsGettersSetters
 	 * necessary to render your template only by calling controller rendering by:
 	 * `$subcontrollerInstance->Render('custom');`
 	 * @param string|NULL $viewScriptsPath
-	 * @return \MvcCore\Controller|\MvcCore\Controller\PropsGettersSetters
+	 * @return \MvcCore\Controller
 	 */
 	public function SetViewScriptsPath ($viewScriptsPath = NULL) {
 		/** @var $this \MvcCore\Controller */
@@ -492,7 +561,7 @@ trait PropsGettersSetters
 	 * `PreDispatch()` method and if view will be automatically rendered with wrapping
 	 * layout view around after controller action is called. Or set `FALSE`
 	 * otherwise to not render any view. Default value is `TRUE` for all non-ajax requests.
-	 * @return \MvcCore\Controller|\MvcCore\Controller\PropsGettersSetters
+	 * @return \MvcCore\Controller
 	 */
 	public function SetViewEnabled ($viewEnabled = TRUE) {
 		/** @var $this \MvcCore\Controller */
@@ -516,7 +585,7 @@ trait PropsGettersSetters
 	 * or `NULL` for "top most parent" controller.
 	 * Method for child controllers.
 	 * @param \MvcCore\Controller|\MvcCore\IController|NULL $parentController
-	 * @return \MvcCore\Controller|\MvcCore\Controller\PropsGettersSetters
+	 * @return \MvcCore\Controller
 	 */
 	public function SetParentController (\MvcCore\IController $parentController = NULL) {
 		/** @var $this \MvcCore\Controller */
@@ -544,7 +613,7 @@ trait PropsGettersSetters
 	 * If you want only to add child controller, use method:
 	 * \MvcCore\Controller::AddChildController();` instead.
 	 * @param \MvcCore\Controller[]|\MvcCore\IController[] $childControllers
-	 * @return \MvcCore\Controller|\MvcCore\Controller\PropsGettersSetters
+	 * @return \MvcCore\Controller
 	 */
 	public function SetChildControllers (array $childControllers = []) {
 		/** @var $this \MvcCore\Controller */

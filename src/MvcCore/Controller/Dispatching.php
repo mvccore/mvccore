@@ -57,45 +57,6 @@ trait Dispatching
 	}
 
 	/**
-	 * Set environment object to detect and manage environment name.
-	 * This is INTERNAL, not TEMPLATE method.
-	 * @param \MvcCore\Environment|\MvcCore\IEnvironment $environment
-	 * @return \MvcCore\Controller
-	 */
-	public function SetEnvironment (\MvcCore\IEnvironment $environment) {
-		/** @var $this \MvcCore\Controller */
-		$this->environment = $environment;
-		return $this;
-	}
-
-
-	/**
-	 * Sets up `\MvcCore\Request` object and other protected properties.
-	 * This is INTERNAL, not TEMPLATE method, internally called in
-	 * `\MvcCore\Application::DispatchControllerAction();` before controller is dispatched.
-	 * Usually call this as soon as possible after controller creation
-	 * to set up following controller properties:
-	 * - `\MvcCore\Controller::$request`
-	 * - `\MvcCore\Controller::$controllerName`
-	 * - `\MvcCore\Controller::$actionName`
-	 * - `\MvcCore\Controller::$ajax`
-	 * @param \MvcCore\Request|\MvcCore\IRequest $request
-	 * @return \MvcCore\Controller
-	 */
-	public function SetRequest (\MvcCore\IRequest $request) {
-		/** @var $this \MvcCore\Controller */
-		$this->request = $request;
-		$this->controllerName = ltrim($request->GetControllerName(), '/');
-		$this->actionName = $request->GetActionName();
-		$this->ajax = $request->IsAjax();
-		if ($this->ajax || (
-			$this->controllerName == 'controller' &&
-			$this->actionName == 'asset'
-		)) $this->SetViewEnabled(FALSE);
-		return $this;
-	}
-
-	/**
 	 * Dispatching controller life cycle by given action.
 	 * This is INTERNAL, not TEMPLATE method, internally
 	 * called in `\MvcCore::DispatchControllerAction();`.
@@ -189,6 +150,10 @@ trait Dispatching
 		if ($this->parentController === NULL && !$this->request->IsCli()) {
 			if ($this->autoStartSession)
 				$this->application->SessionStart();
+			if ($this->ajax || (
+				$this->controllerName == 'controller' &&
+				$this->actionName == 'asset'
+			)) $this->viewEnabled = FALSE;
 			$responseContentType = $this->ajax ? 'text/javascript' : 'text/html';
 			$this->response->SetHeader('Content-Type', $responseContentType);
 		}
@@ -338,11 +303,16 @@ trait Dispatching
 			->SetParentController($this)
 			->SetApplication($this->application)
 			->SetEnvironment($this->environment)
-			// Method `SetRequest()` also sets `ajax`, `viewEnabled`, `controllerName` and `actionName`.
+			// Method `SetRequest()` also sets `ajax`, `controllerName` and `actionName`.
+			//->SetIsAjax($this->ajax)
+			//->SetControllerName($this->controllerName)
+			//->SetActionName($this->actionName)
 			->SetRequest($this->request)
 			->SetResponse($this->response)
 			->SetRouter($this->router)
+			->SetRenderMode($this->renderMode)
 			->SetLayout($this->layout)
+			->SetViewEnabled($this->viewEnabled)
 			->SetUser($this->user);
 		return $this;
 	}
