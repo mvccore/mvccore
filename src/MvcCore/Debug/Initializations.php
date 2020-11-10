@@ -25,8 +25,8 @@ trait Initializations
 	public static function Init ($forceDevelopmentMode = NULL) {
 		if (static::$debugging !== NULL) return;
 
-		if (self::$strictExceptionsMode === NULL)
-			self::initStrictExceptionsMode(self::$strictExceptionsMode);
+		if (static::$strictExceptionsMode === NULL)
+			self::initStrictExceptionsMode(static::$strictExceptionsMode);
 
 		$app = static::$app ?: (static::$app = \MvcCore\Application::GetInstance());
 		static::$requestBegin = $app->GetRequest()->GetStartTime();
@@ -57,7 +57,7 @@ trait Initializations
 	 * @return bool|NULL
 	 */
 	public static function SetStrictExceptionsMode ($strictExceptionsMode, array $errorLevelsToExceptions = []) {
-		if ($strictExceptionsMode && !self::$strictExceptionsMode) {
+		if ($strictExceptionsMode && !static::$strictExceptionsMode) {
 			$errorLevels = array_fill_keys($errorLevelsToExceptions, TRUE);
 			$allLevelsToExceptions = isset($errorLevels[E_ALL]);
 			$prevErrorHandler = NULL;
@@ -77,14 +77,14 @@ trait Initializations
 				}
 			);
 			self::$prevErrorHandler = & $prevErrorHandler;
-		} else if (!$strictExceptionsMode && self::$strictExceptionsMode) {
+		} else if (!$strictExceptionsMode && static::$strictExceptionsMode) {
 			if (self::$prevErrorHandler !== NULL) {
 				set_error_handler(self::$prevErrorHandler);
 			} else {
 				restore_error_handler();
 			}
 		}
-		return self::$strictExceptionsMode = $strictExceptionsMode;
+		return static::$strictExceptionsMode = $strictExceptionsMode;
 	}
 
 	/**
@@ -99,21 +99,30 @@ trait Initializations
 			$sysCfgDebug = static::getSystemCfgDebugSection();
 			if (isset($sysCfgDebug['strictExceptions'])) {
 				$rawStrictExceptions = $sysCfgDebug['strictExceptions'];
-				$rawStrictExceptions = is_array($rawStrictExceptions)
-					? $rawStrictExceptions
-					: explode(',', trim($rawStrictExceptions, '[]'));
-				$errorLevelsToExceptions = array_map(
-					function ($rawErrorLevel) {
-						$rawErrorLevel = trim($rawErrorLevel);
-						if (is_numeric($rawErrorLevel)) return intval($rawErrorLevel);
-						return constant($rawErrorLevel);
-					}, $rawStrictExceptions
-				);
+				if (
+					$rawStrictExceptions === 0 ||
+					$rawStrictExceptions === FALSE
+				) {
+					$strictExceptionsMode = FALSE;
+				} else {
+					$strictExceptionsMode = TRUE;
+					$rawStrictExceptions = is_array($rawStrictExceptions)
+						? $rawStrictExceptions
+						: explode(',', trim($rawStrictExceptions, '[]'));
+					$errorLevelsToExceptions = array_map(
+						function ($rawErrorLevel) {
+							$rawErrorLevel = trim($rawErrorLevel);
+							if (is_numeric($rawErrorLevel)) return intval($rawErrorLevel);
+							return constant($rawErrorLevel);
+						}, $rawStrictExceptions
+					);
+				}
 			} else {
-				$errorLevelsToExceptions = self::$strictExceptionsModeDefaultLevels;
+				$strictExceptionsMode = TRUE;
+				$errorLevelsToExceptions = static::$strictExceptionsModeDefaultLevels;
 			}
 		}
-		return self::SetStrictExceptionsMode($strictExceptionsMode, $errorLevelsToExceptions);
+		return static::SetStrictExceptionsMode($strictExceptionsMode, $errorLevelsToExceptions);
 	}
 
 	/**
