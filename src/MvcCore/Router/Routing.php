@@ -211,7 +211,7 @@ trait Routing
 	 *   controller or action in query string.
 	 * Else then choose strategy to complete controller and action by rewrite routes.
 	 * Return array with possible query string controller name and action.
-	 * @return array
+	 * @return \string[]
 	 */
 	protected function routeDetectStrategy () {
 		/** @var $this \MvcCore\Router */
