@@ -526,10 +526,8 @@ trait InternalInits
 					$lastFixedSectionContent .= ($lastCharIsSlash ? '' : '/') . '?';
 					$trailingSlash = '/?';
 				}}}
-		$result =  '#^' . implode('', $sections) . $trailingSlash . '$#';
-		if (preg_match('#[^\x20-\x7f]#', $result))
-			$result .= 'u'; // add UTF-8 modifier if string contains higher chars than ASCII
-		return $result;
+		// always add UTF-8 modifier to match UTF-8 request paths
+		return '#^' . implode('', $sections) . $trailingSlash . '$#u';
 	}
 
 	/**
