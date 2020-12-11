@@ -128,7 +128,7 @@ interface IModel
 	);
 
 	/**
-	 * Initialize `$this->config`, `$this->db` and `$this->resource` properties.
+	 * Initialize `$this->config`, `$this->connection` and `$this->resource` properties.
 	 * If no `$connectionName` specified by first argument, return connection
 	 * config by connection name defined first in `static::$connectionName`
 	 * and if there is nothing, return connection config by connection name
