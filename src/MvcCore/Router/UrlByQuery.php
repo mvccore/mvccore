@@ -27,8 +27,15 @@ trait UrlByQuery
 		/** @var $this \MvcCore\Router */
 		if ($givenRouteName == 'self') {
 			$params = array_merge($this->requestedParams ?: [], $params);
-			if ($controllerActionOrRouteName === static::DEFAULT_ROUTE_NAME && isset($params[static::URL_PARAM_PATH]))
-				unset($params[static::URL_PARAM_PATH]);
+			if (isset($params[static::URL_PARAM_PATH])) {
+				$defaultRouteName = static::DEFAULT_ROUTE_NAME;
+				if (
+					$controllerActionOrRouteName === $defaultRouteName || (
+						$this->currentRoute != NULL && 
+						$this->currentRoute->GetName() === $defaultRouteName
+					)
+				) unset($params[static::URL_PARAM_PATH]);
+			}
 		}
 		list($ctrlPc, $actionPc) = $this->urlByQueryStringCompleteCtrlAction(
 			$controllerActionOrRouteName, $params
