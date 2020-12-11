@@ -254,6 +254,7 @@ trait Dispatching
 	 * @return void
 	 */
 	public function PreDispatch () {
+		/** @var $this \MvcCore\Controller */
 		if ($this->dispatchState > \MvcCore\IController::DISPATCH_STATE_INITIALIZED) 
 			return;
 		if ($this->dispatchState == \MvcCore\IController::DISPATCH_STATE_CREATED) 
@@ -324,6 +325,7 @@ trait Dispatching
 	 * @return \MvcCore\ISession
 	 */
 	public function GetSessionNamespace ($name = \MvcCore\ISession::DEFAULT_NAMESPACE_NAME) {
+		/** @var $this \MvcCore\Controller */
 		$sessionClass = $this->application->GetSessionClass();
 		return $sessionClass::GetNamespace($name);
 	}
@@ -361,6 +363,7 @@ trait Dispatching
 	 * @return void
 	 */
 	public function Terminate () {
+		/** @var $this \MvcCore\Controller */
 		$this->dispatchState = \MvcCore\IController::DISPATCH_STATE_TERMINATED;
 		self::$allControllers = [];
 		$this->application->Terminate();
@@ -373,6 +376,7 @@ trait Dispatching
 	 * @return void
 	 */
 	public function AssetAction () {
+		/** @var $this \MvcCore\Controller */
 		$ext = '';
 		$path = $this->GetParam('path', 'a-zA-Z0-9_\-\/\.');
 		$path = '/' . ltrim(str_replace('..', '', $path), '/');

@@ -228,8 +228,9 @@ trait Dispatching
 					: mb_substr($viewScriptFullPath, mb_strlen($appRoot));
 				$ctrlClassFullName = $this->request->GetControllerName();
 				return $this->DispatchException(
-					"Controller class `$ctrlClassFullName` has not method `$actionNamePc` \n"
-					."or view doesn't exist: `$viewScriptPath`.",
+					"Controller class `{$ctrlClassFullName}` "
+					."has not method `{$actionNamePc}` \n"
+					."or view doesn't exist: `{$viewScriptPath}`.",
 					404
 				);
 			}
