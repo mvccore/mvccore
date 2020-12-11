@@ -124,7 +124,7 @@ trait Dispatching
 		// \MvcCore\Debug::Timer('dispatch');
 		
 		// Call `Render()` method only if dispatch state is not rendered yet:
-		if ($this->dispatchState < \MvcCore\IController::DISPATCH_STATE_RENDERED)
+		if ($this->viewEnabled && $this->dispatchState < \MvcCore\IController::DISPATCH_STATE_RENDERED)
 			$this->Render(
 				$this->controllerName,	// dashed ctrl name
 				$this->actionName		// dashed action name
