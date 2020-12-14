@@ -99,12 +99,16 @@ trait Connection
 				? $cfg->{$sysCfgProps->class}
 				: self::$defaultConnectionClass;
 			if ($conArgs->auth) {
+				$defaultOptions = self::$connectionArguments['default']['defaults'];
 				$rawOptions = isset($cfg->{$sysCfgProps->options})
-					? array_merge($conArgs->options, $cfg->{$sysCfgProps->options} ?: [])
-					: $conArgs->options;
+					? array_merge([], $defaultOptions, $conArgs->options, $cfg->{$sysCfgProps->options} ?: [])
+					: array_merge([], $defaultOptions, $conArgs->options);
 				$options = [];
 				foreach ($rawOptions as $optionKey => $optionValue) {
-					if (is_string($optionKey)) {
+					if (is_string($optionValue) && mb_strpos($optionValue, '\\PDO::') === 0)
+						if (defined($optionValue))
+							$optionValue = constant($optionValue);
+					if (is_string($optionKey) && mb_strpos($optionKey, '\\PDO::') === 0) {
 						if (defined($optionKey))
 							$options[constant($optionKey)] = $optionValue;
 					} else {

@@ -72,7 +72,6 @@ trait Props
 			'auth'		=> TRUE,
 			'fileDb'	=> FALSE,
 			'options'	=> [
-				'\PDO::ATTR_EMULATE_PREPARES'		=> TRUE,
 				'\PDO::MYSQL_ATTR_MULTI_STATEMENTS'	=> TRUE,
 				'\PDO::MYSQL_ATTR_INIT_COMMAND'		=> "SET NAMES 'UTF8'",
 			],
@@ -83,23 +82,28 @@ trait Props
 			'auth'		=> FALSE,
 			'fileDb'	=> TRUE,
 			'options'	=> [],
-			'defaults'	=> [
-				'\PDO::ATTR_TIMEOUT' => 15,
-			],
+			'defaults'	=> [],
 		],
 		'sqlsrv'		=> [
 			'dsn'		=> '{driver}:Server={host};Database={database}',
 			'auth'		=> TRUE,
 			'fileDb'	=> FALSE,
-			'options'	=> [],
-			'defaults'	=> [],
+			'options'	=> [
+				'\PDO::SQLSRV_ATTR_DIRECT_QUERY'	=> FALSE,
+				'\PDO::SQLSRV_ENCODING_UTF8'		=> TRUE,
+			],
+			'defaults'	=> ['port' => 1433,],
 		],
 		'default'		=> [
 			'dsn'		=> '{driver}:host={host};dbname={database}',
 			'auth'		=> TRUE,
 			'fileDb'	=> FALSE,
 			'options'	=> [],
-			'defaults'	=> [],
+			'defaults'	=> [
+				'\PDO::ATTR_TIMEOUT'				=> 30,
+				'\PDO::ATTR_EMULATE_PREPARES'		=> TRUE,
+				'\PDO::ATTR_ERRMODE'				=> '\PDO::ERRMODE_EXCEPTION',
+			],
 		],
 	];
 
