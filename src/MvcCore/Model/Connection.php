@@ -16,6 +16,14 @@ namespace MvcCore\Model;
 trait Connection
 {
 	/**
+	 * Return system configuration file database section properties names.
+	 * @return \stdClass
+	 */
+	public static function GetSysConfigProperties () {
+		return (object) static::$sysConfigProperties;
+	}
+
+	/**
 	 * Returns `\PDO` database connection by connection name/index,
 	 * usually by system config values (cached by local store)
 	 * or create new connection if no connection cached.
@@ -36,9 +44,12 @@ trait Connection
 			// if no connection index specified, try to get from class or from base model
 			if (self::$configs === NULL) static::loadConfigs(TRUE);
 			$connectionName = $connectionNameOrConfig;
-			if ($connectionName === NULL && isset(static::$connectionName)) $connectionName = static::$connectionName;
-			if ($connectionName === NULL && isset(self::$connectionName)) $connectionName = self::$connectionName;
-			if ($connectionName === NULL) $connectionName = self::$defaultConnectionName;
+			if ($connectionName === NULL && isset(static::$connectionName)) 
+				$connectionName = static::$connectionName;
+			if ($connectionName === NULL && isset(self::$connectionName)) 
+				$connectionName = self::$connectionName;
+			if ($connectionName === NULL) 
+				$connectionName = self::$defaultConnectionName;
 		}
 		if ($connectionName === NULL) throw new \InvalidArgumentException(
 			"[".get_called_class()."] No connection name or connection config specified."
@@ -54,7 +65,7 @@ trait Connection
 			);
 			if ($cfgIsNull) {
 				// if nothing found under connection name - take first database record
-				foreach (self::$configs as $key => $value) {
+				foreach (self::$configs as $value) {
 					if (is_object($value)) {
 						$cfg = $value;
 						break;
@@ -74,7 +85,7 @@ trait Connection
 	 * @return \PDO
 	 */
 	protected static function connect ($dbConfig) {
-		$sysCfgProps = (object) static::$systemConfigModelProps;
+		$sysCfgProps = (object) static::$sysConfigProperties;
 		$conArgsKey = isset(self::$connectionArguments[$dbConfig->{$sysCfgProps->driver}])
 			? $dbConfig->{$sysCfgProps->driver}
 			: 'default';
@@ -237,7 +248,7 @@ trait Connection
 	 */
 	public static function SetConfig (array $config = [], $connectionName = NULL) {
 		if (self::$configs === NULL) static::loadConfigs(FALSE);
-		$sysCfgProps = (object) static::$systemConfigModelProps;
+		$sysCfgProps = (object) static::$sysConfigProperties;
 		if ($connectionName === NULL) {
 			if (isset($config[$sysCfgProps->name])) {
 				$connectionName = $config[$sysCfgProps->name];
@@ -272,7 +283,7 @@ trait Connection
 				"[".get_class()."] System config not found in `"
 				. $configClass::GetSystemConfigPath() . "`."
 			);
-		$sysCfgProps = (object) static::$systemConfigModelProps;
+		$sysCfgProps = (object) static::$sysConfigProperties;
 		$dbSectionName = $sysCfgProps->sectionName;
 		if (!isset($systemCfg->{$dbSectionName}) && $throwExceptionIfNoSysConfig)
 			throw new \Exception(

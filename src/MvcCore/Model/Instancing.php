@@ -112,8 +112,10 @@ trait Instancing
 				$connectionName = $arg;
 			}
 		}
-		if ($connectionName === NULL && isset(static::$connectionName)) $connectionName = static::$connectionName;
-		if ($connectionName === NULL && isset(self::$connectionName)) $connectionName = self::$connectionName;
+		if ($connectionName === NULL && isset(static::$connectionName)) 
+			$connectionName = static::$connectionName;
+		if ($connectionName === NULL && isset(self::$connectionName)) 
+			$connectionName = self::$connectionName;
 		$this->config = static::GetConfig($connectionName);
 		$this->connection = static::GetConnection($connectionName);
 		if ($initResource)

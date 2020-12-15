@@ -143,6 +143,12 @@ interface IModel
 	public function Init ($args = []);
 
 	/**
+	 * Return system configuration file database section properties names.
+	 * @return \stdClass
+	 */
+	public static function GetSysConfigProperties ();
+
+	/**
 	 * Returns `\PDO` database connection by connection name/index,
 	 * usually by system config values (cached by local store)
 	 * or create new connection if no connection cached.

@@ -108,20 +108,15 @@ trait Props
 	];
 
 	/**
-	 * System config database configuration root node name, `db` by default.
-	 * @var string
+	 * System configuration file database section properties names.
+	 * @var \string[]
 	 */
-	protected static $systemConfigDbSectionName = 'db';
-
-	/**
-	 * System config debug configuration root node name (`debug` by default)
-	 * and all it's properties names.
-	 * @var string
-	 */
-	protected static $systemConfigModelProps = [
+	protected static $sysConfigProperties = [
 		'sectionName'	=> 'db',			// db section root node
 		'defaultName'	=> 'defaultName',	// default db connection name
 		'defaultClass'	=> 'defaultClass',	// custom \PDO implementation full class name
+		'retryAttempts'	=> 'retryAttempts',	// reconnection tries count if connection has been lost, extension required
+		'retryDelay'	=> 'retryDelay',	// delay before every reconnection, extension required
 		'name'			=> 'name',			// runtime configuration definition property for connection name
 		'index'			=> 'index',			// runtime configuration definition property for connection index
 		'driver'		=> 'driver',		// connection driver
