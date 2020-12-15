@@ -145,7 +145,7 @@ interface IModel
 	/**
 	 * Returns `\PDO` database connection by connection name/index,
 	 * usually by system config values (cached by local store)
-	 * or create new connection of no connection cached.
+	 * or create new connection if no connection cached.
 	 * @param string|int|array|\stdClass|NULL $connectionNameOrConfig
 	 * @param bool $strict	If `TRUE` and no connection under given name or given
 	 *						index found, exception is thrown. `TRUE` by default.
