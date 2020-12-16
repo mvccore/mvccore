@@ -63,7 +63,7 @@ trait Initializations
 			$prevErrorHandler = NULL;
 			$prevErrorHandler = set_error_handler(
 				function(
-					$errLevel, $errMessage, $errFile, $errLine, $errContext
+					$errLevel, $errMessage, $errFile, $errLine
 				) use (
 					& $prevErrorHandler, $errorLevels, $allLevelsToExceptions
 				) {
