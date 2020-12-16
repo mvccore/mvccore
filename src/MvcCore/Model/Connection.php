@@ -106,15 +106,22 @@ trait Connection
 		// Process connection string (dsn) with config replacements
 		$dsn = $conArgs->dsn;
 		$cfgArr = array_merge($conArgs->defaults, (array) $dbConfig);
+		$credentialsInDsn = (
+			mb_strpos($dsn, '{user}') !== FALSE &&
+			mb_strpos($dsn, '{password}') !== FALSE
+		);
 		foreach ($cfgArr as $key => $value) {
-			if (is_numeric($key)) continue;
+			if (
+				is_numeric($key) || 
+				mb_strpos($key, '\\PDO::') === 0 ||
+				$key == 'options'
+			) continue;
 			if (isset($sysCfgProps->{$key})) {
 				$prop = $sysCfgProps->{$key};
 				$value = isset($dbConfig->{$prop})
 					? $dbConfig->{$prop}
 					: $value;
 			}
-			if ($key == 'options') continue;
 			$dsn = str_replace('{'.$key.'}', $value, $dsn);
 		}
 		// If database required user and password credentials,
@@ -122,31 +129,33 @@ trait Connection
 		$connectionClass = isset($dbConfig->{$sysCfgProps->class})
 			? $dbConfig->{$sysCfgProps->class}
 			: self::$defaultConnectionClass;
-		if ($conArgs->auth) {
-			$defaultOptions = self::$connectionArguments['default']['defaults'];
-			$rawOptions = isset($dbConfig->{$sysCfgProps->options})
-				? array_merge([], $defaultOptions, $conArgs->options, $dbConfig->{$sysCfgProps->options} ?: [])
-				: array_merge([], $defaultOptions, $conArgs->options);
-			$options = [];
-			foreach ($rawOptions as $optionKey => $optionValue) {
-				if (is_string($optionValue) && mb_strpos($optionValue, '\\PDO::') === 0)
-					if (defined($optionValue))
-						$optionValue = constant($optionValue);
-				if (is_string($optionKey) && mb_strpos($optionKey, '\\PDO::') === 0) {
-					if (defined($optionKey))
-						$options[constant($optionKey)] = $optionValue;
-				} else {
-					$options[$optionKey] = $optionValue;
-				}
+		$defaultOptions = self::$connectionArguments['default']['options'];
+		$rawOptions = isset($dbConfig->{$sysCfgProps->options})
+			? array_merge([], $defaultOptions, $conArgs->options, $dbConfig->{$sysCfgProps->options} ?: [])
+			: array_merge([], $defaultOptions, $conArgs->options);
+		$options = [];
+		foreach ($rawOptions as $optionKey => $optionValue) {
+			if (is_string($optionValue) && mb_strpos($optionValue, '\\PDO::') === 0)
+				if (defined($optionValue))
+					$optionValue = constant($optionValue);
+			if (is_string($optionKey) && mb_strpos($optionKey, '\\PDO::') === 0) {
+				if (defined($optionKey))
+					$options[constant($optionKey)] = $optionValue;
+			} else {
+				$options[$optionKey] = $optionValue;
 			}
+		}
+		if ($conArgs->auth && !$credentialsInDsn) {
 			$connection = new $connectionClass(
 				$dsn,
 				$dbConfig->{$sysCfgProps->user},
-				$dbConfig->{$sysCfgProps->password},
+				(string) $dbConfig->{$sysCfgProps->password},
 				$options
 			);
 		} else {
-			$connection = new $connectionClass($dsn);
+			$connection = new $connectionClass(
+				$dsn, NULL, NULL, $options
+			);
 		}
 		return $connection;
 	}

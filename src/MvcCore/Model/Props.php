@@ -39,29 +39,29 @@ trait Props
 	 * @var array
 	 */
 	protected static $connectionArguments = [
-		'4D'			=> [
-			'dsn'		=> '{driver}:host={host};user={user};password={password};dbname={database};port={port};charset={charset}',
+		'cubrid'			=> [
+			'dsn'		=> '{driver}:host={host};port={port};dbname={database}',
 			'auth'		=> TRUE,
 			'fileDb'	=> FALSE,
 			'options'	=> [],
-			'defaults'	=> ['port' => 19812, 'charset' => 'UTF-8',],
+			'defaults'	=> ['port' => 33000,],
 		],
 		'firebird'		=> [
-			'dsn'		=> '{driver}:host={host};dbname={database};charset={charset}',
+			'dsn'		=> '{driver}:dbname={host}:{database};charset={charset}',
 			'auth'		=> TRUE,
 			'fileDb'	=> TRUE,
 			'options'	=> [],
 			'defaults'	=> ['charset' => 'UTF-8',],
 		],
 		'ibm'			=> [
-			'dsn'		=> 'ibm:DRIVER={IBM DB2 ODBC DRIVER};DATABASE={database};HOSTNAME={host};PORT={port};PROTOCOL={protocol};',
+			'dsn'		=> 'ibm:DRIVER={IBM DB2 ODBC DRIVER};DATABASE={database};HOSTNAME={host};PORT={port};PROTOCOL={protocol};UID={user};PWD={password}',
 			'auth'		=> TRUE,
 			'fileDb'	=> FALSE,
 			'options'	=> [],
 			'defaults'	=> ['port' => 56789, 'protocol' => 'TCPIP',],
 		],
 		'informix'		=> [
-			'dsn'		=> '{driver}:host={host};service={service};database={database};server={server};protocol={protocol};EnableScrollableCursors=1',
+			'dsn'		=> "{driver}:host={host}; service={service}; \ndatabase={database}; server={server}; protocol={protocol}; \nEnableScrollableCursors=1",
 			'auth'		=> TRUE,
 			'fileDb'	=> FALSE,
 			'options'	=> [],
@@ -72,6 +72,8 @@ trait Props
 			'auth'		=> TRUE,
 			'fileDb'	=> FALSE,
 			'options'	=> [
+				'\PDO::ATTR_TIMEOUT'				=> 30,
+				'\PDO::ATTR_EMULATE_PREPARES'		=> TRUE,
 				'\PDO::MYSQL_ATTR_MULTI_STATEMENTS'	=> TRUE,
 				'\PDO::MYSQL_ATTR_INIT_COMMAND'		=> "SET NAMES 'UTF8'",
 			],
@@ -82,15 +84,18 @@ trait Props
 			'auth'		=> FALSE,
 			'fileDb'	=> TRUE,
 			'options'	=> [],
-			'defaults'	=> [],
+			'defaults'	=> [
+				'\PDO::ATTR_TIMEOUT'				=> 30,
+				'\PDO::ATTR_EMULATE_PREPARES'		=> TRUE,
+			],
 		],
 		'sqlsrv'		=> [
 			'dsn'		=> '{driver}:Server={host};Database={database}',
 			'auth'		=> TRUE,
 			'fileDb'	=> FALSE,
 			'options'	=> [
+				'\PDO::SQLSRV_ATTR_QUERY_TIMEOUT'	=> 30,
 				'\PDO::SQLSRV_ATTR_DIRECT_QUERY'	=> FALSE,
-				'\PDO::SQLSRV_ENCODING_UTF8'		=> TRUE,
 			],
 			'defaults'	=> ['port' => 1433,],
 		],
@@ -98,12 +103,10 @@ trait Props
 			'dsn'		=> '{driver}:host={host};dbname={database}',
 			'auth'		=> TRUE,
 			'fileDb'	=> FALSE,
-			'options'	=> [],
-			'defaults'	=> [
-				'\PDO::ATTR_TIMEOUT'				=> 30,
-				'\PDO::ATTR_EMULATE_PREPARES'		=> TRUE,
+			'options'	=> [
 				'\PDO::ATTR_ERRMODE'				=> '\PDO::ERRMODE_EXCEPTION',
 			],
+			'defaults'	=> [],
 		],
 	];
 
