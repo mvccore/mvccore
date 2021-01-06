@@ -16,46 +16,10 @@ namespace MvcCore\Tool;
 trait Json {
 
 	/**
-	 * Safely encode json string from php value.
+	 * @inheritDocs
 	 * @param mixed $data
-	 * @param int   $flags
-	 * JSON encoding flags used by default:
-	 *  - `JSON_HEX_TAG`:
-	 *     All < and > are converted to \u003C and \u003E. Available as of PHP 5.3.0.
-	 *  - `JSON_HEX_AMP`:
-	 *    All & are converted to \u0026. Available as of PHP 5.3.0.
-	 *  - `JSON_HEX_APOS`:
-	 *    All ' are converted to \u0027. Available as of PHP 5.3.0.
-	 *  - `JSON_HEX_QUOT`:
-	 *    All " are converted to \u0022. Available as of PHP 5.3.0.
-	 *  - `JSON_UNESCAPED_SLASHES`:
-	 *    Don't escape /. Available as of PHP 5.4.0.
-	 *  - `JSON_PRESERVE_ZERO_FRACTION`:
-	 *    Ensures that float values are always encoded as a float value. Available as of PHP 5.6.6.
-	 * Possible JSON encoding flags to add:
-	 *  - `JSON_PRETTY_PRINT`:
-	 *    Encode JSON into pretty print syntax, Available as of PHP 5.4.0.
-	 *  - `JSON_NUMERIC_CHECK`:
-	 *    Encodes numeric strings as numbers (be carefull for phone numbers). Available as of PHP 5.3.3.
-	 *  - `JSON_UNESCAPED_UNICODE`:
-	 *    Encode multibyte Unicode characters literally (default is to escape as \uXXXX). Available as of PHP 5.4.0.
-	 *  - `JSON_UNESCAPED_LINE_TERMINATORS`:
-	 *    The line terminators are kept unescaped when JSON_UNESCAPED_UNICODE
-	 *    is supplied. It uses the same behaviour as it was before PHP 7.1
-	 *    without this constant. Available as of PHP 7.1.0.	The following
-	 *    constants can be combined to form options for json_decode()
-	 *    and json_encode().
-	 *  - `JSON_INVALID_UTF8_IGNORE`:
-	 *    Ignore invalid UTF-8 characters. Available as of PHP 7.2.0.
-	 *  - `JSON_INVALID_UTF8_SUBSTITUTE`:
-	 *    Convert invalid UTF-8 characters to \0xfffd (Unicode Character
-	 *    'REPLACEMENT CHARACTER') Available as of PHP 7.2.0.
-	 *  - `JSON_THROW_ON_ERROR`:
-	 *    Throws JsonException if an error occurs instead of setting the global
-	 *    error state that is retrieved with json_last_error() and
-	 *    json_last_error_msg(). JSON_PARTIAL_OUTPUT_ON_ERROR takes precedence
-	 *    over JSON_THROW_ON_ERROR. Available as of PHP 7.3.0.
-	 * @param int    $depth Set the maximum depth. Must be greater than zero, default: 512.
+	 * @param int $flags
+	 * @param int $depth Set the maximum depth. Must be greater than zero, default: 512.
 	 * @throws \RuntimeException|\JsonException JSON encoding error.
 	 * @return string
 	 */
@@ -87,25 +51,10 @@ trait Json {
 	}
 
 	/**
-	 * Safely decode json string into php `stdClass/array`.
+	 * @inheritDocs
 	 * @param string $jsonStr
-	 * @param int    $flags
-	 * - `JSON_BIGINT_AS_STRING`:
-	 *    Decodes large integers as their original string value. Available as of PHP 5.4.0.
-	 * - `JSON_OBJECT_AS_ARRAY`:
-	 *   Decodes JSON objects as PHP array. This option can be added automatically by calling json_decode() with
-	 *   the second parameter equal to TRUE. Available as of PHP 5.4.0.
-	 * - `JSON_INVALID_UTF8_IGNORE`:
-	 *   Ignore invalid UTF-8 characters. Available as of PHP 7.2.0.
-	 *  - `JSON_INVALID_UTF8_SUBSTITUTE`:
-	 *    Convert invalid UTF-8 characters to \0xfffd (Unicode Character
-	 *    'REPLACEMENT CHARACTER') Available as of PHP 7.2.0.
-	 *  - `JSON_THROW_ON_ERROR`:
-	 *    Throws JsonException if an error occurs instead of setting the global
-	 *    error state that is retrieved with json_last_error() and
-	 *    json_last_error_msg(). JSON_PARTIAL_OUTPUT_ON_ERROR takes precedence
-	 *    over JSON_THROW_ON_ERROR. Available as of PHP 7.3.0.
-	 * @param int    $depth User specified recursion depth, default: 512.
+	 * @param int $flags
+	 * @param int $depth User specified recursion depth, default: 512.
 	 * @throws \RuntimeException|\JsonException JSON decoding error.
 	 * @return object
 	 */
@@ -122,7 +71,7 @@ trait Json {
 	}
 	
 	/**
-	 * Recognize if given string is JSON or not without JSON parsing.
+	 * @inheritDocs
 	 * @see https://www.ietf.org/rfc/rfc4627.txt
 	 * @param string $jsonStr
 	 * @return bool

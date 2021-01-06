@@ -27,11 +27,13 @@ namespace MvcCore;
  * - Static functions to write into file by one process only.
  * - Static function to check core classes inheritance.
  */
-interface ITool
-{
+interface ITool {
+
 	/**
 	 * Convert all strings `"from" => "to"`:
 	 * - `"MyCustomValue"				=> "my-custom-value"`
+	 * - `"MyWTFValue"					=> "my-w-t-f-value"`
+	 * - `"MyWtfValue"					=> "my-wtf-value"`
 	 * - `"MyCustom/Value/InsideFolder"	=> "my-custom/value/inside-folder"`
 	 * @param string $pascalCase
 	 * @return string
@@ -41,6 +43,8 @@ interface ITool
 	/**
 	 * Convert all string `"from" => "to"`:
 	 * - `"my-custom-value"					=> "MyCustomValue"`
+	 * - `"my-wtf-value"					=> "MyWtfValue"`
+	 * - `"my-w-t-f-value"					=> "MyWTFValue"`
 	 * - `"my-custom/value/inside-folder"	=> "MyCustom/Value/InsideFolder"`
 	 * @param string $dashed
 	 * @return string
@@ -50,6 +54,8 @@ interface ITool
 	/**
 	 * Convert all string `"from" => "to"`:
 	 * - `"MyCutomValue"				=> "my_custom_value"`
+	 * - `"MyWTFValue"					=> "my_w_t_f_value"`
+	 * - `"MyWtfValue"					=> "my_wtf_value"`
 	 * - `"MyCutom/Value/InsideFolder"	=> "my_custom/value/inside_folder"`
 	 * @param string $pascalCase
 	 * @return string
@@ -59,6 +65,8 @@ interface ITool
 	/**
 	 * Convert all string `"from" => "to"`:
 	 * - `"my_custom_value"					=> "MyCutomValue"`
+	 * - `"my_wtf_value"					=> "MyWtfValue"`
+	 * - `"my_w_t_f_value"					=> "MyWTFValue"`
 	 * - `"my_custom/value/inside_folder"	=> "MyCutom/Value/InsideFolder"`
 	 * @param string $underscored
 	 * @return string
@@ -67,8 +75,6 @@ interface ITool
 
 	/**
 	 * Safely encode json string from php value.
-	 * @param mixed $data
-	 * @param int   $flags
 	 * JSON encoding flags used by default:
 	 *  - `JSON_HEX_TAG`:
 	 *     All < and > are converted to \u003C and \u003E. Available as of PHP 5.3.0.
@@ -105,7 +111,9 @@ interface ITool
 	 *    error state that is retrieved with json_last_error() and
 	 *    json_last_error_msg(). JSON_PARTIAL_OUTPUT_ON_ERROR takes precedence
 	 *    over JSON_THROW_ON_ERROR. Available as of PHP 7.3.0.
-	 * @param int    $depth Set the maximum depth. Must be greater than zero, default: 512.
+	 * @param mixed $data
+	 * @param int $flags
+	 * @param int $depth Set the maximum depth. Must be greater than zero, default: 512.
 	 * @throws \RuntimeException|\JsonException JSON encoding error.
 	 * @return string
 	 */
@@ -113,8 +121,6 @@ interface ITool
 
 	/**
 	 * Safely decode json string into php `stdClass/array`.
-	 * @param string $jsonStr
-	 * @param int    $flags
 	 * - `JSON_BIGINT_AS_STRING`:
 	 *    Decodes large integers as their original string value. Available as of PHP 5.4.0.
 	 * - `JSON_OBJECT_AS_ARRAY`:
@@ -130,7 +136,9 @@ interface ITool
 	 *    error state that is retrieved with json_last_error() and
 	 *    json_last_error_msg(). JSON_PARTIAL_OUTPUT_ON_ERROR takes precedence
 	 *    over JSON_THROW_ON_ERROR. Available as of PHP 7.3.0.
-	 * @param int    $depth User specified recursion depth, default: 512.
+	 * @param string $jsonStr
+	 * @param int $flags
+	 * @param int $depth User specified recursion depth, default: 512.
 	 * @throws \RuntimeException|\JsonException JSON decoding error.
 	 * @return object
 	 */
@@ -143,6 +151,12 @@ interface ITool
 	 * @return bool
 	 */
 	public static function IsJsonString ($jsonStr);
+
+	/**
+	 * Returns the OS-specific directory for temporary files.
+	 * @return string
+	 */
+	public static function GetSystemTmpDir ();
 
 	/**
 	 * Recognize if given string is query string without parsing.
@@ -161,12 +175,6 @@ interface ITool
 	public static function IsQueryString ($queryStr);
 
 	/**
-	 * Returns the OS-specific directory for temporary files.
-	 * @return string
-	 */
-	public static function GetSystemTmpDir ();
-
-	/**
 	 * Safely invoke internal PHP function with it's own error handler.
 	 * Error handler accepts arguments:
 	 * - `string $errMessage`	- Error message.
@@ -180,7 +188,7 @@ interface ITool
 	 *							  Warning: This parameter has been DEPRECATED as of PHP 7.2.0.
 	 *							  Relying on it is highly discouraged.
 	 * If the custom error handler returns `FALSE`, normal internal error handler continues.
-	 * This function is very PHP specific. It's proudly used from Nette Framework, optimized for PHP 5.4+:
+	 * This function is very PHP specific. It's proudly used from Nette Framework, optimized for PHP 5.4+ incl.:
 	 * https://github.com/nette/utils/blob/b623b2deec8729c8285d269ad991a97504f76bd4/src/Utils/Callback.php#L63-L84
 	 * @param string|callable $internalFnOrHandler
 	 * @param array $args
@@ -222,7 +230,6 @@ interface ITool
 
 	/**
 	 * Check if given class implements given interface, else throw an exception.
-	 *
 	 * @param string $testClassName Full test class name.
 	 * @param string $interfaceName Full interface class name.
 	 * @param bool $checkStaticMethods Check implementation of all static methods by interface static methods.
@@ -241,4 +248,57 @@ interface ITool
 	 * @return boolean
 	 */
 	public static function CheckClassTrait ($testClassName, $traitName, $throwException = TRUE);
+
+	/**
+	 * Get (cached) class attribute(s) constructor arguments or 
+	 * get class PhpDocs tags and it's arguments for older PHP versions.
+	 * You can optionally set prefered way to get desired meta data.
+	 * @param string|object $classFullNameOrInstance Class instance or full class name.
+	 * @param \string[] $attrsClassesOrDocsTags Array with attribute(s) full class names 
+	 *											or array with PhpDocs tag(s) name(s).
+	 * @param bool|NULL $preferAttributes Prefered way to get meta data. `TRUE` means try 
+	 *									  to get PHP8+ attribute(s) only, `FALSE` means 
+	 *									  try to get PhpDocs tag(s) only and `NULL` (default) 
+	 *									  means try to get PHP8+ attribute(s) first and if 
+	 *									  there is nothing, try to get PhpDocs tag(s).
+	 * @return array Keys are attributes full class names (or PhpDocs tags names) and values
+	 *				 are attributes constructor arguments (or PhpDocs tags arguments).
+	 */
+	public static function GetClassAttrsArgs ($classFullNameOrInstance, $attrsClassesOrDocsTags, $preferAttributes = NULL);
+
+	/**
+	 * Get (cached) class method attribute(s) constructor arguments or 
+	 * get class method PhpDocs tags and it's arguments for older PHP versions.
+	 * You can optionally set prefered way to get desired meta data.
+	 * @param string|object $classFullNameOrInstance Class instance or full class name.
+	 * @param string $methodName Class method name.
+	 * @param \string[] $attrsClassesOrDocsTags Array with attribute(s) full class names 
+	 *											or array with PhpDocs tag(s) name(s).
+	 * @param bool|NULL $preferAttributes Prefered way to get meta data. `TRUE` means try 
+	 *									  to get PHP8+ attribute(s) only, `FALSE` means 
+	 *									  try to get PhpDocs tag(s) only and `NULL` (default) 
+	 *									  means try to get PHP8+ attribute(s) first and if 
+	 *									  there is nothing, try to get PhpDocs tag(s).
+	 * @return array Keys are attributes full class names (or PhpDocs tags names) and values
+	 *				 are attributes constructor arguments (or PhpDocs tags arguments).
+	 */
+	public static function GetMethodAttrsArgs ($classFullNameOrInstance, $methodName, $attrsClassesOrDocsTags, $preferAttributes = NULL);
+
+	/**
+	 * Get (cached) class property attribute(s) constructor arguments or 
+	 * get class property PhpDocs tags and it's arguments for older PHP versions.
+	 * You can optionally set prefered way to get desired meta data.
+	 * @param string|object $classFullNameOrInstance Class instance or full class name.
+	 * @param string $propertyName Class property name.
+	 * @param \string[] $attrsClassesOrDocsTags Array with attribute(s) full class names 
+	 *											or array with PhpDocs tag(s) name(s).
+	 * @param bool|NULL $preferAttributes Prefered way to get meta data. `TRUE` means try 
+	 *									  to get PHP8+ attribute(s) only, `FALSE` means 
+	 *									  try to get PhpDocs tag(s) only and `NULL` (default) 
+	 *									  means try to get PHP8+ attribute(s) first and if 
+	 *									  there is nothing, try to get PhpDocs tag(s).
+	 * @return array Keys are attributes full class names (or PhpDocs tags names) and values
+	 *				 are attributes constructor arguments (or PhpDocs tags arguments).
+	 */
+	public static function GetPropertyAttrsArgs ($classFullNameOrInstance, $propertyName, $attrsClassesOrDocsTags, $preferAttributes = NULL);
 }

@@ -20,11 +20,17 @@ trait Reflection {
 	 * only static and also only public method names by the interface name.
 	 * @var array
 	 */
-	protected static $interfacesStaticMethodsCache = [];
+	protected static $cacheInterfStaticMths = [];
+
+	/**
+	 * Key/value store for parsed reflection attributes constructor arguments.
+	 * @var array
+	 */
+	protected static $cacheAttrsArgs = [];
 
 
 	/**
-	 * Check if given class implements given interface, else throw an exception.
+	 * @inheritDocs
 	 * @param string $testClassName Full test class name.
 	 * @param string $interfaceName Full interface class name.
 	 * @param bool $checkStaticMethods Check implementation of all static methods by interface static methods.
@@ -53,12 +59,6 @@ trait Reflection {
 					$errorMsg = "Class `{$testClassName}` doesn't implement static method `{$methodName}` from interface `{$interfaceName}`.";
 					break;
 				}
-				$testClassStaticMethod = $testClassType->getMethod($methodName);
-				if (!$testClassStaticMethod->isStatic()) {
-					$allStaticsImplemented = FALSE;
-					$errorMsg = "Class `{$testClassName}` doesn't implement static method `{$methodName}` from interface `{$interfaceName}`, method is not static.";
-					break;
-				}
 				// arguments compatibility in presented static method are automatically checked by PHP
 			}
 			if (!$allStaticsImplemented)
@@ -71,7 +71,7 @@ trait Reflection {
 	}
 
 	/**
-	 * Check if given class implements given trait, else throw an exception.
+	 * @inheritDocs
 	 * @param string $testClassName Full test class name.
 	 * @param string $traitName Full trait class name.
 	 * @param bool $checkParentClasses If `TRUE`, trait implementation will be checked on all parent classes until success. Default is `FALSE`.
@@ -108,6 +108,160 @@ trait Reflection {
 		throw new \InvalidArgumentException("[".get_class()."] " . $errorMsg);
 	}
 
+
+	/**
+	 * @inheritDocs
+	 * @param string|object $classFullNameOrInstance Class instance or full class name.
+	 * @param \string[] $attrsClassesOrDocsTags Array with attribute(s) full class names 
+	 *											or array with PhpDocs tag(s) name(s).
+	 * @param bool|NULL $preferAttributes Prefered way to get meta data. `TRUE` means try 
+	 *									  to get PHP8+ attribute(s) only, `FALSE` means 
+	 *									  try to get PhpDocs tag(s) only and `NULL` (default) 
+	 *									  means try to get PHP8+ attribute(s) first and if 
+	 *									  there is nothing, try to get PhpDocs tag(s).
+	 * @return array Keys are attributes full class names (or PhpDocs tags names) and values
+	 *				 are attributes constructor arguments (or PhpDocs tags arguments).
+	 */
+	public static function GetClassAttrsArgs ($classFullNameOrInstance, $attrsClassesOrDocsTags, $preferAttributes = NULL) {
+		$result = [];
+		$attrsOnly = $preferAttributes === TRUE;
+		$docsTagsOnly = $preferAttributes === FALSE || PHP_VERSION_ID < 80000;
+		$reflectionObject = new \ReflectionClass($classFullNameOrInstance);
+		foreach ($attrsClassesOrDocsTags as $attrClassOrDocsTag) 
+			$result[$attrClassOrDocsTag] = static::getAttrArg(
+				implode('|', ['cls', $classFullNameOrInstance, $attrClassOrDocsTag]),
+				$reflectionObject, $attrClassOrDocsTag, $attrsOnly, $docsTagsOnly
+			);
+		return $result;
+	}
+	
+	/**
+	 * @inheritDocs
+	 * @param string|object $classFullNameOrInstance Class instance or full class name.
+	 * @param string $methodName Class method name.
+	 * @param \string[] $attrsClassesOrDocsTags Array with attribute(s) full class names 
+	 *											or array with PhpDocs tag(s) name(s).
+	 * @param bool|NULL $preferAttributes Prefered way to get meta data. `TRUE` means try 
+	 *									  to get PHP8+ attribute(s) only, `FALSE` means 
+	 *									  try to get PhpDocs tag(s) only and `NULL` (default) 
+	 *									  means try to get PHP8+ attribute(s) first and if 
+	 *									  there is nothing, try to get PhpDocs tag(s).
+	 * @return array Keys are attributes full class names (or PhpDocs tags names) and values
+	 *				 are attributes constructor arguments (or PhpDocs tags arguments).
+	 */
+	public static function GetMethodAttrsArgs ($classFullNameOrInstance, $methodName, $attrsClassesOrDocsTags, $preferAttributes = NULL) {
+		$result = [];
+		$attrsOnly = $preferAttributes === TRUE;
+		$docsTagsOnly = $preferAttributes === FALSE || PHP_VERSION_ID < 80000;
+		$reflectionObject = new \ReflectionMethod($classFullNameOrInstance, $methodName);
+		$classMethodFullName = $classFullNameOrInstance . '::' . $methodName;
+		foreach ($attrsClassesOrDocsTags as $attrClassOrDocsTag) 
+			$result[$attrClassOrDocsTag] = static::getAttrArg(
+				implode('|', ['mthd', $classMethodFullName, $attrClassOrDocsTag]),
+				$reflectionObject, $attrClassOrDocsTag, $attrsOnly, $docsTagsOnly
+			);
+		return $result;
+	}
+	
+	/**
+	 * @inheritDocs
+	 * @param string|object $classFullNameOrInstance Class instance or full class name.
+	 * @param string $propertyName Class property name.
+	 * @param \string[] $attrsClassesOrDocsTags Array with attribute(s) full class names 
+	 *											or array with PhpDocs tag(s) name(s).
+	 * @param bool|NULL $preferAttributes Prefered way to get meta data. `TRUE` means try 
+	 *									  to get PHP8+ attribute(s) only, `FALSE` means 
+	 *									  try to get PhpDocs tag(s) only and `NULL` (default) 
+	 *									  means try to get PHP8+ attribute(s) first and if 
+	 *									  there is nothing, try to get PhpDocs tag(s).
+	 * @return array Keys are attributes full class names (or PhpDocs tags names) and values
+	 *				 are attributes constructor arguments (or PhpDocs tags arguments).
+	 */
+	public static function GetPropertyAttrsArgs ($classFullNameOrInstance, $propertyName, $attrsClassesOrDocsTags, $preferAttributes = NULL) {
+		$result = [];
+		$attrsOnly = $preferAttributes === TRUE;
+		$docsTagsOnly = $preferAttributes === FALSE || PHP_VERSION_ID < 80000;
+		$reflectionObject = new \ReflectionProperty($classFullNameOrInstance, $propertyName);
+		$classPropFullName = $classFullNameOrInstance . '::' . $propertyName;
+		foreach ($attrsClassesOrDocsTags as $attrClassOrDocsTag) 
+			$result[$attrClassOrDocsTag] = static::getAttrArg(
+				implode('|', ['prop', $classPropFullName, $attrClassOrDocsTag]),
+				$reflectionObject, $attrClassOrDocsTag, $attrsOnly, $docsTagsOnly
+			);
+		return $result;
+	}
+	
+	/**
+	 * Get (cached) reflection object attribute(s) constructor arguments or 
+	 * get reflection object PhpDocs tags and it's arguments for older PHP versions.
+	 * Set result into local memory cache. You can optionally set prefered way 
+	 * to get desired meta data by last two arguments.
+	 * @param string $cacheKey Result cache key.
+	 * @param \ReflectionClass|\ReflectionMethod|\ReflectionProperty $reflectionObject Reflection object to get attributes/tags from.
+	 * @param string $attrClassOrDocsTag Attributes class full names (or PhpDocs tags).
+	 * @param bool $attrsOnly `TRUE` to get PHP8+ attributes only, do not fall back to PhpDocs tags.
+	 * @param bool $docsTagsOnly `TRUE` to get PhpDocs tags only, do not try PHP8+ attributes.
+	 * @return array Keys are attributes full class names (or PhpDocs tags names) and values
+	 *				 are attributes constructor arguments (or PhpDocs tags arguments).
+	 */
+	protected static function getAttrArg ($cacheKey, $reflectionObject, $attrClassOrDocsTag, $attrsOnly, $docsTagsOnly) {
+		if (array_key_exists($cacheKey, self::$cacheAttrsArgs)) {
+			$result = self::$cacheAttrsArgs[$cacheKey];
+		} else {
+			if ($attrsOnly) {
+				$result = static::getAttrCtorArgs(
+					$reflectionObject, $attrClassOrDocsTag
+				);
+			} else if ($docsTagsOnly) {
+				$result = static::getDocsTagArgs(
+					$reflectionObject, $attrClassOrDocsTag
+				);
+			} else {
+				$result = static::getAttrCtorArgs(
+					$reflectionObject, $attrClassOrDocsTag
+				);
+				if ($result === NULL) 
+					$result = static::getDocsTagArgs(
+						$reflectionObject, $attrClassOrDocsTag
+					);
+			}
+			self::$cacheAttrsArgs[$cacheKey] = $result;
+		}
+		return $result;
+	}
+
+	/**
+	 * Return reflection object attribute constructor arguments.
+	 * @param \ReflectionClass|\ReflectionMethod|\ReflectionProperty $reflectionObject 
+	 * @param string $attributeClassFullName 
+	 * @return array|NULL
+	 */
+	protected static function getAttrCtorArgs ($reflectionObject, $attributeClassFullName) {
+		$attrs = $reflectionObject->getAttributes($attributeClassFullName);
+		if (count($attrs) > 0) 
+			return $attrs[0]->getArguments();
+		return NULL;
+	}
+
+	/**
+	 * Return PhpDocs tag arguments.
+	 * @param \ReflectionClass|\ReflectionMethod|\ReflectionProperty $reflectionObject 
+	 * @param string $phpDocsTagName
+	 * @return array|NULL
+	 */
+	protected static function getDocsTagArgs ($reflectionObject, $phpDocsTagName) {
+		$result = NULL;
+		$docComment = $reflectionObject->getDocComment();
+		$tagPos = mb_strpos($docComment, $phpDocsTagName);
+		if ($tagPos !== FALSE) {
+			$result = [];
+			preg_match("#\s{$phpDocsTagName}\s+([^\s]+)\s*#", $docComment, $matches, 0, $tagPos);
+			if ($matches && count($matches) > 1) 
+				$result = json_decode('['.$matches[1].']');
+		}
+		return $result;
+	}
+
 	/**
 	 * Complete array with only static and also only public method names by given interface name.
 	 * Return completed array and cache it in static local array.
@@ -115,8 +269,8 @@ trait Reflection {
 	 * @return array
 	 */
 	protected static function & checkClassInterfaceGetPublicStaticMethods ($interfaceName) {
-		if (!isset(static::$interfacesStaticMethodsCache[$interfaceName]))
-			static::$interfacesStaticMethodsCache[$interfaceName] = array_map(
+		if (!isset(static::$cacheInterfStaticMths[$interfaceName]))
+			static::$cacheInterfStaticMths[$interfaceName] = array_map(
 				function (\ReflectionMethod $method) {
 					return $method->name;
 				},
@@ -124,6 +278,6 @@ trait Reflection {
 					\ReflectionMethod::IS_STATIC
 				)
 			);
-		return static::$interfacesStaticMethodsCache[$interfaceName];
+		return static::$cacheInterfStaticMths[$interfaceName];
 	}
 }

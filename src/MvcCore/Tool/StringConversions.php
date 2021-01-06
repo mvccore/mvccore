@@ -16,11 +16,7 @@ namespace MvcCore\Tool;
 trait StringConversions {
 
 	/**
-	 * Convert all strings `"from" => "to"`:
-	 * - `"MyCustomValue"				=> "my-custom-value"`
-	 * - `"MyWTFValue"					=> "my-w-t-f-value"`
-	 * - `"MyWtfValue"					=> "my-wtf-value"`
-	 * - `"MyCustom/Value/InsideFolder"	=> "my-custom/value/inside-folder"`
+	 * @inheritDocs
 	 * @param string $pascalCase
 	 * @return string
 	 */
@@ -53,11 +49,7 @@ trait StringConversions {
 	}
 
 	/**
-	 * Convert all string `"from" => "to"`:
-	 * - `"my-custom-value"					=> "MyCustomValue"`
-	 * - `"my-wtf-value"					=> "MyWtfValue"`
-	 * - `"my-w-t-f-value"					=> "MyWTFValue"`
-	 * - `"my-custom/value/inside-folder"	=> "MyCustom/Value/InsideFolder"`
+	 * @inheritDocs
 	 * @param string $dashed
 	 * @return string
 	 */
@@ -72,11 +64,7 @@ trait StringConversions {
 	}
 
 	/**
-	 * Convert all string `"from" => "to"`:
-	 * - `"MyCutomValue"				=> "my_custom_value"`
-	 * - `"MyWTFValue"					=> "my_w_t_f_value"`
-	 * - `"MyWtfValue"					=> "my_wtf_value"`
-	 * - `"MyCutom/Value/InsideFolder"	=> "my_custom/value/inside_folder"`
+	 * @inheritDocs
 	 * @param string $pascalCase
 	 * @return string
 	 */
@@ -108,11 +96,7 @@ trait StringConversions {
 	}
 
 	/**
-	 * Convert all string `"from" => "to"`:
-	 * - `"my_custom_value"					=> "MyCutomValue"`
-	 * - `"my_wtf_value"					=> "MyWtfValue"`
-	 * - `"my_w_t_f_value"					=> "MyWTFValue"`
-	 * - `"my_custom/value/inside_folder"	=> "MyCutom/Value/InsideFolder"`
+	 * @inheritDocs
 	 * @param string $underscored
 	 * @return string
 	 */
@@ -128,6 +112,9 @@ trait StringConversions {
 	
 	/**
 	 * PHP < 5.4.32 compatible method.
+	 * @param string $str 
+	 * @param string $delimiter 
+	 * @return string
 	 */
 	protected static function upperCaseWords ($str, $delimiter) {
 		$words = explode($delimiter, $str);

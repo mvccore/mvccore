@@ -22,7 +22,7 @@ trait Helpers {
 	protected static $tmpDir = NULL;
 
 	/**
-	 * Returns the OS-specific directory for temporary files.
+	 * @inheritDocs
 	 * @return string
 	 */
 	public static function GetSystemTmpDir () {
@@ -63,16 +63,7 @@ trait Helpers {
 	}
 	
 	/**
-	 * Recognize if given string is query string without parsing.
-	 * It recognizes query strings like:
-	 * - `key1=value1`
-	 * - `key1=value1&`
-	 * - `key1=value1&key2=value2`
-	 * - `key1=value1&key2=value2&`
-	 * - `key1=&key2=value2`
-	 * - `key1=value&key2=`
-	 * - `key1=value&key2=&key3=`
-	 * ...
+	 * @inheritDocs
 	 * @param string $jsonStr
 	 * @return bool
 	 */
@@ -89,21 +80,7 @@ trait Helpers {
 	}
 
 	/**
-	 * Safely invoke internal PHP function with it's own error handler.
-	 * Error handler accepts arguments:
-	 * - `string $errMessage`	- Error message.
-	 * - `int $errLevel`		- Level of the error raised.
-	 * - `string $errFile`		- Optional, full path to error file name where error was raised.
-	 * - `int $errLine`			- Optional, The error file line number.
-	 * - `array $errContext`	- Optional, array that points to the active symbol table at the
-	 *							  point the error occurred. In other words, `$errContext` will contain
-	 *							  an array of every variable that existed in the scope the error
-	 *							  was triggered in. User error handler must not modify error context.
-	 *							  Warning: This parameter has been DEPRECATED as of PHP 7.2.0.
-	 *							  Relying on it is highly discouraged.
-	 * If the custom error handler returns `FALSE`, normal internal error handler continues.
-	 * This function is very PHP specific. It's proudly used from Nette Framework, optimized for PHP 5.4+ incl.:
-	 * https://github.com/nette/utils/blob/b623b2deec8729c8285d269ad991a97504f76bd4/src/Utils/Callback.php#L63-L84
+	 * @inheritDocs
 	 * @param string|callable $internalFnOrHandler
 	 * @param array $args
 	 * @param callable $onError
@@ -142,7 +119,7 @@ trait Helpers {
 	}
 
 	/**
-	 * Write or append file content by only one single PHP process.
+	 * @inheritDocs
 	 * @see http://php.net/manual/en/function.flock.php
 	 * @see http://php.net/manual/en/function.set-error-handler.php
 	 * @see http://php.net/manual/en/function.clearstatcache.php
@@ -261,26 +238,26 @@ trait Helpers {
 	}
 
 	/**
-	 * PHP `realpath()` function without checking file/directory existence.
+	 * @inheritDocs
 	 * @see https://www.php.net/manual/en/function.realpath.php
 	 * @param string $path
 	 * @return string
 	 */
 	public static function RealPathVirtual ($path) {
-        $path = str_replace('\\', '/', $path);
-        $rawParts = explode('/', $path);
-        $parts = array_filter($rawParts, 'strlen');
+		$path = str_replace('\\', '/', $path);
+		$rawParts = explode('/', $path);
+		$parts = array_filter($rawParts, 'strlen');
 		if ($rawParts[0] == '' && mb_substr($path, 0, 1) == '/')
 			array_unshift($parts, '');
-        $items = [];
-        foreach ($parts as $part) {
-            if ('.' == $part) continue;
-            if ('..' == $part) {
-                array_pop($items);
-            } else {
-                $items[] = $part;
-            }
-        }
-        return implode('/', $items);
-    }
+		$items = [];
+		foreach ($parts as $part) {
+			if ('.' == $part) continue;
+			if ('..' == $part) {
+				array_pop($items);
+			} else {
+				$items[] = $part;
+			}
+		}
+		return implode('/', $items);
+	}
 }
