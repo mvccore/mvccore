@@ -18,7 +18,6 @@ namespace MvcCore;
  *					instances members for active record pattern.
  * - Reading `db` section from system `config.ini` file.
  * - Database `\PDO` connecting by config settings and index.
- * - Instance loaded variables initializing.
  * - Instance initialized values reading.
  * - Virtual calls/sets and gets handling.
  */
@@ -115,15 +114,17 @@ interface IModel {
 
 
 	/**
+	 * TODO
 	 * Collect all model class public and inherit field values into array.
 	 * @param bool $includeInheritProperties If `TRUE`, include fields from current and all parent classes, if `FALSE`, include fields only from current model class, default - `TRUE`.
 	 * @param bool $publicOnly			     If `TRUE`, include only public instance fields, if `FALSE`, include all instance fields, default - `TRUE`.
 	 * @param bool $getNullValues			 If `TRUE`, include also values with `NULL`s, default - `FALSE`.
 	 * @return array
 	 */
-	public function GetValues ($includeInheritProperties = TRUE, $publicOnly = TRUE, $getNullValues = FALSE);
+	public function GetValues ($readingFlags = 0, $getNullValues = FALSE);
 
 	/**
+	 * TODO
 	 * Set up given `$data` items into `$this` instance context
 	 * as typed properties by PHP doc comments, as properties
 	 * with the same names as `$data` array keys. Case sensitively by default.
@@ -133,16 +134,17 @@ interface IModel {
 	 * @param bool    $completeInitialValues    Complete protected array `initialValues` to be able to compare them by calling method `GetTouched()` anytime later.
 	 * @return \MvcCore\Model|\MvcCore\IModel
 	 */
-	public function SetUp ($data = [], $keysConversionFlags = NULL);
+	public function SetUp ($data = [], $readingFlags = 0);
 
 	/**
+	 * TODO
 	 * Get touched properties from initial moment called by `SetUp()` method.
 	 * Get everything, what is different to `$this->initialValues` array.
 	 * @param bool $includeInheritProperties If `TRUE`, include fields from current and all parent classes, if `FALSE`, include fields only from current model class, default - `TRUE`.
 	 * @param bool $publicOnly			     If `TRUE`, include only public instance fields, if `FALSE`, include all instance fields, default - `TRUE`.
 	 * @return array Keys are class properties names, values are changed values.
 	 */
-	public function GetTouched ($includeInheritProperties = TRUE, $publicOnly = FALSE);
+	public function GetTouched ($readingFlags = 0);
 
 	/**
 	 * Returns (or creates and holds) instance from local store.

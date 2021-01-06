@@ -18,15 +18,12 @@ namespace MvcCore;
  *					instances members for active record pattern.
  * - Reading `db` section from system `config.ini` file.
  * - Database `\PDO` connecting by config settings and index.
- * - Instance loaded variables initializing.
  * - Instance initialized values reading.
  * - Virtual calls/sets and gets handling.
  */
-class Model implements IModel
-{
+class Model implements IModel {
 	use \MvcCore\Model\Props;
-	use \MvcCore\Model\Instancing;
 	use \MvcCore\Model\Connection;
-	use \MvcCore\Model\DataMethods;
-	use \MvcCore\Model\Converters;
+	use \MvcCore\Model\Instancing;
+	use \MvcCore\Model\MagicMethods;
 }
