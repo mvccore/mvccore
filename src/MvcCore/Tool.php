@@ -25,11 +25,11 @@ namespace MvcCore;
  * - Static functions to get system temp directory.
  * - Static functions to safely invoke dangerous call.
  * - Static functions to write into file by one process only.
- * - Static function to check core classes inheritance.
+ * - Static functions to check core classes inheritance.
  */
-class Tool implements ITool
-{
-	use \MvcCore\Tool\StringCaseConversions;
+class Tool implements ITool {
+	use \MvcCore\Tool\Json;
 	use \MvcCore\Tool\Helpers;
-	use \MvcCore\Tool\OopChecking;
+	use \MvcCore\Tool\Reflection;
+	use \MvcCore\Tool\StringConversions;
 }

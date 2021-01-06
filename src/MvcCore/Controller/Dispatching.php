@@ -38,7 +38,7 @@ trait Dispatching
 	 */
 	public static function GetCallerControllerInstance () {
 		$result = NULL;
-		$backtraceItems = debug_backtrace(DEBUG_BACKTRACE_PROVIDE_OBJECT);
+		$backtraceItems = debug_backtrace(DEBUG_BACKTRACE_PROVIDE_OBJECT | DEBUG_BACKTRACE_IGNORE_ARGS);
 		if (count($backtraceItems) < 3) return $result;
 		$calledClass = get_called_class();
 		foreach ($backtraceItems as $backtraceItem) {

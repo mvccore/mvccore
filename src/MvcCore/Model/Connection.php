@@ -38,11 +38,11 @@ trait Connection
 	public static function GetConnection ($connectionNameOrConfig = NULL, $strict = TRUE) {
 		if (is_array($connectionNameOrConfig) || $connectionNameOrConfig instanceof \stdClass) {
 			// if first argument is database connection configuration - set it up and return new connection name
-			if (self::$configs === NULL) static::loadConfigs(FALSE);
+			if (self::$configs === NULL) static::loadConfigs(FALSE, $strict);
 			$connectionName = static::SetConfig((array) $connectionNameOrConfig);
 		} else {
 			// if no connection index specified, try to get from class or from base model
-			if (self::$configs === NULL) static::loadConfigs(TRUE);
+			if (self::$configs === NULL) static::loadConfigs(TRUE, TRUE);
 			$connectionName = $connectionNameOrConfig;
 			if ($connectionName === NULL && isset(static::$connectionName)) 
 				$connectionName = static::$connectionName;
@@ -222,6 +222,7 @@ trait Connection
 		if ($connectionName === NULL && isset(static::$connectionName)) $connectionName = static::$connectionName;
 		if ($connectionName === NULL && isset(self::$connectionName)) $connectionName = self::$connectionName;
 		if ($connectionName === NULL) $connectionName = self::$defaultConnectionName;
+		if ($connectionName === NULL) return NULL;
 		return self::$configs[$connectionName];
 	}
 
@@ -281,17 +282,26 @@ trait Connection
 	/**
 	 * Initializes configuration data from system config if any
 	 * into local `self::$configs` array, keyed by connection name or index.
+	 * @param bool $throwExceptionIfNoSysConfig If `TRUE`, there is thrown an `\Exception`
+	 *											if there is no system config, if `FALSE`,
+	 *											nothing happends. `TRUE` by default.
+	 * @param bool $strict	If `TRUE`, there is initialized static property 
+	 *						`self::$defaultConnectionName` only by config record `db.defaultName`.
+	 *						If `FALSE`, there is not initialized any default connection property.
 	 * @throws \Exception
 	 * @return void
 	 */
-	protected static function loadConfigs ($throwExceptionIfNoSysConfig = TRUE) {
+	protected static function loadConfigs ($throwExceptionIfNoSysConfig = TRUE, $strict = TRUE) {
 		$configClass = \MvcCore\Application::GetInstance()->GetConfigClass();
 		$systemCfg = $configClass::GetSystem();
-		if ($systemCfg === NULL && $throwExceptionIfNoSysConfig)
-			throw new \Exception(
-				"[".get_class()."] System config not found in `"
-				. $configClass::GetSystemConfigPath() . "`."
-			);
+		if ($systemCfg === NULL) {
+			if ($throwExceptionIfNoSysConfig) 
+				throw new \Exception(
+					"[".get_class()."] System config not found in `"
+					. $configClass::GetSystemConfigPath() . "`."
+				);
+			return;
+		}
 		$sysCfgProps = (object) static::$sysConfigProperties;
 		$dbSectionName = $sysCfgProps->sectionName;
 		if (!isset($systemCfg->{$dbSectionName}) && $throwExceptionIfNoSysConfig)
@@ -324,10 +334,10 @@ trait Connection
 				}
 			}
 		}
-		if ($defaultConnectionName === NULL)
+		if ($defaultConnectionName === NULL && !$strict)
 			if ($configs && count($configsConnectionsNames) > 0)
 				$defaultConnectionName = $configsConnectionsNames[0];
-		if (!isset($configs[$defaultConnectionName]))
+		if ($defaultConnectionName !== NULL && !isset($configs[$defaultConnectionName]))
 			throw new \Exception(
 				"[".get_class()."] No default connection name '{$defaultConnectionName}'"
 				." found in 'db.*' section in system config.ini."

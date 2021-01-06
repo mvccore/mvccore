@@ -13,8 +13,8 @@
 
 namespace MvcCore\Tool;
 
-trait OopChecking
-{
+trait Reflection {
+
 	/**
 	 * Cache with keys by full interface class names and with values with
 	 * only static and also only public method names by the interface name.

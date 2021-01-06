@@ -13,8 +13,8 @@
 
 namespace MvcCore\Tool;
 
-trait StringCaseConversions
-{
+trait StringConversions {
+
 	/**
 	 * Convert all strings `"from" => "to"`:
 	 * - `"MyCustomValue"				=> "my-custom-value"`
