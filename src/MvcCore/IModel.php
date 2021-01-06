@@ -27,7 +27,7 @@ interface IModel {
 	 * Set up instance instance properties initial values.
 	 * @var int
 	 */
-	const PROPS_INIT_VALUES							= 1;
+	const PROPS_INITIAL_VALUES						= 1;
 
 
 	/**
@@ -57,94 +57,54 @@ interface IModel {
 
 
 	/**
-	 * Pass throught values with array keys in original case sensitive manner.
+	 * Pass throught values with array keys conversion from underscored case
+	 * into pascal case.
 	 * @var int
 	 */
-	const PROPS_CONVERT_CASE_SENSITIVE				= 32;
+	const PROPS_CONVERT_UNDERSCORES_TO_PASCALCASE	= 32;
+
+	/**
+	 * Pass throught values with array keys conversion from underscored case
+	 * into camel case.
+	 * @var int
+	 */
+	const PROPS_CONVERT_UNDERSCORES_TO_CAMELCASE	= 64;
+
+	/**
+	 * Pass throught values with array keys conversion from pascal case
+	 * into underscored case.
+	 * @var int
+	 */
+	const PROPS_CONVERT_PASCALCASE_TO_UNDERSCORES	= 128;
+
+	/**
+	 * Pass throught values with array keys conversion from pascal case
+	 * into camel case.
+	 * @var int
+	 */
+	const PROPS_CONVERT_PASCALCASE_TO_CAMELCASE		= 256;
+
+	/**
+	 * Pass throught values with array keys conversion from camel case
+	 * into underscored case.
+	 * @var int
+	 */
+	const PROPS_CONVERT_CAMELCASE_TO_UNDERSCORES	= 512;
+
+	/**
+	 * Pass throught values with array keys conversion from camel case
+	 * into pascal case.
+	 * @var int
+	 */
+	const PROPS_CONVERT_CAMELCASE_TO_PASCALCASE		= 1024;
+	
 
 	/**
 	 * Pass throught values with array keys case insensitive.
 	 * @var int
 	 */
-	const PROPS_CONVERT_CASE_INSENSITIVE			= 64;
+	const PROPS_CONVERT_CASE_INSENSITIVE			= 2048;
 
-
-	/**
-	 * Pass throught values with array keys conversion from underscored case
-	 * into pascal case.
-	 * @var int
-	 */
-	const PROPS_CONVERT_UNDERSCORES_TO_PASCALCASE	= 128;
-
-	/**
-	 * Pass throught values with array keys conversion from underscored case
-	 * into camel case.
-	 * @var int
-	 */
-	const PROPS_CONVERT_UNDERSCORES_TO_CAMELCASE	= 256;
-
-	/**
-	 * Pass throught values with array keys conversion from pascal case
-	 * into underscored case.
-	 * @var int
-	 */
-	const PROPS_CONVERT_PASCALCASE_TO_UNDERSCORES	= 512;
-
-	/**
-	 * Pass throught values with array keys conversion from pascal case
-	 * into camel case.
-	 * @var int
-	 */
-	const PROPS_CONVERT_PASCALCASE_TO_CAMELCASE		= 1024;
-
-	/**
-	 * Pass throught values with array keys conversion from camel case
-	 * into underscored case.
-	 * @var int
-	 */
-	const PROPS_CONVERT_CAMELCASE_TO_UNDERSCORES	= 2048;
-
-	/**
-	 * Pass throught values with array keys conversion from camel case
-	 * into pascal case.
-	 * @var int
-	 */
-	const PROPS_CONVERT_CAMELCASE_TO_PASCALCASE		= 4096;
-
-
-
-	/**
-	 * TODO
-	 * Collect all model class public and inherit field values into array.
-	 * @param bool $includeInheritProperties If `TRUE`, include fields from current and all parent classes, if `FALSE`, include fields only from current model class, default - `TRUE`.
-	 * @param bool $publicOnly			     If `TRUE`, include only public instance fields, if `FALSE`, include all instance fields, default - `TRUE`.
-	 * @param bool $getNullValues			 If `TRUE`, include also values with `NULL`s, default - `FALSE`.
-	 * @return array
-	 */
-	public function GetValues ($readingFlags = 0, $getNullValues = FALSE);
-
-	/**
-	 * TODO
-	 * Set up given `$data` items into `$this` instance context
-	 * as typed properties by PHP doc comments, as properties
-	 * with the same names as `$data` array keys. Case sensitively by default.
-	 * Do not set any `$data` items, which are not declared in `$this` context.
-	 * @param array   $data						Collection with data to set up
-	 * @param int	  $keysConversionFlags		`\MvcCore\IModel::PROPS_CONVERT_*` flags to process array keys conversion before set up into properties.
-	 * @param bool    $completeInitialValues    Complete protected array `initialValues` to be able to compare them by calling method `GetTouched()` anytime later.
-	 * @return \MvcCore\Model|\MvcCore\IModel
-	 */
-	public function SetUp ($data = [], $readingFlags = 0);
-
-	/**
-	 * TODO
-	 * Get touched properties from initial moment called by `SetUp()` method.
-	 * Get everything, what is different to `$this->initialValues` array.
-	 * @param bool $includeInheritProperties If `TRUE`, include fields from current and all parent classes, if `FALSE`, include fields only from current model class, default - `TRUE`.
-	 * @param bool $publicOnly			     If `TRUE`, include only public instance fields, if `FALSE`, include all instance fields, default - `TRUE`.
-	 * @return array Keys are class properties names, values are changed values.
-	 */
-	public function GetTouched ($readingFlags = 0);
 
 	/**
 	 * Returns (or creates and holds) instance from local store.

@@ -17,7 +17,7 @@ trait MetaData {
 	
 	/**
 	 * Return cached array about properties in current class to not create
-	 * reflection object every time. Every key in array is property name,
+	 * and parse reflection objects every time. Every key in array is property name,
 	 * every value in array is array with following values:
 	 * - `0` => `bool`						`TRUE` for property defined in current
 	 *										class instance, `FALSE` for parent
@@ -29,38 +29,48 @@ trait MetaData {
 	 * - `3` => `boolean`					`TRUE` for private property.
 	 * - `4` => `boolean`					`TRUE` for protected property.
 	 * - `5` => `boolean`					`TRUE` for public property.
-	 * Available reading flags:
+	 * Possible reading flags:
 	 *  - `\MvcCore\IModel::PROPS_INHERIT`
 	 *  - `\MvcCore\IModel::PROPS_PRIVATE`
 	 *  - `\MvcCore\IModel::PROPS_PROTECTED`
 	 *  - `\MvcCore\IModel::PROPS_PUBLIC`
+	 * @param int $readingFlags
 	 * @return array
 	 */
 	private static function __getPropsMetaData ($readingFlags = 0) {
 		/** @var $this \MvcCore\Model */
 		static $__propsMetaData = [];
 
-		if (isset($__propsMetaData[$readingFlags])) 
-			return $__propsMetaData[$readingFlags];
+		$cacheFlags = 0;
+		$accessModFlags = 0;
+
+		$inclInherit = FALSE;
+		if (($readingFlags & \MvcCore\IModel::PROPS_INHERIT) != 0) {
+			$cacheFlags |= \MvcCore\IModel::PROPS_INHERIT;
+			$inclInherit = TRUE;
+		}
+		if (($readingFlags & \MvcCore\IModel::PROPS_PRIVATE) != 0) {
+			$cacheFlags |= \MvcCore\IModel::PROPS_PRIVATE;
+			$accessModFlags |= \ReflectionProperty::IS_PRIVATE;
+		}
+		if (($readingFlags & \MvcCore\IModel::PROPS_PROTECTED) != 0) {
+			$cacheFlags |= \MvcCore\IModel::PROPS_PROTECTED;
+			$accessModFlags |= \ReflectionProperty::IS_PROTECTED;
+		}
+		if (($readingFlags & \MvcCore\IModel::PROPS_PUBLIC) != 0) {
+			$cacheFlags |= \MvcCore\IModel::PROPS_PUBLIC;
+			$accessModFlags |= \ReflectionProperty::IS_PUBLIC;
+		}
+		
+		if (isset($__propsMetaData[$cacheFlags])) 
+			return $__propsMetaData[$cacheFlags];
 		
 		$result = [];
 
-		$inclInherit	= ($readingFlags & \MvcCore\IModel::PROPS_INHERIT) != 0;
-		$accessModFlags = 0;
-		if (($readingFlags & \MvcCore\IModel::PROPS_PRIVATE) != 0) 
-			$accessModFlags |= \ReflectionProperty::IS_PRIVATE;
-		if (($readingFlags & \MvcCore\IModel::PROPS_PROTECTED) != 0) 
-			$accessModFlags |= \ReflectionProperty::IS_PROTECTED;
-		if (($readingFlags & \MvcCore\IModel::PROPS_PUBLIC) != 0) 
-			$accessModFlags |= \ReflectionProperty::IS_PUBLIC;
-
+		$phpWithTypes = PHP_VERSION_ID >= 70400;
 		$calledClassFullName = get_called_class();
-		/** @var $props \ReflectionProperty[] */
 		$props = (new \ReflectionClass($calledClassFullName))
 			->getProperties($accessModFlags);
-
-		$phpWithTypes = PHP_VERSION_ID >= 70400;
-
 		/** @var $prop \ReflectionProperty */
 		foreach ($props as $prop) {
 			if ($prop->isStatic()) continue;
@@ -96,8 +106,8 @@ trait MetaData {
 			];
 		}
 		
-		$__propsMetaData[$readingFlags] = $result;
-
+		$__propsMetaData[$cacheFlags] = $result;
+		
 		return $result;
 	}
 }
