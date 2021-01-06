@@ -102,6 +102,7 @@ trait Instancing
 	 * @return void
 	 */
 	public function Init ($args = []) {
+		/** @var $this \MvcCore\Model */
 		$connectionName = NULL;
 		$initResource = FALSE;
 		$args = func_get_args();

@@ -96,7 +96,7 @@ trait DataMethods
 	 * with the same names as `$data` array keys. Case sensitively by default.
 	 * Do not set any `$data` items, which are not declared in `$this` context.
 	 * @param array   $data						Collection with data to set up
-	 * @param int	  $keysConversionFlags		`\MvcCore\IModel::KEYS_CONVERSION_*` flags to process array keys conversion before set up into properties.
+	 * @param int	  $keysConversionFlags		`\MvcCore\IModel::PROPS_CONVERT_*` flags to process array keys conversion before set up into properties.
 	 * @param bool    $completeInitialValues    Complete protected array `initialValues` to be able to compare them by calling method `GetTouched()` anytime later.
 	 * @return \MvcCore\Model|\MvcCore\IModel
 	 */
@@ -406,6 +406,7 @@ trait DataMethods
 						$types = explode('|', $rawType);
 					}
 				}
+				// TODO: tady chybí záskávání dalších atributů
 				$isPrivate = $prop->isPrivate();
 				if ($isPrivate) $prop->setAccessible(TRUE);
 				$__propsDataAll[$propName] = [

@@ -59,16 +59,16 @@ trait Converters
 	 * @param int $keysConversionFlags
 	 * @return \string[]
 	 */
-	protected static function getKeyConversionMethods ($keysConversionFlags = \MvcCore\IModel::KEYS_CONVERSION_CASE_SENSITIVE) {
+	protected static function getKeyConversionMethods ($keysConversionFlags = \MvcCore\IModel::PROPS_CONVERT_CASE_SENSITIVE) {
 		$flagsAndConversionMethods = [
-			$keysConversionFlags & \MvcCore\IModel::KEYS_CONVERSION_UNDERSCORES_TO_PASCALCASE   => 'keyConversionUnderscoresToPascalcase',
-			$keysConversionFlags & \MvcCore\IModel::KEYS_CONVERSION_UNDERSCORES_TO_CAMELCASE    => 'keyConversionUnderscoresToCamelcase',
-			$keysConversionFlags & \MvcCore\IModel::KEYS_CONVERSION_PASCALCASE_TO_UNDERSCORES   => 'keyConversionPascalcaseToUnderscores',
-			$keysConversionFlags & \MvcCore\IModel::KEYS_CONVERSION_PASCALCASE_TO_CAMELCASE     => 'keyConversionPascalcaseToCamelcase',
-			$keysConversionFlags & \MvcCore\IModel::KEYS_CONVERSION_CAMELCASE_TO_UNDERSCORES    => 'keyConversionCamelcaseToUnderscores',
-			$keysConversionFlags & \MvcCore\IModel::KEYS_CONVERSION_CAMELCASE_TO_PASCALCASE     => 'keyConversionCamelcaseToPascalcase',
-			/*$keysConversionFlags & \MvcCore\IModel::KEYS_CONVERSION_CASE_SENSITIVE			=> NULL,*/
-			$keysConversionFlags & \MvcCore\IModel::KEYS_CONVERSION_CASE_INSENSITIVE            => 'keyConversionCaseInsensitive',
+			$keysConversionFlags & static::PROPS_CONVERT_UNDERSCORES_TO_PASCALCASE	=> 'propsConvertUnderscoresToPascalcase',
+			$keysConversionFlags & static::PROPS_CONVERT_UNDERSCORES_TO_CAMELCASE	=> 'propsConvertUnderscoresToCamelcase',
+			$keysConversionFlags & static::PROPS_CONVERT_PASCALCASE_TO_UNDERSCORES	=> 'propsConvertPascalcaseToUnderscores',
+			$keysConversionFlags & static::PROPS_CONVERT_PASCALCASE_TO_CAMELCASE	=> 'propsConvertPascalcaseToCamelcase',
+			$keysConversionFlags & static::PROPS_CONVERT_CAMELCASE_TO_UNDERSCORES	=> 'propsConvertCamelcaseToUnderscores',
+			$keysConversionFlags & static::PROPS_CONVERT_CAMELCASE_TO_PASCALCASE	=> 'propsConvertCamelcaseToPascalcase',
+			/*$keysConversionFlags & static::PROPS_CONVERT_CASE_SENSITIVE			=> NULL,*/
+			$keysConversionFlags & static::PROPS_CONVERT_CASE_INSENSITIVE			=> 'propsConvertCaseInsensitive',
 		];
 		unset($flagsAndConversionMethods[0]);
 		return $flagsAndConversionMethods;
@@ -81,7 +81,7 @@ trait Converters
 	 * @param string $csKeysMap
 	 * @return string
 	 */
-	protected static function keyConversionCaseInsensitive ($key, $toolsClass, $csKeysMap) {
+	protected static function propsConvertCaseInsensitive ($key, $toolsClass, $csKeysMap) {
 		$keyPos = stripos($csKeysMap, ','.$key.',');
 		if ($keyPos === FALSE) return $key;
 		return substr($csKeysMap, $keyPos + 1, strlen($key));
@@ -94,7 +94,7 @@ trait Converters
 	 * @param string $csKeysMap
 	 * @return string
 	 */
-	protected static function keyConversionUnderscoresToPascalcase ($key, $toolsClass, $csKeysMap) {
+	protected static function propsConvertUnderscoresToPascalcase ($key, $toolsClass, $csKeysMap) {
 		return $toolsClass::GetPascalCaseFromUnderscored($key);
 	}
 
@@ -105,7 +105,7 @@ trait Converters
 	 * @param string $csKeysMap
 	 * @return string
 	 */
-	protected static function keyConversionUnderscoresToCamelcase ($key, $toolsClass, $csKeysMap) {
+	protected static function propsConvertUnderscoresToCamelcase ($key, $toolsClass, $csKeysMap) {
 		return lcfirst($toolsClass::GetPascalCaseFromUnderscored($key));
 	}
 
@@ -116,7 +116,7 @@ trait Converters
 	 * @param string $csKeysMap
 	 * @return string
 	 */
-	protected static function keyConversionPascalcaseToUnderscores ($key, $toolsClass, $csKeysMap) {
+	protected static function propsConvertPascalcaseToUnderscores ($key, $toolsClass, $csKeysMap) {
 		return $toolsClass::GetUnderscoredFromPascalCase($key);
 	}
 
@@ -127,7 +127,7 @@ trait Converters
 	 * @param string $csKeysMap
 	 * @return string
 	 */
-	protected static function keyConversionPascalcaseToCamelcase ($key, $toolsClass, $csKeysMap) {
+	protected static function propsConvertPascalcaseToCamelcase ($key, $toolsClass, $csKeysMap) {
 		return lcfirst($key);
 	}
 
@@ -138,7 +138,7 @@ trait Converters
 	 * @param string $csKeysMap
 	 * @return string
 	 */
-	protected static function keyConversionCamelcaseToUnderscores ($key, $toolsClass, $csKeysMap) {
+	protected static function propsConvertCamelcaseToUnderscores ($key, $toolsClass, $csKeysMap) {
 		return $toolsClass::GetUnderscoredFromPascalCase(lcfirst($key));
 	}
 
@@ -149,7 +149,7 @@ trait Converters
 	 * @param string $csKeysMap
 	 * @return string
 	 */
-	protected static function keyConversionCamelcaseToPascalcase ($key, $toolsClass, $csKeysMap) {
+	protected static function propsConvertCamelcaseToPascalcase ($key, $toolsClass, $csKeysMap) {
 		return ucfirst($key);
 	}
 }

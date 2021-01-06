@@ -22,61 +22,95 @@ namespace MvcCore;
  * - Instance initialized values reading.
  * - Virtual calls/sets and gets handling.
  */
-interface IModel
-{
+interface IModel {
+	
 	/**
-	 * Pass throught values with array keys conversion from underscored case
-	 * into pascal case.
+	 * Set up instance instance properties initial values.
 	 * @var int
 	 */
-	const KEYS_CONVERSION_UNDERSCORES_TO_PASCALCASE	= 0b00000001;
+	const PROPS_INIT_VALUES							= 1;
+
 
 	/**
-	 * Pass throught values with array keys conversion from underscored case
-	 * into camel case.
+	 * Set up instance inherit properties.
 	 * @var int
 	 */
-	const KEYS_CONVERSION_UNDERSCORES_TO_CAMELCASE	= 0b00000010;
+	const PROPS_INHERIT								= 2;
+
 
 	/**
-	 * Pass throught values with array keys conversion from pascal case
-	 * into underscored case.
+	 * Set up instance private properties.
 	 * @var int
 	 */
-	const KEYS_CONVERSION_PASCALCASE_TO_UNDERSCORES	= 0b00000100;
+	const PROPS_PRIVATE								= 4;
+	
+	/**
+	 * Set up instance protected properties.
+	 * @var int
+	 */
+	const PROPS_PROTECTED							= 8;
+	
+	/**
+	 * Set up instance public properties.
+	 * @var int
+	 */
+	const PROPS_PUBLIC								= 16;
+
 
 	/**
-	 * Pass throught values with array keys conversion from pascal case
-	 * into camel case.
+	 * Pass throught values with array keys in original case sensitive manner.
 	 * @var int
 	 */
-	const KEYS_CONVERSION_PASCALCASE_TO_CAMELCASE	= 0b00001000;
-
-	/**
-	 * Pass throught values with array keys conversion from camel case
-	 * into underscored case.
-	 * @var int
-	 */
-	const KEYS_CONVERSION_CAMELCASE_TO_UNDERSCORES	= 0b00010000;
-
-	/**
-	 * Pass throught values with array keys conversion from camel case
-	 * into pascal case.
-	 * @var int
-	 */
-	const KEYS_CONVERSION_CAMELCASE_TO_PASCALCASE	= 0b00100000;
-
-	/**
-	 * Pass throught values with array keys case sensitive.
-	 * @var int
-	 */
-	const KEYS_CONVERSION_CASE_SENSITIVE			= 0b01000000;
+	const PROPS_CONVERT_CASE_SENSITIVE				= 32;
 
 	/**
 	 * Pass throught values with array keys case insensitive.
 	 * @var int
 	 */
-	const KEYS_CONVERSION_CASE_INSENSITIVE			= 0b10000000;
+	const PROPS_CONVERT_CASE_INSENSITIVE			= 64;
+
+
+	/**
+	 * Pass throught values with array keys conversion from underscored case
+	 * into pascal case.
+	 * @var int
+	 */
+	const PROPS_CONVERT_UNDERSCORES_TO_PASCALCASE	= 128;
+
+	/**
+	 * Pass throught values with array keys conversion from underscored case
+	 * into camel case.
+	 * @var int
+	 */
+	const PROPS_CONVERT_UNDERSCORES_TO_CAMELCASE	= 256;
+
+	/**
+	 * Pass throught values with array keys conversion from pascal case
+	 * into underscored case.
+	 * @var int
+	 */
+	const PROPS_CONVERT_PASCALCASE_TO_UNDERSCORES	= 512;
+
+	/**
+	 * Pass throught values with array keys conversion from pascal case
+	 * into camel case.
+	 * @var int
+	 */
+	const PROPS_CONVERT_PASCALCASE_TO_CAMELCASE		= 1024;
+
+	/**
+	 * Pass throught values with array keys conversion from camel case
+	 * into underscored case.
+	 * @var int
+	 */
+	const PROPS_CONVERT_CAMELCASE_TO_UNDERSCORES	= 2048;
+
+	/**
+	 * Pass throught values with array keys conversion from camel case
+	 * into pascal case.
+	 * @var int
+	 */
+	const PROPS_CONVERT_CAMELCASE_TO_PASCALCASE		= 4096;
 
 
 
@@ -95,7 +129,7 @@ interface IModel
 	 * with the same names as `$data` array keys. Case sensitively by default.
 	 * Do not set any `$data` items, which are not declared in `$this` context.
 	 * @param array   $data						Collection with data to set up
-	 * @param int	  $keysConversionFlags		`\MvcCore\IModel::KEYS_CONVERSION_*` flags to process array keys conversion before set up into properties.
+	 * @param int	  $keysConversionFlags		`\MvcCore\IModel::PROPS_CONVERT_*` flags to process array keys conversion before set up into properties.
 	 * @param bool    $completeInitialValues    Complete protected array `initialValues` to be able to compare them by calling method `GetTouched()` anytime later.
 	 * @return \MvcCore\Model|\MvcCore\IModel
 	 */
