@@ -13,8 +13,8 @@
 
 namespace MvcCore\Router;
 
-trait Redirecting
-{
+trait Redirecting {
+
 	/**
 	 * Redirect to proper trailing slash URL version only
 	 * if there is necessary by configurable property

@@ -13,49 +13,11 @@
 
 namespace MvcCore\Router;
 
-trait Instancing
-{
+trait Instancing {
+
 	/**
-	 * Get singleton instance of `\MvcCore\Router` stored always here.
-	 * Optionally set routes as first argument.
-	 * Create proper router instance type at first time by
-	 * configured class name in `\MvcCore\Application` singleton.
-	 *
-	 * Routes could be defined in various forms:
-	 * Example:
-	 *	`\MvcCore\Router::GetInstance([
-	 *		"Products:List"	=> "/products-list/<name>/<color>",
-	 *	]);`
-	 * or:
-	 *	`\MvcCore\Router::GetInstance([
-	 *		'products_list'	=> [
-	 *			"pattern"			=> "/products-list/<name>/<color>",
-	 *			"controllerAction"	=> "Products:List",
-	 *			"defaults"			=> ["name" => "default-name",	"color" => "red"],
-	 *			"constraints"		=> ["name" => "[^/]*",			"color" => "[a-z]*"]
-	 *		]
-	 *	]);`
-	 * or:
-	 *	`\MvcCore\Router::GetInstance([
-	 *		new Route(
-	 *			"/products-list/<name>/<color>",
-	 *			"Products:List",
-	 *			["name" => "default-name",	"color" => "red"],
-	 *			["name" => "[^/]*",		"color" => "[a-z]*"]
-	 *		)
-	 *	]);`
-	 * or:
-	 *	`\MvcCore\Router::GetInstance([
-	 *		new Route(
-	 *			"name"			=> "products_list",
-	 *			"pattern"		=> "#^/products\-list/(?<name>[^/]*)/(?<color>[a-z]*)(?=/$|$)#",
-	 *			"reverse"		=> "/products-list/<name>/<color>",
-	 *			"controller"	=> "Products",
-	 *			"action"		=> "List",
-	 *			"defaults"		=> ["name" => "default-name",	"color" => "red"],
-	 *		)
-	 *	]);`
-	 * @param \MvcCore\Route[]|\MvcCore\IRoute[]|array $routes 
+	 * @inheritDocs
+	 * @param \MvcCore\Route[]|array $routes 
 	 *				Keyed array with routes, keys are route names or route
 	 *				`Controller::Action` definitions.
 	 * @param bool $autoInitialize 
@@ -67,7 +29,7 @@ trait Instancing
 	 *				`FALSE` to set routes without any change or 
 	 *				auto-initialization, it could be useful to restore cached 
 	 *				routes etc.
-	 * @return \MvcCore\Router|\MvcCore\IRouter
+	 * @return \MvcCore\Router
 	 */
 	public static function GetInstance (array $routes = [], $autoInitialize = TRUE) {
 		if (!self::$instance) {

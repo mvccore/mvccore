@@ -105,7 +105,7 @@ interface IView {
 	 * `\MvcCore\Controller::Render()` to create layout view.
 	 * This is place where to customize any view creation process,
 	 * before it's created by MvcCore framework to fill and render it.
-	 * @return \MvcCore\IView
+	 * @return \MvcCore\View
 	 */
 	public static function CreateInstance ();
 
@@ -243,14 +243,14 @@ interface IView {
 	 * Method is always called in the most parent controller
 	 * `\MvcCore\Controller:PreDispatch()` moment when view instance is created.
 	 * Method sets controller instance into view.
-	 * @param \MvcCore\IController $controller
-	 * @return \MvcCore\IView
+	 * @param \MvcCore\Controller $controller
+	 * @return \MvcCore\View
 	 */
 	public function SetController (\MvcCore\IController $controller);
 
 	/**
 	 * Get controller instance.
-	 * @return \MvcCore\IController
+	 * @return \MvcCore\Controller
 	 */
 	public function GetController ();
 
@@ -260,7 +260,7 @@ interface IView {
 	 * @param int $renderMode
 	 * @param string $controllerOrActionNameDashed
 	 * @param string $actionNameDashed
-	 * @return \MvcCore\IView
+	 * @return \MvcCore\View
 	 */
 	public function SetUpRender ($renderMode = \MvcCore\IView::RENDER_WITH_OB_FROM_ACTION_TO_LAYOUT, $controllerOrActionNameDashed = NULL, $actionNameDashed = NULL);
 
@@ -270,9 +270,9 @@ interface IView {
 	 * `\MvcCore\Controller:Render()` moment when view is rendered.
 	 * Set up all from given view object variables store into current store,
 	 * if there is any already existing key - overwrite it.
-	 * @param \MvcCore\IView $view
+	 * @param \MvcCore\View $view
 	 * @param bool $overwriteExistingKeys If any property name already exist in view store, overwrite it by given value by default.
-	 * @return \MvcCore\IView
+	 * @return \MvcCore\View
 	 */
 	public function SetUpStore (\MvcCore\IView $view, $overwriteExistingKeys = TRUE);
 
@@ -480,7 +480,7 @@ interface IView {
 	 * @param string $helperNameCamelCase View helper method name in camel case.
 	 * @param mixed $instance View helper instance, always as `\MvcCore\Ext\Views\Helpers\AbstractHelper|\MvcCore\Ext\Views\Helpers\IHelper` instance or `\Closure`.
 	 * @param bool $forAllTemplates register this helper instance for all rendered views in the future.
-	 * @return \MvcCore\IView
+	 * @return \MvcCore\View
 	 */
 	public function SetHelper ($helperNameCamelCase, $instance, $forAllTemplates = TRUE);
 

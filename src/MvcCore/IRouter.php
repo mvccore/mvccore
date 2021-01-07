@@ -165,7 +165,7 @@ interface IRouter {
 	 *			"defaults"		=> ["name" => "default-name",	"color" => "red"],
 	 *		)
 	 *	]);`
-	 * @param \MvcCore\IRoute[]|array $routes 
+	 * @param \MvcCore\Route[]|array $routes 
 	 *				Keyed array with routes, keys are route names or route
 	 *				`Controller::Action` definitions.
 	 * @param bool $autoInitialize 
@@ -177,7 +177,7 @@ interface IRouter {
 	 *				`FALSE` to set routes without any change or 
 	 *				auto-initialization, it could be useful to restore cached 
 	 *				routes etc.
-	 * @return \MvcCore\IRouter
+	 * @return \MvcCore\Router
 	 */
 	public static function GetInstance (array $routes = [], $autoInitialize = TRUE);
 
@@ -221,7 +221,7 @@ interface IRouter {
 	 *			"defaults"		=> ["name" => "default-name",	"color" => "red"],
 	 *		)
 	 *	]);`
-	 * @param \MvcCore\Route[]|\MvcCore\IRoute[]|array $routes
+	 * @param \MvcCore\Route[]|array $routes
 	 *				Keyed array with routes, keys are route names or route
 	 *				`Controller::Action` definitions.
 	 * @param string|NULL $groupName 
@@ -237,7 +237,7 @@ interface IRouter {
 	 *				record, completed always from array keys. You can you `FALSE` 
 	 *				to set routes without any change or auto-initialization, it 
 	 *				could be useful to restore cached routes etc.
-	 * @return \MvcCore\IRouter
+	 * @return \MvcCore\Router
 	 */
 	public function SetRoutes ($routes = [], $autoInitialize = TRUE);
 
@@ -280,7 +280,7 @@ interface IRouter {
 	 *			"defaults"		=> ["name" => "default-name",	"color" => "red"],
 	 *		)
 	 *	]);`
-	 * @param \MvcCore\IRoute[]|array $routes 
+	 * @param \MvcCore\Route[]|array $routes 
 	 *			   Keyed array with routes, keys are route names or route 
 	 *			   `Controller::Action` definitions.
 	 * @param string|NULL $groupName 
@@ -295,7 +295,7 @@ interface IRouter {
 	 *			   `TRUE` by default. Throw an exception, if route `name` or 
 	 *			   route `Controller:Action` has been defined already. If 
 	 *			   `FALSE` old route is over-written by new one.
-	 * @return \MvcCore\IRouter
+	 * @return \MvcCore\Router
 	 */
 	public function AddRoutes (array $routes = [], $prepend = FALSE, $throwExceptionForDuplication = TRUE);
 
@@ -336,7 +336,7 @@ interface IRouter {
 	 *		"action"		=> "List",
 	 *		"defaults"		=> ["name" => "default-name",	"color" => "red"],
 	 *	));`
-	 * @param \MvcCore\IRoute|array $routeCfgOrRoute 
+	 * @param \MvcCore\Route|array $routeCfgOrRoute 
 	 *			   Route instance or route config array.
 	 * @param string|NULL $groupName 
 	 *			   Group name is first matched/parsed word in requested path to 
@@ -350,13 +350,13 @@ interface IRouter {
 	 *			   `TRUE` by default. Throw an exception, if route `name` or 
 	 *			   route `Controller:Action` has been defined already. If 
 	 *			   `FALSE` old route is over-written by new one.
-	 * @return \MvcCore\IRouter
+	 * @return \MvcCore\Router
 	 */
 	public function AddRoute ($routeCfgOrRoute, $groupName = NULL, $prepend = FALSE, $throwExceptionForDuplication = TRUE);
 
 	/**
 	 * Get `TRUE` if router has any route by given route name or `FALSE` if not.
-	 * @param string|\MvcCore\IRoute $routeOrRouteName
+	 * @param string|\MvcCore\Route $routeOrRouteName
 	 * @return bool
 	 */
 	public function HasRoute ($routeOrRouteName);
@@ -365,14 +365,14 @@ interface IRouter {
 	 * Remove route from router by given name and return removed route instance.
 	 * If router has no route by given name, `NULL` is returned.
 	 * @param string $routeName
-	 * @return \MvcCore\IRoute|NULL
+	 * @return \MvcCore\Route|NULL
 	 */
 	public function RemoveRoute ($routeName);
 
 	/**
 	 * Get configured `\MvcCore\Route` route instances by route name, 
 	 * `NULL` if no route presented.
-	 * @return \MvcCore\IRoute|NULL
+	 * @return \MvcCore\Route|NULL
 	 */
 	public function GetRoute ($routeName);
 
@@ -384,7 +384,7 @@ interface IRouter {
 	 *				group routes by to try to match only routes you really need, 
 	 *				not all of them. If `NULL` by default, there are returned 
 	 *				all routes from all groups.
-	 * @return \MvcCore\IRoute[]
+	 * @return \MvcCore\Route[]
 	 */
 	public function GetRoutes ();
 
@@ -394,7 +394,7 @@ interface IRouter {
 	 *   sub-methods.
 	 * - URL addresses completing in `\MvcCore\Router::Url()` and it's protected 
 	 *   sub-methods.
-	 * @return \MvcCore\IRequest
+	 * @return \MvcCore\Request
 	 */
 	public function GetRequest ();
 
@@ -406,10 +406,10 @@ interface IRouter {
 	 *   sub-methods.
 	 * This is INTERNAL, not TEMPLATE method, internally called in
 	 * `\MvcCore\Application::Run();` => `\MvcCore\Application::routeRequest();`.
-	 * @param \MvcCore\IRequest $request
-	 * @return \MvcCore\IRouter
+	 * @param \MvcCore\Request $request
+	 * @return \MvcCore\Router
 	 */
-	public function SetRequest (\MvcCore\IRequest $request);
+	public function SetRequest (\MvcCore\Request $request);
 
 	/**
 	 * Set hardly routing strategy. If this method is configures with `TRUE` 
@@ -418,7 +418,7 @@ interface IRouter {
 	 * with `FALSE` value, there are used only rewrite routes routing and no 
 	 * query string data. this method is highly advanced.
 	 * @param bool|NULL $routeByQueryString 
-	 * @return \MvcCore\IRouter
+	 * @return \MvcCore\Router
 	 */
 	public function SetRouteByQueryString ($routeByQueryString = TRUE);
 
@@ -434,16 +434,16 @@ interface IRouter {
 	 * Set matched route instance for given request object
 	 * into `\MvcCore\Route::Route();` method. Currently matched
 	 * route is always assigned internally in that method.
-	 * @param \MvcCore\IRoute $currentRoute
-	 * @return \MvcCore\IRouter
+	 * @param \MvcCore\Route $currentRoute
+	 * @return \MvcCore\Router
 	 */
-	public function SetCurrentRoute (\MvcCore\IRoute $currentRoute);
+	public function SetCurrentRoute (\MvcCore\Route $currentRoute);
 
 	/**
 	 * Get matched route instance reference for given request object
 	 * into `\MvcCore\Route::Route($request);` method. Currently
 	 * matched route is always assigned internally in that method.
-	 * @return \MvcCore\IRoute
+	 * @return \MvcCore\Route
 	 */
 	public function GetCurrentRoute ();
 
@@ -462,7 +462,7 @@ interface IRouter {
 	 * and if request was not `/` (homepage) but `/something-more`.
 	 * Default protected property value: `FALSE`.
 	 * @param bool $enable
-	 * @return \MvcCore\IRouter
+	 * @return \MvcCore\Router
 	 */
 	public function SetRouteToDefaultIfNotMatch ($enable = TRUE);
 
@@ -510,7 +510,7 @@ interface IRouter {
 	 *		slash into URL and redirect to it.
 	 * Default value is `-1` - `\MvcCore\IRouter::TRAILING_SLASH_REMOVE`
 	 * @param int $trailingSlashBehaviour
-	 * @return \MvcCore\IRouter
+	 * @return \MvcCore\Router
 	 */
 	public function SetTrailingSlashBehaviour ($trailingSlashBehaviour = -1);
 
@@ -529,7 +529,7 @@ interface IRouter {
 	 * otherwise for example for development purposes when you develop for 
 	 * example url filtering in and out.
 	 * @param bool $autoCanonizeRequests 
-	 * @return \MvcCore\IRouter
+	 * @return \MvcCore\Router
 	 */
 	public function SetAutoCanonizeRequests ($autoCanonizeRequests = TRUE);
 
@@ -545,7 +545,7 @@ interface IRouter {
 	 * Handler could return value to be void or anything else, doesn't matter.
 	 * Example:
 	 *	`$router->SetPreRouteMatchingHandler(
-	 *		function (\MvcCore\IRouter $router, \MvcCore\IRequest $request, $firstPathWord) {
+	 *		function (\MvcCore\Router $router, \MvcCore\Request $request, $firstPathWord) {
 	 *			// load any routes from database here
 	 *			$routes = $db->loadRoutingRoutesGroup($firstPathWord);
 	 *			// add loaded routes into router
@@ -553,7 +553,7 @@ interface IRouter {
 	 *		}
 	 *	);`
 	 * @param callable $preRouteMatchingHandler 
-	 * @return \MvcCore\IRouter
+	 * @return \MvcCore\Router
 	 */
 	public function SetPreRouteMatchingHandler (callable $preRouteMatchingHandler = NULL);
 
@@ -589,7 +589,7 @@ interface IRouter {
 	 * property `$router->urlRoutes`.
 	 * Example:
 	 *	`$router->SetPreRouteUrlBuildingHandler(
-	 *		function (\MvcCore\IRouter $router, $controllerActionOrRouteName, array $params = []) {
+	 *		function (\MvcCore\Router $router, $controllerActionOrRouteName, array $params = []) {
 	 *			// load any routes from database here
 	 *			$routes = $db->loadUrlRoutesGroup($controllerActionOrRouteName);
 	 *			// return routes in array with keys to be route name for each route
@@ -597,7 +597,7 @@ interface IRouter {
 	 *		}
 	 *	);`
 	 * @param callable $preRouteMatchingHandler 
-	 * @return \MvcCore\IRouter
+	 * @return \MvcCore\Router
 	 */
 	public function SetPreRouteUrlBuildingHandler (callable $preRouteUrlBuildingHandler = NULL);
 
@@ -721,7 +721,7 @@ interface IRouter {
 	 *		);`
 	 *	Output:
 	 *		`/application/base-bath/products-list/cool-product-name/blue?variant[]=L&amp;variant[]=XL"`
-	 * @param \MvcCore\IRoute $route
+	 * @param \MvcCore\Route $route
 	 * @param array $params
 	 * @param string $urlParamRouteName
 	 * @return string
@@ -766,7 +766,7 @@ interface IRouter {
 	 * @param string $controllerPc Controller name in pascal case.
 	 * @param string $actionPc Action name with pascal case without ending `Action` substring.
 	 * @param bool $fallbackCall `FALSE` by default. If `TRUE`, this function is called from error rendering fallback, self route name is not changed.
-	 * @return \MvcCore\IRoute
+	 * @return \MvcCore\Route
 	 */
 	public function SetOrCreateDefaultRouteAsCurrent ($routeName, $controllerPc, $actionPc, $fallbackCall = FALSE);
 }

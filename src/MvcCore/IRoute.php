@@ -731,8 +731,8 @@ interface IRoute {
 	
 	/**
 	 * Set router instance reference, used mostly in route URL building process.
-	 * @param \MvcCore\Router|\MvcCore\IRouter $router 
-	 * @return \MvcCore\IRoute
+	 * @param \MvcCore\Router $router 
+	 * @return \MvcCore\Route
 	 */
 	public function SetRouter (\MvcCore\IRouter $router);
 

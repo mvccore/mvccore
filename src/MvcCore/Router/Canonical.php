@@ -13,8 +13,8 @@
 
 namespace MvcCore\Router;
 
-trait Canonical
-{
+trait Canonical {
+
 	/**
 	 * Redirect to canonical URL if request is not an internal and also if request 
 	 * is not realized by GET method and also if canonical redirect is not permitted.
@@ -24,7 +24,7 @@ trait Canonical
 	 * @return bool
 	 */
 	protected function canonicalRedirectIfAny () {
-		/** @var $request \MvcCore\Router */
+		/** @var $this \MvcCore\Router */
 		if (
 			$this->internalRequest || !$this->autoCanonizeRequests || 
 			$this->request->GetMethod() !== \MvcCore\IRequest::METHOD_GET
@@ -46,7 +46,7 @@ trait Canonical
 	 * @return bool
 	 */
 	protected function canonicalRedirectQueryStringStrategy () {
-		/** @var $request \MvcCore\Router */
+		/** @var $this \MvcCore\Router */
 		$request = $this->request;
 		$redirectToCanonicalUrl = FALSE;
 		$requestGlobalGet = & $request->GetGlobalCollection('get');
@@ -81,7 +81,7 @@ trait Canonical
 	 * @return bool
 	 */
 	protected function canonicalRedirectRewriteRoutesStrategy () {
-		/** @var $request \MvcCore\Router */
+		/** @var $this \MvcCore\Router */
 		$request = $this->request;
 		$redirectToCanonicalUrl = FALSE;
 		$defaultParams =  $this->GetDefaultParams() ?: [];

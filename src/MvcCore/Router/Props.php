@@ -13,8 +13,8 @@
 
 namespace MvcCore\Router;
 
-trait Props
-{
+trait Props {
+
 	/**
 	 * Current `\MvcCore\Router` singleton instance storage.
 	 * @var \MvcCore\Router
@@ -42,7 +42,7 @@ trait Props
 	/**
 	 * Reference to `\MvcCore\Application::GetInstance();` 
 	 * to not call this very time we need app instance.
-	 * @var \MvcCore\Application|\MvcCore\IApplication|NULL
+	 * @var \MvcCore\Application|NULL
 	 */
 	protected $application = NULL;
 
@@ -50,14 +50,14 @@ trait Props
 	 * Internally used `\MvcCore\Request` request object reference for:
 	 * - Routing process in `\MvcCore\Router::Route();` and it's protected sub-methods.
 	 * - URL addresses completing in `\MvcCore\Router::Url()` and it's protected sub-methods.
-	 * @var \MvcCore\Request|\MvcCore\IRequest|NULL
+	 * @var \MvcCore\Request|NULL
 	 */
 	protected $request = NULL;
 
 	/**
 	 * Global application route instances store to match request.
 	 * Keys are route(s) names, values are `\MvcCore\Route` instances.
-	 * @var \MvcCore\Route[]|\MvcCore\IRoute[]
+	 * @var \MvcCore\Route[]
 	 */
 	protected $routes = [];
 
@@ -95,7 +95,7 @@ trait Props
 	/**
 	 * Matched route by `\MvcCore\Router::Match();` processing or NULL if no match.
 	 * By this route, there is created and dispatched controller lifecycle by core.
-	 * @var \MvcCore\Route|\MvcCore\IRoute|NULL
+	 * @var \MvcCore\Route|NULL
 	 */
 	protected $currentRoute = NULL;
 

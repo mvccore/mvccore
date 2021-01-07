@@ -13,48 +13,10 @@
 
 namespace MvcCore\Router;
 
-trait RouteMethods
-{
+trait RouteMethods {
+
 	/**
-	 * Clear all possible previously configured routes
-	 * and set new given request routes again.
-	 * If there is no name configured in route array configuration,
-	 * set route name by given `$routes` array key, if key is not numeric.
-	 *
-	 * Routes could be defined in various forms:
-	 * Example:
-	 *	`\MvcCore\Router::GetInstance()->SetRoutes(array(
-	 *		"Products:List"	=> "/products-list/<name>/<color>",
-	 *	));`
-	 * or:
-	 *	`\MvcCore\Router::GetInstance()->SetRoutes([
-	 *		'products_list'	=> [
-	 *			"pattern"			=> "/products-list/<name>/<color>",
-	 *			"controllerAction"	=> "Products:List",
-	 *			"defaults"			=> ["name" => "default-name",	"color" => "red"],
-	 *			"constraints"		=> ["name" => "[^/]*",			"color" => "[a-z]*"]
-	 *		]
-	 *	]);`
-	 * or:
-	 *	`\MvcCore\Router::GetInstance()->SetRoutes([
-	 *		new Route(
-	 *			"/products-list/<name>/<color>",
-	 *			"Products:List",
-	 *			["name" => "default-name",	"color" => "red"],
-	 *			["name" => "[^/]*",			"color" => "[a-z]*"]
-	 *		)
-	 *	]);`
-	 * or:
-	 *	`\MvcCore\Router::GetInstance()->SetRoutes([
-	 *		new Route(
-	 *			"name"			=> "products_list",
-	 *			"pattern"		=> "#^/products\-list/(?<name>[^/]*)/(?<color>[a-z]*)(?=/$|$)#",
-	 *			"reverse"		=> "/products-list/<name>/<color>",
-	 *			"controller"	=> "Products",
-	 *			"action"		=> "List",
-	 *			"defaults"		=> ["name" => "default-name",	"color" => "red"],
-	 *		)
-	 *	]);`
+	 * @inheritDocs
 	 * @param \MvcCore\Route[]|array $routes
 	 *				Keyed array with routes, keys are route names or route
 	 *				`Controller::Action` definitions.
@@ -71,7 +33,7 @@ trait RouteMethods
 	 *				record, completed always from array keys. You can you `FALSE`
 	 *				to set routes without any change or auto-initialization, it
 	 *				could be useful to restore cached routes etc.
-	 * @return \MvcCore\Router|\MvcCore\IRouter
+	 * @return \MvcCore\Router
 	 */
 	public function SetRoutes ($routes = [], $groupName = NULL, $autoInitialize = TRUE) {
 		/** @var $this \MvcCore\Router */
@@ -115,45 +77,8 @@ trait RouteMethods
 	}
 
 	/**
-	 * Append or prepend new request routes.
-	 * If there is no name configured in route array configuration,
-	 * set route name by given `$routes` array key, if key is not numeric.
-	 *
-	 * Routes could be defined in various forms:
-	 * Example:
-	 *	`\MvcCore\Router::GetInstance()->AddRoutes([
-	 *		"Products:List"	=> "/products-list/<name>/<color>",
-	 *	]);`
-	 * or:
-	 *	`\MvcCore\Router::GetInstance()->AddRoutes([
-	 *		'products_list'	=> [
-	 *			"pattern"			=> "/products-list/<name>/<color>",
-	 *			"controllerAction"	=> "Products:List",
-	 *			"defaults"			=> ["name" => "default-name",	"color" => "red"],
-	 *			"constraints"		=> ["name" => "[^/]*",			"color" => "[a-z]*"]
-	 *		]
-	 *	]);`
-	 * or:
-	 *	`\MvcCore\Router::GetInstance()->AddRoutes([
-	 *		new Route(
-	 *			"/products-list/<name>/<color>",
-	 *			"Products:List",
-	 *			["name" => "default-name",	"color" => "red"],
-	 *			["name" => "[^/]*",		"color" => "[a-z]*"]
-	 *		)
-	 *	]);`
-	 * or:
-	 *	`\MvcCore\Router::GetInstance()->AddRoutes([
-	 *		new Route(
-	 *			"name"			=> "products_list",
-	 *			"pattern"		=> "#^/products\-list/(?<name>[^/]*)/(?<color>[a-z]*)(?=/$|$)#",
-	 *			"reverse"		=> "/products-list/<name>/<color>",
-	 *			"controller"	=> "Products",
-	 *			"action"		=> "List",
-	 *			"defaults"		=> ["name" => "default-name",	"color" => "red"],
-	 *		)
-	 *	]);`
-	 * @param \MvcCore\Route[]|\MvcCore\IRoute[]|array $routes
+	 * @inheritDocs
+	 * @param \MvcCore\Route[]|array $routes
 	 *			   Keyed array with routes, keys are route names or route
 	 *			   `Controller::Action` definitions.
 	 * @param string|NULL $groupName
@@ -168,7 +93,7 @@ trait RouteMethods
 	 *			   `TRUE` by default. Throw an exception, if route `name` or
 	 *			   route `Controller:Action` has been defined already. If
 	 *			   `FALSE` old route is over-written by new one.
-	 * @return \MvcCore\Router|\MvcCore\IRouter
+	 * @return \MvcCore\Router
 	 */
 	public function AddRoutes (array $routes = [], $groupName = NULL, $prepend = FALSE, $throwExceptionForDuplication = TRUE) {
 		/** @var $this \MvcCore\Router */
@@ -223,43 +148,8 @@ trait RouteMethods
 	}
 
 	/**
-	 * Append or prepend new request route.
-	 * Set up route by route name into `\MvcCore\Router::$routes` array
-	 * to route incoming request and also set up route by route name and
-	 * by `Controller:Action` combination into `\MvcCore\Router::$urlRoutes`
-	 * array to build URL addresses.
-	 *
-	 * Route could be defined in various forms:
-	 * Example:
-	 *	`\MvcCore\Router::GetInstance()->AddRoute([
-	 *		"name"		=> "Products:List",
-	 *		"pattern"	=> "/products-list/<name>/<color>",
-	 *	]);`
-	 * or:
-	 *	`\MvcCore\Router::GetInstance()->AddRoute([
-	 *		"name"				=> "products_list",
-	 *		"pattern"			=> "/products-list/<name>/<color>",
-	 *		"controllerAction"	=> "Products:List",
-	 *		"defaults"			=> ["name" => "default-name",	"color" => "red"],
-	 *		"constraints"		=> ["name" => "[^/]*",			"color" => "[a-z]*"]
-	 *	]);`
-	 * or:
-	 *	`\MvcCore\Router::GetInstance()->AddRoute(new Route(
-	 *		"/products-list/<name>/<color>",
-	 *		"Products:List",
-	 *		["name" => "default-name",	"color" => "red"],
-	 *		["name" => "[^/]*",		"color" => "[a-z]*"]
-	 *	));`
-	 * or:
-	 *	`\MvcCore\Router::GetInstance()->AddRoute(new Route(
-	 *		"name"			=> "products_list",
-	 *		"pattern"		=> "#^/products\-list/(?<name>[^/]*)/(?<color>[a-z]*)(?=/$|$)#",
-	 *		"reverse"		=> "/products-list/<name>/<color>",
-	 *		"controller"	=> "Products",
-	 *		"action"		=> "List",
-	 *		"defaults"		=> ["name" => "default-name",	"color" => "red"],
-	 *	));`
-	 * @param \MvcCore\Route|\MvcCore\IRoute|array $routeCfgOrRoute
+	 * @inheritDocs
+	 * @param \MvcCore\Route|array $routeCfgOrRoute
 	 *			   Route instance or route config array.
 	 * @param string|NULL $groupName
 	 *			   Group name is first matched/parsed word in requested path to
@@ -273,7 +163,7 @@ trait RouteMethods
 	 *			   `TRUE` by default. Throw an exception, if route `name` or
 	 *			   route `Controller:Action` has been defined already. If
 	 *			   `FALSE` old route is over-written by new one.
-	 * @return \MvcCore\Router|\MvcCore\IRouter
+	 * @return \MvcCore\Router
 	 */
 	public function AddRoute ($routeCfgOrRoute, $groupName = NULL, $prepend = FALSE, $throwExceptionForDuplication = TRUE) {
 		/** @var $this \MvcCore\Router */
@@ -345,8 +235,8 @@ trait RouteMethods
 	}
 
 	/**
-	 * Get `TRUE` if router has any route by given route name or `FALSE` if not.
-	 * @param string|\MvcCore\IRoute $routeOrRouteName
+	 * @inheritDocs
+	 * @param string|\MvcCore\Route $routeOrRouteName
 	 * @return bool
 	 */
 	public function HasRoute ($routeOrRouteName) {
@@ -363,10 +253,9 @@ trait RouteMethods
 	}
 
 	/**
-	 * Remove route from router by given name and return removed route instance.
-	 * If router has no route by given name, `NULL` is returned.
+	 * @inheritDocs
 	 * @param string $routeName
-	 * @return \MvcCore\Route|\MvcCore\IRoute|NULL
+	 * @return \MvcCore\Route|NULL
 	 */
 	public function RemoveRoute ($routeName) {
 		/** @var $this \MvcCore\Router */
@@ -407,14 +296,13 @@ trait RouteMethods
 	}
 
 	/**
-	 * Get all configured route(s) as `\MvcCore\Route` instances.
-	 * Keys in returned array are route names, values are route objects.
+	 * @inheritDocs
 	 * @param string|NULL $groupName
 	 *				Group name is first matched/parsed word in requested path to
 	 *				group routes by to try to match only routes you really need,
 	 *				not all of them. If `NULL` by default, there are returned
 	 *				all routes from all groups.
-	 * @return \MvcCore\Route[]|\MvcCore\IRoute[]
+	 * @return \MvcCore\Route[]
 	 */
 	public function GetRoutes ($groupName = NULL) {
 		/** @var $this \MvcCore\Router */
@@ -424,9 +312,8 @@ trait RouteMethods
 	}
 
 	/**
-	 * Get configured `\MvcCore\Route` route instances by route name,
-	 * `NULL` if no route presented.
-	 * @return \MvcCore\Route|\MvcCore\IRoute|NULL
+	 * @inheritDocs
+	 * @return \MvcCore\Route|NULL
 	 */
 	public function GetRoute ($routeName) {
 		/** @var $this \MvcCore\Router */
@@ -436,23 +323,20 @@ trait RouteMethods
 	}
 
 	/**
-	 * Set matched route instance for given request object
-	 * into `\MvcCore\Route::Route();` method. Currently matched
-	 * route is always assigned internally in that method.
-	 * @param \MvcCore\Route|\MvcCore\IRoute $currentRoute
-	 * @return \MvcCore\Router|\MvcCore\IRouter
+	 * @inheritDocs
+	 * @param \MvcCore\Route $currentRoute
+	 * @return \MvcCore\Router
 	 */
 	public function SetCurrentRoute (\MvcCore\IRoute $currentRoute) {
 		/** @var $this \MvcCore\Router */
+		/** @var $currentRoute \MvcCore\Route */
 		$this->currentRoute = $currentRoute;
 		return $this;
 	}
 
 	/**
-	 * Get matched route instance reference for given request object
-	 * into `\MvcCore\Route::Route($request);` method. Currently
-	 * matched route is always assigned internally in that method.
-	 * @return \MvcCore\Route|\MvcCore\IRoute
+	 * @inheritDocs
+	 * @return \MvcCore\Route
 	 */
 	public function GetCurrentRoute () {
 		/** @var $this \MvcCore\Router */
@@ -462,9 +346,8 @@ trait RouteMethods
 	/**
 	 * Get always route instance from given route configuration data or return
 	 * already created given instance.
-	 * @param \MvcCore\Route|\MvcCore\IRoute|array $routeCfgOrRoute Route instance or
-	 *																		   route config array.
-	 * @return \MvcCore\Route|\MvcCore\IRoute
+	 * @param \MvcCore\Route|array $routeCfgOrRoute Route instance or route config array.
+	 * @return \MvcCore\Route
 	 */
 	protected function getRouteInstance (& $routeCfgOrRoute) {
 		/** @var $this \MvcCore\Router */

@@ -13,11 +13,10 @@
 
 namespace MvcCore\Router;
 
-trait UrlByQuery
-{
+trait UrlByQuery {
+
 	/**
-	 * Complete optionally absolute, non-localized URL with all params in query string.
-	 * Example: `"/application/base-bath/index.php?controller=ctrlName&amp;action=actionName&amp;name=cool-product-name&amp;color=blue"`
+	 * @inheritDocs
 	 * @param string $controllerActionOrRouteName
 	 * @param array  $params
 	 * @param string $givenRouteName

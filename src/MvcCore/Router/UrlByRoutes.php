@@ -13,25 +13,11 @@
 
 namespace MvcCore\Router;
 
-trait UrlByRoutes
-{
+trait UrlByRoutes {
+
 	/**
-	 * Complete optionally absolute, non-localized URL by route instance reverse
-	 * pattern and given `$params` array. If any param required by reverse
-	 * pattern is missing in params, there is used router default params
-	 * completed in routing process.
-	 * Example:
-	 *	Input (`\MvcCore\Route::$reverse`):
-	 *		`"/products-list/<name>/<color>"`
-	 *	Input ($params):
-	 *		`array(
-	 *			"name"		=> "cool-product-name",
-	 *			"color"		=> "red",
-	 *			"variant"	=> array("L", "XL"),
-	 *		);`
-	 *	Output:
-	 *		`/application/base-bath/products-list/cool-product-name/blue?variant[]=L&amp;variant[]=XL"`
-	 * @param \MvcCore\Route|\MvcCore\IRoute $route
+	 * @inheritDocs
+	 * @param \MvcCore\Route $route
 	 * @param array $params
 	 * @param string $urlParamRouteName
 	 * @return string

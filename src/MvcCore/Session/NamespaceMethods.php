@@ -67,6 +67,7 @@ trait NamespaceMethods {
 	 * @return void
 	 */
 	public function Destroy () {
+		/** @var $this \MvcCore\Session */
 		$name = $this->__name;
 		$names = & static::$meta->names;
 		$hoops = & static::$meta->hoops;

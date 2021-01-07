@@ -13,8 +13,8 @@
 
 namespace MvcCore\Router;
 
-trait RewriteRouting
-{
+trait RewriteRouting {
+
 	/**
 	 * Try to parse first word from request path to get proper routes group.
 	 * If there is no first word in request path, get default routes group. 
@@ -95,7 +95,7 @@ trait RewriteRouting
 	 * word defined. If still there are no such routes in default group, returned 
 	 * is an empty array.
 	 * @param string $firstPathWord 
-	 * @return array|\MvcCore\IRoute[]
+	 * @return array|\MvcCore\Route[]
 	 */
 	protected function rewriteRoutingGetRoutesToMatch ($firstPathWord) {
 		/** @var $this \MvcCore\Router */
