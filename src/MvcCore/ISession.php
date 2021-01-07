@@ -146,7 +146,7 @@ interface ISession {
 	 * the highest expiration to set expiration for `PHPSESSID` cookie.
 	 * @return int
 	 */
-	public static function GetSessionMaxTime ()
+	public static function GetSessionMaxTime ();
 
 	/**
 	 * Destroy whole session namespace in `$_SESSION` storage

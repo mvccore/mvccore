@@ -189,17 +189,17 @@ interface IRouter {
 	 *
 	 * Routes could be defined in various forms:
 	 * Example:
-	 *	`\MvcCore\Router::GetInstance()->SetRoutes(array(
+	 *	`\MvcCore\Router::GetInstance()->SetRoutes([
 	 *		"Products:List"	=> "/products-list/<name>/<color>",
-	 *	));`
+	 *	]);`
 	 * or:
 	 *	`\MvcCore\Router::GetInstance()->SetRoutes([
-	 *		'products_list'	=> array(
+	 *		'products_list'	=> [
 	 *			"pattern"			=> "/products-list/<name>/<color>",
 	 *			"controllerAction"	=> "Products:List",
 	 *			"defaults"			=> ["name" => "default-name",	"color" => "red"],
 	 *			"constraints"		=> ["name" => "[^/]*",			"color" => "[a-z]*"]
-	 *		)
+	 *		]
 	 *	]);`
 	 * or:
 	 *	`\MvcCore\Router::GetInstance()->SetRoutes([
@@ -714,11 +714,11 @@ interface IRouter {
 	 *	Input (`\MvcCore\Route::$reverse`):
 	 *		`"/products-list/<name>/<color>"`
 	 *	Input ($params):
-	 *		`array(
+	 *		`[
 	 *			"name"		=> "cool-product-name",
 	 *			"color"		=> "red",
-	 *			"variant"	=> array("L", "XL"),
-	 *		);`
+	 *			"variant"	=> ["L", "XL"],
+	 *		];`
 	 *	Output:
 	 *		`/application/base-bath/products-list/cool-product-name/blue?variant[]=L&amp;variant[]=XL"`
 	 * @param \MvcCore\Route $route
