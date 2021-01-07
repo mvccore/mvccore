@@ -18,15 +18,14 @@ namespace MvcCore\Application;
  * - Helper methods for normal requests and error requests dispatching.
  * - Helper methods for core classes configuration.
  */
-trait Helpers
-{
+trait Helpers {
+
 	/***********************************************************************************
 	 *					 `\MvcCore\Application` - Helper Methods					 *
 	 ***********************************************************************************/
 
 	/**
-	 * Check if default application controller (`\App\Controllers\Index` by default) has specific action.
-	 * If default controller has specific action - return default controller full name, else empty string.
+	 * @inheritDocs
 	 * @param string $actionName
 	 * @return string
 	 */
@@ -39,8 +38,7 @@ trait Helpers
 	}
 
 	/**
-	 * Complete standard MvcCore application controller full name in form:
-	 * `\App\Controllers\<$controllerNamePascalCase>`.
+	 * @inheritDocs
 	 * @param string $controllerNamePascalCase
 	 * @return string
 	 */
@@ -55,7 +53,7 @@ trait Helpers
 	}
 
 	/**
-	 * Return `TRUE` if current request is default controller error action dispatching process.
+	 * @inheritDocs
 	 * @return bool
 	 */
 	public function IsErrorDispatched () {
@@ -67,7 +65,7 @@ trait Helpers
 	}
 
 	/**
-	 * Return `TRUE` if current request is default controller not found error action dispatching process.
+	 * @inheritDocs
 	 * @return bool
 	 */
 	public function IsNotFoundDispatched () {

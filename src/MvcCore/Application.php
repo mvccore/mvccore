@@ -17,6 +17,7 @@ namespace MvcCore;
  * @inheritDocs
  */
 class Application implements \MvcCore\IApplication {
+
 	/**
 	 * MvcCore - version:
 	 * Comparison by PHP function `version_compare();`.
@@ -26,13 +27,15 @@ class Application implements \MvcCore\IApplication {
 
 	/**
 	 * Include traits with
-	 * - Application properties, getters and setters methods.
+	 * - Application properties.
+	 * - Application getters and setters methods.
 	 * - Application normal requests and error requests dispatching methods.
 	 * - Application helper methods.
 	 * Traits in PHP is the only option, how to get something
 	 * analogous the same as partial classes C#.
 	 */
-	use \MvcCore\Application\PropsGettersSetters;
+	use \MvcCore\Application\Props;
+	use \MvcCore\Application\GettersSetters;
 	use \MvcCore\Application\Dispatching;
 	use \MvcCore\Application\Helpers;
 
@@ -41,7 +44,7 @@ class Application implements \MvcCore\IApplication {
 	 ***********************************************************************************/
 
 	/**
-	 * Returns singleton `\MvcCore\Application` instance as reference.
+	 * @inheritDocs
 	 * @return \MvcCore\Application
 	 */
 	public static function GetInstance () {
