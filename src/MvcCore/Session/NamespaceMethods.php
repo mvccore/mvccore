@@ -13,13 +13,12 @@
 
 namespace MvcCore\Session;
 
-trait NamespaceMethods
-{
+trait NamespaceMethods {
+
 	/**
-	 * Get new or existing MvcCore session namespace instance.
-	 * If session is not started, start session.
+	 * @inheritDocs
 	 * @param string $name Session namespace unique name.
-	 * @return \MvcCore\Session|\MvcCore\ISession
+	 * @return \MvcCore\Session
 	 */
 	public static function GetNamespace (
 		$name = \MvcCore\ISession::DEFAULT_NAMESPACE_NAME
@@ -39,7 +38,7 @@ trait NamespaceMethods
 	}
 
 	/**
-	 * Set MvcCore session namespace expiration by page request(s) count.
+	 * @inheritDocs
 	 * @param int $hoops
 	 * @return \MvcCore\Session
 	 */
@@ -50,9 +49,7 @@ trait NamespaceMethods
 	}
 
 	/**
-	 * Set MvcCore session namespace expiration by expiration seconds.
-	 * Zero (`0`) means "until the browser is closed" if there is no more
-	 * higher namespace expirations in whole session.
+	 * @inheritDocs
 	 * @param int $seconds
 	 * @return \MvcCore\Session
 	 */
@@ -66,8 +63,7 @@ trait NamespaceMethods
 
 
 	/**
-	 * Destroy whole session namespace in `$_SESSION` storage
-	 * and internal static storages.
+	 * @inheritDocs
 	 * @return void
 	 */
 	public function Destroy () {
@@ -84,8 +80,7 @@ trait NamespaceMethods
 	}
 
 	/**
-	 * Destroy all existing session namespaces in `$_SESSION` storage
-	 * and internal static storages, destroy whole PHP session.
+	 * @inheritDocs
 	 * @return void
 	 */
 	public static function DestroyAll () {

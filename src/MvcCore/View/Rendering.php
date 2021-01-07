@@ -21,6 +21,7 @@ trait Rendering {
 	 * @return string
 	 */
 	public function & RenderScript ($relativePath = '') {
+		/** @var $this \MvcCore\View */
 		return $this->Render(static::$scriptsDir, $relativePath);
 	}
 
@@ -30,6 +31,7 @@ trait Rendering {
 	 * @return string
 	 */
 	public function & RenderLayout ($relativePath = '') {
+		/** @var $this \MvcCore\View */
 		return $this->Render(static::$layoutsDir, $relativePath);
 	}
 
@@ -40,6 +42,7 @@ trait Rendering {
 	 * @return string
 	 */
 	public function & RenderLayoutAndContent ($relativePath = '', & $content = NULL) {
+		/** @var $this \MvcCore\View */
 		if ($relativePath === NULL) return $content; // no layout defined
 		$this->__protected['content'] = & $content;
 		return $this->Render(static::$layoutsDir, $relativePath);
@@ -173,6 +176,7 @@ trait Rendering {
 	 * @return string
 	 */
 	public function & GetContent () {
+		/** @var $this \MvcCore\View */
 		list(
 			$renderMode,
 			$controllerOrActionNameDashed,
@@ -205,6 +209,7 @@ trait Rendering {
 	 * @return string
 	 */
 	public function & Evaluate ($content) {
+		/** @var $this \MvcCore\View */
 		if ($content === NULL || mb_strlen(strval($content)) === 0)
 			return '';
 		ob_start();
@@ -223,6 +228,7 @@ trait Rendering {
 	 * @return void
 	 */
 	protected function setUpRenderBuildInHelpers (& $helpers) {
+		/** @var $this \MvcCore\View */
 		$router = $this->controller->GetRouter();
 		$helpers += [
 			'url' => function ($controllerActionOrRouteName = 'Index:Index', array $params = []) use (& $router) {

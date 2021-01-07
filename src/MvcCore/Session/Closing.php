@@ -13,12 +13,10 @@
 
 namespace MvcCore\Session;
 
-trait Closing
-{
+trait Closing {
+
 	/**
-	 * Write and close session in `\MvcCore::Terminate();`.
-	 * Serialize all metadata and call php function to write session into php session storage.
-	 * (HDD, Redis, database, etc., depends on php configuration).
+	 * @inheritDocs
 	 * @return void
 	 */
 	public static function Close () {
@@ -35,8 +33,7 @@ trait Closing
 	}
 
 	/**
-	 * Send `PHPSESSID` http cookie with session id hash before response body is sent.
-	 * This function is always called by `\MvcCore\Application::Terminate();` at the request end.
+	 * @inheritDocs
 	 * @return void
 	 */
 	public static function SendCookie () {
@@ -60,8 +57,7 @@ trait Closing
 	}
 
 	/**
-	 * Get the highest expiration in seconds for namespace with
-	 * the highest expiration to set expiration for `PHPSESSID` cookie.
+	 * @inheritDocs
 	 * @return int
 	 */
 	public static function GetSessionMaxTime () {

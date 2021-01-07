@@ -13,8 +13,16 @@
 
 namespace MvcCore\Session;
 
-trait MetaData
-{
+trait MetaData {
+	
+	/**
+	 * @inheritDocs
+	 * @return \stdClass
+	 */
+	public static function GetSessionMetadata () {
+		return static::$meta;
+	}
+
 	/**
 	 * Set up MvcCore session namespaces metadata
 	 * about namespaces names, hoops and expirations.
@@ -39,8 +47,8 @@ trait MetaData
 	/**
 	 * Set up namespaces data - only if data has not been expired yet,
 	 * if data has been expired, unset data from
-	 * `\MvcCore\ISession::$meta` and `$_SESSION` storage.
-	 * Called only once at session start by `\MvcCore\ISession::Start();`.
+	 * `\MvcCore\Session::$meta` and `$_SESSION` storage.
+	 * Called only once at session start by `\MvcCore\Session::Start();`.
 	 * @return void
 	 */
 	protected static function setUpData () {
@@ -76,14 +84,5 @@ trait MetaData
 				unset($_SESSION[$name]);
 			}
 		}
-	}
-
-	/**
-	 * Get session metadata about session namespaces.
-	 * This method is used for debugging purposes.
-	 * @return \stdClass
-	 */
-	public static function GetSessionMetadata () {
-		return static::$meta;
 	}
 }

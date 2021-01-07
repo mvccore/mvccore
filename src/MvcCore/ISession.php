@@ -90,6 +90,12 @@ interface ISession {
 	public static function GetSessionStartTime ();
 
 	/**
+	 * Get static boolean about if session has been already started or not.
+	 * @return bool
+	 */
+	public static function GetStarted ();
+
+	/**
 	 * Get session metadata about session namespaces.
 	 * This method is used for debugging purposes.
 	 * @return \stdClass
@@ -134,6 +140,13 @@ interface ISession {
 	 * @return void
 	 */
 	public static function SendCookie ();
+
+	/**
+	 * Get the highest expiration in seconds for namespace with
+	 * the highest expiration to set expiration for `PHPSESSID` cookie.
+	 * @return int
+	 */
+	public static function GetSessionMaxTime ()
 
 	/**
 	 * Destroy whole session namespace in `$_SESSION` storage

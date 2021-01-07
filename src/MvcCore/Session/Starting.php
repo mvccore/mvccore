@@ -16,11 +16,7 @@ namespace MvcCore\Session;
 trait Starting
 {
 	/**
-	 * Session safe start only once.
-	 * - called by `\MvcCore\Application::GetInstance()->SessionStart();`
-	 *   - called by `\MvcCore\Controller::Init();`
-	 * It's free to call this function anywhere sooner for custom purposes,
-	 * for example in `Bootstrap.php` by: `\MvcCore\Application::GetInstance()->SessionStart();`
+	 * @inheritDocs
 	 * @return void
 	 */
 	public static function Start (& $session = []) {
@@ -46,8 +42,7 @@ trait Starting
 	}
 
 	/**
-	 * Get Unix epoch for current request session start moment.
-	 * This method is used for debugging purposes.
+	 * @inheritDocs
 	 * @return int
 	 */
 	public static function GetSessionStartTime () {
@@ -55,7 +50,7 @@ trait Starting
 	}
 
 	/**
-	 * Get static boolean about if session has been already started or not.
+	 * @inheritDocs
 	 * @return bool
 	 */
 	public static function GetStarted () {
@@ -93,7 +88,7 @@ trait Starting
 	 * But PHP engine takes always the first cookie value to start session.
 	 * To prevent atacks like that, take always the last session id value 
 	 * in Cookie header list by fixing session id before session has been started.
-	 * @param \MvcCore\IRequest $req
+	 * @param \MvcCore\Request $req
 	 * @return void
 	 */
 	protected static function preventSessionFixation (\MvcCore\IRequest $req) {

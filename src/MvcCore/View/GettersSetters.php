@@ -17,7 +17,7 @@ trait GettersSetters {
 
 	/**
 	 * @inheritDocs
-	 * @return \MvcCore\View|\MvcCore\IView
+	 * @return \MvcCore\View
 	 */
 	public static function CreateInstance () {
 		/** @var $result \MvcCore\View */

@@ -66,6 +66,7 @@ trait ViewHelpers {
 	 * @return string|mixed View helper string result or any other view helper result type or view helper instance, always as `\MvcCore\Ext\Views\Helpers\AbstractHelper|\MvcCore\Ext\Views\Helpers\IHelper` instance.
 	 */
 	public function __call ($method, $arguments) {
+		/** @var $this \MvcCore\View */
 		$result = '';
 		$methodCamelCase = lcfirst($method);
 		$instance = & $this->GetHelper($methodCamelCase, TRUE);
@@ -94,6 +95,7 @@ trait ViewHelpers {
 	 * @return mixed View helper instance, always as `\MvcCore\Ext\Views\Helpers\AbstractHelper|\MvcCore\Ext\Views\Helpers\IHelper` instance.
 	 */
 	public function & GetHelper ($helperNameCamelCase, $asClosure = FALSE) {
+		/** @var $this \MvcCore\View */
 		$setUpView = FALSE;
 		$needsClosureFn = FALSE;
 		$instance = NULL;
@@ -162,7 +164,7 @@ trait ViewHelpers {
 	 * @param string $helperNameCamelCase View helper method name in camel case.
 	 * @param mixed $instance View helper instance, always as `\MvcCore\Ext\Views\Helpers\AbstractHelper|\MvcCore\Ext\Views\Helpers\IHelper` instance or `\Closure`.
 	 * @param bool $forAllTemplates register this helper instance for all rendered views in the future.
-	 * @return \MvcCore\View|\MvcCore\IView
+	 * @return \MvcCore\View
 	 */
 	public function SetHelper ($helperNameCamelCase, $instance, $forAllTemplates = TRUE) {
 		/** @var $this \MvcCore\View */

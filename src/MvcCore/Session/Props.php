@@ -13,8 +13,8 @@
 
 namespace MvcCore\Session;
 
-trait Props
-{
+trait Props {
+
 	/**
 	 * Default session namespace name.
 	 * @var string
@@ -47,7 +47,7 @@ trait Props
 	/**
 	 * Array of created `\MvcCore\ISession` instances,
 	 * keys in this array storage are session namespaces names.
-	 * @var \MvcCore\ISession[]
+	 * @var \MvcCore\Session[]
 	 */
 	protected static $instances = [];
 
@@ -66,7 +66,7 @@ trait Props
 
 	/**
 	 * Request instance reference.
-	 * @var \MvcCore\IRequest
+	 * @var \MvcCore\Request
 	 */
 	protected static $req = NULL;
 }
