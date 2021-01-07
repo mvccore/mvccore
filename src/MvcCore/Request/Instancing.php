@@ -13,22 +13,17 @@
 
 namespace MvcCore\Request;
 
-trait Instancing
-{
+trait Instancing {
+
 	/**
-	 * Static factory to get every time new instance of http request object.
-	 * Global variables for constructor arguments (`$_SERVER`, `$_GET`, `$_POST`...)
-	 * should be changed to any arrays with any values and injected here to get
-	 * different request object then currently called real request object.
-	 * For example to create fake request object for testing purposes
-	 * or for non-real request rendering into request output cache.
+	 * @inheritDocs
 	 * @param array $server
 	 * @param array $get
 	 * @param array $post
 	 * @param array $cookie
 	 * @param array $files
 	 * @param string|NULL $inputStream
-	 * @return \MvcCore\Request|\MvcCore\IRequest
+	 * @return \MvcCore\Request
 	 */
 	public static function CreateInstance (
 		array & $server = [],
@@ -68,6 +63,7 @@ trait Instancing
 		array & $files = [],
 		$inputStream = NULL
 	) {
+		/** @var $this \MvcCore\Request */
 		$app = self::$app ?: (self::$app = \MvcCore\Application::GetInstance());
 		self::$routerClass = self::$routerClass ?: $app->GetRouterClass();
 		$this->globalServer = & $server;
@@ -77,7 +73,7 @@ trait Instancing
 		$this->globalFiles = & $files;
 		$this->cli = php_sapi_name() == 'cli';
 		$inputStreamDefault = $this->cli
-			? STDIN
+			? 'php://stdin'
 			: 'php://input';
 		$this->inputStream = $inputStream !== NULL
 			? $inputStream
@@ -87,12 +83,8 @@ trait Instancing
 	}
 
 	/**
-	 * Initialize all possible protected values from all global variables,
-	 * including all http headers, all params and application inputs.
-	 * This method is not recommended to use in production mode, it's
-	 * designed mostly for development purposes, to see in one moment,
-	 * what could be inside request after calling any getter method.
-	 * @return \MvcCore\Request|\MvcCore\IRequest
+	 * @inheritDocs
+	 * @return \MvcCore\Request
 	 */
 	public function InitAll () {
 		/** @var $this \MvcCore\Request */

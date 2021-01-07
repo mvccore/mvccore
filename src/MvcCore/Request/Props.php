@@ -13,8 +13,8 @@
 
 namespace MvcCore\Request;
 
-trait Props
-{
+trait Props {
+
 	/**
 	 * List of exceptional two-segment top-level domain like
 	 * `'co.jp', 'co.uk', 'co.kr', 'co.nf' ...` to parse

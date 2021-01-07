@@ -13,13 +13,10 @@
 
 namespace MvcCore\Request;
 
-trait CollectionsMethods
-{
+trait CollectionsMethods {
+
 	/**
-	 * Get one of the global data collections stored as protected properties inside request object.
-	 * Example:
-	 *  // to get global `$_GET` with raw values:
-	 *  `$globalGet = $request->GetGlobalCollection('get');`
+	 * @inheritDocs
 	 * @param string $type
 	 * @return array
 	 */
@@ -30,11 +27,9 @@ trait CollectionsMethods
 	}
 
 	/**
-	 * Set directly all raw http headers without any conversion at once.
-	 * Header name(s) as array keys should be in standard format like:
-	 * `"Content-Type" | "Content-Length" | "X-Requested-With" ...`.
+	 * @inheritDocs
 	 * @param array $headers
-	 * @return \MvcCore\Request|\MvcCore\IRequest
+	 * @return \MvcCore\Request
 	 */
 	public function SetHeaders (array & $headers = []) {
 		/** @var $this \MvcCore\Request */
@@ -43,11 +38,7 @@ trait CollectionsMethods
 	}
 
 	/**
-	 * Get directly all raw http headers at once (with/without conversion).
-	 * If headers are not initialized, initialize headers by
-	 * `getallheaders()` or from `$_SERVER['HTTP_...']`.
-	 * Headers are returned as `key => value` array, headers keys are
-	 * in standard format like: `"Content-Type" | "Content-Length" | "X-Requested-With" ...`.
+	 * @inheritDocs
 	 * @param string|array|bool $pregReplaceAllowedChars If String - list of regular expression characters to only keep, if array - `preg_replace()` pattern and reverse, if `FALSE`, raw value is returned.
 	 * @return array
 	 */
@@ -65,12 +56,10 @@ trait CollectionsMethods
 	}
 
 	/**
-	 * Set directly raw http header value without any conversion.
-	 * Header name should be in standard format like:
-	 * `"Content-Type" | "Content-Length" | "X-Requested-With" ...`.
+	 * @inheritDocs
 	 * @param string $name
 	 * @param string|string[] $value
-	 * @return \MvcCore\Request|\MvcCore\IRequest
+	 * @return \MvcCore\Request
 	 */
 	public function SetHeader ($name = '', $value = '') {
 		/** @var $this \MvcCore\Request */
@@ -80,10 +69,7 @@ trait CollectionsMethods
 	}
 
 	/**
-	 * Get http header value filtered by "rule to keep defined characters only",
-	 * defined in second argument (by `preg_replace()`). Place into second argument
-	 * only char groups you want to keep. Header has to be in format like:
-	 * `"Content-Type" | "Content-Length" | "X-Requested-With" ...`.
+	 * @inheritDocs
 	 * @param string $name Http header string name.
 	 * @param string|array|bool $pregReplaceAllowedChars If String - list of regular expression characters to only keep, if array - `preg_replace()` pattern and reverse, if `FALSE`, raw value is returned.
 	 * @param mixed $ifNullValue Default value returned if given param name is null.
@@ -105,7 +91,7 @@ trait CollectionsMethods
 	}
 
 	/**
-	 * Return if request has any http header by given name.
+	 * @inheritDocs
 	 * @param string $name Http header string name.
 	 * @return bool
 	 */
@@ -117,9 +103,9 @@ trait CollectionsMethods
 
 
 	/**
-	 * Set directly all raw parameters without any conversion at once.
+	 * @inheritDocs
 	 * @param array $params
-	 * @return \MvcCore\Request|\MvcCore\IRequest
+	 * @return \MvcCore\Request
 	 */
 	public function SetParams (array & $params = []) {
 		/** @var $this \MvcCore\Request */
@@ -128,9 +114,7 @@ trait CollectionsMethods
 	}
 
 	/**
-	 * Get directly all raw parameters at once (with/without conversion).
-	 * If any defined char groups in `$pregReplaceAllowedChars`, there will be returned
-	 * all params filtered by given rule in `preg_replace()`.
+	 * @inheritDocs
 	 * @param string|array|bool $pregReplaceAllowedChars If String - list of regular expression characters to only keep, if array - `preg_replace()` pattern and reverse, if `FALSE`, raw value is returned.
 	 * @param array $onlyKeys Array with keys to get only. If empty (by default), all possible params are returned.
 	 * @return array
@@ -156,10 +140,10 @@ trait CollectionsMethods
 	}
 
 	/**
-	 * Set directly raw parameter value without any conversion.
+	 * @inheritDocs
 	 * @param string $name
 	 * @param string|string[] $value
-	 * @return \MvcCore\Request|\MvcCore\IRequest
+	 * @return \MvcCore\Request
 	 */
 	public function SetParam ($name = '', $value = '') {
 		/** @var $this \MvcCore\Request */
@@ -169,9 +153,9 @@ trait CollectionsMethods
 	}
 
 	/**
-	 * Remove parameter by name.
+	 * @inheritDocs
 	 * @param string $name
-	 * @return \MvcCore\Request|\MvcCore\IRequest
+	 * @return \MvcCore\Request
 	 */
 	public function RemoveParam ($name = '') {
 		/** @var $this \MvcCore\Request */
@@ -181,9 +165,7 @@ trait CollectionsMethods
 	}
 
 	/**
-	 * Get param value from `$_GET`, `$_POST` or `php://input`, filtered by
-	 * "rule to keep defined characters only", defined in second argument (by `preg_replace()`).
-	 * Place into second argument only char groups you want to keep.
+	 * @inheritDocs
 	 * @param string $name Parameter string name.
 	 * @param string|array|bool $pregReplaceAllowedChars If String - list of regular expression characters to only keep, if array - `preg_replace()` pattern and reverse, if `FALSE`, raw value is returned.
 	 * @param mixed $ifNullValue Default value returned if given param name is null.
@@ -205,7 +187,7 @@ trait CollectionsMethods
 	}
 
 	/**
-	 * Get if any param value exists in `$_GET`, `$_POST` or `php://input`
+	 * @inheritDocs
 	 * @param string $name Parameter string name.
 	 * @return bool
 	 */
@@ -217,9 +199,9 @@ trait CollectionsMethods
 
 
 	/**
-	 * Set directly whole raw global `$_FILES` without any conversion at once.
+	 * @inheritDocs
 	 * @param array $files
-	 * @return \MvcCore\Request|\MvcCore\IRequest
+	 * @return \MvcCore\Request
 	 */
 	public function SetFiles (array & $files = []) {
 		/** @var $this \MvcCore\Request */
@@ -228,8 +210,7 @@ trait CollectionsMethods
 	}
 
 	/**
-	 * Return reference to configured global `$_FILES`
-	 * or reference to any other testing array representing it.
+	 * @inheritDocs
 	 * @return array
 	 */
 	public function & GetFiles () {
@@ -238,10 +219,10 @@ trait CollectionsMethods
 	}
 
 	/**
-	 * Set file item into global `$_FILES` without any conversion at once.
+	 * @inheritDocs
 	 * @param string $file Uploaded file string name.
 	 * @param array $data
-	 * @return \MvcCore\Request|\MvcCore\IRequest
+	 * @return \MvcCore\Request
 	 */
 	public function SetFile ($file = '', $data = []) {
 		/** @var $this \MvcCore\Request */
@@ -250,8 +231,7 @@ trait CollectionsMethods
 	}
 
 	/**
-	 * Return item by file name from referenced global `$_FILES`
-	 * or reference to any other testing array item representing it.
+	 * @inheritDocs
 	 * @param string $file Uploaded file string name.
 	 * @return array
 	 */
@@ -262,7 +242,7 @@ trait CollectionsMethods
 	}
 
 	/**
-	 * Return if any item by file name exists or not in referenced global `$_FILES`.
+	 * @inheritDocs
 	 * @param string $file Uploaded file string name.
 	 * @return bool
 	 */
@@ -273,9 +253,9 @@ trait CollectionsMethods
 
 
 	/**
-	 * Set directly whole raw global `$_COOKIE` without any conversion at once.
+	 * @inheritDocs
 	 * @param array $cookies
-	 * @return \MvcCore\Request|\MvcCore\IRequest
+	 * @return \MvcCore\Request
 	 */
 	public function SetCookies (array & $cookies = []) {
 		/** @var $this \MvcCore\Request */
@@ -284,8 +264,7 @@ trait CollectionsMethods
 	}
 
 	/**
-	 * Get directly all raw global `$_COOKIE`s at once (with/without conversion).
-	 * Cookies are returned as `key => value` array.
+	 * @inheritDocs
 	 * @param string|array|bool $pregReplaceAllowedChars If String - list of regular expression characters to only keep, if array - `preg_replace()` pattern and reverse, if `FALSE`, raw value is returned.
 	 * @param array $onlyKeys Array with keys to get only. If empty (by default), all possible cookies are returned.
 	 * @return array
@@ -310,10 +289,10 @@ trait CollectionsMethods
 	}
 
 	/**
-	 * Set raw request cookie into referenced global `$_COOKIE` without any conversion.
+	 * @inheritDocs
 	 * @param string $name
 	 * @param string|string[] $value
-	 * @return \MvcCore\Request|\MvcCore\IRequest
+	 * @return \MvcCore\Request
 	 */
 	public function SetCookie ($name = "", $value = "") {
 		/** @var $this \MvcCore\Request */
@@ -322,9 +301,7 @@ trait CollectionsMethods
 	}
 
 	/**
-	 * Get request cookie value from referenced global `$_COOKIE` variable,
-	 * filtered by characters defined in second argument through `preg_replace()`.
-	 * Place into second argument only char groups you want to keep.
+	 * @inheritDocs
 	 * @param string $name Cookie string name.
 	 * @param string|array|bool $pregReplaceAllowedChars If String - list of regular expression characters to only keep, if array - `preg_replace()` pattern and reverse, if `FALSE`, raw value is returned.
 	 * @param mixed $ifNullValue Default value returned if given param name is null.
@@ -345,7 +322,7 @@ trait CollectionsMethods
 	}
 
 	/**
-	 * Return if any item by cookie name exists or not in referenced global `$_COOKIE`.
+	 * @inheritDocs
 	 * @param string $name Cookie string name.
 	 * @return bool
 	 */

@@ -220,6 +220,14 @@ interface IRequest {
 
 
 	/**
+	 * Parse list of comma separated language tags and sort it by the
+	 * quality value from `$this->globalServer['HTTP_ACCEPT_LANGUAGE']`.
+	 * @param string[] $languagesList
+	 * @return array
+	 */
+	public static function ParseHttpAcceptLang ($languagesList);
+
+	/**
 	 * Add exceptional two-segment top-level domain like
 	 * `'co.jp', 'co.uk', 'co.kr', 'co.nf' ...` to parse
 	 * domain string correctly.
@@ -243,7 +251,7 @@ interface IRequest {
 	 * @param array $post
 	 * @param array $cookie
 	 * @param array $files
-	 * @return \MvcCore\IRequest
+	 * @return \MvcCore\Request
 	 */
 	public static function CreateInstance (
 		array & $server = [],
@@ -269,7 +277,7 @@ interface IRequest {
 	 * Header name(s) as array keys should be in standard format like:
 	 * `"Content-Type" | "Content-Length" | "X-Requested-With" ...`.
 	 * @param array $headers
-	 * @return \MvcCore\IRequest
+	 * @return \MvcCore\Request
 	 */
 	public function SetHeaders (array & $headers = []);
 
@@ -290,7 +298,7 @@ interface IRequest {
 	 * `"Content-Type" | "Content-Length" | "X-Requested-With" ...`.
 	 * @param string $name
 	 * @param string|string[] $value
-	 * @return \MvcCore\IRequest
+	 * @return \MvcCore\Request
 	 */
 	public function SetHeader ($name = '', $value = '');
 
@@ -324,7 +332,7 @@ interface IRequest {
 	/**
 	 * Set directly all raw parameters without any conversion at once.
 	 * @param array $params
-	 * @return \MvcCore\IRequest
+	 * @return \MvcCore\Request
 	 */
 	public function SetParams (array & $params = []);
 
@@ -342,14 +350,14 @@ interface IRequest {
 	 * Set directly raw parameter value without any conversion.
 	 * @param string $name
 	 * @param string|string[] $value
-	 * @return \MvcCore\IRequest
+	 * @return \MvcCore\Request
 	 */
 	public function SetParam ($name = '', $value = '');
 
 	/**
 	 * Remove parameter by name.
 	 * @param string $name
-	 * @return \MvcCore\IRequest
+	 * @return \MvcCore\Request
 	 */
 	public function RemoveParam ($name = '');
 
@@ -382,7 +390,7 @@ interface IRequest {
 	/**
 	 * Set directly whole raw global `$_FILES` without any conversion at once.
 	 * @param array $files
-	 * @return \MvcCore\IRequest
+	 * @return \MvcCore\Request
 	 */
 	public function SetFiles (array & $files = []);
 
@@ -397,7 +405,7 @@ interface IRequest {
 	 * Set file item into global `$_FILES` without any conversion at once.
 	 * @param string $file Uploaded file string name.
 	 * @param array $data
-	 * @return \MvcCore\IRequest
+	 * @return \MvcCore\Request
 	 */
 	public function SetFile ($file = '', $data = []);
 
@@ -420,7 +428,7 @@ interface IRequest {
 	/**
 	 * Set directly whole raw global `$_COOKIE` without any conversion at once.
 	 * @param array $cookies
-	 * @return \MvcCore\IRequest
+	 * @return \MvcCore\Request
 	 */
 	public function SetCookies (array & $cookies = []);
 
@@ -437,7 +445,7 @@ interface IRequest {
 	 * Set raw request cookie into referenced global `$_COOKIE` without any conversion.
 	 * @param string $name
 	 * @param string|string[] $value
-	 * @return \MvcCore\IRequest
+	 * @return \MvcCore\Request
 	 */
 	public function SetCookie ($name = '', $value = '');
 
@@ -473,7 +481,7 @@ interface IRequest {
 	 * This method is not recommended to use in production mode, it's
 	 * designed mostly for development purposes, to see in one moment,
 	 * what could be inside request after calling any getter method.
-	 * @return \MvcCore\IRequest
+	 * @return \MvcCore\Request
 	 */
 	public function InitAll ();
 
@@ -487,7 +495,7 @@ interface IRequest {
 	 * Set cleaned requested controller name into `\MvcCore\Request::$controllerName;`
 	 * and into `\MvcCore\Request::$params['controller'];`.
 	 * @param string $controllerName
-	 * @return \MvcCore\IRequest
+	 * @return \MvcCore\Request
 	 */
 	public function SetControllerName ($controllerName);
 
@@ -501,7 +509,7 @@ interface IRequest {
 	 * Set cleaned requested controller name into `\MvcCore\Request::$actionName;`
 	 * and into `\MvcCore\Request::$params['action'];`.
 	 * @param string $actionName
-	 * @return \MvcCore\IRequest
+	 * @return \MvcCore\Request
 	 */
 	public function SetActionName ($actionName);
 
@@ -523,7 +531,7 @@ interface IRequest {
 	 * Use this lang storage by your own decision.
 	 * Example: `"en" | "de"`
 	 * @param string|NULL $lang
-	 * @return \MvcCore\IRequest
+	 * @return \MvcCore\Request
 	 */
 	public function SetLang ($lang);
 
@@ -541,7 +549,7 @@ interface IRequest {
 	 * Use this locale storage by your own decision.
 	 * Example: `"US" | "UK"`
 	 * @param string|NULL $locale
-	 * @return \MvcCore\IRequest
+	 * @return \MvcCore\Request
 	 */
 	public function SetLocale ($locale);
 
@@ -559,7 +567,7 @@ interface IRequest {
 	 * Use this media site version storage by your own decision.
 	 * Example: `"full" | "tablet" | "mobile"`
 	 * @param string|NULL $mediaSiteVersion
-	 * @return \MvcCore\IRequest
+	 * @return \MvcCore\Request
 	 */
 	public function SetMediaSiteVersion ($mediaSiteVersion);
 
@@ -582,7 +590,7 @@ interface IRequest {
 	 * @param string $rawName
 	 * @param array  $arguments
 	 * @throws \InvalidArgumentException
-	 * @return mixed|\MvcCore\IRequest
+	 * @return mixed|\MvcCore\Request
 	 */
 	public function __call ($rawName, $arguments = []);
 
@@ -597,7 +605,7 @@ interface IRequest {
 	 * Universal setter, if property not defined, it's automatically declared.
 	 * @param string $name
 	 * @param mixed	 $value
-	 * @return \MvcCore\IRequest
+	 * @return \MvcCore\Request
 	 */
 	public function __set ($name, $value);
 
@@ -620,7 +628,7 @@ interface IRequest {
 	 * Set upper cased http method from global `$_SERVER['REQUEST_METHOD']`.
 	 * Example: `$request->SetMethod("GET" | "POST" | "PUT" | "HEAD"...);`
 	 * @param string $rawMethod
-	 * @return \MvcCore\IRequest
+	 * @return \MvcCore\Request
 	 */
 	public function SetMethod ($rawMethod);
 
@@ -638,7 +646,7 @@ interface IRequest {
 	 * - for full url:  `"http://localhost:88/my/development/direcotry/www/requested/path/after/domain?with=possible&query=string"`
 	 * - set base path: `$request->SetBasePath("/my/development/directory/www");`
 	 * @param string $rawBasePath
-	 * @return \MvcCore\IRequest
+	 * @return \MvcCore\Request
 	 */
 	public function SetBasePath ($rawBasePath);
 
@@ -656,7 +664,7 @@ interface IRequest {
 	 * Set http scheme string.
 	 * Example: `$request->SetScheme("https:");`
 	 * @param string $rawProtocol
-	 * @return \MvcCore\IRequest
+	 * @return \MvcCore\Request
 	 */
 	public function SetScheme ($rawProtocol);
 
@@ -693,7 +701,7 @@ interface IRequest {
 	 * Set TOP level domain like `com` or `co.uk`.
 	 * Method also change server name and host record automatically.
 	 * @param string|NULL $topLevelDomain
-	 * @return \MvcCore\IRequest
+	 * @return \MvcCore\Request
 	 */
 	public function SetTopLevelDomain ($topLevelDomain);
 
@@ -707,7 +715,7 @@ interface IRequest {
 	 * Set second level domain like `example` in `www.example.com`.
 	 * Method also change server name and host record automatically.
 	 * @param string|NULL $secondLevelDomain
-	 * @return \MvcCore\IRequest
+	 * @return \MvcCore\Request
 	 */
 	public function SetSecondLevelDomain ($secondLevelDomain);
 
@@ -721,7 +729,7 @@ interface IRequest {
 	 * Set second level domain like `example` from `www.example.com`.
 	 * Method also change server name and host record automatically.
 	 * @param string|NULL $thirdLevelDomain
-	 * @return \MvcCore\IRequest
+	 * @return \MvcCore\Request
 	 */
 	public function SetThirdLevelDomain ($thirdLevelDomain);
 
@@ -736,7 +744,7 @@ interface IRequest {
 	 * Method also change host record and domain records automatically.
 	 * Example: `$request->SetHostName("localhost");`
 	 * @param string $rawHostName
-	 * @return \MvcCore\IRequest
+	 * @return \MvcCore\Request
 	 */
 	public function SetHostName ($rawHostName);
 
@@ -752,7 +760,7 @@ interface IRequest {
 	 * Method also change server name record and domain records automatically.
 	 * Example: `$request->SetHost("localhost:88");`
 	 * @param string $rawHost
-	 * @return \MvcCore\IRequest
+	 * @return \MvcCore\Request
 	 */
 	public function SetHost ($rawHost);
 
@@ -768,7 +776,7 @@ interface IRequest {
 	 * Empty string if there is no port number in requested address.`.
 	 * Example: `$request->SetPort("88")`
 	 * @param string $rawPort
-	 * @return \MvcCore\IRequest
+	 * @return \MvcCore\Request
 	 */
 	public function SetPort ($rawPort);
 
@@ -784,7 +792,7 @@ interface IRequest {
 	 * Set requested path in from application root (if `mod_rewrite` enabled), never with query string.
 	 * Example: `$request->SetPort("/products/page/2");`
 	 * @param string $rawPathValue
-	 * @return \MvcCore\IRequest
+	 * @return \MvcCore\Request
 	 */
 	public function SetPath ($rawPathValue);
 
@@ -800,7 +808,7 @@ interface IRequest {
 	 * Set URL query string, with or without question mark character, doesn't matter.
 	 * Example: `$request->SetQuery("param-1=value-1&param-2=value-2&param-3[]=value-3-a&param-3[]=value-3-b");`
 	 * @param string $rawQuery
-	 * @return \MvcCore\IRequest
+	 * @return \MvcCore\Request
 	 */
 	public function SetQuery ($rawQuery);
 

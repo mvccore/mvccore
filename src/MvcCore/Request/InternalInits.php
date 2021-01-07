@@ -13,11 +13,10 @@
 
 namespace MvcCore\Request;
 
-trait InternalInits
-{
+trait InternalInits {
+
 	/**
-	 * Parse list of comma separated language tags and sort it by the
-	 * quality value from `$this->globalServer['HTTP_ACCEPT_LANGUAGE']`.
+	 * @inheritDocs
 	 * @param string[] $languagesList
 	 * @return array
 	 */
