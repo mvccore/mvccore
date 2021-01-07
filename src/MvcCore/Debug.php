@@ -12,7 +12,6 @@
 */
 
 namespace MvcCore {
-
 	/**
 	 * @inheritDocs
 	 */

@@ -13,10 +13,10 @@
 
 namespace MvcCore\Debug;
 
-trait Initializations
-{
+trait Initializations {
+
 	/**
-	 * Initialize debugging and logging, once only.
+	 * @inheritDocs
 	 * @param bool $forceDevelopmentMode	If defined as `TRUE` or `FALSE`,
 	 *										debugging mode will be set not
 	 *										by config but by this value.
@@ -48,10 +48,7 @@ trait Initializations
 	}
 
 	/**
-	 * Configure strict exceptions mode, mode is enabled by default.
-	 * If mode is configured to `FALSE` and any previous error handler exists,
-	 * it's automatically assigned back, else there is only called
-	 * `restore_error_handler()` to restore system error handler.
+	 * @inheritDocs
 	 * @param bool $strictExceptionsMode
 	 * @param \int[] $errorLevelsToExceptions E_ERROR, E_RECOVERABLE_ERROR, E_CORE_ERROR, E_USER_ERROR, E_WARNING, E_CORE_WARNING, E_USER_WARNING
 	 * @return bool|NULL

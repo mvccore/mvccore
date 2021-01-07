@@ -13,8 +13,8 @@
 
 namespace MvcCore\Debug;
 
-trait Props
-{
+trait Props {
+
 	/**
 	 * Email recipient to send information about exceptions or errors,
 	 * `"admin@localhost"` by default. This property is not used in core debug

@@ -13,10 +13,10 @@
 
 namespace MvcCore\Debug;
 
-trait Handlers
-{
+trait Handlers {
+
 	/**
-	 * Starts/stops stopwatch.
+	 * @inheritDocs
 	 * @param  string $name Time pointer name.
 	 * @return float		Elapsed seconds.
 	 */
@@ -29,8 +29,7 @@ trait Handlers
 	}
 
 	/**
-	 * Dumps information about any variable in readable format and return it.
-	 * In non-development mode - store dumped variable in `debug.log`.
+	 * @inheritDocs
 	 * @param  mixed  $value		Variable to dump.
 	 * @param  bool   $return		Let's return output instead of printing it.
 	 * @param  bool   $exit			`TRUE` for last dump call by `xxx();` method
@@ -55,9 +54,7 @@ trait Handlers
 	}
 
 	/**
-	 * Dump any variable with output buffering in browser debug bar.
-	 * In non-development mode - store dumped variable in `debug.log`.
-	 * Return printed variable as string.
+	 * @inheritDocs
 	 * @param  mixed	$value		Variable to dump.
 	 * @param  string	$title		Optional title.
 	 * @param  array	$options	Dumper options.
@@ -77,8 +74,7 @@ trait Handlers
 	}
 
 	/**
-	 * Logs any message or exception with log datetime, in `*.log` file
-	 * by given log level, in configured logging directory.
+	 * @inheritDocs
 	 * @param  mixed|\Exception|\Throwable	$value
 	 * @param  string						$priority
 	 * @return string						Logging filename full path.
@@ -95,8 +91,7 @@ trait Handlers
 	}
 
 	/**
-	 * Print caught exception in browser.
-	 * In non-development mode - store dumped exception in `exception.log`.
+	 * @inheritDocs
 	 * @param \Exception|\Error|\Throwable|array $exception
 	 * @param bool $exit
 	 * @return void
@@ -117,9 +112,7 @@ trait Handlers
 	}
 
 	/**
-	 * Print all stored dumps at the end of sent response body as browser debug
-	 * bar. This function is called from registered shutdown handler by
-	 * `register_shutdown_function()` from `\MvcCore\Debug::initHandlers();`.
+	 * @inheritDocs
 	 * @return void
 	 */
 	public static function ShutdownHandler () {
