@@ -13,14 +13,10 @@
 
 namespace MvcCore\View;
 
-trait GettersSetters
-{
+trait GettersSetters {
+
 	/**
-	 * Return always new instance of statically called class, no singleton.
-	 * Always called from `\MvcCore\Controller::PreDispatch()` and
-	 * `\MvcCore\Controller::Render()` to create layout view.
-	 * This is place where to customize any view creation process,
-	 * before it's created by MvcCore framework to fill and render it.
+	 * @inheritDocs
 	 * @return \MvcCore\View|\MvcCore\IView
 	 */
 	public static function CreateInstance () {
@@ -30,8 +26,7 @@ trait GettersSetters
 	}
 
 	/**
-	 * Get view scripts files extension with leading dot char.
-	 * Default value: `".phtml"`.
+	 * @inheritDocs
 	 * @return string
 	 */
 	public static function GetExtension () {
@@ -39,8 +34,7 @@ trait GettersSetters
 	}
 
 	/**
-	 * Set view scripts files extension.
-	 * given value could be with or without leading dot char.
+	 * @inheritDocs
 	 * @param string $extension An extension with or without leading dot char.
 	 * @return string
 	 */
@@ -49,16 +43,7 @@ trait GettersSetters
 	}
 
 	/**
-	 * Get output document type (to automatically and optionally send proper
-	 * HTTP header `Content-Type`, if there is no `Content-Type` HTTP
-	 * header in response object yet).
-	 * This value could be used also for any other custom purposes.
-	 * Possible values:
-	 * - `HTML4` - `\MvcCore\IView::DOCTYPE_HTML4`
-	 * - `XHTML` - `\MvcCore\IView::DOCTYPE_XHTML`
-	 * - `HTML5` - `\MvcCore\IView::DOCTYPE_HTML5`
-	 * - `XML`   - `\MvcCore\IView::DOCTYPE_XML`
-	 * Default value: `HTML5`.
+	 * @inheritDocs
 	 * @return string
 	 */
 	public static function GetDoctype () {
@@ -66,16 +51,7 @@ trait GettersSetters
 	}
 
 	/**
-	 * Set output document type (to automatically and optionally send proper
-	 * HTTP header `Content-Type`, if there is no `Content-Type` HTTP
-	 * header in response object yet).
-	 * This value could be used also for any other custom purposes.
-	 * Possible values:
-	 * - `HTML4` - `\MvcCore\IView::DOCTYPE_HTML4`
-	 * - `XHTML` - `\MvcCore\IView::DOCTYPE_XHTML`
-	 * - `HTML5` - `\MvcCore\IView::DOCTYPE_HTML5`
-	 * - `XML`   - `\MvcCore\IView::DOCTYPE_XML`
-	 * Default value: `HTML5`.
+	 * @inheritDocs
 	 * @param string $doctype
 	 * @return string
 	 */
@@ -84,10 +60,7 @@ trait GettersSetters
 	}
 
 	/**
-	 * Get layout templates directory placed by default
-	 * inside `"/App/Views"` directory. Default value
-	 * is `"Layouts"`, so layouts app path
-	 * is `"/App/Views/Layouts"`.
+	 * @inheritDocs
 	 * @return string
 	 */
 	public static function GetLayoutsDir () {
@@ -95,10 +68,7 @@ trait GettersSetters
 	}
 
 	/**
-	 * Set layout templates directory placed by default
-	 * inside `"/App/Views"` directory. Default value
-	 * is `"Layouts"`, so layouts app path
-	 * is `"/App/Views/Layouts"`.
+	 * @inheritDocs
 	 * @param string $layoutsDir
 	 * @return string
 	 */
@@ -107,10 +77,7 @@ trait GettersSetters
 	}
 
 	/**
-	 * Get controller/action templates directory
-	 * placed by default inside `"/App/Views"` directory.
-	 * Default value is `"Scripts"`, so scripts app path
-	 * is `"/App/Views/Scripts"`.
+	 * @inheritDocs
 	 * @return string
 	 */
 	public static function GetScriptsDir () {
@@ -118,10 +85,7 @@ trait GettersSetters
 	}
 
 	/**
-	 * Set controller/action templates directory
-	 * placed by default inside `"/App/Views"` directory.
-	 * Default value is `"Scripts"`, so scripts app path
-	 * is `"/App/Views/Scripts"`.
+	 * @inheritDocs
 	 * @param string $scriptsDir
 	 * @return string
 	 */
@@ -130,10 +94,7 @@ trait GettersSetters
 	}
 
 	/**
-	 * This is INTERNAL method, do not use it in templates.
-	 * Method is always called in the most parent controller
-	 * `\MvcCore\Controller:PreDispatch()` moment when view instance is created.
-	 * Method sets controller instance into view.
+	 * @inheritDocs
 	 * @param \MvcCore\Controller $controller
 	 * @return \MvcCore\View
 	 */
@@ -144,7 +105,7 @@ trait GettersSetters
 	}
 
 	/**
-	 * Get controller instance as reference.
+	 * @inheritDocs
 	 * @return \MvcCore\Controller
 	 */
 	public function GetController () {

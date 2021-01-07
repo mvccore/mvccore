@@ -13,11 +13,10 @@
 
 namespace MvcCore\View;
 
-trait DirectoryMethods
-{
+trait DirectoryMethods {
+
 	/**
-	 * Get currently rendered view file full path.
-	 * If this method is called outside of rendering process, `NULL` is returned.
+	 * @inheritDocs
 	 * @return string|NULL
 	 */
 	public function GetCurrentViewFullPath () {
@@ -30,8 +29,7 @@ trait DirectoryMethods
 	}
 
 	/**
-	 * Get currently rendered view file directory full path.
-	 * If this method is called outside of rendering process, `NULL` is returned.
+	 * @inheritDocs
 	 * @return string|NULL
 	 */
 	public function GetCurrentViewDirectory () {
@@ -44,12 +42,7 @@ trait DirectoryMethods
 	}
 
 	/**
-	 * Get currently rendered parent view file full path.
-	 * Parent view file could be any view file, where is called `$this->RenderScript(...);`
-	 * method to render sub-view file (actual view file) or it could be any view file
-	 * from parent controller or if current controller has no parent controller,
-	 * it could be layout view script full path.
-	 * If this method is called outside of rendering process, `NULL` is returned.
+	 * @inheritDocs
 	 * @return string|NULL
 	 */
 	public function GetParentViewFullPath () {
@@ -81,12 +74,7 @@ trait DirectoryMethods
 	}
 
 	/**
-	 * Get currently rendered parent view file directory full path.
-	 * Parent view file could be any view file, where is called `$this->RenderScript(...);`
-	 * method to render sub-view file (actual view file) or it could be any view file
-	 * from parent controller or if current controller has no parent controller,
-	 * it could be layout view script full path.
-	 * If this method is called outside of rendering process, `NULL` is returned.
+	 * @inheritDocs
 	 * @return string|NULL
 	 */
 	public function GetParentViewDirectory () {

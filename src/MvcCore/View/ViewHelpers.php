@@ -13,13 +13,10 @@
 
 namespace MvcCore\View;
 
-trait ViewHelpers
-{
+trait ViewHelpers {
+
 	/**
-	 * Get views helpers directory placed by default
-	 * inside `"/App/Views"` directory.
-	 * Default value is `"Helpers"`, so scripts app path
-	 * is `"/App/Views/Helpers"`.
+	 * @inheritDocs
 	 * @return string
 	 */
 	public static function GetHelpersDir () {
@@ -27,10 +24,7 @@ trait ViewHelpers
 	}
 
 	/**
-	 * Set views helpers directory placed by default
-	 * inside `"/App/Views"` directory.
-	 * Default value is `"Helpers"`, so scripts app path
-	 * is `"/App/Views/Helpers"`.
+	 * @inheritDocs
 	 * @param string $helpersDir
 	 * @return string
 	 */
@@ -39,8 +33,7 @@ trait ViewHelpers
 	}
 
 	/**
-	 * Add view helpers classes namespace(s),
-	 * Example: `\MvcCore\View::AddHelpersNamespaces('Any\Other\ViewHelpers\Place', '...');`.
+	 * @inheritDocs
 	 * @param string $helperNamespaces,... View helper classes namespace(s).
 	 * @return void
 	 */
@@ -53,9 +46,7 @@ trait ViewHelpers
 	}
 
 	/**
-	 * Set view helpers classes namespace(s). This method replace all previously configured namespaces.
-	 * If you want only to add namespace, use `\MvcCore\View::AddHelpersNamespaces();` instead.
-	 * Example: `\MvcCore\View::SetHelpersClassNamespaces('Any\Other\ViewHelpers\Place', '...');`.
+	 * @inheritDocs
 	 * @param string $helperNamespaces,... View helper classes namespace(s).
 	 * @return void
 	 */
@@ -68,11 +59,7 @@ trait ViewHelpers
 	}
 
 	/**
-	 * Try to call view helper.
-	 * If view helper doesn't exist in global helpers store - create new helper instance.
-	 * If helper already exists in global helpers store - do not create it again - use instance from the store.
-	 * Then call it's public method named in the same way as helper and return result
-	 * as it is, without any conversion. So then there could be called any other helper method if whole helper instance is returned.
+	 * @inheritDocs
 	 * @param string $method View helper method name in pascal case.
 	 * @param mixed $arguments View helper method arguments.
 	 * @throws \InvalidArgumentException If view doesn't exist in configured namespaces.

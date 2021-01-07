@@ -13,8 +13,8 @@
 
 namespace MvcCore\View;
 
-trait LocalMethods
-{
+trait LocalMethods {
+
 	/**
 	 * If relative path declared in view starts with `"./anything/else.phtml"`,
 	 * then change relative path to correct `"./"` context and return full path.
@@ -27,7 +27,7 @@ trait LocalMethods
 		// if relative path starts with dot:
 		if (mb_substr($relativePath, 0, 1) === '.') {
 			if (self::$_viewScriptsFullPathBase === NULL)
-				self::_initViewScriptsFullPathBase();
+				self::initViewScriptsFullPathBase();
 			$typedViewDirFullPath = implode('/', [
 				self::$_viewScriptsFullPathBase, $typePath
 			]);

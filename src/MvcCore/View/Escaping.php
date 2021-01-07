@@ -13,11 +13,10 @@
 
 namespace MvcCore\View;
 
-trait Escaping
-{
+trait Escaping {
+
 	/**
-	 * Escape string for use inside HTML/XHTML/HTML5 
-	 * node as text content.
+	 * @inheritDocs
 	 * @param string	$str 
 	 * @param bool		$double 
 	 * @param string	$encoding 
@@ -30,8 +29,7 @@ trait Escaping
 	}
 	
 	/**
-	 * Escape string for use inside HTML/XHTML/HTML5 
-	 * node between `<` and `>` for attributes definitions.
+	 * @inheritDocs
 	 * @param string	$str 
 	 * @param bool		$double 
 	 * @param string	$encoding 
@@ -44,7 +42,7 @@ trait Escaping
 	}
 	
 	/**
-	 * Escape string for use inside HTML/XHTML/HTML5 attribute.
+	 * @inheritDocs
 	 * @param string	$str 
 	 * @param bool		$double 
 	 * @param string	$encoding 
@@ -60,10 +58,7 @@ trait Escaping
 	}
 	
 	/**
-	 * Escape string for use inside XML template.
-	 * XML 1.0:	\x09 \x0A \x0D and C1 allowed directly, C0 forbidden
-	 * XML 1.1:	\x00 forbidden directly and as a character reference,
-	 * 		\x09 \x0A \x0D \x85 allowed directly, C0, C1 and \x7F allowed as character references
+	 * @inheritDocs
 	 * @param string $str 
 	 * @param string $encoding 
 	 * @return string
@@ -76,7 +71,7 @@ trait Escaping
 	}
 	
 	/**
-	 * Escape string for use inside JS context, including trailing double quotes.
+	 * @inheritDocs
 	 * @param string	$str 
 	 * @param int		$flags 
 	 * @param int		$depth 
@@ -89,7 +84,7 @@ trait Escaping
 	}
 	
 	/**
-	 * Escape string for use inside CSS context.
+	 * @inheritDocs
 	 * @see http://www.w3.org/TR/2006/WD-CSS21-20060411/syndata.html#q6
 	 * @param string $str 
 	 * @return string
@@ -99,7 +94,7 @@ trait Escaping
 	}
 	
 	/**
-	 * Escape string for use inside iCal template.
+	 * @inheritDocs
 	 * @see https://www.ietf.org/rfc/rfc5545.txt
 	 * @param string $str 
 	 * @return string
@@ -115,7 +110,7 @@ trait Escaping
 	 * @param int $flagsToAdd
 	 * @return int
 	 */
-	public function escapeGetFlags ($flagsToAdd) {
+	protected function escapeGetFlags ($flagsToAdd) {
 		static $allEscapeFlags = [
 			\MvcCore\IView::DOCTYPE_HTML4	=> ENT_HTML401,
 			\MvcCore\IView::DOCTYPE_XHTML	=> ENT_XHTML,

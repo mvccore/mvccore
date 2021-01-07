@@ -13,11 +13,11 @@
 
 namespace MvcCore\View;
 
-trait Props
-{
+trait Props {
+
 	/**
 	 * Currently dispatched controller instance.
-	 * @var \MvcCore\Controller|\MvcCore\IController
+	 * @var \MvcCore\Controller
 	 */
 	protected $controller = NULL;
 

@@ -13,10 +13,10 @@
 
 namespace MvcCore\View;
 
-trait MagicMethods
-{
+trait MagicMethods {
+
 	/**
-	 * Set any value into view context internal store.
+	 * @inheritDocs
 	 * @param string $name
 	 * @param mixed $value
 	 * @return bool
@@ -26,9 +26,7 @@ trait MagicMethods
 	}
 
 	/**
-	 * Get any value by given name existing in local store. If there is no value
-	 * in local store by given name, try to get result value into store by
-	 * controller reflection class from controller instance property.
+	 * @inheritDocs
 	 * @param string $name
 	 * @return mixed
 	 */
@@ -62,15 +60,15 @@ trait MagicMethods
 	}
 
 	/**
-	 * Get `TRUE` if any value by given name exists in
-	 * local view store or in local controller instance.
+	 * @inheritDocs
 	 * @param string $name
 	 * @return bool
 	 */
 	public function __isset ($name) {
 		$store = & $this->__protected['store'];
 		// if property is in view store - return it
-		if (array_key_exists($name, $store)) return TRUE;
+		if (array_key_exists($name, $store)) 
+			return $store[$name] !== NULL;
 		// if property is not in view store - try to get it from controller and set it into local view store
 		if ($controllerType = $this->getReflectionClass('controller')) {
 			if ($controllerType->hasProperty($name)) {
@@ -96,13 +94,13 @@ trait MagicMethods
 	}
 
 	/**
-	 * Unset any value from view context internal store.
+	 * @inheritDocs
 	 * @param string $name
 	 * @return void
 	 */
 	public function __unset ($name) {
 		$store = & $this->__protected['store'];
-		if (isset($store[$name]))
+		if (array_key_exists($name, $store)) 
 			unset($store[$name]);
 	}
 

@@ -13,11 +13,10 @@
 
 namespace MvcCore\View;
 
-trait Rendering
-{
+trait Rendering {
+
 	/**
-	 * Render action template script or any include script and return it's result as reference.
-	 * Do not use this method in layout sub-templates, use method `RenderLayout()` instead.
+	 * @inheritDocs
 	 * @param string $relativePath
 	 * @return string
 	 */
@@ -26,8 +25,7 @@ trait Rendering
 	}
 
 	/**
-	 * Render layout template script or any include script and return it's result as reference.
-	 * Do not use this method in action sub-templates, use method `RenderScript()` instead.
+	 * @inheritDocs
 	 * @param string $relativePath
 	 * @return string
 	 */
@@ -36,10 +34,7 @@ trait Rendering
 	}
 
 	/**
-	 * This method is INTERNAL, always called from `\MvcCore\Controller::Render();`.
-	 * Do not use this method in templates!
-	 * Method renders whole configured layout template and return it's result
-	 * as string reference with inner rendered action template content.
+	 * @inheritDocs
 	 * @param string $relativePatht.
 	 * @param string $content
 	 * @return string
@@ -51,8 +46,7 @@ trait Rendering
 	}
 
 	/**
-	 * Set up view rendering arguments to render layout and action view in both modes properly.
-	 * Set up view instance helpers before rendering.
+	 * @inheritDocs
 	 * @param int $renderMode
 	 * @param string $controllerOrActionNameDashed
 	 * @param string $actionNameDashed
@@ -89,8 +83,7 @@ trait Rendering
 	}
 
 	/**
-	 * Render controller template and all necessary layout
-	 * templates and return rendered result as string reference.
+	 * @inheritDocs
 	 * @param string $typePath By default: `"Layouts" | "Scripts"`. It could be `"Forms" | "Forms/Fields"` etc...
 	 * @param string $relativePath
 	 * @throws \InvalidArgumentException Template not found in path: `$viewScriptFullPath`.
@@ -140,8 +133,7 @@ trait Rendering
 	}
 
 	/**
-	 * Get view script full path by internal application configuration,
-	 * by `$typePath` param and by `$corectedRelativePath` param.
+	 * @inheritDocs
 	 * @param string $typePath Usually `"Layouts"` or `"Scripts"`.
 	 * @param string $corectedRelativePath
 	 * @return string
@@ -157,11 +149,7 @@ trait Rendering
 	}
 
 	/**
-	 * This is INTERNAL method, do not use it in templates.
-	 * Method is always called in the most parent controller
-	 * `\MvcCore\Controller:Render()` moment when view is rendered.
-	 * Set up all from given view object variables store into current store,
-	 * if there is any already existing key - overwrite it.
+	 * @inheritDocs
 	 * @param \MvcCore\View $view
 	 * @param bool $overwriteExistingKeys If any property name already exist in view store, overwrite it by given value by default.
 	 * @return \MvcCore\View
@@ -181,10 +169,7 @@ trait Rendering
 	}
 
 	/**
-	 * Return rendered action template content as string reference.
-	 * You need to use this method always somewhere in layout template to
-	 * render rendered action result content.
-	 * If render mode is continuous, this method renders action view.
+	 * @inheritDocs
 	 * @return string
 	 */
 	public function & GetContent () {
@@ -215,10 +200,7 @@ trait Rendering
 	}
 
 	/**
-	 * Evaluate given template code as PHP code by `eval()` in current view
-	 * context, any `$this` keyword will be used as current view context.
-	 * Returned result is content from output buffer as string reference.
-	 * Evaluated code is wrapped into `try/catch` automatically.
+	 * @inheritDocs
 	 * @param string $content
 	 * @return string
 	 */

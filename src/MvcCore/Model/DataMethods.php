@@ -47,10 +47,7 @@ trait DataMethods {
 		$result = [];
 		
 		foreach ($metaData as $propertyName => $propData) {
-			list(
-				/*$ownedByCurrent*/, /*$types*/, $prop, 
-				$isPrivate, /*$isProtected*/, $isPublic
-			) = $propData;
+			list(/*$types*/, $prop, $isPrivate, $isPublic) = $propData;
 
 			$propValue = NULL;
 
@@ -149,10 +146,7 @@ trait DataMethods {
 			$isNotNull = $dbValue !== NULL;
 			$isPrivate = NULL;
 			if ($isNotNull && isset($metaData[$propertyName])) {
-				list(
-					/*$ownedByCurrent*/, $typeStrings, 
-					$prop, $isPrivate/*, $isProtected, $isPublic*/
-				) = $metaData[$propertyName];
+				list ($typeStrings, $prop, $isPrivate) = $metaData[$propertyName];
 				$targetTypeValue = NULL;
 				foreach ($typeStrings as $typeString) {
 					if (substr($typeString, -2, 2) === '[]') {
@@ -235,10 +229,7 @@ trait DataMethods {
 		$result = [];
 
 		foreach ($metaData as $propertyName => $propData) {
-			list(
-				/*$ownedByCurrent*/, /*$types*/, $prop, 
-				$isPrivate, /*$isProtected*/, $isPublic
-			) = $propData;
+			list (/*$types*/, $prop, $isPrivate, $isPublic) = $propData;
 
 			$initialValue = NULL;
 			$currentValue = NULL;
@@ -303,8 +294,8 @@ trait DataMethods {
 	 *  - array
 	 *  - \stdClass
 	 *  - \DateTimeInterface, \DateInterval, \DateTimeZone, \DatePeriod
-	 *  - resource
-	 *  - object instances (only by === comparison)
+	 *  - resource (only by `intval($value1) == intval($value2)`)
+	 *  - object instances (only by `===` comparison)
 	 * @param mixed $value1 
 	 * @param mixed $value2 
 	 * @return bool
@@ -330,38 +321,27 @@ trait DataMethods {
 				$valuasAreTheSame = $value1 == $value2;
 				
 			} else if ($value1 instanceof \DateInterval && $value2 instanceof \DateInterval) {
-				$secs1 = floatval(($value1->days * 86400) + ($value1->h * 3600) + ($value1->i * 60) + ($value1->s));
-				$secs2 = floatval(($value2->days * 86400) + ($value2->h * 3600) + ($value2->i * 60) + ($value2->s));
-				if (PHP_VERSION_ID >= 70100) {
-					$secs1 += $value1->f;
-					$secs2 += $value2->f;
-				}
-				$valuasAreTheSame = abs($secs1 - $secs2) < PHP_FLOAT_EPSILON;
+				$valuasAreTheSame = abs(
+					self::_convertIntervalToFloat($value1) - 
+					self::_convertIntervalToFloat($value2)
+				) < PHP_FLOAT_EPSILON;
 
 			} else if ($value1 instanceof \DateTimeZone && $value2 instanceof \DateTimeZone) {
 				$now = new \DateTime('now');
 				$valuasAreTheSame = $value1->getOffset($now) === $value2->getOffset($now);
 
 			} else if ($value1 instanceof \DatePeriod && $value2 instanceof \DatePeriod) {
-				$d1s = $value1->getStartDate();
-				$d1e = $value1->getEndDate();
-				$i1 = $value1->getDateInterval();
-				$d2s = $value2->getStartDate();
-				$d2e = $value2->getEndDate();
-				$i2 = $value2->getDateInterval();
-				$secs1 = floatval(($i1->days * 86400) + ($i1->h * 3600) + ($i1->i * 60) + ($i1->s));
-				$secs2 = floatval(($i2->days * 86400) + ($i2->h * 3600) + ($i2->i * 60) + ($i2->s));
-				if (PHP_VERSION_ID >= 70100) {
-					$secs1 += $i1->f;
-					$secs2 += $i2->f;
-				}
-				$internvalsAreTheSame = abs($secs1 - $secs2) < PHP_FLOAT_EPSILON;
 				$valuasAreTheSame = (
-					$d1s == $d2s && $d1e == $d2e && $internvalsAreTheSame
+					$value1->getStartDate() == $value2->getStartDate() && 
+					$value1->getEndDate() == $value2->getEndDate() && 
+					abs(
+						self::_convertIntervalToFloat($value1->getDateInterval()) - 
+						self::_convertIntervalToFloat($value2->getDateInterval())
+					) < PHP_FLOAT_EPSILON
 				);
 
 			} else if (is_resource($value1) && is_resource($value2)) {
-				$valuasAreTheSame = intval($value1) === intval($value2);
+				$valuasAreTheSame = intval($value1) == intval($value2);
 
 			} else {
 				// compare if object instances are the same (do not process any reflection comparison):
@@ -372,4 +352,20 @@ trait DataMethods {
 		return $valuasAreTheSame;
 	}
 
+	/**
+	 * Convert date interval to total microseconds float.
+	 * @param \DateInterval $interval 
+	 * @return float
+	 */
+	private static function _convertIntervalToFloat ($interval) {
+		$result = floatval(
+			($interval->days * 86400) + 
+			($interval->h * 3600) + 
+			($interval->i * 60) + 
+			($interval->s)
+		);
+		if (PHP_VERSION_ID >= 70100)
+			$result += $interval->f;
+		return $result;
+	}
 }

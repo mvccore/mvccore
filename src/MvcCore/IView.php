@@ -249,7 +249,7 @@ interface IView {
 	public function SetController (\MvcCore\IController $controller);
 
 	/**
-	 * Get controller instance as reference.
+	 * Get controller instance.
 	 * @return \MvcCore\IController
 	 */
 	public function GetController ();

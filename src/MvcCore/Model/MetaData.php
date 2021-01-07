@@ -19,16 +19,12 @@ trait MetaData {
 	 * Return cached array about properties in current class to not create
 	 * and parse reflection objects every time. Every key in array is property name,
 	 * every value in array is array with following values:
-	 * - `0` => `bool`						`TRUE` for property defined in current
-	 *										class instance, `FALSE` for parent
-	 *										properties.
-	 * - `1` => `string[]`					Property types from code or from doc
+	 * - `0` => `string[]`					Property types from code or from doc
 	 *										comments or empty array.
-	 * - `2` => `\ReflectionProperty|NULL`	Reflection property object for private
+	 * - `1` => `\ReflectionProperty|NULL`	Reflection property object for private
 	 *										properties.
-	 * - `3` => `boolean`					`TRUE` for private property.
-	 * - `4` => `boolean`					`TRUE` for protected property.
-	 * - `5` => `boolean`					`TRUE` for public property.
+	 * - `2` => `boolean`					`TRUE` for private property.
+	 * - `3` => `boolean`					`TRUE` for public property.
 	 * Possible reading flags:
 	 *  - `\MvcCore\IModel::PROPS_INHERIT`
 	 *  - `\MvcCore\IModel::PROPS_PRIVATE`
@@ -74,9 +70,7 @@ trait MetaData {
 		/** @var $prop \ReflectionProperty */
 		foreach ($props as $prop) {
 			if ($prop->isStatic()) continue;
-			
-			$ownedByCurrent = $prop->class === $calledClassFullName;
-			if (!$inclInherit && !$ownedByCurrent) continue;
+			if (!$inclInherit && $prop->class !== $calledClassFullName) continue;
 			
 			$propName = $prop->getName();
 			if (isset(static::$protectedProperties[$propName])) continue;
@@ -97,11 +91,9 @@ trait MetaData {
 			if ($isPrivate) $prop->setAccessible(TRUE);
 
 			$result[$propName] = [
-				$ownedByCurrent,				// $ownedByCurrent	boolean
 				$types,							// $types			string[]
 				$isPrivate ? $prop : NULL,		// $prop			\ReflectionProperty|NULL
 				$isPrivate,						// $isPrivate		boolean
-				$prop->isProtected(),			// $isProtected		boolean
 				$prop->isPublic(),				// $isPublic		boolean
 			];
 		}
