@@ -14,16 +14,15 @@
 namespace MvcCore;
 
 /**
- * Responsibility - static members for connections and by configuration,
- *					instances members for active record pattern.
- * - Reading `db` section from system `config.ini` file.
- * - Database `\PDO` connecting by config settings and index.
- * - Instance initialized values reading.
- * - Virtual calls/sets and gets handling.
+ * @inheritDocs
  */
 class Model implements IModel {
 	use \MvcCore\Model\Props;
 	use \MvcCore\Model\Connection;
-	use \MvcCore\Model\Instancing;
+	use \MvcCore\Model\Config;
+	use \MvcCore\Model\Resource;
+	use \MvcCore\Model\DataMethods;
+	use \MvcCore\Model\MetaData;
+	use \MvcCore\Model\Converters;
 	use \MvcCore\Model\MagicMethods;
 }

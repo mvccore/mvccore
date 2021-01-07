@@ -27,8 +27,8 @@ namespace MvcCore;
  *   - Variables expiration by seconds.
  *   - Variables expiration by request hoops.
  */
-interface ISession
-{
+interface ISession {
+
 	/**
 	 * Metadata key in `$_SESSION` storage.
 	 * @var string

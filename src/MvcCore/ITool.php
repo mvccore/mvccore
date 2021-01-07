@@ -14,18 +14,15 @@
 namespace MvcCore;
 
 /**
- * Responsibility - static helpers for core classes inheritance, string conversions and JSON.
- * - Static translation functions (supports containing folder or file path):
- *   - `"dashed-case"		=> "PascalCase"`
- *   - `"PascalCase"		=> "dashed-case"`
- *   - `"unserscore_case"	=> "PascalCase"`
- *   - `"PascalCase"		=> "unserscore_case"`
+ * Responsibility - static helpers for core classes.
+ * - Static functions for string case conversions.
  * - Static functions to safely encode/decode JSON.
  * - Static functions to get client/server IPs.
  * - Static functions to get system temp directory.
- * - Static functions to safely invoke dangerous call.
+ * - Static functions to safely invoke dangerous calls.
  * - Static functions to write into file by one process only.
- * - Static function to check core classes inheritance.
+ * - Static functions to check core classes inheritance.
+ * - Static functions to cache and read attributes (or PhpDocs tags).
  */
 interface ITool {
 

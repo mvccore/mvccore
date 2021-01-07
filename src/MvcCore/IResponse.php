@@ -20,8 +20,8 @@ namespace MvcCore;
  * - Sending response at application terminate process by `\MvcCore\IResponse::Send();`.
  * - Completing MvcCore performance header at response end.
  */
-interface IResponse
-{
+interface IResponse {
+
 	/**
 	 * HTTP response code 200 for OK response;
 	 */

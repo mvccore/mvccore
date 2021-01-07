@@ -22,8 +22,8 @@ namespace MvcCore;
  * - Any variables and caught exceptions file logging.
  * - Time printing.
  */
-interface IDebug
-{
+interface IDebug {
+
 	/**
 	 * Logging levels and file names.
 	 */

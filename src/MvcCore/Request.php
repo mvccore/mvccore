@@ -14,20 +14,9 @@
 namespace MvcCore;
 
 /**
- * Responsibility - request description - URL and params inputs parsing and cleaning.
- * - Linear request URL parsing from referenced `$_SERVER` global variable
- *   (as constructor argument) into local properties, describing URL sections.
- * - Params reading from referenced `$_GET` and `$_POST` global variables
- *   (as constructor arguments) or reading data from direct PHP
- *   input `"php://input"` (as encoded JSON data or as query string).
- * - Headers cleaning and reading by `getallheaders()` or from referenced `$_SERVER['HTTP_...']`.
- * - Cookies cleaning and reading from referenced `$_COOKIE['...']`.
- * - Uploaded files by wrapped referenced `$_FILES` global array.
- * - Primitive values cleaning or array recursive cleaning by called
- *	 developer rules from params array, headers array and cookies array.
+ * @inheritDocs
  */
-class Request implements IRequest
-{
+class Request implements IRequest {
 	use \MvcCore\Request\Props;
 	use \MvcCore\Request\GettersSetters;
 	use \MvcCore\Request\Instancing;

@@ -14,14 +14,9 @@
 namespace MvcCore;
 
 /**
- * Responsibility - completing all information for response - headers (cookies) and content.
- * - HTTP response wrapper carrying response headers and response body.
- * - PHP `setcookie` function wrapper to complete default values such domain or http only etc.
- * - Sending response at application terminate process by `\MvcCore\IResponse::Send();`.
- * - Completing MvcCore performance header at response end.
+ * @inheritDocs
  */
-class Response implements IResponse
-{
+class Response implements IResponse {
 	use \MvcCore\Response\PropsGettersSetters;
 	use \MvcCore\Response\Instancing;
 	use \MvcCore\Response\Headers;

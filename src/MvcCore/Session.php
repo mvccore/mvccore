@@ -14,21 +14,9 @@
 namespace MvcCore;
 
 /**
- * Responsibility - session data management - starting, writing and expirations.
- * - Safe start (only once)
- *   - By `\MvcCore\ISession::Start()`
- *	 - Called by `\MvcCore\Application::GetInstance()->SessionStart();`
- *		 - Called by `\MvcCore\Controller::Init();`.
- * - Session writing and closing at request end:
- *   - In `\MvcCore\ISession::Close()`
- *	 - Called over `register_shutdown_function()`
- *	   from `\MvcCore::Terminate();`
- * - Session namespaces management:
- *   - Variables expiration by seconds.
- *   - Variables expiration by request hoops.
+ * @inheritDocs
  */
-class Session implements \Iterator, \ArrayAccess, \Countable, ISession
-{
+class Session implements \Iterator, \ArrayAccess, \Countable, ISession {
 	use \MvcCore\Session\Props;
 	use \MvcCore\Session\Starting;
 	use \MvcCore\Session\MetaData;

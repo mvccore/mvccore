@@ -48,8 +48,8 @@ namespace MvcCore;
  * @method string WriteByJS(string $string) Return any given HTML code as code rendered in javascript: `<script>document.write(String.fromCharCode(...));</script>`. To use this method, you need to install extension `mvccore/ext-view-helper-writebyjs`.
  * @method string Truncate(string $text, int $maxChars = 200, bool $isHtml = NULL) Truncate plain text or text with html tags by given max. characters number and add three dots at the end. To use this method, you need to install extension `mvccore/ext-view-helper-truncate`.
  */
-interface IView
-{
+interface IView {
+
 	/**
 	 * Default rendering mode.
 	 * Render action view first into output buffer, then render layout view

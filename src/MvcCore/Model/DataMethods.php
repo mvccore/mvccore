@@ -13,10 +13,7 @@
 
 namespace MvcCore\Model;
 
-trait ActiveRecord {
-
-	use \MvcCore\Model\MetaData;
-	use \MvcCore\Model\Converters;
+trait DataMethods {
 
 	/**
 	 * Collect all model class properties values into array.
@@ -51,7 +48,7 @@ trait ActiveRecord {
 		
 		foreach ($metaData as $propertyName => $propData) {
 			list(
-				$ownedByCurrent, /*$types*/, $prop, 
+				/*$ownedByCurrent*/, /*$types*/, $prop, 
 				$isPrivate, /*$isProtected*/, $isPublic
 			) = $propData;
 
@@ -103,7 +100,7 @@ trait ActiveRecord {
 					$resultKey, $toolsClass, $caseSensitiveKeysMap
 				);
 			
-			$result[$resultKey] = $currentValue;
+			$result[$resultKey] = $propValue;
 		}
 
 		return $result;
@@ -117,11 +114,11 @@ trait ActiveRecord {
 	 * Do not set any `$data` items, which are not declared in `$this` context.
 	 * @param array $data Raw row data from database.
 	 * @param int $propsFlags All properties flags are available.
-	 * @return \MvcCore\Model|\MvcCore\Model\ActiveRecord Current `$this` context.
+	 * @return \MvcCore\Model Current `$this` context.
 	 */
 	public function SetUp ($data = [], $propsFlags = 0) {
 		/**
-		 * @var $this \MvcCore\Model|\MvcCore\Model\ActiveRecord
+		 * @var $this \MvcCore\Model
 		 * @var $typeStrings \string[]
 		 * @var $prop \ReflectionProperty
 		 */
@@ -154,7 +151,7 @@ trait ActiveRecord {
 			if ($isNotNull && isset($metaData[$propertyName])) {
 				list(
 					/*$ownedByCurrent*/, $typeStrings, 
-					$prop, $isPrivate
+					$prop, $isPrivate/*, $isProtected, $isPublic*/
 				) = $metaData[$propertyName];
 				$targetTypeValue = NULL;
 				foreach ($typeStrings as $typeString) {
@@ -217,7 +214,7 @@ trait ActiveRecord {
 	 */
 	public function GetTouched ($propsFlags = 0) {
 		/**
-		 * @var $this \MvcCore\Model|\MvcCore\Model\ActiveRecord
+		 * @var $this \MvcCore\Model
 		 * @var $prop \ReflectionProperty
 		 */
 		if ($propsFlags === 0) 
@@ -239,7 +236,7 @@ trait ActiveRecord {
 
 		foreach ($metaData as $propertyName => $propData) {
 			list(
-				$ownedByCurrent, /*$types*/, $prop, 
+				/*$ownedByCurrent*/, /*$types*/, $prop, 
 				$isPrivate, /*$isProtected*/, $isPublic
 			) = $propData;
 
@@ -285,7 +282,7 @@ trait ActiveRecord {
 				$currentValue = $this->{$propertyName};
 			}
 
-			if ($initialValue === $currentValue) continue;
+			if (static::compareValues($initialValue, $currentValue)) continue;
 			
 			$resultKey = $propertyName;
 			foreach ($keyConversionsMethods as $keyConversionsMethod)
@@ -298,4 +295,81 @@ trait ActiveRecord {
 
 		return $result;
 	}
+
+	/**
+	 * Compare two values. Supported types are:
+	 *  - NULL
+	 *  - scalar (int, float, string, bool)
+	 *  - array
+	 *  - \stdClass
+	 *  - \DateTimeInterface, \DateInterval, \DateTimeZone, \DatePeriod
+	 *  - resource
+	 *  - object instances (only by === comparison)
+	 * @param mixed $value1 
+	 * @param mixed $value2 
+	 * @return bool
+	 */
+	protected static function compareValues ($value1, $value2) {
+		$valuasAreTheSame = FALSE;
+		$value1IsNull = $value1 === NULL;
+		$value2IsNull = $value2 === NULL;
+		if ($value1IsNull && $value2IsNull) {
+			$valuasAreTheSame = TRUE;
+		} else if (!$value1IsNull && !$value2IsNull) {
+			if (is_float($value1) && is_float($value2)) {
+				$valuasAreTheSame = abs($value1 - $value2) < PHP_FLOAT_EPSILON;
+				
+			} else if (
+				(is_scalar($value1) && is_scalar($value2)) ||
+				(is_array($value1) && is_array($value2)) ||
+				($value1 instanceof \stdClass && $value2 instanceof \stdClass)
+			) {
+				$valuasAreTheSame = $value1 === $value2;
+				
+			} else if ($value1 instanceof \DateTimeInterface && $value2 instanceof \DateTimeInterface) {
+				$valuasAreTheSame = $value1 == $value2;
+				
+			} else if ($value1 instanceof \DateInterval && $value2 instanceof \DateInterval) {
+				$secs1 = floatval(($value1->days * 86400) + ($value1->h * 3600) + ($value1->i * 60) + ($value1->s));
+				$secs2 = floatval(($value2->days * 86400) + ($value2->h * 3600) + ($value2->i * 60) + ($value2->s));
+				if (PHP_VERSION_ID >= 70100) {
+					$secs1 += $value1->f;
+					$secs2 += $value2->f;
+				}
+				$valuasAreTheSame = abs($secs1 - $secs2) < PHP_FLOAT_EPSILON;
+
+			} else if ($value1 instanceof \DateTimeZone && $value2 instanceof \DateTimeZone) {
+				$now = new \DateTime('now');
+				$valuasAreTheSame = $value1->getOffset($now) === $value2->getOffset($now);
+
+			} else if ($value1 instanceof \DatePeriod && $value2 instanceof \DatePeriod) {
+				$d1s = $value1->getStartDate();
+				$d1e = $value1->getEndDate();
+				$i1 = $value1->getDateInterval();
+				$d2s = $value2->getStartDate();
+				$d2e = $value2->getEndDate();
+				$i2 = $value2->getDateInterval();
+				$secs1 = floatval(($i1->days * 86400) + ($i1->h * 3600) + ($i1->i * 60) + ($i1->s));
+				$secs2 = floatval(($i2->days * 86400) + ($i2->h * 3600) + ($i2->i * 60) + ($i2->s));
+				if (PHP_VERSION_ID >= 70100) {
+					$secs1 += $i1->f;
+					$secs2 += $i2->f;
+				}
+				$internvalsAreTheSame = abs($secs1 - $secs2) < PHP_FLOAT_EPSILON;
+				$valuasAreTheSame = (
+					$d1s == $d2s && $d1e == $d2e && $internvalsAreTheSame
+				);
+
+			} else if (is_resource($value1) && is_resource($value2)) {
+				$valuasAreTheSame = intval($value1) === intval($value2);
+
+			} else {
+				// compare if object instances are the same (do not process any reflection comparison):
+				$valuasAreTheSame = $value1 === $value2;
+
+			}
+		}
+		return $valuasAreTheSame;
+	}
+
 }

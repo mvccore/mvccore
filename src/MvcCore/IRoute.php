@@ -19,8 +19,8 @@ namespace MvcCore;
  * - Matching request by given request object, see `\MvcCore\Route::Matches()`.
  * - Completing URL address by given params array, see `\MvcCore\Route::Url()`.
  */
-interface IRoute
-{
+interface IRoute {
+
 	/**
 	 * Route advanced configuration key for filtering params in - `"in"`.
 	 */

@@ -28,8 +28,8 @@ namespace MvcCore;
  *   - By `index.php?` + query string form, containing `controller`, `action` 
  *     and all other params.
  */
-interface IRouter
-{
+interface IRouter {
+
 	/**
 	 * Default system route name, automatically created for requests:
 	 * - For requests with explicitly defined ctrl and action in query string.

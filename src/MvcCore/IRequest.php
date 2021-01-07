@@ -26,8 +26,8 @@ namespace MvcCore;
  * - Primitive values cleaning or array recursive cleaning by called
  *	 developer rules from params array, headers array and cookies array.
  */
-interface IRequest
-{
+interface IRequest {
+
 	/**
 	 * Non-secured HTTP scheme (`http:`).
 	 * @see https://en.wikipedia.org/wiki/Hypertext_Transfer_Protocol

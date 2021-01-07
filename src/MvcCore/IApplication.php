@@ -26,8 +26,8 @@ namespace MvcCore;
  *   - Controller/action dispatching.
  *   - Error handling and error responses.
  */
-interface IApplication
-{
+interface IApplication {
+
 	/***********************************************************************************
 	 *					   `\MvcCore\Application` - Constants						*
 	 ***********************************************************************************/

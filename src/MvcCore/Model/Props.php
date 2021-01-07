@@ -152,48 +152,10 @@ trait Props
 	protected static $connections = [];
 
 	/**
-	 * Instance of current class, if there is necessary to use it as singleton.
-	 * @var \MvcCore\Model[]|\MvcCore\IModel[]
-	 */
-	protected static $instances = [];
-
-	/**
 	 * System config sections array with `\stdClass` objects, keyed by connection indexes.
 	 * @var \stdClass[]
 	 */
 	protected static $configs = NULL;
-
-	/**
-	 * Automatically initialize config, db connection and resource class
-	 * for classes base on "active record" pattern.
-	 * @var bool
-	 */
-	protected $autoInit = FALSE;
-
-	/**
-	 * `\PDO` instance.
-	 * @var \PDO
-	 */
-	protected $connection;
-
-	/**
-	 * System config section for database under called connection index in constructor.
-	 * @var \stdClass
-	 */
-	protected $config;
-
-	/**
-	 * Resource model class with SQL statements.
-	 * @var \MvcCore\Model|\MvcCore\IModel
-	 */
-	protected $resource;
-
-	/**
-	 * Array with values initialized by `SetUp()` method.
-	 * Usefull to recognize changed values bafore `Save()`.
-	 * @var array
-	 */
-	protected $initialValues = [];
 
 	/**
 	 * Originally declared internal model properties to protect their
@@ -203,10 +165,13 @@ trait Props
 	 * @var array
 	 */
 	protected static $protectedProperties = [
-		'autoInit'		=> TRUE,
-		'connection'	=> FALSE,
-		'config'		=> FALSE,
-		'resource'		=> FALSE,
 		'initialValues'	=> FALSE,
 	];
+
+	/**
+	 * Array with values initialized by `SetUp()` method.
+	 * Usefull to recognize changed values bafore `Save()`.
+	 * @var array
+	 */
+	protected $initialValues = [];
 }

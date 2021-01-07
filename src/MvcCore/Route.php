@@ -14,13 +14,9 @@
 namespace MvcCore;
 
 /**
- * Responsibility - describing request(s) to match and reversely build URL addresses.
- * - Describing request to match and target it (read more about properties).
- * - Matching request by given request object, see `\MvcCore\Route::Matches()`.
- * - Completing URL address by given params array, see `\MvcCore\Route::Url()`.
+ * @inheritDocs
  */
-class Route implements IRoute
-{
+class Route implements IRoute {
 	use \MvcCore\Route\Props;
 	use \MvcCore\Route\GettersSetters;
 	use \MvcCore\Route\Instancing;

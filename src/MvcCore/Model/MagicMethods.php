@@ -42,7 +42,9 @@ trait MagicMethods {
 				$this->$name = isset($arguments[0]) ? $arguments[0] : NULL;
 			return $this;
 		} else {
-			throw new \InvalidArgumentException("[".get_class()."] No method `{$rawName}()` defined.");
+			throw new \InvalidArgumentException(
+				"[".get_class()."] No method `{$rawName}()` defined."
+			);
 		}
 	}
 
@@ -50,14 +52,14 @@ trait MagicMethods {
 	 * Set any custom property, not necessary to previously defined.
 	 * @param string $name
 	 * @param mixed  $value
-	 * @throws \InvalidArgumentException If name is `"autoInit" || "db" || "config" || "resource"`
+	 * @throws \InvalidArgumentException If name is `initialValues` or any custom name in extended class.
 	 * @return bool
 	 */
 	public function __set ($name, $value) {
 		/** @var $this \MvcCore\Model */
 		if (isset(static::$protectedProperties[$name]))
 			throw new \InvalidArgumentException(
-				"[".get_class()."] It's not possible to change property: `{$name}` originally declared in this class."
+				"[".get_class()."] It's not possible to change strongly property: `{$name}`."
 			);
 		if (property_exists($this, lcfirst($name)))
 			return $this->{lcfirst($name)} = $value;
@@ -68,14 +70,14 @@ trait MagicMethods {
 	 * Get any custom property, not necessary to previously defined,
 	 * if property is not defined, NULL is returned.
 	 * @param string $name
-	 * @throws \InvalidArgumentException If name is `"autoInit" || "db" || "config" || "resource"`
+	 * @throws \InvalidArgumentException If name is `initialValues` or any custom name in extended class.
 	 * @return mixed
 	 */
 	public function __get ($name) {
 		/** @var $this \MvcCore\Model */
 		if (isset(static::$protectedProperties[$name]))
 			throw new \InvalidArgumentException(
-				"[".get_class()."] It's not possible to get property: `{$name}` originally declared in this class."
+				"[".get_class()."] It's not possible to get strongly protected property: `{$name}`."
 			);
 		if (isset($this->{lcfirst($name)}))
 			return $this->{lcfirst($name)};
@@ -117,17 +119,6 @@ trait MagicMethods {
 			}
 		}
 		return $__serializePropsNames;
-	}
-
-	/**
-	 * Run `$this->Init()` method if there is `$this->autoInit` property defined
-	 * and if the property is `TRUE`.
-	 * @return void
-	 */
-	public function __wakeup () {
-		/** @var $this \MvcCore\Model */
-		if (property_exists($this, 'autoInit') && $this->autoInit)
-			$this->Init();
 	}
 
 }

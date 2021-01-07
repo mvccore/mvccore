@@ -14,12 +14,14 @@
 namespace MvcCore;
 
 /**
- * Responsibility - static members for connections and by configuration,
- *					instances members for active record pattern.
- * - Reading `db` section from system `config.ini` file.
- * - Database `\PDO` connecting by config settings and index.
- * - Instance initialized values reading.
- * - Virtual calls/sets and gets handling.
+ * Responsibility - static methods for connections, configuration
+ *					and for active record properties manipulation.
+ * - Database `\PDO` connecting by config settings.
+ * - Reading `db` section configuration(s) from system `config.ini` file.
+ * - Resource class with SQL queries localization, instancing and caching.
+ * - Data methods for manipulating properties based on active record pattern.
+ * - Meta data about properties parsing and caching.
+ * - Magic methods handling.
  */
 interface IModel {
 	
@@ -107,36 +109,12 @@ interface IModel {
 
 
 	/**
-	 * Returns (or creates and holds) instance from local store.
-	 * @param mixed $args,... unlimited OPTIONAL variables to pass into model `__construct()` method.
-	 * @return \MvcCore\IModel
-	 */
-	public static function GetInstance ();
-
-	/**
 	 * Returns (or creates if necessary) model resource instance.
  	 * @param array|NULL	$args				Values array with variables to pass into resource `__construct()` method.
 	 * @param string		$resourceClassPath	Automatically initialized with string replaced with `%SELF%` by `static::class` (or by `get_called_class()`).
 	 * @return \MvcCore\Model|\MvcCore\IModel
 	 */
-	public static function GetResource (
-		$args = [], $resourceClassPath = '%SELF%s\Resource'
-	);
-
-	/**
-	 * Initialize `$this->config`, `$this->connection` and `$this->resource` properties.
-	 * If no `$connectionName` specified by first argument, return connection
-	 * config by connection name defined first in `static::$connectionName`
-	 * and if there is nothing, return connection config by connection name
-	 * defined in `\MvcCore\Model::$connectionName`.
-	 * @param string|int|bool $args... Optional.
-	 * If there is any `string` or `int`, it's used as connection name or index.
-	 * If there is any `bool`, it's used as boolean to initialize resource or not.
-	 * If there is no connection name or index, i't used from `static::$connectionName`.
-	 * If there is not boolean, resource class is not initialized by default.
-	 * @return void
-	 */
-	public function Init ($args = []);
+	public static function GetResource ($args = [], $resourceClassPath = '%SELF%s\Resource');
 
 	/**
 	 * Return system configuration file database section properties names.
@@ -240,6 +218,41 @@ interface IModel {
 	public static function SetConfig (array $config = [], $connectionName = NULL);
 
 	/**
+	 * Collect all model class properties values into array.
+	 * Result keys could be converted by any conversion flag.
+	 * @param int $propsFlags All properties flags are available except flags 
+	 *						  `\MvcCore\IModel::PROPS_INITIAL_VALUES` and 
+	 *						  `\MvcCore\IModel::PROPS_CONVERT_CASE_INSENSITIVE`.
+	 * @param bool $getNullValues If `TRUE`, include also values with `NULL`s, default - `FALSE`.
+	 * @return array
+	 */
+	public function GetValues ($propsFlags = 0, $getNullValues = FALSE);
+
+	/**
+	 * Set up given `$data` items into `$this` instance context
+	 * as typed properties by PHP types (or by PhpDocs comments in PHP < 7.4) 
+	 * as properties with the same names as `$data` array keys or converted
+	 * by properties flags. Case sensitivelly by default.
+	 * Do not set any `$data` items, which are not declared in `$this` context.
+	 * @param array $data Raw row data from database.
+	 * @param int $propsFlags All properties flags are available.
+	 * @return \MvcCore\IModel Current `$this` context.
+	 */
+	public function SetUp ($data = [], $propsFlags = 0);
+
+	/**
+	 * Get touched properties from `$this` context.
+	 * Touched properties are properties with different value than key 
+	 * in `$this->initialValues` (initial array completed in `SetUp()` method).
+	 * Result keys could be converted by any conversion flag.
+	 * @param int $propsFlags All properties flags are available except flags 
+	 *						  `\MvcCore\IModel::PROPS_INITIAL_VALUES` and 
+	 *						  `\MvcCore\IModel::PROPS_CONVERT_CASE_INSENSITIVE`.
+	 * @return array 
+	 */
+	public function GetTouched ($propsFlags = 0);
+
+	/**
 	 * Sets any custom property `"PropertyName"` by `\MvcCore\IModel::SetPropertyName("value")`,
 	 * which is not necessary to define previously or gets previously defined
 	 * property `"PropertyName"` by `\MvcCore\IModel::GetPropertyName();`.
@@ -257,7 +270,7 @@ interface IModel {
 	 * Set any custom property, not necessary to previously defined.
 	 * @param string $name
 	 * @param mixed  $value
-	 * @throws \InvalidArgumentException If name is `"autoInit" || "db" || "config" || "resource"`
+	 * @throws \InvalidArgumentException If name is `initialValues` or any custom name in extended class.
 	 * @return bool
 	 */
 	public function __set ($name, $value);
@@ -266,7 +279,7 @@ interface IModel {
 	 * Get any custom property, not necessary to previously defined,
 	 * if property is not defined, NULL is returned.
 	 * @param string $name
-	 * @throws \InvalidArgumentException If name is `"autoInit" || "db" || "config" || "resource"`
+	 * @throws \InvalidArgumentException If name is `initialValues` or any custom name in extended class.
 	 * @return mixed
 	 */
 	public function __get ($name);
@@ -280,11 +293,4 @@ interface IModel {
 	 * @return \string[]
 	 */
 	public function __sleep ();
-
-	/**
-	 * Run `$this->Init()` method if there is `$this->autoInit` property defined
-	 * and if the property is `TRUE`.
-	 * @return void
-	 */
-	public function __wakeup ();
 }

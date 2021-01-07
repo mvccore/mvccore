@@ -14,14 +14,9 @@
 namespace MvcCore;
 
 /**
- * Responsibility - detecting environment, optionally by in system config.
- * - Environment management and detection by:
- *   - comparing server and client IP, by value or regular expression.
- *   - comparing server hostname or IP, by value or regular expression.
- *   - checking system environment variable existence, value or by regular exp.
+ * @inheritDocs
  */
-class Environment implements IEnvironment
-{
+class Environment implements IEnvironment {
 	use \MvcCore\Environment\Instancing;
 	use \MvcCore\Environment\PropsGettersSetters;
 	use \MvcCore\Environment\Detection;

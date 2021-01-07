@@ -14,20 +14,9 @@
 namespace MvcCore;
 
 /**
- * Responsibility - singleton, instancing all core classes and handling request.
- * - Global store and managing singleton application instance.
- * - Main application objects container (request, response, controller, etc.).
- * - MvcCore compile mode managing (single file mode, php, phar, or no package).
- * - Global store for all main core class names, to use them as modules,
- *   to be changed any time (request class, response class, debug class, etc.).
- * - Processing application run (`\MvcCore\Application::Run();`):
- *   - Completing request and response.
- *   - Calling pre/post handlers.
- *   - Controller/action dispatching.
- *   - Error handling and error responses.
+ * @inheritDocs
  */
-class Application implements \MvcCore\IApplication
-{
+class Application implements \MvcCore\IApplication {
 	/**
 	 * MvcCore - version:
 	 * Comparison by PHP function `version_compare();`.

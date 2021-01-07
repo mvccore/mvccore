@@ -14,22 +14,9 @@
 namespace MvcCore;
 
 /**
- * Responsibility - singleton, routes instancing, request routing and URL building.
- * - Application router singleton instance managing.
- * - Global storage for all configured routes - instancing all route(s) in 
- *   application start configuration anywhere in `Bootstrap` class.
- * - Global storage for currently matched route.
- * - Application request routing - targeting request by matched route object 
- *   (in route method `Route();` by request `path` [or more]), ) into target 
- *   route controller and route action, always called from core in:
- *   `\MvcCore\Application::Run();` => `\MvcCore\Application::routeRequest();`.
- * - Application URL addresses completing:
- *   - By `mod_rewrite` form by configured route instances.
- *   - By `index.php?` + query string form, containing `controller`, `action` 
- *     and all other params.
+ * @inheritDocs
  */
-class Router implements IRouter
-{
+class Router implements IRouter {
 	use \MvcCore\Router\Props;
 	use \MvcCore\Router\GettersSetters;
 	use \MvcCore\Router\Instancing;

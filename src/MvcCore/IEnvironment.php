@@ -20,8 +20,8 @@ namespace MvcCore;
  *   - comparing server hostname or IP, by value or regular expression.
  *   - checking system environment variable existence, value or by regular exp.
  */
-interface IEnvironment
-{
+interface IEnvironment {
+
 	/**
 	 * Release environment.
 	 */

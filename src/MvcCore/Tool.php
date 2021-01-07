@@ -14,18 +14,7 @@
 namespace MvcCore;
 
 /**
- * Responsibility - static helpers for core classes inheritance, string conversions and JSON.
- * - Static translation functions (supports containing folder or file path):
- *   - `"dashed-case"		=> "PascalCase"`
- *   - `"PascalCase"		=> "dashed-case"`
- *   - `"unserscore_case"	=> "PascalCase"`
- *   - `"PascalCase"		=> "unserscore_case"`
- * - Static functions to safely encode/decode JSON.
- * - Static functions to get client/server IPs.
- * - Static functions to get system temp directory.
- * - Static functions to safely invoke dangerous call.
- * - Static functions to write into file by one process only.
- * - Static functions to check core classes inheritance.
+ * @inheritDocs
  */
 class Tool implements ITool {
 	use \MvcCore\Tool\Json;

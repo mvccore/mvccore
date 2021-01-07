@@ -13,8 +13,8 @@
 
 namespace MvcCore\Model;
 
-trait Converters
-{
+trait Converters {
+
 	/**
 	 * Try to convert database value into target type.
 	 * @param mixed $rawValue

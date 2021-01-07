@@ -24,8 +24,8 @@ namespace MvcCore;
  *     all other environment records.
  *   - Storing serialized config data in single process.
  */
-interface IConfig
-{
+interface IConfig {
+
 	/**
 	 * Get system config relative path from app root.
 	 * @return string
