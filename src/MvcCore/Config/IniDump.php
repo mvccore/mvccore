@@ -13,11 +13,10 @@
 
 namespace MvcCore\Config;
 
-trait IniDump
-{
+trait IniDump {
+
 	/**
-	 * Dump configuration data (for all environments) into INI configuration
-	 * syntax with environment specific sections and data.
+	 * @inheritDocs
 	 * @return string
 	 */
 	public function Dump () {
@@ -33,8 +32,8 @@ trait IniDump
 
 	/**
 	 * Split data into environment specific collections from `$config->mergedData`.
-	 * @param \MvcCore\IConfig $config           Config instance.
-	 * @param array            $environmentNames All detected environment names in merged configuration data.
+	 * @param \MvcCore\Config $config           Config instance.
+	 * @param array           $environmentNames All detected environment names in merged configuration data.
 	 * @return void
 	 */
 	protected static function dumpSplitData (\MvcCore\IConfig $config, array & $environmentNames) {
@@ -210,8 +209,8 @@ trait IniDump
 	/**
 	 * Render splitted data from environment specific collections (`$config->envData`)
 	 * into INI syntax with environment specific sections, optionally grouped.
-	 * @param \MvcCore\IConfig $config           Config instance.
-	 * @param array            $environmentNames All detected environment names in merged configuration data.
+	 * @param \MvcCore\Config $config           Config instance.
+	 * @param array           $environmentNames All detected environment names in merged configuration data.
 	 * @return string
 	 */
 	protected static function dumpRenderEnvData (\MvcCore\IConfig $config, array & $environmentNames) {
@@ -271,8 +270,8 @@ trait IniDump
 
 	/**
 	 * Detect if protected collection `$config->envData` needs sections.
-	 * @param \MvcCore\IConfig $config           Config instance.
-	 * @param array            $environmentNames All detected environment names in merged configuration data.
+	 * @param \MvcCore\Config $config           Config instance.
+	 * @param array           $environmentNames All detected environment names in merged configuration data.
 	 * @return bool
 	 */
 	protected static function dumpDetectSections (\MvcCore\IConfig $config, array & $environmentNames) {
@@ -389,9 +388,9 @@ trait IniDump
 
 	/**
 	 * Try to found the same configuration records accross all environment specific data collections.
-	 * @param \MvcCore\IConfig $config
-	 * @param string           $sectionName
-	 * @param \string[]        $environmentNames
+	 * @param \MvcCore\Config $config
+	 * @param string          $sectionName
+	 * @param \string[]       $environmentNames
 	 * @return array
 	 */
 	protected static function dumpGroupEnvSectionData (\MvcCore\IConfig $config, $sectionName, $environmentNames) {

@@ -13,21 +13,24 @@
 
 namespace MvcCore\Config;
 
-trait MagicMethods
-{
+trait MagicMethods {
+
 	/**
 	 * Serialize only given properties:
 	 * @return \string[]
 	 */
 	public function __sleep () {
+		/** @var $this \MvcCore\Config */
 		if (!$this->mergedData) {
 			$app = self::$app ?: self::$app = \MvcCore\Application::GetInstance();
 			$envName = $app->GetEnvironment()->GetName();
 			if (!$envName) {
-				$envDetectionData = & static::GetEnvironmentDetectionData($this);
-				$envName = static::DetectBySystemConfig((array) $envDetectionData);
+				$cfgClass = $app->GetConfigClass();
+				$envDetectionData = & $cfgClass::GetEnvironmentDetectionData($this);
+				$envClass = $app->GetEnvironmentClass();
+				$envName = $envClass::DetectBySystemConfig((array) $envDetectionData);
 			}
-			static::SetUpEnvironmentData($this, $envName);
+			$cfgClass::SetUpEnvironmentData($this, $envName);
 		}
 		return [
 			'system',
@@ -46,6 +49,7 @@ trait MagicMethods
 	 * @return mixed
 	 */
 	public function __get ($key) {
+		/** @var $this \MvcCore\Config */
 		if (array_key_exists($key, $this->currentData))
 			return $this->currentData[$key];
 		return NULL;
@@ -57,6 +61,7 @@ trait MagicMethods
 	 * @return mixed
 	 */
 	public function __set ($key, $value) {
+		/** @var $this \MvcCore\Config */
 		return $this->currentData[$key] = $value;
 	}
 
@@ -66,6 +71,7 @@ trait MagicMethods
 	 * @return bool
 	 */
 	public function __isset ($key) {
+		/** @var $this \MvcCore\Config */
 		return isset($this->currentData[$key]);
 	}
 
@@ -75,6 +81,7 @@ trait MagicMethods
 	 * @return void
 	 */
 	public function __unset ($key) {
+		/** @var $this \MvcCore\Config */
 		if (isset($this->currentData[$key])) unset($this->currentData[$key]);
 	}
 
@@ -86,53 +93,59 @@ trait MagicMethods
 	 * @return mixed
 	 */
 	public function current () {
-        return current($this->currentData);
-    }
+		/** @var $this \MvcCore\Config */
+		return current($this->currentData);
+	}
 
 	/**
 	 * Return the key of the current element.
 	 * @return string|int
 	 */
-    public function key () {
-        return key($this->currentData);
-    }
+	public function key () {
+		/** @var $this \MvcCore\Config */
+		return key($this->currentData);
+	}
 
 	/**
 	 * Move forward to next element.
 	 * @return void
 	 */
-    public function next () {
-        return next($this->currentData);
-    }
+	public function next () {
+		/** @var $this \MvcCore\Config */
+		return next($this->currentData);
+	}
 
 	/**
 	 * Rewind the Iterator to the first element.
 	 * @return void
 	 */
-    public function rewind () {
-        reset($this->currentData);
-    }
+	public function rewind () {
+		/** @var $this \MvcCore\Config */
+		reset($this->currentData);
+	}
 
 	/**
 	 * Checks if current position is valid.
 	 * @return bool
 	 */
-    public function valid () {
-        return key($this->currentData) !== NULL;
-    }
+	public function valid () {
+		/** @var $this \MvcCore\Config */
+		return key($this->currentData) !== NULL;
+	}
 
 
 	/** \ArrayAccess interface ************************************************/
 
-    /**
+	/**
 	 * Return whether the requested index exists in the internal store.
 	 * Example: `isset($cfg['any']);`
 	 * @param mixed $offset
 	 * @return bool
 	 */
-    public function offsetExists ($offset) {
-        return isset($this->currentData[$offset]);
-    }
+	public function offsetExists ($offset) {
+		/** @var $this \MvcCore\Config */
+		return isset($this->currentData[$offset]);
+	}
 
 	/**
 	 * Get the value at the specified index from the internal store.
@@ -140,9 +153,10 @@ trait MagicMethods
 	 * @param mixed $offset
 	 * @param mixed $value
 	 */
-    public function offsetGet ($offset) {
-        return isset($this->currentData[$offset]) ? $this->currentData[$offset] : NULL;
-    }
+	public function offsetGet ($offset) {
+		/** @var $this \MvcCore\Config */
+		return isset($this->currentData[$offset]) ? $this->currentData[$offset] : NULL;
+	}
 
 	/**
 	 * Set the value at the specified index in the internal store.
@@ -151,21 +165,23 @@ trait MagicMethods
 	 * @param mixed $value
 	 */
 	public function offsetSet ($offset, $value) {
-        if ($offset === NULL) {
-            $this->currentData[] = $value;
-        } else {
-            $this->currentData[$offset] = $value;
-        }
-    }
+		/** @var $this \MvcCore\Config */
+		if ($offset === NULL) {
+			$this->currentData[] = $value;
+		} else {
+			$this->currentData[$offset] = $value;
+		}
+	}
 
-    /**
+	/**
 	 * Unset the value at the specified index in the internal store.
 	 * Example: `unset($cfg['any']);`
 	 * @param mixed $offset
 	 */
-    public function offsetUnset ($offset) {
-        unset($this->currentData[$offset]);
-    }
+	public function offsetUnset ($offset) {
+		/** @var $this \MvcCore\Config */
+		unset($this->currentData[$offset]);
+	}
 
 
 	/** \Countable interface **************************************************/
@@ -176,6 +192,7 @@ trait MagicMethods
 	 * @return int
 	 */
 	public function count () {
+		/** @var $this \MvcCore\Config */
 		return count($this->currentData);
 	}
 

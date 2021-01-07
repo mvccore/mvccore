@@ -13,8 +13,8 @@
 
 namespace MvcCore\Config;
 
-trait PropsGettersSetters
-{
+trait PropsGettersSetters {
+
 	/**
 	 * Replace filter for environment names in INI sections.
 	 * @var string
@@ -93,7 +93,7 @@ trait PropsGettersSetters
 
 
 	/**
-	 * Get system config relative path from app root.
+	 * @inheritDocs
 	 * @return string
 	 */
 	public static function GetSystemConfigPath () {
@@ -102,7 +102,7 @@ trait PropsGettersSetters
 	}
 
 	/**
-	 * Set system config relative path from app root.
+	 * @inheritDocs
 	 * @param string $systemConfigPath
 	 * @return string
 	 */
@@ -112,19 +112,19 @@ trait PropsGettersSetters
 	}
 
 	/**
-	 * Set system config relative path from app root.
+	 * @inheritDocs
 	 * @param string $appRootRelativePath
-	 * @param \MvcCore\Config|\MvcCore\IConfig $config
-	 * @return \MvcCore\Config|\MvcCore\IConfig
+	 * @param \MvcCore\Config $config
+	 * @return \MvcCore\Config
 	 */
 	public static function SetConfigCache ($appRootRelativePath, \MvcCore\IConfig $config) {
 		/** @var $this \MvcCore\Config */
+		/** @var $config \MvcCore\Config */
 		return static::$configsCache[$appRootRelativePath] = $config;
 	}
 
 	/**
-	 * Clear configs memory cache by relative path from app root 
-	 * or clear whole configs memory cache if `NULL` specified.
+	 * @inheritDocs
 	 * @param string|NULL $appRootRelativePath
 	 * @return bool
 	 */
@@ -139,7 +139,7 @@ trait PropsGettersSetters
 	}
 
 	/**
-	 * Full path, where are configuration data stored.
+	 * @inheritDocs
 	 * @return string
 	 */
 	public function GetFullPath () {
@@ -148,7 +148,7 @@ trait PropsGettersSetters
 	}
 
 	/**
-	 * Config file last changed UNIX timestamp.
+	 * @inheritDocs
 	 * @return int
 	 */
 	public function GetLastChanged () {
@@ -157,7 +157,7 @@ trait PropsGettersSetters
 	}
 
 	/**
-	 * If `TRUE`, config contains system data.
+	 * @inheritDocs
 	 * @return bool
 	 */
 	public function IsSystem () {

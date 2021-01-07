@@ -13,13 +13,10 @@
 
 namespace MvcCore\Config;
 
-trait IniRead
-{
+trait IniRead {
+
 	/**
-	 * Load config file and return `TRUE` for success or `FALSE` in failure.
-	 * - Load all sections for all environment names into `$this->envData` collection.
-	 * - Retype all raw string values into `float`, `int` or `boolean` types.
-	 * - Retype collections into `\stdClass`, if there are no numeric keys.
+	 * @inheritDocs
 	 * @return bool
 	 */
 	public function Read () {

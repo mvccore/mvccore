@@ -13,8 +13,8 @@
 
 namespace MvcCore\Config;
 
-trait IniProps
-{
+trait IniProps {
+
 	/**
 	 * System config relative path from app root.
 	 * This value could be changed to any value at the very application start.

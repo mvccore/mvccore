@@ -13,17 +13,13 @@
 
 namespace MvcCore\Config;
 
-trait ReadWrite
-{
+trait ReadWrite {
+
 	/**
-	 * This is INTERNAL method.
-	 * Return always new instance of statically called class, no singleton.
-	 * Always called from `\MvcCore\Config::GetSystem()` before system config is read.
-	 * This is place where to customize any config creation process,
-	 * before it's created by MvcCore framework.
+	 * @inheritDocs
 	 * @param array $mergedData Configuration data for all environments.
 	 * @param string $configFullPath Config absolute path.
-	 * @return \MvcCore\Config|\MvcCore\IConfig
+	 * @return \MvcCore\Config
 	 */
 	public static function CreateInstance (array $mergedData = [], $configFullPath = NULL) {
 		/** @var $config \MvcCore\Config */
@@ -36,9 +32,8 @@ trait ReadWrite
 	}
 
 	/**
-	 * Get (optionally cached) system config INI file as `stdClass` or `array`,
-	 * placed by default in: `"/App/config.ini"`.
-	 * @return \MvcCore\Config|\MvcCore\IConfig|NULL
+	 * @inheritDocs
+	 * @return \MvcCore\Config|NULL
 	 */
 	public static function GetSystem () {
 		/** @var $config \MvcCore\Config */
@@ -63,10 +58,9 @@ trait ReadWrite
 	}
 
 	/**
-	 * Get (optionally cached) config INI file as `stdClass` or `array`,
-	 * placed relatively from application document root.
+	 * @inheritDocs
 	 * @param string $appRootRelativePath Any config relative path like `'/%appPath%/website.ini'`.
-	 * @return \MvcCore\Config|\MvcCore\IConfig|NULL
+	 * @return \MvcCore\Config|NULL
 	 */
 	public static function GetConfig ($appRootRelativePath) {
 		/** @var $config \MvcCore\Config */
@@ -92,11 +86,12 @@ trait ReadWrite
 	}
 
 	/**
-	 * Encode all data into string and store it in `\MvcCore\Config::$fullPath`.
+	 * @inheritDocs
 	 * @throws \Exception Configuration data was not possible to dump or write.
 	 * @return bool
 	 */
 	public function Save () {
+		/** @var $this \MvcCore\Config */
 		$rawContent = $this->Dump();
 		if ($rawContent === NULL)
 			throw new \Exception('Configuration data was not possible to dump.');
@@ -122,7 +117,7 @@ trait ReadWrite
 	 * @param string $configFullPath
 	 * @param string $systemConfigClass
 	 * @param bool   $isSystemConfig
-	 * @return \MvcCore\Config|\MvcCore\IConfig|bool
+	 * @return \MvcCore\Config|bool
 	 */
 	protected static function getConfigInstance ($configFullPath, $systemConfigClass, $isSystemConfig = FALSE) {
 		/** @var $config \MvcCore\Config */

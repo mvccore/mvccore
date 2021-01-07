@@ -13,8 +13,8 @@
 
 namespace MvcCore\Config;
 
-trait Environment
-{
+trait Environment {
+
 	/**
 	 * Name of system config root section with environments recognition configuration.
 	 * @var string
@@ -28,9 +28,8 @@ trait Environment
 	protected static $commonEnvironmentDataKey = '';
 
 	/**
-	 * Return environment configuration data from system config. Environment
-	 * configuration data are always stored under root level section `[environments]`.
-	 * @param \MvcCore\Config|\MvcCore\IConfig $config
+	 * @inheritDocs
+	 * @param \MvcCore\Config $config
 	 * @return array|\stdClass
 	 */
 	public static function & GetEnvironmentDetectionData (\MvcCore\IConfig $config) {
@@ -61,9 +60,8 @@ trait Environment
 	}
 
 	/**
-	 * Set up config with current environment data immediately after
-	 * environment name is detected. This method is used INTERNALLY!
-	 * @param \MvcCore\Config|\MvcCore\IConfig $config
+	 * @inheritDocs
+	 * @param \MvcCore\Config $config
 	 * @param string $environmentName
 	 * @return void
 	 */
@@ -85,7 +83,7 @@ trait Environment
 	}
 
 	/**
-	 * Get internal array store as reference.
+	 * @inheritDocs
 	 * @param string|NULL $environmentName Return configuration data only for specific
 	 *									   environment name. If `NULL`, there are
 	 *									   returned data for current environment.
@@ -116,13 +114,13 @@ trait Environment
 	}
 
 	/**
-	 * Set whole internal array store.
+	 * @inheritDocs
 	 * @param array $data Data to set into configuration store(s). If second
 	 *					  param is `NULL`, there are set data for current envirnment.
 	 * @param string|NULL $environmentName Set configuration data for specific
 	 *									   environment name. If `NULL`, there are
 	 *									   set data for current environment.
-	 * @return \MvcCore\Config|\MvcCore\IConfig
+	 * @return \MvcCore\Config
 	 */
 	public function SetData (array $data = [], $environmentName = NULL) {
 		/** @var $this \MvcCore\Config */

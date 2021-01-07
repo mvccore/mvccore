@@ -42,8 +42,8 @@ interface IConfig {
 	/**
 	 * Set system config relative path from app root.
 	 * @param string $appRootRelativePath
-	 * @param \MvcCore\IConfig $config
-	 * @return \MvcCore\IConfig
+	 * @param \MvcCore\Config $config
+	 * @return \MvcCore\Config
 	 */
 	public static function SetConfigCache ($appRootRelativePath, \MvcCore\IConfig $config);
 
@@ -58,7 +58,7 @@ interface IConfig {
 	/**
 	 * Return environment configuration data from system config. Environment
 	 * configuration data are always stored under root level section `[environments]`.
-	 * @param \MvcCore\IConfig $config
+	 * @param \MvcCore\Config $config
 	 * @return array|\stdClass
 	 */
 	public static function & GetEnvironmentDetectionData (\MvcCore\IConfig $config);
@@ -66,7 +66,7 @@ interface IConfig {
 	/**
 	 * Set up config with current environment data immediately after
 	 * environment name is detected. This method is used INTERNALLY!
-	 * @param \MvcCore\IConfig $config
+	 * @param \MvcCore\Config $config
 	 * @param string $environmentName
 	 * @return void
 	 */
@@ -75,19 +75,19 @@ interface IConfig {
 	/**
 	 * This is INTERNAL method.
 	 * Return always new instance of statically called class, no singleton.
-	 * Always called from `\MvcCore\IConfig::GetSystem()` before system config is read.
+	 * Always called from `\MvcCore\Config::GetSystem()` before system config is read.
 	 * This is place where to customize any config creation process,
 	 * before it's created by MvcCore framework.
 	 * @param array $mergedData Configuration data for all environments.
 	 * @param string $appRootRelativePath Relative config path from app root.
-	 * @return \MvcCore\IConfig
+	 * @return \MvcCore\Config
 	 */
 	public static function CreateInstance (array $mergedData = [], $appRootRelativePath = NULL);
 
 	/**
 	 * Get (optionally cached) system config INI file as `stdClass` or `array`,
 	 * placed by default in: `"/App/config.ini"`.
-	 * @return \MvcCore\IConfig|NULL
+	 * @return \MvcCore\Config|NULL
 	 */
 	public static function GetSystem ();
 
@@ -95,7 +95,7 @@ interface IConfig {
 	 * Get (optionally cached) config INI file as `stdClass` or `array`,
 	 * placed relatively from application document root.
 	 * @param string $appRootRelativePath Any config relative path like `'/%appPath%/website.ini'`.
-	 * @return \MvcCore\IConfig|NULL
+	 * @return \MvcCore\Config|NULL
 	 */
 	public static function GetConfig ($appRootRelativePath);
 
@@ -122,7 +122,7 @@ interface IConfig {
 	 * @param string|NULL $environmentName Set configuration data for specific
 	 *									   environment name. If `NULL`, there are
 	 *									   set data for current environment.
-	 * @return \MvcCore\IConfig
+	 * @return \MvcCore\Config
 	 */
 	public function SetData (array $data = [], $environmentName = NULL);
 
