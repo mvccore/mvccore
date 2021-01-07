@@ -13,42 +13,10 @@
 
 namespace MvcCore\Route;
 
-trait Instancing
-{
+trait Instancing {
+
 	/**
-	 * Create every time new route instance, no singleton managing.
-	 * Called usually from core methods:
-	 * - `\MvcCore\Router::AddRoutes();`
-	 * - `\MvcCore\Router::AddRoute();`
-	 * - `\MvcCore\Router::SetOrCreateDefaultRouteAsCurrent();`
-	 * This method is the best place where to implement custom route init for
-	 * configured core class. First argument could be configuration array with
-	 * all necessary constructor values or all separated arguments - first is
-	 * route pattern value to parse into match and reverse values, then
-	 * controller with action, params default values and constraints.
-	 * Example:
-	 * `new Route([
-	 *		"pattern"			=> "/products-list/<name>/<color>",
-	 *		"controllerAction"	=> "Products:List",
-	 *		"defaults"			=> ["name" => "default-name",	"color" => "red"],
-	 *		"constraints"		=> ["name" => "[^/]*",			"color" => "[a-z]*"]
-	 * ]);`
-	 * or:
-	 * `new Route(
-	 *		"/products-list/<name>/<color>",
-	 *		"Products:List",
-	 *		["name" => "default-name",	"color" => "red"],
-	 *		["name" => "[^/]*",			"color" => "[a-z]*"]
-	 * );`
-	 * or:
-	 * `new Route([
-	 *		"name"			=> "products_list",
-	 *		"match"			=> "#^/products\-list/(?<name>[^/]*)/(?<color>[a-z]*)(?=/$|$)#",
-	 *		"reverse"		=> "/products-list/<name>/<color>",
-	 *		"controller"	=> "Products",
-	 *		"action"		=> "List",
-	 *		"defaults"		=> ["name" => "default-name",	"color" => "red"],
-	 * ]);`
+	 * @inheritDocs
 	 * @param string|array	$patternOrConfig
 	 *						Required, configuration array or route pattern value
 	 *						to parse into match and reverse patterns.

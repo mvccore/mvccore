@@ -13,13 +13,11 @@
 
 namespace MvcCore\Route;
 
-trait InternalInits
-{
+trait InternalInits {
+
 	/**
-	 * Initialize all possible protected values (`match`, `reverse` etc...). This
-	 * method is not recommended to use in production mode, it's designed mostly
-	 * for development purposes, to see what could be inside route object.
-	 * @return \MvcCore\Route|\MvcCore\IRoute
+	 * @inheritDocs
+	 * @return \MvcCore\Route
 	 */
 	public function InitAll () {
 		/** @var $this \MvcCore\Route */
@@ -29,6 +27,24 @@ trait InternalInits
 			$this->initReverse();
 		}
 		return $this;
+	}
+
+	/**
+	 * @inheritDocs
+	 * @return \string[]
+	 */
+	public function __sleep () {
+		/** @var $this \MvcCore\Route */
+		return static::__getPropsNames();
+	}
+
+	/**
+	 * @inheritDocs
+	 * @return void
+	 */
+	public function __wakeup () {
+		/** @var $this \MvcCore\Route */
+		$this->router = \MvcCore\Application::GetInstance()->GetRouter();
 	}
 
 	/**
@@ -579,18 +595,6 @@ trait InternalInits
 	}
 
 	/**
-	 * Collect all properties names to serialize them by `serialize()` method.
-	 * Collect all instance properties declared as private, protected and public
-	 * and if there is not configured in `static::$protectedProperties` anything
-	 * under property name, return those properties in result array.
-	 * @return \string[]
-	 */
-	public function __sleep () {
-		/** @var $this \MvcCore\Route */
-		return static::__getPropsNames();
-	}
-
-	/**
 	 * Return property names to be serialized.
 	 * @return \string[]
 	 */
@@ -612,14 +616,5 @@ trait InternalInits
 					$__propsNames[] = $prop->name;
 		}
 		return $__propsNames;
-	}
-
-	/**
-	 * Assign router instance to local property `$this->router;`.
-	 * @return void
-	 */
-	public function __wakeup () {
-		/** @var $this \MvcCore\Route */
-		$this->router = \MvcCore\Application::GetInstance()->GetRouter();
 	}
 }

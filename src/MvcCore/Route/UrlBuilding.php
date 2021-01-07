@@ -13,12 +13,10 @@
 
 namespace MvcCore\Route;
 
-trait UrlBuilding
-{
+trait UrlBuilding {
+
 	/**
-	 * Filter given `array $params` by configured `"in" | "out"` filter `callable`.
-	 * This function return `array` with first item as `bool` about successful
-	 * filter processing in `try/catch` and second item as filtered params `array`.
+	 * @inheritDocs
 	 * @param array		$params
 	 * @param array		$defaultParams
 	 * @param string	$direction
@@ -47,30 +45,7 @@ trait UrlBuilding
 	}
 
 	/**
-	 * Complete route URL by given params array and route internal reverse
-	 * replacements pattern string. If there are more given params in first
-	 * argument than total count of replacement places in reverse pattern,
-	 * then create URL with query string params after reverse pattern,
-	 * containing that extra record(s) value(s). Returned is an array with only
-	 * one string as result URL or it could be returned for extended classes
-	 * an array with two strings - result URL in two parts - first part as scheme,
-	 * domain and base path and second as path and query string.
-	 * Example:
-	 *	Input (`$params`):
-	 *		`[
-	 *			"name"		=> "cool-product-name",
-	 *			"color"		=> "blue",
-	 *			"variants"	=> ["L", "XL"],
-	 *		];`
-	 *	Input (`\MvcCore\Route::$reverse`):
-	 *		`"/products-list/<name>/<color*>"`
-	 *	Output:
-	 *		`["/any/app/base/path/products-list/cool-product-name/blue?variant[]=L&amp;variant[]=XL"]`
-	 *		or:
-	 *		`[
-	 *			"/any/app/base/path",
-	 *			"/products-list/cool-product-name/blue?variant[]=L&amp;variant[]=XL"
-	 *		]`
+	 * @inheritDocs
 	 * @param \MvcCore\Request	$request
 	 *							Currently requested request object.
 	 * @param array				$params
@@ -214,7 +189,7 @@ trait UrlBuilding
 	 * After final URL is completed, split result URL into two parts. First part
 	 * as scheme, domain part and base path and second part as application
 	 * request path and query string.
-	 * @param \MvcCore\IRequest $request
+	 * @param \MvcCore\Request	$request
 	 *							A request object.
 	 * @param string			$resultUrl
 	 *							Result URL to split. REsult URL still could
@@ -268,7 +243,7 @@ trait UrlBuilding
 	 * URL by given `$domainParams` array values. If there is founded any
 	 * percentage replacement which is not presented in `$domainParams` array,
 	 * there is used value from request object.
-	 * @param \MvcCore\IRequest $request			A request object.
+	 * @param \MvcCore\Request	$request			A request object.
 	 * @param string			$resultUrl			Result URL to split. REsult URL
 	 *												still could contain domain part
 	 *												or base path replacements.
@@ -332,7 +307,7 @@ trait UrlBuilding
 	 * to complete result URL. If there is found base path percentage
 	 * replacement in result url, split url after that percentage replacement
 	 * and replace that part with domain param value or request base path value.
-	 * @param \MvcCore\IRequest $request
+	 * @param \MvcCore\Request	$request
 	 *							A request object.
 	 * @param string			$resultUrl
 	 *							Result URL to split. Result URL still could
@@ -391,7 +366,7 @@ trait UrlBuilding
 	 * to complete result URL. Try to found the point in result URL, where is
 	 * base path end and application request path begin. By that point split and
 	 * return result URL.
-	 * @param \MvcCore\IRequest $request
+	 * @param \MvcCore\Request	$request
 	 *							A request object.
 	 * @param string			$resultUrl
 	 *							Result URL to split. Result URL still could
@@ -464,7 +439,7 @@ trait UrlBuilding
 	 * route flag property `absolute` or by given params. Then complete absolute
 	 * part and return result URL as single array record or split result URL by
 	 * base path end point.
-	 * @param \MvcCore\IRequest $request
+	 * @param \MvcCore\Request	$request
 	 *							A request object.
 	 * @param string			$resultUrl
 	 *							Result URL to split. Result URL still could

@@ -13,20 +13,11 @@
 
 namespace MvcCore\Route;
 
-trait Matching
-{
+trait Matching {
+
 	/**
-	 * Return array of matched params if incoming request match this route
-	 * or `NULL` if doesn't. Returned array must contain all matched reverse 
-	 * params with matched controller and action names by route and by matched 
-	 * params. Route is matched usually if request property `path` matches by 
-	 * PHP `preg_match_all()` route `match` pattern. Sometimes, matching subject 
-	 * could be different if route specifies it - if route `pattern` (or `match`) 
-	 * property contains domain (or base path part) - it means if it is absolute 
-	 * or if `pattern` (or `match`) property contains a query string part.
-	 * This method is usually called in core request routing process
-	 * from `\MvcCore\Router::Route();` method and it's sub-methods.
-	 * @param \MvcCore\Request|\MvcCore\IRequest $request The request object instance.
+	 * @inheritDocs
+	 * @param \MvcCore\Request $request The request object instance.
 	 * @throws \LogicException Route configuration property is missing.
 	 * @throws \InvalidArgumentException Wrong route pattern format.
 	 * @return array Matched and params array, keys are matched
@@ -39,7 +30,8 @@ trait Matching
 		$subject = $this->matchesGetSubject($request);
 		$matchedValues = & $this->match($pattern, $subject);
 		if (isset($matchedValues[0]) && count($matchedValues[0]) > 0) {
-			$matchedParams = $this->matchesParseRewriteParams($matchedValues, $this->GetDefaults());
+			$defaultParams = & $this->GetDefaults();
+			$matchedParams = $this->matchesParseRewriteParams($matchedValues, $defaultParams);
 			if (isset($matchedParams[$this->lastPatternParam])) 
 				$matchedParams[$this->lastPatternParam] = rtrim(
 				$matchedParams[$this->lastPatternParam], '/'
@@ -78,7 +70,7 @@ trait Matching
 	 * prepare always request path and if route `pattern` (or `reverse`) contains
 	 * any query string part, append into result subject query string from request
 	 * object.
-	 * @param \MvcCore\IRequest $request 
+	 * @param \MvcCore\Request $request 
 	 * @return string
 	 */
 	protected function matchesGetSubject (\MvcCore\IRequest $request) {
@@ -118,7 +110,7 @@ trait Matching
 	 * placeholders and prepare domain part with the placeholders. Then also in 
 	 * the same way prepare base path part if necessary, there is also base path 
 	 * placeholder possibility.
-	 * @param \MvcCore\IRequest $request 
+	 * @param \MvcCore\Request $request 
 	 * @return string
 	 */
 	protected function matchesGetSubjectHostAndBase (\MvcCore\IRequest $request) {
@@ -170,7 +162,7 @@ trait Matching
 	 * strings the route `pattern` (or `reverse`) contains. Result is only the 
 	 * domain part with requested domain parts or placeholders to match pattern 
 	 * and subject in match processing.
-	 * @param \MvcCore\IRequest $request 
+	 * @param \MvcCore\Request $request 
 	 * @param int $hostFlag 
 	 * @return string
 	 */

@@ -194,7 +194,7 @@ interface IRoute {
 	 *						method. If `NULL` (by default), request with any http 
 	 *						method could be matched by this route. Given value is 
 	 *						automatically converted to upper case.
-	 * @return \MvcCore\IRoute
+	 * @return \MvcCore\Route
 	 */
 	public static function CreateInstance (
 		$patternOrConfig = NULL,
@@ -247,7 +247,7 @@ interface IRoute {
 	 *
 	 * Example: `"/products-list/<name>[/<color*>]"`.
 	 * @param string|array $pattern
-	 * @return \MvcCore\IRoute
+	 * @return \MvcCore\Route
 	 */
 	public function SetPattern ($pattern);
 
@@ -292,7 +292,7 @@ interface IRoute {
 	 *
 	 * Example: `"#^/products\-list/(?<name>[^/]+)(/(?<id>\d+))?/?$#"`
 	 * @param string|array $match
-	 * @return \MvcCore\IRoute
+	 * @return \MvcCore\Route
 	 */
 	public function SetMatch ($match);
 
@@ -339,7 +339,7 @@ interface IRoute {
 	 *
 	 * Example: `"/products-list/<name>[/<color>]"`
 	 * @param string|array $reverse
-	 * @return \MvcCore\IRoute
+	 * @return \MvcCore\Route
 	 */
 	public function SetReverse ($reverse);
 
@@ -366,7 +366,7 @@ interface IRoute {
 	 *
 	 * Example: `"products_list" | "Products:Gallery"`
 	 * @param string|NULL $name
-	 * @return \MvcCore\IRoute
+	 * @return \MvcCore\Route
 	 */
 	public function SetName ($name);
 
@@ -419,7 +419,7 @@ interface IRoute {
 	 *  `"//Anywhere\Else\Controllers\Products"
 	 *				 - placed in `/Anywhere/Else/Controllers/Products.php`
 	 * @param string|NULL $controller
-	 * @return \MvcCore\IRoute
+	 * @return \MvcCore\Route
 	 */
 	public function SetController ($controller);
 
@@ -452,7 +452,7 @@ interface IRoute {
 	 *
 	 * Example: `"List"`
 	 * @param string|NULL $action
-	 * @return \MvcCore\IRoute
+	 * @return \MvcCore\Route
 	 */
 	public function SetAction ($action);
 
@@ -474,7 +474,7 @@ interface IRoute {
 	 * possibilities in `\MvcCore\Route::SetController();` setter method.
 	 *
 	 * Example: `"Products:List" | "\Front\Business\Products:Gallery"`
-	 * @return \MvcCore\IRoute
+	 * @return \MvcCore\Route
 	 */
 	public function SetControllerAction ($controllerAction);
 	
@@ -495,7 +495,7 @@ interface IRoute {
 	 *
 	 * Example: `["name" => "default-name", "color" => "red",]`.
 	 * @param array|\array[] $defaults
-	 * @return \MvcCore\IRoute
+	 * @return \MvcCore\Route
 	 */
 	public function SetDefaults ($defaults = []);
 
@@ -520,7 +520,7 @@ interface IRoute {
 	 *
 	 * Example: `["name"	=> "[^/]+", "color"	=> "[a-z]+",]`
 	 * @param array|\array[] $constraints
-	 * @return \MvcCore\IRoute
+	 * @return \MvcCore\Route
 	 */
 	public function SetConstraints ($constraints = []);
 
@@ -567,7 +567,7 @@ interface IRoute {
 	 * except forms like `'ClassName::methodName'` and `['childClassName', 
 	 * 'parent::methodName']` and `[$childInstance, 'parent::methodName']`.
 	 * @param array|\callable[] $filters 
-	 * @return \MvcCore\IRoute
+	 * @return \MvcCore\Route
 	 */
 	public function SetFilters (array $filters = []);
 
@@ -653,7 +653,7 @@ interface IRoute {
 	 * to new form.
 	 * Example: `"new_route_name"`
 	 * @param string|NULL $redirectRouteName 
-	 * @return \MvcCore\IRoute
+	 * @return \MvcCore\Route
 	 */
 	public function SetRedirect ($redirectRouteName = NULL);
 
@@ -671,7 +671,7 @@ interface IRoute {
 	 * generated only if `pattern` (or `reverse`) property contains absolute 
 	 * matching form.
 	 * @param bool $absolute 
-	 * @return \MvcCore\IRoute
+	 * @return \MvcCore\Route
 	 */
 	public function SetAbsolute ($absolute = TRUE);
 
@@ -690,7 +690,7 @@ interface IRoute {
 	 * request path. If group name is `NULL`, route belongs to default group 
 	 * and that group is used when no other group matching the request path.
 	 * @param string|NULL $groupName 
-	 * @return \MvcCore\IRoute
+	 * @return \MvcCore\Route
 	 */
 	public function SetGroupName ($groupName);
 
@@ -709,7 +709,7 @@ interface IRoute {
 	 * and it must contain all only matched rewrite params and route controller 
 	 * and route action if any.
 	 * @param array $matchedParams
-	 * @return \MvcCore\IRoute
+	 * @return \MvcCore\Route
 	 */
 	public function SetMatchedParams ($matchedParams = []);
 
@@ -725,7 +725,7 @@ interface IRoute {
 	
 	/**
 	 * Get router instance reference, used mostly in route URL building process.
-	 * @return \MvcCore\IRouter
+	 * @return \MvcCore\Router
 	 */
 	public function GetRouter ();
 	
@@ -762,7 +762,7 @@ interface IRoute {
 	 * or if `pattern` (or `match`) property contains a query string part.
 	 * This method is usually called in core request routing process
 	 * from `\MvcCore\Router::Route();` method and it's sub-methods.
-	 * @param \MvcCore\IRequest $request The request object instance.
+	 * @param \MvcCore\Request $request The request object instance.
 	 * @throws \LogicException Route configuration property is missing.
 	 * @throws \InvalidArgumentException Wrong route pattern format.
 	 * @return array Matched and params array, keys are matched
@@ -837,7 +837,22 @@ interface IRoute {
 	 * Initialize all possible protected values (`match`, `reverse` etc...). This 
 	 * method is not recommended to use in production mode, it's designed mostly 
 	 * for development purposes, to see what could be inside route object.
-	 * @return \MvcCore\IRoute
+	 * @return \MvcCore\Route
 	 */
 	public function InitAll ();
+
+	/**
+	 * Collect all properties names to serialize them by `serialize()` method.
+	 * Collect all instance properties declared as private, protected and public
+	 * and if there is not configured in `static::$protectedProperties` anything
+	 * under property name, return those properties in result array.
+	 * @return \string[]
+	 */
+	public function __sleep ();
+
+	/**
+	 * Assign router instance to local property `$this->router;`.
+	 * @return void
+	 */
+	public function __wakeup ();
 }

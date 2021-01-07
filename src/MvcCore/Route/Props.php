@@ -13,8 +13,8 @@
 
 namespace MvcCore\Route;
 
-trait Props
-{
+trait Props {
+
 	/**
 	 * Default constraint used for all rewrite params in request path, if no 
 	 * constraint for that param has been specified in route instance. 
@@ -338,7 +338,7 @@ trait Props
 
 	/**
 	 * Router instance reference used mostly in route URL building process.
-	 * @var \MvcCore\Router|\MvcCore\IRouter
+	 * @var \MvcCore\Router
 	 */
 	protected $router			= NULL;
 
