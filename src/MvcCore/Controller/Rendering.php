@@ -13,24 +13,19 @@
 
 namespace MvcCore\Controller;
 
-trait Rendering
-{
+trait Rendering {
+
 	/**
-	 * Rendering process alias for `\MvcCore\Controller::Render();`.
+	 * @inheritDocs
 	 * @return string
 	 */
 	public function __toString () {
+		/** @var $this \MvcCore\Controller */
 		return $this->Render();
 	}
 
 	/**
-	 * - This method is called INTERNALLY in lifecycle dispatching process,
-	 *   but you can use it sooner or in any different time for custom render purposes.
-	 * - Render prepared controller/action view in path by default:
-	 * `"/App/Views/Scripts/<ctrl-dashed-name>/<action-dashed-name>.phtml"`.
-	 * - If controller has no other parent controller, render layout view around action view.
-	 * - For top most parent controller - store rendered action and layout view in response object and return empty string.
-	 * - For child controller - return rendered action view as string.
+	 * @inheritDocs
 	 * @param string $controllerOrActionNameDashed
 	 * @param string $actionNameDashed
 	 * @return string
@@ -86,8 +81,7 @@ trait Rendering
 	}
 
 	/**
-	 * Store rendered HTML output inside `\MvcCore\Controller::$response`
-	 * to send into client browser later in `\MvcCore\Application::GetInstance()->Terminate();`.
+	 * @inheritDocs
 	 * @param string $output
 	 * @param bool $terminate
 	 * @return void
@@ -108,13 +102,13 @@ trait Rendering
 	}
 
 	/**
-	 * Store rendered XML output inside `\MvcCore\Controller::$response`
-	 * to send into client browser later in `\MvcCore\Application::GetInstance()->Terminate();`.
+	 * @inheritDocs
 	 * @param string $output
 	 * @param bool $terminate
 	 * @return void
 	 */
 	public function XmlResponse ($output = '', $terminate = TRUE) {
+		/** @var $this \MvcCore\Controller */
 		$res = $this->response;
 		if (!$res->HasHeader('Content-Type'))
 			$res->SetHeader('Content-Type', 'application/xml');
@@ -125,13 +119,13 @@ trait Rendering
 	}
 
 	/**
-	 * Store rendered text output inside `\MvcCore\Controller::$response`
-	 * to send into client browser later in `\MvcCore\Application::GetInstance()->Terminate();`.
+	 * @inheritDocs
 	 * @param string $output
 	 * @param bool $terminate
 	 * @return void
 	 */
 	public function TextResponse ($output = '', $terminate = TRUE) {
+		/** @var $this \MvcCore\Controller */
 		$res = $this->response;
 		if (!$res->HasHeader('Content-Type'))
 			$res->SetHeader('Content-Type', 'text/plain');
@@ -142,15 +136,14 @@ trait Rendering
 	}
 
 	/**
-	 * Serialize any PHP value into `JSON string` and store
-	 * it inside `\MvcCore\Controller::$response` to send it
-	 * into client browser later in `\MvcCore\Application::GetInstance()->Terminate();`.
+	 * @inheritDocs
 	 * @param mixed $data
 	 * @param bool  $terminate
 	 * @throws \Exception JSON encoding error.
 	 * @return void
 	 */
 	public function JsonResponse ($data = NULL, $terminate = TRUE) {
+		/** @var $this \MvcCore\Controller */
 		$res = $this->response;
 		$toolClass = $this->application->GetToolClass();
 		$output = $toolClass::EncodeJson($data);
@@ -166,11 +159,7 @@ trait Rendering
 	}
 
 	/**
-	 * Serialize any PHP value into `JSON string`, wrap around prepared public
-	 * javascript function in target window sent as `$_GET` param under
-	 * variable `$callbackParamName` (allowed chars: `a-zA-Z0-9\.\-_\$`) and
-	 * store it inside `\MvcCore\Controller::$response` to send it
-	 * into client browser later in `\MvcCore\Application::GetInstance()->Terminate();`.
+	 * @inheritDocs
 	 * @param mixed $data
 	 * @param string $callbackParamName
 	 * @param bool  $terminate
@@ -178,6 +167,7 @@ trait Rendering
 	 * @return void
 	 */
 	public function JsonpResponse ($data = NULL, $callbackParamName = 'callback', $terminate = TRUE) {
+		/** @var $this \MvcCore\Controller */
 		$res = $this->response;
 		$toolClass = $this->application->GetToolClass();
 		$output = $toolClass::EncodeJson($data);
@@ -195,13 +185,12 @@ trait Rendering
 	}
 
 	/**
-	 * Render error controller and error action
-	 * for any dispatch exception or error as
-	 * rendered html response or as plain text response.
+	 * @inheritDocs
 	 * @param string $exceptionMessage
 	 * @return void
 	 */
 	public function RenderError ($exceptionMessage = '') {
+		/** @var $this \MvcCore\Controller */
 		if ($this->application->IsErrorDispatched()) return;
 		throw new \ErrorException(
 			$exceptionMessage ? $exceptionMessage :
@@ -211,12 +200,11 @@ trait Rendering
 	}
 
 	/**
-	 * Render not found controller and not found action
-	 * for any dispatch exception with code 404 as
-	 * rendered html response or as plain text response.
+	 * @inheritDocs
 	 * @return void
 	 */
 	public function RenderNotFound () {
+		/** @var $this \MvcCore\Controller */
 		if ($this->application->IsNotFoundDispatched()) return;
 		throw new \ErrorException(
 			"Page not found: `" . htmlspecialchars($this->request->GetFullUrl()) . "`.", 404
@@ -224,12 +212,13 @@ trait Rendering
 	}
 
 	/**
-	 * Complete view script path by given controller and action or only by given action rendering arguments.
+	 * @inheritDocs
 	 * @param string $controllerOrActionNameDashed
 	 * @param string $actionNameDashed
 	 * @return string
 	 */
 	public function GetViewScriptPath ($controllerOrActionNameDashed = NULL, $actionNameDashed = NULL) {
+		/** @var $this \MvcCore\Controller */
 		$currentCtrlIsTopMostParent = $this->parentController === NULL;
 		if ($this->viewScriptsPath !== NULL) {
 			$resultPathItems = [$this->viewScriptsPath];

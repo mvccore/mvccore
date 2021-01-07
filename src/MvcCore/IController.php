@@ -13,12 +13,6 @@
 
 namespace MvcCore;
 
-//include_once('IRequest.php');
-//include_once('IResponse.php');
-//include_once('IModel.php');
-//include_once('IView.php');
-//include_once('ISession.php');
-
 /**
  * Responsibility - controller lifecycle - data preparing, rendering, response completing.
  * - Controller lifecycle dispatching:
@@ -45,7 +39,7 @@ namespace MvcCore;
  *   - `\MvcCore\Controller::$view` property initialization.
  * - `Render()`
  *   - Called after dispatching action has been called.
- *   - `Controller:Action` view rendering responsibility and response completion.
+ *   - `Controller:Action` view rendering responsibility and response competition.
  *
  * Important methods:
  * - `Url()` - proxy method to build URL by configured routes.
@@ -65,8 +59,8 @@ namespace MvcCore;
  *   - Handling internal MvcCore HTTP requests
  *	 to get assets from packed application package.
  */
-interface IController
-{
+interface IController {
+
 	/**
 	 * Initial value after controller has been instantiated.
 	 */
@@ -103,7 +97,7 @@ interface IController
 	 * or always called in `\MvcCore\Controller::autoInitMembers();` in base controller initialization.
 	 * This is place where to customize any controller creation process,
 	 * before it's created by MvcCore framework to dispatch it.
-	 * @return \MvcCore\IController
+	 * @return \MvcCore\Controller
 	 */
 	public static function CreateInstance ();
 
@@ -111,7 +105,7 @@ interface IController
 	 * Try to determinate `\MvcCore\Controller` instance from `debug_bactrace()`,
 	 * where was form created, if no form instance given into form constructor.
 	 * If no previous controller instance founded, `NULL` is returned.
-	 * @return \MvcCore\IController|NULL
+	 * @return \MvcCore\Controller|NULL
 	 */
 	public static function GetCallerControllerInstance ();
 
@@ -195,20 +189,20 @@ interface IController
 	 * This is INTERNAL, not TEMPLATE method, internally called in
 	 * `\MvcCore::DispatchControllerAction()` before controller is dispatched.
 	 * Usually call this as soon as possible after controller creation.
-	 * @param \MvcCore\IApplication $application
-	 * @return \MvcCore\IController
+	 * @param \MvcCore\Application $application
+	 * @return \MvcCore\Controller
 	 */
 	public function SetApplication (\MvcCore\IApplication $application);
 
 	/**
 	 * Get environment object to detect and manage environment name.
-	 * @return \MvcCore\IEnvironment
+	 * @return \MvcCore\Environment
 	 */
 	public function GetEnvironment();
 
 	/**
 	 * Get current application request object as reference.
-	 * @return \MvcCore\IRequest
+	 * @return \MvcCore\Request
 	 */
 	public function GetRequest ();
 
@@ -221,7 +215,7 @@ interface IController
 	/**
 	 * Set requested controller name - `"dashed-controller-name"`.
 	 * @param string $controllerName 
-	 * @return \MvcCore\IController
+	 * @return \MvcCore\Controller
 	 */
 	public function SetControllerName ($controllerName);
 
@@ -234,15 +228,15 @@ interface IController
 	/**
 	 * Set requested action name - `"dashed-action-name"`.
 	 * @param string $actionName
-	 * @return \MvcCore\IController
+	 * @return \MvcCore\Controller
 	 */
 	public function SetActionName ($actionName);
 
 	/**
 	 * Set environment object to detect and manage environment name.
 	 * This is INTERNAL, not TEMPLATE method.
-	 * @param \MvcCore\IEnvironment $environment
-	 * @return \MvcCore\IController
+	 * @param \MvcCore\Environment $environment
+	 * @return \MvcCore\Controller
 	 */
 	public function SetEnvironment (\MvcCore\IEnvironment $environment);
 
@@ -256,14 +250,14 @@ interface IController
 	 * - `\MvcCore\Controller::$controllerName`
 	 * - `\MvcCore\Controller::$actionName`
 	 * - `\MvcCore\Controller::$ajax`
-	 * @param \MvcCore\IRequest $request
-	 * @return \MvcCore\IController
+	 * @param \MvcCore\Request $request
+	 * @return \MvcCore\Controller
 	 */
 	public function SetRequest (\MvcCore\IRequest $request);
 
 	/**
 	 * Get current application response object as reference.
-	 * @return \MvcCore\IResponse
+	 * @return \MvcCore\Response
 	 */
 	public function GetResponse ();
 
@@ -272,14 +266,14 @@ interface IController
 	 * This is INTERNAL, not TEMPLATE method, internally called in
 	 * `\MvcCore::DispatchControllerAction()` before controller is dispatched.
 	 * Usually call this as soon as possible after controller creation.
-	 * @param \MvcCore\IResponse $response
-	 * @return \MvcCore\IController
+	 * @param \MvcCore\Response $response
+	 * @return \MvcCore\Controller
 	 */
 	public function SetResponse (\MvcCore\IResponse $response);
 
 	/**
 	 * Get current application router object as reference.
-	 * @return \MvcCore\IRouter
+	 * @return \MvcCore\Router
 	 */
 	public function GetRouter ();
 
@@ -288,8 +282,8 @@ interface IController
 	 * This is INTERNAL, not TEMPLATE method, internally called in
 	 * `\MvcCore::DispatchControllerAction()` before controller is dispatched.
 	 * Usually call this as soon as possible after controller creation.
-	 * @param \MvcCore\IRouter $router
-	 * @return \MvcCore\IController
+	 * @param \MvcCore\Router $router
+	 * @return \MvcCore\Controller
 	 */
 	public function SetRouter (\MvcCore\IRouter$router);
 
@@ -306,20 +300,20 @@ interface IController
 	 * `TRUE` if request is requested from browser by `XmlHttpRequest` object
 	 * with http header: `X-Requested-With: AnyJavascriptFrameworkName`, `FALSE` otherwise.
 	 * @param boolean $ajax 
-	 * @return \MvcCore\IController
+	 * @return \MvcCore\Controller
 	 */
 	public function SetIsAjax ($ajax);
 
 	/**
 	 * Get user model instance. Template method.
-	 * @return \MvcCore\IModel
+	 * @return \MvcCore\Model
 	 */
 	public function GetUser ();
 
 	/**
 	 * Set user model instance. Template method.
-	 * @param \MvcCore\IModel $user
-	 * @return \MvcCore\IController
+	 * @param \MvcCore\Model $user
+	 * @return \MvcCore\Controller
 	 */
 	public function SetUser ($user);
 
@@ -327,14 +321,14 @@ interface IController
 	 * Return current controller view object if any.
 	 * Before `\MvcCore\Controller::PreDispatch();` is called
 	 * in controller lifecycle, this property will be still `NULL`.
-	 * @return \MvcCore\IView|NULL
+	 * @return \MvcCore\View|NULL
 	 */
 	public function GetView ();
 
 	/**
 	 * Set current controller view object.
-	 * @param \MvcCore\IView $view
-	 * @return \MvcCore\IController
+	 * @param \MvcCore\View $view
+	 * @return \MvcCore\Controller
 	 */
 	public function SetView (\MvcCore\IView $view);
 
@@ -367,7 +361,7 @@ interface IController
 	 *     output buffering. There is not used reponse object body property for
 	 *     this rendering mode. Http headers are sent before view rendering.
 	 * @param int $renderMode
-	 * @return \MvcCore\IController
+	 * @return \MvcCore\Controller
 	 */
 	public function SetRenderMode ($renderMode = \MvcCore\IView::RENDER_WITH_OB_FROM_ACTION_TO_LAYOUT);
 
@@ -382,7 +376,7 @@ interface IController
 	 * Set layout name to render html wrapper around rendered action view.
 	 * Example: `"front" | "admin" | "account"...`.
 	 * @param string $layout
-	 * @return \MvcCore\IController
+	 * @return \MvcCore\Controller
 	 */
 	public function SetLayout ($layout = '');
 
@@ -409,7 +403,7 @@ interface IController
 	 * necessary to render your template only by calling controller rendering by:
 	 * `$subcontrollerInstance->Render('custom');`
 	 * @param string|NULL $viewScriptsPath
-	 * @return \MvcCore\IController
+	 * @return \MvcCore\Controller
 	 */
 	public function SetViewScriptsPath ($viewScriptsPath = NULL);
 
@@ -427,7 +421,7 @@ interface IController
 	 * `PreDispatch()` method and if view will be automatically rendered with wrapping
 	 * layout view around after controller action is called. Or set `FALSE`
 	 * otherwise to not render any view. Default value is `TRUE` for all non-ajax requests.
-	 * @return \MvcCore\IController
+	 * @return \MvcCore\Controller
 	 */
 	public function SetViewEnabled ($viewEnabled = TRUE);
 
@@ -442,9 +436,9 @@ interface IController
 	 *   - `\MvcCore\Controller::$layout`
 	 *   - `\MvcCore\Controller::$viewEnabled`
 	 *   - `\MvcCore\Controller::$user`
-	 * @param \MvcCore\IController &$controller
+	 * @param \MvcCore\Controller $controller
 	 * @param string|int $index
-	 * @return \MvcCore\IController
+	 * @return \MvcCore\Controller
 	 */
 	public function AddChildController (\MvcCore\IController $controller, $index = NULL);
 
@@ -452,7 +446,7 @@ interface IController
 	 * Get parent controller instance if any.
 	 * Method for child controllers. This method returns
 	 * `NULL` for top most parent controller instance.
-	 * @return \MvcCore\IController|NULL
+	 * @return \MvcCore\Controller|NULL
 	 */
 	public function GetParentController ();
 
@@ -460,8 +454,8 @@ interface IController
 	 * Set parent controller instance
 	 * or `NULL` for "top most parent" controller.
 	 * Method for child controllers.
-	 * @param \MvcCore\IController|NULL $parentController
-	 * @return \MvcCore\IController
+	 * @param \MvcCore\Controller|NULL $parentController
+	 * @return \MvcCore\Controller
 	 */
 	public function SetParentController (\MvcCore\IController $parentController = NULL);
 
@@ -469,7 +463,7 @@ interface IController
 	 * Get all child controllers array, indexed by
 	 * sub-controller property string name or by
 	 * custom string name or by custom numeric index.
-	 * @return \MvcCore\IController[]
+	 * @return \MvcCore\Controller[]
 	 */
 	public function GetChildControllers ();
 
@@ -481,8 +475,8 @@ interface IController
 	 * previous child controllers with given child controllers.
 	 * If you want only to add child controller, use method:
 	 * \MvcCore\Controller::AddChildController();` instead.
-	 * @param \MvcCore\IController[] $childControllers
-	 * @return \MvcCore\IController
+	 * @param \MvcCore\Controller[] $childControllers
+	 * @return \MvcCore\Controller
 	 */
 	public function SetChildControllers (array $childControllers = []);
 
@@ -491,7 +485,7 @@ interface IController
 	 * Sub-controller index should be string by parent controller
 	 * property name or custom string name or numeric index.
 	 * @param string|int $index
-	 * @return \MvcCore\IController
+	 * @return \MvcCore\Controller
 	 */
 	public function GetChildController ($index = NULL);
 
@@ -499,14 +493,14 @@ interface IController
 	 * Get (optionally cached) config INI file as `stdClass` or `array`,
 	 * placed relatively from application document root.
 	 * @param string $appRootRelativePath Any config relative path like `'/%appPath%/website.ini'`.
-	 * @return \MvcCore\IConfig|NULL
+	 * @return \MvcCore\Config|NULL
 	 */
 	public function GetConfig ($appRootRelativePath);
 
 	/**
 	 * Get (optionally cached) system config INI file as `stdClass` or `array`,
 	 * placed by default in: `"/App/config.ini"`.
-	 * @return \MvcCore\IConfig|NULL
+	 * @return \MvcCore\Config|NULL
 	 */
 	public function GetSystemConfig ();
 
@@ -622,7 +616,7 @@ interface IController
 	 * Alias for `\MvcCore\Session::GetNamespace($name);`
 	 * but called with configured session core class name.
 	 * @param mixed $name
-	 * @return \MvcCore\ISession
+	 * @return \MvcCore\Session
 	 */
 	public function GetSessionNamespace ($name = \MvcCore\ISession::DEFAULT_NAMESPACE_NAME);
 
@@ -642,6 +636,14 @@ interface IController
 	 * @return void
 	 */
 	public function RenderNotFound ();
+
+	/**
+	 * Complete view script path by given controller and action or only by given action rendering arguments.
+	 * @param string $controllerOrActionNameDashed
+	 * @param string $actionNameDashed
+	 * @return string
+	 */
+	public function GetViewScriptPath ($controllerOrActionNameDashed = NULL, $actionNameDashed = NULL);
 
 	/**
 	 * Terminate request.

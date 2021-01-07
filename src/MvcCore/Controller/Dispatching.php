@@ -13,15 +13,11 @@
 
 namespace MvcCore\Controller;
 
-trait Dispatching
-{
+trait Dispatching {
+
 	/**
-	 * Return always new instance of statically called class, no singleton.
-	 * Always called from `\MvcCore\Application::DispatchControllerAction()` before controller is dispatched,
-	 * or always called in `\MvcCore\Controller::autoInitMembers();` in base controller initialization.
-	 * This is place where to customize any controller creation process,
-	 * before it's created by MvcCore framework to dispatch it.
-	 * @return \MvcCore\Controller|\MvcCore\IController
+	 * @inheritDocs
+	 * @return \MvcCore\Controller
 	 */
 	public static function CreateInstance () {
 		/** @var $instance \MvcCore\Controller */
@@ -31,10 +27,8 @@ trait Dispatching
 	}
 
 	/**
-	 * Try to determinate `\MvcCore\Controller` instance from `debug_bactrace()`,
-	 * where was form created, if no form instance given into form constructor.
-	 * If no previous controller instance founded, `NULL` is returned.
-	 * @return \MvcCore\Controller|\MvcCore\IController|NULL
+	 * @inheritDocs
+	 * @return \MvcCore\Controller|NULL
 	 */
 	public static function GetCallerControllerInstance () {
 		$result = NULL;
@@ -57,20 +51,7 @@ trait Dispatching
 	}
 
 	/**
-	 * Dispatching controller life cycle by given action.
-	 * This is INTERNAL, not TEMPLATE method, internally
-	 * called in `\MvcCore::DispatchControllerAction();`.
-	 * Call this immediately after calling controller methods:
-	 * - `\MvcCore\Controller::__construct()`
-	 * - `\MvcCore\Controller::SetApplication($application)`
-	 * - `\MvcCore\Controller::SetRequest($request)`
-	 * - `\MvcCore\Controller::SetResponse($response)`
-	 * - `\MvcCore\Controller::SetRouter($router)`
-	 * This function automatically complete (through controller lifecycle)
-	 * protected `\MvcCore\Response` object with response headers and content,
-	 * which you can send to client browser by method
-	 * `\MvcCore\Controller::Terminate()` or which you can store
-	 * anywhere in cache to use it later etc.
+	 * @inheritDocs
 	 * @param string $actionName PHP code action name in PascalCase.
 	 *							 This value is used to call your desired function
 	 *							 in controller without any change.
@@ -133,13 +114,7 @@ trait Dispatching
 	}
 
 	/**
-	 * Application controllers initialization.
-	 * This is best time to initialize language, locale, session etc.
-	 * There is also called auto initialization processing - instance creation
-	 * on each controller class member implementing `\MvcCore\IController`
-	 * and marked in doc comments as `@autoinit`.
-	 * then there is of course called `\MvcCore\Controller::Init();` method on each
-	 * automatically created sub-controller.
+	 * @inheritDocs
 	 * @return void
 	 */
 	public function Init () {
@@ -247,10 +222,7 @@ trait Dispatching
 	}
 
 	/**
-	 * Application pre render common action - always used in application controllers.
-	 * This is best time to define any common properties or common view properties,
-	 * which are the same for multiple actions in controller etc.
-	 * There is also called `\MvcCore\Controller::PreDispatch();` method on each sub-controller.
+	 * @inheritDocs
 	 * @return void
 	 */
 	public function PreDispatch () {
@@ -275,17 +247,8 @@ trait Dispatching
 	}
 
 	/**
-	 * - Register child controller to process dispatching on it later.
-	 * - This method is always called INTERNALLY, but you can use it for custom purposes.
-	 * - This method automatically assigns into child controller(s) properties from parent:
-	 *   - `\MvcCore\Controller::$_parentController`
-	 *   - `\MvcCore\Controller::$request`
-	 *   - `\MvcCore\Controller::$response`
-	 *   - `\MvcCore\Controller::$router`
-	 *   - `\MvcCore\Controller::$layout`
-	 *   - `\MvcCore\Controller::$viewEnabled`
-	 *   - `\MvcCore\Controller::$user`
-	 * @param \MvcCore\Controller &$controller
+	 * @inheritDocs
+	 * @param \MvcCore\Controller $controller
 	 * @param string|int $index
 	 * @return \MvcCore\Controller
 	 */
@@ -319,10 +282,9 @@ trait Dispatching
 	}
 
 	/**
-	 * Alias for `\MvcCore\Session::GetNamespace($name);`
-	 * but called with configured session core class name.
+	 * @inheritDocs
 	 * @param mixed $name
-	 * @return \MvcCore\ISession
+	 * @return \MvcCore\Session
 	 */
 	public function GetSessionNamespace ($name = \MvcCore\ISession::DEFAULT_NAMESPACE_NAME) {
 		/** @var $this \MvcCore\Controller */
@@ -331,8 +293,7 @@ trait Dispatching
 	}
 
 	/**
-	 * Redirect client browser to another place by `"Location: ..."`
-	 * header and call `\MvcCore\Application::GetInstance()->Terminate();`.
+	 * @inheritDocs
 	 * @param string		$location
 	 * @param int			$code
 	 * @param string|NULL	$reason	Any optional text header for reason why.
@@ -352,14 +313,7 @@ trait Dispatching
 	}
 
 	/**
-	 * Terminate request.
-	 * - Send headers if possible.
-	 * - Echo response body.
-	 * - Write session.
-	 * This method is always called INTERNALLY after controller
-	 * lifecycle has been dispatched. But you can use it any
-	 * time sooner for custom purposes.
-	 * This method is only shortcut for: `\MvcCore\Application::GetInstance()->Terminate();`.
+	 * @inheritDocs
 	 * @return void
 	 */
 	public function Terminate () {
@@ -370,8 +324,7 @@ trait Dispatching
 	}
 
 	/**
-	 * Return small assets content with proper headers
-	 * in single file application mode and immediately exit.
+	 * @inheritDocs
 	 * @throws \Exception If file path is not allowed (500) or file not found (404).
 	 * @return void
 	 */
