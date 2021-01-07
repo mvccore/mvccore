@@ -16,16 +16,11 @@ namespace MvcCore\Model;
 trait MagicMethods {
 	
 	/**
-	 * Sets any custom property `"PropertyName"` by `\MvcCore\IModel::SetPropertyName("value")`,
-	 * which is not necessary to define previously or gets previously defined
-	 * property `"PropertyName"` by `\MvcCore\IModel::GetPropertyName();`.
-	 * Throws exception if no property defined by get call
-	 * or if virtual call begins with anything different from `Set` or `Get`.
-	 * This method returns custom value for get and `\MvcCore\IModel` instance for set.
+	 * @inheritDocs
 	 * @param string $rawName
 	 * @param array  $arguments
 	 * @throws \InvalidArgumentException If `strtolower($rawName)` doesn't begin with `"get"` or with `"set"`.
-	 * @return mixed|\MvcCore\Model|\MvcCore\IModel
+	 * @return mixed|\MvcCore\Model
 	 */
 	public function __call ($rawName, $arguments = []) {
 		/** @var $this \MvcCore\Model */
@@ -49,7 +44,7 @@ trait MagicMethods {
 	}
 
 	/**
-	 * Set any custom property, not necessary to previously defined.
+	 * @inheritDocs
 	 * @param string $name
 	 * @param mixed  $value
 	 * @throws \InvalidArgumentException If name is `initialValues` or any custom name in extended class.
@@ -67,8 +62,7 @@ trait MagicMethods {
 	}
 
 	/**
-	 * Get any custom property, not necessary to previously defined,
-	 * if property is not defined, NULL is returned.
+	 * @inheritDocs
 	 * @param string $name
 	 * @throws \InvalidArgumentException If name is `initialValues` or any custom name in extended class.
 	 * @return mixed
@@ -87,14 +81,11 @@ trait MagicMethods {
 	}
 
 	/**
-	 * Collect all properties names to serialize them by `serialize()` method.
-	 * Collect all instance properties declared as private, protected and public
-	 * and if there is configured in `static::$protectedProperties` anything as
-	 * `TRUE` (under key by property name), also return those properties in
-	 * result array.
+	 * @inheritDocs
 	 * @return \string[]
 	 */
 	public function __sleep () {
+		/** @var $this \MvcCore\Model */
 		static $__serializePropsNames = NULL;
 		if ($__serializePropsNames == NULL) {
 			$rawPropNames = array_keys(

@@ -16,7 +16,7 @@ namespace MvcCore\Model;
 trait Config {
 
 	/**
-	 * Return system configuration file database section properties names.
+	 * @inheritDocs
 	 * @return \stdClass
 	 */
 	public static function GetSysConfigProperties () {
@@ -24,8 +24,7 @@ trait Config {
 	}
 
 	/**
-	 * Get all known database connection config records as indexed/named array with `\stdClass` objects.
-	 * Keys in array are connection config names/indexes and `\stdClass` values are config values.
+	 * @inheritDocs
 	 * @return \stdClass[]
 	 */
 	public static function & GetConfigs () {
@@ -34,35 +33,9 @@ trait Config {
 	}
 
 	/**
-	 * Set all known configuration at once, optionally set default connection name/index.
-	 * Example:
-	 *	`\MvcCore\Model::SetConfigs([
-	 *		// connection name: 'mysql-cdcol':
-	 *		'mysql-cdcol'	=> [
-	 *			'driver'	=> 'mysql',		'host'		=> 'localhost',
-	 *			'user'		=> 'root',		'password'	=> '1234',		'database' => 'cdcol',
-	 *		],
-	 *		// connection name: 'mssql-tests':
-	 *		'mssql-tests'	=> [
-	 *			'driver'	=> 'sqlsrv',	'host'		=> '.\SQLEXPRESS',
-	 *			'user'		=> 'sa',		'password'	=> '1234',		'database' => 'tests',
-	 *		]
-	 *	]);`
-	 * or:
-	 *	`\MvcCore\Model::SetConfigs([
-	 *		// connection index: 0:
-	 *		[
-	 *			'driver'	=> 'mysql',		'host'		=> 'localhost',
-	 *			'user'		=> 'root',		'password'	=> '1234',		'database' => 'cdcol',
-	 *		],
-	 *		// connection index: 1:
-	 *		[
-	 *			'driver'	=> 'sqlsrv',	'host'		=> '.\SQLEXPRESS',
-	 *			'user'		=> 'sa',		'password'	=> '1234',		'database' => 'tests',
-	 *		]
-	 *	]);`
-	 * @param \stdClass[]|array[] $configs               Configuration array with `\stdClass` objects or arrays with configuration data.
-	 * @param string|int          $defaultConnectionName
+	 * @inheritDocs
+	 * @param \stdClass[]|array[] $configs Configuration array with `\stdClass` objects or arrays with configuration data.
+	 * @param string|int $defaultConnectionName
 	 * @return bool
 	 */
 	public static function SetConfigs (array $configs = [], $defaultConnectionName = NULL) {
@@ -75,8 +48,7 @@ trait Config {
 	}
 
 	/**
-	 * Returns database connection config by connection index (integer)
-	 * or by connection name (string) as `\stdClass` (cached by local store).
+	 * @inheritDocs
 	 * @param int|string|NULL $connectionName
 	 * @return \stdClass
 	 */
@@ -90,31 +62,7 @@ trait Config {
 	}
 
 	/**
-	 * Set configuration array with optional connection name/index.
-	 * If there is array key `name` or `index` inside config `array` or `\stdClass`,
-	 * it's value is used for connection name or index or there is no param `$connectionName` defined.
-	 * Example:
-	 *	`\MvcCore\Model::SetConfig(array(
-	 *		'name'		=> 'mysql-cdcol',
-	 *		'driver'	=> 'mysql',		'host'		=> 'localhost',
-	 *		'user'		=> 'root',		'password'	=> '1234',		'database' => 'cdcol',
-	 *	));`
-	 * or:
-	 *	`\MvcCore\Model::SetConfig(array(
-	 *		'index'		=> 0,
-	 *		'driver'	=> 'mysql',	'host'		=> 'localhost',
-	 *		'user'		=> 'root',	'password'	=> '1234',		'database' => 'cdcol',
-	 *	));`
-	 * or:
-	 *	`\MvcCore\Model::SetConfig(array(
-	 *		'driver'	=> 'mysql',	'host'		=> 'localhost',
-	 *		'user'		=> 'root',	'password'	=> '1234',		'database' => 'cdcol',
-	 *	), 'mysql-cdcol');`
-	 * or:
-	 *	`\MvcCore\Model::SetConfig(array(
-	 *		'driver'	=> 'mysql',	'host'		=> 'localhost',
-	 *		'user'		=> 'root',	'password'	=> '1234',		'database' => 'cdcol',
-	 *	), 0);`
+	 * @inheritDocs
 	 * @param \stdClass[]|array[] $config
 	 * @param string|int|NULL $connectionName
 	 * @return string|int

@@ -16,8 +16,7 @@ namespace MvcCore\Model;
 trait DataMethods {
 
 	/**
-	 * Collect all model class properties values into array.
-	 * Result keys could be converted by any conversion flag.
+	 * @inheritDocs
 	 * @param int $propsFlags All properties flags are available except flags 
 	 *						  `\MvcCore\IModel::PROPS_INITIAL_VALUES` and 
 	 *						  `\MvcCore\IModel::PROPS_CONVERT_CASE_INSENSITIVE`.
@@ -104,11 +103,7 @@ trait DataMethods {
 	}
 
 	/**
-	 * Set up given `$data` items into `$this` instance context
-	 * as typed properties by PHP types (or by PhpDocs comments in PHP < 7.4) 
-	 * as properties with the same names as `$data` array keys or converted
-	 * by properties flags. Case sensitivelly by default.
-	 * Do not set any `$data` items, which are not declared in `$this` context.
+	 * @inheritDocs
 	 * @param array $data Raw row data from database.
 	 * @param int $propsFlags All properties flags are available.
 	 * @return \MvcCore\Model Current `$this` context.
@@ -197,10 +192,7 @@ trait DataMethods {
 	}
 
 	/**
-	 * Get touched properties from `$this` context.
-	 * Touched properties are properties with different value than key 
-	 * in `$this->initialValues` (initial array completed in `SetUp()` method).
-	 * Result keys could be converted by any conversion flag.
+	 * @inheritDocs
 	 * @param int $propsFlags All properties flags are available except flags 
 	 *						  `\MvcCore\IModel::PROPS_INITIAL_VALUES` and 
 	 *						  `\MvcCore\IModel::PROPS_CONVERT_CASE_INSENSITIVE`.

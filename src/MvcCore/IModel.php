@@ -112,7 +112,7 @@ interface IModel {
 	 * Returns (or creates if necessary) model resource instance.
  	 * @param array|NULL	$args				Values array with variables to pass into resource `__construct()` method.
 	 * @param string		$resourceClassPath	Automatically initialized with string replaced with `%SELF%` by `static::class` (or by `get_called_class()`).
-	 * @return \MvcCore\Model|\MvcCore\IModel
+	 * @return \MvcCore\Model
 	 */
 	public static function GetResource ($args = [], $resourceClassPath = '%SELF%s\Resource');
 
@@ -171,8 +171,8 @@ interface IModel {
 	 *			'user'		=> 'sa',		'password'	=> '1234',		'database' => 'tests',
 	 *		]
 	 *	]);`
-	 * @param \stdClass[]|array[] $configs               Configuration array with `\stdClass` objects or arrays with configuration data.
-	 * @param string|int          $defaultConnectionName
+	 * @param \stdClass[]|array[] $configs Configuration array with `\stdClass` objects or arrays with configuration data.
+	 * @param string|int $defaultConnectionName
 	 * @return bool
 	 */
 	public static function SetConfigs (array $configs = []);
@@ -236,7 +236,7 @@ interface IModel {
 	 * Do not set any `$data` items, which are not declared in `$this` context.
 	 * @param array $data Raw row data from database.
 	 * @param int $propsFlags All properties flags are available.
-	 * @return \MvcCore\IModel Current `$this` context.
+	 * @return \MvcCore\Model Current `$this` context.
 	 */
 	public function SetUp ($data = [], $propsFlags = 0);
 
@@ -253,16 +253,16 @@ interface IModel {
 	public function GetTouched ($propsFlags = 0);
 
 	/**
-	 * Sets any custom property `"PropertyName"` by `\MvcCore\IModel::SetPropertyName("value")`,
+	 * Sets any custom property `"PropertyName"` by `\MvcCore\Model::SetPropertyName("value")`,
 	 * which is not necessary to define previously or gets previously defined
-	 * property `"PropertyName"` by `\MvcCore\IModel::GetPropertyName();`.
+	 * property `"PropertyName"` by `\MvcCore\Model::GetPropertyName();`.
 	 * Throws exception if no property defined by get call
 	 * or if virtual call begins with anything different from `Set` or `Get`.
-	 * This method returns custom value for get and `\MvcCore\IModel` instance for set.
+	 * This method returns custom value for get and `\MvcCore\Model` instance for set.
 	 * @param string $rawName
 	 * @param array  $arguments
 	 * @throws \InvalidArgumentException If `strtolower($rawName)` doesn't begin with `"get"` or with `"set"`.
-	 * @return mixed|\MvcCore\Model|\MvcCore\IModel
+	 * @return mixed|\MvcCore\Model
 	 */
 	public function __call ($rawName, $arguments = []);
 
