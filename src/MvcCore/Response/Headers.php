@@ -13,10 +13,10 @@
 
 namespace MvcCore\Response;
 
-trait Headers
-{
+trait Headers {
+
 	/**
-	 * `TRUE` if headers has been sent.
+	 * @inheritDocs
 	 * @return bool
 	 */
 	public function IsSentHeaders () {
@@ -25,19 +25,11 @@ trait Headers
 	}
 
 	/**
-	 * Set multiple HTTP response headers as `key => value` array.
-	 * All given headers are automatically merged with previously setted headers.
-	 * If you change second argument to true, all previous request object and PHP
-	 * headers are removed and given headers will be only headers for output.
-	 * There is automatically set response encoding from value for
-	 * `Content-Type` header, if contains any `charset=...`.
-	 * There is automatically set response encoding from value for
-	 * `Content-Encoding` header.
-	 * Example: `$response->SetHeader(array('Content-Type' => 'text/plain; charset=utf-8'));`
+	 * @inheritDocs
 	 * @param array $headers
 	 * @param bool $cleanAllPrevious `FALSE` by default. If `TRUE`, all previous headers
 	 *								 set by PHP `header()` or by this object will be removed.
-	 * @return \MvcCore\Response|\MvcCore\IResponse
+	 * @return \MvcCore\Response
 	 */
 	public function SetHeaders (array $headers = [], $cleanAllPrevious = FALSE) {
 		/** @var $this \MvcCore\Response */
@@ -52,15 +44,10 @@ trait Headers
 	}
 
 	/**
-	 * Set HTTP response header.
-	 * There is automatically set response encoding from value for
-	 * `Content-Type` header, if contains any `charset=...`.
-	 * There is automatically set response encoding from value for
-	 * `Content-Encoding` header.
-	 * Example: `$response->SetHeader('Content-Type', 'text/plain; charset=utf-8');`
+	 * @inheritDocs
 	 * @param string $name
 	 * @param string $value
-	 * @return \MvcCore\Response|\MvcCore\IResponse
+	 * @return \MvcCore\Response
 	 */
 	public function SetHeader ($name, $value) {
 		/** @var $this \MvcCore\Response */
@@ -84,8 +71,7 @@ trait Headers
 	}
 
 	/**
-	 * Get HTTP response header by name. If header doesn't exists, null is returned.
-	 * Example: `$response->GetHeader('Content-Type'); // returns 'text/plain; charset=utf-8'`
+	 * @inheritDocs
 	 * @param string $name
 	 * @return string|NULL
 	 */
@@ -98,10 +84,7 @@ trait Headers
 	}
 
 	/**
-	 * Get if response has any HTTP response header by given `$name`.
-	 * Example:
-	 *	`$response->GetHeader('Content-Type'); // returns TRUE if there is header 'Content-Type'
-	 *	`$response->GetHeader('content-type'); // returns FALSE if there is header 'Content-Type'
+	 * @inheritDocs
 	 * @param string $name
 	 * @return bool
 	 */
@@ -112,9 +95,8 @@ trait Headers
 	}
 
 	/**
-	 * Consolidate all headers from PHP response
-	 * by calling `headers_list()` into local headers list.
-	 * @return \MvcCore\Response|\MvcCore\IResponse
+	 * @inheritDocs
+	 * @return \MvcCore\Response
 	 */
 	public function UpdateHeaders () {
 		/** @var $this \MvcCore\Response */
@@ -137,10 +119,9 @@ trait Headers
 	}
 
 	/**
-	 * Set disabled headers, never sent except if there is
-	 * rendered exception in development environment.
+	 * @inheritDocs
 	 * @param \string[] $disabledHeaders,...
-	 * @return \MvcCore\Response|\MvcCore\IResponse
+	 * @return \MvcCore\Response
 	 */
 	public function SetDisabledHeaders ($disabledHeaders) {
 		/** @var $this \MvcCore\Response */
@@ -153,8 +134,7 @@ trait Headers
 	}
 
 	/**
-	 * Get disabled headers, never sent except if there is
-	 * rendered exception in development environment.
+	 * @inheritDocs
 	 * @return \string[]
 	 */
 	public function GetDisabledHeaders () {

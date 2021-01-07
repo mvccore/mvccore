@@ -58,7 +58,7 @@ interface IResponse {
 	 * @param int|NULL	$code
 	 * @param array		$headers
 	 * @param string	$body
-	 * @return \MvcCore\IResponse
+	 * @return \MvcCore\Response
 	 */
 	public static function CreateInstance (
 		$code = NULL,
@@ -77,7 +77,7 @@ interface IResponse {
 	/**
 	 * Set response protocol HTTP version - `HTTP/1.1 | HTTP/2.0`...
 	 * @param string $httpVersion
-	 * @return \MvcCore\IResponse
+	 * @return \MvcCore\Response
 	 */
 	public function SetHttpVersion ($httpVersion);
 
@@ -85,7 +85,7 @@ interface IResponse {
 	 * Set HTTP response code.
 	 * @param int $code
 	 * @param string|NULL $codeMessage
-	 * @return \MvcCore\IResponse
+	 * @return \MvcCore\Response
 	 */
 	public function SetCode ($code, $codeMessage = NULL);
 
@@ -108,7 +108,7 @@ interface IResponse {
 	 * @param array $headers
 	 * @param bool $cleanAllPrevious `FALSE` by default. If `TRUE`, all previous headers
 	 *								 set by PHP `header()` or by this object will be removed.
-	 * @return \MvcCore\IResponse
+	 * @return \MvcCore\Response
 	 */
 	public function SetHeaders (array $headers = []);
 
@@ -121,13 +121,13 @@ interface IResponse {
 	 * Example: `$request->SetHeader('Content-Type', 'text/plain; charset=utf-8');`
 	 * @param string $name
 	 * @param string $value
-	 * @return \MvcCore\IResponse
+	 * @return \MvcCore\Response
 	 */
 	public function SetHeader ($name, $value);
 
 	/**
-	 * Get HTTP response header by name.
-	 * Example: `$request->GetHeader('Content-Type'); // returns 'text/plain; charset=utf-8'`
+	 * Get HTTP response header by name. If header doesn't exists, null is returned.
+	 * Example: `$response->GetHeader('Content-Type'); // returns 'text/plain; charset=utf-8'`
 	 * @param string $name
 	 * @return string|NULL
 	 */
@@ -147,7 +147,7 @@ interface IResponse {
 	 * Set HTTP response content encoding.
 	 * Example: `$response->SetEncoding('utf-8');`
 	 * @param string $encoding
-	 * @return \MvcCore\IResponse
+	 * @return \MvcCore\Response
 	 */
 	public function SetEncoding ($encoding = 'utf-8');
 
@@ -161,21 +161,21 @@ interface IResponse {
 	/**
 	 * Set HTTP response body.
 	 * @param string $body
-	 * @return \MvcCore\IResponse
+	 * @return \MvcCore\Response
 	 */
 	public function SetBody ($body);
 
 	/**
 	 * Prepend HTTP response body.
 	 * @param string $body
-	 * @return \MvcCore\IResponse
+	 * @return \MvcCore\Response
 	 */
 	public function PrependBody ($body);
 
 	/**
 	 * Append HTTP response body.
 	 * @param string $body
-	 * @return \MvcCore\IResponse
+	 * @return \MvcCore\Response
 	 */
 	public function AppendBody ($body);
 
@@ -188,7 +188,7 @@ interface IResponse {
 	/**
 	 * Consolidate all headers from PHP response
 	 * by calling `headers_list()` into local headers list.
-	 * @return \MvcCore\IResponse
+	 * @return \MvcCore\Response
 	 */
 	public function UpdateHeaders ();
 
@@ -231,19 +231,19 @@ interface IResponse {
 
 	/**
 	 * Send all HTTP headers and send response body.
-	 * @return \MvcCore\IResponse
+	 * @return \MvcCore\Response
 	 */
 	public function Send ();
 
 	/**
 	 * Send all HTTP headers.
-	 * @return \MvcCore\IResponse
+	 * @return \MvcCore\Response
 	 */
 	public function SendHeaders ();
 
 	/**
 	 * Send response body.
-	 * @return \MvcCore\IResponse
+	 * @return \MvcCore\Response
 	 */
 	public function SendBody ();
 
@@ -280,7 +280,7 @@ interface IResponse {
 	 * Set disabled headers, never sent except if there is
 	 * rendered exception in development environment.
 	 * @param \string[] $disabledHeaders,...
-	 * @return \MvcCore\IResponse
+	 * @return \MvcCore\Response
 	 */
 	public function SetDisabledHeaders ($disabledHeaders);
 

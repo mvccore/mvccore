@@ -13,8 +13,8 @@
 
 namespace MvcCore\Response;
 
-trait PropsGettersSetters
-{
+trait PropsGettersSetters {
+
 	protected static $codeMessages = [
 		\MvcCore\IResponse::OK						=> 'OK',
 		\MvcCore\IResponse::MOVED_PERMANENTLY		=> 'Moved Permanently',
@@ -83,17 +83,17 @@ trait PropsGettersSetters
 
 	/**
 	 * Reference to current application request object.
-	 * @var \MvcCore\IRequest
+	 * @var \MvcCore\Request
 	 */
 	protected $request = NULL;
 
 
 	/**
-	 * Get response protocol HTTP version by `$_SERVER['SERVER_PROTOCOL']`,
-	 * `HTTP/1.1` by default.
+	 * @inheritDocs
 	 * @return string
 	 */
 	public function GetHttpVersion () {
+		/** @var $this \MvcCore\Response */
 		if ($this->httpVersion === NULL) {
 			$server = & $this->request->GetGlobalCollection('server');
 			$this->httpVersion = isset($server['SERVER_PROTOCOL'])
@@ -104,9 +104,9 @@ trait PropsGettersSetters
 	}
 
 	/**
-	 * Set response protocol HTTP version - `HTTP/1.1 | HTTP/2.0`...
+	 * @inheritDocs
 	 * @param string $httpVersion
-	 * @return \MvcCore\Response|\MvcCore\IResponse
+	 * @return \MvcCore\Response
 	 */
 	public function SetHttpVersion ($httpVersion) {
 		/** @var $this \MvcCore\Response */
@@ -115,10 +115,10 @@ trait PropsGettersSetters
 	}
 
 	/**
-	 * Set HTTP response code.
+	 * @inheritDocs
 	 * @param int $code
 	 * @param string|NULL $codeMessage
-	 * @return \MvcCore\Response|\MvcCore\IResponse
+	 * @return \MvcCore\Response
 	 */
 	public function SetCode ($code, $codeMessage = NULL) {
 		/** @var $this \MvcCore\Response */
@@ -129,7 +129,7 @@ trait PropsGettersSetters
 	}
 
 	/**
-	 * Get HTTP response code.
+	 * @inheritDocs
 	 * @return int
 	 */
 	public function GetCode () {
@@ -142,10 +142,9 @@ trait PropsGettersSetters
 	}
 
 	/**
-	 * Set HTTP response content encoding.
-	 * Example: `$response->SetEncoding('utf-8');`
+	 * @inheritDocs
 	 * @param string $encoding
-	 * @return \MvcCore\Response|\MvcCore\IResponse
+	 * @return \MvcCore\Response
 	 */
 	public function SetEncoding ($encoding = 'utf-8') {
 		/** @var $this \MvcCore\Response */
@@ -158,8 +157,7 @@ trait PropsGettersSetters
 	}
 
 	/**
-	 * Get HTTP response content encoding.
-	 * Example: `$response->GetEncoding(); // returns 'utf-8'`
+	 * @inheritDocs
 	 * @return string|NULL
 	 */
 	public function GetEncoding () {
@@ -183,7 +181,7 @@ trait PropsGettersSetters
 	}
 
 	/**
-	 * Return if response has any redirect `"Location: ..."` header inside.
+	 * @inheritDocs
 	 * @return bool
 	 */
 	public function IsRedirect () {
@@ -192,7 +190,7 @@ trait PropsGettersSetters
 	}
 
 	/**
-	 * `TRUE` if headers and body has been sent.
+	 * @inheritDocs
 	 * @return bool
 	 */
 	public function IsSent () {

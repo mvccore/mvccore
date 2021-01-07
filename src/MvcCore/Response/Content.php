@@ -13,12 +13,12 @@
 
 namespace MvcCore\Response;
 
-trait Content
-{
+trait Content {
+
 	/**
-	 * Set HTTP response body.
+	 * @inheritDocs
 	 * @param string $body
-	 * @return \MvcCore\Response|\MvcCore\IResponse
+	 * @return \MvcCore\Response
 	 */
 	public function SetBody ($body) {
 		/** @var $this \MvcCore\Response */
@@ -27,9 +27,9 @@ trait Content
 	}
 
 	/**
-	 * Prepend HTTP response body.
+	 * @inheritDocs
 	 * @param string $body
-	 * @return \MvcCore\Response|\MvcCore\IResponse
+	 * @return \MvcCore\Response
 	 */
 	public function PrependBody ($body) {
 		/** @var $this \MvcCore\Response */
@@ -38,9 +38,9 @@ trait Content
 	}
 
 	/**
-	 * Append HTTP response body.
+	 * @inheritDocs
 	 * @param string $body
-	 * @return \MvcCore\Response|\MvcCore\IResponse
+	 * @return \MvcCore\Response
 	 */
 	public function AppendBody ($body) {
 		/** @var $this \MvcCore\Response */
@@ -49,7 +49,7 @@ trait Content
 	}
 
 	/**
-	 * Get HTTP response body.
+	 * @inheritDocs
 	 * @return string|NULL
 	 */
 	public function & GetBody () {
@@ -58,8 +58,7 @@ trait Content
 	}
 
 	/**
-	 * Returns if response has any `text/html` or `application/xhtml+xml`
-	 * substring in `Content-Type` header.
+	 * @inheritDocs
 	 * @return bool
 	 */
 	public function IsHtmlOutput () {
@@ -72,7 +71,7 @@ trait Content
 	}
 
 	/**
-	 * Returns if response has any `xml` substring in `Content-Type` header.
+	 * @inheritDocs
 	 * @return bool
 	 */
 	public function IsXmlOutput () {
@@ -85,7 +84,7 @@ trait Content
 	}
 
 	/**
-	 * `TRUE` if body has been sent.
+	 * @inheritDocs
 	 * @return bool
 	 */
 	public function IsSentBody () {
@@ -94,8 +93,8 @@ trait Content
 	}
 
 	/**
-	 * Send all HTTP headers and send response body.
-	 * @return \MvcCore\Response|\MvcCore\IResponse
+	 * @inheritDocs
+	 * @return \MvcCore\Response
 	 */
 	public function Send () {
 		/** @var $this \MvcCore\Response */
@@ -105,8 +104,8 @@ trait Content
 	}
 
 	/**
-	 * Send all HTTP headers.
-	 * @return \MvcCore\Response|\MvcCore\IResponse
+	 * @inheritDocs
+	 * @return \MvcCore\Response
 	 */
 	public function SendHeaders () {
 		/** @var $this \MvcCore\Response */
@@ -147,8 +146,8 @@ trait Content
 	}
 
 	/**
-	 * Send response body.
-	 * @return \MvcCore\Response|\MvcCore\IResponse
+	 * @inheritDocs
+	 * @return \MvcCore\Response
 	 */
 	public function SendBody () {
 		/** @var $this \MvcCore\Response */
@@ -172,6 +171,6 @@ trait Content
 		$mtBegin = $this->request->GetStartTime();
 		$time = number_format((microtime(TRUE) - $mtBegin) * 1000, 1, '.', ' ');
 		$ram = function_exists('memory_get_peak_usage') ? number_format(memory_get_peak_usage() / 1000000, 2, '.', ' ') : 'n/a';
-		header("$headerName: $time ms, $ram MB");
+		header("{$headerName}: {$time} ms, {$ram} MB");
 	}
 }

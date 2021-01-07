@@ -13,15 +13,14 @@
 
 namespace MvcCore\Response;
 
-trait Instancing
-{
+trait Instancing {
+
 	/**
-	 * No singleton, get every time new instance of configured HTTP response
-	 * class in `\MvcCore\Application::GetInstance()->GetResponseClass();`.
+	 * @inheritDocs
 	 * @param int|NULL	$code
 	 * @param array		$headers
 	 * @param string	$body
-	 * @return \MvcCore\Response|\MvcCore\IResponse
+	 * @return \MvcCore\Response
 	 */
 	public static function CreateInstance (
 		$code = NULL,
@@ -45,6 +44,7 @@ trait Instancing
 		$headers = [],
 		$body = ''
 	) {
+		/** @var $this \MvcCore\Response */
 		$this->code = $code ?: \MvcCore\IResponse::OK;
 		$this->headers = $headers;
 		$this->body = $body;
