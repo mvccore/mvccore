@@ -13,8 +13,8 @@
 
 namespace MvcCore\Environment;
 
-trait PropsGettersSetters
-{
+trait PropsGettersSetters {
+
 	/**
 	 * If `TRUE` (by default), environment will be detected by loaded system config.
 	 * @var boolean
@@ -27,7 +27,7 @@ trait PropsGettersSetters
 	 */
 	protected static $app;
 
-    /**
+	/**
 	 * Environment name. Usual values:
 	 * - `"dev"`			- Development environment.
 	 * - `"beta"`			- Common team testing environment.
@@ -45,7 +45,7 @@ trait PropsGettersSetters
 
 
 	/**
-	 * Get all available nevironment names.
+	 * @inheritDocs
 	 * @return \string[]
 	 */
 	public static function GetAllNames () {
@@ -58,7 +58,7 @@ trait PropsGettersSetters
 	}
 
 	/**
-	 * Set `TRUE`, if environment is necessary to detected by loaded system config, `FALSE` otherwise.
+	 * @inheritDocs
 	 * @param boolean $detectionBySystemConfig `TRUE` by default.
 	 * @return boolean
 	 */
@@ -67,7 +67,7 @@ trait PropsGettersSetters
 	}
 
 	/**
-	 * Get `TRUE`, if environment is necessary to detected by loaded system config, `FALSE` otherwise.
+	 * @inheritDocs
 	 * @return boolean
 	 */
 	public static function GetDetectionBySystemConfig () {
@@ -75,56 +75,61 @@ trait PropsGettersSetters
 	}
 
 	/**
-	 * Return `TRUE` if environment is `"dev"`.
+	 * @inheritDocs
 	 * @return bool
 	 */
 	public function IsDevelopment () {
+		/** @var $this \MvcCore\Environment */
 		if ($this->name === NULL) $this->GetName();
 		return $this->values[\MvcCore\IEnvironment::DEVELOPMENT];
 	}
 
 	/**
-	 * Return `TRUE` if environment is `"beta"`.
+	 * @inheritDocs
 	 * @return bool
 	 */
 	public function IsBeta () {
+		/** @var $this \MvcCore\Environment */
 		if ($this->name === NULL) $this->GetName();
 		return $this->values[\MvcCore\IEnvironment::BETA];
 	}
 
 	/**
-	 * Return `TRUE` if environment is `"alpha"`.
+	 * @inheritDocs
 	 * @return bool
 	 */
 	public function IsAlpha () {
+		/** @var $this \MvcCore\Environment */
 		if ($this->name === NULL) $this->GetName();
 		return $this->values[\MvcCore\IEnvironment::ALPHA];
 	}
 
 	/**
-	 * Return `TRUE` if environment is `"production"`.
+	 * @inheritDocs
 	 * @return bool
 	 */
 	public function IsProduction () {
+		/** @var $this \MvcCore\Environment */
 		if ($this->name === NULL) $this->GetName();
 		return $this->values[\MvcCore\IEnvironment::PRODUCTION];
 	}
 
 	/**
-	 * Return `TRUE` if environment has already detected name.
+	 * @inheritDocs
 	 * @return bool
 	 */
 	public function IsDetected () {
+		/** @var $this \MvcCore\Environment */
 		return $this->name !== NULL;
 	}
 
 	/**
-	 * Set environment name as string,
-	 * defined by constants: `\MvcCore\IEnvironment::<NAME>`.
+	 * @inheritDocs
 	 * @param string $name
 	 * @return string
 	 */
 	public function SetName ($name = \MvcCore\IEnvironment::PRODUCTION) {
+		/** @var $this \MvcCore\Environment */
 		$this->name = $name;
 		foreach (static::GetAllNames() as $envName)
 			$this->values[$envName] = FALSE;
@@ -133,11 +138,11 @@ trait PropsGettersSetters
 	}
 
 	/**
-	 * Get environment name as string,
-	 * defined by constants: `\MvcCore\IEnvironment::<NAME>`.
+	 * @inheritDocs
 	 * @return string
 	 */
 	public function GetName () {
+		/** @var $this \MvcCore\Environment */
 		if ($this->name === NULL) {
 			if (static::$detectionBySystemConfig) {
 				$app = self::$app ?: (self::$app = \MvcCore\Application::GetInstance());

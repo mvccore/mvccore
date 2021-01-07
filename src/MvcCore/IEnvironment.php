@@ -37,7 +37,7 @@ interface IEnvironment {
 	 */
 	const BETA = 'beta';
 
-    /**
+	/**
 	 * Development environment.
 	 */
 	const DEVELOPMENT = 'dev';
@@ -65,11 +65,11 @@ interface IEnvironment {
 	/**
 	 * Create empty environment detection instance.
 	 * Detection will be executed ondemand later.
-	 * @return \MvcCore\IEnvironment
+	 * @return \MvcCore\Environment
 	 */
 	public static function CreateInstance ();
 
-    /**
+	/**
 	 * Return `TRUE` if environment is `"dev"`.
 	 * @return bool
 	 */

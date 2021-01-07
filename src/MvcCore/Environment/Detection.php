@@ -13,10 +13,10 @@
 
 namespace MvcCore\Environment;
 
-trait Detection
-{
-    /**
-	 * First environment value setup - by server and client IP address.
+trait Detection {
+
+	/**
+	 * @inheritDocs
 	 * @return string Detected environment string.
 	 */
 	public static function DetectByIps () {
@@ -32,7 +32,7 @@ trait Detection
 	}
 
 	/**
-	 * Environment value detection by system config `[environments]` section record.
+	 * @inheritDocs
 	 * @param array $environmentsSectionData System config environment section data part.
 	 * @return string Detected environment string.
 	 */
@@ -263,7 +263,7 @@ trait Detection
 	 * Method returns `TRUE` to stop environment detection or `FALSE`, if
 	 * environment was not detected by given data.
 	 * @param \stdClass			$data
-	 * @param \MvcCore\IRequest	$req
+	 * @param \MvcCore\Request	$req
 	 * @param string|NULL		$clientIp
 	 * @param string|NULL		$appRoot
 	 * @param string|NULL		$serverHostName

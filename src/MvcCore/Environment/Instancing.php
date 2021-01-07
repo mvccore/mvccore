@@ -13,11 +13,10 @@
 
 namespace MvcCore\Environment;
 
-trait Instancing
-{
+trait Instancing {
+
 	/**
-	 * Create empty environment detection instance.
-	 * Detection will be executed ondemand later.
+	 * @inheritDocs
 	 * @return \MvcCore\Environment
 	 */
 	public static function CreateInstance () {
