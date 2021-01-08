@@ -138,27 +138,26 @@ trait DataMethods {
 				$propertyName = static::{$keyConversionsMethod}(
 					$propertyName, $toolsClass, $caseSensitiveKeysMap
 				);
-			$isNotNull = $dbValue !== NULL;
+			$isNull = $dbValue === NULL;
 			$isPrivate = NULL;
 			$propData = NULL;
-			if ($isNotNull && isset($metaData[$propertyName])) {
+			if (isset($metaData[$propertyName])) {
 				$propData = $metaData[$propertyName];
+				if (!$propData->allowNull && $isNull) continue;
 				$isPrivate = $propData->isPrivate;
-				$value = static::convertToTypes($dbValue, $propData->types);
+				if ($isNull) {
+					$value = $dbValue;
+				} else {
+					$value = static::convertToTypes($dbValue, $propData->types);	
+				}
 			} else {
 				$value = $dbValue;
 			}
 
-			$valueIsNull = $value === NULL;
-			if (
-				!$valueIsNull ||
-				($valueIsNull && $propData !== NULL && $propData->allowNull)
-			) {
-				if ($isPrivate) {
-					$propData->property->setValue($this, $value);
-				} else {
-					$this->{$propertyName} = $value;
-				}
+			if ($isPrivate) {
+				$propData->property->setValue($this, $value);
+			} else {
+				$this->{$propertyName} = $value;
 			}
 
 			if ($completeInitialValues)
