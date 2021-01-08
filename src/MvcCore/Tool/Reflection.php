@@ -128,7 +128,7 @@ trait Reflection {
 		$docsTagsOnly = $preferAttributes === FALSE || PHP_VERSION_ID < 80000;
 		$reflectionObject = new \ReflectionClass($classFullNameOrInstance);
 		foreach ($attrsClassesOrDocsTags as $attrClassOrDocsTag) 
-			$result[$attrClassOrDocsTag] = static::getAttrArg(
+			$result[$attrClassOrDocsTag] = static::getAttrArgsOrPhpDocTagArgs(
 				implode('|', ['cls', $classFullNameOrInstance, $attrClassOrDocsTag]),
 				$reflectionObject, $attrClassOrDocsTag, $attrsOnly, $docsTagsOnly
 			);
@@ -156,7 +156,7 @@ trait Reflection {
 		$reflectionObject = new \ReflectionMethod($classFullNameOrInstance, $methodName);
 		$classMethodFullName = $classFullNameOrInstance . '::' . $methodName;
 		foreach ($attrsClassesOrDocsTags as $attrClassOrDocsTag) 
-			$result[$attrClassOrDocsTag] = static::getAttrArg(
+			$result[$attrClassOrDocsTag] = static::getAttrArgsOrPhpDocTagArgs(
 				implode('|', ['mthd', $classMethodFullName, $attrClassOrDocsTag]),
 				$reflectionObject, $attrClassOrDocsTag, $attrsOnly, $docsTagsOnly
 			);
@@ -184,7 +184,7 @@ trait Reflection {
 		$reflectionObject = new \ReflectionProperty($classFullNameOrInstance, $propertyName);
 		$classPropFullName = $classFullNameOrInstance . '::' . $propertyName;
 		foreach ($attrsClassesOrDocsTags as $attrClassOrDocsTag) 
-			$result[$attrClassOrDocsTag] = static::getAttrArg(
+			$result[$attrClassOrDocsTag] = static::getAttrArgsOrPhpDocTagArgs(
 				implode('|', ['prop', $classPropFullName, $attrClassOrDocsTag]),
 				$reflectionObject, $attrClassOrDocsTag, $attrsOnly, $docsTagsOnly
 			);
@@ -204,24 +204,24 @@ trait Reflection {
 	 * @return array Keys are attributes full class names (or PhpDocs tags names) and values
 	 *				 are attributes constructor arguments (or PhpDocs tags arguments).
 	 */
-	protected static function getAttrArg ($cacheKey, $reflectionObject, $attrClassOrDocsTag, $attrsOnly, $docsTagsOnly) {
+	protected static function getAttrArgsOrPhpDocTagArgs ($cacheKey, $reflectionObject, $attrClassOrDocsTag, $attrsOnly, $docsTagsOnly) {
 		if (array_key_exists($cacheKey, self::$cacheAttrsArgs)) {
 			$result = self::$cacheAttrsArgs[$cacheKey];
 		} else {
 			if ($attrsOnly) {
-				$result = static::getAttrCtorArgs(
+				$result = static::GetAttrCtorArgs(
 					$reflectionObject, $attrClassOrDocsTag
 				);
 			} else if ($docsTagsOnly) {
-				$result = static::getDocsTagArgs(
+				$result = static::GetPhpDocsTagArgs(
 					$reflectionObject, $attrClassOrDocsTag
 				);
 			} else {
-				$result = static::getAttrCtorArgs(
+				$result = static::GetAttrCtorArgs(
 					$reflectionObject, $attrClassOrDocsTag
 				);
 				if ($result === NULL) 
-					$result = static::getDocsTagArgs(
+					$result = static::GetPhpDocsTagArgs(
 						$reflectionObject, $attrClassOrDocsTag
 					);
 			}
@@ -231,12 +231,12 @@ trait Reflection {
 	}
 
 	/**
-	 * Return reflection object attribute constructor arguments.
+	 * @inheritDocs
 	 * @param \ReflectionClass|\ReflectionMethod|\ReflectionProperty $reflectionObject 
 	 * @param string $attributeClassFullName 
 	 * @return array|NULL
 	 */
-	protected static function getAttrCtorArgs ($reflectionObject, $attributeClassFullName) {
+	public static function GetAttrCtorArgs ($reflectionObject, $attributeClassFullName) {
 		$attrs = $reflectionObject->getAttributes($attributeClassFullName);
 		if (count($attrs) > 0) 
 			return $attrs[0]->getArguments();
@@ -244,20 +244,20 @@ trait Reflection {
 	}
 
 	/**
-	 * Return PhpDocs tag arguments.
+	 * @inheritDocs
 	 * @param \ReflectionClass|\ReflectionMethod|\ReflectionProperty $reflectionObject 
 	 * @param string $phpDocsTagName
 	 * @return array|NULL
 	 */
-	protected static function getDocsTagArgs ($reflectionObject, $phpDocsTagName) {
+	public static function GetPhpDocsTagArgs ($reflectionObject, $phpDocsTagName) {
 		$result = NULL;
 		$docComment = $reflectionObject->getDocComment();
 		$tagPos = mb_strpos($docComment, $phpDocsTagName);
 		if ($tagPos !== FALSE) {
 			$result = [];
-			preg_match("#\s{$phpDocsTagName}\s+([^\s]+)\s*#", $docComment, $matches, 0, $tagPos);
+			preg_match("#{$phpDocsTagName}\s+([^\r\n\*@]+)#", $docComment, $matches, 0, $tagPos);
 			if ($matches && count($matches) > 1) 
-				$result = json_decode('['.$matches[1].']');
+				$result = explode(',', $matches[1]);
 		}
 		return $result;
 	}

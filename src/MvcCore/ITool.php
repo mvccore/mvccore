@@ -298,4 +298,20 @@ interface ITool {
 	 *				 are attributes constructor arguments (or PhpDocs tags arguments).
 	 */
 	public static function GetPropertyAttrsArgs ($classFullNameOrInstance, $propertyName, $attrsClassesOrDocsTags, $preferAttributes = NULL);
+
+	/**
+	 * Return reflection object attribute constructor arguments.
+	 * @param \ReflectionClass|\ReflectionMethod|\ReflectionProperty $reflectionObject 
+	 * @param string $attributeClassFullName 
+	 * @return array|NULL
+	 */
+	public static function GetAttrCtorArgs ($reflectionObject, $attributeClassFullName);
+
+	/**
+	 * Return PhpDocs tag arguments, arguments has to be defined without space, separated by comma.
+	 * @param \ReflectionClass|\ReflectionMethod|\ReflectionProperty $reflectionObject 
+	 * @param string $phpDocsTagName
+	 * @return array|NULL
+	 */
+	public static function GetPhpDocsTagArgs ($reflectionObject, $phpDocsTagName);
 }
