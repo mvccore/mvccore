@@ -28,7 +28,7 @@ trait Comparing {
 	 * @param mixed $value2 
 	 * @return bool
 	 */
-	protected static function compareValues ($value1, $value2) {
+	protected static function isEqual ($value1, $value2) {
 		$valuasAreTheSame = FALSE;
 		$value1IsNull = $value1 === NULL;
 		$value2IsNull = $value2 === NULL;

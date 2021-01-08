@@ -67,7 +67,8 @@ trait Converters {
 		$conversionResult = FALSE;
 		$typeStr = trim($typeStr, '\\');
 		if ($typeStr == 'DateTime' && !($rawValue instanceof \DateTime)) {
-			$dateTime = static::convertToDateTime($rawValue);
+			static $_dateTimeformatMask = 'Y-m-d H:i:s';
+			$dateTime = static::convertToDateTime($rawValue, [$_dateTimeformatMask]);
 			if ($dateTime instanceof \DateTime) {
 				$rawValue = $dateTime;
 				$conversionResult = TRUE;
@@ -83,10 +84,11 @@ trait Converters {
 	/**
 	 * Convert int, float or string value into \DateTime.
 	 * @param int|float|string|NULL $rawValue 
-	 * @param string $dateTimeFormat 
+	 * @param \string[] $formatArgs 
 	 * @return \DateTime|bool
 	 */
-	protected static function convertToDateTime ($rawValue, $dateTimeFormat = 'Y-m-d H:i:s') {
+	protected static function convertToDateTime ($rawValue, $formatArgs) {
+		$dateTimeFormat = $formatArgs[0];
 		if (is_numeric($rawValue)) {
 			$rawValueStr = str_replace(['+','-','.'], '', (string) $rawValue);
 			$secData = mb_substr($rawValueStr, 0, 10);
@@ -131,9 +133,12 @@ trait Converters {
 		} else if ($count === 1) {
 			return current($flagsAndConversionMethods);
 		} else {
+			$nextFreeFlag = static::PROPS_CONVERT_CASE_INSENSITIVE * 2;
 			throw new \InvalidArgumentException(
-				"Database column name to property conversion (or back) could NOT be defined by multiple conversion flags. ".
-				"Use single conversion flag or any custom flag (equal o higher than 4096) to custom conversion method instead."
+				"Database column name to property conversion (or back) could NOT ".
+				"be defined by multiple conversion flags. Use single conversion ".
+				"flag or any custom flag (equal o higher than {$nextFreeFlag}) ".
+				"to custom conversion method instead."
 			);
 		}
 	}

@@ -17,10 +17,12 @@ trait DataMethods {
 
 	/**
 	 * @inheritDocs
-	 * @param int $propsFlags All properties flags are available except flags 
-	 *						  `\MvcCore\IModel::PROPS_INITIAL_VALUES` and 
-	 *						  `\MvcCore\IModel::PROPS_CONVERT_CASE_INSENSITIVE`.
-	 * @param bool $getNullValues If `TRUE`, include also values with `NULL`s, default - `FALSE`.
+	 * @param int $propsFlags		All properties flags are available except flags: 
+	 *								- `\MvcCore\IModel::PROPS_INITIAL_VALUES`,
+	 *								- `\MvcCore\IModel::PROPS_CONVERT_CASE_INSENSITIVE`,
+	 *								- `\MvcCore\IModel::PROPS_NAMES_BY_*`.
+	 * @param bool $getNullValues	If `TRUE`, include also values with `NULL`s, 
+	 *								`FALSE` by default.
 	 * @throws \InvalidArgumentException
 	 * @return array
 	 */
@@ -37,11 +39,11 @@ trait DataMethods {
 		$phpWithTypes = PHP_VERSION_ID >= 70400;
 		$keyConversionsMethod = NULL;
 		$caseSensitiveKeysMap = '';
-		$stringKeyConversions = $propsFlags > 31;
+		$stringKeyConversions = $propsFlags > 127;
 		if ($stringKeyConversions) {
 			$keyConversionsMethod = static::getKeyConversionMethod($propsFlags);
 			$toolsClass = \MvcCore\Application::GetInstance()->GetToolClass();
-			if ($propsFlags > 2047)
+			if ($propsFlags > 8191)
 				$caseSensitiveKeysMap = ','.implode(',', array_keys($metaData)).',';
 		};
 
@@ -124,11 +126,11 @@ trait DataMethods {
 
 		$keyConversionsMethod = NULL;
 		$caseSensitiveKeysMap = '';
-		$stringKeyConversions = $propsFlags > 31;
+		$stringKeyConversions = $propsFlags > 127;
 		if ($stringKeyConversions) {
 			$keyConversionsMethod = static::getKeyConversionMethod($propsFlags);
 			$toolsClass = \MvcCore\Application::GetInstance()->GetToolClass();
-			if ($propsFlags > 2047)
+			if ($propsFlags > 8191)
 				$caseSensitiveKeysMap = ','.implode(',', array_keys($metaData)).',';
 		};
 
@@ -187,11 +189,11 @@ trait DataMethods {
 		$phpWithTypes = PHP_VERSION_ID >= 70400;
 		$keyConversionsMethod = NULL;
 		$caseSensitiveKeysMap = '';
-		$stringKeyConversions = $propsFlags > 31;
+		$stringKeyConversions = $propsFlags > 127;
 		if ($stringKeyConversions) {
 			$keyConversionsMethod = static::getKeyConversionMethod($propsFlags);
 			$toolsClass = \MvcCore\Application::GetInstance()->GetToolClass();
-			if ($propsFlags > 2047)
+			if ($propsFlags > 8191)
 				$caseSensitiveKeysMap = ','.implode(',', array_keys($metaData)).',';
 		};
 
@@ -240,7 +242,7 @@ trait DataMethods {
 				$currentValue = $this->{$propertyName};
 			}
 
-			if (static::compareValues($initialValue, $currentValue)) continue;
+			if (static::isEqual($initialValue, $currentValue)) continue;
 			
 			$resultKey = $propertyName;
 			if ($stringKeyConversions) 

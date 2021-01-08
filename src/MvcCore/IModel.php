@@ -59,53 +59,70 @@ interface IModel {
 
 
 	/**
+	 * Get result array with keys by properties names from code
+	 * (this flag is not used in core, you have to install any 
+	 * extension by `composer require mvccore/ext-database-*`).
+	 * @var int
+	 */
+	const PROPS_NAMES_BY_CODE						= 32;
+
+	/**
+	 * Get result array with keys by columns names from database
+	 * (this flag is not used in core, you have to install any 
+	 * extension by `composer require mvccore/ext-database-*`).
+	 * @var int
+	 */
+	const PROPS_NAMES_BY_DATABASE					= 64;
+
+
+	/**
 	 * Pass throught values with array keys conversion from underscored case
 	 * into pascal case.
 	 * @var int
 	 */
-	const PROPS_CONVERT_UNDERSCORES_TO_PASCALCASE	= 32;
+	const PROPS_CONVERT_UNDERSCORES_TO_PASCALCASE	= 128;
 
 	/**
 	 * Pass throught values with array keys conversion from underscored case
 	 * into camel case.
 	 * @var int
 	 */
-	const PROPS_CONVERT_UNDERSCORES_TO_CAMELCASE	= 64;
+	const PROPS_CONVERT_UNDERSCORES_TO_CAMELCASE	= 256;
 
 	/**
 	 * Pass throught values with array keys conversion from pascal case
 	 * into underscored case.
 	 * @var int
 	 */
-	const PROPS_CONVERT_PASCALCASE_TO_UNDERSCORES	= 128;
+	const PROPS_CONVERT_PASCALCASE_TO_UNDERSCORES	= 512;
 
 	/**
 	 * Pass throught values with array keys conversion from pascal case
 	 * into camel case.
 	 * @var int
 	 */
-	const PROPS_CONVERT_PASCALCASE_TO_CAMELCASE		= 256;
+	const PROPS_CONVERT_PASCALCASE_TO_CAMELCASE		= 1024;
 
 	/**
 	 * Pass throught values with array keys conversion from camel case
 	 * into underscored case.
 	 * @var int
 	 */
-	const PROPS_CONVERT_CAMELCASE_TO_UNDERSCORES	= 512;
+	const PROPS_CONVERT_CAMELCASE_TO_UNDERSCORES	= 2048;
 
 	/**
 	 * Pass throught values with array keys conversion from camel case
 	 * into pascal case.
 	 * @var int
 	 */
-	const PROPS_CONVERT_CAMELCASE_TO_PASCALCASE		= 1024;
+	const PROPS_CONVERT_CAMELCASE_TO_PASCALCASE		= 4096;
 	
 
 	/**
 	 * Pass throught values with array keys case insensitive.
 	 * @var int
 	 */
-	const PROPS_CONVERT_CASE_INSENSITIVE			= 2048;
+	const PROPS_CONVERT_CASE_INSENSITIVE			= 8192;
 
 
 	/**
