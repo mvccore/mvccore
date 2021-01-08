@@ -66,26 +66,9 @@ trait Converters {
 	protected static function convertToType ($rawValue, $typeStr) {
 		$conversionResult = FALSE;
 		$typeStr = trim($typeStr, '\\');
-		if ($typeStr == 'DateTime') {
-			$dateTimeFormat = 'Y-m-d H:i:s';
-			if (is_numeric($rawValue)) {
-				$rawValueStr = str_replace(['+','-','.'], '', strval($rawValue));
-				$secData = mb_substr($rawValueStr, 0, 10);
-				$dateTimeStr = date($dateTimeFormat, intval($secData));
-				if (strlen($rawValueStr) > 10)
-					$dateTimeStr .= '.' . mb_substr($rawValueStr, 10);
-			} else {
-				$dateTimeStr = strval($rawValue);
-				if (strpos($dateTimeStr, '-') === FALSE) {
-					$dateTimeFormat = substr($dateTimeFormat, 6);
-				} else if (strpos($dateTimeStr, ':') === FALSE) {
-					$dateTimeFormat = substr($dateTimeFormat, 0, 5);
-				}
-			}
-			if (strpos($dateTimeStr, '.') !== FALSE) 
-				$dateTimeFormat .= '.u';
-			$dateTime = date_create_from_format($dateTimeFormat, $dateTimeStr);
-			if ($dateTime !== FALSE) {
+		if ($typeStr == 'DateTime' && !($rawValue instanceof \DateTime)) {
+			$dateTime = static::convertToDateTime($rawValue);
+			if ($dateTime instanceof \DateTime) {
 				$rawValue = $dateTime;
 				$conversionResult = TRUE;
 			}
@@ -95,6 +78,32 @@ trait Converters {
 				$conversionResult = TRUE;
 		}
 		return [$conversionResult, $rawValue];
+	}
+
+	/**
+	 * Convert int, float or string value into \DateTime.
+	 * @param int|float|string|NULL $rawValue 
+	 * @param string $dateTimeFormat 
+	 * @return \DateTime|bool
+	 */
+	protected static function convertToDateTime ($rawValue, $dateTimeFormat = 'Y-m-d H:i:s') {
+		if (is_numeric($rawValue)) {
+			$rawValueStr = str_replace(['+','-','.'], '', (string) $rawValue);
+			$secData = mb_substr($rawValueStr, 0, 10);
+			$dateTimeStr = date($dateTimeFormat, intval($secData));
+			if (strlen($rawValueStr) > 10)
+				$dateTimeStr .= '.' . mb_substr($rawValueStr, 10);
+		} else {
+			$dateTimeStr = (string) $rawValue;
+			if (strpos($dateTimeStr, '-') === FALSE) {
+				$dateTimeFormat = substr($dateTimeFormat, 6);
+			} else if (strpos($dateTimeStr, ':') === FALSE) {
+				$dateTimeFormat = substr($dateTimeFormat, 0, 5);
+			}
+		}
+		if (strpos($dateTimeStr, '.') !== FALSE) 
+			$dateTimeFormat .= '.u';
+		return \date_create_from_format($dateTimeFormat, $dateTimeStr);
 	}
 
 	/**

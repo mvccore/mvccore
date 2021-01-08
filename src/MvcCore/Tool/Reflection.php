@@ -256,8 +256,10 @@ trait Reflection {
 		if ($tagPos !== FALSE) {
 			$result = [];
 			preg_match("#{$phpDocsTagName}\s+([^\r\n\*@]+)#", $docComment, $matches, 0, $tagPos);
-			if ($matches && count($matches) > 1) 
+			if ($matches && count($matches) > 1) {
 				$result = explode(',', $matches[1]);
+				$result = array_map('trim', $result);
+			}
 		}
 		return $result;
 	}
