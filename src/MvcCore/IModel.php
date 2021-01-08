@@ -224,6 +224,7 @@ interface IModel {
 	 *						  `\MvcCore\IModel::PROPS_INITIAL_VALUES` and 
 	 *						  `\MvcCore\IModel::PROPS_CONVERT_CASE_INSENSITIVE`.
 	 * @param bool $getNullValues If `TRUE`, include also values with `NULL`s, default - `FALSE`.
+	 * @throws \InvalidArgumentException
 	 * @return array
 	 */
 	public function GetValues ($propsFlags = 0, $getNullValues = FALSE);
@@ -236,6 +237,7 @@ interface IModel {
 	 * Do not set any `$data` items, which are not declared in `$this` context.
 	 * @param array $data Raw row data from database.
 	 * @param int $propsFlags All properties flags are available.
+	 * @throws \InvalidArgumentException
 	 * @return \MvcCore\Model Current `$this` context.
 	 */
 	public function SetUp ($data = [], $propsFlags = 0);
@@ -248,6 +250,7 @@ interface IModel {
 	 * @param int $propsFlags All properties flags are available except flags 
 	 *						  `\MvcCore\IModel::PROPS_INITIAL_VALUES` and 
 	 *						  `\MvcCore\IModel::PROPS_CONVERT_CASE_INSENSITIVE`.
+	 * @throws \InvalidArgumentException
 	 * @return array 
 	 */
 	public function GetTouched ($propsFlags = 0);

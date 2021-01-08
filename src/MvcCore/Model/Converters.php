@@ -16,6 +16,48 @@ namespace MvcCore\Model;
 trait Converters {
 
 	/**
+	 * Try to convert raw database value into first type in target types.
+	 * @param mixed $rawValue
+	 * @param \string[] $typesString
+	 * @return mixed Converted result.
+	 */
+	protected static function convertToTypes ($rawValue, $typesString) {
+		$targetTypeValue = NULL;
+		$value = $rawValue;
+		foreach ($typesString as $typeString) {
+			if (substr($typeString, -2, 2) === '[]') {
+				if (!is_array($value)) {
+					$value = trim(strval($rawValue));
+					$value = $value === '' ? [] : explode(',', $value);
+				}
+				$arrayItemTypeString = substr($typeString, 0, strlen($typeString) - 2);
+				$targetTypeValue = [];
+				$conversionResult = TRUE;
+				foreach ($value as $key => $item) {
+					list(
+						$conversionResultLocal, $targetTypeValueLocal
+					) = static::convertToType($item, $arrayItemTypeString);
+					if ($conversionResultLocal) {
+						$targetTypeValue[$key] = $targetTypeValueLocal;
+					} else {
+						$conversionResult = FALSE;
+						break;
+					}
+				}
+			} else {
+				list(
+					$conversionResult, $targetTypeValue
+				) = static::convertToType($rawValue, $typeString);
+			}
+			if ($conversionResult) {
+				$value = $targetTypeValue;
+				break;
+			}
+		}
+		return $value;
+	}
+
+	/**
 	 * Try to convert database value into target type.
 	 * @param mixed $rawValue
 	 * @param string $typeStr
@@ -48,30 +90,43 @@ trait Converters {
 				$conversionResult = TRUE;
 			}
 		} else {
-			if (settype($rawValue, $typeStr)) $conversionResult = TRUE;
+			// bool, int, float, string, array, object, null:
+			if (settype($rawValue, $typeStr)) 
+				$conversionResult = TRUE;
 		}
 		return [$conversionResult, $rawValue];
 	}
 
 	/**
-	 * Return protected static key conversion methods
-	 * array by given conversion flag.
+	 * Return protected static conversion method by given conversion flag
+	 * to convert database column name into property name or back.
 	 * @param int $keysConversionFlags
-	 * @return \string[]
+	 * @throws \InvalidArgumentException
+	 * @return string|NULL
 	 */
-	protected static function getKeyConversionMethods ($keysConversionFlags = \MvcCore\IModel::PROPS_CONVERT_CASE_SENSITIVE) {
+	protected static function getKeyConversionMethod ($keysConversionFlags = 0) {
 		$flagsAndConversionMethods = [
+			0																		=> NULL,
 			$keysConversionFlags & static::PROPS_CONVERT_UNDERSCORES_TO_PASCALCASE	=> 'propsConvertUnderscoresToPascalcase',
 			$keysConversionFlags & static::PROPS_CONVERT_UNDERSCORES_TO_CAMELCASE	=> 'propsConvertUnderscoresToCamelcase',
 			$keysConversionFlags & static::PROPS_CONVERT_PASCALCASE_TO_UNDERSCORES	=> 'propsConvertPascalcaseToUnderscores',
 			$keysConversionFlags & static::PROPS_CONVERT_PASCALCASE_TO_CAMELCASE	=> 'propsConvertPascalcaseToCamelcase',
 			$keysConversionFlags & static::PROPS_CONVERT_CAMELCASE_TO_UNDERSCORES	=> 'propsConvertCamelcaseToUnderscores',
 			$keysConversionFlags & static::PROPS_CONVERT_CAMELCASE_TO_PASCALCASE	=> 'propsConvertCamelcaseToPascalcase',
-			/*$keysConversionFlags & static::PROPS_CONVERT_CASE_SENSITIVE			=> NULL,*/
 			$keysConversionFlags & static::PROPS_CONVERT_CASE_INSENSITIVE			=> 'propsConvertCaseInsensitive',
 		];
 		unset($flagsAndConversionMethods[0]);
-		return $flagsAndConversionMethods;
+		$count = count($flagsAndConversionMethods);
+		if ($count === 0) {
+			return NULL;
+		} else if ($count === 1) {
+			return current($flagsAndConversionMethods);
+		} else {
+			throw new \InvalidArgumentException(
+				"Database column name to property conversion (or back) could NOT be defined by multiple conversion flags. ".
+				"Use single conversion flag or any custom flag (equal o higher than 4096) to custom conversion method instead."
+			);
+		}
 	}
 
 	/**

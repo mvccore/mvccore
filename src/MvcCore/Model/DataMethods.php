@@ -21,23 +21,25 @@ trait DataMethods {
 	 *						  `\MvcCore\IModel::PROPS_INITIAL_VALUES` and 
 	 *						  `\MvcCore\IModel::PROPS_CONVERT_CASE_INSENSITIVE`.
 	 * @param bool $getNullValues If `TRUE`, include also values with `NULL`s, default - `FALSE`.
+	 * @throws \InvalidArgumentException
 	 * @return array
 	 */
 	public function GetValues ($propsFlags = 0, $getNullValues = FALSE) {
 		/**
 		 * @var $this \MvcCore\Model
-		 * @var $prop \ReflectionProperty
+		 * @var $propData \stdClass
 		 */
 		if ($propsFlags === 0) 
 			$propsFlags = \MvcCore\IModel::PROPS_INHERIT | \MvcCore\IModel::PROPS_PROTECTED;
 		
-		$metaData = static::__getPropsMetaData($propsFlags);
+		$metaData = static::_getMetaData($propsFlags);
 		
 		$phpWithTypes = PHP_VERSION_ID >= 70400;
-		$keyConversionsMethods = [];
+		$keyConversionsMethod = NULL;
 		$caseSensitiveKeysMap = '';
-		if ($propsFlags > 31) {
-			$keyConversionsMethods = static::getKeyConversionMethods($propsFlags);
+		$stringKeyConversions = $propsFlags > 31;
+		if ($stringKeyConversions) {
+			$keyConversionsMethod = static::getKeyConversionMethod($propsFlags);
 			$toolsClass = \MvcCore\Application::GetInstance()->GetToolClass();
 			if ($propsFlags > 2047)
 				$caseSensitiveKeysMap = ','.implode(',', array_keys($metaData)).',';
@@ -46,11 +48,9 @@ trait DataMethods {
 		$result = [];
 		
 		foreach ($metaData as $propertyName => $propData) {
-			list(/*$types*/, $prop, $isPrivate, $isPublic) = $propData;
-
 			$propValue = NULL;
 
-			if ($isPublic) {
+			if ($propData->isPublic) {
 				/**
 				 * If property is public, it's ok to ask only by
 				 * `isset($this->{$propertyName})`, because then it works
@@ -60,7 +60,7 @@ trait DataMethods {
 				 */
 				if (isset($this->{$propertyName})) 
 					$propValue = $this->{$propertyName};
-			} else if ($isPrivate) {
+			} else if ($propData->isPrivate) {
 				/**
 				 * If property is private, there is only way to get
 				 * it's value by reflection property object. But for
@@ -69,10 +69,10 @@ trait DataMethods {
 				 * calling `$prop->getValue($this);`.
 				 */
 				if ($phpWithTypes) {
-					if ($prop->isInitialized($this))
-						$propValue = $prop->getValue($this);
+					if ($propData->property->isInitialized($this))
+						$propValue = $propData->property->getValue($this);
 				} else {
-					$propValue = $prop->getValue($this);
+					$propValue = $propData->property->getValue($this);
 				}
 			} else if (
 				/**
@@ -86,19 +86,18 @@ trait DataMethods {
 			) {
 				$propValue = $this->{$propertyName};
 			}
-			
+
 			if (!$getNullValues && $propValue === NULL)
 				continue;
-			
+
 			$resultKey = $propertyName;
-			foreach ($keyConversionsMethods as $keyConversionsMethod)
+			if ($stringKeyConversions) 
 				$resultKey = static::{$keyConversionsMethod}(
 					$resultKey, $toolsClass, $caseSensitiveKeysMap
 				);
-			
+
 			$result[$resultKey] = $propValue;
 		}
-
 		return $result;
 	}
 
@@ -106,13 +105,13 @@ trait DataMethods {
 	 * @inheritDocs
 	 * @param array $data Raw row data from database.
 	 * @param int $propsFlags All properties flags are available.
+	 * @throws \InvalidArgumentException
 	 * @return \MvcCore\Model Current `$this` context.
 	 */
 	public function SetUp ($data = [], $propsFlags = 0) {
 		/**
 		 * @var $this \MvcCore\Model
-		 * @var $typeStrings \string[]
-		 * @var $prop \ReflectionProperty
+		 * @var $propData \stdClass
 		 */
 		if ($propsFlags === 0) 
 			$propsFlags = \MvcCore\IModel::PROPS_INHERIT | \MvcCore\IModel::PROPS_PROTECTED;
@@ -121,12 +120,13 @@ trait DataMethods {
 		if ($completeInitialValues) 
 			$propsFlags ^= \MvcCore\IModel::PROPS_INITIAL_VALUES;
 
-		$metaData = static::__getPropsMetaData($propsFlags);
+		$metaData = static::_getMetaData($propsFlags);
 
-		$keyConversionsMethods = [];
+		$keyConversionsMethod = NULL;
 		$caseSensitiveKeysMap = '';
-		if ($propsFlags > 31) {
-			$keyConversionsMethods = static::getKeyConversionMethods($propsFlags);
+		$stringKeyConversions = $propsFlags > 31;
+		if ($stringKeyConversions) {
+			$keyConversionsMethod = static::getKeyConversionMethod($propsFlags);
 			$toolsClass = \MvcCore\Application::GetInstance()->GetToolClass();
 			if ($propsFlags > 2047)
 				$caseSensitiveKeysMap = ','.implode(',', array_keys($metaData)).',';
@@ -134,55 +134,31 @@ trait DataMethods {
 
 		foreach ($data as $dbKey => $dbValue) {
 			$propertyName = $dbKey;
-			foreach ($keyConversionsMethods as $keyConversionsMethod)
+			if ($stringKeyConversions) 
 				$propertyName = static::{$keyConversionsMethod}(
 					$propertyName, $toolsClass, $caseSensitiveKeysMap
 				);
 			$isNotNull = $dbValue !== NULL;
 			$isPrivate = NULL;
+			$propData = NULL;
 			if ($isNotNull && isset($metaData[$propertyName])) {
-				list ($typeStrings, $prop, $isPrivate) = $metaData[$propertyName];
-				$targetTypeValue = NULL;
-				foreach ($typeStrings as $typeString) {
-					if (substr($typeString, -2, 2) === '[]') {
-						if (!is_array($value)) {
-							$value = trim(strval($dbValue));
-							$value = $value === '' ? [] : explode(',', $value);
-						}
-						$arrayItemTypeString = substr($typeString, 0, strlen($typeString) - 2);
-						$targetTypeValue = [];
-						$conversionResult = TRUE;
-						foreach ($value as $key => $item) {
-							list(
-								$conversionResultLocal, $targetTypeValueLocal
-							) = static::convertToType($item, $arrayItemTypeString);
-							if ($conversionResultLocal) {
-								$targetTypeValue[$key] = $targetTypeValueLocal;
-							} else {
-								$conversionResult = FALSE;
-								break;
-							}
-						}
-					} else {
-						list(
-							$conversionResult, $targetTypeValue
-						) = static::convertToType($dbValue, $typeString);
-					}
-					if ($conversionResult) {
-						$value = $targetTypeValue;
-						break;
-					} else {
-						$value = $dbValue;
-					}
-				}
+				$propData = $metaData[$propertyName];
+				$isPrivate = $propData->isPrivate;
+				$value = static::convertToTypes($dbValue, $propData->types);
 			} else {
 				$value = $dbValue;
 			}
 
-			if ($isPrivate) {
-				$prop->setValue($this, $value);
-			} else {
-				$this->{$propertyName} = $value;
+			$valueIsNull = $value === NULL;
+			if (
+				!$valueIsNull ||
+				($valueIsNull && $propData !== NULL && $propData->allowNull)
+			) {
+				if ($isPrivate) {
+					$propData->property->setValue($this, $value);
+				} else {
+					$this->{$propertyName} = $value;
+				}
 			}
 
 			if ($completeInitialValues)
@@ -196,23 +172,25 @@ trait DataMethods {
 	 * @param int $propsFlags All properties flags are available except flags 
 	 *						  `\MvcCore\IModel::PROPS_INITIAL_VALUES` and 
 	 *						  `\MvcCore\IModel::PROPS_CONVERT_CASE_INSENSITIVE`.
+	 * @throws \InvalidArgumentException
 	 * @return array 
 	 */
 	public function GetTouched ($propsFlags = 0) {
 		/**
 		 * @var $this \MvcCore\Model
-		 * @var $prop \ReflectionProperty
+		 * @var $propData \stdClass
 		 */
 		if ($propsFlags === 0) 
 			$propsFlags = \MvcCore\IModel::PROPS_INHERIT | \MvcCore\IModel::PROPS_PROTECTED;
 		
-		$metaData = static::__getPropsMetaData($propsFlags);
+		$metaData = static::_getMetaData($propsFlags);
 		
 		$phpWithTypes = PHP_VERSION_ID >= 70400;
-		$keyConversionsMethods = [];
+		$keyConversionsMethod = NULL;
 		$caseSensitiveKeysMap = '';
-		if ($propsFlags > 31) {
-			$keyConversionsMethods = static::getKeyConversionMethods($propsFlags);
+		$stringKeyConversions = $propsFlags > 31;
+		if ($stringKeyConversions) {
+			$keyConversionsMethod = static::getKeyConversionMethod($propsFlags);
 			$toolsClass = \MvcCore\Application::GetInstance()->GetToolClass();
 			if ($propsFlags > 2047)
 				$caseSensitiveKeysMap = ','.implode(',', array_keys($metaData)).',';
@@ -221,14 +199,12 @@ trait DataMethods {
 		$result = [];
 
 		foreach ($metaData as $propertyName => $propData) {
-			list (/*$types*/, $prop, $isPrivate, $isPublic) = $propData;
-
 			$initialValue = NULL;
 			$currentValue = NULL;
 			if (array_key_exists($propertyName, $this->initialValues))
 				$initialValue = $this->initialValues[$propertyName];
 
-			if ($isPublic) {
+			if ($propData->isPublic) {
 				/**
 				 * If property is public, it's ok to ask only by
 				 * `isset($this->{$propertyName})`, because then it works
@@ -238,7 +214,7 @@ trait DataMethods {
 				 */
 				if (isset($this->{$propertyName})) 
 					$currentValue = $this->{$propertyName};
-			} else if ($isPrivate) {
+			} else if ($propData->isPrivate) {
 				/**
 				 * If property is private, there is only way to get
 				 * it's value by reflection property object. But for
@@ -247,10 +223,10 @@ trait DataMethods {
 				 * calling `$prop->getValue($this);`.
 				 */
 				if ($phpWithTypes) {
-					if ($prop->isInitialized($this))
-						$currentValue = $prop->getValue($this);
+					if ($propData->property->isInitialized($this))
+						$currentValue = $propData->property->getValue($this);
 				} else {
-					$currentValue = $prop->getValue($this);
+					$currentValue = $propData->property->getValue($this);
 				}
 			} else if (
 				/**
@@ -268,7 +244,7 @@ trait DataMethods {
 			if (static::compareValues($initialValue, $currentValue)) continue;
 			
 			$resultKey = $propertyName;
-			foreach ($keyConversionsMethods as $keyConversionsMethod)
+			if ($stringKeyConversions) 
 				$resultKey = static::{$keyConversionsMethod}(
 					$resultKey, $toolsClass, $caseSensitiveKeysMap
 				);
