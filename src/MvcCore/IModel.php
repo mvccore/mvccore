@@ -237,10 +237,12 @@ interface IModel {
 	/**
 	 * Collect all model class properties values into array.
 	 * Result keys could be converted by any conversion flag.
-	 * @param int $propsFlags All properties flags are available except flags 
-	 *						  `\MvcCore\IModel::PROPS_INITIAL_VALUES` and 
-	 *						  `\MvcCore\IModel::PROPS_CONVERT_CASE_INSENSITIVE`.
-	 * @param bool $getNullValues If `TRUE`, include also values with `NULL`s, default - `FALSE`.
+	 * @param int $propsFlags		All properties flags are available except flags: 
+	 *								- `\MvcCore\IModel::PROPS_INITIAL_VALUES`,
+	 *								- `\MvcCore\IModel::PROPS_CONVERT_CASE_INSENSITIVE`,
+	 *								- `\MvcCore\IModel::PROPS_NAMES_BY_*`.
+	 * @param bool $getNullValues	If `TRUE`, include also values with `NULL`s, 
+	 *								`FALSE` by default.
 	 * @throws \InvalidArgumentException
 	 * @return array
 	 */
@@ -251,7 +253,8 @@ interface IModel {
 	 * as typed properties by PHP types (or by PhpDocs comments in PHP < 7.4) 
 	 * as properties with the same names as `$data` array keys or converted
 	 * by properties flags. Case sensitivelly by default.
-	 * Do not set any `$data` items, which are not declared in `$this` context.
+	 * Any `$data` items, which are not declared in `$this` context are 
+	 * initialized by  `__set()` method.
 	 * @param array $data Raw row data from database.
 	 * @param int $propsFlags All properties flags are available.
 	 * @throws \InvalidArgumentException
@@ -261,12 +264,13 @@ interface IModel {
 
 	/**
 	 * Get touched properties from `$this` context.
-	 * Touched properties are properties with different value than key 
-	 * in `$this->initialValues` (initial array completed in `SetUp()` method).
-	 * Result keys could be converted by any conversion flag.
-	 * @param int $propsFlags All properties flags are available except flags 
-	 *						  `\MvcCore\IModel::PROPS_INITIAL_VALUES` and 
-	 *						  `\MvcCore\IModel::PROPS_CONVERT_CASE_INSENSITIVE`.
+	 * Touched properties are properties with different value than value under 
+	 * property name key in `$this->initialValues` (initial array is optionally 
+	 * completed in `SetUp()` method). Result keys could be converted by any 
+	 * conversion flag.
+	 * @param int $propsFlags	All properties flags are available except flags: 
+	 *							- `\MvcCore\IModel::PROPS_INITIAL_VALUES`,
+	 *							- `\MvcCore\IModel::PROPS_CONVERT_CASE_INSENSITIVE`.
 	 * @throws \InvalidArgumentException
 	 * @return array 
 	 */

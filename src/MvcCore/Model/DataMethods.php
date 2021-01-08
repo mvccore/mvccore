@@ -170,9 +170,9 @@ trait DataMethods {
 
 	/**
 	 * @inheritDocs
-	 * @param int $propsFlags All properties flags are available except flags 
-	 *						  `\MvcCore\IModel::PROPS_INITIAL_VALUES` and 
-	 *						  `\MvcCore\IModel::PROPS_CONVERT_CASE_INSENSITIVE`.
+	 * @param int $propsFlags	All properties flags are available except flags: 
+	 *							- `\MvcCore\IModel::PROPS_INITIAL_VALUES`,
+	 *							- `\MvcCore\IModel::PROPS_CONVERT_CASE_INSENSITIVE`.
 	 * @throws \InvalidArgumentException
 	 * @return array 
 	 */
