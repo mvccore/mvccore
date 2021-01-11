@@ -47,8 +47,27 @@ trait MetaData {
 		if (isset($__propsMetaData[$cacheFlags])) 
 			return $__propsMetaData[$cacheFlags];
 		
-		$result = [];
+		$calledClassFullName = get_called_class();
 
+		$metaDataItem = static::_parseMetaData(
+			$calledClassFullName, $accessModFlags, $inclInherit
+		);
+		
+		$__propsMetaData[$cacheFlags] = $metaDataItem;
+		
+		return $metaDataItem;
+	}
+
+	/**
+	 * Parse called class metadata with reflection.
+	 * @param string $calledClassFullName 
+	 * @param int $accessModFlags 
+	 * @param bool $inclInherit 
+	 * @throws \InvalidArgumentException 
+	 * @return array
+	 */
+	private static function _parseMetaData ($calledClassFullName, $accessModFlags, $inclInherit) {
+		$metaDataItem = [];
 		$phpWithTypes = PHP_VERSION_ID >= 70400;
 		$calledClassFullName = get_called_class();
 		$props = (new \ReflectionClass($calledClassFullName))
@@ -60,12 +79,9 @@ trait MetaData {
 				(!$inclInherit && $prop->class !== $calledClassFullName) ||
 				isset(static::$protectedProperties[$prop->name])
 			) continue;
-			$result[$prop->name] = static::_getMetaDataProp($prop, $phpWithTypes);
+			$metaDataItem[$prop->name] = static::_getMetaDataProp($prop, $phpWithTypes);
 		}
-		
-		$__propsMetaData[$cacheFlags] = $result;
-		
-		return $result;
+		return $metaDataItem;
 	}
 
 	/**
