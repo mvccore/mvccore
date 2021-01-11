@@ -23,7 +23,7 @@ namespace MvcCore;
  * - Meta data about properties parsing and caching.
  * - Magic methods handling.
  */
-interface IModel {
+interface IModel extends \MvcCore\Model\IConstants {
 	
 	/**
 	 * Returns (or creates if necessary) model resource instance.

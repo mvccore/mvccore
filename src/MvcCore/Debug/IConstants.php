@@ -11,19 +11,19 @@
  * @license  https://mvccore.github.io/docs/mvccore/5.0.0/LICENCE.md
  */
 
-namespace MvcCore;
+namespace MvcCore\Debug;
 
-/**
- * @inheritDocs
- */
-class Model implements \MvcCore\IModel {
-	use \MvcCore\Model\Props;
-	use \MvcCore\Model\Connection;
-	use \MvcCore\Model\Config;
-	use \MvcCore\Model\Resource;
-	use \MvcCore\Model\DataMethods;
-	use \MvcCore\Model\Comparing;
-	use \MvcCore\Model\MetaData;
-	use \MvcCore\Model\Converters;
-	use \MvcCore\Model\MagicMethods;
+interface IConstants {
+
+	/**
+	 * Logging levels and file names.
+	 */
+	const
+		DEBUG = 'debug',
+		INFO = 'info',
+		WARNING = 'warning',
+		ERROR = 'error',
+		EXCEPTION = 'exception',
+		CRITICAL = 'critical',
+		JAVASCRIPT = 'javascript';
 }

@@ -20,37 +20,7 @@ namespace MvcCore;
  * - Sending response at application terminate process by `\MvcCore\IResponse::Send();`.
  * - Completing MvcCore performance header at response end.
  */
-interface IResponse {
-
-	/**
-	 * HTTP response code 200 for OK response;
-	 */
-	const OK = 200;
-
-	/**
-	 * HTTP response code 301 for moved permanently redirection;
-	 */
-	const MOVED_PERMANENTLY = 301;
-
-	/**
-	 * HTTP response code 303 for see other redirection;
-	 */
-	const SEE_OTHER = 303;
-
-	/**
-	 * HTTP response code 404 for not found error;
-	 */
-	const NOT_FOUND = 404;
-
-	/**
-	 * HTTP response code 500 for internal server error;
-	 */
-	const INTERNAL_SERVER_ERROR = 500;
-
-	/**
-	 * MvcCore internal header always sent in every response.
-	 */
-	const HEADER_X_MVCCORE_CPU_RAM = 'X-MvcCore-Cpu-Ram';
+interface IResponse extends \MvcCore\Response\IConstants {
 
 	/**
 	 * No singleton, get every time new instance of configured HTTP response

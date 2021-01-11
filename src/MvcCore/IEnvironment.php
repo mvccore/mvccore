@@ -20,28 +20,7 @@ namespace MvcCore;
  *   - comparing server hostname or IP, by value or regular expression.
  *   - checking system environment variable existence, value or by regular exp.
  */
-interface IEnvironment {
-
-	/**
-	 * Release environment.
-	 */
-	const PRODUCTION = 'production';
-
-	/**
-	 * Common team testing environment.
-	 */
-	const ALPHA = 'alpha';
-
-	/**
-	 * Release testing environment.
-	 */
-	const BETA = 'beta';
-
-	/**
-	 * Development environment.
-	 */
-	const DEVELOPMENT = 'dev';
-
+interface IEnvironment extends \MvcCore\Environment\IConstants {
 
 	/**
 	 * Get all available nevironment names.

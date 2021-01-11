@@ -11,19 +11,27 @@
  * @license  https://mvccore.github.io/docs/mvccore/5.0.0/LICENCE.md
  */
 
-namespace MvcCore;
+namespace MvcCore\Environment;
 
-/**
- * @inheritDocs
- */
-class Model implements \MvcCore\IModel {
-	use \MvcCore\Model\Props;
-	use \MvcCore\Model\Connection;
-	use \MvcCore\Model\Config;
-	use \MvcCore\Model\Resource;
-	use \MvcCore\Model\DataMethods;
-	use \MvcCore\Model\Comparing;
-	use \MvcCore\Model\MetaData;
-	use \MvcCore\Model\Converters;
-	use \MvcCore\Model\MagicMethods;
+interface IConstants {
+
+	/**
+	 * Release environment.
+	 */
+	const PRODUCTION = 'production';
+
+	/**
+	 * Common team testing environment.
+	 */
+	const ALPHA = 'alpha';
+
+	/**
+	 * Release testing environment.
+	 */
+	const BETA = 'beta';
+
+	/**
+	 * Development environment.
+	 */
+	const DEVELOPMENT = 'dev';
 }

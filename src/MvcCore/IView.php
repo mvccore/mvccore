@@ -48,56 +48,7 @@ namespace MvcCore;
  * @method string WriteByJS(string $string) Return any given HTML code as code rendered in javascript: `<script>document.write(String.fromCharCode(...));</script>`. To use this method, you need to install extension `mvccore/ext-view-helper-writebyjs`.
  * @method string Truncate(string $text, int $maxChars = 200, bool $isHtml = NULL) Truncate plain text or text with html tags by given max. characters number and add three dots at the end. To use this method, you need to install extension `mvccore/ext-view-helper-truncate`.
  */
-interface IView {
-
-	/**
-	 * Default rendering mode.
-	 * Render action view first into output buffer, then render layout view
-	 * wrapped around rendered action view string also into output buffer.
-	 * Then set up rendered content from output buffer into response object
-	 * and then send HTTP headers and content after all.
-	 * @var int
-	 */
-	const RENDER_WITH_OB_FROM_ACTION_TO_LAYOUT = 0b01;
-
-	/**
-	 * Special rendering mode to continuously sent larger data to client.
-	 * Render layout view and render action view together inside it without
-	 * output buffering. There is not used reponse object body property for
-	 * this rendering mode. Http headers are sent before view rendering.
-	 * @var int
-	 */
-	const RENDER_WITHOUT_OB_CONTINUOUSLY = 0b10;
-
-	/**
-	 * View output document type HTML4.
-	 * @var string
-	 */
-	const DOCTYPE_HTML4 = 'HTML4';
-
-	/**
-	 * View output document type XHTML.
-	 * @var string
-	 */
-	const DOCTYPE_XHTML = 'XHTML';
-
-	/**
-	 * View output document type HTML5.
-	 * @var string
-	 */
-	const DOCTYPE_HTML5 = 'HTML5';
-
-	/**
-	 * View output document type for any XML file.
-	 * @var string
-	 */
-	const DOCTYPE_XML = 'XML';
-
-	/**
-	 * MvcCore extension class name for view helpers.
-	 * Helpers view implementing this interface could have better setup.
-	 */
-	const HELPERS_INTERFACE_CLASS_NAME = 'MvcCore\\Ext\\Views\\Helpers\\IHelper';
+interface IView extends \MvcCore\View\IConstants {
 
 	/**
 	 * Return always new instance of statically called class, no singleton.

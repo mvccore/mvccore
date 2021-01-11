@@ -22,19 +22,7 @@ namespace MvcCore;
  * - Any variables and caught exceptions file logging.
  * - Time printing.
  */
-interface IDebug {
-
-	/**
-	 * Logging levels and file names.
-	 */
-	const
-		DEBUG = 'debug',
-		INFO = 'info',
-		WARNING = 'warning',
-		ERROR = 'error',
-		EXCEPTION = 'exception',
-		CRITICAL = 'critical',
-		JAVASCRIPT = 'javascript';
+interface IDebug extends \MvcCore\Debug\IConstants {
 
 	/**
 	 * Initialize debugging and logging, once only.
