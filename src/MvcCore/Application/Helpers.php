@@ -31,7 +31,10 @@ trait Helpers {
 	 */
 	public function GetDefaultControllerIfHasAction ($actionName) {
 		$defaultControllerName = $this->CompleteControllerName($this->defaultControllerName);
-		if (class_exists($defaultControllerName) && method_exists($defaultControllerName, $actionName . 'Action')) {
+		if (
+			class_exists($defaultControllerName) && 
+			method_exists($defaultControllerName, $actionName . 'Action')
+		) {
 			return $defaultControllerName;
 		}
 		return '';

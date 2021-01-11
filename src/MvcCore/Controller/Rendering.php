@@ -193,8 +193,9 @@ trait Rendering {
 		/** @var $this \MvcCore\Controller */
 		if ($this->application->IsErrorDispatched()) return;
 		throw new \ErrorException(
-			$exceptionMessage ? $exceptionMessage :
-			"Server error: `" . htmlspecialchars($this->request->GetFullUrl()) . "`.",
+			$exceptionMessage 
+				? $exceptionMessage :
+				"Server error: `" . htmlspecialchars($this->request->GetFullUrl()) . "`.",
 			500
 		);
 	}
@@ -207,7 +208,8 @@ trait Rendering {
 		/** @var $this \MvcCore\Controller */
 		if ($this->application->IsNotFoundDispatched()) return;
 		throw new \ErrorException(
-			"Page not found: `" . htmlspecialchars($this->request->GetFullUrl()) . "`.", 404
+			"Page not found: `" . htmlspecialchars($this->request->GetFullUrl()) . "`.", 
+			404
 		);
 	}
 
