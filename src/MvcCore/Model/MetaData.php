@@ -19,14 +19,11 @@ trait MetaData {
 	 * Return cached array about properties in current class to not create
 	 * and parse reflection objects every time. 
 	 * 
-	 * Every key in array is property name, every value is `\stdClass` with metadata:
-	 * - `types`		`string[]`					Property types from code or from doc
-	 *												comments or empty array.
-	 * - `isPublic`		`boolean`					`TRUE` for public property.
-	 * - `isPrivate`	`boolean`					`TRUE` for private property.
-	 * - `allowNull'	`boolean`					`TRUE` to allow `NULL` values.
-	 * - `property`		`\ReflectionProperty|NULL`	Reflection property object for 
-	 *												private properties manipulation.
+	 * Every key in array is property name, every value is array with metadata:
+	 * - `0`	`string[]`	Property types from code or from doc comments or empty array.
+	 * - `1`	`boolean`	`TRUE` for public property.
+	 * - `2`	`boolean`	`TRUE` for private property.
+	 * - `3'	`boolean`	`TRUE` to allow `NULL` values.
 	 * 
 	 * Possible reading flags:
 	 *  - `\MvcCore\IModel::PROPS_INHERIT`
@@ -38,6 +35,14 @@ trait MetaData {
 	 */
 	private static function _getMetaData ($readingFlags = 0) {
 		/** @var $this \MvcCore\Model */
+
+		/**
+		 * This is private static hidden property (private as it's method), 
+		 * so it has different values for each class. Keys in this array
+		 * are integer flags, values are arrays with metadata. Metadata
+		 * array has key by properties names.
+		 * @var array
+		 */
 		static $__propsMetaData = [];
 
 		list (
@@ -85,19 +90,16 @@ trait MetaData {
 	}
 
 	/**
-	 * Return `\stdClass` object with metadata:
-	 * - `types`		`string[]`					Property types from code or from doc
-	 *												comments or empty array.
-	 * - `isPublic`		`boolean`					`TRUE` for public property.
-	 * - `isPrivate`	`boolean`					`TRUE` for private property.
-	 * - `property`		`\ReflectionProperty|NULL`	Reflection property object for 
-	 *												private properties manipulation.
+	 * Return `array` with metadata:
+	 * - `0`	`string[]`	Property types from code or from doc comments or empty array.
+	 * - `1`	`boolean`	`TRUE` for public property.
+	 * - `2`	`boolean`	`TRUE` for private property.
+	 * - `3'	`boolean`	`TRUE` to allow `NULL` values.
 	 * @param \ReflectionProperty $prop 
 	 * @param bool $phpWithTypes 
-	 * @return \stdClass
+	 * @return array
 	 */
 	private static function _getMetaDataProp (\ReflectionProperty $prop, $phpWithTypes) {
-		
 		$types = [];
 		$allowNull = FALSE;
 		if ($phpWithTypes && $prop->hasType()) {
@@ -145,16 +147,12 @@ trait MetaData {
 				$types = explode('|', $matches[1]);
 			}
 		}
-			
-		$isPrivate = $prop->isPublic();
-		if ($isPrivate) $prop->setAccessible(TRUE);
-
-		return (object) [
-			'types'		=> $types,						// string[]
-			'isPublic'	=> $prop->isPublic(),			// boolean
-			'isPrivate'	=> $isPrivate,					// boolean
-			'allowNull'	=> $allowNull,					// boolean
-			'property'	=> $isPrivate ? $prop : NULL,	// \ReflectionProperty|NULL
+		
+		return [
+			$types,				// string[]
+			$prop->isPublic(),	// boolean
+			$prop->isPrivate(),	// boolean
+			$allowNull,			// boolean
 		];
 	}
 	

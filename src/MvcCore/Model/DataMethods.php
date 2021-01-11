@@ -27,10 +27,7 @@ trait DataMethods {
 	 * @return array
 	 */
 	public function GetValues ($propsFlags = 0, $getNullValues = FALSE) {
-		/**
-		 * @var $this \MvcCore\Model
-		 * @var $propData \stdClass
-		 */
+		/** @var $this \MvcCore\Model */
 		if ($propsFlags === 0) 
 			$propsFlags = \MvcCore\IModel::PROPS_INHERIT | \MvcCore\IModel::PROPS_PROTECTED;
 		
@@ -51,8 +48,10 @@ trait DataMethods {
 		
 		foreach ($metaData as $propertyName => $propData) {
 			$propValue = NULL;
-
-			if ($propData->isPublic) {
+			list (
+				/*$propTypes*/, $propIsPublic, $propIsPrivate/*, $propAllowNulls*/
+			) = $propData;
+			if ($propIsPublic) {
 				/**
 				 * If property is public, it's ok to ask only by
 				 * `isset($this->{$propertyName})`, because then it works
@@ -62,7 +61,7 @@ trait DataMethods {
 				 */
 				if (isset($this->{$propertyName})) 
 					$propValue = $this->{$propertyName};
-			} else if ($propData->isPrivate) {
+			} else if ($propIsPrivate) {
 				/**
 				 * If property is private, there is only way to get
 				 * it's value by reflection property object. But for
@@ -70,11 +69,13 @@ trait DataMethods {
 				 * to ask `$prop->isInitialized($this)` first before
 				 * calling `$prop->getValue($this);`.
 				 */
+				$prop = new \ReflectionProperty($this, $propertyName);
+				$prop->setAccessible(TRUE);
 				if ($phpWithTypes) {
-					if ($propData->property->isInitialized($this))
-						$propValue = $propData->property->getValue($this);
+					if ($prop->isInitialized($this))
+						$propValue = $prop->getValue($this);
 				} else {
-					$propValue = $propData->property->getValue($this);
+					$propValue = $prop->getValue($this);
 				}
 			} else if (
 				/**
@@ -111,10 +112,7 @@ trait DataMethods {
 	 * @return \MvcCore\Model Current `$this` context.
 	 */
 	public function SetUp ($data = [], $propsFlags = 0) {
-		/**
-		 * @var $this \MvcCore\Model
-		 * @var $propData \stdClass
-		 */
+		/** @var $this \MvcCore\Model */
 		if ($propsFlags === 0) 
 			$propsFlags = \MvcCore\IModel::PROPS_INHERIT | \MvcCore\IModel::PROPS_PROTECTED;
 		
@@ -141,23 +139,25 @@ trait DataMethods {
 					$propertyName, $toolsClass, $caseSensitiveKeysMap
 				);
 			$isNull = $dbValue === NULL;
-			$isPrivate = NULL;
-			$propData = NULL;
+			$propIsPrivate = NULL;
 			if (isset($metaData[$propertyName])) {
-				$propData = $metaData[$propertyName];
-				if (!$propData->allowNull && $isNull) continue;
-				$isPrivate = $propData->isPrivate;
+				list (
+					$propTypes, /*$propIsPublic*/, $propIsPrivate, $propAllowNulls
+				) = $metaData[$propertyName];
+				if (!$propAllowNulls && $isNull) continue;
 				if ($isNull) {
 					$value = $dbValue;
 				} else {
-					$value = static::convertToTypes($dbValue, $propData->types);	
+					$value = static::convertToTypes($dbValue, $propTypes);	
 				}
 			} else {
 				$value = $dbValue;
 			}
 
-			if ($isPrivate) {
-				$propData->property->setValue($this, $value);
+			if ($propIsPrivate) {
+				$prop = new \ReflectionProperty($this, $propertyName);
+				$prop->setAccessible(TRUE);
+				$prop->setValue($this, $value);
 			} else {
 				$this->{$propertyName} = $value;
 			}
@@ -177,10 +177,7 @@ trait DataMethods {
 	 * @return array 
 	 */
 	public function GetTouched ($propsFlags = 0) {
-		/**
-		 * @var $this \MvcCore\Model
-		 * @var $propData \stdClass
-		 */
+		/** @var $this \MvcCore\Model */
 		if ($propsFlags === 0) 
 			$propsFlags = \MvcCore\IModel::PROPS_INHERIT | \MvcCore\IModel::PROPS_PROTECTED;
 		
@@ -200,12 +197,14 @@ trait DataMethods {
 		$result = [];
 
 		foreach ($metaData as $propertyName => $propData) {
+			list(
+				/*$propTypes*/, $propIsPublic, $propIsPrivate/*, $propAllowNulls*/
+			) = $propData;
 			$initialValue = NULL;
 			$currentValue = NULL;
 			if (array_key_exists($propertyName, $this->initialValues))
 				$initialValue = $this->initialValues[$propertyName];
-
-			if ($propData->isPublic) {
+			if ($propIsPublic) {
 				/**
 				 * If property is public, it's ok to ask only by
 				 * `isset($this->{$propertyName})`, because then it works
@@ -215,7 +214,7 @@ trait DataMethods {
 				 */
 				if (isset($this->{$propertyName})) 
 					$currentValue = $this->{$propertyName};
-			} else if ($propData->isPrivate) {
+			} else if ($propIsPrivate) {
 				/**
 				 * If property is private, there is only way to get
 				 * it's value by reflection property object. But for
@@ -223,11 +222,13 @@ trait DataMethods {
 				 * to ask `$prop->isInitialized($this)` first before
 				 * calling `$prop->getValue($this);`.
 				 */
+				$prop = new \ReflectionProperty($this, $propertyName);
+				$prop->setAccessible(TRUE);
 				if ($phpWithTypes) {
-					if ($propData->property->isInitialized($this))
-						$currentValue = $propData->property->getValue($this);
+					if ($prop->isInitialized($this))
+						$currentValue = $prop->getValue($this);
 				} else {
-					$currentValue = $propData->property->getValue($this);
+					$currentValue = $prop->getValue($this);
 				}
 			} else if (
 				/**
