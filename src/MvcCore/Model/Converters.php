@@ -67,8 +67,7 @@ trait Converters {
 		$conversionResult = FALSE;
 		$typeStr = trim($typeStr, '\\');
 		if ($typeStr == 'DateTime' && !($rawValue instanceof \DateTime)) {
-			static $_dateTimeformatMask = 'Y-m-d H:i:s';
-			$dateTime = static::convertToDateTime($rawValue, [$_dateTimeformatMask]);
+			$dateTime = static::convertToDateTime($rawValue, 'Y-m-d H:i:s');
 			if ($dateTime instanceof \DateTime) {
 				$rawValue = $dateTime;
 				$conversionResult = TRUE;
@@ -84,28 +83,27 @@ trait Converters {
 	/**
 	 * Convert int, float or string value into \DateTime.
 	 * @param int|float|string|NULL $rawValue 
-	 * @param \string[] $formatArgs 
+	 * @param string $formatArgs 
 	 * @return \DateTime|bool
 	 */
 	protected static function convertToDateTime ($rawValue, $formatArgs) {
-		$dateTimeFormat = $formatArgs[0];
 		if (is_numeric($rawValue)) {
 			$rawValueStr = str_replace(['+','-','.'], '', (string) $rawValue);
 			$secData = mb_substr($rawValueStr, 0, 10);
-			$dateTimeStr = date($dateTimeFormat, intval($secData));
+			$dateTimeStr = date($formatArgs, intval($secData));
 			if (strlen($rawValueStr) > 10)
 				$dateTimeStr .= '.' . mb_substr($rawValueStr, 10);
 		} else {
 			$dateTimeStr = (string) $rawValue;
 			if (strpos($dateTimeStr, '-') === FALSE) {
-				$dateTimeFormat = substr($dateTimeFormat, 6);
+				$formatArgs = substr($formatArgs, 6);
 			} else if (strpos($dateTimeStr, ':') === FALSE) {
-				$dateTimeFormat = substr($dateTimeFormat, 0, 5);
+				$formatArgs = substr($formatArgs, 0, 5);
 			}
 		}
 		if (strpos($dateTimeStr, '.') !== FALSE) 
-			$dateTimeFormat .= '.u';
-		return \date_create_from_format($dateTimeFormat, $dateTimeStr);
+			$formatArgs .= '.u';
+		return \date_create_from_format($formatArgs, $dateTimeStr);
 	}
 
 	/**

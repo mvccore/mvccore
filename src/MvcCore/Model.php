@@ -16,7 +16,7 @@ namespace MvcCore;
 /**
  * @inheritDocs
  */
-class Model implements IModel {
+class Model implements \MvcCore\IModel {
 	use \MvcCore\Model\Props;
 	use \MvcCore\Model\Connection;
 	use \MvcCore\Model\Config;

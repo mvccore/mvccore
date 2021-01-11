@@ -35,9 +35,10 @@ trait Resource {
 		static $__resources = [];
 		
 		$staticClassPath = get_called_class();
+		$cacheKey = implode('|', [$staticClassPath, serialize($args)]);
 		
-		if (isset($__resources[$staticClassPath])) 
-			return $__resources[$staticClassPath];
+		if (isset($__resources[$cacheKey])) 
+			return $__resources[$cacheKey];
 
 		$resource = NULL;
 		$namespaceSeparator = strpos($staticClassPath, '\\') === FALSE ? '_' : '\\';
@@ -76,7 +77,7 @@ trait Resource {
 			throw new \InvalidArgumentException("Class `{$resourceClassName}` doesn't exist.");
 		}
 
-		$__resources[$staticClassPath] = $resource;
+		$__resources[$cacheKey] = $resource;
 
 		return $resource;
 	}

@@ -20,86 +20,86 @@ trait MetaData {
 	 * and parse reflection objects every time. 
 	 * 
 	 * Every key in array is property name, every value is array with metadata:
-	 * - `0`	`string[]`	Property types from code or from doc comments or empty array.
-	 * - `1`	`boolean`	`TRUE` for public property.
-	 * - `2`	`boolean`	`TRUE` for private property.
-	 * - `3'	`boolean`	`TRUE` to allow `NULL` values.
+	 * - `0`	`boolean`	`TRUE` for private property.
+	 * - `1'	`boolean`	`TRUE` to allow `NULL` values.
+	 * - `2`	`string[]`	Property types from code or from doc comments or empty array.
 	 * 
 	 * Possible reading flags:
 	 *  - `\MvcCore\IModel::PROPS_INHERIT`
 	 *  - `\MvcCore\IModel::PROPS_PRIVATE`
 	 *  - `\MvcCore\IModel::PROPS_PROTECTED`
 	 *  - `\MvcCore\IModel::PROPS_PUBLIC`
-	 * @param int $readingFlags
+	 * @param int $propsFlags
 	 * @return array
 	 */
-	private static function _getMetaData ($readingFlags = 0) {
+	protected static function getMetaData ($propsFlags = 0) {
 		/** @var $this \MvcCore\Model */
 
 		/**
-		 * This is private static hidden property (private as it's method), 
-		 * so it has different values for each class. Keys in this array
-		 * are integer flags, values are arrays with metadata. Metadata
-		 * array has key by properties names.
+		 * This is static hidden property, so it has different values 
+		 * for each static call. Keys in this array are integer flags, 
+		 * values are arrays with metadata. Metadata array has key 
+		 * by properties names.
 		 * @var array
 		 */
-		static $__propsMetaData = [];
+		static $__metaData = [];
+
+		if ($propsFlags === 0) 
+			$propsFlags = \MvcCore\IModel::PROPS_INHERIT | \MvcCore\IModel::PROPS_PROTECTED;
 
 		list (
 			$cacheFlags, $accessModFlags, $inclInherit
-		) = static::_getMetaDataFlagsAndInheriting($readingFlags);
+		) = static::getMetaDataFlags($propsFlags);
 
-		if (isset($__propsMetaData[$cacheFlags])) 
-			return $__propsMetaData[$cacheFlags];
+		if (isset($__metaData[$cacheFlags])) 
+			return $__metaData[$cacheFlags];
 		
-		$calledClassFullName = get_called_class();
+		$classFullName = get_called_class();
 
-		$metaDataItem = static::_parseMetaData(
-			$calledClassFullName, $accessModFlags, $inclInherit
+		$metaDataItem = static::parseMetaData(
+			$classFullName, $accessModFlags, $inclInherit
 		);
 		
-		$__propsMetaData[$cacheFlags] = $metaDataItem;
+		$__metaData[$cacheFlags] = $metaDataItem;
 		
 		return $metaDataItem;
 	}
 
 	/**
 	 * Parse called class metadata with reflection.
-	 * @param string $calledClassFullName 
+	 * @param string $classFullName 
 	 * @param int $accessModFlags 
 	 * @param bool $inclInherit 
 	 * @throws \InvalidArgumentException 
 	 * @return array
 	 */
-	private static function _parseMetaData ($calledClassFullName, $accessModFlags, $inclInherit) {
+	protected static function parseMetaData ($classFullName, $accessModFlags, $inclInherit) {
 		$metaDataItem = [];
 		$phpWithTypes = PHP_VERSION_ID >= 70400;
-		$calledClassFullName = get_called_class();
-		$props = (new \ReflectionClass($calledClassFullName))
+		$props = (new \ReflectionClass($classFullName))
 			->getProperties($accessModFlags);
 		/** @var $prop \ReflectionProperty */
 		foreach ($props as $prop) {
 			if (
 				$prop->isStatic() ||
-				(!$inclInherit && $prop->class !== $calledClassFullName) ||
+				(!$inclInherit && $prop->class !== $classFullName) ||
 				isset(static::$protectedProperties[$prop->name])
 			) continue;
-			$metaDataItem[$prop->name] = static::_getMetaDataProp($prop, $phpWithTypes);
+			$metaDataItem[$prop->name] = static::parseMetaDataProperty($prop, $phpWithTypes);
 		}
 		return $metaDataItem;
 	}
 
 	/**
 	 * Return `array` with metadata:
-	 * - `0`	`string[]`	Property types from code or from doc comments or empty array.
-	 * - `1`	`boolean`	`TRUE` for public property.
-	 * - `2`	`boolean`	`TRUE` for private property.
-	 * - `3'	`boolean`	`TRUE` to allow `NULL` values.
+	 * - `0`	`boolean`	`TRUE` for private property.
+	 * - `1'	`boolean`	`TRUE` to allow `NULL` values.
+	 * - `2`	`string[]`	Property types from code or from doc comments or empty array.
 	 * @param \ReflectionProperty $prop 
 	 * @param bool $phpWithTypes 
 	 * @return array
 	 */
-	private static function _getMetaDataProp (\ReflectionProperty $prop, $phpWithTypes) {
+	protected static function parseMetaDataProperty (\ReflectionProperty $prop, $phpWithTypes) {
 		$types = [];
 		$allowNull = FALSE;
 		if ($phpWithTypes && $prop->hasType()) {
@@ -149,36 +149,35 @@ trait MetaData {
 		}
 		
 		return [
-			$types,				// string[]
-			$prop->isPublic(),	// boolean
 			$prop->isPrivate(),	// boolean
 			$allowNull,			// boolean
+			$types,				// string[]
 		];
 	}
 	
 	/**
 	 * Complete meta data cache key flag, reflection properties getter flags
 	 * and boolean about to include inherit properties or not.
-	 * @param int $readingFlags 
+	 * @param int $propsFlags 
 	 * @return array [int, int, bool]
 	 */
-	private static function _getMetaDataFlagsAndInheriting ($readingFlags) {
+	protected static function getMetaDataFlags ($propsFlags) {
 		$cacheFlags = 0;
 		$accessModFlags = 0;
 		$inclInherit = FALSE;
-		if (($readingFlags & \MvcCore\IModel::PROPS_INHERIT) != 0) {
+		if (($propsFlags & \MvcCore\IModel::PROPS_INHERIT) != 0) {
 			$cacheFlags |= \MvcCore\IModel::PROPS_INHERIT;
 			$inclInherit = TRUE;
 		}
-		if (($readingFlags & \MvcCore\IModel::PROPS_PRIVATE) != 0) {
+		if (($propsFlags & \MvcCore\IModel::PROPS_PRIVATE) != 0) {
 			$cacheFlags |= \MvcCore\IModel::PROPS_PRIVATE;
 			$accessModFlags |= \ReflectionProperty::IS_PRIVATE;
 		}
-		if (($readingFlags & \MvcCore\IModel::PROPS_PROTECTED) != 0) {
+		if (($propsFlags & \MvcCore\IModel::PROPS_PROTECTED) != 0) {
 			$cacheFlags |= \MvcCore\IModel::PROPS_PROTECTED;
 			$accessModFlags |= \ReflectionProperty::IS_PROTECTED;
 		}
-		if (($readingFlags & \MvcCore\IModel::PROPS_PUBLIC) != 0) {
+		if (($propsFlags & \MvcCore\IModel::PROPS_PUBLIC) != 0) {
 			$cacheFlags |= \MvcCore\IModel::PROPS_PUBLIC;
 			$accessModFlags |= \ReflectionProperty::IS_PUBLIC;
 		}

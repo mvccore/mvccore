@@ -28,10 +28,7 @@ trait DataMethods {
 	 */
 	public function GetValues ($propsFlags = 0, $getNullValues = FALSE) {
 		/** @var $this \MvcCore\Model */
-		if ($propsFlags === 0) 
-			$propsFlags = \MvcCore\IModel::PROPS_INHERIT | \MvcCore\IModel::PROPS_PROTECTED;
-		
-		$metaData = static::_getMetaData($propsFlags);
+		$metaData = static::getMetaData($propsFlags);
 		
 		$phpWithTypes = PHP_VERSION_ID >= 70400;
 		$keyConversionsMethod = NULL;
@@ -48,27 +45,8 @@ trait DataMethods {
 		
 		foreach ($metaData as $propertyName => $propData) {
 			$propValue = NULL;
-			list (
-				/*$propTypes*/, $propIsPublic, $propIsPrivate/*, $propAllowNulls*/
-			) = $propData;
-			if ($propIsPublic) {
-				/**
-				 * If property is public, it's ok to ask only by
-				 * `isset($this->{$propertyName})`, because then it works
-				 * in the same way like: `$prop->isInitialized($this)`
-				 * for older PHP versions and also for PHP >= 7.4 and typed
-				 * properties.
-				 */
-				if (isset($this->{$propertyName})) 
-					$propValue = $this->{$propertyName};
-			} else if ($propIsPrivate) {
-				/**
-				 * If property is private, there is only way to get
-				 * it's value by reflection property object. But for
-				 * PHP >= 7.4 and typed properties, there is necessary
-				 * to ask `$prop->isInitialized($this)` first before
-				 * calling `$prop->getValue($this);`.
-				 */
+			//list ($propIsPrivate, $propAllowNulls, $propTypes) = $propData;
+			if ($propData[0]) {
 				$prop = new \ReflectionProperty($this, $propertyName);
 				$prop->setAccessible(TRUE);
 				if ($phpWithTypes) {
@@ -77,16 +55,7 @@ trait DataMethods {
 				} else {
 					$propValue = $prop->getValue($this);
 				}
-			} else if (
-				/**
-				 * If property is not private, it's ok to ask only by
-				 * `isset($this->{$propertyName})`, because then it works
-				 * in the same way like: `$prop->isInitialized($this)`
-				 * for older PHP versions and also for PHP >= 7.4 and typed
-				 * properties.
-				 */
-				isset($this->{$propertyName})
-			) {
+			} else if (isset($this->{$propertyName})) {
 				$propValue = $this->{$propertyName};
 			}
 
@@ -113,14 +82,11 @@ trait DataMethods {
 	 */
 	public function SetUp ($data = [], $propsFlags = 0) {
 		/** @var $this \MvcCore\Model */
-		if ($propsFlags === 0) 
-			$propsFlags = \MvcCore\IModel::PROPS_INHERIT | \MvcCore\IModel::PROPS_PROTECTED;
-		
 		$completeInitialValues = ($propsFlags & \MvcCore\IModel::PROPS_INITIAL_VALUES) != 0;
 		if ($completeInitialValues) 
 			$propsFlags ^= \MvcCore\IModel::PROPS_INITIAL_VALUES;
 
-		$metaData = static::_getMetaData($propsFlags);
+		$metaData = static::getMetaData($propsFlags);
 
 		$keyConversionsMethod = NULL;
 		$caseSensitiveKeysMap = '';
@@ -142,7 +108,7 @@ trait DataMethods {
 			$propIsPrivate = NULL;
 			if (isset($metaData[$propertyName])) {
 				list (
-					$propTypes, /*$propIsPublic*/, $propIsPrivate, $propAllowNulls
+					$propIsPrivate, $propAllowNulls, $propTypes
 				) = $metaData[$propertyName];
 				if (!$propAllowNulls && $isNull) continue;
 				if ($isNull) {
@@ -178,10 +144,7 @@ trait DataMethods {
 	 */
 	public function GetTouched ($propsFlags = 0) {
 		/** @var $this \MvcCore\Model */
-		if ($propsFlags === 0) 
-			$propsFlags = \MvcCore\IModel::PROPS_INHERIT | \MvcCore\IModel::PROPS_PROTECTED;
-		
-		$metaData = static::_getMetaData($propsFlags);
+		$metaData = static::getMetaData($propsFlags);
 		
 		$phpWithTypes = PHP_VERSION_ID >= 70400;
 		$keyConversionsMethod = NULL;
@@ -197,31 +160,12 @@ trait DataMethods {
 		$result = [];
 
 		foreach ($metaData as $propertyName => $propData) {
-			list(
-				/*$propTypes*/, $propIsPublic, $propIsPrivate/*, $propAllowNulls*/
-			) = $propData;
 			$initialValue = NULL;
 			$currentValue = NULL;
 			if (array_key_exists($propertyName, $this->initialValues))
 				$initialValue = $this->initialValues[$propertyName];
-			if ($propIsPublic) {
-				/**
-				 * If property is public, it's ok to ask only by
-				 * `isset($this->{$propertyName})`, because then it works
-				 * in the same way like: `$prop->isInitialized($this)`
-				 * for older PHP versions and also for PHP >= 7.4 and typed
-				 * properties.
-				 */
-				if (isset($this->{$propertyName})) 
-					$currentValue = $this->{$propertyName};
-			} else if ($propIsPrivate) {
-				/**
-				 * If property is private, there is only way to get
-				 * it's value by reflection property object. But for
-				 * PHP >= 7.4 and typed properties, there is necessary
-				 * to ask `$prop->isInitialized($this)` first before
-				 * calling `$prop->getValue($this);`.
-				 */
+			//list ($propIsPrivate, $propAllowNulls, $propTypes) = $propData;
+			if ($propData[0]) {
 				$prop = new \ReflectionProperty($this, $propertyName);
 				$prop->setAccessible(TRUE);
 				if ($phpWithTypes) {
@@ -230,16 +174,7 @@ trait DataMethods {
 				} else {
 					$currentValue = $prop->getValue($this);
 				}
-			} else if (
-				/**
-				 * If property is not public or private, it's ok to ask only by
-				 * `isset($this->{$propertyName})`, because then it works
-				 * in the same way like: `$prop->isInitialized($this)`
-				 * for older PHP versions and also for PHP >= 7.4 and typed
-				 * properties.
-				 */
-				isset($this->{$propertyName})
-			) {
+			} else if (isset($this->{$propertyName})) {
 				$currentValue = $this->{$propertyName};
 			}
 
