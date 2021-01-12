@@ -75,16 +75,14 @@ trait DataMethods {
 
 	/**
 	 * @inheritDocs
-	 * @param array $data Raw row data from database.
+	 * @param array $data Raw data from database (row) or from form fields.
 	 * @param int $propsFlags All properties flags are available.
 	 * @throws \InvalidArgumentException
 	 * @return \MvcCore\Model Current `$this` context.
 	 */
-	public function SetUp ($data = [], $propsFlags = 0) {
+	public function SetValues ($data = [], $propsFlags = 0) {
 		/** @var $this \MvcCore\Model */
 		$completeInitialValues = ($propsFlags & \MvcCore\IModel::PROPS_INITIAL_VALUES) != 0;
-		if ($completeInitialValues) 
-			$propsFlags ^= \MvcCore\IModel::PROPS_INITIAL_VALUES;
 
 		$metaData = static::getMetaData($propsFlags);
 
@@ -114,7 +112,7 @@ trait DataMethods {
 				if ($isNull) {
 					$value = $dbValue;
 				} else {
-					$value = static::convertToTypes($dbValue, $propTypes);	
+					$value = static::parseToTypes($dbValue, $propTypes);	
 				}
 			} else {
 				$value = $dbValue;

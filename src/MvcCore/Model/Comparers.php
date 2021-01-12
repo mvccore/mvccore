@@ -13,7 +13,7 @@
 
 namespace MvcCore\Model;
 
-trait Comparing {
+trait Comparers {
 
 	/**
 	 * Compare two values. Supported types are:

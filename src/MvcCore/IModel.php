@@ -155,18 +155,18 @@ interface IModel extends \MvcCore\Model\IConstants {
 	 * by properties flags. Case sensitivelly by default.
 	 * Any `$data` items, which are not declared in `$this` context are 
 	 * initialized by  `__set()` method.
-	 * @param array $data Raw row data from database.
+	 * @param array $data Raw data from database (row) or from form fields.
 	 * @param int $propsFlags All properties flags are available.
 	 * @throws \InvalidArgumentException
 	 * @return \MvcCore\Model Current `$this` context.
 	 */
-	public function SetUp ($data = [], $propsFlags = 0);
+	public function SetValues ($data = [], $propsFlags = 0);
 
 	/**
 	 * Get touched properties from `$this` context.
 	 * Touched properties are properties with different value than value under 
 	 * property name key in `$this->initialValues` (initial array is optionally 
-	 * completed in `SetUp()` method). Result keys could be converted by any 
+	 * completed in `SetValues()` method). Result keys could be converted by any 
 	 * conversion flag.
 	 * @param int $propsFlags	All properties flags are available except flags: 
 	 *							- `\MvcCore\IModel::PROPS_INITIAL_VALUES`,

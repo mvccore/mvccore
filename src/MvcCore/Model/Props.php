@@ -169,7 +169,7 @@ trait Props
 	];
 
 	/**
-	 * Array with values initialized by `SetUp()` method.
+	 * Array with values initialized by `SetValues()` method.
 	 * Usefull to recognize changed values bafore `Save()`.
 	 * @var array
 	 */

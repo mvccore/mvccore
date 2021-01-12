@@ -16,97 +16,6 @@ namespace MvcCore\Model;
 trait Converters {
 
 	/**
-	 * Try to convert raw database value into first type in target types.
-	 * @param mixed $rawValue
-	 * @param \string[] $typesString
-	 * @return mixed Converted result.
-	 */
-	protected static function convertToTypes ($rawValue, $typesString) {
-		$targetTypeValue = NULL;
-		$value = $rawValue;
-		foreach ($typesString as $typeString) {
-			if (substr($typeString, -2, 2) === '[]') {
-				if (!is_array($value)) {
-					$value = trim(strval($rawValue));
-					$value = $value === '' ? [] : explode(',', $value);
-				}
-				$arrayItemTypeString = substr($typeString, 0, strlen($typeString) - 2);
-				$targetTypeValue = [];
-				$conversionResult = TRUE;
-				foreach ($value as $key => $item) {
-					list(
-						$conversionResultLocal, $targetTypeValueLocal
-					) = static::convertToType($item, $arrayItemTypeString);
-					if ($conversionResultLocal) {
-						$targetTypeValue[$key] = $targetTypeValueLocal;
-					} else {
-						$conversionResult = FALSE;
-						break;
-					}
-				}
-			} else {
-				list(
-					$conversionResult, $targetTypeValue
-				) = static::convertToType($rawValue, $typeString);
-			}
-			if ($conversionResult) {
-				$value = $targetTypeValue;
-				break;
-			}
-		}
-		return $value;
-	}
-
-	/**
-	 * Try to convert database value into target type.
-	 * @param mixed $rawValue
-	 * @param string $typeStr
-	 * @return array First item is conversion boolean success, second item is converted result.
-	 */
-	protected static function convertToType ($rawValue, $typeStr) {
-		$conversionResult = FALSE;
-		$typeStr = trim($typeStr, '\\');
-		if ($typeStr == 'DateTime' && !($rawValue instanceof \DateTime)) {
-			$dateTime = static::convertToDateTime($rawValue, 'Y-m-d H:i:s');
-			if ($dateTime instanceof \DateTime) {
-				$rawValue = $dateTime;
-				$conversionResult = TRUE;
-			}
-		} else {
-			// bool, int, float, string, array, object, null:
-			if (settype($rawValue, $typeStr)) 
-				$conversionResult = TRUE;
-		}
-		return [$conversionResult, $rawValue];
-	}
-
-	/**
-	 * Convert int, float or string value into \DateTime.
-	 * @param int|float|string|NULL $rawValue 
-	 * @param string $formatArgs 
-	 * @return \DateTime|bool
-	 */
-	protected static function convertToDateTime ($rawValue, $formatArgs) {
-		if (is_numeric($rawValue)) {
-			$rawValueStr = str_replace(['+','-','.'], '', (string) $rawValue);
-			$secData = mb_substr($rawValueStr, 0, 10);
-			$dateTimeStr = date($formatArgs, intval($secData));
-			if (strlen($rawValueStr) > 10)
-				$dateTimeStr .= '.' . mb_substr($rawValueStr, 10);
-		} else {
-			$dateTimeStr = (string) $rawValue;
-			if (strpos($dateTimeStr, '-') === FALSE) {
-				$formatArgs = substr($formatArgs, 6);
-			} else if (strpos($dateTimeStr, ':') === FALSE) {
-				$formatArgs = substr($formatArgs, 0, 5);
-			}
-		}
-		if (strpos($dateTimeStr, '.') !== FALSE) 
-			$formatArgs .= '.u';
-		return \date_create_from_format($formatArgs, $dateTimeStr);
-	}
-
-	/**
 	 * Return protected static conversion method by given conversion flag
 	 * to convert database column name into property name or back.
 	 * @param int $keysConversionFlags
@@ -116,13 +25,13 @@ trait Converters {
 	protected static function getKeyConversionMethod ($keysConversionFlags = 0) {
 		$flagsAndConversionMethods = [
 			0																		=> NULL,
-			$keysConversionFlags & static::PROPS_CONVERT_UNDERSCORES_TO_PASCALCASE	=> 'propsConvertUnderscoresToPascalcase',
-			$keysConversionFlags & static::PROPS_CONVERT_UNDERSCORES_TO_CAMELCASE	=> 'propsConvertUnderscoresToCamelcase',
-			$keysConversionFlags & static::PROPS_CONVERT_PASCALCASE_TO_UNDERSCORES	=> 'propsConvertPascalcaseToUnderscores',
-			$keysConversionFlags & static::PROPS_CONVERT_PASCALCASE_TO_CAMELCASE	=> 'propsConvertPascalcaseToCamelcase',
-			$keysConversionFlags & static::PROPS_CONVERT_CAMELCASE_TO_UNDERSCORES	=> 'propsConvertCamelcaseToUnderscores',
-			$keysConversionFlags & static::PROPS_CONVERT_CAMELCASE_TO_PASCALCASE	=> 'propsConvertCamelcaseToPascalcase',
-			$keysConversionFlags & static::PROPS_CONVERT_CASE_INSENSITIVE			=> 'propsConvertCaseInsensitive',
+			$keysConversionFlags & static::PROPS_CONVERT_UNDERSCORES_TO_PASCALCASE	=> 'convertPropUnderscoresToPascalcase',
+			$keysConversionFlags & static::PROPS_CONVERT_UNDERSCORES_TO_CAMELCASE	=> 'convertPropUnderscoresToCamelcase',
+			$keysConversionFlags & static::PROPS_CONVERT_PASCALCASE_TO_UNDERSCORES	=> 'convertPropPascalcaseToUnderscores',
+			$keysConversionFlags & static::PROPS_CONVERT_PASCALCASE_TO_CAMELCASE	=> 'convertPropPascalcaseToCamelcase',
+			$keysConversionFlags & static::PROPS_CONVERT_CAMELCASE_TO_UNDERSCORES	=> 'convertPropCamelcaseToUnderscores',
+			$keysConversionFlags & static::PROPS_CONVERT_CAMELCASE_TO_PASCALCASE	=> 'convertPropCamelcaseToPascalcase',
+			$keysConversionFlags & static::PROPS_CONVERT_CASE_INSENSITIVE			=> 'convertPropCaseInsensitive',
 		];
 		unset($flagsAndConversionMethods[0]);
 		$count = count($flagsAndConversionMethods);
@@ -148,7 +57,7 @@ trait Converters {
 	 * @param string $csKeysMap
 	 * @return string
 	 */
-	protected static function propsConvertCaseInsensitive ($key, $toolsClass, $csKeysMap) {
+	protected static function convertPropCaseInsensitive ($key, $toolsClass, $csKeysMap) {
 		$keyPos = stripos($csKeysMap, ','.$key.',');
 		if ($keyPos === FALSE) return $key;
 		return substr($csKeysMap, $keyPos + 1, strlen($key));
@@ -161,7 +70,7 @@ trait Converters {
 	 * @param string $csKeysMap
 	 * @return string
 	 */
-	protected static function propsConvertUnderscoresToPascalcase ($key, $toolsClass, $csKeysMap) {
+	protected static function convertPropUnderscoresToPascalcase ($key, $toolsClass, $csKeysMap) {
 		return $toolsClass::GetPascalCaseFromUnderscored($key);
 	}
 
@@ -172,7 +81,7 @@ trait Converters {
 	 * @param string $csKeysMap
 	 * @return string
 	 */
-	protected static function propsConvertUnderscoresToCamelcase ($key, $toolsClass, $csKeysMap) {
+	protected static function convertPropUnderscoresToCamelcase ($key, $toolsClass, $csKeysMap) {
 		return lcfirst($toolsClass::GetPascalCaseFromUnderscored($key));
 	}
 
@@ -183,7 +92,7 @@ trait Converters {
 	 * @param string $csKeysMap
 	 * @return string
 	 */
-	protected static function propsConvertPascalcaseToUnderscores ($key, $toolsClass, $csKeysMap) {
+	protected static function convertPropPascalcaseToUnderscores ($key, $toolsClass, $csKeysMap) {
 		return $toolsClass::GetUnderscoredFromPascalCase($key);
 	}
 
@@ -194,7 +103,7 @@ trait Converters {
 	 * @param string $csKeysMap
 	 * @return string
 	 */
-	protected static function propsConvertPascalcaseToCamelcase ($key, $toolsClass, $csKeysMap) {
+	protected static function convertPropPascalcaseToCamelcase ($key, $toolsClass, $csKeysMap) {
 		return lcfirst($key);
 	}
 
@@ -205,7 +114,7 @@ trait Converters {
 	 * @param string $csKeysMap
 	 * @return string
 	 */
-	protected static function propsConvertCamelcaseToUnderscores ($key, $toolsClass, $csKeysMap) {
+	protected static function convertPropCamelcaseToUnderscores ($key, $toolsClass, $csKeysMap) {
 		return $toolsClass::GetUnderscoredFromPascalCase(lcfirst($key));
 	}
 
@@ -216,7 +125,7 @@ trait Converters {
 	 * @param string $csKeysMap
 	 * @return string
 	 */
-	protected static function propsConvertCamelcaseToPascalcase ($key, $toolsClass, $csKeysMap) {
+	protected static function convertPropCamelcaseToPascalcase ($key, $toolsClass, $csKeysMap) {
 		return ucfirst($key);
 	}
 }
