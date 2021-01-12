@@ -25,11 +25,12 @@ trait Converters {
 	protected static function convertToScalar ($value, $formatArgs = []) {
 		if (is_bool($value)) {
 			return $value ? 1 : 0 ;
-		} else if (is_array($value)) {
+		} else if (is_iterable($value)) {
 			$items = [];
 			foreach ($value as $item)
 				if ($item !== NULL)
 					$items[] = static::convertToScalar($item, $formatArgs);
+			if (count($items) === 0) return NULL;
 			return implode(',', $items);
 		} else if ($value instanceof \DateTimeInterface) {
 			$formatArgsCount = count($formatArgs);
