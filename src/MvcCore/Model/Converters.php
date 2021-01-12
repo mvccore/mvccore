@@ -16,6 +16,76 @@ namespace MvcCore\Model;
 trait Converters {
 
 	/**
+	 * Convert `bool`(s), `array`(s), `\DateTimeInterface` or `\DateInterval` 
+	 * value(s) into proper database (`scalar`) value if necessary.
+	 * @param bool|int|float|string|\DateTimeInterface|\DateInterval|\bool[]|\int[]|\float[]|\string[]||\DateTimeInterface[]|\\DateInterval[]|NULL $value 
+	 * @param array $formatArgs 
+	 * @return int|float|string|NULL
+	 */
+	protected static function convertToScalar ($value, $formatArgs = []) {
+		if (is_bool($value)) {
+			return $value ? 1 : 0 ;
+		} else if (is_array($value)) {
+			$items = [];
+			foreach ($value as $item)
+				if ($item !== NULL)
+					$items[] = static::convertToScalar($item, $formatArgs);
+			return implode(',', $items);
+		} else if ($value instanceof \DateTimeInterface) {
+			$formatArgsCount = count($formatArgs);
+			if ($formatArgsCount > 0) {
+				$formatMask = $formatArgs[0];
+				if ($formatArgsCount > 2) {
+					$targetType = $formatArgs[2];
+					if ($targetType === 'int') {
+						$formatMask = 'U';
+					} else if ($targetType === 'float') {
+						$formatMask = 'U.u';
+					}
+				}
+				return $value->format($formatMask);
+			}
+			return $value->format('Y-m-d H:i:s.u');
+		} else if ($value instanceof \DateInterval) {
+			$formatArgsCount = count($formatArgs);
+			if ($formatArgsCount > 0) {
+				$formatMask = $formatArgs[0];
+				if ($formatArgsCount > 2) {
+					$targetType = $formatArgs[2];
+					if ($targetType === 'int') {
+						return intval(round(
+							static::convertIntervalToFloat($value)
+						));
+					} else if ($targetType === 'float') {
+						return static::convertIntervalToFloat($value);
+					}
+				}
+				return $value->format($formatMask);
+			}
+			return static::convertIntervalToFloat($value);
+		} else {
+			return $value;
+		}
+	}
+
+	/**
+	 * Convert date interval to total microseconds float.
+	 * @param \DateInterval $interval 
+	 * @return float
+	 */
+	protected static function convertIntervalToFloat ($interval) {
+		$result = floatval(
+			($interval->days * 86400) + 
+			($interval->h * 3600) + 
+			($interval->i * 60) + 
+			($interval->s)
+		);
+		if (PHP_VERSION_ID >= 70100)
+			$result += $interval->f;
+		return $result;
+	}
+
+	/**
 	 * Return protected static conversion method by given conversion flag
 	 * to convert database column name into property name or back.
 	 * @param int $keysConversionFlags

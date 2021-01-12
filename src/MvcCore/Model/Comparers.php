@@ -50,8 +50,8 @@ trait Comparers {
 				
 			} else if ($value1 instanceof \DateInterval && $value2 instanceof \DateInterval) {
 				$valuasAreTheSame = abs(
-					self::_convertIntervalToFloat($value1) - 
-					self::_convertIntervalToFloat($value2)
+					static::convertIntervalToFloat($value1) - 
+					static::convertIntervalToFloat($value2)
 				) < PHP_FLOAT_EPSILON;
 
 			} else if ($value1 instanceof \DateTimeZone && $value2 instanceof \DateTimeZone) {
@@ -63,8 +63,8 @@ trait Comparers {
 					$value1->getStartDate() == $value2->getStartDate() && 
 					$value1->getEndDate() == $value2->getEndDate() && 
 					abs(
-						self::_convertIntervalToFloat($value1->getDateInterval()) - 
-						self::_convertIntervalToFloat($value2->getDateInterval())
+						static::convertIntervalToFloat($value1->getDateInterval()) - 
+						static::convertIntervalToFloat($value2->getDateInterval())
 					) < PHP_FLOAT_EPSILON
 				);
 
@@ -78,22 +78,5 @@ trait Comparers {
 			}
 		}
 		return $valuasAreTheSame;
-	}
-
-	/**
-	 * Convert date interval to total microseconds float.
-	 * @param \DateInterval $interval 
-	 * @return float
-	 */
-	private static function _convertIntervalToFloat ($interval) {
-		$result = floatval(
-			($interval->days * 86400) + 
-			($interval->h * 3600) + 
-			($interval->i * 60) + 
-			($interval->s)
-		);
-		if (PHP_VERSION_ID >= 70100)
-			$result += $interval->f;
-		return $result;
 	}
 }

@@ -237,10 +237,22 @@ trait Reflection {
 	 * @return array|NULL
 	 */
 	public static function GetAttrCtorArgs ($reflectionObject, $attributeClassFullName) {
-		$attrs = $reflectionObject->getAttributes($attributeClassFullName);
-		if (count($attrs) > 0) 
-			return $attrs[0]->getArguments();
-		return NULL;
+		$result = NULL;
+		$traversing = $reflectionObject instanceof \ReflectionClass;
+		while (TRUE) {
+			$attrs = $reflectionObject->getAttributes($attributeClassFullName);
+			if (count($attrs) > 0) {
+				$result = $attrs[0]->getArguments();
+				break;
+			}
+			if ($traversing) {
+				$reflectionObject = $reflectionObject->getParentClass();
+				if ($reflectionObject === FALSE) break;
+			} else {
+				break;
+			}
+		}
+		return $result;
 	}
 
 	/**
@@ -251,14 +263,24 @@ trait Reflection {
 	 */
 	public static function GetPhpDocsTagArgs ($reflectionObject, $phpDocsTagName) {
 		$result = NULL;
-		$docComment = $reflectionObject->getDocComment();
-		$tagPos = mb_strpos($docComment, $phpDocsTagName);
-		if ($tagPos !== FALSE) {
-			$result = [];
-			preg_match("#{$phpDocsTagName}\s+([^\r\n\*@]+)#", $docComment, $matches, 0, $tagPos);
-			if ($matches && count($matches) > 1) {
-				$result = explode(',', $matches[1]);
-				$result = array_map('trim', $result);
+		$traversing = $reflectionObject instanceof \ReflectionClass;
+		while (TRUE) {
+			$docComment = $reflectionObject->getDocComment();
+			$tagPos = mb_strpos($docComment, $phpDocsTagName);
+			if ($tagPos !== FALSE) {
+				$result = [];
+				preg_match("#{$phpDocsTagName}\s+([^\r\n\*@]+)#", $docComment, $matches, 0, $tagPos);
+				if ($matches && count($matches) > 1) {
+					$result = explode(',', $matches[1]);
+					$result = array_map('trim', $result);
+				}
+				break;
+			}
+			if ($traversing) {
+				$reflectionObject = $reflectionObject->getParentClass();
+				if ($reflectionObject === FALSE) break;
+			} else {
+				break;
 			}
 		}
 		return $result;
