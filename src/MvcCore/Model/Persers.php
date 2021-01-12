@@ -68,7 +68,7 @@ trait Persers {
 		$typeStr = trim($typeStr, '\\');
 		if ($typeStr == 'DateTime') {
 			if (!($rawValue instanceof \DateTime)) {
-				$dateTime = static::parseToDateTime($rawValue, 'Y-m-d H:i:s');
+				$dateTime = static::parseToDateTime($rawValue, 'Y-m-d H:i:s.u');
 				if ($dateTime instanceof \DateTime) {
 					$rawValue = $dateTime;
 					$conversionResult = TRUE;
