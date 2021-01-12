@@ -237,7 +237,12 @@ trait CollectionsMethods {
 	 */
 	public function GetFile ($file = '') {
 		/** @var $this \MvcCore\Request */
-		if (isset($this->globalFiles[$file])) return $this->globalFiles[$file];
+		if (isset($this->globalFiles[$file])) {
+			$file = $this->globalFiles[$file];
+			if (isset($file['error']) && $file['error'] === UPLOAD_ERR_NO_FILE)
+				return [];
+			return $file;
+		}
 		return [];
 	}
 
