@@ -66,11 +66,13 @@ trait Persers {
 	protected static function parseToType ($rawValue, $typeStr) {
 		$conversionResult = FALSE;
 		$typeStr = trim($typeStr, '\\');
-		if ($typeStr == 'DateTime' && !($rawValue instanceof \DateTime)) {
-			$dateTime = static::parseToDateTime($rawValue, 'Y-m-d H:i:s');
-			if ($dateTime instanceof \DateTime) {
-				$rawValue = $dateTime;
-				$conversionResult = TRUE;
+		if ($typeStr == 'DateTime') {
+			if (!($rawValue instanceof \DateTime)) {
+				$dateTime = static::parseToDateTime($rawValue, 'Y-m-d H:i:s');
+				if ($dateTime instanceof \DateTime) {
+					$rawValue = $dateTime;
+					$conversionResult = TRUE;
+				}
 			}
 		} else {
 			// bool, int, float, string, array, object, null:
