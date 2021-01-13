@@ -36,6 +36,8 @@ trait Converters {
 			$formatArgsCount = count($formatArgs);
 			if ($formatArgsCount > 0) {
 				$formatMask = $formatArgs[0];
+				if (mb_substr($formatMask, 0, 1) === '+')
+					$formatMask = mb_substr($formatMask, 1);
 				if ($formatArgsCount > 2) {
 					$targetType = $formatArgs[2];
 					if ($targetType === 'int') {
@@ -46,7 +48,7 @@ trait Converters {
 				}
 				return $value->format($formatMask);
 			}
-			return $value->format('Y-m-d H:i:s.u');
+			return $value->format('Y-m-d H:i:s');
 		} else if ($value instanceof \DateInterval) {
 			$formatArgsCount = count($formatArgs);
 			if ($formatArgsCount > 0) {
