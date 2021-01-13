@@ -13,7 +13,7 @@
 
 namespace MvcCore\Model;
 
-trait Persers {
+trait Parsers {
 
 	/**
 	 * Try to convert raw database value into first type in target types.

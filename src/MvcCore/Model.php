@@ -23,7 +23,7 @@ class Model implements \MvcCore\IModel {
 	use \MvcCore\Model\Resource;
 	use \MvcCore\Model\MetaData;
 	use \MvcCore\Model\Converters;
-	use \MvcCore\Model\Persers;
+	use \MvcCore\Model\Parsers;
 	use \MvcCore\Model\DataMethods;
 	use \MvcCore\Model\Comparers;
 	use \MvcCore\Model\MagicMethods;
