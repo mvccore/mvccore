@@ -18,20 +18,10 @@ trait Resource {
 	/**
 	 * @inheritDocs
 	 * @param array|NULL	$args				Values array with variables to pass into resource `__construct()` method.
-	 * @param string		$resourceClassPath	Automatically initialized with string replaced with `%SELF%` by `static::class` (or by `get_called_class()`).
+	 * @param string		$resourceClassPath	Automatically initialized with string replaced with `%SELF%` by `get_called_class()`.
 	 * @return \MvcCore\Model
 	 */
 	public static function GetResource ($args = [], $resourceClassPath = '%SELF%s\Resource') {
-		return static::_getResource($args, $resourceClassPath);
-	}
-
-	/**
-	 * Returns (or creates if necessary) model resource instance.
-	 * @param array|NULL	$args				Values array with variables to pass into resource `__construct()` method.
-	 * @param string		$resourceClassPath	Automatically initialized with string replaced with `%SELF%` by `static::class` (or by `get_called_class()`).
-	 * @return \MvcCore\Model
-	 */
-	private static function _getResource ($args = [], $resourceClassPath = '%SELF%s\Resource') {
 		static $__resources = [];
 		
 		$staticClassPath = get_called_class();
