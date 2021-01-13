@@ -42,6 +42,8 @@ trait Instancing {
 			$instance = new $routerClass($routes, $autoInitialize);
 			$instance->application = $app;
 			self::$instance = $instance;
+		} else if ($routes) {
+			self::$instance->SetRoutes($routes, NULL, $autoInitialize);
 		}
 		return self::$instance;
 	}
