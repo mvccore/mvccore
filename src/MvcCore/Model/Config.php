@@ -57,7 +57,10 @@ trait Config {
 		if ($connectionName === NULL && isset(static::$connectionName)) $connectionName = static::$connectionName;
 		if ($connectionName === NULL && isset(self::$connectionName)) $connectionName = self::$connectionName;
 		if ($connectionName === NULL) $connectionName = self::$defaultConnectionName;
-		if ($connectionName === NULL) return NULL;
+		if ($connectionName === NULL) {
+			$result = NULL;
+			return $result;
+		}
 		return self::$configs[$connectionName];
 	}
 
