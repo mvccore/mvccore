@@ -90,7 +90,7 @@ trait Props
 			],
 		],
 		'sqlsrv'		=> [
-			'dsn'		=> '{driver}:Server={host};Database={database}',
+			'dsn'		=> '{driver}:Server={host};Database={database};MultipleActiveResultSets=False',
 			'auth'		=> TRUE,
 			'fileDb'	=> FALSE,
 			'options'	=> [
