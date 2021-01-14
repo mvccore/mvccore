@@ -63,9 +63,7 @@ trait Connection {
 				}
 			}
 			// store new connection under config index for all other model classes
-			static::$connections[$connectionName] = static::connect(
-				(object) array_merge([], (array) $cfg) // clone the `\stdClass`
-			);
+			static::$connections[$connectionName] = static::connect($cfg);
 		}
 		return static::$connections[$connectionName];
 	}
@@ -91,6 +89,7 @@ trait Connection {
 				$lastSlashPos = strrpos($appRoot, '/');
 				$appRoot = substr($appRoot, 7, $lastSlashPos - 7);
 			}
+			$dbConfig = (object) array_merge([], (array) $dbConfig); // clone the `\stdClass` before change
 			$dbConfig->{$sysCfgProps->database} = str_replace(
 				'\\', '/', realpath($appRoot . $dbConfig->{$sysCfgProps->database})
 			);
