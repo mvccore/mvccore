@@ -89,6 +89,13 @@ trait Props
 				'\PDO::ATTR_EMULATE_PREPARES'		=> TRUE,
 			],
 		],
+		'pgsql'		=> [
+			'dsn'		=> '{driver}:host={host};port={port};dbname={database};user={user};password={password}',
+			'auth'		=> TRUE,
+			'fileDb'	=> FALSE,
+			'options'	=> [],
+			'defaults'	=> ['port' => 5432,],
+		],
 		'sqlsrv'		=> [
 			'dsn'		=> '{driver}:Server={host};Database={database};MultipleActiveResultSets=False',
 			'auth'		=> TRUE,
