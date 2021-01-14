@@ -54,7 +54,7 @@ trait Connection {
 				"No connection found under given name/index: `{$connectionNameOrConfig}`."
 			);
 			if ($cfgIsNull) {
-				// if nothing found under connection name - take first database record
+				// if nothing found under connection name - take first config database record
 				foreach (self::$configs as $value) {
 					if (is_object($value)) {
 						$cfg = $value;
@@ -63,7 +63,9 @@ trait Connection {
 				}
 			}
 			// store new connection under config index for all other model classes
-			static::$connections[$connectionName] = static::connect($cfg);
+			static::$connections[$connectionName] = static::connect(
+				(object) array_merge([], (array) $cfg) // clone the `\stdClass`
+			);
 		}
 		return static::$connections[$connectionName];
 	}
