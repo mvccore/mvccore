@@ -148,9 +148,15 @@ trait Config {
 				}
 			}
 		}
-		if ($defaultConnectionName === NULL && !$strict)
-			if ($configs && count($configsConnectionsNames) > 0)
+		$configsConnectionsNamesCount = count($configsConnectionsNames);
+		if ($defaultConnectionName === NULL) {
+			if (
+				($configsConnectionsNamesCount === 1) || 
+				(!$strict && $configsConnectionsNamesCount > 0)
+			) {
 				$defaultConnectionName = $configsConnectionsNames[0];
+			}
+		}
 		if ($defaultConnectionName !== NULL && !isset($configs[$defaultConnectionName]))
 			throw new \Exception(
 				"[".get_class()."] No default connection name '{$defaultConnectionName}'"

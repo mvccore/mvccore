@@ -26,6 +26,36 @@ trait Connection {
 	 * @return \PDO
 	 */
 	public static function GetConnection ($connectionNameOrConfig = NULL, $strict = TRUE) {
+		$connectionName = (is_string($connectionNameOrConfig) || is_int($connectionNameOrConfig))
+			? $connectionNameOrConfig
+			: static::resolveConnectionName($connectionNameOrConfig, $strict);
+		// if no connection exists under connection name key - connect to database
+		if (isset(self::$connections[$connectionName])) 
+			return self::$connections[$connectionName];
+
+		// get system config 'db' data
+		// and get predefined constructor arguments by driver value from config
+		$cfg = static::GetConfig($connectionName);
+		if ($cfg === NULL) throw new \InvalidArgumentException(
+			"[".get_called_class()."] No connection found under given name/index: `{$connectionName}`."
+		);
+		// connect:
+		$connection = static::connect($cfg);
+		// store new connection under config index for all other model classes:
+		self::$connections[$connectionName] = $connection;
+		return $connection;
+	}
+
+	/**
+	 * Resolve connection name or connection index or connection 
+	 * configuration into single string or integer coresponding to 
+	 * database config record.
+	 * @param string|int|array|\stdClass|NULL $connectionNameOrConfig 
+	 * @param bool $strict 
+	 * @throws \InvalidArgumentException 
+	 * @return string|int
+	 */
+	protected static function resolveConnectionName ($connectionNameOrConfig = NULL, $strict = TRUE) {
 		if (is_array($connectionNameOrConfig) || $connectionNameOrConfig instanceof \stdClass) {
 			// if first argument is database connection configuration - set it up and return new connection name
 			if (self::$configs === NULL) static::loadConfigs(FALSE, $strict);
@@ -41,31 +71,11 @@ trait Connection {
 			if ($connectionName === NULL) 
 				$connectionName = self::$defaultConnectionName;
 		}
-		if ($connectionName === NULL) throw new \InvalidArgumentException(
-			"[".get_called_class()."] No connection name or connection config specified."
-		);
-		// if no connection exists under connection name key - connect to database
-		if (!isset(static::$connections[$connectionName])) {
-			// get system config 'db' data
-			// and get predefined constructor arguments by driver value from config
-			$cfg = static::GetConfig($connectionName);
-			$cfgIsNull = $cfg === NULL;
-			if ($strict && $cfgIsNull) throw new \InvalidArgumentException(
-				"No connection found under given name/index: `{$connectionNameOrConfig}`."
+		if ($connectionName === NULL) 
+			throw new \InvalidArgumentException(
+				"[".get_called_class()."] No connection name or connection config specified."
 			);
-			if ($cfgIsNull) {
-				// if nothing found under connection name - take first config database record
-				foreach (self::$configs as $value) {
-					if (is_object($value)) {
-						$cfg = $value;
-						break;
-					}
-				}
-			}
-			// store new connection under config index for all other model classes
-			static::$connections[$connectionName] = static::connect($cfg);
-		}
-		return static::$connections[$connectionName];
+		return $connectionName;
 	}
 
 	/**
