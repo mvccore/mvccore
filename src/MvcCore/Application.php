@@ -7,7 +7,7 @@
  * For the full copyright and license information, please view
  * the LICENSE.md file that are distributed with this source code.
  *
- * @copyright	Copyright (c) 2016 Tom Flídr (https://github.com/mvccore/mvccore)
+ * @copyright	Copyright (c) 2016 Tom Flidr (https://github.com/mvccore)
  * @license  https://mvccore.github.io/docs/mvccore/5.0.0/LICENCE.md
  */
 
@@ -23,7 +23,7 @@ class Application implements \MvcCore\IApplication {
 	 * Comparison by PHP function `version_compare();`.
 	 * @see http://php.net/manual/en/function.version-compare.php
 	 */
-	const VERSION = '5.0.0-alpha';
+	const VERSION = '5.0.0';
 
 	/**
 	 * Include traits with
