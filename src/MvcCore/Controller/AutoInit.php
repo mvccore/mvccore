@@ -16,7 +16,7 @@ namespace MvcCore\Controller;
 #[\Attribute(\Attribute::TARGET_CLASS)]
 class AutoInit {
 
-	const PHP_DOCS_TAG = '@autoInit';
+	const PHP_DOCS_TAG_NAME = '@autoInit';
 
 	/**
 	 * Define this attribute for any controller property 

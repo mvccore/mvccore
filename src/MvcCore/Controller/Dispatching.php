@@ -172,7 +172,7 @@ trait Dispatching {
 		$attrsAnotations = $toolsClass::GetAttributesAnotations();
 		$attrClassName = '\\MvcCore\\Controller\\AutoInit';
 		$attrClassNameWithoutSlash = mb_substr($attrClassName, 1);
-		$phpDocsTagName = $attrClassName::PHP_DOCS_TAG;
+		$phpDocsTagName = $attrClassName::PHP_DOCS_TAG_NAME;
 		foreach ($props as $prop) {
 
 			if ($attrsAnotations) {
