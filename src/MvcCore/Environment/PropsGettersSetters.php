@@ -147,7 +147,7 @@ trait PropsGettersSetters {
 			if (static::$detectionBySystemConfig) {
 				$app = self::$app ?: (self::$app = \MvcCore\Application::GetInstance());
 				$configClass = $app->GetConfigClass();
-				$sysConfig = $configClass::GetSystem();
+				$sysConfig = $configClass::GetSystem(TRUE);
 				if ($sysConfig) {
 					$envDetectionData = & $configClass::GetEnvironmentDetectionData($sysConfig);
 					$this->name = static::DetectBySystemConfig((array) $envDetectionData);

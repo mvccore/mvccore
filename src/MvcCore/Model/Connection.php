@@ -100,9 +100,11 @@ trait Connection {
 				$appRoot = substr($appRoot, 7, $lastSlashPos - 7);
 			}
 			$dbConfig = (object) array_merge([], (array) $dbConfig); // clone the `\stdClass` before change
-			$dbConfig->{$sysCfgProps->database} = str_replace(
-				'\\', '/', realpath($appRoot . $dbConfig->{$sysCfgProps->database})
+			$dbFileFullPath = realpath($appRoot . $dbConfig->{$sysCfgProps->database});
+			if ($dbFileFullPath === FALSE) throw new \InvalidArgumentException(
+				"[".get_called_class()."] Database file doesn't exists: `{$dbFileFullPath}`."
 			);
+			$dbConfig->{$sysCfgProps->database} = str_replace('\\', '/', realpath($dbFileFullPath));
 		}
 		// Process connection string (dsn) with config replacements
 		$dsn = $conArgs->dsn;

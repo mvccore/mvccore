@@ -87,6 +87,7 @@ interface IConfig {
 	/**
 	 * Get (optionally cached) system config INI file as `stdClass` or `array`,
 	 * placed by default in: `"/App/config.ini"`.
+	 * @throws \RuntimeException
 	 * @return \MvcCore\Config|NULL
 	 */
 	public static function GetSystem ();
@@ -95,6 +96,7 @@ interface IConfig {
 	 * Get (optionally cached) config INI file as `stdClass` or `array`,
 	 * placed relatively from application document root.
 	 * @param string $appRootRelativePath Any config relative path like `'/%appPath%/website.ini'`.
+	 * @throws \RuntimeException
 	 * @return \MvcCore\Config|NULL
 	 */
 	public static function GetConfig ($appRootRelativePath);

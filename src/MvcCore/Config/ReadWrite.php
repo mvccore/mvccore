@@ -33,6 +33,7 @@ trait ReadWrite {
 
 	/**
 	 * @inheritDocs
+	 * @throws \RuntimeException
 	 * @return \MvcCore\Config|NULL
 	 */
 	public static function GetSystem () {
@@ -49,8 +50,16 @@ trait ReadWrite {
 			$config = $configClass::getConfigInstance($configFullPath, $configClass, TRUE);
 			if ($config) {
 				$environment = $app->GetEnvironment();
-				if ($environment->IsDetected())
+				$doNotThrownError = func_num_args() > 0 ? func_get_arg(0) : FALSE;
+				if ($environment->IsDetected()) {
 					$configClass::SetUpEnvironmentData($config, $environment->GetName());
+				} else if (!$doNotThrownError) {
+					throw new \RuntimeException(
+						"The configuration cannot be loaded until the environment is detected. ".
+						"Please detect the environment first before loading configuration by: ".
+						"`\MvcCore\Application::GetInstance()->GetEnvironment()->GetName()`."
+					);
+				}
 			}
 			self::$configsCache[$configFullPath] = $config;
 		}
@@ -60,6 +69,7 @@ trait ReadWrite {
 	/**
 	 * @inheritDocs
 	 * @param string $appRootRelativePath Any config relative path like `'/%appPath%/website.ini'`.
+	 * @throws \RuntimeException
 	 * @return \MvcCore\Config|NULL
 	 */
 	public static function GetConfig ($appRootRelativePath) {
@@ -77,8 +87,16 @@ trait ReadWrite {
 			$config = $systemConfigClass::getConfigInstance($configFullPath, $systemConfigClass, $isSystem);
 			if ($config) {
 				$environment = $app->GetEnvironment();
-				if ($environment->IsDetected())
+				$doNotThrownError = func_num_args() > 1 ? func_get_arg(1) : FALSE;
+				if ($environment->IsDetected()) {
 					$systemConfigClass::SetUpEnvironmentData($config, $environment->GetName());
+				} else if (!$doNotThrownError) {
+					throw new \RuntimeException(
+						"The configuration cannot be loaded until the environment is detected. ".
+						"Please detect the environment first before loading configuration by: ".
+						"`\MvcCore\Application::GetInstance()->GetEnvironment()->GetName()`."
+					);
+				}
 			}
 			self::$configsCache[$configFullPath] = $config;
 		}
