@@ -33,7 +33,7 @@ trait Converters {
 			if (count($items) === 0) return NULL;
 			return implode(',', $items);
 		} else if ($value instanceof \DateTimeInterface) {
-			$formatArgsCount = count($formatArgs);
+			$formatArgsCount = is_array($formatArgs) ? count($formatArgs) : 0;
 			if ($formatArgsCount > 0) {
 				$formatMask = $formatArgs[0];
 				if (mb_substr($formatMask, 0, 1) === '+')
