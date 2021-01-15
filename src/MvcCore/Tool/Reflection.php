@@ -28,6 +28,31 @@ trait Reflection {
 	 */
 	protected static $cacheAttrsArgs = [];
 
+	/**
+	 * Prefered PHP classes and properties anontation.
+	 * `FALSE` by default, older PHP Docs tags anotations are default
+	 * because of maximum compatibility.
+	 * @var bool
+	 */
+	protected static $attributesAnotation = FALSE;
+
+
+	/**
+	 * @inheritDocs
+	 * @param bool $attributesAnotation 
+	 * @return bool
+	 */
+	public static function SetAttributesAnotations ($attributesAnotation = TRUE) {
+		return self::$attributesAnotation = $attributesAnotation;
+	}
+	
+	/**
+	 * @inheritDocs
+	 * @return bool
+	 */
+	public static function GetAttributesAnotations () {
+		return self::$attributesAnotation;
+	}
 
 	/**
 	 * @inheritDocs
@@ -125,7 +150,7 @@ trait Reflection {
 	public static function GetClassAttrsArgs ($classFullNameOrInstance, $attrsClassesOrDocsTags, $preferAttributes = NULL) {
 		$result = [];
 		$attrsOnly = $preferAttributes === TRUE;
-		$docsTagsOnly = $preferAttributes === FALSE || PHP_VERSION_ID < 80000;
+		$docsTagsOnly = $preferAttributes === FALSE;
 		$reflectionObject = new \ReflectionClass($classFullNameOrInstance);
 		foreach ($attrsClassesOrDocsTags as $attrClassOrDocsTag) 
 			$result[$attrClassOrDocsTag] = static::getAttrArgsOrPhpDocTagArgs(
@@ -152,7 +177,7 @@ trait Reflection {
 	public static function GetMethodAttrsArgs ($classFullNameOrInstance, $methodName, $attrsClassesOrDocsTags, $preferAttributes = NULL) {
 		$result = [];
 		$attrsOnly = $preferAttributes === TRUE;
-		$docsTagsOnly = $preferAttributes === FALSE || PHP_VERSION_ID < 80000;
+		$docsTagsOnly = $preferAttributes === FALSE;
 		$reflectionObject = new \ReflectionMethod($classFullNameOrInstance, $methodName);
 		$classMethodFullName = $classFullNameOrInstance . '::' . $methodName;
 		foreach ($attrsClassesOrDocsTags as $attrClassOrDocsTag) 
@@ -180,7 +205,7 @@ trait Reflection {
 	public static function GetPropertyAttrsArgs ($classFullNameOrInstance, $propertyName, $attrsClassesOrDocsTags, $preferAttributes = NULL) {
 		$result = [];
 		$attrsOnly = $preferAttributes === TRUE;
-		$docsTagsOnly = $preferAttributes === FALSE || PHP_VERSION_ID < 80000;
+		$docsTagsOnly = $preferAttributes === FALSE;
 		$reflectionObject = new \ReflectionProperty($classFullNameOrInstance, $propertyName);
 		$classPropFullName = $classFullNameOrInstance . '::' . $propertyName;
 		foreach ($attrsClassesOrDocsTags as $attrClassOrDocsTag) 

@@ -142,10 +142,11 @@ trait Props {
 	protected $autoStartSession = TRUE;
 
 	/**
-	 * If `TRUE`, automatically initialize properties with `@autoinit` tag.
+	 * If `TRUE`, automatically initialize properties with PHP docs tag
+	 * with tha same name as this property. `FALSE` by default.
 	 * @var bool
 	 */
-	protected $autoInitProperties = TRUE;
+	protected $autoInitProperties = FALSE;
 
 	/**
 	 * Controller lifecycle state:

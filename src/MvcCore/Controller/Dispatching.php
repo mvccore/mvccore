@@ -133,7 +133,7 @@ trait Dispatching {
 			$this->response->SetHeader('Content-Type', $responseContentType);
 		}
 		if ($this->autoInitProperties)
-			$this->processAutoInitProperties();
+			$this->autoInitializeProperties();
 		foreach ($this->childControllers as $controller) {
 			$controller->Init();
 			if ($controller->dispatchState == \MvcCore\IController::DISPATCH_STATE_TERMINATED) 
@@ -144,81 +144,111 @@ trait Dispatching {
 	}
 
 	/**
-	 * Initialize all members implementing `\MvcCore\IController` marked
-	 * in doc comments as `@autoinit` into `\MvcCore\Controller::$controllers` array
-	 * and into member property itself. This method is always called inside
-	 * `\MvcCore\Controller::Init();` method, after session has been started.
-	 * Create every new instance by calling existing method named as
-	 * `[_]create<PascalCasePropertyName>` and returning new instance or by doc
-	 * comment type defined by `@var` over static method `$ClassName::CreateInstance()`.
+	 * Automatically initialize all properties with PHP Docs tag `@autoInit` 
+	 * or with PHP8+ attribute `\MvcCore\ControllerAutoInit`.
+	 * This method is always called inside `\MvcCore\Controller::Init();` 
+	 * method, after session has been started.
+	 * If there is defined factory method name in PHP Docs tag, use that method to 
+	 * initialize property or try to find method with name '[_]create' + upper
+	 * cased property name. 
+	 * If there is no factory method found, try to get property type. First by 
+	 * property type in PHP 7.4+, than by Php Docs tag `@var`. Than try to create 
+	 * instance by calling property type static method `CreateInstance()`. 
+	 * If there is no such static method, create instance by property type 
+	 * constructor with no arguments. If property instance implements 
+	 * `\MvcCore\IController`, add instance into child controllers.
 	 * @return void
 	 */
-	protected function processAutoInitProperties () {
+	protected function autoInitializeProperties () {
 		/** @var $this \MvcCore\Controller */
-		$type = new \ReflectionClass($this);
+		$ctrl = new \ReflectionClass($this);
 		/** @var $props \ReflectionProperty[] */
-		$props = $type->getProperties(
+		$props = $ctrl->getProperties(
 			\ReflectionProperty::IS_PUBLIC |
 			\ReflectionProperty::IS_PROTECTED |
 			\ReflectionProperty::IS_PRIVATE
 		);
 		$toolsClass = $this->application->GetToolClass();
-		$phpWithTypes = PHP_VERSION_ID >= 70400;
+		$attrsAnotations = $toolsClass::GetAttributesAnotations();
+		$attrClassName = '\\MvcCore\\Controller\\AutoInit';
+		$attrClassNameWithoutSlash = mb_substr($attrClassName, 1);
+		$phpDocsTagName = $attrClassName::PHP_DOCS_TAG;
 		foreach ($props as $prop) {
-			$docComment = $prop->getDocComment();
-			if (mb_strpos($docComment, '@autoinit') === FALSE)
-				continue;
-			$propName = $prop->getName();
-			$methodName = 'create' . ucfirst($propName);
-			$hasMethod = $type->hasMethod($methodName);
-			if (!$hasMethod) {
-				$methodName = '_'.$methodName;
-				$hasMethod = $type->hasMethod($methodName);
-			}
-			if ($hasMethod) {
-				$method = $type->getMethod($methodName);
-				if (!$method->isPublic()) $method->setAccessible(TRUE);
-				$instance = $method->invoke($this);
-				$implementsController = $instance instanceof \MvcCore\IController;
+
+			if ($attrsAnotations) {
+				$attrArgs = $toolsClass::GetAttrCtorArgs($prop, $attrClassNameWithoutSlash);
 			} else {
-				$className = NULL;
-				if ($phpWithTypes && $prop->hasType()) {
-					$refType = $prop->getType();
-					if ($refType !== NULL)
-						$className = $refType->getName();
-				} else {
-					$pos = mb_strpos($docComment, '@var ');
-					if ($pos !== FALSE) {
-						$docComment = str_replace(["\r","\n","\t", "*/"], " ", mb_substr($docComment, $pos + 5));
-						$pos = mb_strpos($docComment, ' ');
-						if ($pos !== FALSE) {
-							$className = trim(mb_substr($docComment, 0, $pos));
-							$pos = mb_strpos($className, '|');
-							if ($pos !== FALSE)
-								$className = mb_substr($className, 0, $pos);
-						}
-					}
-				}
-				if ($className === NULL)
-					continue;
-				if (!@class_exists($className)) {
-					$className = $prop->getDeclaringClass()->getNamespaceName() . '\\' . $className;
-					if (!@class_exists($className)) continue;
-				}
-				$implementsController = $toolsClass::CheckClassInterface(
-					$className, 'MvcCore\\IController', FALSE, FALSE
-				);
-				if ($implementsController) {
-					$instance = $className::CreateInstance();
-				} else {
-					$instance = new $className();
-				}
+				$attrArgs = $toolsClass::GetPhpDocsTagArgs($prop, $phpDocsTagName);
 			}
-			if ($implementsController)
-				$this->AddChildController($instance, $propName);
-			if (!$prop->isPublic()) $prop->setAccessible(TRUE);
-			$prop->setValue($this, $instance);
+			if ($attrArgs === NULL) continue;
+
+			$factoryMethodName = isset($attrArgs[0]) && is_string($attrArgs[0])
+				? $attrArgs[0]
+				: 'create' . ucfirst($prop->name);
+			$hasMethod = $ctrl->hasMethod($factoryMethodName);
+			if (!$hasMethod) {
+				$factoryMethodName = '_'.$factoryMethodName;
+				if (!$ctrl->hasMethod($factoryMethodName))
+					$factoryMethodName = NULL;
+			}
+
+			$this->autoInitializeProperty($ctrl, $prop, $factoryMethodName);
 		}
+	}
+
+	/**
+	 * Automatically initialize given class and property with PHP Docs tag `@autoInit` 
+	 * or with PHP8+ attribute `\MvcCore\ControllerAutoInit`.
+	 * This method is always called inside `\MvcCore\Controller::Init();` 
+	 * method, after session has been started.
+	 * If there is given `$factoryMethodName`, initialize  property with calling
+	 * that method. If factory method is `NULL`, try to get property type. First by 
+	 * property type in PHP 7.4+, than by Php Docs tag `@var`. Than try to create 
+	 * instance by calling property type static method `CreateInstance()`. 
+	 * If there is no such static method, create instance by property type 
+	 * constructor with no arguments. If property instance implements 
+	 * `\MvcCore\IController`, add instance into child controllers.
+	 * @param \ReflectionClass $ctrl 
+	 * @param \ReflectionProperty $prop 
+	 * @param string|NULL $factoryMethodName 
+	 * @return bool
+	 */
+	protected function autoInitializeProperty (\ReflectionClass $ctrl, \ReflectionProperty $prop, $factoryMethodName) {
+		$phpWithTypes = PHP_VERSION_ID >= 70400;
+		if ($factoryMethodName !== NULL) {
+			$method = $ctrl->getMethod($factoryMethodName);
+			if (!$method->isPublic()) $method->setAccessible(TRUE);
+			$instance = $method->invoke($this, []);
+		} else {
+			$className = NULL;
+			if ($phpWithTypes && $prop->hasType()) {
+				$refType = $prop->getType();
+				if ($refType !== NULL)
+					$className = $refType->getName();
+			}
+			if ($className === NULL) {
+				$toolsClass = $this->application->GetToolClass();
+				$attrArgs = $toolsClass::GetPhpDocsTagArgs($prop, '@var');
+				if (isset($attrArgs[0]) && is_string($attrArgs[0]))
+					$className = $attrArgs[0];
+			}
+			if ($className === NULL)
+				return FALSE;
+			if (!@class_exists($className)) {
+				$className = $prop->getDeclaringClass()->getNamespaceName() . '\\' . $className;
+				if (!@class_exists($className)) return FALSE;
+			}
+			if (is_callable("{$className}::CreateInstance")) {
+				$instance = $className::CreateInstance();
+			} else {
+				$instance = new $className();
+			}
+		}
+		if ($instance instanceof \MvcCore\IController)
+			$this->AddChildController($instance, $prop->name);
+		if (!$prop->isPublic()) $prop->setAccessible(TRUE);
+		$prop->setValue($this, $instance);
+		return TRUE;
 	}
 
 	/**

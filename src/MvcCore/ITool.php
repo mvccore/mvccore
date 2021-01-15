@@ -225,6 +225,24 @@ interface ITool {
 	 */
 	public static function RealPathVirtual ($path);
 
+	
+	/**
+	 * Set prefered PHP classes and properties anontation preference.
+	 * PHP8+ attributes anotation is default. Set value to `FALSE`
+	 * to prefer PhpDocs tags anotation instead.
+	 * @param bool $attributesAnotation 
+	 * @return bool
+	 */
+	public static function SetAttributesAnotations ($attributesAnotation = TRUE);
+	
+	/**
+	 * Get prefered PHP classes and properties anontation preference.
+	 * PHP8+ attributes anotation is default. `FALSE` value means
+	 * to prefer PhpDocs tags anotation instead.
+	 * @return bool
+	 */
+	public static function GetAttributesAnotations ();
+
 	/**
 	 * Check if given class implements given interface, else throw an exception.
 	 * @param string $testClassName Full test class name.

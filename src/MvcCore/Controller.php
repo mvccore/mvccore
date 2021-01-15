@@ -16,7 +16,7 @@ namespace MvcCore;
 /**
  * @inheritDocs
  */
-class Controller implements IController {
+class Controller implements \MvcCore\IController {
 	use \MvcCore\Controller\Props;
 	use \MvcCore\Controller\GettersSetters;
 	use \MvcCore\Controller\Dispatching;

@@ -118,7 +118,7 @@ interface IController extends \MvcCore\Controller\IConstants {
 	 * This is best time to initialize language, locale, session etc.
 	 * There is also called auto initialization processing - instance creation
 	 * on each controller class member implementing `\MvcCore\IController`
-	 * and marked in doc comments as `@autoinit`.
+	 * and marked in doc comments as `@autoInit`.
 	 * then there is of course called `\MvcCore\Controller::Init();` method on each
 	 * automatically created sub-controller.
 	 * @return void
