@@ -102,6 +102,15 @@ interface IConfig {
 	public static function GetConfig ($appRootRelativePath);
 
 	/**
+	 * Try to load and parse config file by absolute path.
+	 * @param string $configFullPath
+	 * @param string $systemConfigClass
+	 * @param bool   $isSystemConfig
+	 * @return \MvcCore\Config|bool
+	 */
+	public static function LoadConfig ($configFullPath, $systemConfigClass, $isSystemConfig = FALSE);
+
+	/**
 	 * Encode all data into string and store it in `\MvcCore\Config::$fullPath`.
 	 * @throws \Exception Configuration data was not possible to dump or write.
 	 * @return bool

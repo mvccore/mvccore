@@ -47,7 +47,7 @@ trait ReadWrite {
 			'%appPath%', $app->GetAppDir(), ltrim($appRootRelativePath, '/')
 		));
 		if (!array_key_exists($configFullPath, self::$configsCache)) {
-			$config = $configClass::getConfigInstance($configFullPath, $configClass, TRUE);
+			$config = $configClass::LoadConfig($configFullPath, $configClass, TRUE);
 			if ($config) {
 				$environment = $app->GetEnvironment();
 				$doNotThrownError = func_num_args() > 0 ? func_get_arg(0) : FALSE;
@@ -84,7 +84,7 @@ trait ReadWrite {
 		if (!array_key_exists($configFullPath, self::$configsCache)) {
 			$systemConfigClass = $app->GetConfigClass();
 			$isSystem = $systemConfigClass::GetSystemConfigPath() === '/' . $appRootRelativePath;
-			$config = $systemConfigClass::getConfigInstance($configFullPath, $systemConfigClass, $isSystem);
+			$config = $systemConfigClass::LoadConfig($configFullPath, $systemConfigClass, $isSystem);
 			if ($config) {
 				$environment = $app->GetEnvironment();
 				$doNotThrownError = func_num_args() > 1 ? func_get_arg(1) : FALSE;
@@ -131,13 +131,13 @@ trait ReadWrite {
 	}
 
 	/**
-	 * Try to load and parse config file by absolute path.
+	 * @inheritDocs
 	 * @param string $configFullPath
 	 * @param string $systemConfigClass
 	 * @param bool   $isSystemConfig
 	 * @return \MvcCore\Config|bool
 	 */
-	protected static function getConfigInstance ($configFullPath, $systemConfigClass, $isSystemConfig = FALSE) {
+	public static function LoadConfig ($configFullPath, $systemConfigClass, $isSystemConfig = FALSE) {
 		/** @var $config \MvcCore\Config */
 		$config = $systemConfigClass::CreateInstance([], $configFullPath);
 		if (!file_exists($configFullPath)) {

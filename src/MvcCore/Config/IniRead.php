@@ -47,6 +47,7 @@ trait IniRead {
 					$objectType[1] = (object) $objectType[1];
 			$this->envData[$envName] = $data;
 		}
+		
 		return TRUE;
 	}
 
