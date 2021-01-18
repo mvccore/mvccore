@@ -8,7 +8,7 @@
  * the LICENSE.md file that are distributed with this source code.
  *
  * @copyright	Copyright (c) 2016 Tom Flidr (https://github.com/mvccore)
- * @license  https://mvccore.github.io/docs/mvccore/5.0.0/LICENCE.md
+ * @license		https://mvccore.github.io/docs/mvccore/5.0.0/LICENSE.md
  */
 
 if (PHP_VERSION_ID < 70000 && !interface_exists('\\Throwable') && !class_exists('\\Throwable')) {
