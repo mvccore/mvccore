@@ -40,6 +40,9 @@ trait Dispatching {
 			$this->GetResponse();
 			$debugClass = $this->debugClass;
 			$debugClass::Init();
+		} catch (\Exception $e) { // backward compatibility
+			$this->DispatchException($e);
+			return $this->Terminate();
 		} catch (\Throwable $e) {
 			$this->DispatchException($e);
 			return $this->Terminate();
@@ -78,6 +81,9 @@ trait Dispatching {
 			 * @throws \InvalidArgumentException Wrong route pattern format.
 			 */
 			$result = $router->Route();
+		} catch (\Exception $e) { // backward compatibility
+			$this->DispatchException($e);
+			$result = FALSE;
 		} catch (\Throwable $e) {
 			$this->DispatchException($e);
 			$result = FALSE;
@@ -107,6 +113,10 @@ trait Dispatching {
 					$result = FALSE;
 					break;
 				}
+			} catch (\Exception $e) { // backward compatibility
+				$this->DispatchException($e);
+				$result = FALSE;
+				break;
 			} catch (\Throwable $e) {
 				$this->DispatchException($e);
 				$result = FALSE;
@@ -153,7 +163,7 @@ trait Dispatching {
 			$controllerName,
 			$actionName,
 			$viewScriptFullPath,
-			function (\Throwable $e) {
+			function ($e) {
 				return $this->DispatchException($e);
 			}
 		);
@@ -178,6 +188,8 @@ trait Dispatching {
 			$controller = NULL;
 			try {
 				$controller = $ctrlClassFullName::CreateInstance();
+			} catch (\Exception $e) { // backward compatibility
+				return $this->DispatchException($e->getMessage(), 404);
 			} catch (\Throwable $e) {
 				return $this->DispatchException($e->getMessage(), 404);
 			}
@@ -210,6 +222,8 @@ trait Dispatching {
 		if (!$this->ProcessCustomHandlers($this->preDispatchHandlers)) return FALSE;
 		try {
 			$this->controller->Dispatch($actionNamePc);
+		} catch (\Exception $e) { // backward compatibility
+			return $exceptionCallback($e);
 		} catch (\Throwable $e) {
 			return $exceptionCallback($e);
 		}
@@ -285,7 +299,9 @@ trait Dispatching {
 			try {
 				if ($code === NULL) throw new \Exception($exceptionOrMessage);
 				throw new \ErrorException($exceptionOrMessage, $code);
-			} catch (\Exception $e) {
+			} catch (\Exception $e) { // backward compatibility
+				$exception = $e;
+			} catch (\Throwable $e) {
 				$exception = $e;
 			}
 		}
@@ -307,7 +323,7 @@ trait Dispatching {
 	 * @param \Throwable $e
 	 * @return bool
 	 */
-	public function RenderError (\Throwable $e) {
+	public function RenderError ($e) {
 		/** @var $this \MvcCore\Application */
 		$defaultCtrlFullName = $this->GetDefaultControllerIfHasAction(
 			$this->defaultControllerErrorActionName

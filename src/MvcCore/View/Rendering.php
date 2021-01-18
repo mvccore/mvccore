@@ -215,6 +215,8 @@ trait Rendering {
 		ob_start();
 		try {
 			eval(' ?'.'>'.$content.'<'.'?php ');
+		} catch (\Exception $e) { // backward compatibility
+			throw $e;
 		} catch (\Throwable $e) {
 			throw $e;
 		}

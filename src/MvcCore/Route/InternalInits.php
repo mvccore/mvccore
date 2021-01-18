@@ -588,7 +588,9 @@ trait InternalInits {
 			$value = NULL;
 			try {
 				$value = $prop->getValue($this);
-			} catch (\Exception $e) {};
+			} catch (\Exception $e) { // backward compatibility
+			} catch (\Throwable $e) {
+			};
 			$result[] = '"' . $prop->getName() . '":"' . ($value === NULL ? 'NULL' : var_export($value)) . '"';
 		}
 		return '{'.implode(', ', $result) . '}';

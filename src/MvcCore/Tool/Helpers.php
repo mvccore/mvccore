@@ -110,7 +110,8 @@ trait Helpers {
 		);
 		try {
 			return call_user_func_array($internalFnOrHandler, $args);
-		} catch (\Exception $e) {
+		} catch (\Exception $e) { // backward compatibility
+		} catch (\Throwable $e) {
 		} /* finally {
 			restore_error_handler();
 		}*/

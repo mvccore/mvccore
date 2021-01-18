@@ -283,7 +283,8 @@ trait InternalInits {
 			if ($jsonType) {
 				try {
 					$result = $toolClass::DecodeJson($this->body);
-				} catch (\Exception $e) {
+				} catch (\Exception $e) { // backward compatibility
+				} catch (\Throwable $e) {
 				}
 			} else {
 				// if content type header is not recognized,
@@ -292,7 +293,9 @@ trait InternalInits {
 				if ($probablyAJsonType) {
 					try {
 						$result = $toolClass::DecodeJson($this->body);
-					} catch (\Exception $e) {
+					} catch (\Exception $e) { // backward compatibility
+						$probablyAJsonType = FALSE; // fall back to query string parsing
+					} catch (\Throwable $e) {
 						$probablyAJsonType = FALSE; // fall back to query string parsing
 					}
 				}

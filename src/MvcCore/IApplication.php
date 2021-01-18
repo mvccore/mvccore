@@ -645,7 +645,7 @@ interface IApplication extends \MvcCore\Application\IConstants {
 	 * @param \Exception $e
 	 * @return bool
 	 */
-	public function RenderError (\Throwable $e);
+	public function RenderError ($e);
 
 	/**
 	 * Render error by configured default controller and not found error action,

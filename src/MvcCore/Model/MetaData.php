@@ -76,6 +76,7 @@ trait MetaData {
 	protected static function parseMetaData ($classFullName, $accessModFlags, $inclInherit) {
 		$metaDataItem = [];
 		$phpWithTypes = PHP_VERSION_ID >= 70400;
+		$phpWithUnionTypes = PHP_VERSION_ID >= 80000;
 		$props = (new \ReflectionClass($classFullName))
 			->getProperties($accessModFlags);
 		/** @var $prop \ReflectionProperty */
@@ -85,7 +86,9 @@ trait MetaData {
 				(!$inclInherit && $prop->class !== $classFullName) ||
 				isset(static::$protectedProperties[$prop->name])
 			) continue;
-			$metaDataItem[$prop->name] = static::parseMetaDataProperty($prop, $phpWithTypes);
+			$metaDataItem[$prop->name] = static::parseMetaDataProperty(
+				$prop, $phpWithTypes, $phpWithUnionTypes
+			);
 		}
 		return $metaDataItem;
 	}
@@ -97,16 +100,17 @@ trait MetaData {
 	 * - `2`	`string[]`	Property types from code or from doc comments or empty array.
 	 * @param \ReflectionProperty $prop 
 	 * @param bool $phpWithTypes 
+	 * @param bool $phpWithUnionTypes 
 	 * @return array
 	 */
-	protected static function parseMetaDataProperty (\ReflectionProperty $prop, $phpWithTypes) {
+	protected static function parseMetaDataProperty (\ReflectionProperty $prop, $phpWithTypes, $phpWithUnionTypes) {
 		$types = [];
 		$allowNull = FALSE;
 		if ($phpWithTypes && $prop->hasType()) {
 			/** @var $reflType \ReflectionUnionType|\ReflectionNamedType */
 			$refType = $prop->getType();
 			if ($refType !== NULL) {
-				if ($refType instanceof \ReflectionUnionType) {
+				if ($phpWithUnionTypes && $refType instanceof \ReflectionUnionType) {
 					$refTypes = $refType->getTypes();
 					/** @var $refTypesItem \ReflectionNamedType */
 					$strIndex = NULL;
@@ -131,8 +135,8 @@ trait MetaData {
 			preg_match('/@var\s+([^\s]+)/', $prop->getDocComment(), $matches);
 			if ($matches) {
 				$rawTypes = '|'.$matches[1].'|';
-				$nullPos = stripos($rawTypes,'|null|');
-				$qmPos = strpos($rawTypes, '?');
+				$nullPos = mb_stripos($rawTypes,'|null|');
+				$qmPos = mb_strpos($rawTypes, '?');
 				$qmMatched = $qmPos !== FALSE;
 				$nullMatched = $nullPos !== FALSE;
 				$allowNull = $qmMatched || $nullMatched;
@@ -140,11 +144,11 @@ trait MetaData {
 					$rawTypes = str_replace('?', '', $rawTypes);
 				if ($nullMatched)
 					$rawTypes = (
-						substr($rawTypes, 0, $nullPos) . 
-						substr($rawTypes, $nullPos + 5)
+						mb_substr($rawTypes, 0, $nullPos) . 
+						mb_substr($rawTypes, $nullPos + 5)
 					);
-				$rawTypes = substr($rawTypes, 1, strlen($rawTypes) - 2);
-				$types = explode('|', $matches[1]);
+				$rawTypes = mb_substr($rawTypes, 1, mb_strlen($rawTypes) - 2);
+				$types = explode('|', $rawTypes);
 			}
 		}
 		

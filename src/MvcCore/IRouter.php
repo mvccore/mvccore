@@ -314,7 +314,7 @@ interface IRouter extends \MvcCore\Router\IConstants {
 	 * @param \MvcCore\Request $request
 	 * @return \MvcCore\Router
 	 */
-	public function SetRequest (\MvcCore\Request $request);
+	public function SetRequest (\MvcCore\IRequest $request);
 
 	/**
 	 * Set hardly routing strategy. If this method is configures with `TRUE` 
@@ -342,7 +342,7 @@ interface IRouter extends \MvcCore\Router\IConstants {
 	 * @param \MvcCore\Route $currentRoute
 	 * @return \MvcCore\Router
 	 */
-	public function SetCurrentRoute (\MvcCore\Route $currentRoute);
+	public function SetCurrentRoute (\MvcCore\IRoute $currentRoute);
 
 	/**
 	 * Get matched route instance reference for given request object

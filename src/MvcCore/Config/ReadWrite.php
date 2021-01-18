@@ -124,8 +124,10 @@ trait ReadWrite {
 				5000,	// Maximum milliseconds time to wait before thrown an exception about not possible write.
 				30000	// Maximum milliseconds time to consider lock file as operative or as old after some died process.
 			);
-		} catch (\Exception $ex) {
-			throw $ex;
+		} catch (\Exception $e) { // backward compatibility
+			throw $e;
+		} catch (\Throwable $e) {
+			throw $e;
 		}
 		return TRUE;
 	}

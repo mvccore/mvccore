@@ -11,6 +11,6 @@
  * @license  https://mvccore.github.io/docs/mvccore/5.0.0/LICENCE.md
  */
 
-if (!interface_exists('\\Throwable') && !class_exists('\\Throwable')) {
+if (PHP_VERSION_ID < 70000 && !interface_exists('\\Throwable') && !class_exists('\\Throwable')) {
 	class Throwable extends \Exception {}
 }
