@@ -103,7 +103,7 @@ trait MagicMethods {
 					: substr($rawPropName, $pos + 1);
 				$doNotSerialize = (
 					isset($protectedPropNames[$propName]) &&
-					$protectedPropNames[$propName]
+					!$protectedPropNames[$propName]
 				);
 				if (!$doNotSerialize)
 					$__serializePropsNames[] = $rawPropName;
