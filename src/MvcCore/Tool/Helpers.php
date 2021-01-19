@@ -89,7 +89,11 @@ trait Helpers {
 	public static function Invoke ($internalFnOrHandler, array $args, callable $onError) {
 		$prevErrorHandler = NULL;
 		$prevErrorHandler = set_error_handler(
-			function ($errLevel, $errMessage, $errFile, $errLine, $errContext) use ($onError, & $prevErrorHandler, $internalFnOrHandler) {
+			function (
+				$errLevel, $errMessage, $errFile, $errLine
+			) use (
+				$onError, & $prevErrorHandler, $internalFnOrHandler
+			) {
 				if ($errFile === '' && defined('HHVM_VERSION'))  // https://github.com/facebook/hhvm/issues/4625
 					$errFile = func_get_arg(5)[1]['file'];
 				if ($errFile === __FILE__) {
@@ -100,7 +104,7 @@ trait Helpers {
 							: strval($internalFnOrHandler)
 						);
 					$errMessage = preg_replace("#^$funcNameStr\(.*?\): #", '', $errMessage);
-					if ($onError($errMessage, $errLevel, $errFile, $errLine, $errContext) !== FALSE)
+					if ($onError($errMessage, $errLevel, $errFile, $errLine) !== FALSE)
 						return TRUE;
 				}
 				return $prevErrorHandler
