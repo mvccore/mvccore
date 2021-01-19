@@ -87,7 +87,7 @@ trait MetaData {
 				isset(static::$protectedProperties[$prop->name])
 			) continue;
 			$metaDataItem[$prop->name] = static::parseMetaDataProperty(
-				$prop, $phpWithTypes, $phpWithUnionTypes
+				$prop, [$phpWithTypes, $phpWithUnionTypes]
 			);
 		}
 		return $metaDataItem;
@@ -99,11 +99,11 @@ trait MetaData {
 	 * - `1'	`boolean`	`TRUE` to allow `NULL` values.
 	 * - `2`	`string[]`	Property types from code or from doc comments or empty array.
 	 * @param \ReflectionProperty $prop 
-	 * @param bool $phpWithTypes 
-	 * @param bool $phpWithUnionTypes 
+	 * @param array $params [bool $phpWithTypes, bool $phpWithUnionTypes]
 	 * @return array
 	 */
-	protected static function parseMetaDataProperty (\ReflectionProperty $prop, $phpWithTypes, $phpWithUnionTypes) {
+	protected static function parseMetaDataProperty (\ReflectionProperty $prop, $params) {
+		list ($phpWithTypes, $phpWithUnionTypes) = $params;
 		$types = [];
 		$allowNull = FALSE;
 		if ($phpWithTypes && $prop->hasType()) {
