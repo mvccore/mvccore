@@ -367,11 +367,30 @@ trait InternalInits {
 		$this->scriptName = str_replace('\\', '/', $this->globalServer['SCRIPT_NAME']);
 		$lastSlashPos = mb_strrpos($this->scriptName, '/');
 		if ($lastSlashPos !== 0) {
-			$redirectUrl = rawurldecode(isset($this->globalServer['REDIRECT_URL']) ? $this->globalServer['REDIRECT_URL'] : '');
-			$redirectUrlLength = mb_strlen($redirectUrl);
+			// request uri is always there:
 			$requestUri = rawurldecode($this->globalServer['REQUEST_URI']);
 			$questionMarkPos = mb_strpos($requestUri, '?');
-			if ($questionMarkPos !== FALSE) $requestUri = mb_substr($requestUri, 0, $questionMarkPos);
+			if ($questionMarkPos !== FALSE) 
+				$requestUri = mb_substr($requestUri, 0, $questionMarkPos);
+
+			// try to complete redirected url if any:
+			$redirectPath = isset($this->globalServer['REDIRECT_REDIRECT_PATH']) 
+				? $this->globalServer['REDIRECT_REDIRECT_PATH'] 
+				: (isset($this->globalServer['REDIRECT_PATH']) 
+					? $this->globalServer['REDIRECT_PATH'] 
+					: NULL
+				);
+			if ($redirectPath !== NULL) {
+				// usually cases with script requests paths like `/index.php?action=submit`
+				$redirectPath = rawurldecode($redirectPath);
+				$redirectUrl = $redirectPath . $requestUri;
+			} else {
+				$redirectUrl = isset($this->globalServer['REDIRECT_URL']) 
+					? $this->globalServer['REDIRECT_URL'] 
+					: '';
+			}
+			$redirectUrlLength = mb_strlen($redirectUrl);
+			
 			if ($redirectUrlLength === 0 || ($redirectUrlLength > 0 && $redirectUrl === $requestUri)) {
 				$this->basePath = mb_substr($this->scriptName, 0, $lastSlashPos);
 				$this->scriptName = '/' . mb_substr($this->scriptName, $lastSlashPos + 1);
