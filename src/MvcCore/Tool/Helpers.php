@@ -152,7 +152,11 @@ trait Helpers {
 		$lockFullPath = $tmpDir . '/mvccore_lock_' . sha1($fullPath) . '.tmp';
 
 		// capture E_WARNINGs for `fopen()` and `filemtime()` and do not log them:
-		set_error_handler(function ($level, $msg, $file, $line, $args) use (& $fullPath, & $lockFullPath, & $lockHandle) {
+		set_error_handler(function (
+			$level, $msg, $file, $line
+		) use (
+			& $fullPath, & $lockFullPath, & $lockHandle
+		) {
 			if ($level == E_WARNING) {
 				if (
 					mb_strpos($msg, 'fopen(' . $fullPath) === 0 ||
