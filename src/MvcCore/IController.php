@@ -275,6 +275,45 @@ interface IController extends \MvcCore\Controller\IConstants {
 	public function SetIsAjax ($ajax);
 
 	/**
+	 * Get controller lifecycle state:
+	 * - 0 => Controller has been created.
+	 * - 1 => Controller has been initialized.
+	 * - 2 => Controller has been pre-dispatched.
+	 * - 3 => controller has been action executed.
+	 * - 4 => Controller has been rendered.
+	 * - 5 => Controller has been redirected.
+	 * You can compare value with predefined constants:
+	 * - `\MvcCore\IController::DISPATCH_STATE_CREATED`
+	 * - `\MvcCore\IController::DISPATCH_STATE_INITIALIZED`
+	 * - `\MvcCore\IController::DISPATCH_STATE_PRE_DISPATCHED`
+	 * - `\MvcCore\IController::DISPATCH_STATE_ACTION_EXECUTED`
+	 * - `\MvcCore\IController::DISPATCH_STATE_RENDERED`
+	 * - `\MvcCore\IController::DISPATCH_STATE_TERMINATED`
+	 * @return int
+	 */
+	public function GetDispatchState ();
+
+	/**
+	 * Set controller lifecycle state:
+	 * - 0 => Controller has been created.
+	 * - 1 => Controller has been initialized.
+	 * - 2 => Controller has been pre-dispatched.
+	 * - 3 => controller has been action executed.
+	 * - 4 => Controller has been rendered.
+	 * - 5 => Controller has been redirected.
+	 * You can use predefined constants:
+	 * - `\MvcCore\IController::DISPATCH_STATE_CREATED`
+	 * - `\MvcCore\IController::DISPATCH_STATE_INITIALIZED`
+	 * - `\MvcCore\IController::DISPATCH_STATE_PRE_DISPATCHED`
+	 * - `\MvcCore\IController::DISPATCH_STATE_ACTION_EXECUTED`
+	 * - `\MvcCore\IController::DISPATCH_STATE_RENDERED`
+	 * - `\MvcCore\IController::DISPATCH_STATE_TERMINATED`
+	 * @param int $dispatchState
+	 * @return \MvcCore\Controller
+	 */
+	public function SetDispatchState ($dispatchState);
+
+	/**
 	 * Get user model instance. Template method.
 	 * @return \MvcCore\Model
 	 */

@@ -202,6 +202,26 @@ trait GettersSetters {
 		$this->ajax = $ajax;
 		return $this;
 	}
+	
+	/**
+	 * @inheritDocs
+	 * @return int
+	 */
+	public function GetDispatchState () {
+		/** @var $this \MvcCore\Controller */
+		return $this->dispatchState;
+	}
+
+	/**
+	 * @inheritDocs
+	 * @param int $dispatchState
+	 * @return \MvcCore\Controller
+	 */
+	public function SetDispatchState ($dispatchState) {
+		/** @var $this \MvcCore\Controller */
+		$this->dispatchState = $dispatchState;
+		return $this;
+	}
 
 	/**
 	 * @inheritDocs
