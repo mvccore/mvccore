@@ -754,15 +754,10 @@ trait GettersSetters {
 	public function IsAjax () {
 		/** @var $this \MvcCore\Request */
 		if ($this->ajax === NULL) {
-			if (
-				isset($this->globalServer['HTTP_X_REQUESTED_WITH']) &&
-				strlen($this->globalServer['HTTP_X_REQUESTED_WITH']) > 0
-			) {
-				$this->ajax =TRUE;
-			} else {
-				$rawHeader = $this->GetHeader('X-Requested-With', '\-\. _a-zA-Z0-9', '');
-				$this->ajax = strlen($rawHeader) > 0;
-			}
+			$rawHeader = isset($this->globalServer['HTTP_X_REQUESTED_WITH'])
+				? $this->globalServer['HTTP_X_REQUESTED_WITH']
+				: $this->GetHeader('X-Requested-With', FALSE);
+			$this->ajax = mb_strtolower($rawHeader) === 'xmlhttprequest';
 		}
 		return $this->ajax;
 	}
