@@ -104,7 +104,7 @@ trait Props {
 	protected $host				= NULL;
 
 	/**
-	 * Http port defined in requested URI if any, parsed by `parse_url()`.
+	 * Http port defined in requested URI if any.
 	 * Empty string if there is no port number in requested address.`.
 	 * Example: `"88" | ""`
 	 * @var string|NULL
@@ -119,7 +119,7 @@ trait Props {
 	protected $domainParts		= NULL;
 
 	/**
-	 * `TRUE` if http port defined in requested URI (parsed by `parse_url()`).
+	 * `TRUE` if http port defined in requested URI.
 	 * @var bool
 	 */
 	protected $portDefined		= FALSE;
@@ -132,14 +132,14 @@ trait Props {
 	protected $path				= NULL;
 
 	/**
-	 * Uri query string without question mark.
+	 * URL query string without question mark.
 	 * Example: `"param-1=value-1&param-2=value-2&param-3[]=value-3-a&param-3[]=value-3-b"`
 	 * @var string|NULL
 	 */
 	protected $query			= NULL;
 
 	/**
-	 * Uri fragment parsed by `parse_url()` including hash.
+	 * URL fragment including hash.
 	 * Example: `"#any-sublink-path"`
 	 * @var string|NULL
 	 */

@@ -581,7 +581,7 @@ interface IRequest extends \MvcCore\Request\IConstants {
 	public function GetHost ();
 
 	/**
-	 * Set http port defined in requested URL if any, parsed by `parse_url().
+	 * Set http port defined in requested URL if any.
 	 * Empty string if there is no port number in requested address.`.
 	 * Example: `$request->SetPort("88")`
 	 * @param string $rawPort
@@ -590,7 +590,7 @@ interface IRequest extends \MvcCore\Request\IConstants {
 	public function SetPort ($rawPort);
 
 	/**
-	 * Get http port defined in requested URL if any, parsed by `parse_url().
+	 * Get http port defined in requested URL if any.
 	 * Empty string if there is no port number in requested address.`.
 	 * Example: `"88" | ""`
 	 * @return string
@@ -673,7 +673,7 @@ interface IRequest extends \MvcCore\Request\IConstants {
 	public function GetFullUrl ($rawInput = FALSE);
 
 	/**
-	 * Get URI fragment parsed by `parse_url()` (without hash character by default).
+	 * Get URI fragment (without hash character by default).
 	 * Example: `"any-sublink-path"`
 	 * @param bool $withHash If `FALSE` (by default), fragment is returned always without hash character
 	 *					   at the beginning.
