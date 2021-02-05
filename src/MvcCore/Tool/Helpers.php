@@ -269,4 +269,183 @@ trait Helpers {
 		}
 		return implode('/', $items);
 	}
+
+	/**
+	 * Parse a URL and return it's components.
+	 * @see https://www.php.net/manual/en/function.parse-url.php
+	 * @see https://bugs.php.net/bug.php?id=73192
+	 * @see https://en.wikipedia.org/wiki/Uniform_Resource_Identifier
+	 * @param string $uri 
+	 * @param int $component 
+	 * @return array|string|int|null|false
+	 */
+	public static function ParseUrl ($uri, $component = -1) {
+		static $parseUriConstsToKeys = [
+			PHP_URL_SCHEME		=> 'scheme',
+			PHP_URL_USER		=> 'user',
+			PHP_URL_PASS		=> 'pass',
+			PHP_URL_HOST		=> 'host',
+			PHP_URL_PORT		=> 'port',
+			PHP_URL_PATH		=> 'path',
+			PHP_URL_QUERY		=> 'query',
+			PHP_URL_FRAGMENT	=> 'fragment',
+		];
+
+		if ($uri === NULL) return NULL;
+
+		$result = [
+			//'scheme'		=> NULL,
+			//'user'		=> NULL,
+			//'pass'		=> NULL,
+			//'host'		=> NULL,
+			//'port'		=> NULL,
+			//'path'		=> NULL,
+			//'query'		=> NULL,
+			//'fragment'	=> NULL,
+		];
+		
+		$uriWithoutScheme = NULL;
+		$uriAuthority = NULL;
+		$uriUserInfo = NULL;
+		$uriAuthorityHost = NULL;
+		$uriWithoutAuthority = NULL;
+
+		try {
+			// scheme:
+			$firstColonPos = FALSE;
+			if (preg_match("#^([a-z]+):#", $uri)) 
+				$firstColonPos = mb_strpos($uri, ':');
+			if ($firstColonPos === FALSE) {
+				$doubleSlashPos = FALSE;
+				if (preg_match("#^//#", $uri)) 
+					$doubleSlashPos = mb_strpos($uri, '//');
+				if ($doubleSlashPos === FALSE) {
+					$uriWithoutAuthority = $uri;
+				} else {
+					$uriWithoutScheme = $uri;
+				}
+			} else {
+				$result['scheme'] = mb_substr($uri, 0, $firstColonPos);
+				$uriWithoutScheme = mb_substr($uri, $firstColonPos + 1);
+			}
+			
+			// separate authority and path[+query[+fragment]]:
+			if ($uriWithoutScheme !== NULL) {
+				$doubleSlashPos = mb_strpos($uriWithoutScheme, '//');
+				if ($doubleSlashPos === FALSE) {
+					$uriWithoutAuthority = $uri;
+				} else {
+					$uriLen = mb_strlen($uriWithoutScheme);
+					$nextSlashPos = mb_strpos($uriWithoutScheme, '/', 2) ?: $uriLen;
+					$nextQmPos = mb_strpos($uriWithoutScheme, '?', 2) ?: $uriLen;
+					$nextHashPos = mb_strpos($uriWithoutScheme, '#', 2) ?: $uriLen;
+					$nextDelimPos = min($nextSlashPos, $nextQmPos, $nextHashPos);
+					if ($nextDelimPos === $uriLen) {
+						$uriAuthority = mb_substr($uriWithoutScheme, 2);
+					} else {
+						$uriAuthority = mb_substr($uriWithoutScheme, 2, $nextDelimPos - 2);
+						$uriWithoutAuthority = mb_substr($uriWithoutScheme, $nextDelimPos);
+					}
+				}
+			}
+
+			// separate authority user info and hostname or ip [+port]:
+			if ($uriAuthority !== NULL) {
+				$atPos = mb_strpos($uriAuthority, '@');
+				if ($atPos === FALSE) {
+					$uriAuthorityHost = $uriAuthority;
+				} else {
+					$uriUserInfo = mb_substr($uriAuthority, 0, $atPos);
+					$uriAuthorityHost = mb_substr($uriAuthority, $atPos + 1);
+				}
+			}
+
+			// user info:
+			if ($uriUserInfo !== NULL) {
+				$colonPos = mb_strpos($uriUserInfo, ':');
+				if ($colonPos === FALSE) {
+					$result['user'] = $uriUserInfo;
+				} else {
+					$result['user'] = mb_substr($uriUserInfo, 0, $colonPos);
+					$result['pass'] = mb_substr($uriUserInfo, $colonPos + 1);
+				}
+			}
+
+			// authority - domain or ip [+ port]:
+			if ($uriAuthorityHost !== NULL) {
+				$ipv6OpenPos = mb_strpos($uriAuthorityHost, '[');
+				$ipv6ClosePos = mb_strrpos($uriAuthorityHost, ']');
+				$uriPort = NULL;
+				if ($ipv6OpenPos !== FALSE && $ipv6ClosePos !== FALSE) {
+					$ipv6ClosePos++;
+					$result['host'] = mb_substr($uriAuthorityHost, $ipv6OpenPos, $ipv6ClosePos - $ipv6OpenPos);
+					$uriPort = ltrim(mb_substr($uriAuthorityHost, $ipv6ClosePos), ':');
+				} else {
+					$lastColonPos = mb_strrpos($uriAuthorityHost, ':');
+					if ($lastColonPos === FALSE) {
+						$result['host'] = $uriAuthorityHost;
+					} else {
+						$result['host'] = mb_substr($uriAuthorityHost, 0, $lastColonPos);
+						$uriPort = mb_substr($uriAuthorityHost, $lastColonPos + 1);
+					}
+				}
+				if ($uriPort !== NULL && $uriPort !== '' && preg_match("#^\d+$#", $uriPort)) 
+					$result['port'] = intval($uriPort);
+			}
+
+			// path[+query[+fragment]]:
+			if ($uriWithoutAuthority !== NULL) {
+				$qmPos = mb_strpos($uriWithoutAuthority, '?');
+				$hashPos = mb_strpos($uriWithoutAuthority, '#');
+				$qmContained = $qmPos !== FALSE;
+				$hashContained = $hashPos !== FALSE;
+				if (!$qmContained && !$hashContained) {
+					// path, no query, no hash
+					if ($uriWithoutAuthority !== '') $result['path'] = $uriWithoutAuthority;
+				} else if ($qmContained && !$hashContained) {
+					// path, query and no hash
+					$path = mb_substr($uriWithoutAuthority, 0, $qmPos);
+					if ($path !== '') $result['path'] = $path;
+					$result['query'] = trim(mb_substr($uriWithoutAuthority, $qmPos + 1), '&');
+				} else if (!$qmContained && $hashContained) {
+					// path, no query and hash
+					$path = mb_substr($uriWithoutAuthority, 0, $hashPos);
+					if ($path !== '') $result['path'] = $path;
+					$result['fragment'] = mb_substr($uriWithoutAuthority, $hashPos + 1);
+				} else if ($qmContained && $hashContained && $qmPos < $hashPos) {
+					// path or no path, query and hash
+					$path = mb_substr($uriWithoutAuthority, 0, $qmPos);
+					if ($path !== '') $result['path'] = $path;
+					$result['query'] = trim(mb_substr($uriWithoutAuthority, $qmPos + 1, $hashPos - $qmPos - 1), '&');
+					$result['fragment'] = mb_substr($uriWithoutAuthority, $hashPos + 1);
+				} else {
+					// path, no query and hash containing question mark
+					$path = mb_substr($uriWithoutAuthority, 0, $qmPos);
+					if ($path !== '') $result['path'] = $path;
+					$result['fragment'] = mb_substr($uriWithoutAuthority, $hashPos + 1);
+				}
+			}
+
+		} catch (\Throwable $e1) {
+			$component = -1;
+			$result = FALSE;
+		} catch (\Exception $e2) {
+			$component = -1;
+			$result = FALSE;
+		}
+
+		// result:
+		if ($component !== -1) {
+			if (isset($parseUriConstsToKeys[$component])) {
+				$resultKey = $parseUriConstsToKeys[$component];	
+				return isset($result[$resultKey])
+					? $result[$resultKey]
+					: NULL;
+			} else {
+				return FALSE;
+			}
+		} else {
+			return $result;
+		}
+	}
 }

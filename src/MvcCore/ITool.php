@@ -219,6 +219,17 @@ interface ITool {
 	 */
 	public static function RealPathVirtual ($path);
 
+	/**
+	 * Parse a URL and return it's components.
+	 * @see https://www.php.net/manual/en/function.parse-url.php
+	 * @see https://bugs.php.net/bug.php?id=73192
+	 * @see https://en.wikipedia.org/wiki/Uniform_Resource_Identifier
+	 * @param string $uri 
+	 * @param int $component 
+	 * @return array|string|int|null|false
+	 */
+	public static function ParseUrl ($uri, $component = -1);
+
 	
 	/**
 	 * Set prefered PHP classes and properties anontation preference.
