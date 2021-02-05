@@ -123,8 +123,9 @@ trait InternalInits {
 	}
 
 	/**
-	 * Initialize URI segments parsed by `parse_url()`
-	 * php method: port, path, query and fragment.
+	 * Initialize URI segments: port, path, query and fragment.
+	 * @see https://en.wikipedia.org/wiki/Uniform_Resource_Identifier
+	 * @see https://bugs.php.net/bug.php?id=73192
 	 * @return void
 	 */
 	protected function initUrlSegments () {
@@ -134,7 +135,7 @@ trait InternalInits {
 		$this->path = '';
 		$this->query = '';
 		$this->fragment = '';
-
+		
 		$uri = $this->GetScheme() . '//'
 			. $this->globalServer['HTTP_HOST'];
 		if (isset($this->globalServer['UNENCODED_URL'])) {
@@ -144,28 +145,41 @@ trait InternalInits {
 		} else {
 			$uri .= rawurldecode($this->globalServer['REQUEST_URI']);
 		}
-
-		$firstColonPos = mb_strpos($uri, ':');
+		
+		
+		$firstColonPos = FALSE;
+		if (preg_match("#^([a-z]+):#", $uri)) 
+			$firstColonPos = mb_strpos($uri, ':');
 		if ($firstColonPos !== FALSE)
 			$uri = mb_substr($uri, $firstColonPos + 1);
-
-		if (mb_substr($uri, 0, 2) === '//') {
-			$nextSlashPos = mb_strpos($uri, '/', 2);
-			if ($nextSlashPos !== FALSE) {
-				$authority = mb_substr($uri, 2, $nextSlashPos - 2);
-				$uri = mb_substr($uri, $nextSlashPos);
-				$colonsCount = mb_substr_count($authority, ':');
-				if ($colonsCount === 1) {
-					$colonPos = mb_strpos($authority, ':');
-					$this->port = mb_substr($authority, $colonPos + 1);
-					if ($this->port !== '')
-						$this->portDefined = TRUE;
-				}
+		if (preg_match("#^//#", $uri)) {
+			$uriLen = mb_strlen($uri);
+			$nextSlashPos = mb_strpos($uri, '/', 2) ?: $uriLen;
+			$nextQmPos = mb_strpos($uri, '?', 2) ?: $uriLen;
+			$nextHashPos = mb_strpos($uri, '#', 2) ?: $uriLen;
+			$nextDelimPos = min($nextSlashPos, $nextQmPos, $nextHashPos);
+			if ($nextDelimPos === $uriLen) return;
+			$authority = mb_substr($uri, 2, $nextDelimPos - 2);
+			$uri = mb_substr($uri, $nextDelimPos);
+			$ipv6OpenPos = mb_strpos($authority, '[');
+			$ipv6ClosePos = mb_strrpos($authority, ']');
+			$uriPort = NULL;
+			if ($ipv6OpenPos !== FALSE && $ipv6ClosePos !== FALSE) {
+				$uriPort = mb_substr($authority, $ipv6ClosePos + 1);
 			} else {
-				return;
+				$lastColonPos = mb_strrpos($authority, ':');
+				if ($lastColonPos !== FALSE) 
+					$uriPort = mb_substr($authority, $lastColonPos + 1);
 			}
+			if ($uriPort !== NULL && $uriPort !== '' && preg_match("#^\d+$#", $uriPort)) {
+				$this->port = $uriPort;
+				$this->portDefined = TRUE;
+			}
+		} else {
+			$this->path = $uri;
+			return;
 		}
-
+		
 		$basePath = $this->GetBasePath();
 		$uri = mb_substr($uri, mb_strlen($basePath));
 
@@ -185,9 +199,9 @@ trait InternalInits {
 			$this->path = mb_substr($uri, 0, $hashPos);
 			$this->fragment = mb_substr($uri, $hashPos + 1);
 		} else if ($questionMarkContained && $hashContained && $questionMarkPos < $hashPos) {
-			// path, query and hash
+			// path or no path, query and hash
 			$this->path = mb_substr($uri, 0, $questionMarkPos);
-			$this->query = trim(mb_substr($uri, $questionMarkPos + 1, $questionMarkPos + 1 - $hashPos), '&');
+			$this->query = trim(mb_substr($uri, $questionMarkPos + 1, $hashPos - $questionMarkPos - 1), '&');
 			$this->fragment = mb_substr($uri, $hashPos + 1);
 		} else {
 			// path, no query and hash containing question mark
