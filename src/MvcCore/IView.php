@@ -37,6 +37,7 @@ namespace MvcCore;
  * - No special view language implemented, use `short_open_tags` (`<?=...?>`) allowed by default.
  *
  * MvcCore view properties and helpers:
+ * 
  * @property-read \MvcCore\Controller $controller Currently dispatched controller instance.
  * @method \MvcCore\Ext\Views\Helpers\CssHelper Css(string $groupName = self::GROUP_NAME_DEFAULT) Get css helper instance by group name. To use this method, you need to install extension `mvccore/ext-view-helper-assets`.
  * @method \MvcCore\Ext\Views\Helpers\JsHelper Js(string $groupName = self::GROUP_NAME_DEFAULT) Get js helper instance by group name. To use this method, you need to install extension `mvccore/ext-view-helper-assets`.
@@ -352,7 +353,6 @@ interface IView extends \MvcCore\View\IConstants {
 	 * Escape string for use inside HTML/XHTML/HTML5 
 	 * node as text content.
 	 * @param string	$str 
-	 * @param bool		$double 
 	 * @param string	$encoding 
 	 * @return string
 	 */
@@ -362,7 +362,6 @@ interface IView extends \MvcCore\View\IConstants {
 	 * Escape string for use inside HTML/XHTML/HTML5 
 	 * node between `<` and `>` for attributes definitions.
 	 * @param string	$str 
-	 * @param bool		$double 
 	 * @param string	$encoding 
 	 * @return string
 	 */
@@ -379,9 +378,9 @@ interface IView extends \MvcCore\View\IConstants {
 	
 	/**
 	 * Escape string for use inside XML template.
-	 * XML 1.0:	\x09 \x0A \x0D and C1 allowed directly, C0 forbidden
+	 * XML 1.0:	\x09 \x0A \x0D and C1 allowed directly, C0 forbidden.
 	 * XML 1.1:	\x00 forbidden directly and as a character reference,
-	 * 		\x09 \x0A \x0D \x85 allowed directly, C0, C1 and \x7F allowed as character references
+	 * 		\x09 \x0A \x0D \x85 allowed directly, C0, C1 and \x7F allowed as character references.
 	 * @param string $str 
 	 * @param string $encoding 
 	 * @return string
@@ -421,7 +420,7 @@ interface IView extends \MvcCore\View\IConstants {
 	 * @param string $helperNameCamelCase View helper method name in camel case.
 	 * @param bool $asClosure Get View helper prepared as closure function, `FALSE` by default.
 	 * @throws \InvalidArgumentException If view doesn't exist in configured namespaces.
-	 * @return mixed View helper instance, always as `\MvcCore\Ext\Views\Helpers\AbstractHelper|\MvcCore\Ext\Views\Helpers\IHelper` instance.
+	 * @return \MvcCore\Ext\Views\Helpers\AbstractHelper|\MvcCore\Ext\Views\Helpers\IHelper|\Closure|mixed View helper instance.
 	 */
 	public function & GetHelper ($helperNameCamelCase, $asClosure = FALSE);
 
