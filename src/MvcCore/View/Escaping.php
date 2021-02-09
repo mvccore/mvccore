@@ -18,7 +18,6 @@ trait Escaping {
 	/**
 	 * @inheritDocs
 	 * @param string	$str 
-	 * @param bool		$double 
 	 * @param string	$encoding 
 	 * @return string
 	 */
@@ -32,7 +31,6 @@ trait Escaping {
 	/**
 	 * @inheritDocs
 	 * @param string	$str 
-	 * @param bool		$double 
 	 * @param string	$encoding 
 	 * @return string
 	 */
