@@ -33,7 +33,7 @@ trait Detection {
 
 	/**
 	 * @inheritDocs
-	 * @param array $environmentsSectionData System config environment section data part.
+	 * @param  array  $environmentsSectionData System config environment section data part.
 	 * @return string Detected environment string.
 	 */
 	public static function DetectBySystemConfig (array $environmentsSectionData = []) {
@@ -62,8 +62,8 @@ trait Detection {
 	/**
 	 * Parse system config environment section data from various declarations
 	 * into specific detection structure.
-	 * @param mixed $environmentSection
-	 * @param string|NULL $clientIp
+	 * @param  mixed       $environmentSection
+	 * @param  string|NULL $clientIp
 	 * @return \stdClass
 	 */
 	protected static function detectByConfigSectionData ($environmentSection, $clientIp) {
@@ -128,8 +128,8 @@ trait Detection {
 	/**
 	 * Parse system config environment section data from various declarations
 	 * about client IP addresses into specific detection structure.
-	 * @param \stdClass $data
-	 * @param mixed $rawClientIps
+	 * @param  \stdClass $data
+	 * @param  mixed     $rawClientIps
 	 * @return void
 	 */
 	protected static function detectByConfigClientIps (& $data, $rawClientIps) {
@@ -160,8 +160,8 @@ trait Detection {
 	/**
 	 * Parse system config environment section data from various declarations
 	 * about application document root path into specific detection structure.
-	 * @param \stdClass $data
-	 * @param mixed $rawPaths
+	 * @param  \stdClass $data
+	 * @param  mixed     $rawPaths
 	 * @return void
 	 */
 	protected static function detectByConfigPaths (& $data, $rawPaths) {
@@ -192,8 +192,8 @@ trait Detection {
 	/**
 	 * Parse system config environment section data from various declarations
 	 * about server host names into specific detection structure.
-	 * @param \stdClass $data
-	 * @param mixed $rawHostNames
+	 * @param  \stdClass $data
+	 * @param  mixed     $rawHostNames
 	 * @return void
 	 */
 	protected static function detectByConfigServerNames (& $data, $rawHostNames) {
@@ -224,8 +224,8 @@ trait Detection {
 	/**
 	 * Parse system config environment section data from various declarations
 	 * about server environment variables into specific detection structure.
-	 * @param \stdClass $data
-	 * @param mixed $rawServerVariable
+	 * @param  \stdClass $data
+	 * @param  mixed     $rawServerVariable
 	 * @return void
 	 */
 	protected static function detectByConfigEnvVariables (& $data, $rawServerVariable) {
@@ -357,7 +357,7 @@ trait Detection {
 
 	/**
 	 * Check if given string is PHP regular expression syntax.
-	 * @param string $rawValue
+	 * @param  string $rawValue
 	 * @return bool
 	 */
 	protected static function detectRegExpCheck ($rawValue) {
@@ -366,7 +366,7 @@ trait Detection {
 
 	/**
 	 * Convert given regular expression into hash trailing characters form.
-	 * @param string $regExpWithTrailingSlashes
+	 * @param  string $regExpWithTrailingSlashes
 	 * @return string
 	 */
 	protected static function detectRegExpConvert ($regExpWithTrailingSlashes) {

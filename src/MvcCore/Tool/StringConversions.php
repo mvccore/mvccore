@@ -17,7 +17,7 @@ trait StringConversions {
 
 	/**
 	 * @inheritDocs
-	 * @param string $pascalCase
+	 * @param  string $pascalCase
 	 * @return string
 	 */
 	public static function GetDashedFromPascalCase ($pascalCase = '') {
@@ -50,7 +50,7 @@ trait StringConversions {
 
 	/**
 	 * @inheritDocs
-	 * @param string $dashed
+	 * @param  string $dashed
 	 * @return string
 	 */
 	public static function GetPascalCaseFromDashed ($dashed = '') {
@@ -65,7 +65,7 @@ trait StringConversions {
 
 	/**
 	 * @inheritDocs
-	 * @param string $pascalCase
+	 * @param  string $pascalCase
 	 * @return string
 	 */
 	public static function GetUnderscoredFromPascalCase ($pascalCase = '') {
@@ -97,7 +97,7 @@ trait StringConversions {
 
 	/**
 	 * @inheritDocs
-	 * @param string $underscored
+	 * @param  string $underscored
 	 * @return string
 	 */
 	public static function GetPascalCaseFromUnderscored ($underscored = '') {
@@ -112,8 +112,8 @@ trait StringConversions {
 	
 	/**
 	 * PHP < 5.4.32 compatible method.
-	 * @param string $str 
-	 * @param string $delimiter 
+	 * @param  string $str 
+	 * @param  string $delimiter 
 	 * @return string
 	 */
 	protected static function upperCaseWords ($str, $delimiter) {

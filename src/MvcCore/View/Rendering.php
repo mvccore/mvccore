@@ -17,7 +17,7 @@ trait Rendering {
 
 	/**
 	 * @inheritDocs
-	 * @param string $relativePath
+	 * @param  string $relativePath
 	 * @return string
 	 */
 	public function & RenderScript ($relativePath = '') {
@@ -27,7 +27,7 @@ trait Rendering {
 
 	/**
 	 * @inheritDocs
-	 * @param string $relativePath
+	 * @param  string $relativePath
 	 * @return string
 	 */
 	public function & RenderLayout ($relativePath = '') {
@@ -37,8 +37,8 @@ trait Rendering {
 
 	/**
 	 * @inheritDocs
-	 * @param string $relativePatht.
-	 * @param string $content
+	 * @param  string $relativePatht.
+	 * @param  string $content
 	 * @return string
 	 */
 	public function & RenderLayoutAndContent ($relativePath = '', & $content = NULL) {
@@ -50,9 +50,9 @@ trait Rendering {
 
 	/**
 	 * @inheritDocs
-	 * @param int $renderMode
-	 * @param string $controllerOrActionNameDashed
-	 * @param string $actionNameDashed
+	 * @param  int    $renderMode
+	 * @param  string $controllerOrActionNameDashed
+	 * @param  string $actionNameDashed
 	 * @return \MvcCore\View
 	 */
 	public function SetUpRender ($renderMode = \MvcCore\IView::RENDER_WITH_OB_FROM_ACTION_TO_LAYOUT, $controllerOrActionNameDashed = NULL, $actionNameDashed = NULL) {
@@ -87,8 +87,8 @@ trait Rendering {
 
 	/**
 	 * @inheritDocs
-	 * @param string $typePath By default: `"Layouts" | "Scripts"`. It could be `"Forms" | "Forms/Fields"` etc...
-	 * @param string $relativePath
+	 * @param  string      $typePath     By default: `"Layouts" | "Scripts"`. It could be `"Forms" | "Forms/Fields"` etc...
+	 * @param  string      $relativePath
 	 * @throws \InvalidArgumentException Template not found in path: `$viewScriptFullPath`.
 	 * @return string
 	 */
@@ -137,8 +137,8 @@ trait Rendering {
 
 	/**
 	 * @inheritDocs
-	 * @param string $typePath Usually `"Layouts"` or `"Scripts"`.
-	 * @param string $corectedRelativePath
+	 * @param  string $typePath Usually `"Layouts"` or `"Scripts"`.
+	 * @param  string $corectedRelativePath
 	 * @return string
 	 */
 	public static function GetViewScriptFullPath ($typePath = '', $corectedRelativePath = '') {
@@ -153,8 +153,8 @@ trait Rendering {
 
 	/**
 	 * @inheritDocs
-	 * @param \MvcCore\View $view
-	 * @param bool $overwriteExistingKeys If any property name already exist in view store, overwrite it by given value by default.
+	 * @param  \MvcCore\View $view
+	 * @param  bool          $overwriteExistingKeys If any property name already exist in view store, overwrite it by given value by default.
 	 * @return \MvcCore\View
 	 */
 	public function SetUpStore (\MvcCore\IView $view, $overwriteExistingKeys = TRUE) {
@@ -205,7 +205,7 @@ trait Rendering {
 
 	/**
 	 * @inheritDocs
-	 * @param string $content
+	 * @param  string $content
 	 * @return string
 	 */
 	public function & Evaluate ($content) {
@@ -226,7 +226,7 @@ trait Rendering {
 
 	/**
 	 * Set up build in view instance helpers before rendering.
-	 * @param array $helpers 
+	 * @param  array $helpers 
 	 * @return void
 	 */
 	protected function setUpRenderBuildInHelpers (& $helpers) {

@@ -107,7 +107,7 @@ trait PropsGettersSetters {
 
 	/**
 	 * @inheritDocs
-	 * @param string $httpVersion
+	 * @param  string $httpVersion
 	 * @return \MvcCore\Response
 	 */
 	public function SetHttpVersion ($httpVersion) {
@@ -118,8 +118,8 @@ trait PropsGettersSetters {
 
 	/**
 	 * @inheritDocs
-	 * @param int $code
-	 * @param string|NULL $codeMessage
+	 * @param  int         $code
+	 * @param  string|NULL $codeMessage
 	 * @return \MvcCore\Response
 	 */
 	public function SetCode ($code, $codeMessage = NULL) {
@@ -145,7 +145,7 @@ trait PropsGettersSetters {
 
 	/**
 	 * @inheritDocs
-	 * @param string $encoding
+	 * @param  string $encoding
 	 * @return \MvcCore\Response
 	 */
 	public function SetEncoding ($encoding = 'utf-8') {

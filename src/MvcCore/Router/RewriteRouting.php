@@ -82,7 +82,7 @@ trait RewriteRouting {
 	 * Call any configured pre-route matching handler with first parsed word from
 	 * requested path and with request object to load for example from database
 	 * only routes you need to use for routing, not all of them.
-	 * @param string $firstPathWord 
+	 * @param  string $firstPathWord 
 	 * @return void
 	 */
 	protected function rewriteRoutingProcessPreHandler ($firstPathWord) {
@@ -96,7 +96,7 @@ trait RewriteRouting {
 	 * If first path word is an empty string, there is returned routes with no group
 	 * word defined. If still there are no such routes in default group, returned 
 	 * is an empty array.
-	 * @param string $firstPathWord 
+	 * @param  string $firstPathWord 
 	 * @return array|\MvcCore\Route[]
 	 */
 	protected function rewriteRoutingGetRoutesToMatch ($firstPathWord) {
@@ -117,8 +117,8 @@ trait RewriteRouting {
 	 * to route request by given route as first argument. For example if route
 	 * object has defined http method and request has the same method or not 
 	 * or much more by additional info array records in extended classes.
-	 * @param \MvcCore\IRoute $route 
-	 * @param array $additionalInfo 
+	 * @param  \MvcCore\IRoute $route 
+	 * @param  array           $additionalInfo 
 	 * @return bool
 	 */
 	protected function rewriteRoutingCheckRoute (\MvcCore\IRoute $route, array $additionalInfo) {

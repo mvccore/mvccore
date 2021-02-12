@@ -49,8 +49,8 @@ trait Initializations {
 
 	/**
 	 * @inheritDocs
-	 * @param bool $strictExceptionsMode
-	 * @param \int[] $errorLevelsToExceptions E_ERROR, E_RECOVERABLE_ERROR, E_CORE_ERROR, E_USER_ERROR, E_WARNING, E_CORE_WARNING, E_USER_WARNING
+	 * @param  bool   $strictExceptionsMode
+	 * @param  \int[] $errorLevelsToExceptions E_ERROR, E_RECOVERABLE_ERROR, E_CORE_ERROR, E_USER_ERROR, E_WARNING, E_CORE_WARNING, E_USER_WARNING
 	 * @return bool|NULL
 	 */
 	public static function SetStrictExceptionsMode ($strictExceptionsMode, array $errorLevelsToExceptions = []) {
@@ -87,7 +87,7 @@ trait Initializations {
 	/**
 	 * Initialize strict exceptions mode in default levels or in customized
 	 * levels from system config.
-	 * @param bool|NULL $strictExceptionsMode
+	 * @param  bool|NULL $strictExceptionsMode
 	 * @return bool|NULL
 	 */
 	protected static function initStrictExceptionsMode ($strictExceptionsMode) {

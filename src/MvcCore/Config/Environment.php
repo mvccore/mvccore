@@ -29,7 +29,7 @@ trait Environment {
 
 	/**
 	 * @inheritDocs
-	 * @param \MvcCore\Config $config
+	 * @param  \MvcCore\Config $config
 	 * @return array|\stdClass
 	 */
 	public static function & GetEnvironmentDetectionData (\MvcCore\IConfig $config) {
@@ -61,8 +61,8 @@ trait Environment {
 
 	/**
 	 * @inheritDocs
-	 * @param \MvcCore\Config $config
-	 * @param string $environmentName
+	 * @param  \MvcCore\Config $config
+	 * @param  string          $environmentName
 	 * @return void
 	 */
 	public static function SetUpEnvironmentData (\MvcCore\IConfig $config, $environmentName) {
@@ -140,8 +140,8 @@ trait Environment {
 	/**
 	 * Merge data from `$config->envData` array (-> common end env. specific records)
 	 * into given result collection.
-	 * @param array $resultCollection
-	 * @param string $environmentName
+	 * @param  array  $resultCollection
+	 * @param  string $environmentName
 	 * @return void
 	 */
 	protected static function mergeEnvironmentData (\MvcCore\IConfig $config, & $resultCollection, $environmentName) {
@@ -171,8 +171,8 @@ trait Environment {
 
 	/**
 	 * Recursively merge two `\stdClass|array` objects and returns a resulting object.
-	 * @param \stdClass|array $commonEnvData The base object.
-	 * @param \stdClass|array $specificEnvData The merge object.
+	 * @param  \stdClass|array $commonEnvData   The base object.
+	 * @param  \stdClass|array $specificEnvData The merge object.
 	 * @return \stdClass|array The merged object
 	 */
 	protected static function mergeRecursive ($commonEnvData, $specificEnvData) {
@@ -184,8 +184,8 @@ trait Environment {
 	/**
 	 * Recursively merge two `\stdClass|array` objects and returns a resulting object.
 	 * First object will be changed.
-	 * @param \stdClass|array $commonEnvData The base object.
-	 * @param \stdClass|array $specificEnvData The merge object.
+	 * @param  \stdClass|array $commonEnvData   The base object.
+	 * @param  \stdClass|array $specificEnvData The merge object.
 	 * @return void
 	 */
 	private static function _mergeArraysOrObjectsRecursive (& $commonEnvData, & $specificEnvData) {

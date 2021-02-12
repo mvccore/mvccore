@@ -131,7 +131,7 @@ interface IRoute extends \MvcCore\Route\IConstants {
 	 *   matching all to the end of the URL address. It has to be the last one.
 	 *
 	 * Example: `"/products-list/<name>[/<color*>]"`.
-	 * @param string|array $pattern
+	 * @param  string|array $pattern
 	 * @return \MvcCore\Route
 	 */
 	public function SetPattern ($pattern);
@@ -176,7 +176,7 @@ interface IRoute extends \MvcCore\Route\IConstants {
 	 * and `pattern` parsing into `match` and `reverse` properties.
 	 *
 	 * Example: `"#^/products\-list/(?<name>[^/]+)(/(?<id>\d+))?/?$#"`
-	 * @param string|array $match
+	 * @param  string|array $match
 	 * @return \MvcCore\Route
 	 */
 	public function SetMatch ($match);
@@ -250,7 +250,7 @@ interface IRoute extends \MvcCore\Route\IConstants {
 	 * by given params in router method: `\MvcCore\Router:Url($name, $params);`.
 	 *
 	 * Example: `"products_list" | "Products:Gallery"`
-	 * @param string|NULL $name
+	 * @param  string|NULL $name
 	 * @return \MvcCore\Route
 	 */
 	public function SetName ($name);
@@ -305,7 +305,7 @@ interface IRoute extends \MvcCore\Route\IConstants {
 	 *   - placed in `/App/Controllers/Front/Business/Products.php`
 	 * - `"//Anywhere\Else\Controllers\Products"
 	 *   - placed in `/Anywhere/Else/Controllers/Products.php`
-	 * @param string|NULL $controller
+	 * @param  string|NULL $controller
 	 * @return \MvcCore\Route
 	 */
 	public function SetController ($controller);
@@ -338,7 +338,7 @@ interface IRoute extends \MvcCore\Route\IConstants {
 	 * controller has to be named as: `public function ListAction () {...}`.
 	 *
 	 * Example: `"List"`
-	 * @param string|NULL $action
+	 * @param  string|NULL $action
 	 * @return \MvcCore\Route
 	 */
 	public function SetAction ($action);
@@ -381,7 +381,7 @@ interface IRoute extends \MvcCore\Route\IConstants {
 	 * param from those application inputs - `$_GET`, `$_POST` or `php://input`.
 	 *
 	 * Example: `["name" => "default-name", "color" => "red",]`.
-	 * @param array|\array[] $defaults
+	 * @param  array|\array[] $defaults
 	 * @return \MvcCore\Route
 	 */
 	public function SetDefaults ($defaults = []);
@@ -406,7 +406,7 @@ interface IRoute extends \MvcCore\Route\IConstants {
 	 * is `"[^.]+"` for domain part and `"[^/]+"` for path part.
 	 *
 	 * Example: `["name"	=> "[^/]+", "color"	=> "[a-z]+",]`
-	 * @param array|\array[] $constraints
+	 * @param  array|\array[] $constraints
 	 * @return \MvcCore\Route
 	 */
 	public function SetConstraints ($constraints = []);
@@ -453,7 +453,7 @@ interface IRoute extends \MvcCore\Route\IConstants {
 	 * There is possible to call any `callable` as closure function in variable
 	 * except forms like `'ClassName::methodName'` and `['childClassName', 
 	 * 'parent::methodName']` and `[$childInstance, 'parent::methodName']`.
-	 * @param array|\callable[] $filters 
+	 * @param  array|\callable[] $filters 
 	 * @return \MvcCore\Route
 	 */
 	public function SetFilters (array $filters = []);
@@ -498,8 +498,8 @@ interface IRoute extends \MvcCore\Route\IConstants {
 	 * There is possible to call any `callable` as closure function in variable
 	 * except forms like `'ClassName::methodName'` and `['childClassName', 
 	 * 'parent::methodName']` and `[$childInstance, 'parent::methodName']`.
-	 * @param \callable $handler 
-	 * @param string $direction
+	 * @param  \callable $handler 
+	 * @param  string $direction
 	 * @return \MvcCore\Route
 	 */
 	public function SetFilter ($handler, $direction = \MvcCore\IRoute::CONFIG_FILTER_IN);
@@ -518,7 +518,7 @@ interface IRoute extends \MvcCore\Route\IConstants {
 	 * request with any http method could be matched by this route. Value has to 
 	 * be in upper case.
 	 * Example: `"POST" | \MvcCore\IRequest::METHOD_POST`
-	 * @param string|NULL $method
+	 * @param  string|NULL $method
 	 * @return \MvcCore\Route
 	 */
 	public function SetMethod ($method = NULL);
@@ -557,7 +557,7 @@ interface IRoute extends \MvcCore\Route\IConstants {
 	 * always generated absolute URL form. If `FALSE`, absolute URL address is 
 	 * generated only if `pattern` (or `reverse`) property contains absolute 
 	 * matching form.
-	 * @param bool $absolute 
+	 * @param  bool $absolute 
 	 * @return \MvcCore\Route
 	 */
 	public function SetAbsolute ($absolute = TRUE);
@@ -576,7 +576,7 @@ interface IRoute extends \MvcCore\Route\IConstants {
 	 * from request path. First word is content between two first slashes in 
 	 * request path. If group name is `NULL`, route belongs to default group 
 	 * and that group is used when no other group matching the request path.
-	 * @param string|NULL $groupName 
+	 * @param  string|NULL $groupName 
 	 * @return \MvcCore\Route
 	 */
 	public function SetGroupName ($groupName);
@@ -595,7 +595,7 @@ interface IRoute extends \MvcCore\Route\IConstants {
 	 * Passed array must have keys as param names and values as matched values
 	 * and it must contain all only matched rewrite params and route controller 
 	 * and route action if any.
-	 * @param array $matchedParams
+	 * @param  array $matchedParams
 	 * @return \MvcCore\Route
 	 */
 	public function SetMatchedParams ($matchedParams = []);
@@ -618,7 +618,7 @@ interface IRoute extends \MvcCore\Route\IConstants {
 	
 	/**
 	 * Set router instance reference, used mostly in route URL building process.
-	 * @param \MvcCore\Router $router 
+	 * @param  \MvcCore\Router $router 
 	 * @return \MvcCore\Route
 	 */
 	public function SetRouter (\MvcCore\IRouter $router);
@@ -633,7 +633,7 @@ interface IRoute extends \MvcCore\Route\IConstants {
 	 * configuration single array argument. Data in described are without no 
 	 * change against initialization moment. You can specify key to the array to
 	 * get any initialization value.
-	 * @param string $propertyName 
+	 * @param  string $propertyName 
 	 * @return mixed
 	 */
 	public function GetAdvancedConfigProperty ($propertyName);
@@ -649,11 +649,11 @@ interface IRoute extends \MvcCore\Route\IConstants {
 	 * or if `pattern` (or `match`) property contains a query string part.
 	 * This method is usually called in core request routing process
 	 * from `\MvcCore\Router::Route();` method and it's sub-methods.
-	 * @param \MvcCore\Request $request The request object instance.
-	 * @throws \LogicException Route configuration property is missing.
+	 * @param  \MvcCore\Request $request The request object instance.
+	 * @throws \LogicException           Route configuration property is missing.
 	 * @throws \InvalidArgumentException Wrong route pattern format.
-	 * @return array Matched and params array, keys are matched
-	 *               params or controller and action params.
+	 * @return array                     Matched and params array, keys are matched
+	 *                                   params or controller and action params.
 	 */
 	public function & Matches (\MvcCore\IRequest $request);
 

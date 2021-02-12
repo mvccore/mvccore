@@ -70,7 +70,7 @@ trait Matching {
 	 * prepare always request path and if route `pattern` (or `reverse`) contains
 	 * any query string part, append into result subject query string from request
 	 * object.
-	 * @param \MvcCore\Request $request 
+	 * @param  \MvcCore\Request $request 
 	 * @return string
 	 */
 	protected function matchesGetSubject (\MvcCore\IRequest $request) {
@@ -86,8 +86,8 @@ trait Matching {
 	 * Process `preg_match_all()` by given `$pattern` on given `$subject`.
 	 * If subject contains higher characters than ASCII, add unicode modifier 
 	 * after pattern if necessary.
-	 * @param string $pattern 
-	 * @param string $subject 
+	 * @param  string $pattern 
+	 * @param  string $subject 
 	 * @return array
 	 */
 	protected function & match ($pattern, & $subject) {
@@ -110,7 +110,7 @@ trait Matching {
 	 * placeholders and prepare domain part with the placeholders. Then also in 
 	 * the same way prepare base path part if necessary, there is also base path 
 	 * placeholder possibility.
-	 * @param \MvcCore\Request $request 
+	 * @param  \MvcCore\Request $request 
 	 * @return string
 	 */
 	protected function matchesGetSubjectHostAndBase (\MvcCore\IRequest $request) {
@@ -141,7 +141,7 @@ trait Matching {
 	 * match processing. Given flag value contains scheme part string length,  
 	 * which is an array index inside local static property to return real scheme 
 	 * string by the flag.
-	 * @param int $schemeFlag 
+	 * @param  int $schemeFlag 
 	 * @return string
 	 */
 	protected function matchesGetSubjectScheme (& $schemeFlag) {
@@ -162,8 +162,8 @@ trait Matching {
 	 * strings the route `pattern` (or `reverse`) contains. Result is only the 
 	 * domain part with requested domain parts or placeholders to match pattern 
 	 * and subject in match processing.
-	 * @param \MvcCore\Request $request 
-	 * @param int $hostFlag 
+	 * @param  \MvcCore\Request $request 
+	 * @param  int              $hostFlag 
 	 * @return string
 	 */
 	protected function matchesGetSubjectHost (\MvcCore\IRequest $request, & $hostFlag) {
@@ -198,8 +198,8 @@ trait Matching {
 	 * array first, converted into dashed case. If any rewrite param defines 
 	 * `controller` or `action` again, those values are overwritten in result 
 	 * array by values from regular expression `$matches` array.
-	 * @param array $matchedValues 
-	 * @param array $defaults 
+	 * @param  array $matchedValues 
+	 * @param  array $defaults 
 	 * @return array
 	 */
 	protected function & matchesParseRewriteParams (& $matchedValues, & $defaults) {

@@ -24,8 +24,8 @@ trait Comparers {
 	 *  - \DateTimeInterface, \DateInterval, \DateTimeZone, \DatePeriod
 	 *  - resource (only by `intval($value1) == intval($value2)`)
 	 *  - object instances (only by `===` comparison)
-	 * @param mixed $value1 
-	 * @param mixed $value2 
+	 * @param  mixed $value1 
+	 * @param  mixed $value2 
 	 * @return bool
 	 */
 	protected static function isEqual ($value1, $value2) {

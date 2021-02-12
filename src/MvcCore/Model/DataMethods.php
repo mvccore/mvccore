@@ -75,10 +75,10 @@ trait DataMethods {
 
 	/**
 	 * @inheritDocs
-	 * @param array $data Raw data from database (row) or from form fields.
-	 * @param int $propsFlags All properties flags are available.
+	 * @param  array $data       Raw data from database (row) or from form fields.
+	 * @param  int   $propsFlags All properties flags are available.
 	 * @throws \InvalidArgumentException
-	 * @return \MvcCore\Model Current `$this` context.
+	 * @return \MvcCore\Model    Current `$this` context.
 	 */
 	public function SetValues ($data = [], $propsFlags = 0) {
 		/** @var $this \MvcCore\Model */

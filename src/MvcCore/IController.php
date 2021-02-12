@@ -140,10 +140,10 @@ interface IController extends \MvcCore\Controller\IConstants {
 	 * "rule to keep defined characters only", defined in second argument (by `preg_replace()`).
 	 * Place into second argument only char groups you want to keep.
 	 * Shortcut for: `\MvcCore\Request::GetParam();`
-	 * @param string $name Parameter string name.
-	 * @param string|array|bool $pregReplaceAllowedChars If String - list of regular expression characters to only keep, if array - `preg_replace()` pattern and reverse, if `FALSE`, raw value is returned.
-	 * @param mixed $ifNullValue Default value returned if given param name is null.
-	 * @param string $targetType Target type to retype param value or default if-null value. If param is an array, every param item will be retyped into given target type.
+	 * @param  string            $name                    Parameter string name.
+	 * @param  string|array|bool $pregReplaceAllowedChars If String - list of regular expression characters to only keep, if array - `preg_replace()` pattern and reverse, if `FALSE`, raw value is returned.
+	 * @param  mixed             $ifNullValue             Default value returned if given param name is null.
+	 * @param  string            $targetType              Target type to retype param value or default if-null value. If param is an array, every param item will be retyped into given target type.
 	 * @return string|\string[]|int|\int[]|bool|\bool[]|array|mixed
 	 */
 	public function GetParam ($name = "", $pregReplaceAllowedChars = "a-zA-Z0-9_/\-\.\@");
@@ -159,7 +159,7 @@ interface IController extends \MvcCore\Controller\IConstants {
 	 * This is INTERNAL, not TEMPLATE method, internally called in
 	 * `\MvcCore::DispatchControllerAction()` before controller is dispatched.
 	 * Usually call this as soon as possible after controller creation.
-	 * @param \MvcCore\Application $application
+	 * @param  \MvcCore\Application $application
 	 * @return \MvcCore\Controller
 	 */
 	public function SetApplication (\MvcCore\IApplication $application);
@@ -184,7 +184,7 @@ interface IController extends \MvcCore\Controller\IConstants {
 
 	/**
 	 * Set requested controller name - `"dashed-controller-name"`.
-	 * @param string $controllerName 
+	 * @param  string $controllerName 
 	 * @return \MvcCore\Controller
 	 */
 	public function SetControllerName ($controllerName);
@@ -197,7 +197,7 @@ interface IController extends \MvcCore\Controller\IConstants {
 
 	/**
 	 * Set requested action name - `"dashed-action-name"`.
-	 * @param string $actionName
+	 * @param  string $actionName
 	 * @return \MvcCore\Controller
 	 */
 	public function SetActionName ($actionName);
@@ -205,7 +205,7 @@ interface IController extends \MvcCore\Controller\IConstants {
 	/**
 	 * Set environment object to detect and manage environment name.
 	 * This is INTERNAL, not TEMPLATE method.
-	 * @param \MvcCore\Environment $environment
+	 * @param  \MvcCore\Environment $environment
 	 * @return \MvcCore\Controller
 	 */
 	public function SetEnvironment (\MvcCore\IEnvironment $environment);
@@ -220,7 +220,7 @@ interface IController extends \MvcCore\Controller\IConstants {
 	 * - `\MvcCore\Controller::$controllerName`
 	 * - `\MvcCore\Controller::$actionName`
 	 * - `\MvcCore\Controller::$ajax`
-	 * @param \MvcCore\Request $request
+	 * @param  \MvcCore\Request $request
 	 * @return \MvcCore\Controller
 	 */
 	public function SetRequest (\MvcCore\IRequest $request);
@@ -236,7 +236,7 @@ interface IController extends \MvcCore\Controller\IConstants {
 	 * This is INTERNAL, not TEMPLATE method, internally called in
 	 * `\MvcCore::DispatchControllerAction()` before controller is dispatched.
 	 * Usually call this as soon as possible after controller creation.
-	 * @param \MvcCore\Response $response
+	 * @param  \MvcCore\Response $response
 	 * @return \MvcCore\Controller
 	 */
 	public function SetResponse (\MvcCore\IResponse $response);
@@ -252,7 +252,7 @@ interface IController extends \MvcCore\Controller\IConstants {
 	 * This is INTERNAL, not TEMPLATE method, internally called in
 	 * `\MvcCore::DispatchControllerAction()` before controller is dispatched.
 	 * Usually call this as soon as possible after controller creation.
-	 * @param \MvcCore\Router $router
+	 * @param  \MvcCore\Router $router
 	 * @return \MvcCore\Controller
 	 */
 	public function SetRouter (\MvcCore\IRouter$router);
@@ -269,7 +269,7 @@ interface IController extends \MvcCore\Controller\IConstants {
 	 * Set boolean about AJAX request.
 	 * `TRUE` if request is requested from browser by `XmlHttpRequest` object
 	 * with http header: `X-Requested-With: AnyJavascriptFrameworkName`, `FALSE` otherwise.
-	 * @param boolean $ajax 
+	 * @param  boolean $ajax 
 	 * @return \MvcCore\Controller
 	 */
 	public function SetIsAjax ($ajax);
@@ -308,7 +308,7 @@ interface IController extends \MvcCore\Controller\IConstants {
 	 * - `\MvcCore\IController::DISPATCH_STATE_ACTION_EXECUTED`
 	 * - `\MvcCore\IController::DISPATCH_STATE_RENDERED`
 	 * - `\MvcCore\IController::DISPATCH_STATE_TERMINATED`
-	 * @param int $dispatchState
+	 * @param  int $dispatchState
 	 * @return \MvcCore\Controller
 	 */
 	public function SetDispatchState ($dispatchState);
@@ -336,7 +336,7 @@ interface IController extends \MvcCore\Controller\IConstants {
 
 	/**
 	 * Set current controller view object.
-	 * @param \MvcCore\View $view
+	 * @param  \MvcCore\View $view
 	 * @return \MvcCore\Controller
 	 */
 	public function SetView (\MvcCore\IView $view);
@@ -369,7 +369,7 @@ interface IController extends \MvcCore\Controller\IConstants {
 	 *     Render layout view and render action view together inside it without
 	 *     output buffering. There is not used reponse object body property for
 	 *     this rendering mode. Http headers are sent before view rendering.
-	 * @param int $renderMode
+	 * @param  int $renderMode
 	 * @return \MvcCore\Controller
 	 */
 	public function SetRenderMode ($renderMode = \MvcCore\IView::RENDER_WITH_OB_FROM_ACTION_TO_LAYOUT);
@@ -384,7 +384,7 @@ interface IController extends \MvcCore\Controller\IConstants {
 	/**
 	 * Set layout name to render html wrapper around rendered action view.
 	 * Example: `"front" | "admin" | "account"...`.
-	 * @param string $layout
+	 * @param  string $layout
 	 * @return \MvcCore\Controller
 	 */
 	public function SetLayout ($layout = '');
@@ -411,7 +411,7 @@ interface IController extends \MvcCore\Controller\IConstants {
 	 * up this property to value `something/completely` and then there is
 	 * necessary to render your template only by calling controller rendering by:
 	 * `$subcontrollerInstance->Render('custom');`
-	 * @param string|NULL $viewScriptsPath
+	 * @param  string|NULL $viewScriptsPath
 	 * @return \MvcCore\Controller
 	 */
 	public function SetViewScriptsPath ($viewScriptsPath = NULL);
@@ -445,8 +445,8 @@ interface IController extends \MvcCore\Controller\IConstants {
 	 *   - `\MvcCore\Controller::$layout`
 	 *   - `\MvcCore\Controller::$viewEnabled`
 	 *   - `\MvcCore\Controller::$user`
-	 * @param \MvcCore\Controller $controller
-	 * @param string|int $index
+	 * @param  \MvcCore\Controller $controller
+	 * @param  string|int          $index
 	 * @return \MvcCore\Controller
 	 */
 	public function AddChildController (\MvcCore\IController $controller, $index = NULL);
@@ -463,7 +463,7 @@ interface IController extends \MvcCore\Controller\IConstants {
 	 * Set parent controller instance
 	 * or `NULL` for "top most parent" controller.
 	 * Method for child controllers.
-	 * @param \MvcCore\Controller|NULL $parentController
+	 * @param  \MvcCore\Controller|NULL $parentController
 	 * @return \MvcCore\Controller
 	 */
 	public function SetParentController (\MvcCore\IController $parentController = NULL);
@@ -484,7 +484,7 @@ interface IController extends \MvcCore\Controller\IConstants {
 	 * previous child controllers with given child controllers.
 	 * If you want only to add child controller, use method:
 	 * \MvcCore\Controller::AddChildController();` instead.
-	 * @param \MvcCore\Controller[] $childControllers
+	 * @param  \MvcCore\Controller[] $childControllers
 	 * @return \MvcCore\Controller
 	 */
 	public function SetChildControllers (array $childControllers = []);
@@ -493,7 +493,7 @@ interface IController extends \MvcCore\Controller\IConstants {
 	 * Get child controller at specific index.
 	 * Sub-controller index should be string by parent controller
 	 * property name or custom string name or numeric index.
-	 * @param string|int $index
+	 * @param  string|int $index
 	 * @return \MvcCore\Controller
 	 */
 	public function GetChildController ($index = NULL);
@@ -501,7 +501,7 @@ interface IController extends \MvcCore\Controller\IConstants {
 	/**
 	 * Get (optionally cached) config INI file as `stdClass` or `array`,
 	 * placed relatively from application document root.
-	 * @param string $appRootRelativePath Any config relative path like `'/%appPath%/website.ini'`.
+	 * @param  string $appRootRelativePath Any config relative path like `'/%appPath%/website.ini'`.
 	 * @return \MvcCore\Config|NULL
 	 */
 	public function GetConfig ($appRootRelativePath);
@@ -535,8 +535,8 @@ interface IController extends \MvcCore\Controller\IConstants {
 	 * - If controller has no other parent controller, render layout view around action view.
 	 * - For top most parent controller - store rendered action and layout view in response object and return empty string.
 	 * - For child controller - return rendered action view as string.
-	 * @param string $controllerOrActionNameDashed
-	 * @param string $actionNameDashed
+	 * @param  string $controllerOrActionNameDashed
+	 * @param  string $actionNameDashed
 	 * @return string
 	 */
 	public function Render ($controllerOrActionNameDashed = NULL, $actionNameDashed = NULL);
@@ -544,8 +544,8 @@ interface IController extends \MvcCore\Controller\IConstants {
 	/**
 	 * Store rendered HTML output inside `\MvcCore\Controller::$response`
 	 * to send into client browser later in `\MvcCore\Application::GetInstance()->Terminate();`.
-	 * @param string $output
-	 * @param bool $terminate
+	 * @param  string $output
+	 * @param  bool   $terminate
 	 * @return void
 	 */
 	public function HtmlResponse ($output = "", $terminate = TRUE);
@@ -553,8 +553,8 @@ interface IController extends \MvcCore\Controller\IConstants {
 	/**
 	 * Store rendered XML output inside `\MvcCore\Controller::$response`
 	 * to send into client browser later in `\MvcCore\Application::GetInstance()->Terminate();`.
-	 * @param string $output
-	 * @param bool $terminate
+	 * @param  string $output
+	 * @param  bool   $terminate
 	 * @return void
 	 */
 	public function XmlResponse ($output = "", $terminate = TRUE);
@@ -562,8 +562,8 @@ interface IController extends \MvcCore\Controller\IConstants {
 	/**
 	 * Store rendered text output inside `\MvcCore\Controller::$response`
 	 * to send into client browser later in `\MvcCore\Application::GetInstance()->Terminate();`.
-	 * @param string $output
-	 * @param bool $terminate
+	 * @param  string $output
+	 * @param  bool   $terminate
 	 * @return void
 	 */
 	public function TextResponse ($output = '', $terminate = TRUE);
@@ -572,8 +572,8 @@ interface IController extends \MvcCore\Controller\IConstants {
 	 * Serialize any PHP value into `JSON string` and store
 	 * it inside `\MvcCore\Controller::$response` to send it
 	 * into client browser later in `\MvcCore\Application::GetInstance()->Terminate();`.
-	 * @param mixed $data
-	 * @param bool  $terminate
+	 * @param  mixed $data
+	 * @param  bool  $terminate
 	 * @throws \Exception JSON encoding error.
 	 * @return void
 	 */
@@ -585,9 +585,9 @@ interface IController extends \MvcCore\Controller\IConstants {
 	 * variable `$callbackParamName` (allowed chars: `a-zA-Z0-9\.\-_\$`) and
 	 * store it inside `\MvcCore\Controller::$response` to send it
 	 * into client browser later in `\MvcCore\Application::GetInstance()->Terminate();`.
-	 * @param mixed $data
-	 * @param string $callbackParamName
-	 * @param bool $terminate
+	 * @param  mixed  $data
+	 * @param  string $callbackParamName
+	 * @param  bool   $terminate
 	 * @throws \Exception JSON encoding error.
 	 * @return void
 	 */
@@ -607,8 +607,8 @@ interface IController extends \MvcCore\Controller\IConstants {
 	 *   and when first param is key in routes configuration array).
 	 * - For all other cases is URL form like: `"index.php?controller=ctrlName&amp;action=actionName"`
 	 *   (when first param is not founded in routes configuration array).
-	 * @param string $controllerActionOrRouteName	Should be `"Controller:Action"` combination or just any route name as custom specific string.
-	 * @param array  $params						Optional, array with params, key is param name, value is param value.
+	 * @param  string $controllerActionOrRouteName	Should be `"Controller:Action"` combination or just any route name as custom specific string.
+	 * @param  array  $params						Optional, array with params, key is param name, value is param value.
 	 * @return string
 	 */
 	public function Url ($controllerActionOrRouteName = 'Index:Index', array $params = []);
@@ -616,7 +616,7 @@ interface IController extends \MvcCore\Controller\IConstants {
 	/**
 	 * Return asset path or single file mode URL for small assets
 	 * handled by internal controller action `"Controller:Asset"`.
-	 * @param string $path
+	 * @param  string $path
 	 * @return string
 	 */
 	public function AssetUrl ($path = '');
@@ -624,7 +624,7 @@ interface IController extends \MvcCore\Controller\IConstants {
 	/**
 	 * Alias for `\MvcCore\Session::GetNamespace($name);`
 	 * but called with configured session core class name.
-	 * @param mixed $name
+	 * @param  mixed $name
 	 * @return \MvcCore\Session
 	 */
 	public function GetSessionNamespace ($name = \MvcCore\ISession::DEFAULT_NAMESPACE_NAME);
@@ -633,7 +633,7 @@ interface IController extends \MvcCore\Controller\IConstants {
 	 * Render error controller and error action
 	 * for any dispatch exception or error as
 	 * rendered html response or as plain text response.
-	 * @param string $exceptionMessage
+	 * @param  string $exceptionMessage
 	 * @return void
 	 */
 	public function RenderError ($exceptionMessage = '');
@@ -648,8 +648,8 @@ interface IController extends \MvcCore\Controller\IConstants {
 
 	/**
 	 * Complete view script path by given controller and action or only by given action rendering arguments.
-	 * @param string $controllerOrActionNameDashed
-	 * @param string $actionNameDashed
+	 * @param  string $controllerOrActionNameDashed
+	 * @param  string $actionNameDashed
 	 * @return string
 	 */
 	public function GetViewScriptPath ($controllerOrActionNameDashed = NULL, $actionNameDashed = NULL);

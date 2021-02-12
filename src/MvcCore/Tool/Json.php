@@ -17,9 +17,10 @@ trait Json {
 
 	/**
 	 * @inheritDocs
-	 * @param mixed $data
-	 * @param int $flags
-	 * @param int $depth Set the maximum depth. Must be greater than zero, default: 512.
+	 * @param  mixed $data
+	 * @param  int   $flags
+	 * @param  int   $depth                     Set the maximum depth. 
+	 *                                          Must be greater than zero, default: 512.
 	 * @throws \RuntimeException|\JsonException JSON encoding error.
 	 * @return string
 	 */
@@ -52,9 +53,9 @@ trait Json {
 
 	/**
 	 * @inheritDocs
-	 * @param string $jsonStr
-	 * @param int $flags
-	 * @param int $depth User specified recursion depth, default: 512.
+	 * @param  string $jsonStr
+	 * @param  int    $flags
+	 * @param  int    $depth                    User specified recursion depth, default: 512.
 	 * @throws \RuntimeException|\JsonException JSON decoding error.
 	 * @return object
 	 */
@@ -73,7 +74,7 @@ trait Json {
 	/**
 	 * @inheritDocs
 	 * @see https://www.ietf.org/rfc/rfc4627.txt
-	 * @param string $jsonStr
+	 * @param  string $jsonStr
 	 * @return bool
 	 */
 	public static function IsJsonString ($jsonStr) {
@@ -89,7 +90,7 @@ trait Json {
 
 	/**
 	 * Return last JSON encode/decode error message, optionally by error code for PHP 5.4.
-	 * @param int $jsonErrorCode
+	 * @param  int $jsonErrorCode
 	 * @return string
 	 */
 	protected static function getJsonLastErrorMessage ($jsonErrorCode) {

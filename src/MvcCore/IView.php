@@ -334,8 +334,8 @@ interface IView extends \MvcCore\View\IConstants {
 	 *   and when first param is key in routes configuration array).
 	 * - For all other cases is URL form like: `"index.php?controller=ctrlName&amp;action=actionName"`
 	 *   (when first param is not founded in routes configuration array).
-	 * @param string $controllerActionOrRouteName Should be `"Controller:Action"` combination or just any route name as custom specific string.
-	 * @param array  $params                      Optional, array with params, key is param name, value is param value.
+	 * @param  string $controllerActionOrRouteName Should be `"Controller:Action"` combination or just any route name as custom specific string.
+	 * @param  array  $params                      Optional, array with params, key is param name, value is param value.
 	 * @return string
 	 */
 	public function Url ($controllerActionOrRouteName = 'Index:Index', array $params = []);
@@ -344,7 +344,7 @@ interface IView extends \MvcCore\View\IConstants {
 	 * Return asset path or single file mode URL for small assets
 	 * handled by internal controller action `"Controller:Asset"`.
 	 * Example: `echo $this->AssetUrl('/static/img/favicon.ico');`
-	 * @param string $path
+	 * @param  string $path
 	 * @return string
 	 */
 	public function AssetUrl ($path = '');
@@ -378,9 +378,9 @@ interface IView extends \MvcCore\View\IConstants {
 	
 	/**
 	 * Escape string for use inside XML template.
-	 * XML 1.0:	\x09 \x0A \x0D and C1 allowed directly, C0 forbidden.
-	 * XML 1.1:	\x00 forbidden directly and as a character reference,
-	 * 		\x09 \x0A \x0D \x85 allowed directly, C0, C1 and \x7F allowed as character references.
+	 * XML 1.0: \x09 \x0A \x0D and C1 allowed directly, C0 forbidden.
+	 * XML 1.1: \x00 forbidden directly and as a character reference,
+	 *          \x09 \x0A \x0D \x85 allowed directly, C0, C1 and \x7F allowed as character references.
 	 * @param  string $str 
 	 * @param  string $encoding 
 	 * @return string
@@ -427,9 +427,12 @@ interface IView extends \MvcCore\View\IConstants {
 	/**
 	 * Set view helper for current template or for all templates globally by default.
 	 * If view helper already exist in global helpers store - it's overwritten.
-	 * @param  string $helperNameCamelCase View helper method name in camel case.
-	 * @param  mixed  $instance            View helper instance, always as `\MvcCore\Ext\Views\Helpers\AbstractHelper|\MvcCore\Ext\Views\Helpers\IHelper` instance or `\Closure`.
-	 * @param  bool   $forAllTemplates     Register this helper instance for all rendered views in the future.
+	 * @param  string                                                                                      $helperNameCamelCase
+	 *                                                                                                     View helper method name in camel case.
+	 * @param  \MvcCore\Ext\Views\Helpers\AbstractHelper|\MvcCore\Ext\Views\Helpers\IHelper|\Closure|mixed $instance
+	 *                                                                                                     View helper instance.
+	 * @param  bool                                                                                        $forAllTemplates
+	 *                                                                                                     Register this helper instance for all rendered views in the future.
 	 * @return \MvcCore\View
 	 */
 	public function SetHelper ($helperNameCamelCase, $instance, $forAllTemplates = TRUE);
@@ -472,10 +475,10 @@ interface IView extends \MvcCore\View\IConstants {
 	 * If helper already exists in global helpers store - do not create it again - use instance from the store.
 	 * Then call it's public method named in the same way as helper and return result
 	 * as it is, without any conversion. So then there could be called any other helper method if whole helper instance is returned.
-	 * @param  string $method    View helper method name in pascal case.
-	 * @param  mixed  $arguments View helper method arguments.
+	 * @param  string         $method    View helper method name in pascal case.
+	 * @param  mixed          $arguments View helper method arguments.
 	 * @throws \InvalidArgumentException If view doesn't exist in configured namespaces.
-	 * @return string|mixed View helper string result or any other view helper result type or view helper instance, always as `\MvcCore\Ext\Views\Helpers\AbstractHelper|\MvcCore\Ext\Views\Helpers\IHelper` instance.
+	 * @return string|mixed              View helper string result or any other view helper result type or view helper instance, always as `\MvcCore\Ext\Views\Helpers\AbstractHelper|\MvcCore\Ext\Views\Helpers\IHelper` instance.
 	 */
 	public function __call ($method, $arguments);
 }

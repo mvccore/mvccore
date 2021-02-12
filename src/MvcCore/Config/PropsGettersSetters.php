@@ -103,7 +103,7 @@ trait PropsGettersSetters {
 
 	/**
 	 * @inheritDocs
-	 * @param string $systemConfigPath
+	 * @param  string $systemConfigPath
 	 * @return string
 	 */
 	public static function SetSystemConfigPath ($systemConfigPath) {
@@ -113,8 +113,8 @@ trait PropsGettersSetters {
 
 	/**
 	 * @inheritDocs
-	 * @param string $appRootRelativePath
-	 * @param \MvcCore\Config $config
+	 * @param  string          $appRootRelativePath
+	 * @param  \MvcCore\Config $config
 	 * @return \MvcCore\Config
 	 */
 	public static function SetConfigCache ($appRootRelativePath, \MvcCore\IConfig $config) {
@@ -125,7 +125,7 @@ trait PropsGettersSetters {
 
 	/**
 	 * @inheritDocs
-	 * @param string|NULL $appRootRelativePath
+	 * @param  string|NULL $appRootRelativePath
 	 * @return bool
 	 */
 	public static function ClearConfigCache ($appRootRelativePath = NULL) {

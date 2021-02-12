@@ -17,15 +17,15 @@ trait Cookies {
 
 	/**
 	 * @inheritDocs
-	 * @param string $name			Cookie name. Assuming the name is `cookiename`, this value is retrieved through `$_COOKIE['cookiename']`.
-	 * @param string $value			The value of the cookie. This value is stored on the clients computer; do not store sensitive information.
-	 * @param int    $lifetime		Life time in seconds to expire. 0 means "until the browser is closed".
-	 * @param string $path			The path on the server in which the cookie will be available on. If set to '/', the cookie will be available within the entire domain.
-	 * @param string $domain		If not set, value is completed by `\MvcCore\Application::GetInstance()->GetRequest()->GetHostName();` .
-	 * @param bool   $secure		If not set, value is completed by `\MvcCore\Application::GetInstance()->GetRequest()->IsSecure();`.
-	 * @param bool   $httpOnly		HTTP only cookie, `TRUE` by default.
-	 * @throws \RuntimeException	If HTTP headers have been sent.
-	 * @return bool					True if cookie has been set.
+	 * @param  string $name      Cookie name. Assuming the name is `cookiename`, this value is retrieved through `$_COOKIE['cookiename']`.
+	 * @param  string $value     The value of the cookie. This value is stored on the clients computer; do not store sensitive information.
+	 * @param  int    $lifetime  Life time in seconds to expire. 0 means "until the browser is closed".
+	 * @param  string $path      The path on the server in which the cookie will be available on. If set to '/', the cookie will be available within the entire domain.
+	 * @param  string $domain    If not set, value is completed by `\MvcCore\Application::GetInstance()->GetRequest()->GetHostName();` .
+	 * @param  bool   $secure    If not set, value is completed by `\MvcCore\Application::GetInstance()->GetRequest()->IsSecure();`.
+	 * @param  bool   $httpOnly  HTTP only cookie, `TRUE` by default.
+	 * @throws \RuntimeException If HTTP headers have been sent.
+	 * @return bool              True if cookie has been set.
 	 */
 	public function SetCookie (
 		$name, $value,
@@ -66,12 +66,12 @@ trait Cookies {
 
 	/**
 	 * @inheritDocs
-	 * @param string $name			Cookie name. Assuming the name is `cookiename`, this value is retrieved through `$_COOKIE['cookiename']`.
-	 * @param string $path			The path on the server in which the cookie will be available on. If set to '/', the cookie will be available within the entire domain.
-	 * @param string $domain		If not set, value is completed by `\MvcCore\Application::GetInstance()->GetRequest()->GetHostName();` .
-	 * @param bool   $secure		If not set, value is completed by `\MvcCore\Application::GetInstance()->GetRequest()->IsSecure();`.
-	 * @throws \RuntimeException	If HTTP headers have been sent.
-	 * @return bool					True if cookie has been set.
+	 * @param  string $name      Cookie name. Assuming the name is `cookiename`, this value is retrieved through `$_COOKIE['cookiename']`.
+	 * @param  string $path      The path on the server in which the cookie will be available on. If set to '/', the cookie will be available within the entire domain.
+	 * @param  string $domain    If not set, value is completed by `\MvcCore\Application::GetInstance()->GetRequest()->GetHostName();` .
+	 * @param  bool   $secure    If not set, value is completed by `\MvcCore\Application::GetInstance()->GetRequest()->IsSecure();`.
+	 * @throws \RuntimeException If HTTP headers have been sent.
+	 * @return bool              True if cookie has been set.
 	 */
 	public function DeleteCookie ($name, $path = '/', $domain = NULL, $secure = NULL) {
 		/** @var $this \MvcCore\Response */

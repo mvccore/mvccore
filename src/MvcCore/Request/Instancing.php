@@ -17,12 +17,12 @@ trait Instancing {
 
 	/**
 	 * @inheritDocs
-	 * @param array $server
-	 * @param array $get
-	 * @param array $post
-	 * @param array $cookie
-	 * @param array $files
-	 * @param string|NULL $inputStream
+	 * @param  array       $server
+	 * @param  array       $get
+	 * @param  array       $post
+	 * @param  array       $cookie
+	 * @param  array       $files
+	 * @param  string|NULL $inputStream
 	 * @return \MvcCore\Request
 	 */
 	public static function CreateInstance (
@@ -47,12 +47,12 @@ trait Instancing {
 	 * different request object then currently called real request object.
 	 * For example to create fake request object for testing purposes
 	 * or for non-real request rendering into request output cache.
-	 * @param array $server
-	 * @param array $get
-	 * @param array $post
-	 * @param array $cookie
-	 * @param array $files
-	 * @param string|NULL $inputStream
+	 * @param  array       $server
+	 * @param  array       $get
+	 * @param  array       $post
+	 * @param  array       $cookie
+	 * @param  array       $files
+	 * @param  string|NULL $inputStream
 	 * @return void
 	 */
 	public function __construct (

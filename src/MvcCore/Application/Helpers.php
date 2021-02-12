@@ -26,7 +26,7 @@ trait Helpers {
 
 	/**
 	 * @inheritDocs
-	 * @param string $actionName
+	 * @param  string $actionName
 	 * @return string
 	 */
 	public function GetDefaultControllerIfHasAction ($actionName) {
@@ -42,7 +42,7 @@ trait Helpers {
 
 	/**
 	 * @inheritDocs
-	 * @param string $controllerNamePascalCase
+	 * @param  string $controllerNamePascalCase
 	 * @return string
 	 */
 	public function CompleteControllerName ($controllerNamePascalCase) {
@@ -82,9 +82,9 @@ trait Helpers {
 	/**
 	 * Set core class name only if given class string implements
 	 * given core interface, else thrown an exception.
-	 * @param string $newCoreClassName
-	 * @param string $coreClassVar
-	 * @param string $coreClassInterface
+	 * @param  string $newCoreClassName
+	 * @param  string $coreClassVar
+	 * @param  string $coreClassInterface
 	 * @throws \Exception
 	 * @return \MvcCore\Application
 	 */
@@ -99,9 +99,9 @@ trait Helpers {
 
 	/**
 	 * Set pre-route, pre-dispatch or post-dispatch handler under specific priority index.
-	 * @param array $handlers Application handlers collection reference.
-	 * @param callable $handler
-	 * @param int|NULL $priorityIndex
+	 * @param  array    $handlers      Application handlers collection reference.
+	 * @param  callable $handler
+	 * @param  int|NULL $priorityIndex
 	 * @return \MvcCore\Application
 	 */
 	protected function setHandler (array & $handlers, callable $handler, $priorityIndex = NULL) {

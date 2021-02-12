@@ -234,7 +234,7 @@ trait GettersSetters {
 
 	/**
 	 * @inheritDocs
-	 * @return string[]
+	 * @return \string[]
 	 */
 	public function GetDefaultControllerAndActionNames () {
 		/** @var $this \MvcCore\Application */
@@ -248,7 +248,7 @@ trait GettersSetters {
 
 	/**
 	 * @inheritDocs
-	 * @param string $compiled
+	 * @param  string $compiled
 	 * @return \MvcCore\Application
 	 */
 	public function SetCompiled ($compiled = '') {
@@ -260,7 +260,7 @@ trait GettersSetters {
 
 	/**
 	 * @inheritDocs
-	 * @param string $environmentClass
+	 * @param  string $environmentClass
 	 * @return \MvcCore\Application
 	 */
 	public function SetEnvironmentClass ($environmentClass) {
@@ -270,7 +270,7 @@ trait GettersSetters {
 
 	/**
 	 * @inheritDocs
-	 * @param string $configClass
+	 * @param  string $configClass
 	 * @return \MvcCore\Application
 	 */
 	public function SetConfigClass ($configClass) {
@@ -280,7 +280,7 @@ trait GettersSetters {
 
 	/**
 	 * @inheritDocs
-	 * @param string $controllerClass
+	 * @param  string $controllerClass
 	 * @return \MvcCore\Application
 	 */
 	public function SetControllerClass ($controllerClass) {
@@ -290,7 +290,7 @@ trait GettersSetters {
 
 	/**
 	 * @inheritDocs
-	 * @param string $debugClass
+	 * @param  string $debugClass
 	 * @return \MvcCore\Application
 	 */
 	public function SetDebugClass ($debugClass) {
@@ -300,7 +300,7 @@ trait GettersSetters {
 
 	/**
 	 * @inheritDocs
-	 * @param string $requestClass
+	 * @param  string $requestClass
 	 * @return \MvcCore\Application
 	 */
 	public function SetRequestClass ($requestClass) {
@@ -310,7 +310,7 @@ trait GettersSetters {
 
 	/**
 	 * @inheritDocs
-	 * @param string $responseClass
+	 * @param  string $responseClass
 	 * @return \MvcCore\Application
 	 */
 	public function SetResponseClass ($responseClass) {
@@ -320,7 +320,7 @@ trait GettersSetters {
 
 	/**
 	 * @inheritDocs
-	 * @param string $routeClass
+	 * @param  string $routeClass
 	 * @return \MvcCore\Application
 	 */
 	public function SetRouteClass ($routeClass) {
@@ -330,7 +330,7 @@ trait GettersSetters {
 
 	/**
 	 * @inheritDocs
-	 * @param string $routerClass
+	 * @param  string $routerClass
 	 * @return \MvcCore\Application
 	 */
 	public function SetRouterClass ($routerClass) {
@@ -340,7 +340,7 @@ trait GettersSetters {
 
 	/**
 	 * @inheritDocs
-	 * @param string $sessionClass
+	 * @param  string $sessionClass
 	 * @return \MvcCore\Application
 	 */
 	public function SetSessionClass ($sessionClass) {
@@ -350,7 +350,7 @@ trait GettersSetters {
 
 	/**
 	 * @inheritDocs
-	 * @param string $toolClass
+	 * @param  string $toolClass
 	 * @return \MvcCore\Application
 	 */
 	public function SetToolClass ($toolClass) {
@@ -360,7 +360,7 @@ trait GettersSetters {
 
 	/**
 	 * @inheritDocs
-	 * @param string $viewClass
+	 * @param  string $viewClass
 	 * @return \MvcCore\Application
 	 */
 	public function SetViewClass ($viewClass) {
@@ -371,7 +371,7 @@ trait GettersSetters {
 
 	/**
 	 * @inheritDocs
-	 * @param \MvcCore\Controller $controller
+	 * @param  \MvcCore\Controller $controller
 	 * @return \MvcCore\Application
 	 */
 	public function SetController (\MvcCore\IController $controller) {
@@ -383,7 +383,7 @@ trait GettersSetters {
 
 	/**
 	 * @inheritDocs
-	 * @param string $appDir
+	 * @param  string $appDir
 	 * @return \MvcCore\Application
 	 */
 	public function SetAppDir ($appDir) {
@@ -394,7 +394,7 @@ trait GettersSetters {
 
 	/**
 	 * @inheritDocs
-	 * @param string $controllersDir
+	 * @param  string $controllersDir
 	 * @return \MvcCore\Application
 	 */
 	public function SetControllersDir ($controllersDir) {
@@ -405,7 +405,7 @@ trait GettersSetters {
 
 	/**
 	 * @inheritDocs
-	 * @param string $viewsDir
+	 * @param  string $viewsDir
 	 * @return \MvcCore\Application
 	 */
 	public function SetViewsDir ($viewsDir) {
@@ -416,7 +416,7 @@ trait GettersSetters {
 
 	/**
 	 * @inheritDocs
-	 * @param string $defaultControllerName
+	 * @param  string $defaultControllerName
 	 * @return \MvcCore\Application
 	 */
 	public function SetDefaultControllerName ($defaultControllerName) {
@@ -427,7 +427,7 @@ trait GettersSetters {
 
 	/**
 	 * @inheritDocs
-	 * @param string $defaultActionName
+	 * @param  string $defaultActionName
 	 * @return \MvcCore\Application
 	 */
 	public function SetDefaultControllerDefaultActionName ($defaultActionName) {
@@ -438,7 +438,7 @@ trait GettersSetters {
 
 	/**
 	 * @inheritDocs
-	 * @param string $defaultControllerErrorActionName
+	 * @param  string $defaultControllerErrorActionName
 	 * @return \MvcCore\Application
 	 */
 	public function SetDefaultControllerErrorActionName ($defaultControllerErrorActionName) {
@@ -449,7 +449,7 @@ trait GettersSetters {
 
 	/**
 	 * @inheritDocs
-	 * @param string $defaultControllerNotFoundActionName
+	 * @param  string $defaultControllerNotFoundActionName
 	 * @return \MvcCore\Application
 	 */
 	public function SetDefaultControllerNotFoundActionName ($defaultControllerNotFoundActionName) {
@@ -460,8 +460,8 @@ trait GettersSetters {
 
 	/**
 	 * @inheritDocs`
-	 * @param callable $handler
-	 * @param int|NULL $priorityIndex
+	 * @param  callable $handler
+	 * @param  int|NULL $priorityIndex
 	 * @return \MvcCore\Application
 	 */
 	public function AddPreRouteHandler (callable $handler, $priorityIndex = NULL) {
@@ -475,8 +475,8 @@ trait GettersSetters {
 
 	/**
 	 * @inheritDocs
-	 * @param callable $handler
-	 * @param int|NULL $priorityIndex
+	 * @param  callable $handler
+	 * @param  int|NULL $priorityIndex
 	 * @return \MvcCore\Application
 	 */
 	public function AddPostRouteHandler (callable $handler, $priorityIndex = NULL) {
@@ -490,8 +490,8 @@ trait GettersSetters {
 
 	/**
 	 * @inheritDocs
-	 * @param callable $handler
-	 * @param int|NULL $priorityIndex
+	 * @param  callable $handler
+	 * @param  int|NULL $priorityIndex
 	 * @return \MvcCore\Application
 	 */
 	public function AddPreDispatchHandler (callable $handler, $priorityIndex = NULL) {
@@ -505,8 +505,8 @@ trait GettersSetters {
 
 	/**
 	 * @inheritDocs
-	 * @param callable $handler
-	 * @param int|NULL $priorityIndex
+	 * @param  callable $handler
+	 * @param  int|NULL $priorityIndex
 	 * @return \MvcCore\Application
 	 */
 	public function AddPostDispatchHandler (callable $handler, $priorityIndex = NULL) {
@@ -520,8 +520,8 @@ trait GettersSetters {
 
 	/**
 	 * @inheritDocs
-	 * @param callable $handler
-	 * @param int|NULL $priorityIndex
+	 * @param  callable $handler
+	 * @param  int|NULL $priorityIndex
 	 * @return \MvcCore\Application
 	 */
 	public function AddPostTerminateHandler (callable $handler, $priorityIndex = NULL) {

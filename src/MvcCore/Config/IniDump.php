@@ -32,8 +32,8 @@ trait IniDump {
 
 	/**
 	 * Split data into environment specific collections from `$config->mergedData`.
-	 * @param \MvcCore\Config $config           Config instance.
-	 * @param array           $environmentNames All detected environment names in merged configuration data.
+	 * @param  \MvcCore\Config $config           Config instance.
+	 * @param  array           $environmentNames All detected environment names in merged configuration data.
 	 * @return void
 	 */
 	protected static function dumpSplitData (\MvcCore\IConfig $config, array & $environmentNames) {
@@ -62,7 +62,7 @@ trait IniDump {
 
 	/**
 	 * Cast any `\stdClass` in configuration structure into array recursively.
-	 * @param \stdClass|array $obj
+	 * @param  \stdClass|array $obj
 	 * @return array
 	 */
 	protected static function dumpCastToArrayRecursive ($obj) {
@@ -77,9 +77,9 @@ trait IniDump {
 
 	/**
 	 * Split data into nevironment specific collections from `$config->mergedData` recursively.
-	 * @param \stdClass $currentMerged    Collection with all detected environments and it's recursive level for merged collection.
-	 * @param \stdClass $currentSeparated Collection with all detected environments and it's recursive level for splited collections.
-	 * @param array     $allEnvNames      All detected environments in configuration.
+	 * @param  \stdClass $currentMerged    Collection with all detected environments and it's recursive level for merged collection.
+	 * @param  \stdClass $currentSeparated Collection with all detected environments and it's recursive level for splited collections.
+	 * @param  array     $allEnvNames      All detected environments in configuration.
 	 * @return void
 	 */
 	protected static function dumpSplitDataRecursive (\stdClass $currentMerged, \stdClass $currentSeparated, array & $allEnvNames) {
@@ -151,8 +151,8 @@ trait IniDump {
 
 	/**
 	 * Return common keys and environment specific keys for all nevironment values levels.
-	 * @param \stdClass $currentMerged    Recursive level of values from `$config->mergedData`.
-	 * @param \string[] $environmentNames Environment names found in configuration.
+	 * @param  \stdClass $currentMerged    Recursive level of values from `$config->mergedData`.
+	 * @param  \string[] $environmentNames Environment names found in configuration.
 	 * @return array [all common environment keys, environment specific keys]
 	 */
 	protected static function dumpSplitDataKeys (\stdClass $currentMerged, array & $environmentNames) {
@@ -184,9 +184,9 @@ trait IniDump {
 	/**
 	 * Compare given values for all environments
 	 * and return specific info about comparison.
-	 * @param mixed[]   $compareValues
-	 * @param \string[] $environmentNames Environment names found in configuration.
-	 * @return array [common env. value, boolean about if all env. values are the same, boolean about if values are scalar]
+	 * @param  mixed[]   $compareValues
+	 * @param  \string[] $environmentNames Environment names found in configuration.
+	 * @return array     [common env. value, boolean about if all env. values are the same, boolean about if values are scalar]
 	 */
 	protected static function dumpSplitDataCompareValues (& $compareValues, & $environmentNames) {
 		$baseValue = $compareValues[0];
@@ -209,8 +209,8 @@ trait IniDump {
 	/**
 	 * Render splitted data from environment specific collections (`$config->envData`)
 	 * into INI syntax with environment specific sections, optionally grouped.
-	 * @param \MvcCore\Config $config           Config instance.
-	 * @param array           $environmentNames All detected environment names in merged configuration data.
+	 * @param  \MvcCore\Config $config           Config instance.
+	 * @param  array           $environmentNames All detected environment names in merged configuration data.
 	 * @return string
 	 */
 	protected static function dumpRenderEnvData (\MvcCore\IConfig $config, array & $environmentNames) {
@@ -270,8 +270,8 @@ trait IniDump {
 
 	/**
 	 * Detect if protected collection `$config->envData` needs sections.
-	 * @param \MvcCore\Config $config           Config instance.
-	 * @param array           $environmentNames All detected environment names in merged configuration data.
+	 * @param  \MvcCore\Config $config           Config instance.
+	 * @param  array           $environmentNames All detected environment names in merged configuration data.
 	 * @return bool
 	 */
 	protected static function dumpDetectSections (\MvcCore\IConfig $config, array & $environmentNames) {
@@ -317,11 +317,11 @@ trait IniDump {
 
 	/**
 	 * Dump recursive with dot syntax any PHP object/array data into INI syntax.
-	 * @param \string[]   $rawData
-	 * @param array       $data
-	 * @param int         $level
-	 * @param string      $levelKey
-	 * @param boolean     $sequentialKeys
+	 * @param  \string[] $rawData
+	 * @param  array     $data
+	 * @param  int       $level
+	 * @param  string    $levelKey
+	 * @param  boolean   $sequentialKeys
 	 * @return void
 	 */
 	protected static function dumpRenderRecursive (& $rawData, & $data, $level, $levelKey = '', $sequentialKeys = FALSE) {
@@ -355,7 +355,7 @@ trait IniDump {
 	/**
 	 * Dump any scalar value into INI syntax by special local static
 	 * configuration array.
-	 * @param mixed $value
+	 * @param  mixed $value
 	 * @return string
 	 */
 	protected static function dumpRenderScalar ($value) {
@@ -388,9 +388,9 @@ trait IniDump {
 
 	/**
 	 * Try to found the same configuration records accross all environment specific data collections.
-	 * @param \MvcCore\Config $config
-	 * @param string          $sectionName
-	 * @param \string[]       $environmentNames
+	 * @param  \MvcCore\Config $config
+	 * @param  string          $sectionName
+	 * @param  \string[]       $environmentNames
 	 * @return array
 	 */
 	protected static function dumpGroupEnvSectionData (\MvcCore\IConfig $config, $sectionName, $environmentNames) {

@@ -17,7 +17,7 @@ trait NamespaceMethods {
 
 	/**
 	 * @inheritDocs
-	 * @param string $name Session namespace unique name.
+	 * @param  string $name Session namespace unique name.
 	 * @return \MvcCore\Session
 	 */
 	public static function GetNamespace (
@@ -39,7 +39,7 @@ trait NamespaceMethods {
 
 	/**
 	 * @inheritDocs
-	 * @param int $hoops
+	 * @param  int $hoops
 	 * @return \MvcCore\Session
 	 */
 	public function SetExpirationHoops ($hoops) {
@@ -50,7 +50,7 @@ trait NamespaceMethods {
 
 	/**
 	 * @inheritDocs
-	 * @param int $seconds
+	 * @param  int $seconds
 	 * @return \MvcCore\Session
 	 */
 	public function SetExpirationSeconds ($seconds = 0) {

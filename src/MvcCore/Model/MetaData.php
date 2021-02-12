@@ -29,7 +29,7 @@ trait MetaData {
 	 *  - `\MvcCore\IModel::PROPS_PRIVATE`
 	 *  - `\MvcCore\IModel::PROPS_PROTECTED`
 	 *  - `\MvcCore\IModel::PROPS_PUBLIC`
-	 * @param int $propsFlags
+	 * @param  int $propsFlags
 	 * @return array
 	 */
 	protected static function getMetaData ($propsFlags = 0) {
@@ -67,9 +67,9 @@ trait MetaData {
 
 	/**
 	 * Parse called class metadata with reflection.
-	 * @param string $classFullName 
-	 * @param int $accessModFlags 
-	 * @param bool $inclInherit 
+	 * @param  string $classFullName 
+	 * @param  int    $accessModFlags 
+	 * @param  bool   $inclInherit 
 	 * @throws \InvalidArgumentException 
 	 * @return array
 	 */
@@ -98,8 +98,8 @@ trait MetaData {
 	 * - `0`	`boolean`	`TRUE` for private property.
 	 * - `1'	`boolean`	`TRUE` to allow `NULL` values.
 	 * - `2`	`string[]`	Property types from code or from doc comments or empty array.
-	 * @param \ReflectionProperty $prop 
-	 * @param array $params [bool $phpWithTypes, bool $phpWithUnionTypes]
+	 * @param  \ReflectionProperty $prop 
+	 * @param  array               $params [bool $phpWithTypes, bool $phpWithUnionTypes]
 	 * @return array
 	 */
 	protected static function parseMetaDataProperty (\ReflectionProperty $prop, $params) {
@@ -155,14 +155,14 @@ trait MetaData {
 		return [
 			$prop->isPrivate(),	// boolean
 			$allowNull,			// boolean
-			$types,				// string[]
+			$types,				// \string[]
 		];
 	}
 	
 	/**
 	 * Complete meta data cache key flag, reflection properties getter flags
 	 * and boolean about to include inherit properties or not.
-	 * @param int $propsFlags 
+	 * @param  int   $propsFlags 
 	 * @return array [int, int, bool]
 	 */
 	protected static function getMetaDataFlags ($propsFlags) {

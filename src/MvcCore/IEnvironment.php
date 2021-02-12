@@ -30,7 +30,7 @@ interface IEnvironment extends \MvcCore\Environment\IConstants {
 
 	/**
 	 * Set `TRUE`, if environment is necessary to detected by loaded system config, `FALSE` otherwise.
-	 * @param boolean $detectionBySystemConfig `TRUE` by default.
+	 * @param  boolean $detectionBySystemConfig `TRUE` by default.
 	 * @return boolean
 	 */
 	public static function SetDetectionBySystemConfig ($detectionBySystemConfig = TRUE);
@@ -81,7 +81,7 @@ interface IEnvironment extends \MvcCore\Environment\IConstants {
 	/**
 	 * Set environment name as string,
 	 * defined by constants: `\MvcCore\IEnvironment::<NAME>`.
-	 * @param string $name
+	 * @param  string $name
 	 * @return string
 	 */
 	public function SetName ($name = \MvcCore\IEnvironment::PRODUCTION);
@@ -101,7 +101,7 @@ interface IEnvironment extends \MvcCore\Environment\IConstants {
 
 	/**
 	 * Second environment value setup - by system config data environment record.
-	 * @param array $environmentsSectionData System config environment section data part.
+	 * @param  array $environmentsSectionData System config environment section data part.
 	 * @return string Detected environment string.
 	 */
 	public static function DetectBySystemConfig (array $environmentsSectionData = []);

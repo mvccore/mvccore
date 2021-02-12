@@ -51,8 +51,8 @@ trait Connection {
 	 * Resolve connection name or connection index or connection 
 	 * configuration into single string or integer coresponding to 
 	 * database config record.
-	 * @param string|int|array|\stdClass|NULL $connectionNameOrConfig 
-	 * @param bool $strict 
+	 * @param  string|int|array|\stdClass|NULL $connectionNameOrConfig 
+	 * @param  bool                            $strict 
 	 * @throws \InvalidArgumentException 
 	 * @return string|int
 	 */

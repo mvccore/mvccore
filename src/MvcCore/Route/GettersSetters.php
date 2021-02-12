@@ -27,7 +27,7 @@ trait GettersSetters {
 
 	/**
 	 * @inheritDocs
-	 * @param string|array $pattern
+	 * @param  string|array $pattern
 	 * @return \MvcCore\Route
 	 */
 	public function SetPattern ($pattern) {
@@ -47,7 +47,7 @@ trait GettersSetters {
 
 	/**
 	 * @inheritDocs
-	 * @param string|array $match
+	 * @param  string|array $match
 	 * @return \MvcCore\Route
 	 */
 	public function SetMatch ($match) {
@@ -67,7 +67,7 @@ trait GettersSetters {
 
 	/**
 	 * @inheritDocs
-	 * @param string|array $reverse
+	 * @param  string|array $reverse
 	 * @return \MvcCore\Route
 	 */
 	public function SetReverse ($reverse) {
@@ -87,7 +87,7 @@ trait GettersSetters {
 
 	/**
 	 * @inheritDocs
-	 * @param string|NULL $name
+	 * @param  string|NULL $name
 	 * @return \MvcCore\Route
 	 */
 	public function SetName ($name) {
@@ -107,7 +107,7 @@ trait GettersSetters {
 
 	/**
 	 * @inheritDocs
-	 * @param string|NULL $controller
+	 * @param  string|NULL $controller
 	 * @return \MvcCore\Route
 	 */
 	public function SetController ($controller) {
@@ -127,7 +127,7 @@ trait GettersSetters {
 
 	/**
 	 * @inheritDocs
-	 * @param string|NULL $action
+	 * @param  string|NULL $action
 	 * @return \MvcCore\Route
 	 */
 	public function SetAction ($action) {
@@ -168,7 +168,7 @@ trait GettersSetters {
 
 	/**
 	 * @inheritDocs
-	 * @param array|\array[] $defaults
+	 * @param  array|\array[] $defaults
 	 * @return \MvcCore\Route
 	 */
 	public function SetDefaults ($defaults = []) {
@@ -188,7 +188,7 @@ trait GettersSetters {
 
 	/**
 	 * @inheritDocs
-	 * @param array|\array[] $constraints
+	 * @param  array|\array[] $constraints
 	 * @return \MvcCore\Route
 	 */
 	public function SetConstraints ($constraints = []) {
@@ -214,7 +214,7 @@ trait GettersSetters {
 
 	/**
 	 * @inheritDocs
-	 * @param array|\callable[] $filters 
+	 * @param  array|\callable[] $filters 
 	 * @return \MvcCore\Route
 	 */
 	public function SetFilters (array $filters = []) {
@@ -237,8 +237,8 @@ trait GettersSetters {
 
 	/**
 	 * @inheritDocs
-	 * @param \callable $handler 
-	 * @param string $direction
+	 * @param  \callable $handler 
+	 * @param  string    $direction
 	 * @return \MvcCore\Route
 	 */
 	public function SetFilter ($handler, $direction = \MvcCore\IRoute::CONFIG_FILTER_IN) {
@@ -265,7 +265,7 @@ trait GettersSetters {
 
 	/**
 	 * @inheritDocs
-	 * @param string|NULL $method
+	 * @param  string|NULL $method
 	 * @return \MvcCore\Route
 	 */
 	public function SetMethod ($method = NULL) {
@@ -285,7 +285,7 @@ trait GettersSetters {
 
 	/**
 	 * @inheritDocs
-	 * @param string|NULL $redirectRouteName 
+	 * @param  string|NULL $redirectRouteName 
 	 * @return \MvcCore\Route
 	 */
 	public function SetRedirect ($redirectRouteName = NULL) {
@@ -305,7 +305,7 @@ trait GettersSetters {
 
 	/**
 	 * @inheritDocs
-	 * @param bool $absolute 
+	 * @param  bool $absolute 
 	 * @return \MvcCore\Route
 	 */
 	public function SetAbsolute ($absolute = TRUE) {
@@ -325,7 +325,7 @@ trait GettersSetters {
 
 	/**
 	 * @inheritDocs
-	 * @param string|NULL $groupName 
+	 * @param  string|NULL $groupName 
 	 * @return \MvcCore\Route
 	 */
 	public function SetGroupName ($groupName) {
@@ -347,7 +347,7 @@ trait GettersSetters {
 
 	/**
 	 * @inheritDocs
-	 * @param array $matchedParams
+	 * @param  array $matchedParams
 	 * @return \MvcCore\Route
 	 */
 	public function SetMatchedParams ($matchedParams = []) {
@@ -376,7 +376,7 @@ trait GettersSetters {
 	
 	/**
 	 * @inheritDocs
-	 * @param \MvcCore\Router $router 
+	 * @param  \MvcCore\Router $router 
 	 * @return \MvcCore\Route
 	 */
 	public function SetRouter (\MvcCore\IRouter $router) {
@@ -388,7 +388,7 @@ trait GettersSetters {
 
 	/**
 	 * @inheritDocs
-	 * @param string $propertyName 
+	 * @param  string $propertyName 
 	 * @return mixed
 	 */
 	public function GetAdvancedConfigProperty ($propertyName) {

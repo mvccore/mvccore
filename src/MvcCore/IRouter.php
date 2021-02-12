@@ -371,7 +371,7 @@ interface IRouter extends \MvcCore\Router\IConstants {
 	 * Set matched route instance for given request object
 	 * into `\MvcCore\Route::Route();` method. Currently matched
 	 * route is always assigned internally in that method.
-	 * @param \MvcCore\Route $currentRoute
+	 * @param  \MvcCore\Route $currentRoute
 	 * @return \MvcCore\Router
 	 */
 	public function SetCurrentRoute (\MvcCore\IRoute $currentRoute);

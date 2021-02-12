@@ -196,7 +196,7 @@ interface IApplication extends \MvcCore\Application\IConstants {
 	 * Returns array with:
 	 * - `0 => "index"` - Default controller name, from protected `\MvcCore\Application::$defaultControllerName`.
 	 * - `1 => "index"` - Default action name, from protected `\MvcCore\Application::$defaultControllerDefaultActionName`.
-	 * @return string[]
+	 * @return \string[]
 	 */
 	public function GetDefaultControllerAndActionNames ();
 
@@ -214,7 +214,7 @@ interface IApplication extends \MvcCore\Application\IConstants {
 	 * - `\MvcCore\IApplication::NOT_COMPILED`
 	 * Read more about every mode in interface: `\MvcCore\IApplication`.
 	 * Core configuration method.
-	 * @param string $compiled
+	 * @param  string $compiled
 	 * @return \MvcCore\Application
 	 */
 	public function SetCompiled ($compiled = '');
@@ -224,7 +224,7 @@ interface IApplication extends \MvcCore\Application\IConstants {
 	 * Set application environment class implementing `\MvcCore\IEnvironment`.
 	 * Class to detect and manage environment name.
 	 * Core configuration method.
-	 * @param string $environmentClass
+	 * @param  string $environmentClass
 	 * @return \MvcCore\Application
 	 */
 	public function SetEnvironmentClass ($environmentClass);
@@ -233,7 +233,7 @@ interface IApplication extends \MvcCore\Application\IConstants {
 	 * Set application config class implementing `\MvcCore\IConfig`.
 	 * Class to load and parse (system) config(s).
 	 * Core configuration method.
-	 * @param string $configClass
+	 * @param  string $configClass
 	 * @return \MvcCore\Application
 	 */
 	public function SetConfigClass ($configClass);
@@ -243,7 +243,7 @@ interface IApplication extends \MvcCore\Application\IConstants {
 	 * Class to create default controller for request targeting views only
 	 * and to handle small assets inside packed application.
 	 * Core configuration method.
-	 * @param string $controllerClass
+	 * @param  string $controllerClass
 	 * @return \MvcCore\Application
 	 */
 	public function SetControllerClass ($controllerClass);
@@ -252,7 +252,7 @@ interface IApplication extends \MvcCore\Application\IConstants {
 	 * Set application debug class implementing `\MvcCore\IDebug`.
 	 * Class to handle any application error to render the error in browser or log in HDD.
 	 * Core configuration method.
-	 * @param string $debugClass
+	 * @param  string $debugClass
 	 * @return \MvcCore\Application
 	 */
 	public function SetDebugClass ($debugClass);
@@ -261,7 +261,7 @@ interface IApplication extends \MvcCore\Application\IConstants {
 	 * Set application request class implementing `\MvcCore\IRequest`.
 	 * Class to create describing HTTP request object.
 	 * Core configuration method.
-	 * @param string $requestClass
+	 * @param  string $requestClass
 	 * @return \MvcCore\Application
 	 */
 	public function SetRequestClass ($requestClass);
@@ -270,7 +270,7 @@ interface IApplication extends \MvcCore\Application\IConstants {
 	 * Set application response class implementing `\MvcCore\IResponse`.
 	 * Class to create HTTP response object to store response headers and response content.
 	 * Core configuration method.
-	 * @param string $responseClass
+	 * @param  string $responseClass
 	 * @return \MvcCore\Application
 	 */
 	public function SetResponseClass ($responseClass);
@@ -280,7 +280,7 @@ interface IApplication extends \MvcCore\Application\IConstants {
 	 * Class to describe single route with match and replace pattern,
 	 * controller, action, params default values and params constraints.
 	 * Core configuration method.
-	 * @param string $routerClass
+	 * @param  string $routerClass
 	 * @return \MvcCore\Application
 	 */
 	public function SetRouteClass ($routerClass);
@@ -289,7 +289,7 @@ interface IApplication extends \MvcCore\Application\IConstants {
 	 * Set application router class implementing `\MvcCore\IRouter`.
 	 * Class to store all routes, dispatch request by routes and generate URL addresses by routes.
 	 * Core configuration method.
-	 * @param string $routerClass
+	 * @param  string $routerClass
 	 * @return \MvcCore\Application
 	 */
 	public function SetRouterClass ($routerClass);
@@ -298,7 +298,7 @@ interface IApplication extends \MvcCore\Application\IConstants {
 	 * Set application session class implementing `\MvcCore\ISession`.
 	 * Class to configure session namespaces, session opening, writing and expirations.
 	 * Core configuration method.
-	 * @param string $sessionClass
+	 * @param  string $sessionClass
 	 * @return \MvcCore\Application
 	 */
 	public function SetSessionClass ($sessionClass);
@@ -307,7 +307,7 @@ interface IApplication extends \MvcCore\Application\IConstants {
 	 * Set application tool class implementing `\MvcCore\ITool`.
 	 * Class to handle helper calls from MvcCore core modules.
 	 * Core configuration method.
-	 * @param string $toolClass
+	 * @param  string $toolClass
 	 * @return \MvcCore\Application
 	 */
 	public function SetToolClass ($toolClass);
@@ -316,7 +316,7 @@ interface IApplication extends \MvcCore\Application\IConstants {
 	 * Set application view class implementing `\MvcCore\IView`.
 	 * Class to prepare and render controller view, sub-views and wrapper layout.
 	 * Core configuration method.
-	 * @param string $viewClass
+	 * @param  string $viewClass
 	 * @return \MvcCore\Application
 	 */
 	public function SetViewClass ($viewClass);
@@ -324,7 +324,7 @@ interface IApplication extends \MvcCore\Application\IConstants {
 
 	/**
 	 * Set currently dispatched controller instance.
-	 * @param \MvcCore\Controller $controller
+	 * @param  \MvcCore\Controller $controller
 	 * @return \MvcCore\Application
 	 */
 	public function SetController (\MvcCore\IController $controller);
@@ -338,7 +338,7 @@ interface IApplication extends \MvcCore\Application\IConstants {
 	 * - `/App/Views`
 	 * It should by reconfigured to custom value in the very application beginning.
 	 * Core configuration method.
-	 * @param string $appDir
+	 * @param  string $appDir
 	 * @return \MvcCore\Application
 	 */
 	public function SetAppDir ($appDir);
@@ -348,7 +348,7 @@ interface IApplication extends \MvcCore\Application\IConstants {
 	 * it's placed directly in application directory by default.
 	 * It should by reconfigured to custom value in the very application beginning.
 	 * Core configuration method.
-	 * @param string $controllersDir
+	 * @param  string $controllersDir
 	 * @return \MvcCore\Application
 	 */
 	public function SetControllersDir ($controllersDir);
@@ -366,7 +366,7 @@ interface IApplication extends \MvcCore\Application\IConstants {
 	/**
 	 * Set default controller name. `"Index"` value by default.
 	 * Core configuration method.
-	 * @param string $defaultControllerName
+	 * @param  string $defaultControllerName
 	 * @return \MvcCore\Application
 	 */
 	public function SetDefaultControllerName ($defaultControllerName);
@@ -374,7 +374,7 @@ interface IApplication extends \MvcCore\Application\IConstants {
 	/**
 	 * Set default controller default action name. `"Index"` value by default.
 	 * Core configuration method.
-	 * @param string $defaultActionName
+	 * @param  string $defaultActionName
 	 * @return \MvcCore\Application
 	 */
 	public function SetDefaultControllerDefaultActionName ($defaultActionName);
@@ -382,7 +382,7 @@ interface IApplication extends \MvcCore\Application\IConstants {
 	/**
 	 * Set default controller common error action name. `"Error"` value by default.
 	 * Core configuration method.
-	 * @param string $defaultControllerErrorActionName
+	 * @param  string $defaultControllerErrorActionName
 	 * @return \MvcCore\Application
 	 */
 	public function SetDefaultControllerErrorActionName ($defaultControllerErrorActionName);
@@ -390,7 +390,7 @@ interface IApplication extends \MvcCore\Application\IConstants {
 	/**
 	 * Set default controller not found error action name. `"NotFound"` value by default.
 	 * Core configuration method.
-	 * @param string $defaultControllerNotFoundActionName
+	 * @param  string $defaultControllerNotFoundActionName
 	 * @return \MvcCore\Application
 	 */
 	public function SetDefaultControllerNotFoundActionName ($defaultControllerNotFoundActionName);
@@ -411,8 +411,8 @@ interface IApplication extends \MvcCore\Application\IConstants {
 	 *       $request->customVar = 'custom_value';
 	 *   });
 	 * ````
-	 * @param callable $handler
-	 * @param int|NULL $priorityIndex
+	 * @param  callable $handler
+	 * @param  int|NULL $priorityIndex
 	 * @return \MvcCore\Application
 	 */
 	public function AddPreRouteHandler (callable $handler, $priorityIndex = NULL);
@@ -434,8 +434,8 @@ interface IApplication extends \MvcCore\Application\IConstants {
 	 *       $request->customVar = 'custom_value';
 	 *   });
 	 * ````
-	 * @param callable $handler
-	 * @param int|NULL $priorityIndex
+	 * @param  callable $handler
+	 * @param  int|NULL $priorityIndex
 	 * @return \MvcCore\Application
 	 */
 	public function AddPostRouteHandler (callable $handler, $priorityIndex = NULL);
@@ -457,8 +457,8 @@ interface IApplication extends \MvcCore\Application\IConstants {
 	 *       $request->customVar = 'custom_value';
 	 *   });
 	 * ````
-	 * @param callable $handler
-	 * @param int|NULL $priorityIndex
+	 * @param  callable $handler
+	 * @param  int|NULL $priorityIndex
 	 * @return \MvcCore\Application
 	 */
 	public function AddPreDispatchHandler (callable $handler, $priorityIndex = NULL);
@@ -479,8 +479,8 @@ interface IApplication extends \MvcCore\Application\IConstants {
 	 *       $request->customVar = 'custom_value';
 	 *   });
 	 * ````
-	 * @param callable $handler
-	 * @param int|NULL $priorityIndex
+	 * @param  callable $handler
+	 * @param  int|NULL $priorityIndex
 	 * @return \MvcCore\Application
 	 */
 	public function AddPostDispatchHandler (callable $handler, $priorityIndex = NULL);
@@ -560,7 +560,7 @@ interface IApplication extends \MvcCore\Application\IConstants {
 	 * handlers queue by queue index. Call every handler in queue
 	 * in try catch mode to catch any exceptions to call:
 	 * `\MvcCore\Application::DispatchException($e);`.
-	 * @param \callable[] $handlers
+	 * @param  \callable[] $handlers
 	 * @return bool
 	 */
 	public function ProcessCustomHandlers (& $handlers = []);
@@ -580,10 +580,10 @@ interface IApplication extends \MvcCore\Application\IConstants {
 	 * Call exception callback if there is caught any
 	 * exception in controller life-cycle dispatching process
 	 * with first argument as caught exception.
-	 * @param string $ctrlClassFullName
-	 * @param string $actionNamePc
-	 * @param string $viewScriptFullPath
-	 * @param callable $exceptionCallback
+	 * @param  string   $ctrlClassFullName
+	 * @param  string   $actionNamePc
+	 * @param  string   $viewScriptFullPath
+	 * @param  callable $exceptionCallback
 	 * @return bool
 	 */
 	public function DispatchControllerAction (
@@ -641,8 +641,8 @@ interface IApplication extends \MvcCore\Application\IConstants {
 	 * - If request is not in development mode:
 	 *   - Log error and try to render error page by configured controller and error action:,
 	 *     `\App\Controllers\Index::Error();` by default.
-	 * @param \Exception|string $exceptionOrMessage
-	 * @param int|NULL $code
+	 * @param  \Exception|string $exceptionOrMessage
+	 * @param  int|NULL          $code
 	 * @return bool
 	 */
 	public function DispatchException ($exceptionOrMessage, $code = NULL);
@@ -652,7 +652,7 @@ interface IApplication extends \MvcCore\Application\IConstants {
 	 * `\App\Controllers\Index::Error();` by default.
 	 * If there is no controller/action like that or any other exception happens,
 	 * it's processed very simple plain text response with 500 http code.
-	 * @param \Exception $e
+	 * @param  \Exception $e
 	 * @return bool
 	 */
 	public function RenderError ($e);
@@ -662,7 +662,7 @@ interface IApplication extends \MvcCore\Application\IConstants {
 	 * `\App\Controllers\Index::NotFound();` by default.
 	 * If there is no controller/action like that or any other exception happens,
 	 * it's processed very simple plain text response with 404 http code.
-	 * @param \Exception $e
+	 * @param  \Exception $e
 	 * @return bool
 	 */
 	public function RenderNotFound ($exceptionMessage = '');
@@ -670,7 +670,7 @@ interface IApplication extends \MvcCore\Application\IConstants {
 	/**
 	 * Prepare very simple response with internal server error (500)
 	 * as plain text response into `\MvcCore\Application::$response`.
-	 * @param string $text
+	 * @param  string $text
 	 * @return bool
 	 */
 	public function RenderError500PlainText ($text = '');
@@ -678,7 +678,7 @@ interface IApplication extends \MvcCore\Application\IConstants {
 	/**
 	 * Prepare very simple response with not found error (404)
 	 * as plain text response into `\MvcCore\Application::$response`.
-	 * @param string $text
+	 * @param  string $text
 	 * @return bool
 	 */
 	public function RenderError404PlainText ();
@@ -691,7 +691,7 @@ interface IApplication extends \MvcCore\Application\IConstants {
 	/**
 	 * Check if default application controller (`\App\Controllers\Index` by default) has specific action.
 	 * If default controller has specific action - return default controller full name, else empty string.
-	 * @param string $actionName
+	 * @param  string $actionName
 	 * @return string
 	 */
 	public function GetDefaultControllerIfHasAction ($actionName);
@@ -699,7 +699,7 @@ interface IApplication extends \MvcCore\Application\IConstants {
 	/**
 	 * Complete standard MvcCore application controller full name in form:
 	 * `\App\Controllers\<$controllerNamePascalCase>`.
-	 * @param string $controllerNamePascalCase
+	 * @param  string $controllerNamePascalCase
 	 * @return string
 	 */
 	public function CompleteControllerName ($controllerNamePascalCase);

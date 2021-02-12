@@ -17,9 +17,9 @@ trait UrlByQuery {
 
 	/**
 	 * @inheritDocs
-	 * @param string $controllerActionOrRouteName
-	 * @param array  $params
-	 * @param string $givenRouteName
+	 * @param  string $controllerActionOrRouteName
+	 * @param  array  $params
+	 * @param  string $givenRouteName
 	 * @return string
 	 */
 	public function UrlByQueryString ($controllerActionOrRouteName = 'Index:Index', array & $params = [], $givenRouteName = NULL) {
@@ -53,8 +53,8 @@ trait UrlByQuery {
 	 * Complete controller or action possible passed through `$params` array.
 	 * It there is controller or action founded, unset it from `$params` and 
 	 * returns it as result Array - first index is controller, second is action. 
-	 * @param mixed $controllerActionOrRouteName 
-	 * @param array $params 
+	 * @param  mixed $controllerActionOrRouteName 
+	 * @param  array $params 
 	 * @return array
 	 */
 	protected function urlByQueryStringCompleteCtrlAction ($controllerActionOrRouteName, array & $params) {
@@ -81,9 +81,9 @@ trait UrlByQuery {
 	 * `$params` in third argument, add those params as query string after.
 	 * If controller and also action has default values and there are no params,
 	 * return `/` slash (to target homepage).
-	 * @param string $ctrlPc 
-	 * @param string $actionPc 
-	 * @param array $params 
+	 * @param  string $ctrlPc 
+	 * @param  string $actionPc 
+	 * @param  array  $params 
 	 * @return string
 	 */
 	protected function urlByQueryStringCompleteResult ($ctrlPc, $actionPc, array & $params) {
@@ -118,7 +118,7 @@ trait UrlByQuery {
 	 * if given `array $params` contains `boolean` record under `"absolute"`
 	 * array key and if the record is `TRUE`. Unset the absolute flag from 
 	 * `$params` in any case and return the boolean value (`FALSE` by default).
-	 * @param array $params Params array, the second argument from router `Url()` method.
+	 * @param  array $params Params array, the second argument from router `Url()` method.
 	 * @return boolean
 	 */
 	protected function urlGetAbsoluteParam (array & $params = []) {

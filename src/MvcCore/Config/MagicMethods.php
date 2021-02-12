@@ -45,7 +45,7 @@ trait MagicMethods {
 	/**
 	 * Get not defined property from `$this->currentData` array store,
 	 * if there is nothing, return `NULL`.
-	 * @param string $key
+	 * @param  string $key
 	 * @return mixed
 	 */
 	public function __get ($key) {
@@ -57,7 +57,7 @@ trait MagicMethods {
 
 	/**
 	 * Store not defined property inside `$this->currentData` array store.
-	 * @param string $key
+	 * @param  string $key
 	 * @return mixed
 	 */
 	public function __set ($key, $value) {
@@ -67,7 +67,7 @@ trait MagicMethods {
 
 	/**
 	 * Magic function triggered by: `isset($cfg->key);`.
-	 * @param string $key
+	 * @param  string $key
 	 * @return bool
 	 */
 	public function __isset ($key) {
@@ -77,7 +77,7 @@ trait MagicMethods {
 
 	/**
 	 * Magic function triggered by: `unset($cfg->key);`.
-	 * @param string $key
+	 * @param  string $key
 	 * @return void
 	 */
 	public function __unset ($key) {
@@ -139,7 +139,7 @@ trait MagicMethods {
 	/**
 	 * Return whether the requested index exists in the internal store.
 	 * Example: `isset($cfg['any']);`
-	 * @param mixed $offset
+	 * @param  mixed $offset
 	 * @return bool
 	 */
 	public function offsetExists ($offset) {

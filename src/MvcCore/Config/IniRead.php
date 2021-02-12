@@ -55,7 +55,7 @@ trait IniRead {
 	 * Explode all possible sections into environment ini data collections,
 	 * keyed by environment name. Data, not targeted into any environment,
 	 * explode into default ini data collection keyed under empty string.
-	 * @param array $rawIniData
+	 * @param  array $rawIniData
 	 * @return array
 	 */
 	protected static function & readAllEnvironmentsSections (array & $rawIniData) {
@@ -98,8 +98,8 @@ trait IniRead {
 	 * Process single level array with dotted keys into tree structure
 	 * and complete object type switches about tree records
 	 * to complete journal about final `\stdClass`es or `array`s types.
-	 * @param array $iniData
-	 * @param int   $iniScannerMode
+	 * @param  array $iniData
+	 * @param  int   $iniScannerMode
 	 * @return array
 	 */
 	protected static function readExpandLevelsAndReType (array & $iniData, $iniScannerMode) {
@@ -160,7 +160,7 @@ trait IniRead {
 	/**
 	 * Retype raw INI value into `array` with retyped it's own values or
 	 * retype raw INI value into `float`, `int` or `string`.
-	 * @param string|array $rawValue
+	 * @param  string|array $rawValue
 	 * @return array|float|int|string
 	 */
 	protected static function readTypedValue ($rawValue) {
@@ -183,7 +183,7 @@ trait IniRead {
 
 	/**
 	 * Retype raw INI value into `float` or `int`.
-	 * @param string $rawValue
+	 * @param  string $rawValue
 	 * @return float|int|string
 	 */
 	protected static function readTypedValueFloatOrInt ($rawValue) {
@@ -201,7 +201,7 @@ trait IniRead {
 
 	/**
 	 * Retype raw INI value into `bool`, `NULL` or `string`.
-	 * @param string $rawValue
+	 * @param  string $rawValue
 	 * @return bool|NULL|string
 	 */
 	protected static function readTypedSpecialValueOrString ($rawValue) {

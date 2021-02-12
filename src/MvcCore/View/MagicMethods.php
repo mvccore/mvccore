@@ -17,8 +17,8 @@ trait MagicMethods {
 
 	/**
 	 * @inheritDocs
-	 * @param string $name
-	 * @param mixed $value
+	 * @param  string $name
+	 * @param  mixed $value
 	 * @return bool
 	 */
 	public function __set ($name, $value) {
@@ -28,7 +28,7 @@ trait MagicMethods {
 
 	/**
 	 * @inheritDocs
-	 * @param string $name
+	 * @param  string $name
 	 * @return mixed
 	 */
 	public function __get ($name) {
@@ -63,7 +63,7 @@ trait MagicMethods {
 
 	/**
 	 * @inheritDocs
-	 * @param string $name
+	 * @param  string $name
 	 * @return bool
 	 */
 	public function __isset ($name) {
@@ -98,7 +98,7 @@ trait MagicMethods {
 
 	/**
 	 * @inheritDocs
-	 * @param string $name
+	 * @param  string $name
 	 * @return void
 	 */
 	public function __unset ($name) {
@@ -111,7 +111,7 @@ trait MagicMethods {
 	/**
 	 * Get cached reflection class instance about given name from current `$this` context.
 	 * If given name doesn't exists in local context, return `NULL`.
-	 * @param string $currentContextObjectName Local context property name to get reflection class about.
+	 * @param  string $currentContextObjectName Local context property name to get reflection class about.
 	 * @return \ReflectionClass|NULL
 	 */
 	protected function getReflectionClass ($currentContextObjectName) {

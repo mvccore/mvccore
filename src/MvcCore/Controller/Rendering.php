@@ -26,8 +26,8 @@ trait Rendering {
 
 	/**
 	 * @inheritDocs
-	 * @param string $controllerOrActionNameDashed
-	 * @param string $actionNameDashed
+	 * @param  string $controllerOrActionNameDashed
+	 * @param  string $actionNameDashed
 	 * @return string
 	 */
 	public function Render ($controllerOrActionNameDashed = NULL, $actionNameDashed = NULL) {
@@ -82,8 +82,8 @@ trait Rendering {
 
 	/**
 	 * @inheritDocs
-	 * @param string $output
-	 * @param bool $terminate
+	 * @param  string $output
+	 * @param  bool   $terminate
 	 * @return void
 	 */
 	public function HtmlResponse ($output = '', $terminate = TRUE) {
@@ -103,8 +103,8 @@ trait Rendering {
 
 	/**
 	 * @inheritDocs
-	 * @param string $output
-	 * @param bool $terminate
+	 * @param  string $output
+	 * @param  bool   $terminate
 	 * @return void
 	 */
 	public function XmlResponse ($output = '', $terminate = TRUE) {
@@ -120,8 +120,8 @@ trait Rendering {
 
 	/**
 	 * @inheritDocs
-	 * @param string $output
-	 * @param bool $terminate
+	 * @param  string $output
+	 * @param  bool   $terminate
 	 * @return void
 	 */
 	public function TextResponse ($output = '', $terminate = TRUE) {
@@ -137,8 +137,8 @@ trait Rendering {
 
 	/**
 	 * @inheritDocs
-	 * @param mixed $data
-	 * @param bool  $terminate
+	 * @param  mixed $data
+	 * @param  bool  $terminate
 	 * @throws \Exception JSON encoding error.
 	 * @return void
 	 */
@@ -160,9 +160,9 @@ trait Rendering {
 
 	/**
 	 * @inheritDocs
-	 * @param mixed $data
-	 * @param string $callbackParamName
-	 * @param bool  $terminate
+	 * @param  mixed      $data
+	 * @param  string     $callbackParamName
+	 * @param  bool       $terminate
 	 * @throws \Exception JSON encoding error.
 	 * @return void
 	 */
@@ -186,7 +186,7 @@ trait Rendering {
 
 	/**
 	 * @inheritDocs
-	 * @param string $exceptionMessage
+	 * @param  string $exceptionMessage
 	 * @return void
 	 */
 	public function RenderError ($exceptionMessage = '') {
@@ -215,8 +215,8 @@ trait Rendering {
 
 	/**
 	 * @inheritDocs
-	 * @param string $controllerOrActionNameDashed
-	 * @param string $actionNameDashed
+	 * @param  string $controllerOrActionNameDashed
+	 * @param  string $actionNameDashed
 	 * @return string
 	 */
 	public function GetViewScriptPath ($controllerOrActionNameDashed = NULL, $actionNameDashed = NULL) {
@@ -269,9 +269,9 @@ trait Rendering {
 	 * wrapped around rendered action view string also into output buffer.
 	 * Then set up rendered content from output buffer into response object
 	 * and then send HTTP headers and content after all.
-	 * @param string $controllerOrActionNameDashed
-	 * @param string $actionNameDashed
-	 * @param bool   $topMostParentCtrl
+	 * @param  string $controllerOrActionNameDashed
+	 * @param  string $actionNameDashed
+	 * @param  bool   $topMostParentCtrl
 	 * @return void
 	 */
 	protected function renderWithObFromActionToLayout ($controllerOrActionNameDashed, $actionNameDashed, $topMostParentCtrl) {
@@ -310,9 +310,9 @@ trait Rendering {
 	 * Render layout view and render action view together inside it without
 	 * output buffering. There is not used reponse object body property for
 	 * this rendering mode. Http headers are sent before view rendering.
-	 * @param string $controllerOrActionNameDashed
-	 * @param string $actionNameDashed
-	 * @param bool   $topMostParentCtrl
+	 * @param  string $controllerOrActionNameDashed
+	 * @param  string $actionNameDashed
+	 * @param  bool   $topMostParentCtrl
 	 * @return void
 	 */
 	protected function renderWithoutObContinuously ($controllerOrActionNameDashed, $actionNameDashed, $topMostParentCtrl) {

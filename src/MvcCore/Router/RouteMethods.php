@@ -236,7 +236,7 @@ trait RouteMethods {
 
 	/**
 	 * @inheritDocs
-	 * @param string|\MvcCore\Route $routeOrRouteName
+	 * @param  string|\MvcCore\Route $routeOrRouteName
 	 * @return bool
 	 */
 	public function HasRoute ($routeOrRouteName) {
@@ -254,7 +254,7 @@ trait RouteMethods {
 
 	/**
 	 * @inheritDocs
-	 * @param string $routeName
+	 * @param  string $routeName
 	 * @return \MvcCore\Route|NULL
 	 */
 	public function RemoveRoute ($routeName) {
@@ -283,8 +283,8 @@ trait RouteMethods {
 	 * Unset route from defined group. This method doesn't unset the route
 	 * from router object to not be possible to create URL by given route anymore.
 	 * This does route method: `\MvcCore\Route::RemoveRoute($routeName);`.
-	 * @param \MvcCore\IRoute $route
-	 * @param string $routeName
+	 * @param  \MvcCore\IRoute $route
+	 * @param  string          $routeName
 	 * @return void
 	 */
 	protected function removeRouteFromGroup (\MvcCore\IRoute $route, $routeName) {
@@ -324,7 +324,7 @@ trait RouteMethods {
 
 	/**
 	 * @inheritDocs
-	 * @param \MvcCore\Route $currentRoute
+	 * @param  \MvcCore\Route $currentRoute
 	 * @return \MvcCore\Router
 	 */
 	public function SetCurrentRoute (\MvcCore\IRoute $currentRoute) {
@@ -346,7 +346,7 @@ trait RouteMethods {
 	/**
 	 * Get always route instance from given route configuration data or return
 	 * already created given instance.
-	 * @param \MvcCore\Route|array $routeCfgOrRoute Route instance or route config array.
+	 * @param  \MvcCore\Route|array $routeCfgOrRoute Route instance or route config array.
 	 * @return \MvcCore\Route
 	 */
 	protected function getRouteInstance (& $routeCfgOrRoute) {

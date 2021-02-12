@@ -17,8 +17,8 @@ trait ReadWrite {
 
 	/**
 	 * @inheritDocs
-	 * @param array $mergedData Configuration data for all environments.
-	 * @param string $configFullPath Config absolute path.
+	 * @param  array  $mergedData     Configuration data for all environments.
+	 * @param  string $configFullPath Config absolute path.
 	 * @return \MvcCore\Config
 	 */
 	public static function CreateInstance (array $mergedData = [], $configFullPath = NULL) {
@@ -68,7 +68,7 @@ trait ReadWrite {
 
 	/**
 	 * @inheritDocs
-	 * @param string $appRootRelativePath Any config relative path like `'/%appPath%/website.ini'`.
+	 * @param  string $appRootRelativePath Any config relative path like `'/%appPath%/website.ini'`.
 	 * @throws \RuntimeException
 	 * @return \MvcCore\Config|NULL
 	 */
@@ -134,9 +134,9 @@ trait ReadWrite {
 
 	/**
 	 * @inheritDocs
-	 * @param string $configFullPath
-	 * @param string $systemConfigClass
-	 * @param bool   $isSystemConfig
+	 * @param  string $configFullPath
+	 * @param  string $systemConfigClass
+	 * @param  bool   $isSystemConfig
 	 * @return \MvcCore\Config|bool
 	 */
 	public static function LoadConfig ($configFullPath, $systemConfigClass, $isSystemConfig = FALSE) {

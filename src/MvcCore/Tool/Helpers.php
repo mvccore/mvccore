@@ -64,7 +64,7 @@ trait Helpers {
 	
 	/**
 	 * @inheritDocs
-	 * @param string $jsonStr
+	 * @param  string $jsonStr
 	 * @return bool
 	 */
 	public static function IsQueryString ($queryStr) {
@@ -81,9 +81,9 @@ trait Helpers {
 
 	/**
 	 * @inheritDocs
-	 * @param string|callable $internalFnOrHandler
-	 * @param array $args
-	 * @param callable $onError
+	 * @param  string|callable $internalFnOrHandler
+	 * @param  array           $args
+	 * @param  callable        $onError
 	 * @return mixed
 	 */
 	public static function Invoke ($internalFnOrHandler, array $args, callable $onError) {
@@ -128,12 +128,12 @@ trait Helpers {
 	 * @see http://php.net/manual/en/function.flock.php
 	 * @see http://php.net/manual/en/function.set-error-handler.php
 	 * @see http://php.net/manual/en/function.clearstatcache.php
-	 * @param string $fullPath File full path.
-	 * @param string $content String content to write.
-	 * @param string $writeMode PHP `fopen()` second argument flag, could be `w`, `w+`, `a`, `a+` etc...
-	 * @param int $lockWaitMilliseconds Milliseconds to wait before next lock file existence is checked in `while()` cycle.
-	 * @param int $maxLockWaitMilliseconds Maximum milliseconds time to wait before thrown an exception about not possible write.
-	 * @param int $oldLockMillisecondsTolerance Maximum milliseconds time to consider lock file as operative or as old after some died process.
+	 * @param  string $fullPath                  File full path.
+	 * @param  string $content                   String content to write.
+	 * @param  string $writeMode                 PHP `fopen()` second argument flag, could be `w`, `w+`, `a`, `a+` etc...
+	 * @param  int $lockWaitMilliseconds         Milliseconds to wait before next lock file existence is checked in `while()` cycle.
+	 * @param  int $maxLockWaitMilliseconds      Maximum milliseconds time to wait before thrown an exception about not possible write.
+	 * @param  int $oldLockMillisecondsTolerance Maximum milliseconds time to consider lock file as operative or as old after some died process.
 	 * @throws \Exception
 	 * @return bool
 	 */
@@ -249,7 +249,7 @@ trait Helpers {
 	/**
 	 * @inheritDocs
 	 * @see https://www.php.net/manual/en/function.realpath.php
-	 * @param string $path
+	 * @param  string $path
 	 * @return string
 	 */
 	public static function RealPathVirtual ($path) {
@@ -275,8 +275,8 @@ trait Helpers {
 	 * @see https://www.php.net/manual/en/function.parse-url.php
 	 * @see https://bugs.php.net/bug.php?id=73192
 	 * @see https://en.wikipedia.org/wiki/Uniform_Resource_Identifier
-	 * @param string $uri 
-	 * @param int $component 
+	 * @param  string $uri 
+	 * @param  int    $component 
 	 * @return array|string|int|null|false
 	 */
 	public static function ParseUrl ($uri, $component = -1) {

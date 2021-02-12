@@ -35,7 +35,7 @@ trait GettersSetters {
 
 	/**
 	 * @inheritDocs
-	 * @param string $extension An extension with or without leading dot char.
+	 * @param  string $extension An extension with or without leading dot char.
 	 * @return string
 	 */
 	public static function SetExtension ($extension = '.phtml') {
@@ -52,7 +52,7 @@ trait GettersSetters {
 
 	/**
 	 * @inheritDocs
-	 * @param string $doctype
+	 * @param  string $doctype
 	 * @return string
 	 */
 	public static function SetDoctype ($doctype = \MvcCore\IView::DOCTYPE_HTML5) {
@@ -69,7 +69,7 @@ trait GettersSetters {
 
 	/**
 	 * @inheritDocs
-	 * @param string $layoutsDir
+	 * @param  string $layoutsDir
 	 * @return string
 	 */
 	public static function SetLayoutsDir ($layoutsDir = 'Layouts') {
@@ -86,7 +86,7 @@ trait GettersSetters {
 
 	/**
 	 * @inheritDocs
-	 * @param string $scriptsDir
+	 * @param  string $scriptsDir
 	 * @return string
 	 */
 	public static function SetScriptsDir ($scriptsDir = 'Scripts') {
@@ -95,7 +95,7 @@ trait GettersSetters {
 
 	/**
 	 * @inheritDocs
-	 * @param \MvcCore\Controller $controller
+	 * @param  \MvcCore\Controller $controller
 	 * @return \MvcCore\View
 	 */
 	public function SetController (\MvcCore\IController $controller) {

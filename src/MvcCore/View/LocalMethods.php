@@ -18,8 +18,8 @@ trait LocalMethods {
 	/**
 	 * If relative path declared in view starts with `"./anything/else.phtml"`,
 	 * then change relative path to correct `"./"` context and return full path.
-	 * @param string $typePath
-	 * @param string $relativePath
+	 * @param  string $typePath
+	 * @param  string $relativePath
 	 * @return string full path
 	 */
 	protected function correctRelativePath ($typePath, $relativePath) {

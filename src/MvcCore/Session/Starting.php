@@ -88,7 +88,7 @@ trait Starting
 	 * But PHP engine takes always the first cookie value to start session.
 	 * To prevent atacks like that, take always the last session id value 
 	 * in Cookie header list by fixing session id before session has been started.
-	 * @param \MvcCore\Request $req
+	 * @param  \MvcCore\Request $req
 	 * @return void
 	 */
 	protected static function preventSessionFixation (\MvcCore\IRequest $req) {

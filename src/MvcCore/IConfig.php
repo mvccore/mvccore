@@ -34,15 +34,15 @@ interface IConfig {
 
 	/**
 	 * Set system config relative path from app root.
-	 * @param string $systemConfigPath
+	 * @param  string $systemConfigPath
 	 * @return string
 	 */
 	public static function SetSystemConfigPath ($systemConfigPath);
 
 	/**
 	 * Set system config relative path from app root.
-	 * @param string $appRootRelativePath
-	 * @param \MvcCore\Config $config
+	 * @param  string          $appRootRelativePath
+	 * @param  \MvcCore\Config $config
 	 * @return \MvcCore\Config
 	 */
 	public static function SetConfigCache ($appRootRelativePath, \MvcCore\IConfig $config);
@@ -50,7 +50,7 @@ interface IConfig {
 	/**
 	 * Clear configs memory cache by relative path from app root 
 	 * or clear whole configs memory cache if `NULL` specified.
-	 * @param string|NULL $appRootRelativePath
+	 * @param  string|NULL $appRootRelativePath
 	 * @return bool
 	 */
 	public static function ClearConfigCache ($appRootRelativePath = NULL);
@@ -58,7 +58,7 @@ interface IConfig {
 	/**
 	 * Return environment configuration data from system config. Environment
 	 * configuration data are always stored under root level section `[environments]`.
-	 * @param \MvcCore\Config $config
+	 * @param  \MvcCore\Config $config
 	 * @return array|\stdClass
 	 */
 	public static function & GetEnvironmentDetectionData (\MvcCore\IConfig $config);
@@ -66,8 +66,8 @@ interface IConfig {
 	/**
 	 * Set up config with current environment data immediately after
 	 * environment name is detected. This method is used INTERNALLY!
-	 * @param \MvcCore\Config $config
-	 * @param string $environmentName
+	 * @param  \MvcCore\Config $config
+	 * @param  string          $environmentName
 	 * @return void
 	 */
 	public static function SetUpEnvironmentData (\MvcCore\IConfig $config, $environmentName);
@@ -78,8 +78,8 @@ interface IConfig {
 	 * Always called from `\MvcCore\Config::GetSystem()` before system config is read.
 	 * This is place where to customize any config creation process,
 	 * before it's created by MvcCore framework.
-	 * @param array $mergedData Configuration data for all environments.
-	 * @param string $appRootRelativePath Relative config path from app root.
+	 * @param  array  $mergedData          Configuration data for all environments.
+	 * @param  string $appRootRelativePath Relative config path from app root.
 	 * @return \MvcCore\Config
 	 */
 	public static function CreateInstance (array $mergedData = [], $appRootRelativePath = NULL);
@@ -95,7 +95,7 @@ interface IConfig {
 	/**
 	 * Get (optionally cached) config INI file as `stdClass` or `array`,
 	 * placed relatively from application document root.
-	 * @param string $appRootRelativePath Any config relative path like `'/%appPath%/website.ini'`.
+	 * @param  string $appRootRelativePath Any config relative path like `'/%appPath%/website.ini'`.
 	 * @throws \RuntimeException
 	 * @return \MvcCore\Config|NULL
 	 */
@@ -103,9 +103,9 @@ interface IConfig {
 
 	/**
 	 * Try to load and parse config file by absolute path.
-	 * @param string $configFullPath
-	 * @param string $systemConfigClass
-	 * @param bool   $isSystemConfig
+	 * @param  string $configFullPath
+	 * @param  string $systemConfigClass
+	 * @param  bool   $isSystemConfig
 	 * @return \MvcCore\Config|bool
 	 */
 	public static function LoadConfig ($configFullPath, $systemConfigClass, $isSystemConfig = FALSE);
@@ -174,28 +174,28 @@ interface IConfig {
 	/**
 	 * Get not defined property from `$this->currentData` array store,
 	 * if there is nothing, return `NULL`.
-	 * @param string $key
+	 * @param  string $key
 	 * @return mixed
 	 */
 	public function __get ($key);
 
 	/**
 	 * Store not defined property inside `$this->currentData` array store.
-	 * @param string $key
+	 * @param  string $key
 	 * @return mixed
 	 */
 	public function __set ($key, $value);
 
 	/**
 	 * Magic function triggered by: `isset($cfg->key);`.
-	 * @param string $key
+	 * @param  string $key
 	 * @return bool
 	 */
 	public function __isset ($key);
 
 	/**
 	 * Magic function triggered by: `unset($cfg->key);`.
-	 * @param string $key
+	 * @param  string $key
 	 * @return void
 	 */
 	public function __unset ($key);

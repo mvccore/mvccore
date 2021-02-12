@@ -208,9 +208,9 @@ trait Dispatching {
 	 * If there is no such static method, create instance by property type 
 	 * constructor with no arguments. If property instance implements 
 	 * `\MvcCore\IController`, add instance into child controllers.
-	 * @param \ReflectionClass $ctrl 
-	 * @param \ReflectionProperty $prop 
-	 * @param string|NULL $factoryMethodName 
+	 * @param  \ReflectionClass    $ctrl 
+	 * @param  \ReflectionProperty $prop 
+	 * @param  string|NULL         $factoryMethodName 
 	 * @return bool
 	 */
 	protected function autoInitializeProperty (\ReflectionClass $ctrl, \ReflectionProperty $prop, $factoryMethodName) {
@@ -278,8 +278,8 @@ trait Dispatching {
 
 	/**
 	 * @inheritDocs
-	 * @param \MvcCore\Controller $controller
-	 * @param string|int $index
+	 * @param  \MvcCore\Controller $controller
+	 * @param  string|int          $index
 	 * @return \MvcCore\Controller
 	 */
 	public function AddChildController (\MvcCore\IController $controller, $index = NULL) {
@@ -313,7 +313,7 @@ trait Dispatching {
 
 	/**
 	 * @inheritDocs
-	 * @param mixed $name
+	 * @param  mixed $name
 	 * @return \MvcCore\Session
 	 */
 	public function GetSessionNamespace ($name = \MvcCore\ISession::DEFAULT_NAMESPACE_NAME) {
@@ -324,9 +324,9 @@ trait Dispatching {
 
 	/**
 	 * @inheritDocs
-	 * @param string      $location
-	 * @param int         $code
-	 * @param string|NULL $reason   Any optional text header for reason why.
+	 * @param  string      $location
+	 * @param  int         $code
+	 * @param  string|NULL $reason   Any optional text header for reason why.
 	 * @return void
 	 */
 	public static function Redirect ($location = '', $code = \MvcCore\IResponse::SEE_OTHER, $reason = NULL) {

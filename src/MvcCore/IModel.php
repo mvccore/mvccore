@@ -27,8 +27,8 @@ interface IModel extends \MvcCore\Model\IConstants {
 	
 	/**
 	 * Returns (or creates if necessary) model resource instance.
- 	 * @param array|NULL $args              Values array with variables to pass into resource `__construct()` method.
-	 * @param string     $resourceClassPath Automatically initialized with string replaced with `%SELF%` by `static::class` (or by `get_called_class()`).
+ 	 * @param  array|NULL $args              Values array with variables to pass into resource `__construct()` method.
+	 * @param  string     $resourceClassPath Automatically initialized with string replaced with `%SELF%` by `static::class` (or by `get_called_class()`).
 	 * @return \MvcCore\Model
 	 */
 	public static function GetResource ($args = [], $resourceClassPath = '%SELF%s\Resource');
@@ -91,8 +91,8 @@ interface IModel extends \MvcCore\Model\IConstants {
 	 *       ]
 	 *   ]);
 	 * ````
-	 * @param \stdClass[]|array[] $configs Configuration array with `\stdClass` objects or arrays with configuration data.
-	 * @param string|int $defaultConnectionName
+	 * @param  \stdClass[]|array[] $configs               Configuration array with `\stdClass` objects or arrays with configuration data.
+	 * @param  string|int          $defaultConnectionName
 	 * @return bool
 	 */
 	public static function SetConfigs (array $configs = []);
@@ -100,7 +100,7 @@ interface IModel extends \MvcCore\Model\IConstants {
 	/**
 	 * Returns database connection config by connection index (integer)
 	 * or by connection name (string) as `\stdClass` (cached by local store).
-	 * @param int|string|NULL $connectionName
+	 * @param  int|string|NULL $connectionName
 	 * @return \stdClass
 	 */
 	public static function & GetConfig ($connectionName = NULL);
@@ -139,8 +139,8 @@ interface IModel extends \MvcCore\Model\IConstants {
 	 *       'user'   => 'root',       'password'    => '1234',      'database' => 'cdcol',
 	 *   ], 0);
 	 * ````
-	 * @param \stdClass[]|array[] $config
-	 * @param string|int|NULL $connectionName
+	 * @param  \stdClass[]|array[] $config
+	 * @param  string|int|NULL     $connectionName
 	 * @return string|int
 	 */
 	public static function SetConfig (array $config = [], $connectionName = NULL);
@@ -148,7 +148,7 @@ interface IModel extends \MvcCore\Model\IConstants {
 	/**
 	 * Collect all model class properties values into array.
 	 * Result keys could be converted by any conversion flag.
-	 * @param  int $propsFlags     All properties flags are available except flags: 
+	 * @param  int  $propsFlags    All properties flags are available except flags: 
 	 *                             - `\MvcCore\IModel::PROPS_INITIAL_VALUES`,
 	 *                             - `\MvcCore\IModel::PROPS_CONVERT_CASE_INSENSITIVE`,
 	 *                             - `\MvcCore\IModel::PROPS_NAMES_BY_*`.

@@ -19,7 +19,7 @@ trait MagicMethods {
 
 	/**
 	 * @inheritDocs
-	 * @param string $key
+	 * @param  string $key
 	 * @return mixed
 	 */
 	public function __get ($key) {
@@ -31,8 +31,8 @@ trait MagicMethods {
 
 	/**
 	 * @inheritDocs
-	 * @param string $key
-	 * @param mixed $value
+	 * @param  string $key
+	 * @param  mixed  $value
 	 * @return mixed
 	 */
 	public function __set ($key, $value) {
@@ -42,7 +42,7 @@ trait MagicMethods {
 
 	/**
 	 * @inheritDocs
-	 * @param string $key
+	 * @param  string $key
 	 * @return bool
 	 */
 	public function __isset ($key) {
@@ -52,7 +52,7 @@ trait MagicMethods {
 
 	/**
 	 * @inheritDocs
-	 * @param string $key
+	 * @param  string $key
 	 * @return void
 	 */
 	public function __unset ($key) {
@@ -177,7 +177,7 @@ trait MagicMethods {
 	/**
 	 * Return whether the requested index exists.
 	 * Example: `isset($sessionNamespace['any']);`
-	 * @param mixed $offset
+	 * @param  mixed $offset
 	 * @return bool
 	 */
 	public function offsetExists ($offset) {

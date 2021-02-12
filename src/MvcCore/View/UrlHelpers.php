@@ -17,8 +17,8 @@ trait UrlHelpers {
 
 	/**
 	 * @inheritDocs
-	 * @param string $controllerActionOrRouteName	Should be `"Controller:Action"` combination or just any route name as custom specific string.
-	 * @param array  $params						Optional, array with params, key is param name, value is param value.
+	 * @param  string $controllerActionOrRouteName Should be `"Controller:Action"` combination or just any route name as custom specific string.
+	 * @param  array  $params                      Optional, array with params, key is param name, value is param value.
 	 * @return string
 	 */
 	public function Url ($controllerActionOrRouteName = 'Index:Index', array $params = []) {
@@ -28,7 +28,7 @@ trait UrlHelpers {
 
 	/**
 	 * @inheritDocs
-	 * @param string $path
+	 * @param  string $path
 	 * @return string
 	 */
 	public function AssetUrl ($path = '') {

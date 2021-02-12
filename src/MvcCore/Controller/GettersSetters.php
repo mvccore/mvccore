@@ -17,10 +17,10 @@ trait GettersSetters {
 
 	/**
 	 * @inheritDocs
-	 * @param string $name Parameter string name.
-	 * @param string|array|bool $pregReplaceAllowedChars If String - list of regular expression characters to only keep, if array - `preg_replace()` pattern and reverse, if `FALSE`, raw value is returned.
-	 * @param mixed $ifNullValue Default value returned if given param name is null.
-	 * @param string $targetType Target type to retype param value or default if-null value. If param is an array, every param item will be retyped into given target type.
+	 * @param  string            $name                    Parameter string name.
+	 * @param  string|array|bool $pregReplaceAllowedChars If String - list of regular expression characters to only keep, if array - `preg_replace()` pattern and reverse, if `FALSE`, raw value is returned.
+	 * @param  mixed             $ifNullValue             Default value returned if given param name is null.
+	 * @param  string            $targetType              Target type to retype param value or default if-null value. If param is an array, every param item will be retyped into given target type.
 	 * @return string|\string[]|int|\int[]|bool|\bool[]|array|mixed
 	 */
 	public function GetParam (
@@ -46,7 +46,7 @@ trait GettersSetters {
 
 	/**
 	 * @inheritDocs
-	 * @param \MvcCore\Application $application
+	 * @param  \MvcCore\Application $application
 	 * @return \MvcCore\Controller
 	 */
 	public function SetApplication (\MvcCore\IApplication $application) {
@@ -67,7 +67,7 @@ trait GettersSetters {
 
 	/**
 	 * @inheritDocs
-	 * @param \MvcCore\Environment $environment
+	 * @param  \MvcCore\Environment $environment
 	 * @return \MvcCore\Controller
 	 */
 	public function SetEnvironment (\MvcCore\IEnvironment $environment) {
@@ -88,7 +88,7 @@ trait GettersSetters {
 
 	/**
 	 * @inheritDocs
-	 * @param \MvcCore\Request $request
+	 * @param  \MvcCore\Request $request
 	 * @return \MvcCore\Controller
 	 */
 	public function SetRequest (\MvcCore\IRequest $request) {
@@ -112,7 +112,7 @@ trait GettersSetters {
 
 	/**
 	 * @inheritDocs
-	 * @param string $controllerName 
+	 * @param  string $controllerName 
 	 * @return \MvcCore\Controller
 	 */
 	public function SetControllerName ($controllerName) {
@@ -132,7 +132,7 @@ trait GettersSetters {
 
 	/**
 	 * @inheritDocs
-	 * @param string $actionName
+	 * @param  string $actionName
 	 * @return \MvcCore\Controller
 	 */
 	public function SetActionName ($actionName) {
@@ -173,7 +173,7 @@ trait GettersSetters {
 
 	/**
 	 * @inheritDocs
-	 * @param \MvcCore\Router $router
+	 * @param  \MvcCore\Router $router
 	 * @return \MvcCore\Controller
 	 */
 	public function SetRouter (\MvcCore\IRouter $router) {
@@ -194,7 +194,7 @@ trait GettersSetters {
 	
 	/**
 	 * @inheritDocs
-	 * @param boolean $ajax 
+	 * @param  boolean $ajax 
 	 * @return \MvcCore\Controller
 	 */
 	public function SetIsAjax ($ajax) {
@@ -214,7 +214,7 @@ trait GettersSetters {
 
 	/**
 	 * @inheritDocs
-	 * @param int $dispatchState
+	 * @param  int $dispatchState
 	 * @return \MvcCore\Controller
 	 */
 	public function SetDispatchState ($dispatchState) {
@@ -234,7 +234,7 @@ trait GettersSetters {
 
 	/**
 	 * @inheritDocs
-	 * @param \MvcCore\Model $user
+	 * @param  \MvcCore\Model $user
 	 * @return \MvcCore\Controller
 	 */
 	public function SetUser ($user) {
@@ -254,7 +254,7 @@ trait GettersSetters {
 
 	/**
 	 * @inheritDocs
-	 * @param \MvcCore\View $view
+	 * @param  \MvcCore\View $view
 	 * @return \MvcCore\Controller
 	 */
 	public function SetView (\MvcCore\IView $view) {
@@ -275,7 +275,7 @@ trait GettersSetters {
 
 	/**
 	 * @inheritDocs
-	 * @param int $renderMode
+	 * @param  int $renderMode
 	 * @return \MvcCore\Controller
 	 */
 	public function SetRenderMode ($renderMode = \MvcCore\IView::RENDER_WITH_OB_FROM_ACTION_TO_LAYOUT) {
@@ -295,7 +295,7 @@ trait GettersSetters {
 
 	/**
 	 * @inheritDocs
-	 * @param string $layout
+	 * @param  string $layout
 	 * @return \MvcCore\Controller
 	 */
 	public function SetLayout ($layout = '') {
@@ -315,7 +315,7 @@ trait GettersSetters {
 
 	/**
 	 * @inheritDocs
-	 * @param string|NULL $viewScriptsPath
+	 * @param  string|NULL $viewScriptsPath
 	 * @return \MvcCore\Controller
 	 */
 	public function SetViewScriptsPath ($viewScriptsPath = NULL) {
@@ -354,7 +354,7 @@ trait GettersSetters {
 
 	/**
 	 * @inheritDocs
-	 * @param \MvcCore\Controller|NULL $parentController
+	 * @param  \MvcCore\Controller|NULL $parentController
 	 * @return \MvcCore\Controller
 	 */
 	public function SetParentController (\MvcCore\IController $parentController = NULL) {
@@ -375,7 +375,7 @@ trait GettersSetters {
 
 	/**
 	 * @inheritDocs
-	 * @param \MvcCore\Controller[] $childControllers
+	 * @param  \MvcCore\Controller[] $childControllers
 	 * @return \MvcCore\Controller
 	 */
 	public function SetChildControllers (array $childControllers = []) {
@@ -386,7 +386,7 @@ trait GettersSetters {
 
 	/**
 	 * @inheritDocs
-	 * @param string|int $index
+	 * @param  string|int $index
 	 * @return \MvcCore\Controller
 	 */
 	public function GetChildController ($index = NULL) {
@@ -396,7 +396,7 @@ trait GettersSetters {
 
 	/**
 	 * @inheritDocs
-	 * @param string $appRootRelativePath Any config relative path like `'/%appPath%/website.ini'`.
+	 * @param  string $appRootRelativePath Any config relative path like `'/%appPath%/website.ini'`.
 	 * @return \MvcCore\Config|NULL
 	 */
 	public function GetConfig ($appRootRelativePath) {
@@ -417,8 +417,8 @@ trait GettersSetters {
 
 	/**
 	 * @inheritDocs
-	 * @param string $controllerActionOrRouteName	Should be `"Controller:Action"` combination or just any route name as custom specific string.
-	 * @param array  $params						Optional, array with params, key is param name, value is param value.
+	 * @param  string $controllerActionOrRouteName Should be `"Controller:Action"` combination or just any route name as custom specific string.
+	 * @param  array  $params                      Optional, array with params, key is param name, value is param value.
 	 * @return string
 	 */
 	public function Url ($controllerActionOrRouteName = 'Index:Index', array $params = []) {
@@ -428,7 +428,7 @@ trait GettersSetters {
 
 	/**
 	 * @inheritDocs
-	 * @param string $path
+	 * @param  string $path
 	 * @return string
 	 */
 	public function AssetUrl ($path = '') {

@@ -409,7 +409,7 @@ trait InternalInits {
 	 * is contained in given pattern, if and what domain parts are contained in
 	 * given pattern and if given pattern contains any part of query string.
 	 * Given pattern is `reverse` and if reverse is empty, it's `pattern` prop.
-	 * @param string $pattern
+	 * @param  string $pattern
 	 * @return void
 	 */
 	protected function initFlagsByPatternOrReverse ($pattern) {
@@ -551,8 +551,8 @@ trait InternalInits {
 	 * parse `pattern` or `reverse`. Those properties are necessary to complete
 	 * correctly `match` property to route incoming request or to complete
 	 * correctly `reverse` property to build URL address.
-	 * @throws \LogicException Route configuration property is missing.
-	 * @param \string[] $propsNames,... Missing properties names.
+	 * @param  \string[] $propsNames,... Missing properties names.
+	 * @throws \LogicException           Route configuration property is missing.
 	 * @return void
 	 */
 	protected function throwExceptionIfKeyPropertyIsMissing ($propsNames) {

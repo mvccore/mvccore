@@ -59,7 +59,7 @@ trait PropsGettersSetters {
 
 	/**
 	 * @inheritDocs
-	 * @param boolean $detectionBySystemConfig `TRUE` by default.
+	 * @param  boolean $detectionBySystemConfig `TRUE` by default.
 	 * @return boolean
 	 */
 	public static function SetDetectionBySystemConfig ($detectionBySystemConfig = TRUE) {
@@ -125,7 +125,7 @@ trait PropsGettersSetters {
 
 	/**
 	 * @inheritDocs
-	 * @param string $name
+	 * @param  string $name
 	 * @return string
 	 */
 	public function SetName ($name = \MvcCore\IEnvironment::PRODUCTION) {

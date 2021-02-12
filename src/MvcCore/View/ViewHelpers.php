@@ -25,7 +25,7 @@ trait ViewHelpers {
 
 	/**
 	 * @inheritDocs
-	 * @param string $helpersDir
+	 * @param  string $helpersDir
 	 * @return string
 	 */
 	public static function SetHelpersDir ($helpersDir = 'Helpers') {
@@ -34,7 +34,7 @@ trait ViewHelpers {
 
 	/**
 	 * @inheritDocs
-	 * @param string $helperNamespaces,... View helper classes namespace(s).
+	 * @param  string $helperNamespaces,... View helper classes namespace(s).
 	 * @return void
 	 */
 	public static function AddHelpersNamespaces ($helperNamespaces) {
@@ -47,7 +47,7 @@ trait ViewHelpers {
 
 	/**
 	 * @inheritDocs
-	 * @param string $helperNamespaces,... View helper classes namespace(s).
+	 * @param  string $helperNamespaces,... View helper classes namespace(s).
 	 * @return void
 	 */
 	public static function SetHelpersNamespaces ($helperNamespaces) {
@@ -60,10 +60,10 @@ trait ViewHelpers {
 
 	/**
 	 * @inheritDocs
-	 * @param string $method View helper method name in pascal case.
-	 * @param mixed $arguments View helper method arguments.
+	 * @param  string $method            View helper method name in pascal case.
+	 * @param  mixed  $arguments         View helper method arguments.
 	 * @throws \InvalidArgumentException If view doesn't exist in configured namespaces.
-	 * @return string|mixed View helper string result or any other view helper result type or view helper instance, always as `\MvcCore\Ext\Views\Helpers\AbstractHelper|\MvcCore\Ext\Views\Helpers\IHelper` instance.
+	 * @return string|mixed              View helper string result or any other view helper result type or view helper instance, always as `\MvcCore\Ext\Views\Helpers\AbstractHelper|\MvcCore\Ext\Views\Helpers\IHelper` instance.
 	 */
 	public function __call ($method, $arguments) {
 		/** @var $this \MvcCore\View */
@@ -86,9 +86,9 @@ trait ViewHelpers {
 
 	/**
 	 * @inheritDocs
-	 * @param string $helperNameCamelCase View helper method name in camel case.
-	 * @param bool $asClosure Get View helper prepared as closure function, `FALSE` by default.
-	 * @throws \InvalidArgumentException If view doesn't exist in configured namespaces.
+	 * @param  string $helperNameCamelCase View helper method name in camel case.
+	 * @param  bool   $asClosure           Get View helper prepared as closure function, `FALSE` by default.
+	 * @throws \InvalidArgumentException   If view doesn't exist in configured namespaces.
 	 * @return \MvcCore\Ext\Views\Helpers\AbstractHelper|\MvcCore\Ext\Views\Helpers\IHelper|\Closure|mixed View helper instance.
 	 */
 	public function & GetHelper ($helperNameCamelCase, $asClosure = FALSE) {
@@ -157,9 +157,12 @@ trait ViewHelpers {
 
 	/**
 	 * @inheritDocs
-	 * @param string $helperNameCamelCase View helper method name in camel case.
-	 * @param \MvcCore\Ext\Views\Helpers\AbstractHelper|\MvcCore\Ext\Views\Helpers\IHelper|\Closure|mixed $instance View helper instance.
-	 * @param bool $forAllTemplates register this helper instance for all rendered views in the future.
+	 * @param  string                                                                                      $helperNameCamelCase
+	 *                                                                                                     View helper method name in camel case.
+	 * @param  \MvcCore\Ext\Views\Helpers\AbstractHelper|\MvcCore\Ext\Views\Helpers\IHelper|\Closure|mixed $instance
+	 *                                                                                                     View helper instance.
+	 * @param  bool                                                                                        $forAllTemplates
+	 *                                                                                                     Register this helper instance for all rendered views in the future.
 	 * @return \MvcCore\View
 	 */
 	public function SetHelper ($helperNameCamelCase, $instance, $forAllTemplates = TRUE) {

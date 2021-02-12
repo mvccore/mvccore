@@ -28,44 +28,44 @@ interface ITool {
 
 	/**
 	 * Convert all strings `"from" => "to"`:
-	 * - `"MyCustomValue"				=> "my-custom-value"`
-	 * - `"MyWTFValue"					=> "my-w-t-f-value"`
-	 * - `"MyWtfValue"					=> "my-wtf-value"`
-	 * - `"MyCustom/Value/InsideFolder"	=> "my-custom/value/inside-folder"`
-	 * @param string $pascalCase
+	 * - `"MyCustomValue"               => "my-custom-value"`
+	 * - `"MyWTFValue"                  => "my-w-t-f-value"`
+	 * - `"MyWtfValue"                  => "my-wtf-value"`
+	 * - `"MyCustom/Value/InsideFolder" => "my-custom/value/inside-folder"`
+	 * @param  string $pascalCase
 	 * @return string
 	 */
 	public static function GetDashedFromPascalCase ($pascalCase = '');
 
 	/**
 	 * Convert all string `"from" => "to"`:
-	 * - `"my-custom-value"					=> "MyCustomValue"`
-	 * - `"my-wtf-value"					=> "MyWtfValue"`
-	 * - `"my-w-t-f-value"					=> "MyWTFValue"`
-	 * - `"my-custom/value/inside-folder"	=> "MyCustom/Value/InsideFolder"`
-	 * @param string $dashed
+	 * - `"my-custom-value"               => "MyCustomValue"`
+	 * - `"my-wtf-value"                  => "MyWtfValue"`
+	 * - `"my-w-t-f-value"                => "MyWTFValue"`
+	 * - `"my-custom/value/inside-folder" => "MyCustom/Value/InsideFolder"`
+	 * @param  string $dashed
 	 * @return string
 	 */
 	public static function GetPascalCaseFromDashed ($dashed = '');
 
 	/**
 	 * Convert all string `"from" => "to"`:
-	 * - `"MyCutomValue"				=> "my_custom_value"`
-	 * - `"MyWTFValue"					=> "my_w_t_f_value"`
-	 * - `"MyWtfValue"					=> "my_wtf_value"`
-	 * - `"MyCutom/Value/InsideFolder"	=> "my_custom/value/inside_folder"`
-	 * @param string $pascalCase
+	 * - `"MyCutomValue"               => "my_custom_value"`
+	 * - `"MyWTFValue"                 => "my_w_t_f_value"`
+	 * - `"MyWtfValue"                 => "my_wtf_value"`
+	 * - `"MyCutom/Value/InsideFolder" => "my_custom/value/inside_folder"`
+	 * @param  string $pascalCase
 	 * @return string
 	 */
 	public static function GetUnderscoredFromPascalCase ($pascalCase = '');
 
 	/**
 	 * Convert all string `"from" => "to"`:
-	 * - `"my_custom_value"					=> "MyCutomValue"`
-	 * - `"my_wtf_value"					=> "MyWtfValue"`
-	 * - `"my_w_t_f_value"					=> "MyWTFValue"`
-	 * - `"my_custom/value/inside_folder"	=> "MyCutom/Value/InsideFolder"`
-	 * @param string $underscored
+	 * - `"my_custom_value"               => "MyCutomValue"`
+	 * - `"my_wtf_value"                  => "MyWtfValue"`
+	 * - `"my_w_t_f_value"                => "MyWTFValue"`
+	 * - `"my_custom/value/inside_folder" => "MyCutom/Value/InsideFolder"`
+	 * @param  string $underscored
 	 * @return string
 	 */
 	public static function GetPascalCaseFromUnderscored ($underscored = '');
@@ -108,9 +108,9 @@ interface ITool {
 	 *    error state that is retrieved with json_last_error() and
 	 *    json_last_error_msg(). JSON_PARTIAL_OUTPUT_ON_ERROR takes precedence
 	 *    over JSON_THROW_ON_ERROR. Available as of PHP 7.3.0.
-	 * @param mixed $data
-	 * @param int $flags
-	 * @param int $depth Set the maximum depth. Must be greater than zero, default: 512.
+	 * @param  mixed $data
+	 * @param  int   $flags
+	 * @param  int   $depth Set the maximum depth. Must be greater than zero, default: 512.
 	 * @throws \RuntimeException|\JsonException JSON encoding error.
 	 * @return string
 	 */
@@ -133,9 +133,9 @@ interface ITool {
 	 *    error state that is retrieved with json_last_error() and
 	 *    json_last_error_msg(). JSON_PARTIAL_OUTPUT_ON_ERROR takes precedence
 	 *    over JSON_THROW_ON_ERROR. Available as of PHP 7.3.0.
-	 * @param string $jsonStr
-	 * @param int $flags
-	 * @param int $depth User specified recursion depth, default: 512.
+	 * @param  string $jsonStr
+	 * @param  int    $flags
+	 * @param  int    $depth   User specified recursion depth, default: 512.
 	 * @throws \RuntimeException|\JsonException JSON decoding error.
 	 * @return object
 	 */
@@ -144,7 +144,7 @@ interface ITool {
 	/**
 	 * Recognize if given string is JSON or not without JSON parsing.
 	 * @see https://www.ietf.org/rfc/rfc4627.txt
-	 * @param string $jsonStr
+	 * @param  string $jsonStr
 	 * @return bool
 	 */
 	public static function IsJsonString ($jsonStr);
@@ -166,7 +166,7 @@ interface ITool {
 	 * - `key1=value&key2=`
 	 * - `key1=value&key2=&key3=`
 	 * ...
-	 * @param string $jsonStr
+	 * @param  string $jsonStr
 	 * @return bool
 	 */
 	public static function IsQueryString ($queryStr);
@@ -174,16 +174,16 @@ interface ITool {
 	/**
 	 * Safely invoke internal PHP function with it's own error handler.
 	 * Error handler accepts arguments:
-	 * - `string $errMessage`	- Error message.
-	 * - `int $errLevel`		- Level of the error raised.
-	 * - `string $errFile`		- Optional, full path to error file name where error was raised.
-	 * - `int $errLine`			- Optional, The error file line number.
+	 * - `string $errMessage` - Error message.
+	 * - `int $errLevel`      - Level of the error raised.
+	 * - `string $errFile`    - Optional, full path to error file name where error was raised.
+	 * - `int $errLine`       - Optional, The error file line number.
 	 * If the custom error handler returns `FALSE`, normal internal error handler continues.
 	 * This function is very PHP specific. It's proudly used from Nette Framework, optimized for PHP 5.4+ incl.:
 	 * https://github.com/nette/utils/blob/b623b2deec8729c8285d269ad991a97504f76bd4/src/Utils/Callback.php#L63-L84
-	 * @param string|callable $internalFnOrHandler
-	 * @param array $args
-	 * @param callable $onError
+	 * @param  string|callable $internalFnOrHandler
+	 * @param  array           $args
+	 * @param  callable        $onError
 	 * @return mixed
 	 */
 	public static function Invoke ($internalFnOrHandler, array $args, callable $onError);
@@ -193,12 +193,12 @@ interface ITool {
 	 * @see http://php.net/manual/en/function.flock.php
 	 * @see http://php.net/manual/en/function.set-error-handler.php
 	 * @see http://php.net/manual/en/function.clearstatcache.php
-	 * @param string $fullPath File full path.
-	 * @param string $content String content to write.
-	 * @param string $writeMode PHP `fopen()` second argument flag, could be `w`, `w+`, `a`, `a+` etc...
-	 * @param int $lockWaitMilliseconds Milliseconds to wait before next lock file existence is checked in `while()` cycle.
-	 * @param int $maxLockWaitMilliseconds Maximum milliseconds time to wait before thrown an exception about not possible write.
-	 * @param int $oldLockMillisecondsTolerance Maximum milliseconds time to consider lock file as operative or as old after some died process.
+	 * @param  string $fullPath                     File full path.
+	 * @param  string $content                      String content to write.
+	 * @param  string $writeMode                    PHP `fopen()` second argument flag, could be `w`, `w+`, `a`, `a+` etc...
+	 * @param  int    $lockWaitMilliseconds         Milliseconds to wait before next lock file existence is checked in `while()` cycle.
+	 * @param  int    $maxLockWaitMilliseconds      Maximum milliseconds time to wait before thrown an exception about not possible write.
+	 * @param  int    $oldLockMillisecondsTolerance Maximum milliseconds time to consider lock file as operative or as old after some died process.
 	 * @throws \Exception
 	 * @return bool
 	 */
@@ -214,7 +214,7 @@ interface ITool {
 	/**
 	 * PHP `realpath()` function without checking file/directory existence.
 	 * @see https://www.php.net/manual/en/function.realpath.php
-	 * @param string $path
+	 * @param  string $path
 	 * @return string
 	 */
 	public static function RealPathVirtual ($path);
@@ -224,8 +224,8 @@ interface ITool {
 	 * @see https://www.php.net/manual/en/function.parse-url.php
 	 * @see https://bugs.php.net/bug.php?id=73192
 	 * @see https://en.wikipedia.org/wiki/Uniform_Resource_Identifier
-	 * @param string $uri 
-	 * @param int $component 
+	 * @param  string $uri 
+	 * @param  int    $component 
 	 * @return array|string|int|null|false
 	 */
 	public static function ParseUrl ($uri, $component = -1);
@@ -235,7 +235,7 @@ interface ITool {
 	 * Set prefered PHP classes and properties anontation preference.
 	 * PHP8+ attributes anotation is default. Set value to `FALSE`
 	 * to prefer PhpDocs tags anotation instead.
-	 * @param bool $attributesAnotation 
+	 * @param  bool $attributesAnotation 
 	 * @return bool
 	 */
 	public static function SetAttributesAnotations ($attributesAnotation = TRUE);
@@ -250,10 +250,10 @@ interface ITool {
 
 	/**
 	 * Check if given class implements given interface, else throw an exception.
-	 * @param string $testClassName Full test class name.
-	 * @param string $interfaceName Full interface class name.
-	 * @param bool $checkStaticMethods Check implementation of all static methods by interface static methods.
-	 * @param bool $throwException If `TRUE`, throw an exception if something is not implemented or if `FALSE` return `FALSE` only.
+	 * @param  string $testClassName      Full test class name.
+	 * @param  string $interfaceName      Full interface class name.
+	 * @param  bool   $checkStaticMethods Check implementation of all static methods by interface static methods.
+	 * @param  bool   $throwException     If `TRUE`, throw an exception if something is not implemented or if `FALSE` return `FALSE` only.
 	 * @throws \InvalidArgumentException
 	 * @return boolean
 	 */
@@ -261,9 +261,9 @@ interface ITool {
 
 	/**
 	 * Check if given class implements given trait, else throw an exception.
-	 * @param string $testClassName Full test class name.
-	 * @param string $traitName Full trait class name.
-	 * @param bool $throwException If `TRUE`, throw an exception if trait is not implemented or if `FALSE` return `FALSE` only.
+	 * @param  string $testClassName  Full test class name.
+	 * @param  string $traitName      Full trait class name.
+	 * @param  bool   $throwException If `TRUE`, throw an exception if trait is not implemented or if `FALSE` return `FALSE` only.
 	 * @throws \InvalidArgumentException
 	 * @return boolean
 	 */
@@ -335,16 +335,16 @@ interface ITool {
 
 	/**
 	 * Return reflection object attribute constructor arguments.
-	 * @param \ReflectionClass|\ReflectionMethod|\ReflectionProperty $reflectionObject 
-	 * @param string $attributeClassFullName 
+	 * @param  \ReflectionClass|\ReflectionMethod|\ReflectionProperty $reflectionObject 
+	 * @param  string                                                 $attributeClassFullName 
 	 * @return array|NULL
 	 */
 	public static function GetAttrCtorArgs ($reflectionObject, $attributeClassFullName);
 
 	/**
 	 * Return PhpDocs tag arguments, arguments has to be defined without space, separated by comma.
-	 * @param \ReflectionClass|\ReflectionMethod|\ReflectionProperty $reflectionObject 
-	 * @param string $phpDocsTagName
+	 * @param  \ReflectionClass|\ReflectionMethod|\ReflectionProperty $reflectionObject 
+	 * @param  string                                                 $phpDocsTagName
 	 * @return array|NULL
 	 */
 	public static function GetPhpDocsTagArgs ($reflectionObject, $phpDocsTagName);

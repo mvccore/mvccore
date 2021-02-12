@@ -17,7 +17,7 @@ trait GettersSetters {
 
 	/**
 	 * @inheritDocs
-	 * @param \string[] $twoSegmentTlds,... List of two-segment top-level domains without leading dot.
+	 * @param  \string[] $twoSegmentTlds,... List of two-segment top-level domains without leading dot.
 	 * @return void
 	 */
 	public static function AddTwoSegmentTlds ($twoSegmentTlds) {
@@ -53,7 +53,7 @@ trait GettersSetters {
 
 	/**
 	 * @inheritDocs
-	 * @param string $controllerName
+	 * @param  string $controllerName
 	 * @return \MvcCore\Request
 	 */
 	public function SetControllerName ($controllerName) {
@@ -82,7 +82,7 @@ trait GettersSetters {
 
 	/**
 	 * @inheritDocs
-	 * @param string $actionName
+	 * @param  string $actionName
 	 * @return \MvcCore\Request
 	 */
 	public function SetActionName ($actionName) {
@@ -120,7 +120,7 @@ trait GettersSetters {
 
 	/**
 	 * @inheritDocs
-	 * @param string|NULL $lang
+	 * @param  string|NULL $lang
 	 * @return \MvcCore\Request
 	 */
 	public function SetLang ($lang) {
@@ -141,7 +141,7 @@ trait GettersSetters {
 
 	/**
 	 * @inheritDocs
-	 * @param string|NULL $locale
+	 * @param  string|NULL $locale
 	 * @return \MvcCore\Request
 	 */
 	public function SetLocale ($locale) {
@@ -162,7 +162,7 @@ trait GettersSetters {
 
 	/**
 	 * @inheritDocs
-	 * @param string|NULL $mediaSiteVersion
+	 * @param  string|NULL $mediaSiteVersion
 	 * @return \MvcCore\Request
 	 */
 	public function SetMediaSiteVersion ($mediaSiteVersion) {
@@ -183,8 +183,8 @@ trait GettersSetters {
 
 	/**
 	 * @inheritDocs
-	 * @param string $name
-	 * @param array  $arguments
+	 * @param  string $name
+	 * @param  array  $arguments
 	 * @throws \InvalidArgumentException
 	 * @return mixed|\MvcCore\Request
 	 */
@@ -214,7 +214,7 @@ trait GettersSetters {
 
 	/**
 	 * @inheritDocs
-	 * @param string $name
+	 * @param  string $name
 	 * @return mixed
 	 */
 	public function __get ($name) {
@@ -270,7 +270,7 @@ trait GettersSetters {
 
 	/**
 	 * @inheritDocs
-	 * @param string $rawMethod
+	 * @param  string $rawMethod
 	 * @return \MvcCore\Request
 	 */
 	public function SetMethod ($rawMethod) {
@@ -293,7 +293,7 @@ trait GettersSetters {
 
 	/**
 	 * @inheritDocs
-	 * @param string $rawBasePath
+	 * @param  string $rawBasePath
 	 * @return \MvcCore\Request
 	 */
 	public function SetBasePath ($rawBasePath) {
@@ -317,7 +317,7 @@ trait GettersSetters {
 
 	/**
 	 * @inheritDocs
-	 * @param string $rawProtocol
+	 * @param  string $rawProtocol
 	 * @return \MvcCore\Request
 	 */
 	public function SetScheme ($rawProtocol) {
@@ -365,7 +365,7 @@ trait GettersSetters {
 
 	/**
 	 * @inheritDocs
-	 * @param bool $rawInput Get raw input if `TRUE`. `FALSE` by default to get value through `htmlspecialchars($result);` without ampersand `&` escaping.
+	 * @param  bool $rawInput Get raw input if `TRUE`. `FALSE` by default to get value through `htmlspecialchars($result);` without ampersand `&` escaping.
 	 * @return string
 	 */
 	public function GetReferer ($rawInput = FALSE) {
@@ -396,7 +396,7 @@ trait GettersSetters {
 
 	/**
 	 * @inheritDocs
-	 * @param string|NULL $topLevelDomain
+	 * @param  string|NULL $topLevelDomain
 	 * @return \MvcCore\Request
 	 */
 	public function SetTopLevelDomain ($topLevelDomain) {
@@ -425,7 +425,7 @@ trait GettersSetters {
 
 	/**
 	 * @inheritDocs
-	 * @param string|NULL $secondLevelDomain
+	 * @param  string|NULL $secondLevelDomain
 	 * @return \MvcCore\Request
 	 */
 	public function SetSecondLevelDomain ($secondLevelDomain) {
@@ -454,7 +454,7 @@ trait GettersSetters {
 
 	/**
 	 * @inheritDocs
-	 * @param string|NULL $thirdLevelDomain
+	 * @param  string|NULL $thirdLevelDomain
 	 * @return \MvcCore\Request
 	 */
 	public function SetThirdLevelDomain ($thirdLevelDomain) {
@@ -483,7 +483,7 @@ trait GettersSetters {
 
 	/**
 	 * @inheritDocs
-	 * @param string $rawHostName
+	 * @param  string $rawHostName
 	 * @return \MvcCore\Request
 	 */
 	public function SetHostName ($rawHostName) {
@@ -512,7 +512,7 @@ trait GettersSetters {
 
 	/**
 	 * @inheritDocs
-	 * @param string $rawHost
+	 * @param  string $rawHost
 	 * @return \MvcCore\Request
 	 */
 	public function SetHost ($rawHost) {
@@ -546,7 +546,7 @@ trait GettersSetters {
 
 	/**
 	 * @inheritDocs
-	 * @param string $rawPort
+	 * @param  string $rawPort
 	 * @return \MvcCore\Request
 	 */
 	public function SetPort ($rawPort) {
@@ -578,7 +578,7 @@ trait GettersSetters {
 
 	/**
 	 * @inheritDocs
-	 * @param string $rawPathValue
+	 * @param  string $rawPathValue
 	 * @return \MvcCore\Request
 	 */
 	public function SetPath ($rawPathValue) {
@@ -592,7 +592,7 @@ trait GettersSetters {
 
 	/**
 	 * @inheritDocs
-	 * @param bool $rawInput Get raw input if `TRUE`. `FALSE` by default to get value through `htmlspecialchars($result);` without ampersand `&` escaping.
+	 * @param  bool $rawInput Get raw input if `TRUE`. `FALSE` by default to get value through `htmlspecialchars($result);` without ampersand `&` escaping.
 	 * @return string
 	 */
 	public function GetPath ($rawInput = FALSE) {
@@ -604,7 +604,7 @@ trait GettersSetters {
 
 	/**
 	 * @inheritDocs
-	 * @param string $rawQuery
+	 * @param  string $rawQuery
 	 * @return \MvcCore\Request
 	 */
 	public function SetQuery ($rawQuery) {
@@ -641,7 +641,7 @@ trait GettersSetters {
 
 	/**
 	 * @inheritDocs
-	 * @param bool $rawInput Get raw input if `TRUE`. `FALSE` by default to get value through `htmlspecialchars($result);` without ampersand `&` escaping.
+	 * @param  bool $rawInput Get raw input if `TRUE`. `FALSE` by default to get value through `htmlspecialchars($result);` without ampersand `&` escaping.
 	 * @return string
 	 */
 	public function GetRequestPath ($rawInput = FALSE) {
@@ -676,7 +676,7 @@ trait GettersSetters {
 
 	/**
 	 * @inheritDocs
-	 * @param bool $rawInput Get raw input if `TRUE`. `FALSE` by default to get value through `htmlspecialchars($result);` without ampersand `&` escaping.
+	 * @param  bool $rawInput Get raw input if `TRUE`. `FALSE` by default to get value through `htmlspecialchars($result);` without ampersand `&` escaping.
 	 * @return string
 	 */
 	public function GetRequestUrl ($rawInput = FALSE) {
@@ -803,7 +803,7 @@ trait GettersSetters {
 	/**
 	 * @inheritDocs
 	 * @see http://php.net/manual/en/function.htmlspecialchars.php
-	 * @param string $str
+	 * @param  string $str
 	 * @return string
 	 */
 	public static function HtmlSpecialChars ($str) {

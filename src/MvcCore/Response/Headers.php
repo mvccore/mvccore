@@ -45,8 +45,8 @@ trait Headers {
 
 	/**
 	 * @inheritDocs
-	 * @param string $name
-	 * @param string $value
+	 * @param  string $name
+	 * @param  string $value
 	 * @return \MvcCore\Response
 	 */
 	public function SetHeader ($name, $value) {
@@ -72,7 +72,7 @@ trait Headers {
 
 	/**
 	 * @inheritDocs
-	 * @param string $name
+	 * @param  string $name
 	 * @return string|NULL
 	 */
 	public function GetHeader ($name) {
@@ -85,7 +85,7 @@ trait Headers {
 
 	/**
 	 * @inheritDocs
-	 * @param string $name
+	 * @param  string $name
 	 * @return bool
 	 */
 	public function HasHeader ($name) {
@@ -120,7 +120,7 @@ trait Headers {
 
 	/**
 	 * @inheritDocs
-	 * @param \string[] $disabledHeaders,...
+	 * @param  \string[] $disabledHeaders,...
 	 * @return \MvcCore\Response
 	 */
 	public function SetDisabledHeaders ($disabledHeaders) {

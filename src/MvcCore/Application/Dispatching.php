@@ -93,7 +93,7 @@ trait Dispatching {
 
 	/**
 	 * @inheritDocs
-	 * @param \callable[] $handlers
+	 * @param  \callable[] $handlers
 	 * @return bool
 	 */
 	public function ProcessCustomHandlers (& $handlers = []) {
@@ -171,10 +171,10 @@ trait Dispatching {
 
 	/**
 	 * @inheritDocs
-	 * @param string $ctrlClassFullName
-	 * @param string $actionNamePc
-	 * @param string $viewScriptFullPath
-	 * @param callable $exceptionCallback
+	 * @param  string   $ctrlClassFullName
+	 * @param  string   $actionNamePc
+	 * @param  string   $viewScriptFullPath
+	 * @param  callable $exceptionCallback
 	 * @return bool
 	 */
 	public function DispatchControllerAction (
@@ -232,8 +232,8 @@ trait Dispatching {
 
 	/**
 	 * @inheritDocs
-	 * @param string $controllerActionOrRouteName	Should be `"Controller:Action"` combination or just any route name as custom specific string.
-	 * @param array  $params						Optional, array with params, key is param name, value is param value.
+	 * @param  string $controllerActionOrRouteName Should be `"Controller:Action"` combination or just any route name as custom specific string.
+	 * @param  array  $params                      Optional, array with params, key is param name, value is param value.
 	 * @return string
 	 */
 	public function Url ($controllerActionOrRouteName = 'Index:Index', $params = []) {
@@ -285,8 +285,8 @@ trait Dispatching {
 
 	/**
 	 * @inheritDocs
-	 * @param \Throwable|string $exceptionOrMessage
-	 * @param int|NULL $code
+	 * @param  \Throwable|string $exceptionOrMessage
+	 * @param  int|NULL          $code
 	 * @return bool
 	 */
 	public function DispatchException ($exceptionOrMessage, $code = NULL) {
@@ -320,7 +320,7 @@ trait Dispatching {
 
 	/**
 	 * @inheritDocs
-	 * @param \Throwable $e
+	 * @param  \Throwable $e
 	 * @return bool
 	 */
 	public function RenderError ($e) {
@@ -372,7 +372,7 @@ trait Dispatching {
 
 	/**
 	 * @inheritDocs
-	 * @param \Throwable $e
+	 * @param  \Throwable $e
 	 * @return bool
 	 */
 	public function RenderNotFound ($exceptionMessage = '') {
@@ -422,7 +422,7 @@ trait Dispatching {
 
 	/**
 	 * @inheritDocs
-	 * @param string $text
+	 * @param  string $text
 	 * @return bool
 	 */
 	public function RenderError500PlainText ($text = '') {
@@ -451,7 +451,7 @@ trait Dispatching {
 
 	/**
 	 * @inheritDocs
-	 * @param string $text
+	 * @param  string $text
 	 * @return bool
 	 */
 	public function RenderError404PlainText ($text = '') {

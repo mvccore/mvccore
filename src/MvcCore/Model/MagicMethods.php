@@ -17,8 +17,8 @@ trait MagicMethods {
 	
 	/**
 	 * @inheritDocs
-	 * @param string $rawName
-	 * @param array  $arguments
+	 * @param  string $rawName
+	 * @param  array  $arguments
 	 * @throws \InvalidArgumentException If `strtolower($rawName)` doesn't begin with `"get"` or with `"set"`.
 	 * @return mixed|\MvcCore\Model
 	 */
@@ -45,8 +45,8 @@ trait MagicMethods {
 
 	/**
 	 * @inheritDocs
-	 * @param string $name
-	 * @param mixed  $value
+	 * @param  string $name
+	 * @param  mixed  $value
 	 * @throws \InvalidArgumentException If name is `initialValues` or any custom name in extended class.
 	 * @return bool
 	 */
@@ -63,7 +63,7 @@ trait MagicMethods {
 
 	/**
 	 * @inheritDocs
-	 * @param string $name
+	 * @param  string $name
 	 * @throws \InvalidArgumentException If name is `initialValues` or any custom name in extended class.
 	 * @return mixed
 	 */

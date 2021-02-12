@@ -18,8 +18,8 @@ trait Converters {
 	/**
 	 * Convert `bool`(s), `array`(s), `\DateTimeInterface` or `\DateInterval` 
 	 * value(s) into proper database (`scalar`) value if necessary.
-	 * @param bool|int|float|string|\DateTimeInterface|\DateInterval|\bool[]|\int[]|\float[]|\string[]||\DateTimeInterface[]|\\DateInterval[]|NULL $value 
-	 * @param array $formatArgs 
+	 * @param  bool|int|float|string|\DateTimeInterface|\DateInterval|\bool[]|\int[]|\float[]|\string[]||\DateTimeInterface[]|\\DateInterval[]|NULL $value 
+	 * @param  array                                                                                                                                $formatArgs 
 	 * @return int|float|string|NULL
 	 */
 	protected static function convertToScalar ($value, $formatArgs = []) {
@@ -73,7 +73,7 @@ trait Converters {
 
 	/**
 	 * Convert date interval to total microseconds float.
-	 * @param \DateInterval $interval 
+	 * @param  \DateInterval $interval 
 	 * @return float
 	 */
 	protected static function convertIntervalToFloat ($interval) {
@@ -91,7 +91,7 @@ trait Converters {
 	/**
 	 * Return protected static conversion method by given conversion flag
 	 * to convert database column name into property name or back.
-	 * @param int $keysConversionFlags
+	 * @param  int $keysConversionFlags
 	 * @throws \InvalidArgumentException
 	 * @return string|NULL
 	 */
@@ -125,9 +125,9 @@ trait Converters {
 
 	/**
 	 * Return key proper case sensitive value by given case sensitive map.
-	 * @param string $key
-	 * @param string $toolsClass
-	 * @param string $csKeysMap
+	 * @param  string $key
+	 * @param  string $toolsClass
+	 * @param  string $csKeysMap
 	 * @return string
 	 */
 	protected static function convertPropCaseInsensitive ($key, $toolsClass, $csKeysMap) {
@@ -138,9 +138,9 @@ trait Converters {
 
 	/**
 	 * Return key proper case sensitive value by given case sensitive map.
-	 * @param string $key
-	 * @param string $toolsClass
-	 * @param string $csKeysMap
+	 * @param  string $key
+	 * @param  string $toolsClass
+	 * @param  string $csKeysMap
 	 * @return string
 	 */
 	protected static function convertPropUnderscoresToPascalcase ($key, $toolsClass, $csKeysMap) {
@@ -149,9 +149,9 @@ trait Converters {
 
 	/**
 	 * Return camel case key from underscore case key.
-	 * @param string $key
-	 * @param string $toolsClass
-	 * @param string $csKeysMap
+	 * @param  string $key
+	 * @param  string $toolsClass
+	 * @param  string $csKeysMap
 	 * @return string
 	 */
 	protected static function convertPropUnderscoresToCamelcase ($key, $toolsClass, $csKeysMap) {
@@ -160,9 +160,9 @@ trait Converters {
 
 	/**
 	 * Return underscore case key from pascal case key.
-	 * @param string $key
-	 * @param string $toolsClass
-	 * @param string $csKeysMap
+	 * @param  string $key
+	 * @param  string $toolsClass
+	 * @param  string $csKeysMap
 	 * @return string
 	 */
 	protected static function convertPropPascalcaseToUnderscores ($key, $toolsClass, $csKeysMap) {
@@ -171,9 +171,9 @@ trait Converters {
 
 	/**
 	 * Return camel case key from pascal case key.
-	 * @param string $key
-	 * @param string $toolsClass
-	 * @param string $csKeysMap
+	 * @param  string $key
+	 * @param  string $toolsClass
+	 * @param  string $csKeysMap
 	 * @return string
 	 */
 	protected static function convertPropPascalcaseToCamelcase ($key, $toolsClass, $csKeysMap) {
@@ -182,9 +182,9 @@ trait Converters {
 
 	/**
 	 * Return underscore case key from camel case key.
-	 * @param string $key
-	 * @param string $toolsClass
-	 * @param string $csKeysMap
+	 * @param  string $key
+	 * @param  string $toolsClass
+	 * @param  string $csKeysMap
 	 * @return string
 	 */
 	protected static function convertPropCamelcaseToUnderscores ($key, $toolsClass, $csKeysMap) {
@@ -193,9 +193,9 @@ trait Converters {
 
 	/**
 	 * Return pascal case key from camel case key.
-	 * @param string $key
-	 * @param string $toolsClass
-	 * @param string $csKeysMap
+	 * @param  string $key
+	 * @param  string $toolsClass
+	 * @param  string $csKeysMap
 	 * @return string
 	 */
 	protected static function convertPropCamelcaseToPascalcase ($key, $toolsClass, $csKeysMap) {

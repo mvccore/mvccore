@@ -504,7 +504,7 @@ trait UrlBuilding {
 	 * found in given `$params` array. All those domain params and possible
 	 * `absolute` flag unset from given `$params` array and return it in result
 	 * array as domain params. Keys as param name, values as domain param value.
-	 * @param array $params
+	 * @param  array $params
 	 * @return array
 	 */
 	protected function urlGetAndRemoveDomainPercentageParams (array & $params = []) {
@@ -543,7 +543,7 @@ trait UrlBuilding {
 	 * Correct last character in path element completed in `Url()` method by
 	 * cached router configuration protected property
 	 * `\MvcCore\Router::$trailingSlashBehaviour;`.
-	 * @param string $urlPath
+	 * @param  string $urlPath
 	 * @return string
 	 */
 	protected function & urlCorrectTrailingSlashBehaviour (& $urlPath) {

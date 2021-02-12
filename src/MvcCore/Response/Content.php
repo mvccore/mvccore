@@ -17,7 +17,7 @@ trait Content {
 
 	/**
 	 * @inheritDocs
-	 * @param string $body
+	 * @param  string $body
 	 * @return \MvcCore\Response
 	 */
 	public function SetBody ($body) {
@@ -28,7 +28,7 @@ trait Content {
 
 	/**
 	 * @inheritDocs
-	 * @param string $body
+	 * @param  string $body
 	 * @return \MvcCore\Response
 	 */
 	public function PrependBody ($body) {
@@ -39,7 +39,7 @@ trait Content {
 
 	/**
 	 * @inheritDocs
-	 * @param string $body
+	 * @param  string $body
 	 * @return \MvcCore\Response
 	 */
 	public function AppendBody ($body) {

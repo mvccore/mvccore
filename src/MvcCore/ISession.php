@@ -69,14 +69,14 @@ interface ISession extends \MvcCore\Session\IConstants {
 	/**
 	 * Get new or existing MvcCore session namespace instance.
 	 * If session is not started, start session.
-	 * @param string $name Session namespace unique name.
+	 * @param  string $name Session namespace unique name.
 	 * @return \MvcCore\Session
 	 */
 	public static function GetNamespace ($name = \MvcCore\ISession::DEFAULT_NAMESPACE_NAME);
 
 	/**
 	 * Set MvcCore session namespace expiration by page request(s) count.
-	 * @param int $hoops
+	 * @param  int $hoops
 	 * @return \MvcCore\Session
 	 */
 	public function SetExpirationHoops ($hoops);
@@ -85,7 +85,7 @@ interface ISession extends \MvcCore\Session\IConstants {
 	 * Set MvcCore session namespace expiration by expiration seconds.
 	 * Zero (`0`) means "until the browser is closed" if there is no more
 	 * higher namespace expirations in whole session.
-	 * @param int $seconds
+	 * @param  int $seconds
 	 * @return \MvcCore\Session
 	 */
 	public function SetExpirationSeconds ($seconds);
@@ -120,29 +120,29 @@ interface ISession extends \MvcCore\Session\IConstants {
 
 	/**
 	 * Magic function triggered by: `$value = \MvcCore\Session->key;`.
-	 * @param string $key
+	 * @param  string $key
 	 * @return mixed
 	 */
 	public function __get ($key);
 
 	/**
 	 * Magic function triggered by: `\MvcCore\Session->key = "value";`.
-	 * @param string $key
-	 * @param mixed $value
+	 * @param  string $key
+	 * @param  mixed  $value
 	 * @return void
 	 */
 	public function __set ($key, $value);
 
 	/**
 	 * Magic function triggered by: `isset(\MvcCore\Session->key);`.
-	 * @param string $key
+	 * @param  string $key
 	 * @return bool
 	 */
 	public function __isset ($key);
 
 	/**
 	 * Magic function triggered by: `unset(\MvcCore\Session->key);`.
-	 * @param string $key
+	 * @param  string $key
 	 * @return void
 	 */
 	public function __unset ($key);

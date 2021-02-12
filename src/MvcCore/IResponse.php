@@ -46,15 +46,15 @@ interface IResponse extends \MvcCore\Response\IConstants {
 
 	/**
 	 * Set response protocol HTTP version - `HTTP/1.1 | HTTP/2.0`...
-	 * @param string $httpVersion
+	 * @param  string $httpVersion
 	 * @return \MvcCore\Response
 	 */
 	public function SetHttpVersion ($httpVersion);
 
 	/**
 	 * Set HTTP response code.
-	 * @param int $code
-	 * @param string|NULL $codeMessage
+	 * @param  int         $code
+	 * @param  string|NULL $codeMessage
 	 * @return \MvcCore\Response
 	 */
 	public function SetCode ($code, $codeMessage = NULL);
@@ -89,8 +89,8 @@ interface IResponse extends \MvcCore\Response\IConstants {
 	 * There is automatically set response encoding from value for
 	 * `Content-Encoding` header.
 	 * Example: `$request->SetHeader('Content-Type', 'text/plain; charset=utf-8');`
-	 * @param string $name
-	 * @param string $value
+	 * @param  string $name
+	 * @param  string $value
 	 * @return \MvcCore\Response
 	 */
 	public function SetHeader ($name, $value);
@@ -98,7 +98,7 @@ interface IResponse extends \MvcCore\Response\IConstants {
 	/**
 	 * Get HTTP response header by name. If header doesn't exists, null is returned.
 	 * Example: `$response->GetHeader('Content-Type'); // returns 'text/plain; charset=utf-8'`
-	 * @param string $name
+	 * @param  string $name
 	 * @return string|NULL
 	 */
 	public function GetHeader ($name);
@@ -110,7 +110,7 @@ interface IResponse extends \MvcCore\Response\IConstants {
 	 *   $response->HasHeader('Content-Type'); // returns TRUE if there is header 'Content-Type'
 	 *   $response->HasHeader('content-type'); // returns FALSE if there is header 'Content-Type'
 	 * ````
-	 * @param string $name
+	 * @param  string $name
 	 * @return bool
 	 */
 	public function HasHeader ($name);
@@ -118,7 +118,7 @@ interface IResponse extends \MvcCore\Response\IConstants {
 	/**
 	 * Set HTTP response content encoding.
 	 * Example: `$response->SetEncoding('utf-8');`
-	 * @param string $encoding
+	 * @param  string $encoding
 	 * @return \MvcCore\Response
 	 */
 	public function SetEncoding ($encoding = 'utf-8');
@@ -132,21 +132,21 @@ interface IResponse extends \MvcCore\Response\IConstants {
 
 	/**
 	 * Set HTTP response body.
-	 * @param string $body
+	 * @param  string $body
 	 * @return \MvcCore\Response
 	 */
 	public function SetBody ($body);
 
 	/**
 	 * Prepend HTTP response body.
-	 * @param string $body
+	 * @param  string $body
 	 * @return \MvcCore\Response
 	 */
 	public function PrependBody ($body);
 
 	/**
 	 * Append HTTP response body.
-	 * @param string $body
+	 * @param  string $body
 	 * @return \MvcCore\Response
 	 */
 	public function AppendBody ($body);
@@ -251,7 +251,7 @@ interface IResponse extends \MvcCore\Response\IConstants {
 	/**
 	 * Set disabled headers, never sent except if there is
 	 * rendered exception in development environment.
-	 * @param \string[] $disabledHeaders,...
+	 * @param  \string[] $disabledHeaders,...
 	 * @return \MvcCore\Response
 	 */
 	public function SetDisabledHeaders ($disabledHeaders);
