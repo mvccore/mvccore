@@ -137,14 +137,14 @@ trait Props {
 	/**
 	 * Trailing slash behaviour - integer state about what to do with trailing
 	 * slash in all requested URL except homepage. Possible states are:
-	 * - `-1` (`\MvcCore\IRouter::TRAILING_SLASH_REMOVE`)
-	 *		Always remove trailing slash from requested URL if there
-	 *		is any and redirect to it, except homepage.
-	 * -  `0` (`\MvcCore\IRouter::TRAILING_SLASH_BENEVOLENT`)
-	 *		Be absolutely benevolent for trailing slash in requested url.
-	 * -  `1` (`\MvcCore\IRouter::TRAILING_SLASH_ALWAYS`)
-	 *		Always keep trailing slash in requested URL or always add trailing
-	 *		slash into URL and redirect to it.
+	 * - `-1` - `\MvcCore\IRouter::TRAILING_SLASH_REMOVE`)
+	 *          Always remove trailing slash from requested URL if there
+	 *          is any and redirect to it, except homepage.
+	 * -  `0` - `\MvcCore\IRouter::TRAILING_SLASH_BENEVOLENT`)
+	 *          Be absolutely benevolent for trailing slash in requested url.
+	 * -  `1` - `\MvcCore\IRouter::TRAILING_SLASH_ALWAYS`)
+	 *          Always keep trailing slash in requested URL or always add trailing
+	 *          slash into URL and redirect to it.
 	 * Default value is `-1` - `\MvcCore\IRouter::TRAILING_SLASH_REMOVE`
 	 * @var int
 	 */
@@ -187,13 +187,15 @@ trait Props {
 	 * with possibly parsed first word from requested path or an empty string.
 	 * Handler could return value to be void or anything else, doesn't matter.
 	 * Example:
-	 *	`$router->preRouteMatchingHandler = 
-	 *		function (\MvcCore\IRouter $router, \MvcCore\IRequest $request, $firstPathWord) {
-	 *			// load any routes from database here
-	 *			$routes = $db->loadRoutingRoutesGroup($firstPathWord);
-	 *			// add loaded routes into router
-	 *			$router->AddRoutes($routes, $firstPathWord);
-	 *		};`
+	 * ````
+	 * $router->preRouteMatchingHandler = 
+	 *     function (\MvcCore\IRouter $router, \MvcCore\IRequest $request, $firstPathWord) {
+	 *         // load any routes from database here
+	 *         $routes = $db->loadRoutingRoutesGroup($firstPathWord);
+	 *         // add loaded routes into router
+	 *         $router->AddRoutes($routes, $firstPathWord);
+	 *     };
+	 * ````
 	 * @var callable|NULL
 	 */
 	protected $preRouteMatchingHandler = NULL;
@@ -215,13 +217,15 @@ trait Props {
 	 * routes with already defined routes in router instance in protected 
 	 * property `$router->urlRoutes`.
 	 * Example:
-	 *	`$router->preRouteUrlBuildingHandler =
-	 *		function (\MvcCore\IRouter $router, $controllerActionOrRouteName, array $params = []) {
-	 *			// load any routes from database here
-	 *			$routes = $db->loadUrlRoutesGroup($controllerActionOrRouteName);
-	 *			// return routes in array with keys to be route name for each route
-	 *			return $routes;
-	 *		};`
+	 * ````
+	 * $router->preRouteUrlBuildingHandler =
+	 *     function (\MvcCore\IRouter $router, $controllerActionOrRouteName, array $params = []) {
+	 *         // load any routes from database here
+	 *         $routes = $db->loadUrlRoutesGroup($controllerActionOrRouteName);
+	 *         // return routes in array with keys to be route name for each route
+	 *         return $routes;
+	 *     };
+	 * ````
 	 * @var callable|NULL
 	 */
 	protected $preRouteUrlBuildingHandler = NULL;

@@ -84,9 +84,9 @@ trait Environment {
 
 	/**
 	 * @inheritDocs
-	 * @param string|NULL $environmentName Return configuration data only for specific
-	 *									   environment name. If `NULL`, there are
-	 *									   returned data for current environment.
+	 * @param  string|NULL $environmentName Return configuration data only for specific
+	 *                                      environment name. If `NULL`, there are
+	 *                                      returned data for current environment.
 	 * @return array
 	 */
 	public function & GetData ($environmentName = NULL) {
@@ -115,11 +115,11 @@ trait Environment {
 
 	/**
 	 * @inheritDocs
-	 * @param array $data Data to set into configuration store(s). If second
-	 *					  param is `NULL`, there are set data for current envirnment.
-	 * @param string|NULL $environmentName Set configuration data for specific
-	 *									   environment name. If `NULL`, there are
-	 *									   set data for current environment.
+	 * @param  array $data Data to set into configuration store(s). If second
+	 *                     param is `NULL`, there are set data for current envirnment.
+	 * @param  string|NULL $environmentName Set configuration data for specific
+	 *                                      environment name. If `NULL`, there are
+	 *                                      set data for current environment.
 	 * @return \MvcCore\Config
 	 */
 	public function SetData (array $data = [], $environmentName = NULL) {

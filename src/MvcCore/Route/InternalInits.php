@@ -92,11 +92,11 @@ trait InternalInits {
 	 * section defined with brackets `[]` info about it's type (fixed or
 	 * variable), about start position, end position and length. Those
 	 * statistics are always used to build URL later.
-	 * @param string $match		A match string prepared from `pattern` property.
-	 * @param string $reverse	A reverse string value, directly from `reverse`
-	 *							property or from `pattern` property if `reverse`
-	 *							property is empty.
-	 * @return \stdClass[][] Two arrays with array with `\stdClass` objects.
+	 * @param  string $match   A match string prepared from `pattern` property.
+	 * @param  string $reverse A reverse string value, directly from `reverse`
+	 *                         property or from `pattern` property if `reverse`
+	 *                         property is empty.
+	 * @return \stdClass[][]   Two arrays with array with `\stdClass` objects.
 	 */
 	protected function initSectionsInfoForMatchAndReverse (& $match, & $reverse) {
 		/** @var $this \MvcCore\Route */
@@ -217,10 +217,10 @@ trait InternalInits {
 	 * or variable section defined with brackets `[]` info about it's type
 	 * (fixed or variable), about start position, end position and length. This
 	 * statistic is always used to build URL later.
-	 * @param string $pattern A reverse string value, directly from `reverse`
-	 *						  property or from `pattern` property if `reverse`
-	 *						  property is empty.
-	 * @return \stdClass[][] An array with `\stdClass` objects.
+	 * @param  string        $pattern A reverse string value, directly from `reverse`
+	 *                                property or from `pattern` property if `reverse`
+	 *                                property is empty.
+	 * @return \stdClass[][]          An array with `\stdClass` objects.
 	 */
 	protected function & initSectionsInfo (& $pattern) {
 		/** @var $this \MvcCore\Route */

@@ -18,10 +18,10 @@ namespace MvcCore;
  * - Controller lifecycle dispatching:
  *   - Handling setup methods after creation from application core dispatching.
  *   - Calling lifecycle methods (`\MvcCore\Controller::Dispatch();`):
- *	 - `\MvcCore\Controller::Init();`
- *	 - `\MvcCore\Controller::PreDispatch();`
- *	 - Calling routed controller action.
- *	 - `\MvcCore\Controller::Render();`
+ *   - `\MvcCore\Controller::Init();`
+ *   - `\MvcCore\Controller::PreDispatch();`
+ *   - Calling routed controller action.
+ *   - `\MvcCore\Controller::Render();`
  * - Rendering or no-rendering customization.
  * - HTTP responses and redirects managing and customization.
  * - Basic error responses rendering.
@@ -49,15 +49,15 @@ namespace MvcCore;
  * Internal methods and actions:
  * - `Render()`
  *   - Called internally in lifecycle dispatching,
- *	 but it's possible to use it for custom purposes.
+ *     but it's possible to use it for custom purposes.
  * - `Terminate()`
  *   - Called internally after lifecycle dispatching,
- *	 but it's possible to use it for custom purposes.
+ *     but it's possible to use it for custom purposes.
  * - `Dispatch()`
  *   - Processing whole controller and sub-controllers lifecycle.
  * - `AssetAction()`
  *   - Handling internal MvcCore HTTP requests
- *	 to get assets from packed application package.
+ *     to get assets from packed application package.
  */
 interface IController extends \MvcCore\Controller\IConstants {
 
@@ -105,9 +105,9 @@ interface IController extends \MvcCore\Controller\IConstants {
 	 * which you can send to client browser by method
 	 * `\MvcCore\Controller::Terminate()` or which you can store
 	 * anywhere in cache to use it later etc.
-	 * @param string $actionName PHP code action name in PascalCase.
-	 *							 This value is used to call your desired function
-	 *							 in controller without any change.
+	 * @param  string $actionName PHP code action name in PascalCase.
+	 *                            This value is used to call your desired function
+	 *                            in controller without any change.
 	 * @return void
 	 */
 	public function Dispatch ($actionName = "IndexAction");
@@ -599,14 +599,14 @@ interface IController extends \MvcCore\Controller\IConstants {
 	 *   (for routes configuration when routes array has keys with `"Controller:Action"` strings
 	 *   and routes has not controller name and action name defined inside).
 	 * - By route name and params array
-	 *	 (route name is key in routes configuration array, should be any string
-	 *	 but routes must have information about controller name and action name inside).
+	 *   (route name is key in routes configuration array, should be any string
+	 *   but routes must have information about controller name and action name inside).
 	 * Result address (url string) should have two forms:
 	 * - Nice rewritten URL by routes configuration
 	 *   (for apps with URL rewrite support (Apache `.htaccess` or IIS URL rewrite module)
 	 *   and when first param is key in routes configuration array).
 	 * - For all other cases is URL form like: `"index.php?controller=ctrlName&amp;action=actionName"`
-	 *	 (when first param is not founded in routes configuration array).
+	 *   (when first param is not founded in routes configuration array).
 	 * @param string $controllerActionOrRouteName	Should be `"Controller:Action"` combination or just any route name as custom specific string.
 	 * @param array  $params						Optional, array with params, key is param name, value is param value.
 	 * @return string

@@ -52,9 +52,9 @@ trait Dispatching {
 
 	/**
 	 * @inheritDocs
-	 * @param string $actionName PHP code action name in PascalCase.
-	 *							 This value is used to call your desired function
-	 *							 in controller without any change.
+	 * @param  string $actionName PHP code action name in PascalCase.
+	 *                            This value is used to call your desired function
+	 *                            in controller without any change.
 	 * @return void
 	 */
 	public function Dispatch ($actionName = "IndexAction") {

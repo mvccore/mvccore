@@ -26,9 +26,9 @@ trait Headers {
 
 	/**
 	 * @inheritDocs
-	 * @param array $headers
-	 * @param bool $cleanAllPrevious `FALSE` by default. If `TRUE`, all previous headers
-	 *								 set by PHP `header()` or by this object will be removed.
+	 * @param  array $headers
+	 * @param  bool  $cleanAllPrevious `FALSE` by default. If `TRUE`, all previous headers
+	 *                                 set by PHP `header()` or by this object will be removed.
 	 * @return \MvcCore\Response
 	 */
 	public function SetHeaders (array $headers = [], $cleanAllPrevious = FALSE) {

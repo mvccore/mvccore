@@ -250,16 +250,16 @@ trait Detection {
 	 * This method is called for all founded environments in system config in
 	 * order by system config and it tries to detect environment by following
 	 * order:
-	 *	- by client IP address (if defined)
-	 *		- by IPs list (if defined)
-	 *		- by regular expression (if defined)
-	 *	- by server hostname (if defined)
-	 *		- by host names list (if defined)
-	 *		- by regular expression (if defined)
-	 *	- by server variable(s) (if defined)
-	 *		- by existence (if defined)
-	 *		- by value (if defined)
-	 *		- by regular expression (if defined)
+	 * - by client IP address (if defined)
+	 *   - by IPs list (if defined)
+	 *   - by regular expression (if defined)
+	 * - by server hostname (if defined)
+	 *   - by host names list (if defined)
+	 *   - by regular expression (if defined)
+	 * - by server variable(s) (if defined)
+	 *   - by existence (if defined)
+	 *   - by value (if defined)
+	 *   - by regular expression (if defined)
 	 * Method returns `TRUE` to stop environment detection or `FALSE`, if
 	 * environment was not detected by given data.
 	 * @param  \stdClass        $data

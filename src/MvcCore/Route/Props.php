@@ -137,13 +137,14 @@ trait Props {
 	 * from base PHP place without any automatic MvcCore namespace prepending.
 	 * 
 	 * Example:
-	 *  `"Products"` - normally placed in /App/Controllers/Products.php` (but it 
-	 *				   could be also in some sub-directory if there is used 
-	 *				   extended route with namespace)
-	 *  `"\Front\Business\Products"`
-	 *				 - placed in `/App/Controllers/Front/Business/Products.php`
-	 *  `"//Anywhere\Else\Controllers\Products"
-	 *				 - placed in `/Anywhere/Else/Controllers/Products.php`
+	 * - `"Products"`
+	 *   - normally placed in /App/Controllers/Products.php` (but it 
+	 *     could be also in some sub-directory if there is used 
+	 *     extended route with namespace)
+	 * - `"\Front\Business\Products"`
+	 *   - placed in `/App/Controllers/Front/Business/Products.php`
+	 * - `"//Anywhere\Else\Controllers\Products"
+	 *   - placed in `/Anywhere/Else/Controllers/Products.php`
 	 * @var string
 	 */
 	protected $controller	= '';
@@ -193,12 +194,12 @@ trait Props {
 	 * 
 	 * Filters are `callable`s and always in this array under keys `"in"` and 
 	 * `"out"` accepting arguments: 
-	 * - `$params`  associative array with params from requested URL address for 
-	 *				in filter and associative array with params to build URL 
-	 *				address for out filter.
-	 * - `$defaultParams`	associative array with default params to store 
-	 *						any custom value necessary to filter effectively.
-	 * - `$request`	current request instance implements `\MvcCore\IRequest`.
+	 * - `$params`        associative array with params from requested URL address for 
+	 *                    in filter and associative array with params to build URL 
+	 *                    address for out filter.
+	 * - `$defaultParams` associative array with default params to store 
+	 *                    any custom value necessary to filter effectively.
+	 * - `$request`       current request instance implements `\MvcCore\IRequest`.
 	 * 
 	 * `Callable` filter must return associative `array` with filtered params. 
 	 * 
@@ -259,21 +260,23 @@ trait Props {
 	 * `match` is configured as `NULL`) and to complete URL address string in 
 	 * method `Url();` and it's sub-methods.
 	 * Example: 
-	 * // For pattern `/products-list/<name>[/<color*>]`
-	 * `[
-	 *		'name' => (object) [
-	 *			'name'			=> 'name',	'greedy'		=> FALSE,	
-	 *			'sectionIndex'	=> 0,		'reverseStart'	=> 15,	
-	 *			'reverseEnd'	=> 21,		'matchStart'	=> 15,	
-	 *			'matchEnd'		=> 21,
-	 *		],
-	 *		'color' => (object) [
-	 *			'name'			=> 'color',	'greedy'		=> TRUE,
-				'sectionIndex'	=> 1,		'reverseStart'	=> 22,		
-				'reverseEnd'	=> 30,		'matchStart'	=> 22,
-				'matchEnd'		=> 30,
-	 *		]
-	 * ];`
+	 * ````
+	 *   // For pattern `/products-list/<name>[/<color*>]`
+	 *   [
+	 *       'name' => (object) [
+	 *           'name'         => 'name',  'greedy'       => FALSE,
+	 *           'sectionIndex' => 0,       'reverseStart' => 15,
+	 *           'reverseEnd'   => 21,      'matchStart'   => 15,
+	 *           'matchEnd'     => 21,
+	 *       ],
+	 *       'color' => (object) [
+	 *           'name'         => 'color', 'greedy'       => TRUE,
+	 *           'sectionIndex' => 1,       'reverseStart' => 22,
+	 *           'reverseEnd'   => 30,      'matchStart'   => 22,
+	 *           'matchEnd'     => 30,
+	 *       ]
+	 *   ];
+	 * ````
 	 * @var array|NULL
 	 */
 	protected $reverseParams	= NULL;
@@ -296,17 +299,19 @@ trait Props {
 	 * `NULL`) and to complete URL address string in method `Url();` and it's 
 	 * sub-methods.
 	 * Example: 
-	 * // For pattern `/products-list/<name>[/<color*>]`
-	 * `[
-	 *		(object) [
-	 *			'fixed'	=> TRUE,	'start'		=> 0,
-	 *			'end'	=> 21,		'length'	=> 21,
-	 *		],
-	 *		(object) [
-	 *			'fixed'	=> FALSE,	'start'		=> 21,
-	 *			'end'	=> 30,		'length'	=> 9,
-	 *		]
-	 * ];`
+	 * ````
+	 *   // For pattern `/products-list/<name>[/<color*>]`
+	 *   [
+	 *       (object) [
+	 *           'fixed' => TRUE,  'start'  => 0,
+	 *           'end'   => 21,    'length' => 21,
+	 *       ],
+	 *       (object) [
+	 *           'fixed' => FALSE, 'start'  => 21,
+	 *           'end'   => 30,    'length' => 9,
+	 *       ]
+	 *   ];
+	 * ````
 	 * @var \stdClass[]
 	 */
 	protected $reverseSections	= NULL;

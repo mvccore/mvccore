@@ -28,11 +28,13 @@ trait RewriteRouting {
 	 * route object. If route matches the request, set up default and request 
 	 * params and try to process route filtering in. If it is successful, set 
 	 * up current route object and end route matching process.
-	 * @param string|NULL $requestCtrlName		Possible controller name value or `NULL` assigned directly 
-	 *											from request object in `\MvcCore\router::routeDetectStrategy();`
-	 * @param string|NULL $requestActionName	Possible action name value or `NULL` assigned directly 
-	 *											from request object in `\MvcCore\router::routeDetectStrategy();`
-	 * @throws \LogicException Route configuration property is missing.
+	 * @param  string|NULL $requestCtrlName
+	 *                                   Possible controller name value or `NULL` assigned directly 
+	 *                                   from request object in `\MvcCore\router::routeDetectStrategy();`
+	 * @param  string|NULL $requestActionName
+	 *                                   Possible action name value or `NULL` assigned directly 
+	 *                                   from request object in `\MvcCore\router::routeDetectStrategy();`
+	 * @throws \LogicException           Route configuration property is missing.
 	 * @throws \InvalidArgumentException Wrong route pattern format.
 	 * @return void
 	 */
@@ -212,10 +214,10 @@ trait RewriteRouting {
 	 * continuing another route matching. If filtering is successful, set matched
 	 * controller and action into request object and return `TRUE` to finish routes
 	 * matching process.
-	 * @param array $allMatchedParams	All matched params completed `\MvcCore\Route::Matches();`, 
-	 *									where could be controller and action if it is defined in 
-	 *									route object, default param values from route and all 
-	 *									rewrite params parsed by route.
+	 * @param  array $allMatchedParams All matched params completed `\MvcCore\Route::Matches();`, 
+	 *                                 where could be controller and action if it is defined in 
+	 *                                 route object, default param values from route and all 
+	 *                                 rewrite params parsed by route.
 	 * @return bool
 	 */
 	protected function rewriteRoutingSetRequestParams (array & $allMatchedParams) {

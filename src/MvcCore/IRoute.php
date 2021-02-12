@@ -33,28 +33,34 @@ interface IRoute extends \MvcCore\Route\IConstants {
 	 * route pattern value to parse into match and reverse values, then 
 	 * controller with action, params default values and constraints.
 	 * Example:
-	 * `new Route([
-	 *		"pattern"			=> "/products-list/<name>/<color>",
-	 *		"controllerAction"	=> "Products:List",
-	 *		"defaults"			=> ["name" => "default-name",	"color" => "red"],
-	 *		"constraints"		=> ["name" => "[^/]*",			"color" => "[a-z]*"]
-	 * ]);`
+	 * ````
+	 * new Route([
+	 *     "pattern"          => "/products-list/<name>/<color>",
+	 *     "controllerAction" => "Products:List",
+	 *     "defaults"         => ["name" => "default-name", "color" => "red"],
+	 *     "constraints"      => ["name" => "[^/]*",        "color" => "[a-z]*"]
+	 * ]);
+	 * ````
 	 * or:
-	 * `new Route(
-	 *		"/products-list/<name>/<color>",
-	 *		"Products:List",
-	 *		["name" => "default-name",	"color" => "red"],
-	 *		["name" => "[^/]*",			"color" => "[a-z]*"]
-	 * );`
+	 * ````
+	 * new Route(
+	 *     "/products-list/<name>/<color>",
+	 *     "Products:List",
+	 *     ["name" => "default-name", "color" => "red"],
+	 *     ["name" => "[^/]*",        "color" => "[a-z]*"]
+	 * );
+	 * ````
 	 * or:
-	 * `new Route([
-	 *		"name"			=> "products_list",
-	 *		"match"			=> "#^/products\-list/(?<name>[^/]*)/(?<color>[a-z]*)(?=/$|$)#",
-	 *		"reverse"		=> "/products-list/<name>/<color>",
-	 *		"controller"	=> "Products",
-	 *		"action"		=> "List",
-	 *		"defaults"		=> ["name" => "default-name",	"color" => "red"],
-	 * ]);`
+	 * ````
+	 * new Route([
+	 *     "name"       => "products_list",
+	 *     "match"      => "#^/products\-list/(?<name>[^/]*)/(?<color>[a-z]*)(?=/$|$)#",
+	 *     "reverse"    => "/products-list/<name>/<color>",
+	 *     "controller" => "Products",
+	 *     "action"     => "List",
+	 *     "defaults"   => ["name" => "default-name", "color" => "red"],
+	 * ]);
+	 * ````
 	 * @param string|array $patternOrConfig
 	 *                     Required, configuration array or route pattern value 
 	 *                     to parse into match and reverse patterns.
@@ -264,13 +270,14 @@ interface IRoute extends \MvcCore\Route\IConstants {
 	 * from base PHP place without any automatic MvcCore namespace prepending.
 	 * 
 	 * Example:
-	 *  `"Products"` - normally placed in /App/Controllers/Products.php` (but it 
-	 *				   could be also in some sub-directory if there is used 
-	 *				   extended route with namespace)
-	 *  `"\Front\Business\Products"`
-	 *				 - placed in `/App/Controllers/Front/Business/Products.php`
-	 *  `"//Anywhere\Else\Controllers\Products"
-	 *				 - placed in `/Anywhere/Else/Controllers/Products.php`
+	 * - `"Products"`
+	 *   - normally placed in /App/Controllers/Products.php` (but it 
+	 *     could be also in some sub-directory if there is used 
+	 *     extended route with namespace)
+	 * - `"\Front\Business\Products"`
+	 *   - placed in `/App/Controllers/Front/Business/Products.php`
+	 * - `"//Anywhere\Else\Controllers\Products"
+	 *   - placed in `/Anywhere/Else/Controllers/Products.php`
 	 * @return string
 	 */
 	public function GetController ();
@@ -290,13 +297,14 @@ interface IRoute extends \MvcCore\Route\IConstants {
 	 * from base PHP place without any automatic MvcCore namespace prepending.
 	 * 
 	 * Example:
-	 *  `"Products"` - normally placed in /App/Controllers/Products.php` (but it 
-	 *				   could be also in some sub-directory if there is used 
-	 *				   extended route with namespace)
-	 *  `"\Front\Business\Products"`
-	 *				 - placed in `/App/Controllers/Front/Business/Products.php`
-	 *  `"//Anywhere\Else\Controllers\Products"
-	 *				 - placed in `/Anywhere/Else/Controllers/Products.php`
+	 * - `"Products"`
+	 *   - normally placed in /App/Controllers/Products.php` (but it 
+	 *     could be also in some sub-directory if there is used 
+	 *     extended route with namespace)
+	 * - `"\Front\Business\Products"`
+	 *   - placed in `/App/Controllers/Front/Business/Products.php`
+	 * - `"//Anywhere\Else\Controllers\Products"
+	 *   - placed in `/Anywhere/Else/Controllers/Products.php`
 	 * @param string|NULL $controller
 	 * @return \MvcCore\Route
 	 */
@@ -410,12 +418,12 @@ interface IRoute extends \MvcCore\Route\IConstants {
 	 * 
 	 * Filters are `callable`s and always in this array under keys `"in"` and 
 	 * `"out"` accepting arguments: 
-	 * - `$params`  associative array with params from requested URL address for 
-	 *				in filter and associative array with params to build URL 
-	 *				address for out filter.
-	 * - `$defaultParams`	associative array with default params to store 
-	 *						any custom value necessary to filter effectively.
-	 * - `$request`	current request instance implements `\MvcCore\IRequest`.
+	 * - `$params`        - associative array with params from requested URL address for 
+	 *                      in filter and associative array with params to build URL 
+	 *                      address for out filter.
+	 * - `$defaultParams` - associative array with default params to store 
+	 *                      any custom value necessary to filter effectively.
+	 * - `$request`       - current request instance implements `\MvcCore\IRequest`.
 	 * 
 	 * `Callable` filter must return associative `array` with filtered params. 
 	 * 
@@ -433,12 +441,12 @@ interface IRoute extends \MvcCore\Route\IConstants {
 	 * 
 	 * Filters are `callable`s and always in this array under keys `"in"` and 
 	 * `"out"` accepting arguments: 
-	 * - `$params`  associative array with params from requested URL address for 
-	 *				in filter and associative array with params to build URL 
-	 *				address for out filter.
-	 * - `$defaultParams`	associative array with default params to store 
-	 *						any custom value necessary to filter effectively.
-	 * - `$request`	current request instance implements `\MvcCore\IRequest`.
+	 * - `$params`       - associative array with params from requested URL address for 
+	 *                     in filter and associative array with params to build URL 
+	 *                     address for out filter.
+	 * - `$defaultParams`- associative array with default params to store 
+	 *                     any custom value necessary to filter effectively.
+	 * - `$request`      - current request instance implements `\MvcCore\IRequest`.
 	 * 
 	 * `Callable` filter must return associative `array` with filtered params. 
 	 * 
@@ -456,12 +464,12 @@ interface IRoute extends \MvcCore\Route\IConstants {
 	 * from application. For example to translate the values or anything else. 
 	 * 
 	 * Filter is `callable` accepting arguments: 
-	 * - `$params`  associative array with params from requested URL address for 
-	 *				in filter and associative array with params to build URL 
-	 *				address for out filter.
-	 * - `$defaultParams`	associative array with default params to store 
-	 *						any custom value necessary to filter effectively.
-	 * - `$request`	current request instance implements `\MvcCore\IRequest`.
+	 * - `$params`       - associative array with params from requested URL address for 
+	 *                     in filter and associative array with params to build URL 
+	 *                     address for out filter.
+	 * - `$defaultParams`- associative array with default params to store 
+	 *                     any custom value necessary to filter effectively.
+	 * - `$request`      - current request instance implements `\MvcCore\IRequest`.
 	 * 
 	 * `Callable` filter must return associative `array` with filtered params. 
 	 * 
@@ -478,12 +486,12 @@ interface IRoute extends \MvcCore\Route\IConstants {
 	 * from application. For example to translate the values or anything else. 
 	 * 
 	 * Filter is `callable` accepting arguments: 
-	 * - `$params`  associative array with params from requested URL address for 
-	 *				in filter and associative array with params to build URL 
-	 *				address for out filter.
-	 * - `$defaultParams`	associative array with default params to store 
-	 *						any custom value necessary to filter effectively.
-	 * - `$request`	current request instance implements `\MvcCore\IRequest`.
+	 * - `$params`       - associative array with params from requested URL address for 
+	 *                     in filter and associative array with params to build URL 
+	 *                     address for out filter.
+	 * - `$defaultParams`- associative array with default params to store 
+	 *                     any custom value necessary to filter effectively.
+	 * - `$request`      - current request instance implements `\MvcCore\IRequest`.
 	 * 
 	 * `Callable` filter must return associative `array` with filtered params. 
 	 * 
@@ -670,21 +678,24 @@ interface IRoute extends \MvcCore\Route\IConstants {
 	 * an array with two strings - result URL in two parts - first part as scheme, 
 	 * domain and base path and second as path and query string.
 	 * Example:
-	 *	Input (`$params`):
-	 *		`[
-	 *			"name"		=> "cool-product-name",
-	 *			"color"		=> "blue",
-	 *			"variants"	=> ["L", "XL"],
-	 *		];`
-	 *	Input (`\MvcCore\Route::$reverse`):
-	 *		`"/products-list/<name>/<color*>"`
-	 *	Output:
-	 *		`["/any/app/base/path/products-list/cool-product-name/blue?variant[]=L&amp;variant[]=XL"]`
-	 *		or:
-	 *		`[
-	 *			"/any/app/base/path", 
-	 *			"/products-list/cool-product-name/blue?variant[]=L&amp;variant[]=XL"
-	 *		]`
+	 * ```
+	 *   // Input `$params`:
+	 *   [
+	 *       "name"     => "cool-product-name",
+	 *       "color"    => "blue",
+	 *       "variants" => ["L", "XL"],
+	 *   ];
+	 *   // Input `\MvcCore\Route::$reverse`:
+	 *   "/products-list/<name>/<color*>"
+	 *   
+	 *   // Output:
+	 *   ["/any/app/base/path/products-list/cool-product-name/blue?variant[]=L&amp;variant[]=XL"]
+	 *   // or:
+	 *   [
+	 *       "/any/app/base/path", 
+	 *       "/products-list/cool-product-name/blue?variant[]=L&amp;variant[]=XL"
+	 *   ]
+	 * ````
 	 * @param \MvcCore\Request $request 
 	 *                         Currently requested request object.
 	 * @param array            $params

@@ -17,11 +17,12 @@ trait Connection {
 	
 	/**
 	 * @inheritDocs
-	 * @param string|int|array|\stdClass|NULL $connectionNameOrConfig
-	 * @param bool $strict	If `TRUE` and no connection under given name or given
-	 *						index found, exception is thrown. `TRUE` by default.
-	 *						If `FALSE`, there could be returned connection by
-	 *						first available configuration.
+	 * @param  string|int|array|\stdClass|NULL $connectionNameOrConfig
+	 * @param  bool                            $strict
+	 *         If `TRUE` and no connection under given name or given
+	 *         index found, exception is thrown. `TRUE` by default.
+	 *         If `FALSE`, there could be returned connection by
+	 *         first available configuration.
 	 * @throws \InvalidArgumentException
 	 * @return \PDO
 	 */
@@ -80,8 +81,8 @@ trait Connection {
 
 	/**
 	 * Always create new `\PDO` database connection.
-	 * @param \stdClass $dbConfig `\stdClass` with members:
-	 *							  driver, host, user, password, database, options, class
+	 * @param  \stdClass $dbConfig `\stdClass` with members:
+	 *                             driver, host, user, password, database, options, class
 	 * @return \PDO
 	 */
 	protected static function connect ($dbConfig) {

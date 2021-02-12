@@ -23,7 +23,7 @@ namespace MvcCore\Application;
 trait Props {
 
 	/***********************************************************************************
-	 *					   `\MvcCore\Application` - Properties					   *
+	 *                       `\MvcCore\Application` - Properties                       *
 	 ***********************************************************************************/
 
 	/**
@@ -79,15 +79,17 @@ trait Props {
 	 * Pre route custom closure calls storage.
 	 * Every item in this array has to be `callable`.
 	 * Params in callable should be two with following types:
-	 *	- `\MvcCore\Request`
-	 *	- `\MvcCore\Response`
+	 * - `\MvcCore\Request`
+	 * - `\MvcCore\Response`
 	 * Example:
-	 * `\MvcCore\Application::GetInstance()->AddPreRouteHandler(function(
-	 *		\MvcCore\Request $request,
-	 *		\MvcCore\Response $response
-	 * ) {
-	 *		$request->customVar = 'custom_value';
-	 * });`
+	 * ````
+	 *   \MvcCore\Application::GetInstance()->AddPreRouteHandler(function(
+	 *       \MvcCore\Request $request,
+	 *       \MvcCore\Response $response
+	 *   ) {
+	 *       $request->customVar = 'custom_value';
+	 *   });
+	 * ````
 	 * @var \array[]
 	 */
 	protected $preRouteHandlers = [];
@@ -96,15 +98,17 @@ trait Props {
 	 * Post route custom closure calls storage.
 	 * Every item in this array has to be `callable`.
 	 * Params in callable should be two with following types:
-	 *	- `\MvcCore\Request`
-	 *	- `\MvcCore\Response`
+	 * - `\MvcCore\Request`
+	 * - `\MvcCore\Response`
 	 * Example:
-	 * `\MvcCore\Application::GetInstance()->AddPostRouteHandler(function(
-	 *		\MvcCore\Request $request,
-	 *		\MvcCore\Response $response
-	 * ) {
-	 *		$request->customVar = 'custom_value';
-	 * });`
+	 * ````
+	 *   \MvcCore\Application::GetInstance()->AddPostRouteHandler(function(
+	 *       \MvcCore\Request $request,
+	 *       \MvcCore\Response $response
+	 *   ) {
+	 *       $request->customVar = 'custom_value';
+	 *   });
+	 * ````
 	 * @var \array[]
 	 */
 	protected $postRouteHandlers = [];
@@ -113,15 +117,17 @@ trait Props {
 	 * Pre dispatch custom calls storage.
 	 * Every item in this array has to be `callable`.
 	 * Params in `callable` should be two with following types:
-	 *	- `\MvcCore\Request`
-	 *	- `\MvcCore\Response`
+	 * - `\MvcCore\Request`
+	 * - `\MvcCore\Response`
 	 * Example:
-	 * `\MvcCore\Application::GetInstance()->AddPreDispatchHandler(function(
-	 *		\MvcCore\Request $request,
-	 *		\MvcCore\Response $response
-	 * ) {
-	 *		$request->customVar = 'custom_value';
-	 * });`
+	 * ````
+	 *   \MvcCore\Application::GetInstance()->AddPreDispatchHandler(function(
+	 *       \MvcCore\Request $request,
+	 *       \MvcCore\Response $response
+	 *   ) {
+	 *       $request->customVar = 'custom_value';
+	 *   });
+	 * ````
 	 * @var \array[]
 	 */
 	protected $preDispatchHandlers = [];
@@ -130,15 +136,17 @@ trait Props {
 	 * Post dispatch custom calls storage.
 	 * Every item in this array has to be `callable`.
 	 * Params in `callable` should be two with following types:
-	 *	- `\MvcCore\Request`
-	 *	- `\MvcCore\Response`
+	 * - `\MvcCore\Request`
+	 * - `\MvcCore\Response`
 	 * Example:
-	 * `\MvcCore\Application::GetInstance()->AddPostDispatchHandler(function(
-	 *		\MvcCore\Request $request,
-	 *		\MvcCore\Response $response
-	 * ) {
-	 *		$request->customVar = 'custom_value';
-	 * });`
+	 * ````
+	 *   \MvcCore\Application::GetInstance()->AddPostDispatchHandler(function(
+	 *       \MvcCore\Request $request,
+	 *       \MvcCore\Response $response
+	 *   ) {
+	 *       $request->customVar = 'custom_value';
+	 *   });
+	 * ````
 	 * @var \array[]
 	 */
 	protected $postDispatchHandlers = [];
@@ -147,17 +155,17 @@ trait Props {
 	 * Post terminate custom calls storage.
 	 * Every item in this array has to be `callable`.
 	 * Params in `callable` should be two with following types:
-	 *	- `\MvcCore\Request`
-	 *	- `\MvcCore\Response`
+	 * - `\MvcCore\Request`
+	 * - `\MvcCore\Response`
 	 * Example:
-	 * `\MvcCore\Application::GetInstance()->AddPostTerminateHandler(function(
-	 *		\MvcCore\Request $request,
-	 *		\MvcCore\Response $response
-	 * ) {
-	 *		// close connection by previously configured
-	 *		// header: header('Connection: close');
-	 *		// and run background process now:
-	 * });`
+	 * ````
+	 * \MvcCore\Application::GetInstance()->AddPostTerminateHandler(function(
+	 *       \MvcCore\Request $request,
+	 *       \MvcCore\Response $response
+	 *   ) {
+	 *       $request->customVar = 'custom_value';
+	 *   });
+	 * ````
 	 * @var \array[]
 	 */
 	protected $postTerminateHandlers = [];

@@ -17,9 +17,9 @@ trait Initializations {
 
 	/**
 	 * @inheritDocs
-	 * @param bool $forceDevelopmentMode	If defined as `TRUE` or `FALSE`,
-	 *										debugging mode will be set not
-	 *										by config but by this value.
+	 * @param  bool $forceDevelopmentMode If defined as `TRUE` or `FALSE`,
+	 *                                    debugging mode will be set not
+	 *                                    by config but by this value.
 	 * @return void
 	 */
 	public static function Init ($forceDevelopmentMode = NULL) {

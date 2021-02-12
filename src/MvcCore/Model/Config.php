@@ -96,12 +96,14 @@ trait Config {
 	/**
 	 * Initializes configuration data from system config if any
 	 * into local `self::$configs` array, keyed by connection name or index.
-	 * @param bool $throwExceptionIfNoSysConfig If `TRUE`, there is thrown an `\Exception`
-	 *											if there is no system config, if `FALSE`,
-	 *											nothing happends. `TRUE` by default.
-	 * @param bool $strict	If `TRUE`, there is initialized static property 
-	 *						`self::$defaultConnectionName` only by config record `db.defaultName`.
-	 *						If `FALSE`, there is not initialized any default connection property.
+	 * @param  bool $throwExceptionIfNoSysConfig 
+	 *              If `TRUE`, there is thrown an `\Exception`
+	 *              if there is no system config, if `FALSE`,
+	 *              nothing happends. `TRUE` by default.
+	 * @param  bool $strict
+	 *              If `TRUE`, there is initialized static property 
+	 *              `self::$defaultConnectionName` only by config record `db.defaultName`.
+	 *              If `FALSE`, there is not initialized any default connection property.
 	 * @throws \Exception
 	 * @return void
 	 */

@@ -24,7 +24,7 @@ namespace MvcCore;
  * - Cookies cleaning and reading from referenced `$_COOKIE['...']`.
  * - Uploaded files by wrapped referenced `$_FILES` global array.
  * - Primitive values cleaning or array recursive cleaning by called
- *	 developer rules from params array, headers array and cookies array.
+ *   developer rules from params array, headers array and cookies array.
  */
 interface IRequest extends \MvcCore\Request\IConstants {
 
@@ -252,8 +252,8 @@ interface IRequest extends \MvcCore\Request\IConstants {
 
 	/**
 	 * Set raw request cookie into referenced global `$_COOKIE` without any conversion.
-	 * @param string $name
-	 * @param string|string[] $value
+	 * @param  string          $name
+	 * @param  string|string[] $value
 	 * @return \MvcCore\Request
 	 */
 	public function SetCookie ($name = '', $value = '');
@@ -262,11 +262,11 @@ interface IRequest extends \MvcCore\Request\IConstants {
 	 * Get request cookie value from referenced global `$_COOKIE` variable,
 	 * filtered by characters defined in second argument through `preg_replace()`.
 	 * Place into second argument only char groups you want to keep.
-	 * @param string $name Cookie string name.
-	 * @param string|array|bool $pregReplaceAllowedChars If String - list of regular expression characters to only keep, if array - `preg_replace()` pattern and reverse, if `FALSE`, raw value is returned.
-	 * @param mixed $ifNullValue Default value returned if given param name is null.
-	 * @param string $targetType Target type to retype param value or default if-null value. If param is an array, every param item will be retyped into given target type.
-	 * @throws \InvalidArgumentException `$name` must be a `$targetType`, not an `array`.
+	 * @param  string            $name                    Cookie string name.
+	 * @param  string|array|bool $pregReplaceAllowedChars If String - list of regular expression characters to only keep, if array - `preg_replace()` pattern and reverse, if `FALSE`, raw value is returned.
+	 * @param  mixed             $ifNullValue             Default value returned if given param name is null.
+	 * @param  string            $targetType              Target type to retype param value or default if-null value. If param is an array, every param item will be retyped into given target type.
+	 * @throws \InvalidArgumentException                  `$name` must be a `$targetType`, not an `array`.
 	 * @return string|\string[]|int|\int[]|bool|\bool[]|array|mixed
 	 */
 	public function GetCookie (
@@ -278,7 +278,7 @@ interface IRequest extends \MvcCore\Request\IConstants {
 
 	/**
 	 * Return if any item by cookie name exists or not in referenced global `$_COOKIE`.
-	 * @param string $name Cookie string name.
+	 * @param  string $name Cookie string name.
 	 * @return bool
 	 */
 	public function HasCookie ($name = '');
@@ -303,7 +303,7 @@ interface IRequest extends \MvcCore\Request\IConstants {
 	/**
 	 * Set cleaned requested controller name into `\MvcCore\Request::$controllerName;`
 	 * and into `\MvcCore\Request::$params['controller'];`.
-	 * @param string $controllerName
+	 * @param  string $controllerName
 	 * @return \MvcCore\Request
 	 */
 	public function SetControllerName ($controllerName);
@@ -317,7 +317,7 @@ interface IRequest extends \MvcCore\Request\IConstants {
 	/**
 	 * Set cleaned requested controller name into `\MvcCore\Request::$actionName;`
 	 * and into `\MvcCore\Request::$params['action'];`.
-	 * @param string $actionName
+	 * @param  string $actionName
 	 * @return \MvcCore\Request
 	 */
 	public function SetActionName ($actionName);
@@ -339,7 +339,7 @@ interface IRequest extends \MvcCore\Request\IConstants {
 	 * Set language international code.
 	 * Use this lang storage by your own decision.
 	 * Example: `"en" | "de"`
-	 * @param string|NULL $lang
+	 * @param  string|NULL $lang
 	 * @return \MvcCore\Request
 	 */
 	public function SetLang ($lang);
@@ -357,7 +357,7 @@ interface IRequest extends \MvcCore\Request\IConstants {
 	 * Set country/locale code, upper case.
 	 * Use this locale storage by your own decision.
 	 * Example: `"US" | "UK"`
-	 * @param string|NULL $locale
+	 * @param  string|NULL $locale
 	 * @return \MvcCore\Request
 	 */
 	public function SetLocale ($locale);
@@ -375,7 +375,7 @@ interface IRequest extends \MvcCore\Request\IConstants {
 	 * Set media site version - `"full" | "tablet" | "mobile"`.
 	 * Use this media site version storage by your own decision.
 	 * Example: `"full" | "tablet" | "mobile"`
-	 * @param string|NULL $mediaSiteVersion
+	 * @param  string|NULL $mediaSiteVersion
 	 * @return \MvcCore\Request
 	 */
 	public function SetMediaSiteVersion ($mediaSiteVersion);
@@ -396,8 +396,8 @@ interface IRequest extends \MvcCore\Request\IConstants {
 	 * Throws exception if no property defined by get call or if virtual call
 	 * begins with anything different from `Set` or `Get`.
 	 * This method returns custom value for get and `\MvcCore\Request` instance for set.
-	 * @param string $rawName
-	 * @param array  $arguments
+	 * @param  string $rawName
+	 * @param  array  $arguments
 	 * @throws \InvalidArgumentException
 	 * @return mixed|\MvcCore\Request
 	 */
@@ -405,15 +405,15 @@ interface IRequest extends \MvcCore\Request\IConstants {
 
 	/**
 	 * Universal getter, if property not defined, `NULL` is returned.
-	 * @param string $name
+	 * @param  string $name
 	 * @return mixed
 	 */
 	public function __get ($name);
 
 	/**
 	 * Universal setter, if property not defined, it's automatically declared.
-	 * @param string $name
-	 * @param mixed  $value
+	 * @param  string $name
+	 * @param  mixed  $value
 	 * @return \MvcCore\Request
 	 */
 	public function __set ($name, $value);
@@ -436,7 +436,7 @@ interface IRequest extends \MvcCore\Request\IConstants {
 	/**
 	 * Set upper cased http method from global `$_SERVER['REQUEST_METHOD']`.
 	 * Example: `$request->SetMethod("GET" | "POST" | "PUT" | "HEAD"...);`
-	 * @param string $rawMethod
+	 * @param  string $rawMethod
 	 * @return \MvcCore\Request
 	 */
 	public function SetMethod ($rawMethod);
@@ -454,7 +454,7 @@ interface IRequest extends \MvcCore\Request\IConstants {
 	 * Example:
 	 * - for full url:  `"http://localhost:88/my/development/direcotry/www/requested/path/after/domain?with=possible&query=string"`
 	 * - set base path: `$request->SetBasePath("/my/development/directory/www");`
-	 * @param string $rawBasePath
+	 * @param  string $rawBasePath
 	 * @return \MvcCore\Request
 	 */
 	public function SetBasePath ($rawBasePath);
@@ -472,7 +472,7 @@ interface IRequest extends \MvcCore\Request\IConstants {
 	/**
 	 * Set http scheme string.
 	 * Example: `$request->SetScheme("https:");`
-	 * @param string $rawProtocol
+	 * @param  string $rawProtocol
 	 * @return \MvcCore\Request
 	 */
 	public function SetScheme ($rawProtocol);
@@ -494,7 +494,7 @@ interface IRequest extends \MvcCore\Request\IConstants {
 	 * Get referer URL if any, safely read by:
 	 * `filter_var($_SERVER['HTTP_REFERER'], FILTER_SANITIZE_URL);`
 	 * Example: `"http://foreing.domain.com/path/where/is/link/to/?my=app"`
-	 * @param bool $rawInput Get raw input if `TRUE`. `FALSE` by default to get value through `htmlspecialchars($result);` without ampersand `&` escaping.
+	 * @param  bool $rawInput Get raw input if `TRUE`. `FALSE` by default to get value through `htmlspecialchars($result);` without ampersand `&` escaping.
 	 * @return string
 	 */
 	public function GetReferer ($rawInput = FALSE);
@@ -509,7 +509,7 @@ interface IRequest extends \MvcCore\Request\IConstants {
 	/**
 	 * Set TOP level domain like `com` or `co.uk`.
 	 * Method also change server name and host record automatically.
-	 * @param string|NULL $topLevelDomain
+	 * @param  string|NULL $topLevelDomain
 	 * @return \MvcCore\Request
 	 */
 	public function SetTopLevelDomain ($topLevelDomain);
@@ -523,7 +523,7 @@ interface IRequest extends \MvcCore\Request\IConstants {
 	/**
 	 * Set second level domain like `example` in `www.example.com`.
 	 * Method also change server name and host record automatically.
-	 * @param string|NULL $secondLevelDomain
+	 * @param  string|NULL $secondLevelDomain
 	 * @return \MvcCore\Request
 	 */
 	public function SetSecondLevelDomain ($secondLevelDomain);
@@ -537,7 +537,7 @@ interface IRequest extends \MvcCore\Request\IConstants {
 	/**
 	 * Set second level domain like `example` from `www.example.com`.
 	 * Method also change server name and host record automatically.
-	 * @param string|NULL $thirdLevelDomain
+	 * @param  string|NULL $thirdLevelDomain
 	 * @return \MvcCore\Request
 	 */
 	public function SetThirdLevelDomain ($thirdLevelDomain);
@@ -552,7 +552,7 @@ interface IRequest extends \MvcCore\Request\IConstants {
 	 * Set application server name - domain without any port.
 	 * Method also change host record and domain records automatically.
 	 * Example: `$request->SetHostName("localhost");`
-	 * @param string $rawHostName
+	 * @param  string $rawHostName
 	 * @return \MvcCore\Request
 	 */
 	public function SetHostName ($rawHostName);
@@ -568,7 +568,7 @@ interface IRequest extends \MvcCore\Request\IConstants {
 	 * Set application host with port if there is any.
 	 * Method also change server name record and domain records automatically.
 	 * Example: `$request->SetHost("localhost:88");`
-	 * @param string $rawHost
+	 * @param  string $rawHost
 	 * @return \MvcCore\Request
 	 */
 	public function SetHost ($rawHost);
@@ -584,7 +584,7 @@ interface IRequest extends \MvcCore\Request\IConstants {
 	 * Set http port defined in requested URL if any.
 	 * Empty string if there is no port number in requested address.`.
 	 * Example: `$request->SetPort("88")`
-	 * @param string $rawPort
+	 * @param  string $rawPort
 	 * @return \MvcCore\Request
 	 */
 	public function SetPort ($rawPort);
@@ -600,7 +600,7 @@ interface IRequest extends \MvcCore\Request\IConstants {
 	/**
 	 * Set requested path in from application root (if `mod_rewrite` enabled), never with query string.
 	 * Example: `$request->SetPort("/products/page/2");`
-	 * @param string $rawPathValue
+	 * @param  string $rawPathValue
 	 * @return \MvcCore\Request
 	 */
 	public function SetPath ($rawPathValue);
@@ -608,7 +608,7 @@ interface IRequest extends \MvcCore\Request\IConstants {
 	/**
 	 * Get requested path in from application root (if `mod_rewrite` enabled), never with query string.
 	 * Example: `"/products/page/2"`
-	 * @param bool $rawInput Get raw input if `TRUE`. `FALSE` by default to get value through `htmlspecialchars($result);` without ampersand `&` escaping.
+	 * @param  bool $rawInput Get raw input if `TRUE`. `FALSE` by default to get value through `htmlspecialchars($result);` without ampersand `&` escaping.
 	 * @return string
 	 */
 	public function GetPath ($rawInput = FALSE);
@@ -616,7 +616,7 @@ interface IRequest extends \MvcCore\Request\IConstants {
 	/**
 	 * Set URL query string, with or without question mark character, doesn't matter.
 	 * Example: `$request->SetQuery("param-1=value-1&param-2=value-2&param-3[]=value-3-a&param-3[]=value-3-b");`
-	 * @param string $rawQuery
+	 * @param  string $rawQuery
 	 * @return \MvcCore\Request
 	 */
 	public function SetQuery ($rawQuery);
@@ -624,12 +624,12 @@ interface IRequest extends \MvcCore\Request\IConstants {
 	/**
 	 * Get URL query string (without question mark character by default).
 	 * Example: `"param-1=value-1&param-2=value-2&param-3[]=value-3-a&param-3[]=value-3-b"`
-	 * @param bool $withQuestionMark If `FALSE` (by default), query string is returned always without question
-	 *							   mark character at the beginning.
-	 *							   If `TRUE`, and query string contains any character(s), query string is returned
-	 *							   with question mark character at the beginning. But if query string contains no
-	 *							   character(s), query string is returned as EMPTY STRING WITHOUT question mark character.
-	 * @param bool $rawInput Get raw input if `TRUE`. `FALSE` by default to get value through `htmlspecialchars($result);` without ampersand `&` escaping.
+	 * @param  bool   $withQuestionMark If `FALSE` (by default), query string is returned always without question
+	 *                                  mark character at the beginning.
+	 *                                  If `TRUE`, and query string contains any character(s), query string is returned
+	 *                                  with question mark character at the beginning. But if query string contains no
+	 *                                  character(s), query string is returned as EMPTY STRING WITHOUT question mark character.
+	 * @param  bool   $rawInput         Get raw input if `TRUE`. `FALSE` by default to get value through `htmlspecialchars($result);` without ampersand `&` escaping.
 	 * @return string
 	 */
 	public function GetQuery ($withQuestionMark = FALSE, $rawInput = FALSE);
@@ -637,7 +637,7 @@ interface IRequest extends \MvcCore\Request\IConstants {
 	/**
 	 * Get request path after domain with possible query string
 	 * Example: `"/requested/path/after/app/root?with=possible&query=string"`
-	 * @param bool $rawInput Get raw input if `TRUE`. `FALSE` by default to get value through `htmlspecialchars($result);` without ampersand `&` escaping.
+	 * @param  bool $rawInput Get raw input if `TRUE`. `FALSE` by default to get value through `htmlspecialchars($result);` without ampersand `&` escaping.
 	 * @return string
 	 */
 	public function GetRequestPath ($rawInput = FALSE);
@@ -659,7 +659,7 @@ interface IRequest extends \MvcCore\Request\IConstants {
 	/**
 	 * Get request URL including scheme, domain, port, path, without any query string
 	 * Example: "`http://localhost:88/my/development/direcotry/www/requested/path/after/domain"`
-	 * @param bool $rawInput Get raw input if `TRUE`. `FALSE` by default to get value through `htmlspecialchars($result);` without ampersand `&` escaping.
+	 * @param  bool $rawInput Get raw input if `TRUE`. `FALSE` by default to get value through `htmlspecialchars($result);` without ampersand `&` escaping.
 	 * @return string
 	 */
 	public function GetRequestUrl ($rawInput = FALSE);
@@ -667,7 +667,7 @@ interface IRequest extends \MvcCore\Request\IConstants {
 	/**
 	 * Get request URL including scheme, domain, port, path and with query string
 	 * Example: `"http://localhost:88/my/development/direcotry/www/requested/path/after/domain?with=possible&query=string"`
-	 * @param bool $rawInput Get raw input if `TRUE`. `FALSE` by default to get value through `htmlspecialchars($result);` without ampersand `&` escaping.
+	 * @param  bool $rawInput Get raw input if `TRUE`. `FALSE` by default to get value through `htmlspecialchars($result);` without ampersand `&` escaping.
 	 * @return string
 	 */
 	public function GetFullUrl ($rawInput = FALSE);
@@ -675,12 +675,12 @@ interface IRequest extends \MvcCore\Request\IConstants {
 	/**
 	 * Get URI fragment (without hash character by default).
 	 * Example: `"any-sublink-path"`
-	 * @param bool $withHash If `FALSE` (by default), fragment is returned always without hash character
-	 *					   at the beginning.
-	 *					   If `TRUE`, and fragment contains any character(s), fragment is returned
-	 *					   with hash character at the beginning. But if fragment contains no
-	 *					   character(s), fragment is returned as EMPTY STRING WITHOUT hash character.
-	 * @param bool $rawInput Get raw input if `TRUE`. `FALSE` by default to get value through `htmlspecialchars($result);` without ampersand `&` escaping.
+	 * @param  bool $withHash If `FALSE` (by default), fragment is returned always without hash character
+	 *                        at the beginning.
+	 *                        If `TRUE`, and fragment contains any character(s), fragment is returned
+	 *                        with hash character at the beginning. But if fragment contains no
+	 *                        character(s), fragment is returned as EMPTY STRING WITHOUT hash character.
+	 * @param  bool $rawInput Get raw input if `TRUE`. `FALSE` by default to get value through `htmlspecialchars($result);` without ampersand `&` escaping.
 	 * @return string
 	 */
 	public function GetFragment ($withHash = FALSE, $rawInput = FALSE);
@@ -722,7 +722,7 @@ interface IRequest extends \MvcCore\Request\IConstants {
 	/**
 	 * Convert special characters to HTML entities except ampersand `&`.
 	 * @see http://php.net/manual/en/function.htmlspecialchars.php
-	 * @param string $str
+	 * @param  string $str
 	 * @return string
 	 */
 	public static function HtmlSpecialChars ($str);

@@ -617,12 +617,16 @@ trait GettersSetters {
 
 	/**
 	 * @inheritDocs
-	 * @param bool $withQuestionMark If `FALSE` (by default), query string is returned always without question
-	 *							   mark character at the beginning.
-	 *							   If `TRUE`, and query string contains any character(s), query string is returned
-	 *							   with question mark character at the beginning. But if query string contains no
-	 *							   character(s), query string is returned as EMPTY STRING WITHOUT question mark character.
-	 * @param bool $rawInput Get raw input if `TRUE`. `FALSE` by default to get value through `htmlspecialchars($result);` without ampersand `&` escaping.
+	 * @param  bool   $withQuestionMark
+	 *                If `FALSE` (by default), query string is returned always without 
+	 *                question mark character at the beginning. If `TRUE`, and query 
+	 *                string contains any character(s), query string is returned with 
+	 *                question mark character at the beginning. But if query string 
+	 *                contains no character(s), query string is returned as EMPTY STRING 
+	 *                WITHOUT question mark character.
+	 * @param  bool   $rawInput 
+	 *                Get raw input if `TRUE`. `FALSE` by default to get value 
+	 *                through `htmlspecialchars($result);` without ampersand `&` escaping.
 	 * @return string
 	 */
 	public function GetQuery ($withQuestionMark = FALSE, $rawInput = FALSE) {
@@ -684,7 +688,7 @@ trait GettersSetters {
 
 	/**
 	 * @inheritDocs
-	 * @param bool $rawInput Get raw input if `TRUE`. `FALSE` by default to get value through `htmlspecialchars($result);` without ampersand `&` escaping.
+	 * @param  bool $rawInput Get raw input if `TRUE`. `FALSE` by default to get value through `htmlspecialchars($result);` without ampersand `&` escaping.
 	 * @return string
 	 */
 	public function GetFullUrl ($rawInput = FALSE) {
@@ -696,12 +700,15 @@ trait GettersSetters {
 
 	/**
 	 * @inheritDocs
-	 * @param bool $withHash If `FALSE` (by default), fragment is returned always without hash character
-	 *					   at the beginning.
-	 *					   If `TRUE`, and fragment contains any character(s), fragment is returned
-	 *					   with hash character at the beginning. But if fragment contains no
-	 *					   character(s), fragment is returned as EMPTY STRING WITHOUT hash character.
-	 * @param bool $rawInput Get raw input if `TRUE`. `FALSE` by default to get value through `htmlspecialchars($result);` without ampersand `&` escaping.
+	 * @param  bool $withHash 
+	 *              If `FALSE` (by default), fragment is returned always without 
+	 *              hash character at the beginning. If `TRUE`, and fragment 
+	 *              contains any character(s), fragment is returned with hash 
+	 *              character at the beginning. But if fragment contains no
+	 *              character(s), fragment is returned as EMPTY STRING WITHOUT hash character.
+	 * @param  bool $rawInput 
+	 *              Get raw input if `TRUE`. `FALSE` by default to get value 
+	 *              through `htmlspecialchars($result);` without ampersand `&` escaping.
 	 * @return string
 	 */
 	public function GetFragment ($withHash = FALSE, $rawInput = FALSE) {

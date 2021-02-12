@@ -16,7 +16,7 @@ namespace MvcCore\Application;
 interface IConstants {
 	
 	/***********************************************************************************
-	 *					   `\MvcCore\Application` - Constants						*
+	 *                       `\MvcCore\Application` - Constants                        *
 	 ***********************************************************************************/
 	
 	/**

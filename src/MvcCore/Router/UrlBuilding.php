@@ -17,12 +17,10 @@ trait UrlBuilding {
 
 	/**
 	 * @inheritDocs
-	 * @param string $controllerActionOrRouteName
-	 *				Should be `"Controller:Action"` combination or just any 
-	 *				route name as custom specific string.
-	 * @param array  $params
-	 *				Optional, array with params, key is param name, value is 
-	 *				param value.
+	 * @param  string $controllerActionOrRouteName Should be `"Controller:Action"` combination 
+	 *                                             or just any route name as custom specific string.
+	 * @param  array  $params                      Optional, array with params, key is 
+	 *                                             param name, value is param value.
 	 * @throws \InvalidArgumentException
 	 * @return string
 	 */

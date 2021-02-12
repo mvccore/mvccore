@@ -17,11 +17,11 @@ trait Matching {
 
 	/**
 	 * @inheritDocs
-	 * @param \MvcCore\Request $request The request object instance.
-	 * @throws \LogicException Route configuration property is missing.
+	 * @param  \MvcCore\Request $request The request object instance.
+	 * @throws \LogicException           Route configuration property is missing.
 	 * @throws \InvalidArgumentException Wrong route pattern format.
-	 * @return array Matched and params array, keys are matched
-	 *				 params or controller and action params.
+	 * @return array                     Matched and params array, keys are matched
+	 *                                   params or controller and action params.
 	 */
 	public function & Matches (\MvcCore\IRequest $request) {
 		/** @var $this \MvcCore\Route */

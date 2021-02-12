@@ -274,14 +274,17 @@ trait Props {
 	 * Do not read this `$params` array directly, read it's values by:
 	 * `\MvcCore\Request::GetParam($paramName, $allowedChars, $defaultValueIfNull, $targetType);`.
 	 * Example:
-	 *	`\MvcCore\Request:$params = array(
-	 *		"controller"	=> "default",
-	 *		"action"		=> "default",
-	 *		"username"		=> "' OR 1=1;-- ",	// be careful for this content with raw (danger) value!
-	 *	);`
-	 *	// Do not read `$params` array directly,
-	 *	// to get safe param value use:
-	 *	`\MvcCore\Request::GetParam("username", "a-zA-Z0-9_");` // return `OR` string without danger chars.
+	 * ````
+	 *   \MvcCore\Request:$params = [
+	 *       "controller" => "default",
+	 *       "action"     => "default",
+	 *       "username"   => "' OR 1=1;-- ", // be careful for this content with raw (danger) value!
+	 *   ];
+	 *   // Do not read `$params` array directly,
+	 *   // to get safe param value use:
+	 *   \MvcCore\Request::GetParam("username", "a-zA-Z0-9_");
+	 *   // returns `OR` string without danger chars.
+	 * ````
 	 * @var array|NULL
 	 */
 	protected $params			= NULL;

@@ -38,50 +38,58 @@ interface IRouter extends \MvcCore\Router\IConstants {
 	 *
 	 * Routes could be defined in various forms:
 	 * Example:
-	 *	`\MvcCore\Router::GetInstance([
-	 *		"Products:List"	=> "/products-list/<name>/<color>",
-	 *	]);`
+	 * ````
+	 *   \MvcCore\Router::GetInstance([
+	 *       "Products:List" => "/products-list/<name>/<color>",
+	 *   ]);
+	 * ````
 	 * or:
-	 *	`\MvcCore\Router::GetInstance([
-	 *		'products_list'	=> [
-	 *			"pattern"			=> "/products-list/<name>/<color>",
-	 *			"controllerAction"	=> "Products:List",
-	 *			"defaults"			=> ["name" => "default-name",	"color" => "red"],
-	 *			"constraints"		=> ["name" => "[^/]*",			"color" => "[a-z]*"]
-	 *		]
-	 *	]);`
+	 * ````
+	 *   \MvcCore\Router::GetInstance([
+	 *       'products_list'        => [
+	 *           "pattern"          => "/products-list/<name>/<color>",
+	 *           "controllerAction" => "Products:List",
+	 *           "defaults"         => ["name" => "default-name", "color" => "red"],
+	 *           "constraints"      => ["name" => "[^/]*",        "color" => "[a-z]*"]
+	 *       ]
+	 *   ]);
+	 * ````
 	 * or:
-	 *	`\MvcCore\Router::GetInstance([
-	 *		new Route(
-	 *			"/products-list/<name>/<color>",
-	 *			"Products:List",
-	 *			["name" => "default-name",	"color" => "red"],
-	 *			["name" => "[^/]*",		"color" => "[a-z]*"]
-	 *		)
-	 *	]);`
+	 * ````
+	 *   \MvcCore\Router::GetInstance([
+	 *       new Route(
+	 *           "/products-list/<name>/<color>",
+	 *           "Products:List",
+	 *           ["name" => "default-name", "color" => "red"],
+	 *           ["name" => "[^/]*",        "color" => "[a-z]*"]
+	 *       )
+	 *   ]);
+	 * ````
 	 * or:
-	 *	`\MvcCore\Router::GetInstance([
-	 *		new Route(
-	 *			"name"			=> "products_list",
-	 *			"pattern"		=> "#^/products\-list/(?<name>[^/]*)/(?<color>[a-z]*)(?=/$|$)#",
-	 *			"reverse"		=> "/products-list/<name>/<color>",
-	 *			"controller"	=> "Products",
-	 *			"action"		=> "List",
-	 *			"defaults"		=> ["name" => "default-name",	"color" => "red"],
-	 *		)
-	 *	]);`
-	 * @param \MvcCore\Route[]|array $routes 
-	 *				Keyed array with routes, keys are route names or route
-	 *				`Controller::Action` definitions.
-	 * @param bool $autoInitialize 
-	 *				If `TRUE`, locale routes array is cleaned and then all 
-	 *				routes (or configuration arrays) are sent into method 
-	 *				`$router->AddRoutes();`, where are routes auto initialized 
-	 *				for missing route names or route controller or route action
-	 *				record, completed always from array keys. You can you 
-	 *				`FALSE` to set routes without any change or 
-	 *				auto-initialization, it could be useful to restore cached 
-	 *				routes etc.
+	 * ````
+	 *   \MvcCore\Router::GetInstance([
+	 *       new Route(
+	 *           "name"       => "products_list",
+	 *           "pattern"    => "#^/products\-list/(?<name>[^/]*)/(?<color>[a-z]*)(?=/$|$)#",
+	 *           "reverse"    => "/products-list/<name>/<color>",
+	 *           "controller" => "Products",
+	 *           "action"     => "List",
+	 *           "defaults"   => ["name" => "default-name", "color" => "red"],
+	 *       )
+	 *   ]);
+	 * ````
+	 * @param  \MvcCore\Route[]|array $routes 
+	 *                                Keyed array with routes, keys are route names or route
+	 *                                `Controller::Action` definitions.
+	 * @param  bool                   $autoInitialize 
+	 *                                If `TRUE`, locale routes array is cleaned and then all 
+	 *                                routes (or configuration arrays) are sent into method 
+	 *                                `$router->AddRoutes();`, where are routes auto initialized 
+	 *                                for missing route names or route controller or route action
+	 *                                record, completed always from array keys. You can you 
+	 *                                `FALSE` to set routes without any change or 
+	 *                                auto-initialization, it could be useful to restore cached 
+	 *                                routes etc.
 	 * @return \MvcCore\Router
 	 */
 	public static function GetInstance (array $routes = [], $autoInitialize = TRUE);
@@ -94,54 +102,62 @@ interface IRouter extends \MvcCore\Router\IConstants {
 	 *
 	 * Routes could be defined in various forms:
 	 * Example:
-	 *	`\MvcCore\Router::GetInstance()->SetRoutes([
-	 *		"Products:List"	=> "/products-list/<name>/<color>",
-	 *	]);`
+	 * ````
+	 *   \MvcCore\Router::GetInstance()->SetRoutes([
+	 *       "Products:List" => "/products-list/<name>/<color>",
+	 *   ]);
+	 * ````
 	 * or:
-	 *	`\MvcCore\Router::GetInstance()->SetRoutes([
-	 *		'products_list'	=> [
-	 *			"pattern"			=> "/products-list/<name>/<color>",
-	 *			"controllerAction"	=> "Products:List",
-	 *			"defaults"			=> ["name" => "default-name",	"color" => "red"],
-	 *			"constraints"		=> ["name" => "[^/]*",			"color" => "[a-z]*"]
-	 *		]
-	 *	]);`
+	 * ````
+	 *   \MvcCore\Router::GetInstance()->SetRoutes([
+	 *       'products_list'        => [
+	 *           "pattern"          => "/products-list/<name>/<color>",
+	 *           "controllerAction" => "Products:List",
+	 *           "defaults"         => ["name" => "default-name", "color" => "red"],
+	 *           "constraints"      => ["name" => "[^/]*",        "color" => "[a-z]*"]
+	 *       ]
+	 *   ]);
+	 * ````
 	 * or:
-	 *	`\MvcCore\Router::GetInstance()->SetRoutes([
-	 *		new Route(
-	 *			"/products-list/<name>/<color>",
-	 *			"Products:List",
-	 *			["name" => "default-name",	"color" => "red"],
-	 *			["name" => "[^/]*",		"color" => "[a-z]*"]
-	 *		)
-	 *	]);`
+	 * ````
+	 *   \MvcCore\Router::GetInstance()->SetRoutes([
+	 *       new Route(
+	 *           "/products-list/<name>/<color>",
+	 *           "Products:List",
+	 *           ["name" => "default-name", "color" => "red"],
+	 *           ["name" => "[^/]*",        "color" => "[a-z]*"]
+	 *       )
+	 *   ]);
+	 * ````
 	 * or:
-	 *	`\MvcCore\Router::GetInstance()->SetRoutes([
-	 *		new Route(
-	 *			"name"			=> "products_list",
-	 *			"pattern"		=> "#^/products\-list/(?<name>[^/]*)/(?<color>[a-z]*)(?=/$|$)#",
-	 *			"reverse"		=> "/products-list/<name>/<color>",
-	 *			"controller"	=> "Products",
-	 *			"action"		=> "List",
-	 *			"defaults"		=> ["name" => "default-name",	"color" => "red"],
-	 *		)
-	 *	]);`
-	 * @param \MvcCore\Route[]|array $routes
-	 *				Keyed array with routes, keys are route names or route
-	 *				`Controller::Action` definitions.
-	 * @param string|NULL $groupName 
-	 *				Group name is first matched/parsed word in requested path to 
-	 *				group routes by to try to match only routes you really need, 
-	 *				not all of them. If `NULL` by default, routes are inserted 
-	 *				into default group.
-	 * @param bool $autoInitialize 
-	 *				If `TRUE`, locale routes array is cleaned and then all 
-	 *				routes (or configuration arrays) are sent into method 
-	 *				`$router->AddRoutes();`, where are routes auto initialized 
-	 *				for missing route names or route controller or route action
-	 *				record, completed always from array keys. You can you `FALSE` 
-	 *				to set routes without any change or auto-initialization, it 
-	 *				could be useful to restore cached routes etc.
+	 * ````
+	 *   \MvcCore\Router::GetInstance()->SetRoutes([
+	 *       new Route(
+	 *           "name"       => "products_list",
+	 *           "pattern"    => "#^/products\-list/(?<name>[^/]*)/(?<color>[a-z]*)(?=/$|$)#",
+	 *           "reverse"    => "/products-list/<name>/<color>",
+	 *           "controller" => "Products",
+	 *           "action"     => "List",
+	 *           "defaults"   => ["name" => "default-name", "color" => "red"],
+	 *       )
+	 *   ]);
+	 * ````
+	 * @param  \MvcCore\Route[]|array $routes
+	 *                                Keyed array with routes, keys are route names or route
+	 *                                `Controller::Action` definitions.
+	 * @param  string|NULL            $groupName 
+	 *                                Group name is first matched/parsed word in requested path to 
+	 *                                group routes by to try to match only routes you really need, 
+	 *                                not all of them. If `NULL` by default, routes are inserted 
+	 *                                into default group.
+	 * @param  bool                   $autoInitialize 
+	 *                                If `TRUE`, locale routes array is cleaned and then all 
+	 *                                routes (or configuration arrays) are sent into method 
+	 *                                `$router->AddRoutes();`, where are routes auto initialized 
+	 *                                for missing route names or route controller or route action
+	 *                                record, completed always from array keys. You can you `FALSE` 
+	 *                                to set routes without any change or auto-initialization, it 
+	 *                                could be useful to restore cached routes etc.
 	 * @return \MvcCore\Router
 	 */
 	public function SetRoutes ($routes = [], $autoInitialize = TRUE);
@@ -153,53 +169,61 @@ interface IRouter extends \MvcCore\Router\IConstants {
 	 *
 	 * Routes could be defined in various forms:
 	 * Example:
-	 *	`\MvcCore\Router::GetInstance()->AddRoutes([
-	 *		"Products:List"	=> "/products-list/<name>/<color>",
-	 *	]);`
+	 * ````
+	 *   \MvcCore\Router::GetInstance()->AddRoutes([
+	 *       "Products:List" => "/products-list/<name>/<color>",
+	 *   ]);
+	 * ````
 	 * or:
-	 *	`\MvcCore\Router::GetInstance()->AddRoutes([
-	 *		'products_list'	=> [
-	 *			"pattern"			=> "/products-list/<name>/<color>",
-	 *			"controllerAction"	=> "Products:List",
-	 *			"defaults"			=> ["name" => "default-name",	"color" => "red"],
-	 *			"constraints"		=> ["name" => "[^/]*",			"color" => "[a-z]*"]
-	 *		]
-	 *	]);`
+	 * ````
+	 *   \MvcCore\Router::GetInstance()->AddRoutes([
+	 *       'products_list'        => [
+	 *           "pattern"          => "/products-list/<name>/<color>",
+	 *           "controllerAction" => "Products:List",
+	 *           "defaults"         => ["name" => "default-name", "color" => "red"],
+	 *           "constraints"      => ["name" => "[^/]*",        "color" => "[a-z]*"]
+	 *       ]
+	 *   ]);
+	 * ````
 	 * or:
-	 *	`\MvcCore\Router::GetInstance()->AddRoutes([
-	 *		new Route(
-	 *			"/products-list/<name>/<color>",
-	 *			"Products:List",
-	 *			["name" => "default-name",	"color" => "red"],
-	 *			["name" => "[^/]*",		"color" => "[a-z]*"]
-	 *		)
-	 *	]);`
+	 * ````
+	 *   \MvcCore\Router::GetInstance()->AddRoutes([
+	 *       new Route(
+	 *           "/products-list/<name>/<color>",
+	 *           "Products:List",
+	 *           ["name" => "default-name", "color" => "red"],
+	 *           ["name" => "[^/]*",        "color" => "[a-z]*"]
+	 *       )
+	 *   ]);
+	 * ````
 	 * or:
-	 *	`\MvcCore\Router::GetInstance()->AddRoutes([
-	 *		new Route(
-	 *			"name"			=> "products_list",
-	 *			"pattern"		=> "#^/products\-list/(?<name>[^/]*)/(?<color>[a-z]*)(?=/$|$)#",
-	 *			"reverse"		=> "/products-list/<name>/<color>",
-	 *			"controller"	=> "Products",
-	 *			"action"		=> "List",
-	 *			"defaults"		=> ["name" => "default-name",	"color" => "red"],
-	 *		)
-	 *	]);`
-	 * @param \MvcCore\Route[]|array $routes 
-	 *			   Keyed array with routes, keys are route names or route 
-	 *			   `Controller::Action` definitions.
-	 * @param string|NULL $groupName 
-	 *			   Group name is first matched/parsed word in requested path to 
-	 *			   group routes by to try to match only routes you really need, 
-	 *			   not all of them. If `NULL` by default, routes are inserted 
-	 *			   into default group.
-	 * @param bool $prepend	
-	 *			   Optional, if `TRUE`, all given routes will be prepended from 
-	 *			   the last to the first in given list, not appended.
-	 * @param bool $throwExceptionForDuplication 
-	 *			   `TRUE` by default. Throw an exception, if route `name` or 
-	 *			   route `Controller:Action` has been defined already. If 
-	 *			   `FALSE` old route is over-written by new one.
+	 * ````
+	 *   \MvcCore\Router::GetInstance()->AddRoutes([
+	 *       new Route(
+	 *           "name"       => "products_list",
+	 *           "pattern"    => "#^/products\-list/(?<name>[^/]*)/(?<color>[a-z]*)(?=/$|$)#",
+	 *           "reverse"    => "/products-list/<name>/<color>",
+	 *           "controller" => "Products",
+	 *           "action"     => "List",
+	 *           "defaults"   => ["name" => "default-name", "color" => "red"],
+	 *       )
+	 *   ]);
+	 * ````
+	 * @param  \MvcCore\Route[]|array $routes 
+	 *                                Keyed array with routes, keys are route names or route 
+	 *                                `Controller::Action` definitions.
+	 * @param  string|NULL            $groupName 
+	 *                                Group name is first matched/parsed word in requested path to 
+	 *                                group routes by to try to match only routes you really need, 
+	 *                                not all of them. If `NULL` by default, routes are inserted 
+	 *                                into default group.
+	 * @param  bool                   $prepend	
+	 *                                Optional, if `TRUE`, all given routes will be prepended from 
+	 *                                the last to the first in given list, not appended.
+	 * @param  bool                   $throwExceptionForDuplication 
+	 *                                `TRUE` by default. Throw an exception, if route `name` or 
+	 *                                route `Controller:Action` has been defined already. If 
+	 *                                `FALSE` old route is over-written by new one.
 	 * @return \MvcCore\Router
 	 */
 	public function AddRoutes (array $routes = [], $prepend = FALSE, $throwExceptionForDuplication = TRUE);
@@ -213,55 +237,63 @@ interface IRouter extends \MvcCore\Router\IConstants {
 	 *
 	 * Route could be defined in various forms:
 	 * Example:
-	 *	`\MvcCore\Router::GetInstance()->AddRoute([
-	 *		"name"		=> "Products:List",
-	 *		"pattern"	=> "/products-list/<name>/<color>",
-	 *	]);`
+	 * ````
+	 *   \MvcCore\Router::GetInstance()->AddRoute([
+	 *       "name"    => "Products:List",
+	 *       "pattern" => "/products-list/<name>/<color>",
+	 *   ]);
+	 * ````
 	 * or:
-	 *	`\MvcCore\Router::GetInstance()->AddRoute([
-	 *		"name"				=> "products_list",
-	 *		"pattern"			=> "/products-list/<name>/<color>",
-	 *		"controllerAction"	=> "Products:List",
-	 *		"defaults"			=> ["name" => "default-name",	"color" => "red"],
-	 *		"constraints"		=> ["name" => "[^/]*",			"color" => "[a-z]*"]
-	 *	]);`
+	 * ````
+	 *   \MvcCore\Router::GetInstance()->AddRoute([
+	 *       "name"             => "products_list",
+	 *       "pattern"          => "/products-list/<name>/<color>",
+	 *       "controllerAction" => "Products:List",
+	 *       "defaults"         => ["name" => "default-name", "color" => "red"],
+	 *       "constraints"      => ["name" => "[^/]*",        "color" => "[a-z]*"]
+	 *   ]);
+	 * ````
 	 * or:
-	 *	`\MvcCore\Router::GetInstance()->AddRoute(new Route(
-	 *		"/products-list/<name>/<color>",
-	 *		"Products:List",
-	 *		["name" => "default-name",	"color" => "red"],
-	 *		["name" => "[^/]*",		"color" => "[a-z]*"]
-	 *	));`
+	 * ````
+	 *   \MvcCore\Router::GetInstance()->AddRoute(new Route(
+	 *       "/products-list/<name>/<color>",
+	 *       "Products:List",
+	 *       ["name" => "default-name", "color" => "red"],
+	 *       ["name" => "[^/]*",        "color" => "[a-z]*"]
+	 *   ));
+	 * ````
 	 * or:
-	 *	`\MvcCore\Router::GetInstance()->AddRoute(new Route(
-	 *		"name"			=> "products_list",
-	 *		"pattern"		=> "#^/products\-list/(?<name>[^/]*)/(?<color>[a-z]*)(?=/$|$)#",
-	 *		"reverse"		=> "/products-list/<name>/<color>",
-	 *		"controller"	=> "Products",
-	 *		"action"		=> "List",
-	 *		"defaults"		=> ["name" => "default-name",	"color" => "red"],
-	 *	));`
-	 * @param \MvcCore\Route|array $routeCfgOrRoute 
-	 *			   Route instance or route config array.
-	 * @param string|NULL $groupName 
-	 *			   Group name is first matched/parsed word in requested path to 
-	 *			   group routes by to try to match only routes you really need, 
-	 *			   not all of them. If `NULL` by default, routes are inserted 
-	 *			   into default group.
-	 * @param bool $prepend
-	 *			   Optional, if `TRUE`, given route will be prepended, 
-	 *			   not appended.
-	 * @param bool $throwExceptionForDuplication 
-	 *			   `TRUE` by default. Throw an exception, if route `name` or 
-	 *			   route `Controller:Action` has been defined already. If 
-	 *			   `FALSE` old route is over-written by new one.
+	 * ````
+	 *   \MvcCore\Router::GetInstance()->AddRoute(new Route(
+	 *       "name"       => "products_list",
+	 *       "pattern"    => "#^/products\-list/(?<name>[^/]*)/(?<color>[a-z]*)(?=/$|$)#",
+	 *       "reverse"    => "/products-list/<name>/<color>",
+	 *       "controller" => "Products",
+	 *       "action"     => "List",
+	 *       "defaults"   => ["name" => "default-name", "color" => "red"],
+	 *   ));
+	 * ````
+	 * @param  \MvcCore\Route|array $routeCfgOrRoute 
+	 *                              Route instance or route config array.
+	 * @param  string|NULL          $groupName 
+	 *                              Group name is first matched/parsed word in requested path to 
+	 *                              group routes by to try to match only routes you really need, 
+	 *                              not all of them. If `NULL` by default, routes are inserted 
+	 *                              into default group.
+	 * @param  bool                 $prepend
+	 *                              Optional, if `TRUE`, given route will be prepended, 
+	 *                              not appended.
+	 * @param  bool                 $throwExceptionForDuplication 
+	 *                              `TRUE` by default. Throw an exception, if route `name` or 
+	 *                              route `Controller:Action` has been defined already. If 
+	 *                              `FALSE` old route is over-written by new one.
 	 * @return \MvcCore\Router
 	 */
 	public function AddRoute ($routeCfgOrRoute, $groupName = NULL, $prepend = FALSE, $throwExceptionForDuplication = TRUE);
 
 	/**
 	 * Get `TRUE` if router has any route by given route name or `FALSE` if not.
-	 * @param string|\MvcCore\Route $routeOrRouteName
+	 * @param  string|\MvcCore\Route $routeOrRouteName
 	 * @return bool
 	 */
 	public function HasRoute ($routeOrRouteName);
@@ -269,7 +301,7 @@ interface IRouter extends \MvcCore\Router\IConstants {
 	/**
 	 * Remove route from router by given name and return removed route instance.
 	 * If router has no route by given name, `NULL` is returned.
-	 * @param string $routeName
+	 * @param  string $routeName
 	 * @return \MvcCore\Route|NULL
 	 */
 	public function RemoveRoute ($routeName);
@@ -284,11 +316,11 @@ interface IRouter extends \MvcCore\Router\IConstants {
 	/**
 	 * Get all configured route(s) as `\MvcCore\Route` instances.
 	 * Keys in returned array are route names, values are route objects.
-	 * @param string|NULL $groupName 
-	 *				Group name is first matched/parsed word in requested path to 
-	 *				group routes by to try to match only routes you really need, 
-	 *				not all of them. If `NULL` by default, there are returned 
-	 *				all routes from all groups.
+	 * @param  string|NULL $groupName 
+	 *                     Group name is first matched/parsed word in requested path to 
+	 *                     group routes by to try to match only routes you really need, 
+	 *                     not all of them. If `NULL` by default, there are returned 
+	 *                     all routes from all groups.
 	 * @return \MvcCore\Route[]
 	 */
 	public function GetRoutes ();
@@ -311,7 +343,7 @@ interface IRouter extends \MvcCore\Router\IConstants {
 	 *   sub-methods.
 	 * This is INTERNAL, not TEMPLATE method, internally called in
 	 * `\MvcCore\Application::Run();` => `\MvcCore\Application::routeRequest();`.
-	 * @param \MvcCore\Request $request
+	 * @param  \MvcCore\Request $request
 	 * @return \MvcCore\Router
 	 */
 	public function SetRequest (\MvcCore\IRequest $request);
@@ -322,7 +354,7 @@ interface IRouter extends \MvcCore\Router\IConstants {
 	 * values with controller and action are used. If this method is configures 
 	 * with `FALSE` value, there are used only rewrite routes routing and no 
 	 * query string data. this method is highly advanced.
-	 * @param bool|NULL $routeByQueryString 
+	 * @param  bool|NULL $routeByQueryString 
 	 * @return \MvcCore\Router
 	 */
 	public function SetRouteByQueryString ($routeByQueryString = TRUE);
@@ -366,7 +398,7 @@ interface IRouter extends \MvcCore\Router\IConstants {
 	 * `Index:Index` route, if there was no route matching current request
 	 * and if request was not `/` (homepage) but `/something-more`.
 	 * Default protected property value: `FALSE`.
-	 * @param bool $enable
+	 * @param  bool $enable
 	 * @return \MvcCore\Router
 	 */
 	public function SetRouteToDefaultIfNotMatch ($enable = TRUE);
@@ -389,14 +421,14 @@ interface IRouter extends \MvcCore\Router\IConstants {
 	/**
 	 * Get trailing slash behaviour - integer state about what to do with 
 	 * trailing slash in all requested URL except homepage. Possible states are:
-	 * - `-1` (`\MvcCore\IRouter::TRAILING_SLASH_REMOVE`)
-	 *		Always remove trailing slash from requested URL if there
-	 *		is any and redirect to it, except homepage.
-	 * -  `0` (`\MvcCore\IRouter::TRAILING_SLASH_BENEVOLENT`)
-	 *		Be absolutely benevolent for trailing slash in requested url.
-	 * -  `1` (`\MvcCore\IRouter::TRAILING_SLASH_ALWAYS`)
-	 *		Always keep trailing slash in requested URL or always add trailing
-	 *		slash into URL and redirect to it.
+	 * - `-1` - `\MvcCore\IRouter::TRAILING_SLASH_REMOVE`
+	 *          Always remove trailing slash from requested URL if there
+	 *          is any and redirect to it, except homepage.
+	 * -  `0` - `\MvcCore\IRouter::TRAILING_SLASH_BENEVOLENT`
+	 *          Be absolutely benevolent for trailing slash in requested url.
+	 * -  `1` - `\MvcCore\IRouter::TRAILING_SLASH_ALWAYS`
+	 *          Always keep trailing slash in requested URL or always add trailing
+	 *          slash into URL and redirect to it.
 	 * Default value is `-1` - `\MvcCore\IRouter::TRAILING_SLASH_REMOVE`
 	 * @return int
 	 */
@@ -405,16 +437,16 @@ interface IRouter extends \MvcCore\Router\IConstants {
 	/**
 	 * Set trailing slash behaviour - integer state about what to do with 
 	 * trailing slash in all requested URL except homepage. Possible states are:
-	 * - `-1` (`\MvcCore\IRouter::TRAILING_SLASH_REMOVE`)
-	 *		Always remove trailing slash from requested URL if there
-	 *		is any and redirect to it, except homepage.
-	 * -  `0` (`\MvcCore\IRouter::TRAILING_SLASH_BENEVOLENT`)
-	 *		Be absolutely benevolent for trailing slash in requested url.
-	 * -  `1` (`\MvcCore\IRouter::TRAILING_SLASH_ALWAYS`)
-	 *		Always keep trailing slash in requested URL or always add trailing
-	 *		slash into URL and redirect to it.
+	 * - `-1` - `\MvcCore\IRouter::TRAILING_SLASH_REMOVE`
+	 *          Always remove trailing slash from requested URL if there
+	 *          is any and redirect to it, except homepage.
+	 * -  `0` - `\MvcCore\IRouter::TRAILING_SLASH_BENEVOLENT`
+	 *          Be absolutely benevolent for trailing slash in requested url.
+	 * -  `1` - `\MvcCore\IRouter::TRAILING_SLASH_ALWAYS`
+	 *          Always keep trailing slash in requested URL or always add trailing
+	 *          slash into URL and redirect to it.
 	 * Default value is `-1` - `\MvcCore\IRouter::TRAILING_SLASH_REMOVE`
-	 * @param int $trailingSlashBehaviour
+	 * @param  int $trailingSlashBehaviour
 	 * @return \MvcCore\Router
 	 */
 	public function SetTrailingSlashBehaviour ($trailingSlashBehaviour = -1);
@@ -433,7 +465,7 @@ interface IRouter extends \MvcCore\Router\IConstants {
 	 * is processed. Default value is `TRUE` to do it. You can use `FALSE` 
 	 * otherwise for example for development purposes when you develop for 
 	 * example url filtering in and out.
-	 * @param bool $autoCanonizeRequests 
+	 * @param  bool $autoCanonizeRequests 
 	 * @return \MvcCore\Router
 	 */
 	public function SetAutoCanonizeRequests ($autoCanonizeRequests = TRUE);
@@ -449,15 +481,17 @@ interface IRouter extends \MvcCore\Router\IConstants {
 	 * with possibly parsed first word from requested path or an empty string.
 	 * Handler could return value to be void or anything else, doesn't matter.
 	 * Example:
-	 *	`$router->SetPreRouteMatchingHandler(
-	 *		function (\MvcCore\Router $router, \MvcCore\Request $request, $firstPathWord) {
-	 *			// load any routes from database here
-	 *			$routes = $db->loadRoutingRoutesGroup($firstPathWord);
-	 *			// add loaded routes into router
-	 *			$router->AddRoutes($routes, $firstPathWord);
-	 *		}
-	 *	);`
-	 * @param callable $preRouteMatchingHandler 
+	 * ````
+	 *   $router->SetPreRouteMatchingHandler(
+	 *       function (\MvcCore\Router $router, \MvcCore\Request $request, $firstPathWord) {
+	 *           // load any routes from database here
+	 *           $routes = $db->loadRoutingRoutesGroup($firstPathWord);
+	 *           // add loaded routes into router
+	 *           $router->AddRoutes($routes, $firstPathWord);
+	 *       }
+	 *   );
+	 * ````
+	 * @param  callable $preRouteMatchingHandler 
 	 * @return \MvcCore\Router
 	 */
 	public function SetPreRouteMatchingHandler (callable $preRouteMatchingHandler = NULL);
@@ -493,15 +527,17 @@ interface IRouter extends \MvcCore\Router\IConstants {
 	 * routes with already defined routes in router instance in protected 
 	 * property `$router->urlRoutes`.
 	 * Example:
-	 *	`$router->SetPreRouteUrlBuildingHandler(
-	 *		function (\MvcCore\Router $router, $controllerActionOrRouteName, array $params = []) {
-	 *			// load any routes from database here
-	 *			$routes = $db->loadUrlRoutesGroup($controllerActionOrRouteName);
-	 *			// return routes in array with keys to be route name for each route
-	 *			return $routes;
-	 *		}
-	 *	);`
-	 * @param callable $preRouteMatchingHandler 
+	 * ````
+	 *   $router->SetPreRouteUrlBuildingHandler(
+	 *       function (\MvcCore\Router $router, $controllerActionOrRouteName, array $params = []) {
+	 *           // load any routes from database here
+	 *           $routes = $db->loadUrlRoutesGroup($controllerActionOrRouteName);
+	 *           // return routes in array with keys to be route name for each route
+	 *           return $routes;
+	 *       }
+	 *   );
+	 * ````
+	 * @param  callable $preRouteMatchingHandler 
 	 * @return \MvcCore\Router
 	 */
 	public function SetPreRouteUrlBuildingHandler (callable $preRouteUrlBuildingHandler = NULL);
@@ -546,7 +582,7 @@ interface IRouter extends \MvcCore\Router\IConstants {
 	 * immediately `FALSE` and return from this method. Else continue to next 
 	 * step and return `TRUE`. This method is always called from core routing by:
 	 * `\MvcCore\Application::Run();` => `\MvcCore\Application::routeRequest();`.
-	 * @throws \LogicException Route configuration property is missing.
+	 * @throws \LogicException           Route configuration property is missing.
 	 * @throws \InvalidArgumentException Wrong route pattern format.
 	 * @return bool
 	 */
@@ -573,28 +609,28 @@ interface IRouter extends \MvcCore\Router\IConstants {
 	 *   `"Controller:Action"` strings and routes has not controller name and 
 	 *   action name defined inside).
 	 * - By route name and params array
-	 *	 (route name is key in routes configuration array, should be any string,
-	 *	 routes must have information about controller name and action name 
-	 *	 inside).
+	 *   (route name is key in routes configuration array, should be any string,
+	 *   routes must have information about controller name and action name 
+	 *   inside).
 	 * Result address (url string) should have two forms:
 	 * - Nice rewritten URL by routes configuration (for apps with URL rewrite 
 	 *   support [Apache `.htaccess` or IIS URL rewrite module] and when first 
 	 *   param is key in routes configuration array).
 	 * - For all other cases is URL form like: 
 	 *   `"index.php?controller=ctrlName&amp;action=actionName"`
-	 *	 (when first param is not founded in routes configuration array).
+	 *   (when first param is not founded in routes configuration array).
 	 * Method tries to find any route between routes by first argument and if
 	 * there is no route but if there is any pre route URL building handler 
 	 * defined, the handler is called to assign desired routes from database 
 	 * or any other place and then there is processed route search between 
 	 * routes again. If there is still no routes, result url is completed 
 	 * in query string form.
-	 * @param string $controllerActionOrRouteName
-	 *				Should be `"Controller:Action"` combination or just any 
-	 *				route name as custom specific string.
-	 * @param array  $params
-	 *				Optional, array with params, key is param name, value is 
-	 *				param value.
+	 * @param  string $controllerActionOrRouteName
+	 *                Should be `"Controller:Action"` combination or just any 
+	 *                route name as custom specific string.
+	 * @param  array  $params
+	 *                Optional, array with params, key is param name, value is 
+	 *                param value.
 	 * @throws \InvalidArgumentException
 	 * @return string
 	 */
@@ -603,9 +639,9 @@ interface IRouter extends \MvcCore\Router\IConstants {
 	/**
 	 * Complete optionally absolute, non-localized URL with all params in query string.
 	 * Example: `"/application/base-bath/index.php?controller=ctrlName&amp;action=actionName&amp;name=cool-product-name&amp;color=blue"`
-	 * @param string $controllerActionOrRouteName
-	 * @param array  $params
-	 * @param string $givenRouteName
+	 * @param  string $controllerActionOrRouteName
+	 * @param  array  $params
+	 * @param  string $givenRouteName
 	 * @return string
 	 */
 	public function UrlByQueryString ($controllerActionOrRouteName = 'Index:Index', array & $params = [], $givenRouteName = NULL);
@@ -616,19 +652,21 @@ interface IRouter extends \MvcCore\Router\IConstants {
 	 * pattern is missing in params, there is used router default params
 	 * completed in routing process.
 	 * Example:
-	 *	Input (`\MvcCore\Route::$reverse`):
-	 *		`"/products-list/<name>/<color>"`
-	 *	Input ($params):
-	 *		`[
-	 *			"name"		=> "cool-product-name",
-	 *			"color"		=> "red",
-	 *			"variant"	=> ["L", "XL"],
-	 *		];`
-	 *	Output:
-	 *		`/application/base-bath/products-list/cool-product-name/blue?variant[]=L&amp;variant[]=XL"`
-	 * @param \MvcCore\Route $route
-	 * @param array $params
-	 * @param string $urlParamRouteName
+	 * ````
+	 *   // Input `\MvcCore\Route::$reverse`:
+	 *       "/products-list/<name>/<color>"
+	 *   // Input `$params`:
+	 *       [
+	 *           "name"    => "cool-product-name",
+	 *           "color"   => "red",
+	 *           "variant" => ["L", "XL"],
+	 *       ];
+	 *   // Output:
+	 *       "/application/base-bath/products-list/cool-product-name/blue?variant[]=L&amp;variant[]=XL"
+	 * ````
+	 * @param  \MvcCore\Route $route
+	 * @param  array          $params
+	 * @param  string         $urlParamRouteName
 	 * @return string
 	 */
 	public function UrlByRoute (\MvcCore\IRoute $route, array & $params = [], $urlParamRouteName = NULL);
@@ -663,14 +701,15 @@ interface IRouter extends \MvcCore\Router\IConstants {
 	 *   when there was not possible to route the request or when
 	 *   there was any uncaught exception in controller or template
 	 *   caught later by application.
-	 *
-	 * @param string $routeName Always as `default`, `error` or `not_found`, by constants:
-	 *						 `\MvcCore\IRouter::DEFAULT_ROUTE_NAME`
-	 *						 `\MvcCore\IRouter::DEFAULT_ROUTE_NAME_ERROR`
-	 *						 `\MvcCore\IRouter::DEFAULT_ROUTE_NAME_NOT_FOUND`
-	 * @param string $controllerPc Controller name in pascal case.
-	 * @param string $actionPc Action name with pascal case without ending `Action` substring.
-	 * @param bool $fallbackCall `FALSE` by default. If `TRUE`, this function is called from error rendering fallback, self route name is not changed.
+	 * 
+	 * @internal
+	 * @param  string $routeName    Always as `default`, `error` or `not_found`, by constants:
+	 *                              `\MvcCore\IRouter::DEFAULT_ROUTE_NAME`
+	 *                              `\MvcCore\IRouter::DEFAULT_ROUTE_NAME_ERROR`
+	 *                              `\MvcCore\IRouter::DEFAULT_ROUTE_NAME_NOT_FOUND`
+	 * @param  string $controllerPc Controller name in pascal case.
+	 * @param  string $actionPc     Action name with pascal case without ending `Action` substring.
+	 * @param  bool $fallbackCall   `FALSE` by default. If `TRUE`, this function is called from error rendering fallback, self route name is not changed.
 	 * @return \MvcCore\Route
 	 */
 	public function SetOrCreateDefaultRouteAsCurrent ($routeName, $controllerPc, $actionPc, $fallbackCall = FALSE);

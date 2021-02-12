@@ -55,28 +55,34 @@ trait Instancing {
 	 * is route pattern value to parse into match and reverse values, then
 	 * controller with action, params default values and constraints.
 	 * Example:
-	 * `new Route([
-	 *		"pattern"			=> "/products-list/<name>/<color>",
-	 *		"controllerAction"	=> "Products:List",
-	 *		"defaults"			=> ["name" => "default-name",	"color" => "red"],
-	 *		"constraints"		=> ["name" => "[^/]*",			"color" => "[a-z]*"]
-	 * ]);`
+	 * ````
+	 *   new Route([
+	 *       "pattern"          => "/products-list/<name>/<color>",
+	 *       "controllerAction" => "Products:List",
+	 *       "defaults"         => ["name" => "default-name", "color" => "red"],
+	 *       "constraints"      => ["name" => "[^/]*",        "color" => "[a-z]*"]
+	 *   ]);
+	 * ````
 	 * or:
-	 * `new Route(
-	 *		"/products-list/<name>/<color>",
-	 *		"Products:List",
-	 *		["name" => "default-name",	"color" => "red"],
-	 *		["name" => "[^/]*",			"color" => "[a-z]*"]
-	 * );`
+	 * ````
+	 *   new Route(
+	 *       "/products-list/<name>/<color>",
+	 *       "Products:List",
+	 *       ["name" => "default-name", "color" => "red"],
+	 *       ["name" => "[^/]*",        "color" => "[a-z]*"]
+	 *   );
+	 * ````
 	 * or:
-	 * `new Route([
-	 *		"name"			=> "products_list",
-	 *		"match"			=> "#^/products\-list/(?<name>[^/]*)/(?<color>[a-z]*)(?=/$|$)#",
-	 *		"reverse"		=> "/products-list/<name>/<color>",
-	 *		"controller"	=> "Products",
-	 *		"action"		=> "List",
-	 *		"defaults"		=> ["name" => "default-name",	"color" => "red"],
-	 * ]);`
+	 * ````
+	 *   new Route([
+	 *       "name"       => "products_list",
+	 *       "match"      => "#^/products\-list/(?<name>[^/]*)/(?<color>[a-z]*)(?=/$|$)#",
+	 *       "reverse"    => "/products-list/<name>/<color>",
+	 *       "controller" => "Products",
+	 *       "action"     => "List",
+	 *       "defaults"   => ["name" => "default-name", "color" => "red"],
+	 *   ]);
+	 * ````
 	 * @param string|array $patternOrConfig
 	 *                     Required, configuration array or route pattern value
 	 *                     to parse into match and reverse patterns.
@@ -128,8 +134,8 @@ trait Instancing {
 	 * initialize following properties if those exist in given object:
 	 * `pattern`, `match` and `reverse`. If properties `defaults`, `constraints`
 	 * and `filters` exist in given object, initialize them by setter methods.
-	 * @param \stdClass $data	Object containing properties `pattern`,
-	 *							`match`, `reverse`, `filters` and `defaults`.
+	 * @param  \stdClass $data Object containing properties `pattern`,
+	 *                         `match`, `reverse`, `filters` and `defaults`.
 	 * @return void
 	 */
 	protected function constructDataPatternsDefaultsConstraintsFilters (& $data) {
@@ -152,8 +158,8 @@ trait Instancing {
 	 * If route is initialized by single array argument with all data,
 	 * initialize following properties if those exist in given object:
 	 * `controller`, `action` (or `controllerAction`) and `name`.
-	 * @param \stdClass $data	Object containing properties `controller`,
-	 *							`action` (or `controllerAction`) and `name`.
+	 * @param  \stdClass $data Object containing properties `controller`,
+	 *                         `action` (or `controllerAction`) and `name`.
 	 * @return void
 	 */
 	protected function constructDataCtrlActionName (& $data) {
@@ -184,8 +190,8 @@ trait Instancing {
 	 * If route is initialized by single array argument with all data,
 	 * initialize following properties if those exist in given object:
 	 * `method`, `redirect` and `absolute`.
-	 * @param \stdClass $data	Object containing properties `method`,
-	 *							`redirect` and `absolute`.
+	 * @param  \stdClass $data Object containing properties `method`,
+	 *                         `redirect` and `absolute`.
 	 * @return void
 	 */
 	protected function constructDataAdvConf (& $data) {
@@ -239,9 +245,9 @@ trait Instancing {
 	 * If route is initialized by each constructor function arguments,
 	 * initialize `controller` and `action`, if any of them is defined in given
 	 * argument `$ctrlAction`.
-	 * @param string|NULL $ctrlAction	Controller and action combination
-	 *									definition, it could be `"Products:List"`
-	 *									or only `"Products:"` etc.
+	 * @param  string|NULL $ctrlAction Controller and action combination
+	 *                                 definition, it could be `"Products:List"`
+	 *                                 or only `"Products:"` etc.
 	 * @return void
 	 */
 	protected function constructVarCtrlActionNameByData (& $ctrlAction) {
@@ -256,8 +262,8 @@ trait Instancing {
 	/**
 	 * If route is initialized by each constructor function arguments,
 	 * initialize `method`, `redirect` and `absolute`.
-	 * @param array $advCfg An array with possible keys `method`,
-	 *						`redirect` and `absolute`.
+	 * @param  array $advCfg An array with possible keys `method`,
+	 *                       `redirect` and `absolute`.
 	 * @return void
 	 */
 	protected function constructVarAdvConf (& $advCfg) {
@@ -279,8 +285,8 @@ trait Instancing {
 	 * function is called to initialize `controller` and `action` properties if
 	 * those are still `NULL`. Function tries to initialize those properties
 	 * from route `action` property`, if it contains colon char `:`.
-	 * @param array $advCfg An array with possible keys `method`,
-	 *						`redirect` and `absolute`.
+	 * @param  array $advCfg An array with possible keys `method`,
+	 *                       `redirect` and `absolute`.
 	 * @return void
 	 */
 	protected function constructCtrlOrActionByName () {

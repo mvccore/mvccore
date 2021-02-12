@@ -17,18 +17,18 @@ trait Instancing {
 
 	/**
 	 * @inheritDocs
-	 * @param \MvcCore\Route[]|array $routes 
-	 *				Keyed array with routes, keys are route names or route
-	 *				`Controller::Action` definitions.
-	 * @param bool $autoInitialize 
-	 *				If `TRUE`, locale routes array is cleaned and then all 
-	 *				routes (or configuration arrays) are sent into method 
-	 *				`$router->AddRoutes();`, where are routes auto initialized 
-	 *				for missing route names or route controller or route action
-	 *				record, completed always from array keys. You can you 
-	 *				`FALSE` to set routes without any change or 
-	 *				auto-initialization, it could be useful to restore cached 
-	 *				routes etc.
+	 * @param  \MvcCore\Route[]|array $routes 
+	 *                                Keyed array with routes, keys are route names or route
+	 *                                `Controller::Action` definitions.
+	 * @param  bool                   $autoInitialize 
+	 *                                If `TRUE`, locale routes array is cleaned and then all 
+	 *                                routes (or configuration arrays) are sent into method 
+	 *                                `$router->AddRoutes();`, where are routes auto initialized 
+	 *                                for missing route names or route controller or route action
+	 *                                record, completed always from array keys. You can you 
+	 *                                `FALSE` to set routes without any change or 
+	 *                                auto-initialization, it could be useful to restore cached 
+	 *                                routes etc.
 	 * @return \MvcCore\Router
 	 */
 	public static function GetInstance (array $routes = [], $autoInitialize = TRUE) {
@@ -57,50 +57,60 @@ trait Instancing {
 	 *
 	 * Routes could be defined in various forms:
 	 * Example:
-	 *	`new \MvcCore\Router([
-	 *		"Products:List"	=> "/products-list/<name>/<color>",
-	 *	]);`
+	 * ````
+	 *    new \MvcCore\Router([
+	 *        "Products:List"    => "/products-list/<name>/<color>",
+	 *    ]);
+	 * ````
 	 * or:
-	 *	`new \MvcCore\Router([
-	 *		'products_list'	=> [
-	 *			"pattern"			=> "/products-list/<name>/<color>",
-	 *			"controllerAction"	=> "Products:List",
-	 *			"defaults"			=> ["name" => "default-name",	"color" => "red"],
-	 *			"constraints"		=> ["name" => "[^/]*",			"color" => "[a-z]*"]
-	 *		]
-	 *	]);`
+	 * ````
+	 *   new \MvcCore\Router([
+	 *       'products_list'        => [
+	 *           "pattern"          => "/products-list/<name>/<color>",
+	 *           "controllerAction" => "Products:List",
+	 *           "defaults"         => ["name" => "default-name", "color" => "red"],
+	 *           "constraints"      => ["name" => "[^/]*",        "color" => "[a-z]*"]
+	 *       ]
+	 *   ]);
+	 * ````
 	 * or:
-	 *	`new \MvcCore\Router([
-	 *		new Route(
-	 *			"/products-list/<name>/<color>",
-	 *			"Products:List",
-	 *			["name" => "default-name",	"color" => "red"],
-	 *			["name" => "[^/]*",		"color" => "[a-z]*"]
-	 *		)
-	 *	]);`
+	 * ````
+	 *   new \MvcCore\Router([
+	 *       new Route(
+	 *           "/products-list/<name>/<color>",
+	 *           "Products:List",
+	 *           ["name" => "default-name", "color" => "red"],
+	 *           ["name" => "[^/]*",        "color" => "[a-z]*"]
+	 *       )
+	 *   ]);
+	 * ````
 	 * or:
-	 *	`new \MvcCore\Router([
-	 *		new Route(
-	 *			"name"			=> "products_list",
-	 *			"pattern"		=> "#^/products\-list/(?<name>[^/]*)/(?<color>[a-z]*)(?=/$|$)#",
-	 *			"reverse"		=> "/products-list/<name>/<color>",
-	 *			"controller"	=> "Products",
-	 *			"action"		=> "List",
-	 *			"defaults"		=> ["name" => "default-name",	"color" => "red"],
-	 *		)
-	 *	]);`
-	 * @param \MvcCore\Route[]|array $routes Keyed array with routes,
-	 *										 keys are route names or route
-	 *										`Controller::Action` definitions.
-	 * @param bool $autoInitialize If `TRUE`, locale routes array is cleaned and 
-	 *							   then all routes (or configuration arrays) are 
-	 *							   sent into method `$router->AddRoutes();`, 
-	 *							   where are routes auto initialized for missing 
-	 *							   route names or route controller or route action
-	 *							   record, completed always from array keys.
-	 *							   You can you `FALSE` to set routes without any 
-	 *							   change or auto-initialization, it could be useful 
-	 *							   to restore cached routes etc.
+	 * ````
+	 *   new \MvcCore\Router([
+	 *       new Route(
+	 *           "name"       => "products_list",
+	 *           "pattern"    => "#^/products\-list/(?<name>[^/]*)/(?<color>[a-z]*)(?=/$|$)#",
+	 *           "reverse"    => "/products-list/<name>/<color>",
+	 *           "controller" => "Products",
+	 *           "action"     => "List",
+	 *           "defaults"   => ["name" => "default-name", "color" => "red"],
+	 *       )
+	 *   ]);
+	 * ````
+	 * @param \MvcCore\Route[]|array $routes
+	 *                               Keyed array with routes,
+	 *                                keys are route names or route
+	 *                               `Controller::Action` definitions.
+	 * @param bool                   $autoInitialize
+	 *                               If `TRUE`, locale routes array is cleaned and 
+	 *                               then all routes (or configuration arrays) are 
+	 *                               sent into method `$router->AddRoutes();`, 
+	 *                               where are routes auto initialized for missing 
+	 *                               route names or route controller or route action
+	 *                               record, completed always from array keys.
+	 *                               You can you `FALSE` to set routes without any 
+	 *                               change or auto-initialization, it could be useful 
+	 *                               to restore cached routes etc.
 	 * @return void
 	 */
 	public function __construct (array $routes = [], $autoInitialize = TRUE) {

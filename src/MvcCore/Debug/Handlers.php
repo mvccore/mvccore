@@ -18,7 +18,7 @@ trait Handlers {
 	/**
 	 * @inheritDocs
 	 * @param  string $name Time pointer name.
-	 * @return float		Elapsed seconds.
+	 * @return float        Elapsed seconds.
 	 */
 	public static function Timer ($name = NULL) {
 		return static::BarDump(
@@ -30,11 +30,11 @@ trait Handlers {
 
 	/**
 	 * @inheritDocs
-	 * @param  mixed  $value		Variable to dump.
-	 * @param  bool   $return		Let's return output instead of printing it.
-	 * @param  bool   $exit			`TRUE` for last dump call by `xxx();` method
-	 *								to dump and `exit;`.
-	 * @return mixed				Variable itself or dumped variable string.
+	 * @param  mixed  $value  Variable to dump.
+	 * @param  bool   $return Let's return output instead of printing it.
+	 * @param  bool   $exit   `TRUE` for last dump call by `xxx();` method
+	 *                        to dump and `exit;`.
+	 * @return mixed          Variable itself or dumped variable string.
 	 */
 	public static function Dump ($value, $return = FALSE, $exit = FALSE) {
 		if (static::$originalDebugClass) {
@@ -92,8 +92,8 @@ trait Handlers {
 
 	/**
 	 * @inheritDocs
-	 * @param \Exception|\Error|\Throwable|array $exception
-	 * @param bool $exit
+	 * @param  \Exception|\Error|\Throwable|array $exception
+	 * @param  bool $exit
 	 * @return void
 	 */
 	public static function Exception ($exception, $exit = TRUE) {
@@ -129,8 +129,8 @@ trait Handlers {
 
 	/**
 	 * Starts/stops stopwatch.
-	 * @param  string  Name.
-	 * @return float   Elapsed seconds.
+	 * @param  string Name.
+	 * @return float  Elapsed seconds.
 	 */
 	protected static function timerHandler ($name = NULL) {
 		$now = microtime(TRUE);
@@ -175,8 +175,8 @@ trait Handlers {
 	/**
 	 * Store given log record in text file.
 	 * Return full path where the message has been written.
-	 * @param mixed $value
-	 * @param string $priority
+	 * @param  mixed  $value
+	 * @param  string $priority
 	 * @return string
 	 */
 	protected static function storeLogRecord ($value, $priority) {
@@ -209,9 +209,9 @@ trait Handlers {
 	/**
 	 * Format one dump record into single string with source PHP script file
 	 * link element and remove all useless new lines in PHP dumps.
-	 * @param array $dumpRecord Dump record from `self::$dumps` with items under indexes: `0` => dump string, `1` => title, `2` => options.
-	 * @param string|NULL $appRoot
-	 * @return array An array with formatted dump string and boolean about last dump before script exit.
+	 * @param  array       $dumpRecord Dump record from `self::$dumps` with items under indexes: `0` => dump string, `1` => title, `2` => options.
+	 * @param  string|NULL $appRoot
+	 * @return array       An array with formatted dump string and boolean about last dump before script exit.
 	 */
 	protected static function formatDebugDump ($dumpRecord, $appRoot = NULL) {
 		$result = '';
@@ -254,9 +254,9 @@ trait Handlers {
 
 	/**
 	 * Sent given dump record into client in specific header for ajax response.
-	 * @param  mixed  $value  Variable to dump.
-	 * @param  string $title  Optional title.
-	 * @param  array $options Dumper options.
+	 * @param  mixed  $value   Variable to dump.
+	 * @param  string $title   Optional title.
+	 * @param  array  $options Dumper options.
 	 * @return void
 	 */
 	protected static function sendDumpInAjaxHeader ($value, $title, $options) {

@@ -21,9 +21,9 @@ trait Props
 	 * If you need to reconfigure connection string for any other special
 	 * `\PDO` database implementation or you specific needs, patch this array
 	 * in extended application base model class in base `__construct()` method by:
-	 *	 `static::$connectionArguments = array_merge(static::$connectionArguments, array(...));`
+	 *   `static::$connectionArguments = array_merge(static::$connectionArguments, array(...));`
 	 * or by:
-	 *	 `static::$connectionArguments['driverName']['dsn'] = '...';`
+	 *   `static::$connectionArguments['driverName']['dsn'] = '...';`
 	 *
 	 * Every key in this field is driver name, so you can use usual `\PDO` drivers:
 	 * - `mysql`, `sqlite`, `sqlsrv` (mssql), `firebird`, `ibm`, `informix`, `4D`
@@ -31,11 +31,11 @@ trait Props
 	 * - `oci`, `pgsql`, `cubrid`, `sysbase`, `dblib`
 	 *
 	 * Every value in this configuration field should be defined as:
-	 * - `dsn`		- connection query as first `\PDO` constructor argument
-	 *				  with database config replacements.
-	 * - `auth`		- if required to use database credentials for connecting or not.
-	 * - `fileDb`	- if database if file database or not.
-	 * - `options`	. any additional arguments array or empty array.
+	 * - `dsn`      - connection query as first `\PDO` constructor argument
+	 *                with database config replacements.
+	 * - `auth`     - if required to use database credentials for connecting or not.
+	 * - `fileDb`   - if database if file database or not.
+	 * - `options`  - any additional arguments array or empty array.
 	 * @var array
 	 */
 	protected static $connectionArguments = [

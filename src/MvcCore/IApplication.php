@@ -29,7 +29,7 @@ namespace MvcCore;
 interface IApplication extends \MvcCore\Application\IConstants {
 
 	/***********************************************************************************
-	 *					  `\MvcCore\Application` - Static Calls					  *
+	 *                      `\MvcCore\Application` - Static Calls                      *
 	 ***********************************************************************************/
 
 	/**
@@ -40,7 +40,7 @@ interface IApplication extends \MvcCore\Application\IConstants {
 
 
 	/***********************************************************************************
-	 *						`\MvcCore\Application` - Getters						 *
+	 *                        `\MvcCore\Application` - Getters                         *
 	 ***********************************************************************************/
 
 	/**
@@ -202,7 +202,7 @@ interface IApplication extends \MvcCore\Application\IConstants {
 
 
 	/***********************************************************************************
-	 *						`\MvcCore\Application` - Setters						 *
+	 *                        `\MvcCore\Application` - Setters                         *
 	 ***********************************************************************************/
 
 	/**
@@ -400,15 +400,17 @@ interface IApplication extends \MvcCore\Application\IConstants {
 	 * every request has been completed into `\MvcCore\Request` describing object and before
 	 * every request will be routed by `\MvcCore\Router::Route();` call.
 	 * Callable should be void and it's params should be two with following types:
-	 *	- `\MvcCore\Request`
-	 *	- `\MvcCore\Response`
+	 * - `\MvcCore\Request`
+	 * - `\MvcCore\Response`
 	 * Example:
-	 * `\MvcCore\Application::GetInstance()->AddPreRouteHandler(function(
-	 *		\MvcCore\Request $request,
-	 *		\MvcCore\Response $response
-	 * ) {
-	 *		$request->customVar = 'custom_value';
-	 * });`
+	 * ````
+	 *   \MvcCore\Application::GetInstance()->AddPreRouteHandler(function(
+	 *       \MvcCore\Request $request,
+	 *       \MvcCore\Response $response
+	 *   ) {
+	 *       $request->customVar = 'custom_value';
+	 *   });
+	 * ````
 	 * @param callable $handler
 	 * @param int|NULL $priorityIndex
 	 * @return \MvcCore\Application
@@ -421,15 +423,17 @@ interface IApplication extends \MvcCore\Application\IConstants {
 	 * every request has been routed by `\MvcCore\Router::Route();` call and before
 	 * every request has created target controller instance.
 	 * Callable should be void and it's params should be two with following types:
-	 *	- `\MvcCore\Request`
-	 *	- `\MvcCore\Response`
+	 * - `\MvcCore\Request`
+	 * - `\MvcCore\Response`
 	 * Example:
-	 * `\MvcCore\Application::GetInstance()->AddPostRouteHandler(function(
-	 *		\MvcCore\Request $request,
-	 *		\MvcCore\Response $response
-	 * ) {
-	 *		$request->customVar = 'custom_value';
-	 * });`
+	 * ````
+	 *   \MvcCore\Application::GetInstance()->AddPostRouteHandler(function(
+	 *       \MvcCore\Request $request,
+	 *       \MvcCore\Response $response
+	 *   ) {
+	 *       $request->customVar = 'custom_value';
+	 *   });
+	 * ````
 	 * @param callable $handler
 	 * @param int|NULL $priorityIndex
 	 * @return \MvcCore\Application
@@ -442,15 +446,17 @@ interface IApplication extends \MvcCore\Application\IConstants {
 	 * every request has been dispatched by `\MvcCore\Controller::Dispatch();` and
 	 * after every request has created and prepared target controller instance to dispatch.
 	 * Callable should be void and it's params should be two with following types:
-	 *	- `\MvcCore\Request`
-	 *	- `\MvcCore\Response`
+	 * - `\MvcCore\Request`
+	 * - `\MvcCore\Response`
 	 * Example:
-	 * `\MvcCore\Application::GetInstance()->AddPreDispatchHandler(function(
-	 *		\MvcCore\Request $request,
-	 *		\MvcCore\Response $response
-	 * ) {
-	 *		$request->customVar = 'custom_value';
-	 * });`
+	 * ````
+	 * \MvcCore\Application::GetInstance()->AddPreDispatchHandler(function(
+	 *       \MvcCore\Request $request,
+	 *       \MvcCore\Response $response
+	 *   ) {
+	 *       $request->customVar = 'custom_value';
+	 *   });
+	 * ````
 	 * @param callable $handler
 	 * @param int|NULL $priorityIndex
 	 * @return \MvcCore\Application
@@ -462,15 +468,17 @@ interface IApplication extends \MvcCore\Application\IConstants {
 	 * before every request is terminated by `\MvcCore\Application::Terminate();`.
 	 * Every request terminated sooner has executed this post dispatch handlers queue.
 	 * Callable should be void and it's params should be two with following types:
-	 *	- `\MvcCore\Request`
-	 *	- `\MvcCore\Response`
+	 * - `\MvcCore\Request`
+	 * - `\MvcCore\Response`
 	 * Example:
-	 * `\MvcCore\Application::GetInstance()->AddPostDispatchHandler(function(
-	 *		\MvcCore\Request $request,
-	 *		\MvcCore\Response $response
-	 * ) {
-	 *		$request->customVar = 'custom_value';
-	 * });`
+	 * ````
+	 *   \MvcCore\Application::GetInstance()->AddPostDispatchHandler(function(
+	 *       \MvcCore\Request $request,
+	 *       \MvcCore\Response $response
+	 *   ) {
+	 *       $request->customVar = 'custom_value';
+	 *   });
+	 * ````
 	 * @param callable $handler
 	 * @param int|NULL $priorityIndex
 	 * @return \MvcCore\Application
@@ -481,17 +489,19 @@ interface IApplication extends \MvcCore\Application\IConstants {
 	 * Add post terminate handler into post terminate handlers queue to process them
 	 * after every request is terminated by `\MvcCore\Application::Terminate();`.
 	 * Callable should be void and it's params should be two with following types:
-	 *	- `\MvcCore\Request`
-	 *	- `\MvcCore\Response`
+	 * - `\MvcCore\Request`
+	 * - `\MvcCore\Response`
 	 * Example:
-	 * `\MvcCore\Application::GetInstance()->AddPostTerminateHandler(function(
-	 *		\MvcCore\Request $request,
-	 *		\MvcCore\Response $response
-	 * ) {
-	 *		// close connection by previously configured
-	 *		// header: header('Connection: close');
-	 *		// and run background process now:
-	 * });`
+	 * ````
+	 *   \MvcCore\Application::GetInstance()->AddPostTerminateHandler(function(
+	 *       \MvcCore\Request $request,
+	 *       \MvcCore\Response $response
+	 *   ) {
+	 *       // close connection by previously configured
+	 *       // header: header('Connection: close');
+	 *       // and run background process now:
+	 *   });
+	 * ````
 	 * @param callable $handler
 	 * @param int|NULL $priorityIndex
 	 * @return \MvcCore\Application
@@ -500,29 +510,29 @@ interface IApplication extends \MvcCore\Application\IConstants {
 
 
 	/***********************************************************************************
-	 *				   `\MvcCore\Application` - Normal Dispatching				   *
+	 *                   `\MvcCore\Application` - Normal Dispatching                   *
 	 ***********************************************************************************/
 
 	/**
 	 * Dispatch http request/response.
 	 * - 1. Complete and init:
-	 *	  - Complete describing environment object `\MvcCore\Request`.
-	 *	  - Complete describing request object `\MvcCore\Request`.
-	 *	  - Complete response storage object `\MvcCore\Response`.
-	 *	  - Init debugging and logging by `\MvcCore\Debug::Init();`.
+	 *     - Complete describing environment object `\MvcCore\Request`.
+	 *     - Complete describing request object `\MvcCore\Request`.
+	 *     - Complete response storage object `\MvcCore\Response`.
+	 *     - Init debugging and logging by `\MvcCore\Debug::Init();`.
 	 * - 2. (Process pre-route handlers queue.)
 	 * - 3. Route request by your router or with `\MvcCore\Router::Route()` by default.
 	 * - 4. (Process post-route handlers queue.)
 	 * - 5. Create and set up controller instance.
 	 * - 6. (Process pre-dispatch handlers queue.)
 	 * - 7. Dispatch controller life-cycle.
-	 *  	- Call `\MvcCore\Controller::Init()` and `\MvcCore\Controller::PreDispatch()`.
-	 *	  - Call routed action method.
-	 *	  - Call `\MvcCore\Controller::Render()` to render all views.
+	 *     - Call `\MvcCore\Controller::Init()` and `\MvcCore\Controller::PreDispatch()`.
+	 *     - Call routed action method.
+	 *     - Call `\MvcCore\Controller::Render()` to render all views.
 	 * - 6. Terminate request:
-	 *	  - (Process post-dispatch handlers queue.)
-	 *	  - Write session in `register_shutdown_function()` handler.
-	 *	  - Send response headers if possible and echo response body.
+	 *     - (Process post-dispatch handlers queue.)
+	 *     - Write session in `register_shutdown_function()` handler.
+	 *     - Send response headers if possible and echo response body.
 	 * @return \MvcCore\Application
 	 */
 	public function Dispatch ();
@@ -589,14 +599,14 @@ interface IApplication extends \MvcCore\Application\IConstants {
 	 *   (for routes configuration when routes array has keys with `"Controller:Action"` strings
 	 *   and routes has not controller name and action name defined inside).
 	 * - By route name and params array
-	 *	 (route name is key in routes configuration array, should be any string
-	 *	 but routes must have information about controller name and action name inside).
+	 *   (route name is key in routes configuration array, should be any string
+	 *   but routes must have information about controller name and action name inside).
 	 * Result address (url string) should have two forms:
 	 * - Nice rewritten URL by routes configuration
 	 *   (for apps with URL rewrite support (Apache `.htaccess` or IIS URL rewrite module)
 	 *   and when first param is key in routes configuration array).
 	 * - For all other cases is URL form like: `"index.php?controller=ctrlName&amp;action=actionName"`
-	 *	 (when first param is not founded in routes configuration array).
+	 *   (when first param is not founded in routes configuration array).
 	 * @param string $controllerActionOrRouteName	Should be `"Controller:Action"` combination or just any route name as custom specific string.
 	 * @param array  $params						Optional, array with params, key is param name, value is param value.
 	 * @return string
@@ -619,18 +629,18 @@ interface IApplication extends \MvcCore\Application\IConstants {
 
 
 	/***********************************************************************************
-	 *			   `\MvcCore\Application` - Request Error Dispatching				*
+	 *               `\MvcCore\Application` - Request Error Dispatching                *
 	 ***********************************************************************************/
 
 	/**
 	 * Dispatch caught exception:
-	 *	- If request is processing PHP package packing to determinate current script dependencies:
-	 *		- Do not log or render nothing.
-	 *	- If request is production mode:
-	 *		- Print exception in browser.
-	 *	- If request is not in development mode:
-	 *		- Log error and try to render error page by configured controller and error action:,
-	 *		  `\App\Controllers\Index::Error();` by default.
+	 * - If request is processing PHP package packing to determinate current script dependencies:
+	 *   - Do not log or render nothing.
+	 * - If request is production mode:
+	 *   - Print exception in browser.
+	 * - If request is not in development mode:
+	 *   - Log error and try to render error page by configured controller and error action:,
+	 *     `\App\Controllers\Index::Error();` by default.
 	 * @param \Exception|string $exceptionOrMessage
 	 * @param int|NULL $code
 	 * @return bool
@@ -675,7 +685,7 @@ interface IApplication extends \MvcCore\Application\IConstants {
 
 
 	/***********************************************************************************
-	 *					 `\MvcCore\Application` - Helper Methods					 *
+	 *                     `\MvcCore\Application` - Helper Methods                     *
 	 ***********************************************************************************/
 
 	/**

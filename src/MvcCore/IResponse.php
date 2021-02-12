@@ -75,9 +75,9 @@ interface IResponse extends \MvcCore\Response\IConstants {
 	 * There is automatically set response encoding from value for
 	 * `Content-Encoding` header.
 	 * Example: `$request->SetHeader(array('Content-Type' => 'text/plain; charset=utf-8'));`
-	 * @param array $headers
-	 * @param bool $cleanAllPrevious `FALSE` by default. If `TRUE`, all previous headers
-	 *								 set by PHP `header()` or by this object will be removed.
+	 * @param  array $headers
+	 * @param  bool  $cleanAllPrevious `FALSE` by default. If `TRUE`, all previous headers
+	 *                                 set by PHP `header()` or by this object will be removed.
 	 * @return \MvcCore\Response
 	 */
 	public function SetHeaders (array $headers = []);
@@ -106,8 +106,10 @@ interface IResponse extends \MvcCore\Response\IConstants {
 	/**
 	 * Get if response has any HTTP response header by given `$name`.
 	 * Example:
-	 *	`$request->GetHeader('Content-Type'); // returns TRUE if there is header 'Content-Type'
-	 *	`$request->GetHeader('content-type'); // returns FALSE if there is header 'Content-Type'
+	 * ````
+	 *   $response->HasHeader('Content-Type'); // returns TRUE if there is header 'Content-Type'
+	 *   $response->HasHeader('content-type'); // returns FALSE if there is header 'Content-Type'
+	 * ````
 	 * @param string $name
 	 * @return bool
 	 */

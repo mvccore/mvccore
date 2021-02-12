@@ -21,7 +21,7 @@ namespace MvcCore\Application;
 trait Helpers {
 
 	/***********************************************************************************
-	 *					 `\MvcCore\Application` - Helper Methods					 *
+	 *                     `\MvcCore\Application` - Helper Methods                     *
 	 ***********************************************************************************/
 
 	/**

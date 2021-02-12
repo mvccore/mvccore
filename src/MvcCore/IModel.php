@@ -15,7 +15,7 @@ namespace MvcCore;
 
 /**
  * Responsibility - static methods for connections, configuration
- *					and for active record properties manipulation.
+ *                  and for active record properties manipulation.
  * - Database `\PDO` connecting by config settings.
  * - Reading `db` section configuration(s) from system `config.ini` file.
  * - Resource class with SQL queries localization, instancing and caching.
@@ -43,11 +43,12 @@ interface IModel extends \MvcCore\Model\IConstants {
 	 * Returns `\PDO` database connection by connection name/index,
 	 * usually by system config values (cached by local store)
 	 * or create new connection if no connection cached.
-	 * @param string|int|array|\stdClass|NULL $connectionNameOrConfig
-	 * @param bool $strict	If `TRUE` and no connection under given name or given
-	 *						index found, exception is thrown. `TRUE` by default.
-	 *						If `FALSE`, there could be returned connection by
-	 *						first available configuration.
+	 * @param  string|int|array|\stdClass|NULL $connectionNameOrConfig
+	 * @param  bool                            $strict
+	 *                                         If `TRUE` and no connection under given name or given
+	 *                                         index found, exception is thrown. `TRUE` by default.
+	 *                                         If `FALSE`, there could be returned connection by
+	 *                                         first available configuration.
 	 * @throws \InvalidArgumentException
 	 * @return \PDO
 	 */
@@ -63,31 +64,33 @@ interface IModel extends \MvcCore\Model\IConstants {
 	/**
 	 * Set all known configuration at once, optionally set default connection name/index.
 	 * Example:
-	 *	`\MvcCore\Model::SetConfigs([
-	 *		// connection name: 'mysql-cdcol':
-	 *		'mysql-cdcol'	=> [
-	 *			'driver'	=> 'mysql',		'host'		=> 'localhost',
-	 *			'user'		=> 'root',		'password'	=> '1234',		'database' => 'cdcol',
-	 *		],
-	 *		// connection name: 'mssql-tests':
-	 *		'mssql-tests'	=> [
-	 *			'driver'	=> 'sqlsrv',	'host'		=> '.\SQLEXPRESS',
-	 *			'user'		=> 'sa',		'password'	=> '1234',		'database' => 'tests',
-	 *		]
-	 *	]);`
+	 * ````
+	 *   \MvcCore\Model::SetConfigs([
+	 *       // connection name: 'mysql-cdcol':
+	 *       'mysql-cdcol' => [
+	 *           'driver'  => 'mysql',  'host'     => 'localhost',
+	 *           'user'    => 'root',   'password' => '1234',         'database' => 'cdcol',
+	 *       ],
+	 *       // connection name: 'mssql-tests':
+	 *       'mssql-tests' => [
+	 *           'driver'  => 'sqlsrv', 'host'     => '.\SQLEXPRESS',
+	 *           'user'    => 'sa',     'password' => '1234',         'database' => 'tests',
+	 *       ]
+	 *   ]);
+	 * ````
 	 * or:
-	 *	`\MvcCore\Model::SetConfigs([
-	 *		// connection index: 0:
-	 *		[
-	 *			'driver'	=> 'mysql',		'host'		=> 'localhost',
-	 *			'user'		=> 'root',		'password'	=> '1234',		'database' => 'cdcol',
-	 *		],
-	 *		// connection index: 1:
-	 *		[
-	 *			'driver'	=> 'sqlsrv',	'host'		=> '.\SQLEXPRESS',
-	 *			'user'		=> 'sa',		'password'	=> '1234',		'database' => 'tests',
-	 *		]
-	 *	]);`
+	 * ````
+	 *   \MvcCore\Model::SetConfigs([
+	 *       [   // connection index: 0:
+	 *           'driver' => 'mysql',   'host'     => 'localhost',
+	 *           'user'   => 'root',    'password' => '1234',         'database' => 'cdcol',
+	 *       ],
+	 *       [   // connection index: 1:
+	 *           'driver' => 'sqlsrv',  'host'     => '.\SQLEXPRESS',
+	 *           'user'   => 'sa',      'password' => '1234',         'database' => 'tests',
+	 *       ]
+	 *   ]);
+	 * ````
 	 * @param \stdClass[]|array[] $configs Configuration array with `\stdClass` objects or arrays with configuration data.
 	 * @param string|int $defaultConnectionName
 	 * @return bool
@@ -107,27 +110,35 @@ interface IModel extends \MvcCore\Model\IConstants {
 	 * If there is array key `name` or `index` inside config `array` or `\stdClass`,
 	 * it's value is used for connection name or index or there is no param `$connectionName` defined.
 	 * Example:
-	 *	`\MvcCore\Model::SetConfig(array(
-	 *		'name'		=> 'mysql-cdcol',
-	 *		'driver'	=> 'mysql',		'host'		=> 'localhost',
-	 *		'user'		=> 'root',		'password'	=> '1234',		'database' => 'cdcol',
-	 *	));`
+	 * ````
+	 *   \MvcCore\Model::SetConfig([
+	 *       'name'   => 'mysql-cdcol',
+	 *       'driver' => 'mysql',      'host'        => 'localhost',
+	 *       'user'   => 'root',       'password'    => '1234',      'database' => 'cdcol',
+	 *   ]);
+	 * ````
 	 * or:
-	 *	`\MvcCore\Model::SetConfig(array(
-	 *		'index'		=> 0,
-	 *		'driver'	=> 'mysql',	'host'		=> 'localhost',
-	 *		'user'		=> 'root',	'password'	=> '1234',		'database' => 'cdcol',
-	 *	));`
+	 * ````
+	 *   \MvcCore\Model::SetConfig([
+	 *       'index'  => 0,
+	 *       'driver' => 'mysql',      'host'        => 'localhost',
+	 *       'user'   => 'root',       'password'    => '1234',      'database' => 'cdcol',
+	 *   ]);
+	 * ````
 	 * or:
-	 *	`\MvcCore\Model::SetConfig(array(
-	 *		'driver'	=> 'mysql',	'host'		=> 'localhost',
-	 *		'user'		=> 'root',	'password'	=> '1234',		'database' => 'cdcol',
-	 *	), 'mysql-cdcol');`
+	 * ````
+	 *   \MvcCore\Model::SetConfig([
+	 *       'driver' => 'mysql',      'host'        => 'localhost',
+	 *       'user'   => 'root',       'password'    => '1234',      'database' => 'cdcol',
+	 *   ], 'mysql-cdcol');
+	 * ````
 	 * or:
-	 *	`\MvcCore\Model::SetConfig(array(
-	 *		'driver'	=> 'mysql',	'host'		=> 'localhost',
-	 *		'user'		=> 'root',	'password'	=> '1234',		'database' => 'cdcol',
-	 *	), 0);`
+	 * ````
+	 *   \MvcCore\Model::SetConfig([
+	 *       'driver' => 'mysql',      'host'        => 'localhost',
+	 *       'user'   => 'root',       'password'    => '1234',      'database' => 'cdcol',
+	 *   ], 0);
+	 * ````
 	 * @param \stdClass[]|array[] $config
 	 * @param string|int|NULL $connectionName
 	 * @return string|int
@@ -137,12 +148,12 @@ interface IModel extends \MvcCore\Model\IConstants {
 	/**
 	 * Collect all model class properties values into array.
 	 * Result keys could be converted by any conversion flag.
-	 * @param int $propsFlags		All properties flags are available except flags: 
-	 *								- `\MvcCore\IModel::PROPS_INITIAL_VALUES`,
-	 *								- `\MvcCore\IModel::PROPS_CONVERT_CASE_INSENSITIVE`,
-	 *								- `\MvcCore\IModel::PROPS_NAMES_BY_*`.
-	 * @param bool $getNullValues	If `TRUE`, include also values with `NULL`s, 
-	 *								`FALSE` by default.
+	 * @param  int $propsFlags     All properties flags are available except flags: 
+	 *                             - `\MvcCore\IModel::PROPS_INITIAL_VALUES`,
+	 *                             - `\MvcCore\IModel::PROPS_CONVERT_CASE_INSENSITIVE`,
+	 *                             - `\MvcCore\IModel::PROPS_NAMES_BY_*`.
+	 * @param  bool $getNullValues If `TRUE`, include also values with `NULL`s, 
+	 *                             `FALSE` by default.
 	 * @throws \InvalidArgumentException
 	 * @return array
 	 */
@@ -155,10 +166,10 @@ interface IModel extends \MvcCore\Model\IConstants {
 	 * by properties flags. Case sensitivelly by default.
 	 * Any `$data` items, which are not declared in `$this` context are 
 	 * initialized by  `__set()` method.
-	 * @param array $data Raw data from database (row) or from form fields.
-	 * @param int $propsFlags All properties flags are available.
+	 * @param  array $data       Raw data from database (row) or from form fields.
+	 * @param  int   $propsFlags All properties flags are available.
 	 * @throws \InvalidArgumentException
-	 * @return \MvcCore\Model Current `$this` context.
+	 * @return \MvcCore\Model    Current `$this` context.
 	 */
 	public function SetValues ($data = [], $propsFlags = 0);
 
@@ -168,9 +179,9 @@ interface IModel extends \MvcCore\Model\IConstants {
 	 * property name key in `$this->initialValues` (initial array is optionally 
 	 * completed in `SetValues()` method). Result keys could be converted by any 
 	 * conversion flag.
-	 * @param int $propsFlags	All properties flags are available except flags: 
-	 *							- `\MvcCore\IModel::PROPS_INITIAL_VALUES`,
-	 *							- `\MvcCore\IModel::PROPS_CONVERT_CASE_INSENSITIVE`.
+	 * @param  int $propsFlags All properties flags are available except flags: 
+	 *                         - `\MvcCore\IModel::PROPS_INITIAL_VALUES`,
+	 *                         - `\MvcCore\IModel::PROPS_CONVERT_CASE_INSENSITIVE`.
 	 * @throws \InvalidArgumentException
 	 * @return array 
 	 */
@@ -183,8 +194,8 @@ interface IModel extends \MvcCore\Model\IConstants {
 	 * Throws exception if no property defined by get call
 	 * or if virtual call begins with anything different from `Set` or `Get`.
 	 * This method returns custom value for get and `\MvcCore\Model` instance for set.
-	 * @param string $rawName
-	 * @param array  $arguments
+	 * @param  string $rawName
+	 * @param  array  $arguments
 	 * @throws \InvalidArgumentException If `strtolower($rawName)` doesn't begin with `"get"` or with `"set"`.
 	 * @return mixed|\MvcCore\Model
 	 */
@@ -192,8 +203,8 @@ interface IModel extends \MvcCore\Model\IConstants {
 
 	/**
 	 * Set any custom property, not necessary to previously defined.
-	 * @param string $name
-	 * @param mixed  $value
+	 * @param  string $name
+	 * @param  mixed  $value
 	 * @throws \InvalidArgumentException If name is `initialValues` or any custom name in extended class.
 	 * @return bool
 	 */
@@ -202,7 +213,7 @@ interface IModel extends \MvcCore\Model\IConstants {
 	/**
 	 * Get any custom property, not necessary to previously defined,
 	 * if property is not defined, NULL is returned.
-	 * @param string $name
+	 * @param  string $name
 	 * @throws \InvalidArgumentException If name is `initialValues` or any custom name in extended class.
 	 * @return mixed
 	 */

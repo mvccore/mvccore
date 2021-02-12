@@ -46,10 +46,12 @@ trait PropsGettersSetters {
 	/**
 	 * Response HTTP headers as `key => value` array.
 	 * Example:
-	 *	`array(
-	 *		'Content-Type'		=> 'text/html',
-	 *		'Content-Encoding'	=> 'utf-8'
-	 *	);`
+	 * ````
+	 *   [
+	 *       'Content-Type'     => 'text/html',
+	 *       'Content-Encoding' => 'utf-8'
+	 *   ];
+	 * ````
 	 * @var \string[]
 	 */
 	protected $headers = [];
