@@ -17,24 +17,24 @@ trait Instancing {
 
 	/**
 	 * @inheritDocs
-	 * @param string|array	$patternOrConfig
-	 *						Required, configuration array or route pattern value
-	 *						to parse into match and reverse patterns.
-	 * @param string		$controllerAction
-	 *						Optional, controller and action name in pascal case
-	 *						like: `"Products:List"`.
-	 * @param array			$defaults
-	 *						Optional, default param values like:
-	 *						`["name" => "default-name", "page" => 1]`.
-	 * @param array			$constraints
-	 *						Optional, params regular expression constraints for
-	 *						regular expression match function if no `"match"`
-	 *						property in config array as first argument defined.
-	 * @param array			$advancedConfiguration
-	 *						Optional, http method to only match requests by this
-	 *						method. If `NULL` (by default), request with any http
-	 *						method could be matched by this route. Given value is
-	 *						automatically converted to upper case.
+	 * @param string|array $patternOrConfig
+	 *                     Required, configuration array or route pattern value
+	 *                     to parse into match and reverse patterns.
+	 * @param string       $controllerAction
+	 *                     Optional, controller and action name in pascal case
+	 *                     like: `"Products:List"`.
+	 * @param array        $defaults
+	 *                     Optional, default param values like:
+	 *                     `["name" => "default-name", "page" => 1]`.
+	 * @param array        $constraints
+	 *                     Optional, params regular expression constraints for
+	 *                     regular expression match function if no `"match"`
+	 *                     property in config array as first argument defined.
+	 * @param array        $advancedConfiguration
+	 *                     Optional, http method to only match requests by this
+	 *                     method. If `NULL` (by default), request with any http
+	 *                     method could be matched by this route. Given value is
+	 *                     automatically converted to upper case.
 	 * @return \MvcCore\Route
 	 */
 	public static function CreateInstance (
@@ -77,24 +77,24 @@ trait Instancing {
 	 *		"action"		=> "List",
 	 *		"defaults"		=> ["name" => "default-name",	"color" => "red"],
 	 * ]);`
-	 * @param string|array	$patternOrConfig
-	 *						Required, configuration array or route pattern value
-	 *						to parse into match and reverse patterns.
-	 * @param string		$controllerAction
-	 *						Optional, controller and action name in pascal case
-	 *						like: `"Products:List"`.
-	 * @param array			$defaults
-	 *						Optional, default param values like:
-	 *						`["name" => "default-name", "page" => 1]`.
-	 * @param array			$constraints
-	 *						Optional, params regular expression constraints for
-	 *						regular expression match function no `"match"` record
-	 *						in configuration array as first argument defined.
-	 * @param array			$advancedConfiguration
-	 *						Optional, http method to only match requests by this
-	 *						method. If `NULL` (by default), request with any http
-	 *						method could be matched by this route. Given value is
-	 *						automatically converted to upper case.
+	 * @param string|array $patternOrConfig
+	 *                     Required, configuration array or route pattern value
+	 *                     to parse into match and reverse patterns.
+	 * @param string       $controllerAction
+	 *                     Optional, controller and action name in pascal case
+	 *                     like: `"Products:List"`.
+	 * @param array        $defaults
+	 *                     Optional, default param values like:
+	 *                     `["name" => "default-name", "page" => 1]`.
+	 * @param array        $constraints
+	 *                     Optional, params regular expression constraints for
+	 *                     regular expression match function no `"match"` record
+	 *                     in configuration array as first argument defined.
+	 * @param array        $advancedConfiguration
+	 *                     Optional, http method to only match requests by this
+	 *                     method. If `NULL` (by default), request with any http
+	 *                     method could be matched by this route. Given value is
+	 *                     automatically converted to upper case.
 	 * @return void
 	 */
 	public function __construct (
@@ -207,16 +207,16 @@ trait Instancing {
 	 * initialize constraints by setter if not `NULL` and initialize filter in
 	 * and filter out by filter setter from `$advCfg` array if there are those
 	 * filter keys found.
-	 * @param string|NULL	$pattern		Route pattern string.
-	 * @param array|NULL	$defaults		Route defaults array, keys are param
-	 *										names, values are default values.
-	 * @param array|NULL	$constraints	Route params regular expression
-	 *										constraints array, keys are param
-	 *										names, values are allowed regular
-	 *										expression rules.
-	 * @param array			$advCfg			An array with possible keys `in` and
-	 *										`out` to define route filter in and
-	 *										filter out callable.
+	 * @param string|NULL $pattern     Route pattern string.
+	 * @param array|NULL  $defaults    Route defaults array, keys are param
+	 *                                 names, values are default values.
+	 * @param array|NULL  $constraints Route params regular expression
+	 *                                 constraints array, keys are param
+	 *                                 names, values are allowed regular
+	 *                                 expression rules.
+	 * @param array       $advCfg      An array with possible keys `in` and
+	 *                                 `out` to define route filter in and
+	 *                                 filter out callable.
 	 * @return void
 	 */
 	protected function constructVarsPatternDefaultsConstraintsFilters (& $pattern, & $defaults, & $constraints, & $advCfg) {

@@ -262,13 +262,13 @@ trait Detection {
 	 *		- by regular expression (if defined)
 	 * Method returns `TRUE` to stop environment detection or `FALSE`, if
 	 * environment was not detected by given data.
-	 * @param \stdClass			$data
-	 * @param \MvcCore\Request	$req
-	 * @param string|NULL		$clientIp
-	 * @param string|NULL		$appRoot
-	 * @param string|NULL		$serverHostName
-	 * @param array|NULL		$serverGlobals
-	 * @return bool If `TRUE`, environment has been detected and detection procedure could stop.
+	 * @param  \stdClass        $data
+	 * @param  \MvcCore\Request $req
+	 * @param  string|NULL      $clientIp
+	 * @param  string|NULL      $appRoot
+	 * @param  string|NULL      $serverHostName
+	 * @param  array|NULL       $serverGlobals
+	 * @return bool             If `TRUE`, environment has been detected and detection procedure could stop.
 	 */
 	protected static function detectByConfigSection (& $data, $req, & $clientIp, & $appRoot, & $serverHostName, & $serverGlobals) {
 		if ($data->clientIps->check) {

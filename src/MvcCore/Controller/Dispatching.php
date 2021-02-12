@@ -324,9 +324,9 @@ trait Dispatching {
 
 	/**
 	 * @inheritDocs
-	 * @param string		$location
-	 * @param int			$code
-	 * @param string|NULL	$reason	Any optional text header for reason why.
+	 * @param string      $location
+	 * @param int         $code
+	 * @param string|NULL $reason   Any optional text header for reason why.
 	 * @return void
 	 */
 	public static function Redirect ($location = '', $code = \MvcCore\IResponse::SEE_OTHER, $reason = NULL) {

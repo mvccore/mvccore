@@ -559,9 +559,9 @@ interface IRouter extends \MvcCore\Router\IConstants {
 	 * `Route()` method has been called and before controller is created by 
 	 * application and dispatched. This method is highly advanced. There is 
 	 * no missing template or controller or action checking.
-	 * @param string	$controllerNamePc	Pascal case classic controller name definition.
-	 * @param string	$actionNamePc		Pascal case action name without `Action` suffix.
-	 * @param bool		$changeSelfRoute	`FALSE` by default to change self route to generate self URLs.
+	 * @param  string $controllerNamePc Pascal case classic controller name definition.
+	 * @param  string $actionNamePc     Pascal case action name without `Action` suffix.
+	 * @param  bool   $changeSelfRoute  `FALSE` by default to change self route to generate self URLs.
 	 * @return bool
 	 */
 	public function RedefineRoutedTarget ($controllerNamePc = NULL, $actionNamePc = NULL, $changeSelfRoute = FALSE);

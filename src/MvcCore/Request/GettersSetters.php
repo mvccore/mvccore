@@ -229,8 +229,8 @@ trait GettersSetters {
 
 	/**
 	 * @inheritDocs
-	 * @param string $name
-	 * @param mixed	 $value
+	 * @param  string $name
+	 * @param  mixed  $value
 	 * @return \MvcCore\Request
 	 */
 	public function __set ($name, $value) {

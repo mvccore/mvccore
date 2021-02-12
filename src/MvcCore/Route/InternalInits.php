@@ -270,14 +270,14 @@ trait InternalInits {
 	 * `reverse` properties together and also to complete `reverse` property
 	 * separately and only. Result array is always used as `reverseParams`
 	 * property to complete URL rewrite params inside result `reverse` string.
-	 * @param string		$reverse				A reverse string with `<param>`s.
-	 * @param \stdClass[]	$reverseSectionsInfo	Reverse sections statistics with
-	 *												fixed and variable sections.
-	 * @param array			$constraints			Route constraints array.
-	 * @param string|NULL	$match					A match string, could be `NULL`.
-	 * @throws \InvalidArgumentException Wrong route pattern format.
-	 * @return array		An array with keys as param names and values as
-	 *						`\stdClass` objects with data about each reverse param.
+	 * @param  string      $reverse             A reverse string with `<param>`s.
+	 * @param  \stdClass[] $reverseSectionsInfo Reverse sections statistics with
+	 *                                          fixed and variable sections.
+	 * @param  array       $constraints         Route constraints array.
+	 * @param  string|NULL $match               A match string, could be `NULL`.
+	 * @throws \InvalidArgumentException        Wrong route pattern format.
+	 * @return array       An array with keys as param names and values as
+	 *                     `\stdClass` objects with data about each reverse param.
 	 */
 	protected function & initReverseParams (& $reverse, & $reverseSectionsInfo, & $constraints, & $match = NULL) {
 		/** @var $this \MvcCore\Route */
@@ -355,16 +355,16 @@ trait InternalInits {
 	 * is only one greedy param in whole pattern string and if it is the last
 	 * param between other params. Get also if given section index belongs to
 	 * the last section info in line.
-	 * @param \stdClass[]	$reverseSectionsInfo	Whole sections info array ref.
-	 *												with `\stdClass` objects.
-	 * @param array			$constraints			Route params constraints.
-	 * @param string		$paramName				Route parsed params.
-	 * @param int			$sectionIndex			Currently checked section index.
-	 * @param bool			$greedyCaught			Boolean about if param is checked as greedy.
+	 * @param  \stdClass[] $reverseSectionsInfo Whole sections info array ref.
+	 *                                          with `\stdClass` objects.
+	 * @param  array       $constraints         Route params constraints.
+	 * @param  string      $paramName           Route parsed params.
+	 * @param  int         $sectionIndex        Currently checked section index.
+	 * @param  bool        $greedyCaught        Boolean about if param is checked as greedy.
 	 * @throws \InvalidArgumentException Wrong route pattern format.
-	 * @return \bool[]		Array with two boolean values. First is greedy flag
-	 *						and second is about if section is last or not. The
-	 *						second could be `NULL`
+	 * @return \bool[]     Array with two boolean values. First is greedy flag
+	 *                     and second is about if section is last or not. The
+	 *                     second could be `NULL`
 	 */
 	protected function initReverseParamsGetGreedyInfo (& $reverseSectionsInfo, & $constraints, & $paramName, & $sectionIndex, & $greedyCaught) {
 		/** @var $this \MvcCore\Route */
@@ -449,16 +449,16 @@ trait InternalInits {
 	 * complete route `match` property from `pattern` property. The result
 	 * regular expression is always composed to match trailing slash or missing
 	 * trailing slash and any fixed and variable sections defined by `pattern`.
-	 * @param string		$match				A pattern string with escaped all special regular
-	 *											expression special characters except `<>` chars.
-	 * @param \stdClass[]	$matchSectionsInfo	Match sections info about fixed or variable
-	 *											section, param name, start, end and length.
-	 * @param array			$reverseParams		An array with keys as param names and values as
-	 *											`\stdClass` objects with data about reverse params.
-	 * @param array			$constraints		Route params regular expression constraints
-	 *											Defining which value each param could contain or not.
-	 *											If there is no constraint for param, there is used
-	 *											default constraint defined in route static property.
+	 * @param  string      $match             A pattern string with escaped all special regular
+	 *                                        expression special characters except `<>` chars.
+	 * @param  \stdClass[] $matchSectionsInfo Match sections info about fixed or variable
+	 *                                        section, param name, start, end and length.
+	 * @param  array       $reverseParams     An array with keys as param names and values as
+	 *                                        `\stdClass` objects with data about reverse params.
+	 * @param  array       $constraints       Route params regular expression constraints
+	 *                                        Defining which value each param could contain or not.
+	 *                                        If there is no constraint for param, there is used
+	 *                                        default constraint defined in route static property.
 	 * @return string
 	 */
 	protected function initMatchComposeRegex (& $match, & $matchSectionsInfo, & $reverseParams, & $constraints) {

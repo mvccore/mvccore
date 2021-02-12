@@ -66,19 +66,19 @@ interface IDebug extends \MvcCore\Debug\IConstants {
 	 * Dump any variable with output buffering in browser debug bar.
 	 * In non-development mode - store dumped variable in `debug.log`.
 	 * Return printed variable as string.
-	 * @param  mixed	$value		Variable to dump.
-	 * @param  string	$title		Optional title.
-	 * @param  array	$options	Dumper options.
-	 * @return mixed				Variable itself.
+	 * @param  mixed  $value   Variable to dump.
+	 * @param  string $title   Optional title.
+	 * @param  array  $options Dumper options.
+	 * @return mixed           Variable itself.
 	 */
 	public static function BarDump ($value, $title = NULL, $options = []);
 
 	/**
 	 * Logs any message or exception with log date time, in `*.log` file
 	 * by given log level, in configured logging directory.
-	 * @param  mixed|\Exception|\Throwable	$value
-	 * @param  string						$priority
-	 * @return string						Logging filename full path.
+	 * @param  mixed|\Exception|\Throwable $value
+	 * @param  string                      $priority
+	 * @return string                      Logging filename full path.
 	 */
 	public static function Log ($value, $priority = \MvcCore\IDebug::INFO);
 

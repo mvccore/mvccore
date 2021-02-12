@@ -206,10 +206,10 @@ trait RouteMethods {
 	/**
 	 * Add route instance into named routes group. Every routes group is chosen
 	 * in routing moment by first parsed word from requested URL.
-	 * @param \MvcCore\Route	$route		A route instance reference.
-	 * @param string			$routeName	Route name.
-	 * @param string|NULL		$groupName	Group name, first parsed word from requested URL.
-	 * @param bool				$prepend	IF `TRUE`, prepend route instance, `FALSE` otherwise.
+	 * @param  \MvcCore\Route $route     A route instance reference.
+	 * @param  string         $routeName Route name.
+	 * @param  string|NULL    $groupName Group name, first parsed word from requested URL.
+	 * @param  bool           $prepend   IF `TRUE`, prepend route instance, `FALSE` otherwise.
 	 * @return void
 	 */
 	protected function addRouteToGroup (\MvcCore\IRoute $route, $routeName, $groupName, $prepend) {

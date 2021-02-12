@@ -17,9 +17,9 @@ trait Instancing {
 
 	/**
 	 * @inheritDocs
-	 * @param int|NULL	$code
-	 * @param array		$headers
-	 * @param string	$body
+	 * @param  int|NULL $code
+	 * @param  array    $headers
+	 * @param  string   $body
 	 * @return \MvcCore\Response
 	 */
 	public static function CreateInstance (
@@ -34,9 +34,9 @@ trait Instancing {
 
 	/**
 	 * Create new HTTP response instance.
-	 * @param int		$code
-	 * @param array		$headers
-	 * @param string	$body
+	 * @param  int    $code
+	 * @param  array  $headers
+	 * @param  string $body
 	 * @return void
 	 */
 	public function __construct (

@@ -17,8 +17,8 @@ trait Escaping {
 
 	/**
 	 * @inheritDocs
-	 * @param string	$str 
-	 * @param string	$encoding 
+	 * @param  string $str 
+	 * @param  string $encoding 
 	 * @return string
 	 */
 	public function Escape ($str, $encoding = 'UTF-8') {
@@ -30,8 +30,8 @@ trait Escaping {
 	
 	/**
 	 * @inheritDocs
-	 * @param string	$str 
-	 * @param string	$encoding 
+	 * @param  string $str 
+	 * @param  string $encoding 
 	 * @return string
 	 */
 	public function EscapeHtml ($str, $encoding = 'UTF-8') {
@@ -43,9 +43,9 @@ trait Escaping {
 	
 	/**
 	 * @inheritDocs
-	 * @param string	$str 
-	 * @param bool		$double 
-	 * @param string	$encoding 
+	 * @param  string $str 
+	 * @param  bool   $double 
+	 * @param  string $encoding 
 	 * @return string
 	 */
 	public function EscapeAttr ($str, $double = TRUE, $encoding = 'UTF-8') {
@@ -60,8 +60,8 @@ trait Escaping {
 	
 	/**
 	 * @inheritDocs
-	 * @param string $str 
-	 * @param string $encoding 
+	 * @param  string $str 
+	 * @param  string $encoding 
 	 * @return string
 	 */
 	public function EscapeXml ($str, $encoding = 'UTF-8') {
@@ -74,9 +74,9 @@ trait Escaping {
 	
 	/**
 	 * @inheritDocs
-	 * @param string	$str 
-	 * @param int		$flags 
-	 * @param int		$depth 
+	 * @param  string $str 
+	 * @param  int    $flags 
+	 * @param  int    $depth 
 	 * @return string
 	 */
 	public function EscapeJs ($str, $flags = 0, $depth = 512) {
@@ -88,8 +88,8 @@ trait Escaping {
 	
 	/**
 	 * @inheritDocs
-	 * @see http://www.w3.org/TR/2006/WD-CSS21-20060411/syndata.html#q6
-	 * @param string $str 
+	 * @see    http://www.w3.org/TR/2006/WD-CSS21-20060411/syndata.html#q6
+	 * @param  string $str 
 	 * @return string
 	 */
 	public function EscapeCss ($str) {
@@ -99,8 +99,8 @@ trait Escaping {
 	
 	/**
 	 * @inheritDocs
-	 * @see https://www.ietf.org/rfc/rfc5545.txt
-	 * @param string $str 
+	 * @see    https://www.ietf.org/rfc/rfc5545.txt
+	 * @param  string $str 
 	 * @return string
 	 */
 	public function EscapeICal ($str) {
@@ -112,7 +112,7 @@ trait Escaping {
 
 	/**
 	 * Complete flags for `htmlspecialchars()` by view type.
-	 * @param int $flagsToAdd
+	 * @param  int $flagsToAdd
 	 * @return int
 	 */
 	protected function escapeGetFlags ($flagsToAdd) {

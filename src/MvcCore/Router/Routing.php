@@ -40,9 +40,9 @@ trait Routing {
 	
 	/**
 	 * @inheritDocs
-	 * @param string	$controllerNamePc	Pascal case classic controller name definition.
-	 * @param string	$actionNamePc		Pascal case action name without `Action` suffix.
-	 * @param bool		$changeSelfRoute	`FALSE` by default to change self route to generate self URLs.
+	 * @param  string $controllerNamePc Pascal case classic controller name definition.
+	 * @param  string $actionNamePc     Pascal case action name without `Action` suffix.
+	 * @param  bool   $changeSelfRoute  `FALSE` by default to change self route to generate self URLs.
 	 * @return bool
 	 */
 	public function RedefineRoutedTarget ($controllerNamePc = NULL, $actionNamePc = NULL, $changeSelfRoute = FALSE) {

@@ -141,14 +141,14 @@ trait RewriteRouting {
 	 * This method also completes any missing `controller` or `action` param
 	 * values with default values. Request params can not contain those 
 	 * automatically completed values, only values really requested.
-	 * @param array			$allMatchedParams	All matched params completed `\MvcCore\Route::Matches();`, 
-	 *											where could be controller and action if it is defined in 
-	 *											route object, default param values from route and all 
-	 *											rewrite params parsed by route.
-	 * @param string|NULL	$requestCtrlName	Possible controller name value or `NULL` assigned directly 
-	 *											from request object in `\MvcCore\router::routeDetectStrategy();`
-	 * @param string|NULL	$requestActionName	Possible action name value or `NULL` assigned directly from 
-	 *											request object in `\MvcCore\router::routeDetectStrategy();`
+	 * @param  array       $allMatchedParams  All matched params completed `\MvcCore\Route::Matches();`, 
+	 *                                        where could be controller and action if it is defined in 
+	 *                                        route object, default param values from route and all 
+	 *                                        rewrite params parsed by route.
+	 * @param  string|NULL $requestCtrlName   Possible controller name value or `NULL` assigned directly 
+	 *                                        from request object in `\MvcCore\router::routeDetectStrategy();`
+	 * @param  string|NULL $requestActionName Possible action name value or `NULL` assigned directly from 
+	 *                                        request object in `\MvcCore\router::routeDetectStrategy();`
 	 * @return void
 	 */
 	protected function rewriteRoutingSetRequestedAndDefaultParams (array & $allMatchedParams, $requestCtrlName = NULL, $requestActionName = NULL) {

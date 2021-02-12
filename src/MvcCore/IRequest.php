@@ -413,7 +413,7 @@ interface IRequest extends \MvcCore\Request\IConstants {
 	/**
 	 * Universal setter, if property not defined, it's automatically declared.
 	 * @param string $name
-	 * @param mixed	 $value
+	 * @param mixed  $value
 	 * @return \MvcCore\Request
 	 */
 	public function __set ($name, $value);

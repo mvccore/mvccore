@@ -27,10 +27,10 @@ namespace {
 		/**
 		 * Dump any variable with output buffering in browser debug bar,
 		 * store result for printing later. Return printed variable as string.
-		 * @param  mixed	$value		Variable to dump.
-		 * @param  string	$title		Optional title.
-		 * @param  array	$options	Dumper options.
-		 * @return mixed				Variable itself.
+		 * @param  mixed  $value   Variable to dump.
+		 * @param  string $title   Optional title.
+		 * @param  array  $options Dumper options.
+		 * @return mixed           Variable itself.
 		 */
 		function x ($value, $title = NULL, $options = []) {
 			$options['backtraceIndex'] = 2;

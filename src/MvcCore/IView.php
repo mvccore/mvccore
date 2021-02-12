@@ -71,7 +71,7 @@ interface IView extends \MvcCore\View\IConstants {
 	/**
 	 * Set view scripts files extension.
 	 * given value could be with or without leading dot char.
-	 * @param string $extension An extension with or without leading dot char.
+	 * @param  string $extension An extension with or without leading dot char.
 	 * @return string
 	 */
 	public static function SetExtension ($extension = '.phtml');
@@ -102,7 +102,7 @@ interface IView extends \MvcCore\View\IConstants {
 	 * - `HTML5` - `\MvcCore\IView::DOCTYPE_HTML5`
 	 * - `XML`   - `\MvcCore\IView::DOCTYPE_XML`
 	 * Default value: `HTML5`.
-	 * @param string $doctype
+	 * @param  string $doctype
 	 * @return string
 	 */
 	public static function SetDoctype ($doctype = \MvcCore\IView::DOCTYPE_HTML5);
@@ -121,7 +121,7 @@ interface IView extends \MvcCore\View\IConstants {
 	 * inside `"/App/Views"` directory. Default value
 	 * is `"Layouts"`, so layouts app path
 	 * is `"/App/Views/Layouts"`.
-	 * @param string $layoutsDir
+	 * @param  string $layoutsDir
 	 * @return string
 	 */
 	public static function SetLayoutsDir ($layoutsDir = 'Layouts');
@@ -140,7 +140,7 @@ interface IView extends \MvcCore\View\IConstants {
 	 * placed by default inside `"/App/Views"` directory.
 	 * Default value is `"Scripts"`, so scripts app path
 	 * is `"/App/Views/Scripts"`.
-	 * @param string $scriptsDir
+	 * @param  string $scriptsDir
 	 * @return string
 	 */
 	public static function SetScriptsDir ($scriptsDir = 'Scripts');
@@ -159,7 +159,7 @@ interface IView extends \MvcCore\View\IConstants {
 	 * inside `"/App/Views"` directory.
 	 * Default value is `"Helpers"`, so scripts app path
 	 * is `"/App/Views/Helpers"`.
-	 * @param string $helpersDir
+	 * @param  string $helpersDir
 	 * @return string
 	 */
 	public static function SetHelpersDir ($helpersDir = 'Helpers');
@@ -167,7 +167,7 @@ interface IView extends \MvcCore\View\IConstants {
 	/**
 	 * Add view helpers classes namespace(s),
 	 * Example: `\MvcCore\View::AddHelpersNamespaces('Any\Other\ViewHelpers\Place', '...');`.
-	 * @param string $helperNamespaces,... View helper classes namespace(s).
+	 * @param  string $helperNamespaces,... View helper classes namespace(s).
 	 * @return void
 	 */
 	public static function AddHelpersNamespaces ($helperNamespaces);
@@ -176,7 +176,7 @@ interface IView extends \MvcCore\View\IConstants {
 	 * Set view helpers classes namespace(s). This method replace all previously configured namespaces.
 	 * If you want only to add namespace, use `\MvcCore\View::AddHelpersNamespaces();` instead.
 	 * Example: `\MvcCore\View::SetHelpersClassNamespaces('Any\Other\ViewHelpers\Place', '...');`.
-	 * @param string $helperNamespaces,... View helper classes namespace(s).
+	 * @param  string $helperNamespaces,... View helper classes namespace(s).
 	 * @return void
 	 */
 	public static function SetHelpersNamespaces ($helperNamespaces);
@@ -184,8 +184,8 @@ interface IView extends \MvcCore\View\IConstants {
 	/**
 	 * Get view script full path by internal application configuration,
 	 * by `$typePath` param and by `$corectedRelativePath` param.
-	 * @param string $typePath Usually `"Layouts"` or `"Scripts"`.
-	 * @param string $corectedRelativePath
+	 * @param  string $typePath             Usually `"Layouts"` or `"Scripts"`.
+	 * @param  string $corectedRelativePath
 	 * @return string
 	 */
 	public static function GetViewScriptFullPath ($typePath = '', $corectedRelativePath = '');
@@ -195,7 +195,7 @@ interface IView extends \MvcCore\View\IConstants {
 	 * Method is always called in the most parent controller
 	 * `\MvcCore\Controller:PreDispatch()` moment when view instance is created.
 	 * Method sets controller instance into view.
-	 * @param \MvcCore\Controller $controller
+	 * @param  \MvcCore\Controller $controller
 	 * @return \MvcCore\View
 	 */
 	public function SetController (\MvcCore\IController $controller);
@@ -209,9 +209,9 @@ interface IView extends \MvcCore\View\IConstants {
 	/**
 	 * Set up view rendering arguments  to render layout and action view in both modes properly.
 	 * Set up view instance helpers before rendering.
-	 * @param int $renderMode
-	 * @param string $controllerOrActionNameDashed
-	 * @param string $actionNameDashed
+	 * @param  int    $renderMode
+	 * @param  string $controllerOrActionNameDashed
+	 * @param  string $actionNameDashed
 	 * @return \MvcCore\View
 	 */
 	public function SetUpRender ($renderMode = \MvcCore\IView::RENDER_WITH_OB_FROM_ACTION_TO_LAYOUT, $controllerOrActionNameDashed = NULL, $actionNameDashed = NULL);
@@ -222,8 +222,8 @@ interface IView extends \MvcCore\View\IConstants {
 	 * `\MvcCore\Controller:Render()` moment when view is rendered.
 	 * Set up all from given view object variables store into current store,
 	 * if there is any already existing key - overwrite it.
-	 * @param \MvcCore\View $view
-	 * @param bool $overwriteExistingKeys If any property name already exist in view store, overwrite it by given value by default.
+	 * @param  \MvcCore\View $view
+	 * @param  bool          $overwriteExistingKeys If any property name already exist in view store, overwrite it by given value by default.
 	 * @return \MvcCore\View
 	 */
 	public function SetUpStore (\MvcCore\IView $view, $overwriteExistingKeys = TRUE);
@@ -276,7 +276,7 @@ interface IView extends \MvcCore\View\IConstants {
 	/**
 	 * Render action template script or any include script and return it's result as reference.
 	 * Do not use this method in layout sub-templates, use method `RenderLayout()` instead.
-	 * @param string $relativePath
+	 * @param  string $relativePath
 	 * @return string
 	 */
 	public function & RenderScript ($relativePath = '');
@@ -284,7 +284,7 @@ interface IView extends \MvcCore\View\IConstants {
 	/**
 	 * Render layout template script or any include script and return it's result as reference.
 	 * Do not use this method in action sub-templates, use method `RenderScript()` instead.
-	 * @param string $relativePath
+	 * @param  string $relativePath
 	 * @return string
 	 */
 	public function & RenderLayout ($relativePath = '');
@@ -294,8 +294,8 @@ interface IView extends \MvcCore\View\IConstants {
 	 * Do not use this method in templates!
 	 * Method renders whole configured layout template and return it's result
 	 * as string reference with inner rendered action template content.
-	 * @param string $relativePatht.
-	 * @param string $content
+	 * @param  string $relativePatht.
+	 * @param  string $content
 	 * @return string
 	 */
 	public function & RenderLayoutAndContent ($relativePath = '', & $content = NULL);
@@ -303,8 +303,8 @@ interface IView extends \MvcCore\View\IConstants {
 	/**
 	 * Render controller template and all necessary layout
 	 * templates and return rendered result as string reference.
-	 * @param string $typePath By default: `"Layouts" | "Scripts"`. It could be `"Forms" | "Forms/Fields"` etc...
-	 * @param string $relativePath
+	 * @param  string $typePath     By default: `"Layouts" | "Scripts"`. It could be `"Forms" | "Forms/Fields"` etc...
+	 * @param  string $relativePath
 	 * @throws \InvalidArgumentException Template not found in path: `$viewScriptFullPath`.
 	 * @return string
 	 */
@@ -315,7 +315,7 @@ interface IView extends \MvcCore\View\IConstants {
 	 * context, any `$this` keyword will be used as current view context.
 	 * Returned result is content from output buffer as string reference.
 	 * Evaluated code is wrapped into `try/catch` automatically.
-	 * @param string $content
+	 * @param  string $content
 	 * @return string
 	 */
 	public function Evaluate ($content);
@@ -334,8 +334,8 @@ interface IView extends \MvcCore\View\IConstants {
 	 *   and when first param is key in routes configuration array).
 	 * - For all other cases is URL form like: `"index.php?controller=ctrlName&amp;action=actionName"`
 	 *	 (when first param is not founded in routes configuration array).
-	 * @param string $controllerActionOrRouteName	Should be `"Controller:Action"` combination or just any route name as custom specific string.
-	 * @param array  $params						Optional, array with params, key is param name, value is param value.
+	 * @param string $controllerActionOrRouteName Should be `"Controller:Action"` combination or just any route name as custom specific string.
+	 * @param array  $params                      Optional, array with params, key is param name, value is param value.
 	 * @return string
 	 */
 	public function Url ($controllerActionOrRouteName = 'Index:Index', array $params = []);
@@ -352,8 +352,8 @@ interface IView extends \MvcCore\View\IConstants {
 	/**
 	 * Escape string for use inside HTML/XHTML/HTML5 
 	 * node as text content.
-	 * @param string	$str 
-	 * @param string	$encoding 
+	 * @param  string $str 
+	 * @param  string $encoding 
 	 * @return string
 	 */
 	public function Escape ($str, $encoding = 'UTF-8');
@@ -361,17 +361,17 @@ interface IView extends \MvcCore\View\IConstants {
 	/**
 	 * Escape string for use inside HTML/XHTML/HTML5 
 	 * node between `<` and `>` for attributes definitions.
-	 * @param string	$str 
-	 * @param string	$encoding 
+	 * @param  string $str 
+	 * @param  string $encoding 
 	 * @return string
 	 */
 	public function EscapeHtml ($str, $encoding = 'UTF-8');
 	
 	/**
 	 * Escape string for use inside HTML/XHTML/HTML5 attribute.
-	 * @param string	$str 
-	 * @param bool		$double 
-	 * @param string	$encoding 
+	 * @param  string $str 
+	 * @param  bool   $double 
+	 * @param  string $encoding 
 	 * @return string
 	 */
 	public function EscapeAttr ($str, $double = TRUE, $encoding = 'UTF-8');
@@ -381,17 +381,17 @@ interface IView extends \MvcCore\View\IConstants {
 	 * XML 1.0:	\x09 \x0A \x0D and C1 allowed directly, C0 forbidden.
 	 * XML 1.1:	\x00 forbidden directly and as a character reference,
 	 * 		\x09 \x0A \x0D \x85 allowed directly, C0, C1 and \x7F allowed as character references.
-	 * @param string $str 
-	 * @param string $encoding 
+	 * @param  string $str 
+	 * @param  string $encoding 
 	 * @return string
 	 */
 	public function EscapeXml ($str, $encoding = 'UTF-8');
 	
 	/**
 	 * Escape string for use inside JS context, including trailing double quotes.
-	 * @param string	$str 
-	 * @param int		$flags 
-	 * @param int		$depth 
+	 * @param  string $str 
+	 * @param  int    $flags 
+	 * @param  int    $depth 
 	 * @return string
 	 */
 	public function EscapeJs ($str, $flags = 0, $depth = 512);
@@ -399,7 +399,7 @@ interface IView extends \MvcCore\View\IConstants {
 	/**
 	 * Escape string for use inside CSS context.
 	 * @see http://www.w3.org/TR/2006/WD-CSS21-20060411/syndata.html#q6
-	 * @param string $str 
+	 * @param  string $str 
 	 * @return string
 	 */
 	public function EscapeCss ($str);
@@ -407,7 +407,7 @@ interface IView extends \MvcCore\View\IConstants {
 	/**
 	 * Escape string for use inside iCal template.
 	 * @see https://www.ietf.org/rfc/rfc5545.txt
-	 * @param string $str 
+	 * @param  string $str 
 	 * @return string
 	 */
 	public function EscapeICal ($str);
@@ -417,9 +417,9 @@ interface IView extends \MvcCore\View\IConstants {
 	 * If view helper doesn't exist in global helpers store - create new helper instance.
 	 * If helper already exists in global helpers store - do not create it again - use instance from the store.
 	 * Example: `echo $this->GetHelper('facebook')->RenderSomeSpecialWidgetMethod();`
-	 * @param string $helperNameCamelCase View helper method name in camel case.
-	 * @param bool $asClosure Get View helper prepared as closure function, `FALSE` by default.
-	 * @throws \InvalidArgumentException If view doesn't exist in configured namespaces.
+	 * @param  string $helperNameCamelCase View helper method name in camel case.
+	 * @param  bool   $asClosure           Get View helper prepared as closure function, `FALSE` by default.
+	 * @throws \InvalidArgumentException   If view doesn't exist in configured namespaces.
 	 * @return \MvcCore\Ext\Views\Helpers\AbstractHelper|\MvcCore\Ext\Views\Helpers\IHelper|\Closure|mixed View helper instance.
 	 */
 	public function & GetHelper ($helperNameCamelCase, $asClosure = FALSE);
@@ -427,17 +427,17 @@ interface IView extends \MvcCore\View\IConstants {
 	/**
 	 * Set view helper for current template or for all templates globally by default.
 	 * If view helper already exist in global helpers store - it's overwritten.
-	 * @param string $helperNameCamelCase View helper method name in camel case.
-	 * @param mixed $instance View helper instance, always as `\MvcCore\Ext\Views\Helpers\AbstractHelper|\MvcCore\Ext\Views\Helpers\IHelper` instance or `\Closure`.
-	 * @param bool $forAllTemplates register this helper instance for all rendered views in the future.
+	 * @param  string $helperNameCamelCase View helper method name in camel case.
+	 * @param  mixed  $instance            View helper instance, always as `\MvcCore\Ext\Views\Helpers\AbstractHelper|\MvcCore\Ext\Views\Helpers\IHelper` instance or `\Closure`.
+	 * @param  bool   $forAllTemplates     Register this helper instance for all rendered views in the future.
 	 * @return \MvcCore\View
 	 */
 	public function SetHelper ($helperNameCamelCase, $instance, $forAllTemplates = TRUE);
 
 	/**
 	 * Set any value into view context internal store.
-	 * @param string $name
-	 * @param mixed $value
+	 * @param  string $name
+	 * @param  mixed  $value
 	 * @return bool
 	 */
 	public function __set ($name, $value);
@@ -446,7 +446,7 @@ interface IView extends \MvcCore\View\IConstants {
 	 * Get any value by given name existing in local store. If there is no value
 	 * in local store by given name, try to get result value into store by
 	 * controller reflection class from controller instance property.
-	 * @param string $name
+	 * @param  string $name
 	 * @return mixed
 	 */
 	public function __get ($name);
@@ -454,14 +454,14 @@ interface IView extends \MvcCore\View\IConstants {
 	/**
 	 * Get `TRUE` if any value by given name exists in
 	 * local view store or in local controller instance.
-	 * @param string $name
+	 * @param  string $name
 	 * @return bool
 	 */
 	public function __isset ($name);
 
 	/**
 	 * Unset any value from view context internal store.
-	 * @param string $name
+	 * @param  string $name
 	 * @return void
 	 */
 	public function __unset ($name);
@@ -472,8 +472,8 @@ interface IView extends \MvcCore\View\IConstants {
 	 * If helper already exists in global helpers store - do not create it again - use instance from the store.
 	 * Then call it's public method named in the same way as helper and return result
 	 * as it is, without any conversion. So then there could be called any other helper method if whole helper instance is returned.
-	 * @param string $method View helper method name in pascal case.
-	 * @param mixed $arguments View helper method arguments.
+	 * @param  string $method    View helper method name in pascal case.
+	 * @param  mixed  $arguments View helper method arguments.
 	 * @throws \InvalidArgumentException If view doesn't exist in configured namespaces.
 	 * @return string|mixed View helper string result or any other view helper result type or view helper instance, always as `\MvcCore\Ext\Views\Helpers\AbstractHelper|\MvcCore\Ext\Views\Helpers\IHelper` instance.
 	 */

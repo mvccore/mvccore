@@ -55,10 +55,10 @@ trait Handlers {
 
 	/**
 	 * @inheritDocs
-	 * @param  mixed	$value		Variable to dump.
-	 * @param  string	$title		Optional title.
-	 * @param  array	$options	Dumper options.
-	 * @return mixed				Variable itself.
+	 * @param  mixed  $value   Variable to dump.
+	 * @param  string $title   Optional title.
+	 * @param  array  $options Dumper options.
+	 * @return mixed           Variable itself.
 	 */
 	public static function BarDump ($value, $title = NULL, $options = []) {
 		if (static::$originalDebugClass) {
@@ -75,9 +75,9 @@ trait Handlers {
 
 	/**
 	 * @inheritDocs
-	 * @param  mixed|\Exception|\Throwable	$value
-	 * @param  string						$priority
-	 * @return string						Logging filename full path.
+	 * @param  mixed|\Exception|\Throwable $value
+	 * @param  string                      $priority
+	 * @return string                      Logging filename full path.
 	 */
 	public static function Log ($value, $priority = \MvcCore\IDebug::INFO) {
 		if (static::$originalDebugClass) {
@@ -146,9 +146,9 @@ trait Handlers {
 	 * dumped string in debug bar - store the dump record for HTML response later
 	 * rendering in shutdown handler or render dumped string directly in HTTP
 	 * header for AJAX response, before any output body.
-	 * @param  mixed	$value		Variable to dump.
-	 * @param  string	$title		Optional title.
-	 * @param  array	$options	Dumper options.
+	 * @param  mixed  $value   Variable to dump.
+	 * @param  string $title   Optional title.
+	 * @param  array  $options Dumper options.
 	 * @return string
 	 */
 	protected static function dumpHandler ($value, $title = NULL, $options = []) {
@@ -254,9 +254,9 @@ trait Handlers {
 
 	/**
 	 * Sent given dump record into client in specific header for ajax response.
-	 * @param  mixed	$value		Variable to dump.
-	 * @param  string	$title		Optional title.
-	 * @param  array	$options	Dumper options.
+	 * @param  mixed  $value  Variable to dump.
+	 * @param  string $title  Optional title.
+	 * @param  array $options Dumper options.
 	 * @return void
 	 */
 	protected static function sendDumpInAjaxHeader ($value, $title, $options) {
