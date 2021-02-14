@@ -307,25 +307,130 @@ trait Reflection {
 		$traversing = $reflectionObject instanceof \ReflectionClass;
 		while (TRUE) {
 			$docComment = $reflectionObject->getDocComment();
-			$tagPos = mb_strpos($docComment, $phpDocsTagName);
-			if ($tagPos !== FALSE) {
-				$result = [];
-				preg_match("#{$phpDocsTagName}\s+([^\r\n\*@]+)#", $docComment, $matches, 0, $tagPos);
-				if ($matches && count($matches) > 1) {
-					$rawResult = explode(',', $matches[1]);
-					foreach ($rawResult as $rawItem) {
-						$rawItem = trim($rawItem);
-						if ($rawItem !== '')
-							$result[] = $rawItem;
-					}
+			if ($docComment !== FALSE) {
+				$tagPos = mb_strpos($docComment, $phpDocsTagName);
+				if ($tagPos !== FALSE) {
+					$tagLines = static::getPhpDocsTagArgsParseDocComment($docComment, $phpDocsTagName);
+					$result = static::getPhpDocsTagArgsEncodeTags($tagLines, $phpDocsTagName);
+					break;
 				}
-				break;
 			}
 			if ($traversing) {
 				$reflectionObject = $reflectionObject->getParentClass();
 				if ($reflectionObject === FALSE) break;
 			} else {
 				break;
+			}
+		}
+		return $result;
+	}
+
+	/**
+	 * Parse PHP Doc comment into tag(s) array.
+	 * @param  string $docComment 
+	 * @param  string $phpDocsTagName 
+	 * @return string[]
+	 */
+	protected static function getPhpDocsTagArgsParseDocComment ($docComment, $phpDocsTagName) {
+		$docComment = str_replace(["\r\n", "\r"], "\n", trim(mb_substr($docComment, 3, mb_strlen($docComment) - 5)));
+		$tagLines = [];
+		$docCommentLines = explode("\n", $docComment);
+		$tagMatched = FALSE;
+		$index = 0;
+		$length = count($docCommentLines);
+		$docCommentLine = $docCommentLines[$index];
+		$pattern = "#({$phpDocsTagName})\s*([^@]*)(@[a-zA-Z0-9]+)?#";
+		while ($index < $length) {
+			$docCommentLine = ltrim($docCommentLine, "*\t \v\0");
+			if ($tagMatched) {
+				if (mb_strpos($docCommentLine, '@') === 0) {
+					$tagMatched = FALSE;
+					continue;
+				}
+				$tagLines[] = $docCommentLine;
+				$index++;
+				if ($index === $length) break;
+				$docCommentLine = $docCommentLines[$index];
+			} else {
+				$tagPos = mb_strpos($docCommentLine, $phpDocsTagName);
+				if ($tagPos !== FALSE) {
+					$tagMatched = TRUE;
+					if ($tagPos > 0) $docCommentLine = mb_substr($docCommentLine, $tagPos);
+					preg_match($pattern, $docCommentLine, $matches, PREG_OFFSET_CAPTURE);
+					if ($matches && count($matches) > 3) {
+						$nextTagPos = $matches[3][1];
+						$tagLines[] = mb_substr($docCommentLine, 0, $nextTagPos);
+						$docCommentLine = mb_substr($docCommentLine, $nextTagPos);
+					} else {
+						$tagLines[] = $docCommentLine;
+						$index++;
+						if ($index === $length) break;
+						$docCommentLine = $docCommentLines[$index];
+					}
+				} else {
+					$index++;
+					if ($index === $length) break;
+					$docCommentLine = $docCommentLines[$index];
+				}
+			}
+		}
+		return $tagLines;
+	}
+
+	/**
+	 * Parse tag line(s) array into array(s) of parsed arguments.
+	 * Input is always array of one or more tags with the same name:
+	 * ````
+	 *   ['@validator SafeString', '@validator MyClass', '@validator AnotherClass({"key":"value",...})']
+	 * ````
+	 * Output could be like:
+	 * ````
+	 *   [
+	 *       'SafeString',
+	 *       'MyClass',
+	 *       'AnotherClass',
+	 *       (object) ["key", "value", ...]
+	 *   ]
+	 * ````
+	 * @param  \string[] $tagLines 
+	 * @param  string $phpDocsTagName
+	 * @return array
+	 */
+	protected static function getPhpDocsTagArgsEncodeTags ($tagLines, $phpDocsTagName) {
+		$result = [];
+		if (count($tagLines) > 0) {
+			$tagContent = mb_substr(implode("\n", $tagLines), mb_strlen($phpDocsTagName));
+			if (mb_strpos($tagContent, $phpDocsTagName) !== FALSE) {
+				$tagsContents = explode($phpDocsTagName, $tagContent);
+			} else {
+				$tagsContents = [$tagContent];
+			}
+			foreach ($tagsContents as $tagContent) {
+				$classCtorParsed = FALSE;
+				$localResult = [];
+				if (preg_match_all("#^(\s*)([A-Z][\\\\A-Za-z0-9]*)?\((.*)\)(\s*)$#s", $tagContent, $matches)) {
+					$className = $matches[2][0];
+					if ($className !== '') 
+						$localResult[] = $className;
+					try {
+						$jsonStr = str_replace(["\n"], "", $matches[3][0]);
+						$parsedData = static::DecodeJson($jsonStr);
+						$localResult[] = $parsedData;
+						$classCtorParsed = TRUE;
+					} catch (\Exception $e) {
+						$localResult = [];
+					}
+				}
+				if (!$classCtorParsed) {
+					$rawResult = explode(',', $tagContent);
+					foreach ($rawResult as $rawItem) {
+						$rawItem = trim($rawItem);
+						if ($rawItem !== '')
+							$localResult[] = $rawItem;
+					}
+				}
+				foreach ($localResult as $localItem)
+					$result[] = $localItem;
 			}
 		}
 		return $result;

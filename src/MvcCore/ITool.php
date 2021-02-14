@@ -342,7 +342,27 @@ interface ITool {
 	public static function GetAttrCtorArgs ($reflectionObject, $attributeClassFullName);
 
 	/**
-	 * Return PhpDocs tag arguments, arguments has to be defined without space, separated by comma.
+	 * Return PhpDocs tag arguments, arguments could be in three different formats:
+	 * 1. Comma separated strings
+	 * ````
+	 *   @tagName val1, val2, val3...
+	 * ````
+	 * 2. Tag name with constructor data in brackets:
+	 * ````
+	 *   @tagName({
+	 *       "option1": "val1",
+	 *       "option2": "val2",
+	 *       ...
+	 *   })
+	 * ````
+	 * 3. Tag name with Class name and JSON constructor data in brackets:
+	 * ````
+	 *   @tagName Full\ClassName({
+	 *       "option1": "val1",
+	 *       "option2": "val2",
+	 *       ...
+	 *   })
+	 * ````
 	 * @param  \ReflectionClass|\ReflectionMethod|\ReflectionProperty $reflectionObject 
 	 * @param  string                                                 $phpDocsTagName
 	 * @return array|NULL
