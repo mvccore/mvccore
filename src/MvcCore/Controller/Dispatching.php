@@ -161,6 +161,7 @@ trait Dispatching {
 	 */
 	protected function autoInitializeProperties () {
 		/** @var $this \MvcCore\Controller */
+		/** @var $ctrl \ReflectionClass */
 		$ctrl = new \ReflectionClass($this);
 		/** @var $props \ReflectionProperty[] */
 		$props = $ctrl->getProperties(

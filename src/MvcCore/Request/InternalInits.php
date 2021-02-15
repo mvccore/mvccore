@@ -324,7 +324,7 @@ trait InternalInits {
 	 * Get param value from given collection (`$_GET`, `$_POST`, `php://input` or http headers),
 	 * filtered by characters defined in second argument through `preg_replace()`.
 	 * Place into second argument only char groups you want to keep.
-	 * @param  array             $collection              Array with request params or array with request headers.
+	 * @param  array             $paramsCollection        Array with request params or array with request headers.
 	 * @param  string            $name                    Parameter string name.
 	 * @param  string|array|bool $pregReplaceAllowedChars If String - list of regular expression characters to only keep, if array - `preg_replace()` pattern and reverse, if `FALSE`, raw value is returned.
 	 * @param  mixed             $ifNullValue             Default value returned if given param name is null.

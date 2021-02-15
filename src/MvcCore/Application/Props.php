@@ -40,37 +40,37 @@ trait Props {
 	 * - `\MvcCore\IApplication::COMPILED_SFU`
 	 * - `\MvcCore\IApplication::NOT_COMPILED`
 	 * Read more about every mode in interface: `\MvcCore\IApplication`.
-	 * @var string
+	 * @var string|NULL
 	 */
 	protected $compiled = NULL;
 
 	/**
 	 * Environment detection instance.
-	 * @var \MvcCore\Environment
+	 * @var \MvcCore\Environment|NULL
 	 */
 	protected $environment = NULL;
 
 	/**
 	 * Top most parent controller instance currently dispatched by application.
-	 * @var \MvcCore\Controller
+	 * @var \MvcCore\Controller|NULL
 	 */
 	protected $controller = NULL;
 
 	/**
 	 * Request object - parsed URI, query params, app paths...
-	 * @var \MvcCore\Request
+	 * @var \MvcCore\Request|NULL
 	 */
 	protected $request = NULL;
 
 	/**
 	 * Response object - storage for response headers and rendered body.
-	 * @var \MvcCore\Response
+	 * @var \MvcCore\Response|NULL
 	 */
 	protected $response = NULL;
 
 	/**
 	 * Application http router to route request and build URL addresses.
-	 * @var \MvcCore\Router
+	 * @var \MvcCore\Router|NULL
 	 */
 	protected $router = NULL;
 

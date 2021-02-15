@@ -313,6 +313,7 @@ trait RouteMethods {
 
 	/**
 	 * @inheritDocs
+	 * @param  string $routeName
 	 * @return \MvcCore\Route|NULL
 	 */
 	public function GetRoute ($routeName) {

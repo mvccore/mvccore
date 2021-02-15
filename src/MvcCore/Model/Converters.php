@@ -18,8 +18,8 @@ trait Converters {
 	/**
 	 * Convert `bool`(s), `array`(s), `\DateTimeInterface` or `\DateInterval` 
 	 * value(s) into proper database (`scalar`) value if necessary.
-	 * @param  bool|int|float|string|\DateTimeInterface|\DateInterval|\bool[]|\int[]|\float[]|\string[]||\DateTimeInterface[]|\\DateInterval[]|NULL $value 
-	 * @param  array                                                                                                                                $formatArgs 
+	 * @param  bool|int|float|string|\DateTimeInterface|\DateInterval|\bool[]|\int[]|\float[]|\string[]|\DateTimeInterface[]|\DateInterval[]|NULL $value 
+	 * @param  array                                                                                                                              $formatArgs 
 	 * @return int|float|string|NULL
 	 */
 	protected static function convertToScalar ($value, $formatArgs = []) {

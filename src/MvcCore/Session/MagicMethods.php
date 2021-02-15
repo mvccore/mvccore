@@ -165,8 +165,8 @@ trait MagicMethods {
 	/**
 	 * Get the value at the specified index.
 	 * Example: `$thing = $sessionNamespace['any'];`
-	 * @param mixed $offset
-	 * @param mixed $value
+	 * @param  mixed $offset
+	 * @return mixed
 	 */
 	public function offsetGet ($offset) {
 		/** @var $this \MvcCore\Session */

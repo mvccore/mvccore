@@ -97,10 +97,13 @@ trait Instancing {
 	 *                     regular expression match function no `"match"` record
 	 *                     in configuration array as first argument defined.
 	 * @param array        $advancedConfiguration
-	 *                     Optional, http method to only match requests by this
-	 *                     method. If `NULL` (by default), request with any http
-	 *                     method could be matched by this route. Given value is
-	 *                     automatically converted to upper case.
+	 *                     Optional, array with adwanced configuration.
+	 *                     There could be defined:
+	 *                     - string   `method`   HTTP method name.
+	 *                     - string   `redirect` Redirect route name.
+	 *                     - bool     `absolute` Absolutize URL.
+	 *                     - callable `in`       URL filter in.
+	 *                     - bool     `out`      URL filter out.
 	 * @return void
 	 */
 	public function __construct (
@@ -285,8 +288,6 @@ trait Instancing {
 	 * function is called to initialize `controller` and `action` properties if
 	 * those are still `NULL`. Function tries to initialize those properties
 	 * from route `action` property`, if it contains colon char `:`.
-	 * @param  array $advCfg An array with possible keys `method`,
-	 *                       `redirect` and `absolute`.
 	 * @return void
 	 */
 	protected function constructCtrlOrActionByName () {

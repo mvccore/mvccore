@@ -183,7 +183,7 @@ trait GettersSetters {
 
 	/**
 	 * @inheritDocs
-	 * @param  string $name
+	 * @param  string $rawName
 	 * @param  array  $arguments
 	 * @throws \InvalidArgumentException
 	 * @return mixed|\MvcCore\Request

@@ -166,7 +166,7 @@ interface ITool {
 	 * - `key1=value&key2=`
 	 * - `key1=value&key2=&key3=`
 	 * ...
-	 * @param  string $jsonStr
+	 * @param  string $queryStr
 	 * @return bool
 	 */
 	public static function IsQueryString ($queryStr);

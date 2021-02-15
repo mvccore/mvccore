@@ -58,6 +58,7 @@ trait MagicMethods {
 	/**
 	 * Store not defined property inside `$this->currentData` array store.
 	 * @param  string $key
+	 * @param  mixed  $value
 	 * @return mixed
 	 */
 	public function __set ($key, $value) {
@@ -150,8 +151,8 @@ trait MagicMethods {
 	/**
 	 * Get the value at the specified index from the internal store.
 	 * Example: `$thing = $cfg['any'];`
-	 * @param mixed $offset
-	 * @param mixed $value
+	 * @param  mixed $offset
+	 * @return mixed
 	 */
 	public function offsetGet ($offset) {
 		/** @var $this \MvcCore\Config */
@@ -161,8 +162,9 @@ trait MagicMethods {
 	/**
 	 * Set the value at the specified index in the internal store.
 	 * Example: `$cfg['any'] = 'thing';`
-	 * @param mixed $offset
-	 * @param mixed $value
+	 * @param  mixed $offset
+	 * @param  mixed $value
+	 * @return void
 	 */
 	public function offsetSet ($offset, $value) {
 		/** @var $this \MvcCore\Config */
@@ -176,7 +178,8 @@ trait MagicMethods {
 	/**
 	 * Unset the value at the specified index in the internal store.
 	 * Example: `unset($cfg['any']);`
-	 * @param mixed $offset
+	 * @param  mixed $offset
+	 * @return void
 	 */
 	public function offsetUnset ($offset) {
 		/** @var $this \MvcCore\Config */

@@ -20,7 +20,7 @@ trait GettersSetters {
 	 * @param  string            $name                    Parameter string name.
 	 * @param  string|array|bool $pregReplaceAllowedChars If String - list of regular expression characters to only keep, if array - `preg_replace()` pattern and reverse, if `FALSE`, raw value is returned.
 	 * @param  mixed             $ifNullValue             Default value returned if given param name is null.
-	 * @param  string            $targetType              Target type to retype param value or default if-null value. If param is an array, every param item will be retyped into given target type.
+	 * @param  string|NULL       $targetType              Target type to retype param value or default if-null value. If param is an array, every param item will be retyped into given target type.
 	 * @return string|\string[]|int|\int[]|bool|\bool[]|array|mixed
 	 */
 	public function GetParam (
@@ -335,6 +335,7 @@ trait GettersSetters {
 
 	/**
 	 * @inheritDocs
+	 * @param  bool $viewEnabled
 	 * @return \MvcCore\Controller
 	 */
 	public function SetViewEnabled ($viewEnabled = TRUE) {

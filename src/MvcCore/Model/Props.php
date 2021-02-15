@@ -119,7 +119,7 @@ trait Props
 
 	/**
 	 * System configuration file database section properties names.
-	 * @var \string[]
+	 * @var array
 	 */
 	protected static $sysConfigProperties = [
 		'sectionName'	=> 'db',			// db section root node

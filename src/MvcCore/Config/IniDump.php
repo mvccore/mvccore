@@ -184,7 +184,7 @@ trait IniDump {
 	/**
 	 * Compare given values for all environments
 	 * and return specific info about comparison.
-	 * @param  mixed[]   $compareValues
+	 * @param  \mixed[]  $compareValues
 	 * @param  \string[] $environmentNames Environment names found in configuration.
 	 * @return array     [common env. value, boolean about if all env. values are the same, boolean about if values are scalar]
 	 */

@@ -372,7 +372,7 @@ trait Dispatching {
 
 	/**
 	 * @inheritDocs
-	 * @param  \Throwable $e
+	 * @param  string $exceptionMessage
 	 * @return bool
 	 */
 	public function RenderNotFound ($exceptionMessage = '') {

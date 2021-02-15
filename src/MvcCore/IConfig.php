@@ -182,6 +182,7 @@ interface IConfig {
 	/**
 	 * Store not defined property inside `$this->currentData` array store.
 	 * @param  string $key
+	 * @param  mixed  $value
 	 * @return mixed
 	 */
 	public function __set ($key, $value);

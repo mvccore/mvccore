@@ -37,8 +37,8 @@ trait Rendering {
 
 	/**
 	 * @inheritDocs
-	 * @param  string $relativePatht.
-	 * @param  string $content
+	 * @param  string      $relativePath
+	 * @param  string|NULL $content
 	 * @return string
 	 */
 	public function & RenderLayoutAndContent ($relativePath = '', & $content = NULL) {

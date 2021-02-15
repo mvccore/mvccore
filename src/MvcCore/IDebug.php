@@ -46,8 +46,8 @@ interface IDebug extends \MvcCore\Debug\IConstants {
 
 	/**
 	 * Starts/stops stopwatch.
-	 * @param  string $name Time pointer name.
-	 * @return float        Elapsed seconds.
+	 * @param  string|NULL $name Time pointer name.
+	 * @return float             Elapsed seconds.
 	 */
 	public static function Timer ($name = NULL);
 

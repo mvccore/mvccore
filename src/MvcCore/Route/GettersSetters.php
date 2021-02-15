@@ -147,6 +147,7 @@ trait GettersSetters {
 
 	/**
 	 * @inheritDocs
+	 * @param  string $controllerAction
 	 * @return \MvcCore\Route
 	 */
 	public function SetControllerAction ($controllerAction) {
@@ -219,6 +220,7 @@ trait GettersSetters {
 	 */
 	public function SetFilters (array $filters = []) {
 		/** @var $this \MvcCore\Route */
+		/** @var $filters array|\callable[] */
 		foreach ($filters as $direction => $handler) 
 			$this->SetFilter($handler, $direction);
 		return $this;
@@ -226,6 +228,9 @@ trait GettersSetters {
 
 	/**
 	 * @inheritDocs
+	 * @param  string $direction Strings `in` or `out`. You can use predefined constants:
+	 *                           - `\MvcCore\IRoute::CONFIG_FILTER_IN`
+	 *                           - `\MvcCore\IRoute::CONFIG_FILTER_OUT`
 	 * @return \callable|NULL
 	 */
 	public function GetFilter ($direction = \MvcCore\IRoute::CONFIG_FILTER_IN) {

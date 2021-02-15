@@ -35,7 +35,7 @@ trait Config {
 	/**
 	 * @inheritDocs
 	 * @param  \stdClass[]|array[] $configs               Configuration array with `\stdClass` objects or arrays with configuration data.
-	 * @param  string|int          $defaultConnectionName
+	 * @param  string|int|NULL     $defaultConnectionName
 	 * @return bool
 	 */
 	public static function SetConfigs (array $configs = [], $defaultConnectionName = NULL) {
@@ -50,7 +50,7 @@ trait Config {
 	/**
 	 * @inheritDocs
 	 * @param  int|string|NULL $connectionName
-	 * @return \stdClass
+	 * @return \stdClass|NULL
 	 */
 	public static function & GetConfig ($connectionName = NULL) {
 		if (self::$configs === NULL) static::loadConfigs(TRUE);

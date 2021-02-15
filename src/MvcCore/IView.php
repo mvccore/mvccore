@@ -294,8 +294,8 @@ interface IView extends \MvcCore\View\IConstants {
 	 * Do not use this method in templates!
 	 * Method renders whole configured layout template and return it's result
 	 * as string reference with inner rendered action template content.
-	 * @param  string $relativePatht.
-	 * @param  string $content
+	 * @param  string      $relativePath
+	 * @param  string|NULL $content
 	 * @return string
 	 */
 	public function & RenderLayoutAndContent ($relativePath = '', & $content = NULL);
