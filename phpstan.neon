@@ -1,0 +1,21 @@
+parameters:
+	level: 6
+	paths:
+		- src
+	checkGenericClassInNonGenericObjectType: false
+	parallel:
+		maximumNumberOfProcesses: 1
+	excludes_analyse:
+		- src/Throwable.php
+	ignoreErrors:
+		- '#^Ternary operator condition is always true\.$#'
+		- '#no value type specified in iterable type array\.#'
+		- '#^PHPDoc tag @var above assignment does not specify variable name\.$#'
+		- '#^PHPDoc tag @var has invalid value \(([^\)]+)\)\: Unexpected token "([^"]+)", expected type at offset \d#'
+		- '#^PHPDoc tag @var does not specify variable name\.$#'
+		- '#has invalid typehint type string\.$#'
+		- '#^Parameter \#\d ([^\s]+) of function ([^\s]+) expects string, string given\.$#'
+		- '#^Parameter \#\d ([^\s]+) of static method ([^\s]+) expects string, string given\.$#'
+		-
+			message: '#^Unsafe usage of new static#'
+			path: src/MvcCore/Application.php
