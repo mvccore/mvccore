@@ -19,7 +19,7 @@ trait Starting
 	 * @inheritDocs
 	 * @return void
 	 */
-	public static function Start (& $session = []) {
+	public static function Start () {
 		if (static::GetStarted()) return;
 		$req = self::$req ?: self::$req = \MvcCore\Application::GetInstance()->GetRequest();
 		if ($req->IsInternalRequest() === TRUE) return;

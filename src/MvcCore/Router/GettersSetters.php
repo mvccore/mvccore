@@ -161,10 +161,10 @@ trait GettersSetters {
 
 	/**
 	 * @inheritDocs
-	 * @param  callable $preRouteMatchingHandler 
+	 * @param  callable $preRouteUrlBuildingHandler 
 	 * @return \MvcCore\Router
 	 */
-	public function SetPreRouteUrlBuildingHandler (callable $preRouteUrlBuildingHandler = NULL) {
+	public function SetPreRouteUrlBuildingHandler (callable $preRouteUrlBuildingHandler) {
 		/** @var $this \MvcCore\Router */
 		$this->preRouteUrlBuildingHandler = $preRouteUrlBuildingHandler;
 		return $this;
