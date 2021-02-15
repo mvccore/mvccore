@@ -64,7 +64,7 @@ trait Helpers {
 	
 	/**
 	 * @inheritDocs
-	 * @param  string $jsonStr
+	 * @param  string $queryStr
 	 * @return bool
 	 */
 	public static function IsQueryString ($queryStr) {
@@ -426,10 +426,10 @@ trait Helpers {
 				}
 			}
 
-		} catch (\Throwable $e1) {
+		} catch (\Exception $e1) { // backward compatibility
 			$component = -1;
 			$result = FALSE;
-		} catch (\Exception $e2) {
+		} catch (\Throwable $e2) {
 			$component = -1;
 			$result = FALSE;
 		}
