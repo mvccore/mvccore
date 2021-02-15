@@ -129,8 +129,8 @@ trait Handlers {
 
 	/**
 	 * Starts/stops stopwatch.
-	 * @param  string Name.
-	 * @return float  Elapsed seconds.
+	 * @param  string|NULL $name Name.
+	 * @return float             Elapsed seconds.
 	 */
 	protected static function timerHandler ($name = NULL) {
 		$now = microtime(TRUE);
@@ -274,7 +274,7 @@ trait Handlers {
 				$base64Item
 			);
 		$ajaxHeadersIndex += 1;
-		$response->SetHeader('X-MvcCore-Debug', $ajaxHeadersIndex);
+		$response->SetHeader('X-MvcCore-Debug', (string) $ajaxHeadersIndex);
 	}
 
 	/**
