@@ -64,7 +64,7 @@ interface IRoute extends \MvcCore\Route\IConstants {
 	 * @param string|array $patternOrConfig
 	 *                     Required, configuration array or route pattern value 
 	 *                     to parse into match and reverse patterns.
-	 * @param string       $controllerAction		
+	 * @param string|NULL  $controllerAction		
 	 *                     Optional, controller and action name in pascal case 
 	 *                     like: `"Products:List"`.
 	 * @param array        $defaults
@@ -75,10 +75,13 @@ interface IRoute extends \MvcCore\Route\IConstants {
 	 *                     regular expression match function if no `"match"` 
 	 *                     property in config array as first argument defined.
 	 * @param array        $advancedConfiguration
-	 *                     Optional, http method to only match requests by this 
-	 *                     method. If `NULL` (by default), request with any http 
-	 *                     method could be matched by this route. Given value is 
-	 *                     automatically converted to upper case.
+	 *                     Optional, array with adwanced configuration.
+	 *                     There could be defined:
+	 *                     - string   `method`   HTTP method name.
+	 *                     - string   `redirect` Redirect route name.
+	 *                     - bool     `absolute` Absolutize URL.
+	 *                     - callable `in`       URL filter in.
+	 *                     - bool     `out`      URL filter out.
 	 * @return \MvcCore\Route
 	 */
 	public static function CreateInstance (
@@ -86,7 +89,7 @@ interface IRoute extends \MvcCore\Route\IConstants {
 		$controllerAction = NULL,
 		$defaults = [],
 		$constraints = [],
-		$method = NULL
+		$advancedConfiguration = []
 	);
 
 	/**
@@ -361,6 +364,7 @@ interface IRoute extends \MvcCore\Route\IConstants {
 	 * possibilities in `\MvcCore\Route::SetController();` setter method.
 	 *
 	 * Example: `"Products:List" | "\Front\Business\Products:Gallery"`
+	 * @param  string $controllerAction
 	 * @return \MvcCore\Route
 	 */
 	public function SetControllerAction ($controllerAction);
@@ -476,6 +480,9 @@ interface IRoute extends \MvcCore\Route\IConstants {
 	 * There is possible to call any `callable` as closure function in variable
 	 * except forms like `'ClassName::methodName'` and `['childClassName', 
 	 * 'parent::methodName']` and `[$childInstance, 'parent::methodName']`.
+	 * @param  string $direction Strings `in` or `out`. You can use predefined constants:
+	 *                           - `\MvcCore\IRoute::CONFIG_FILTER_IN`
+	 *                           - `\MvcCore\IRoute::CONFIG_FILTER_OUT`
 	 * @return \callable|NULL
 	 */
 	public function GetFilter ($direction = \MvcCore\IRoute::CONFIG_FILTER_IN);
@@ -696,30 +703,30 @@ interface IRoute extends \MvcCore\Route\IConstants {
 	 *       "/products-list/cool-product-name/blue?variant[]=L&amp;variant[]=XL"
 	 *   ]
 	 * ````
-	 * @param \MvcCore\Request $request 
-	 *                         Currently requested request object.
-	 * @param array            $params
-	 *                         URL params from application point completed 
-	 *                         by developer.
-	 * @param array            $defaultUrlParams 
-	 *                         Requested URL route params and query string 
-	 *                         params without escaped HTML special chars: 
+	 * @param  \MvcCore\Request $request 
+	 *                          Currently requested request object.
+	 * @param  array            $params
+	 *                          URL params from application point completed 
+	 *                          by developer.
+	 * @param  array            $defaultUrlParams 
+	 *                          Requested URL route params and query string 
+	 *                          params without escaped HTML special chars: 
 	 *                         `< > & " ' &`.
-	 * @param string           $queryStringParamsSepatator 
-	 *                         Query params separator, `&` by default. Always 
-	 *                         automatically completed by router instance.
-	 * @param bool             $splitUrl
-	 *                         Boolean value about to split completed result URL
-	 *                         into two parts or not. Default is FALSE to return 
-	 *                         a string array with only one record - the result 
-	 *                         URL. If `TRUE`, result url is split into two 
-	 *                         parts and function return array with two items.
-	 * @return \string[]       Result URL address in array. If last argument is 
-	 *                         `FALSE` by default, this function returns only 
-	 *                         single item array with result URL. If last 
-	 *                         argument is `TRUE`, function returns result URL 
-	 *                         in two parts - domain part with base path and 
-	 *                         path part with query string.
+	 * @param  string           $queryStringParamsSepatator 
+	 *                          Query params separator, `&` by default. Always 
+	 *                          automatically completed by router instance.
+	 * @param  bool             $splitUrl
+	 *                          Boolean value about to split completed result URL
+	 *                          into two parts or not. Default is FALSE to return 
+	 *                          a string array with only one record - the result 
+	 *                          URL. If `TRUE`, result url is split into two 
+	 *                          parts and function return array with two items.
+	 * @return \string[]        Result URL address in array. If last argument is 
+	 *                          `FALSE` by default, this function returns only 
+	 *                          single item array with result URL. If last 
+	 *                          argument is `TRUE`, function returns result URL 
+	 *                          in two parts - domain part with base path and 
+	 *                          path part with query string.
 	 */
 	public function Url (\MvcCore\IRequest $request, array & $params = [], array & $defaultUrlParams = [], $queryStringParamsSepatator = '&', $splitUrl = FALSE);
 

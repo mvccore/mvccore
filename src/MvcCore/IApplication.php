@@ -51,7 +51,7 @@ interface IApplication extends \MvcCore\Application\IConstants {
 	 * - `\MvcCore\IApplication::COMPILED_SFU`
 	 * - `\MvcCore\IApplication::NOT_COMPILED`
 	 * Read more about every mode in interface: `\MvcCore\IApplication`.
-	 * @var string
+	 * @return string
 	 */
 	public function GetCompiled ();
 
@@ -137,7 +137,7 @@ interface IApplication extends \MvcCore\Application\IConstants {
 
 	/**
 	 * Returns environment detection instance.
-	 * @var \MvcCore\Environment
+	 * @return \MvcCore\Environment
 	 */
 	public function GetEnvironment ();
 
@@ -587,7 +587,7 @@ interface IApplication extends \MvcCore\Application\IConstants {
 	 * @return bool
 	 */
 	public function DispatchControllerAction (
-		$controllerClassFullName,
+		$ctrlClassFullName,
 		$actionNamePc,
 		$viewScriptFullPath,
 		callable $exceptionCallback
@@ -607,8 +607,8 @@ interface IApplication extends \MvcCore\Application\IConstants {
 	 *   and when first param is key in routes configuration array).
 	 * - For all other cases is URL form like: `"index.php?controller=ctrlName&amp;action=actionName"`
 	 *   (when first param is not founded in routes configuration array).
-	 * @param string $controllerActionOrRouteName	Should be `"Controller:Action"` combination or just any route name as custom specific string.
-	 * @param array  $params						Optional, array with params, key is param name, value is param value.
+	 * @param  string $controllerActionOrRouteName Should be `"Controller:Action"` combination or just any route name as custom specific string.
+	 * @param  array  $params                      Optional, array with params, key is param name, value is param value.
 	 * @return string
 	 */
 	public function Url ($controllerActionOrRouteName = 'Index:Index', $params = []);
@@ -662,7 +662,7 @@ interface IApplication extends \MvcCore\Application\IConstants {
 	 * `\App\Controllers\Index::NotFound();` by default.
 	 * If there is no controller/action like that or any other exception happens,
 	 * it's processed very simple plain text response with 404 http code.
-	 * @param  \Exception $e
+	 * @param  string $exceptionMessage
 	 * @return bool
 	 */
 	public function RenderNotFound ($exceptionMessage = '');
@@ -681,7 +681,7 @@ interface IApplication extends \MvcCore\Application\IConstants {
 	 * @param  string $text
 	 * @return bool
 	 */
-	public function RenderError404PlainText ();
+	public function RenderError404PlainText ($text = '');
 
 
 	/***********************************************************************************

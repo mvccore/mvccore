@@ -160,7 +160,7 @@ interface IRouter extends \MvcCore\Router\IConstants {
 	 *                                could be useful to restore cached routes etc.
 	 * @return \MvcCore\Router
 	 */
-	public function SetRoutes ($routes = [], $autoInitialize = TRUE);
+	public function SetRoutes ($routes = [], $groupName = NULL, $autoInitialize = TRUE);
 
 	/**
 	 * Append or prepend new request routes.
@@ -226,7 +226,7 @@ interface IRouter extends \MvcCore\Router\IConstants {
 	 *                                `FALSE` old route is over-written by new one.
 	 * @return \MvcCore\Router
 	 */
-	public function AddRoutes (array $routes = [], $prepend = FALSE, $throwExceptionForDuplication = TRUE);
+	public function AddRoutes (array $routes = [], $groupName = NULL, $prepend = FALSE, $throwExceptionForDuplication = TRUE);
 
 	/**
 	 * Append or prepend new request route.
@@ -309,6 +309,7 @@ interface IRouter extends \MvcCore\Router\IConstants {
 	/**
 	 * Get configured `\MvcCore\Route` route instances by route name, 
 	 * `NULL` if no route presented.
+	 * @param  string $routeName
 	 * @return \MvcCore\Route|NULL
 	 */
 	public function GetRoute ($routeName);
@@ -316,14 +317,14 @@ interface IRouter extends \MvcCore\Router\IConstants {
 	/**
 	 * Get all configured route(s) as `\MvcCore\Route` instances.
 	 * Keys in returned array are route names, values are route objects.
-	 * @param  string|NULL $groupName 
-	 *                     Group name is first matched/parsed word in requested path to 
-	 *                     group routes by to try to match only routes you really need, 
-	 *                     not all of them. If `NULL` by default, there are returned 
+	 * @param  string|NULL $groupName
+	 *                     Group name is first matched/parsed word in requested path to
+	 *                     group routes by to try to match only routes you really need,
+	 *                     not all of them. If `NULL` by default, there are returned
 	 *                     all routes from all groups.
 	 * @return \MvcCore\Route[]
 	 */
-	public function GetRoutes ();
+	public function GetRoutes ($groupName = NULL);
 
 	/**
 	 * Get `\MvcCore\Request` object as reference, used internally for:
@@ -537,10 +538,10 @@ interface IRouter extends \MvcCore\Router\IConstants {
 	 *       }
 	 *   );
 	 * ````
-	 * @param  callable $preRouteMatchingHandler 
+	 * @param  callable $preRouteUrlBuildingHandler 
 	 * @return \MvcCore\Router
 	 */
-	public function SetPreRouteUrlBuildingHandler (callable $preRouteUrlBuildingHandler = NULL);
+	public function SetPreRouteUrlBuildingHandler (callable $preRouteUrlBuildingHandler);
 
 	/**
 	 * Get handler executed before building URL by rewrite routes. This 

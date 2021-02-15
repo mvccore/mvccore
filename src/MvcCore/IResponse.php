@@ -80,7 +80,7 @@ interface IResponse extends \MvcCore\Response\IConstants {
 	 *                                 set by PHP `header()` or by this object will be removed.
 	 * @return \MvcCore\Response
 	 */
-	public function SetHeaders (array $headers = []);
+	public function SetHeaders (array $headers = [], $cleanAllPrevious = FALSE);
 
 	/**
 	 * Set HTTP response header.

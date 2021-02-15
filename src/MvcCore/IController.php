@@ -143,10 +143,15 @@ interface IController extends \MvcCore\Controller\IConstants {
 	 * @param  string            $name                    Parameter string name.
 	 * @param  string|array|bool $pregReplaceAllowedChars If String - list of regular expression characters to only keep, if array - `preg_replace()` pattern and reverse, if `FALSE`, raw value is returned.
 	 * @param  mixed             $ifNullValue             Default value returned if given param name is null.
-	 * @param  string            $targetType              Target type to retype param value or default if-null value. If param is an array, every param item will be retyped into given target type.
+	 * @param  string|NULL       $targetType              Target type to retype param value or default if-null value. If param is an array, every param item will be retyped into given target type.
 	 * @return string|\string[]|int|\int[]|bool|\bool[]|array|mixed
 	 */
-	public function GetParam ($name = "", $pregReplaceAllowedChars = "a-zA-Z0-9_/\-\.\@");
+	public function GetParam (
+		$name = "",
+		$pregReplaceAllowedChars = "a-zA-Z0-9_;, /\-\@\:",
+		$ifNullValue = NULL,
+		$targetType = NULL
+	);
 
 	/**
 	 * Get current application singleton instance object as reference.
@@ -430,6 +435,7 @@ interface IController extends \MvcCore\Controller\IConstants {
 	 * `PreDispatch()` method and if view will be automatically rendered with wrapping
 	 * layout view around after controller action is called. Or set `FALSE`
 	 * otherwise to not render any view. Default value is `TRUE` for all non-ajax requests.
+	 * @param  bool $viewEnabled
 	 * @return \MvcCore\Controller
 	 */
 	public function SetViewEnabled ($viewEnabled = TRUE);
