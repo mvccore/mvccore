@@ -275,14 +275,18 @@ After exploring basic examples, you could look into more complex MvcCore applica
 [go to top](#user-content-outline)
 
 #### 4.2.10. Features - Classes - `\MvcCore\Config`
-- environment name management
-- automatic environment detection or detection by system config
 - system config or custom config files read/write with environment specific sections (extended INI format)
 - many more features in extended classes - YAML syntax and environment specific files
 
 [go to top](#user-content-outline)
 
-#### 4.2.11. Features - Classes - `\MvcCore\Tool`
+#### 4.2.11. Features - Classes - `\MvcCore\Environment`
+- environment name management
+- automatic environment detection or detection by system config
+
+[go to top](#user-content-outline)
+
+#### 4.2.12. Features - Classes - `\MvcCore\Tool`
 - OOP programming and checking helper methods
 - JSON encoding/decoding
 - string case conversions
@@ -291,7 +295,7 @@ After exploring basic examples, you could look into more complex MvcCore applica
 
 [go to top](#user-content-outline)
 
-#### 4.2.12. Features - Classes - `\MvcCore\Debug`
+#### 4.2.13. Features - Classes - `\MvcCore\Debug`
 - browser debug bar to dump any variable in HTML or in AJAX request
 - any variable/data/exceptions logging into predefined logging level files
 - global debug shortcut methods `x()`, `xx()` and `xxx()`
