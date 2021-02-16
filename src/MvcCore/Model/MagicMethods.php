@@ -27,9 +27,12 @@ trait MagicMethods {
 		$nameBegin = strtolower(substr($rawName, 0, 3));
 		$name = substr($rawName, 3);
 		if ($nameBegin == 'get') {
-			if (property_exists($this, lcfirst($name))) return $this->{lcfirst($name)};
+			$lcName = lcfirst($name);
+			if (property_exists($this, $lcName)) return $this->{$lcName};
 			if (property_exists($this, $name)) return $this->$name;
-			return NULL;
+			throw new \InvalidArgumentException(
+				"[".get_class()."] No property `{$lcName}` or `{$name}` defined."
+			);
 		} else if ($nameBegin == 'set') {
 			if (property_exists($this, lcfirst($name)))
 				$this->{lcfirst($name)} = isset($arguments[0]) ? $arguments[0] : NULL;
