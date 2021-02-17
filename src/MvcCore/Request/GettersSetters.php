@@ -374,11 +374,9 @@ trait GettersSetters {
 			$referer = isset($this->globalServer['HTTP_REFERER'])
 				? $this->globalServer['HTTP_REFERER']
 				: '';
-			if ($referer) {
+			if ($referer) 
 				while (mb_strpos($referer, '%') !== FALSE)
 					$referer = rawurldecode($referer);
-				$referer = filter_var($referer, FILTER_SANITIZE_URL) ?: '';
-			}
 			$this->referer = $referer;
 		}
 		return $rawInput ? $this->referer : static::HtmlSpecialChars($this->referer);
@@ -807,7 +805,23 @@ trait GettersSetters {
 	 * @return string
 	 */
 	public static function HtmlSpecialChars ($str) {
-		static $chars = ['"'=>'&quot;',"'"=>'&apos;','<'=>'&lt;','>'=>'&gt;',/*'&' => '&amp;',*/];
+		static $chars = [
+			// Base ASCII chars from 0 to 31:
+			"\x00"	=> '',	"\x08"	=> '',			"\x10"	=> '',	"\x18"	=> '',
+			"\x01"	=> '',	/*"\x09"	=> "\t",*/	"\x11"	=> '',	"\x19"	=> '',
+			"\x02"	=> '',	/*"\x0A"	=> "\n",*/	"\x12"	=> '',	"\x1A"	=> '',
+			"\x03"	=> '',	"\x0B"	=> '',			"\x13"	=> '',	"\x1B"	=> '',
+			"\x04"	=> '',	"\x0C"	=> '',			"\x14"	=> '',	"\x1C"	=> '',
+			"\x05"	=> '',	/*"\x0D"	=> "\r",*/	"\x15"	=> '',	"\x1D"	=> '',
+			"\x06"	=> '',	"\x0E"	=> '',			"\x16"	=> '',	"\x1E"	=> '',
+			"\x07"	=> '',	"\x0F"	=> '',			"\x17"	=> '',	"\x1F"	=> '',
+			// HTML special chars except `&`:
+			'"'=>'&quot;',
+			"'"=>'&apos;',
+			'<'=>'&lt;',
+			'>'=>'&gt;',
+			/*'&' => '&amp;',*/
+		];
 		return strtr($str, $chars);
 	}
 }

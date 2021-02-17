@@ -218,8 +218,7 @@ trait Props {
 	protected $method			= NULL;
 
 	/**
-	 * Referer URI if any, safely read by:
-	 * `filter_var($_SERVER['HTTP_REFERER'], FILTER_SANITIZE_URL);`
+	 * Referer URL if any.
 	 * Example: `"http://foreing.domain.com/path/where/is/link/to/?my=app"`
 	 * @var string|NULL
 	 */

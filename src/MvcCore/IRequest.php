@@ -491,8 +491,7 @@ interface IRequest extends \MvcCore\Request\IConstants {
 	public function IsSecure ();
 
 	/**
-	 * Get referer URL if any, safely read by:
-	 * `filter_var($_SERVER['HTTP_REFERER'], FILTER_SANITIZE_URL);`
+	 * Get referer URL if any.
 	 * Example: `"http://foreing.domain.com/path/where/is/link/to/?my=app"`
 	 * @param  bool $rawInput Get raw input if `TRUE`. `FALSE` by default to get value through `htmlspecialchars($result);` without ampersand `&` escaping.
 	 * @return string
@@ -721,6 +720,7 @@ interface IRequest extends \MvcCore\Request\IConstants {
 
 	/**
 	 * Convert special characters to HTML entities except ampersand `&`.
+	 * Remove all ASCII characters from 0 to 31 except `\r`,`\n` and `\t`.
 	 * @see http://php.net/manual/en/function.htmlspecialchars.php
 	 * @param  string $str
 	 * @return string
