@@ -142,10 +142,10 @@ trait Rendering {
 	 * @return string
 	 */
 	public static function GetViewScriptFullPath ($typePath = '', $corectedRelativePath = '') {
-		if (self::$viewScriptsFullPathBase === NULL)
-			self::initViewScriptsFullPathBase();
+		if (static::$viewScriptsFullPathBase === NULL)
+			static::initViewScriptsFullPathBase();
 		return implode('/', [
-			self::$viewScriptsFullPathBase,
+			static::$viewScriptsFullPathBase,
 			$typePath,
 			$corectedRelativePath . static::$extension
 		]);

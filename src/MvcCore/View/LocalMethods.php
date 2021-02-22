@@ -27,10 +27,10 @@ trait LocalMethods {
 		$result = str_replace('\\', '/', $relativePath);
 		// if relative path starts with dot:
 		if (mb_substr($relativePath, 0, 1) === '.') {
-			if (self::$viewScriptsFullPathBase === NULL)
-				self::initViewScriptsFullPathBase();
+			if (static::$viewScriptsFullPathBase === NULL)
+				static::initViewScriptsFullPathBase();
 			$typedViewDirFullPath = implode('/', [
-				self::$viewScriptsFullPathBase, $typePath
+				static::$viewScriptsFullPathBase, $typePath
 			]);
 			// get current view script full path:
 			$renderedFullPaths = & $this->__protected['renderedFullPaths'];
@@ -63,7 +63,7 @@ trait LocalMethods {
 	 */
 	protected static function initViewScriptsFullPathBase () {
 		$app = \MvcCore\Application::GetInstance();
-		self::$viewScriptsFullPathBase = implode('/', [
+		static::$viewScriptsFullPathBase = implode('/', [
 			$app->GetRequest()->GetAppRoot(),
 			$app->GetAppDir(),
 			$app->GetViewsDir()

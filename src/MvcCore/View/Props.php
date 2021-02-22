@@ -154,7 +154,7 @@ trait Props {
 
 	/**
 	 * Cached base full path for repeat method calls `\MvcCore\View::GetViewScriptFullPath();`.
-	 * @var string
+	 * @var string|NULL
 	 */
 	protected static $viewScriptsFullPathBase = NULL;
 
