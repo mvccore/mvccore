@@ -65,7 +65,7 @@ trait Rendering {
 			$buildInHelpersInit = TRUE;
 			$this->setUpRenderBuildInHelpers($helpers);
 		}
-		foreach (self::$_globalHelpers as $helperNamePascalCase => $helperRecord) {
+		foreach (self::$globalHelpers as $helperNamePascalCase => $helperRecord) {
 			$helperNameCamelCase = lcfirst($helperNamePascalCase);
 			if (isset($helpers[$helperNameCamelCase])) continue;
 			//list($instance, $implementsIHelper, $needsClosureFn) = $helperRecord;
@@ -142,10 +142,10 @@ trait Rendering {
 	 * @return string
 	 */
 	public static function GetViewScriptFullPath ($typePath = '', $corectedRelativePath = '') {
-		if (self::$_viewScriptsFullPathBase === NULL)
+		if (self::$viewScriptsFullPathBase === NULL)
 			self::initViewScriptsFullPathBase();
 		return implode('/', [
-			self::$_viewScriptsFullPathBase,
+			self::$viewScriptsFullPathBase,
 			$typePath,
 			$corectedRelativePath . static::$extension
 		]);

@@ -150,17 +150,17 @@ trait Props {
 	 * These helpers instances are used for all views.
 	 * @var array
 	 */
-	private static $_globalHelpers = [];
+	protected static $globalHelpers = [];
 
 	/**
 	 * Cached base full path for repeat method calls `\MvcCore\View::GetViewScriptFullPath();`.
 	 * @var string
 	 */
-	private static $_viewScriptsFullPathBase = NULL;
+	protected static $viewScriptsFullPathBase = NULL;
 
 	/**
 	 * Reference to `\MvcCore\Application::GetInstance()->GetToolClass();`.
 	 * @var string|NULL
 	 */
-	private static $_toolClass = NULL;
+	protected static $toolClass = NULL;
 }

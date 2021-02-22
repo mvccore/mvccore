@@ -81,7 +81,7 @@ trait Escaping {
 	 */
 	public function EscapeJs ($str, $flags = 0, $depth = 512) {
 		/** @var $this \MvcCore\View */
-		$toolClass = self::$_toolClass;
+		$toolClass = self::$toolClass;
 		$json = $toolClass::EncodeJson($str, JSON_UNESCAPED_UNICODE);
 		return str_replace([']]>', '<!'], [']]\x3E', '\x3C!'], $json);
 	}

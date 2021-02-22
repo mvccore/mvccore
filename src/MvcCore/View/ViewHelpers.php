@@ -100,15 +100,15 @@ trait ViewHelpers {
 		$helperNamePascalCase = ucfirst($helperNameCamelCase);
 		if (isset($helpers[$helperNameCamelCase])) {
 			$instance = & $helpers[$helperNameCamelCase];
-		} else if (isset(self::$_globalHelpers[$helperNamePascalCase])) {
-			$globalHelpersRecord = & self::$_globalHelpers[$helperNamePascalCase];
+		} else if (isset(self::$globalHelpers[$helperNamePascalCase])) {
+			$globalHelpersRecord = & self::$globalHelpers[$helperNamePascalCase];
 			$instance = & $globalHelpersRecord[0];
 			//$result = & $instance;
 			$setUpView = $globalHelpersRecord[1];
 			$needsClosureFn = $globalHelpersRecord[2];
 		} else {
 			$helperFound = FALSE;
-			$toolClass = self::$_toolClass ?: self::$_toolClass = \MvcCore\Application::GetInstance()->GetToolClass();
+			$toolClass = self::$toolClass ?: self::$toolClass = \MvcCore\Application::GetInstance()->GetToolClass();
 			$helpersInterface = self::HELPERS_INTERFACE_CLASS_NAME;
 			if (!static::$helpersNamespaces)
 				self::initHelpersNamespaces();
@@ -127,7 +127,7 @@ trait ViewHelpers {
 					!($instance instanceof \Closure) &&
 					!method_exists($className, '__invoke')
 				);
-				self::$_globalHelpers[$helperNamePascalCase] = [& $instance, $setUpView, $needsClosureFn];
+				self::$globalHelpers[$helperNamePascalCase] = [& $instance, $setUpView, $needsClosureFn];
 				break;
 			}
 			if (!$helperFound)
@@ -168,9 +168,7 @@ trait ViewHelpers {
 	public function SetHelper ($helperNameCamelCase, $instance, $forAllTemplates = TRUE) {
 		/** @var $this \MvcCore\View */
 		$implementsIHelper = FALSE;
-		if (self::$_toolClass === NULL)
-			self::$_toolClass = \MvcCore\Application::GetInstance()->GetToolClass();
-		$toolClass = self::$_toolClass;
+		$toolClass = self::$toolClass ?: self::$toolClass = \MvcCore\Application::GetInstance()->GetToolClass();
 		$helpersInterface = self::HELPERS_INTERFACE_CLASS_NAME;
 		$className = get_class($instance);
 		$implementsIHelper = $toolClass::CheckClassInterface($className, $helpersInterface, FALSE, FALSE);
@@ -180,7 +178,7 @@ trait ViewHelpers {
 			!method_exists($className, '__invoke')
 		);
 		if ($forAllTemplates)
-			self::$_globalHelpers[ucfirst($helperNameCamelCase)] = [
+			self::$globalHelpers[ucfirst($helperNameCamelCase)] = [
 				& $instance, $implementsIHelper, $needsClosureFn
 			];
 		$helpers = & $this->__protected['helpers'];
