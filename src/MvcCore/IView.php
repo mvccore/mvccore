@@ -209,10 +209,12 @@ interface IView extends \MvcCore\View\IConstants {
 	/**
 	 * Set up view rendering arguments  to render layout and action view in both modes properly.
 	 * Set up view instance helpers before rendering.
-	 * @param  int $renderMode
+	 * @param  int    $renderMode
+	 * @param  string $controllerOrActionNameDashed
+	 * @param  string $actionNameDashed
 	 * @return \MvcCore\View
 	 */
-	public function SetUpRender ($renderMode = \MvcCore\IView::RENDER_WITH_OB_FROM_ACTION_TO_LAYOUT);
+	public function SetUpRender ($renderMode = \MvcCore\IView::RENDER_WITH_OB_FROM_ACTION_TO_LAYOUT, $controllerOrActionNameDashed = NULL, $actionNameDashed = NULL);
 
 	/**
 	 * This is INTERNAL method, do not use it in templates.
