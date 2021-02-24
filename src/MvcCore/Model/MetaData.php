@@ -16,23 +16,11 @@ namespace MvcCore\Model;
 trait MetaData {
 	
 	/**
-	 * Return cached array about properties in current class to not create
-	 * and parse reflection objects every time. 
-	 * 
-	 * Every key in array is property name, every value is array with metadata:
-	 * - `0`	`boolean`	`TRUE` for private property.
-	 * - `1'	`boolean`	`TRUE` to allow `NULL` values.
-	 * - `2`	`string[]`	Property types from code or from doc comments or empty array.
-	 * 
-	 * Possible reading flags:
-	 *  - `\MvcCore\IModel::PROPS_INHERIT`
-	 *  - `\MvcCore\IModel::PROPS_PRIVATE`
-	 *  - `\MvcCore\IModel::PROPS_PROTECTED`
-	 *  - `\MvcCore\IModel::PROPS_PUBLIC`
+	 * @inheritDocs
 	 * @param  int $propsFlags
 	 * @return array
 	 */
-	protected static function getMetaData ($propsFlags = 0) {
+	public static function GetMetaData ($propsFlags = 0) {
 		/** @var $this \MvcCore\Model */
 
 		/**

@@ -28,7 +28,7 @@ trait DataMethods {
 	 */
 	public function GetValues ($propsFlags = 0, $getNullValues = FALSE) {
 		/** @var $this \MvcCore\Model */
-		$metaData = static::getMetaData($propsFlags);
+		$metaData = static::GetMetaData($propsFlags);
 		
 		$phpWithTypes = PHP_VERSION_ID >= 70400;
 		$keyConversionsMethod = NULL;
@@ -84,7 +84,7 @@ trait DataMethods {
 		/** @var $this \MvcCore\Model */
 		$completeInitialValues = ($propsFlags & \MvcCore\IModel::PROPS_INITIAL_VALUES) != 0;
 
-		$metaData = static::getMetaData($propsFlags);
+		$metaData = static::GetMetaData($propsFlags);
 
 		$keyConversionsMethod = NULL;
 		$caseSensitiveKeysMap = '';
@@ -142,7 +142,7 @@ trait DataMethods {
 	 */
 	public function GetTouched ($propsFlags = 0) {
 		/** @var $this \MvcCore\Model */
-		$metaData = static::getMetaData($propsFlags);
+		$metaData = static::GetMetaData($propsFlags);
 		
 		$phpWithTypes = PHP_VERSION_ID >= 70400;
 		$keyConversionsMethod = NULL;

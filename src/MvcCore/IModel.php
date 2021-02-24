@@ -146,6 +146,27 @@ interface IModel extends \MvcCore\Model\IConstants {
 	public static function SetConfig (array $config = [], $connectionName = NULL);
 
 	/**
+	 * Return cached array of arrays about properties in current class to not create
+	 * and parse reflection objects every time. Be carefull, meta data are in lowest 
+	 * level as it could be - only in array types, to serialize/unserialize them 
+	 * into/from cache as fast as possible instead of serializing PHP objects. 
+	 * 
+	 * Every key in array is property name, every value is array with metadata:
+	 * - `0`	`boolean`	`TRUE` for private property.
+	 * - `1'	`boolean`	`TRUE` to allow `NULL` values.
+	 * - `2`	`string[]`	Property types from code or from doc comments or empty array.
+	 * 
+	 * Possible reading flags:
+	 *  - `\MvcCore\IModel::PROPS_INHERIT`
+	 *  - `\MvcCore\IModel::PROPS_PRIVATE`
+	 *  - `\MvcCore\IModel::PROPS_PROTECTED`
+	 *  - `\MvcCore\IModel::PROPS_PUBLIC`
+	 * @param  int $propsFlags
+	 * @return array
+	 */
+	public static function GetMetaData ($propsFlags = 0);
+
+	/**
 	 * Collect all model class properties values into array.
 	 * Result keys could be converted by any conversion flag.
 	 * @param  int  $propsFlags    All properties flags are available except flags: 
