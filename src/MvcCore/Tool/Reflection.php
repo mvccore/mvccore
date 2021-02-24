@@ -185,8 +185,11 @@ trait Reflection {
 		$result = [];
 		$attrsOnly = $preferAttributes === TRUE;
 		$docsTagsOnly = $preferAttributes === FALSE;
+		$classFullName = is_string($classFullNameOrInstance) 
+			? $classFullNameOrInstance
+			: get_class($classFullNameOrInstance);
 		$reflectionObject = new \ReflectionMethod($classFullNameOrInstance, $methodName);
-		$classMethodFullName = $classFullNameOrInstance . '::' . $methodName;
+		$classMethodFullName = $classFullName . '::' . $methodName;
 		foreach ($attrsClassesOrDocsTags as $attrClassOrDocsTag) 
 			$result[$attrClassOrDocsTag] = static::getAttrArgsOrPhpDocTagArgs(
 				implode('|', ['mthd', $classMethodFullName, $attrClassOrDocsTag]),
@@ -217,8 +220,11 @@ trait Reflection {
 		$result = [];
 		$attrsOnly = $preferAttributes === TRUE;
 		$docsTagsOnly = $preferAttributes === FALSE;
+		$classFullName = is_string($classFullNameOrInstance) 
+			? $classFullNameOrInstance
+			: get_class($classFullNameOrInstance);
 		$reflectionObject = new \ReflectionProperty($classFullNameOrInstance, $propertyName);
-		$classPropFullName = $classFullNameOrInstance . '::' . $propertyName;
+		$classPropFullName = $classFullName . '::' . $propertyName;
 		foreach ($attrsClassesOrDocsTags as $attrClassOrDocsTag) 
 			$result[$attrClassOrDocsTag] = static::getAttrArgsOrPhpDocTagArgs(
 				implode('|', ['prop', $classPropFullName, $attrClassOrDocsTag]),
