@@ -233,30 +233,39 @@ trait Rendering {
 		$router = $this->controller->GetRouter();
 		$helpers += [
 			'url' => function ($controllerActionOrRouteName = 'Index:Index', array $params = []) use (& $router) {
+				/** @var $router \MvcCore\Router */
 				return $router->Url($controllerActionOrRouteName, $params);
 			},
 			'assetUrl' => function ($path = '') use (& $router) {
+				/** @var $router \MvcCore\Router */
 				return $router->Url('Controller:Asset', ['path' => $path]);
 			},
+			'escape' => function ($str, $encoding = 'UTF-8') {
+				/** @var $this \MvcCore\View */
+				return $this->Escape($str, $encoding);
+			},
 			'escapeHtml' => function ($str, $encoding = 'UTF-8') {
+				/** @var $this \MvcCore\View */
 				return $this->EscapeHtml($str, $encoding);
 			},
-			'escapeHtmlText' => function ($str, $encoding = 'UTF-8') {
-				return $this->EscapeHtmlText($str, $encoding);
-			},
-			'escapeHtmlAttr' => function ($str, $double = TRUE, $encoding = 'UTF-8') {
-				return $this->EscapeHtmlAttr($str, $double, $encoding);
+			'escapeAttr' => function ($str, $double = TRUE, $encoding = 'UTF-8') {
+				/** @var $this \MvcCore\View */
+				return $this->EscapeAttr($str, $double, $encoding);
 			},
 			'escapeXml' => function ($str, $encoding = 'UTF-8') {
+				/** @var $this \MvcCore\View */
 				return $this->EscapeXml($str, $encoding);
 			},
 			'escapeJs' => function ($str, $flags = 0, $depth = 512) {
+				/** @var $this \MvcCore\View */
 				return $this->EscapeJs($str, $flags, $depth);
 			},
 			'escapeCss' => function ($str) {
+				/** @var $this \MvcCore\View */
 				return $this->EscapeCss($str);
 			},
 			'escapeICal' => function ($str) {
+				/** @var $this \MvcCore\View */
 				return $this->EscapeICal($str);
 			},
 		];
