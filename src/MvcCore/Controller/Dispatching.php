@@ -199,7 +199,7 @@ trait Dispatching {
 
 	/**
 	 * Automatically initialize given class and property with PHP Docs tag `@autoInit` 
-	 * or with PHP8+ attribute `\MvcCore\ControllerAutoInit`.
+	 * or with PHP8+ attribute `\MvcCore\Controller\AutoInit`.
 	 * This method is always called inside `\MvcCore\Controller::Init();` 
 	 * method, after session has been started.
 	 * If there is given `$factoryMethodName`, initialize  property with calling
@@ -293,22 +293,22 @@ trait Dispatching {
 			} else {
 				$this->childControllers[$index] = $controller;
 			}
+			$controller
+				->SetParentController($this)
+				->SetApplication($this->application)
+				->SetEnvironment($this->environment)
+				// Method `SetRequest()` also sets `ajax`, `controllerName` and `actionName`.
+				//->SetIsAjax($this->ajax)
+				//->SetControllerName($this->controllerName)
+				//->SetActionName($this->actionName)
+				->SetRequest($this->request)
+				->SetResponse($this->response)
+				->SetRouter($this->router)
+				->SetRenderMode($this->renderMode)
+				->SetLayout($this->layout)
+				->SetViewEnabled($this->viewEnabled)
+				->SetUser($this->user);
 		}
-		$controller
-			->SetParentController($this)
-			->SetApplication($this->application)
-			->SetEnvironment($this->environment)
-			// Method `SetRequest()` also sets `ajax`, `controllerName` and `actionName`.
-			//->SetIsAjax($this->ajax)
-			//->SetControllerName($this->controllerName)
-			//->SetActionName($this->actionName)
-			->SetRequest($this->request)
-			->SetResponse($this->response)
-			->SetRouter($this->router)
-			->SetRenderMode($this->renderMode)
-			->SetLayout($this->layout)
-			->SetViewEnabled($this->viewEnabled)
-			->SetUser($this->user);
 		return $this;
 	}
 
