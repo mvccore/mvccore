@@ -36,7 +36,16 @@ trait LocalMethods {
 			$renderedFullPaths = & $this->__protected['renderedFullPaths'];
 			$lastRenderedFullPath = $renderedFullPaths[count($renderedFullPaths) - 1];
 			// create `$renderedRelPath` by cutting directory with typed view scripts:
-			$renderedRelPath = mb_substr($lastRenderedFullPath, mb_strlen($typedViewDirFullPath));
+			if (mb_strpos($lastRenderedFullPath, $typedViewDirFullPath) === 0) {
+				$renderedRelPath = mb_substr($lastRenderedFullPath, mb_strlen($typedViewDirFullPath));
+			} else if (mb_strpos($lastRenderedFullPath, static::$viewScriptsFullPathBase) === 0) {
+				$renderedRelPath = mb_substr($lastRenderedFullPath, mb_strlen(static::$viewScriptsFullPathBase));
+			} else {
+				$lastSlashPos = mb_strrpos($lastRenderedFullPath, '/');
+				$renderedRelPath = $lastSlashPos !== FALSE
+					? mb_substr($lastRenderedFullPath, 0, $lastSlashPos)
+					: '';
+			}
 			// set how many dots is at `$relativePath` string start:
 			$startingDotsCount = mb_substr($relativePath, 1, 1) === '.' ? 2 : 1;
 			// cut so many slash steps from `$renderedRelPath` start, 
