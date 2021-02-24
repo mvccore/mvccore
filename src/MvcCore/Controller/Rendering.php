@@ -32,31 +32,28 @@ trait Rendering {
 	 */
 	public function Render ($controllerOrActionNameDashed = NULL, $actionNameDashed = NULL) {
 		/** @var $this \MvcCore\Controller */
-		if ($this->dispatchState >= \MvcCore\IController::DISPATCH_STATE_RENDERED)
-			return '';
-		if ($this->dispatchState < \MvcCore\IController::DISPATCH_STATE_INITIALIZED)
-			$this->Init();
-		if ($this->dispatchState < \MvcCore\IController::DISPATCH_STATE_PRE_DISPATCHED)
-			$this->PreDispatch();
-		if ($this->dispatchState < \MvcCore\IController::DISPATCH_STATE_RENDERED && $this->viewEnabled) {
-			$topMostParentCtrl = $this->parentController === NULL;
-			// If this is child controller - set up view store with parent controller view store, do not overwrite existing keys:
-			if (!$topMostParentCtrl)
-				$this->view->SetUpStore($this->parentController->GetView(), FALSE);
-			// Set up child controllers into view if any of them is named by string index:
-			foreach ($this->childControllers as $ctrlKey => $childCtrl) {
-				if (!is_numeric($ctrlKey) && !isset($this->view->{$ctrlKey}))
-					$this->view->{$ctrlKey} = $childCtrl;
-			}
-			// Render this view or view with layout by render mode:
-			if (($this->renderMode & \MvcCore\IView::RENDER_WITH_OB_FROM_ACTION_TO_LAYOUT) != 0) {
-				$this->renderWithObFromActionToLayout(
-					$controllerOrActionNameDashed,
-					$actionNameDashed,
-					$topMostParentCtrl
-				);
-				return '';
-			} else /*if (($this->renderMode & \MvcCore\IView::RENDER_WITHOUT_OB_CONTINUOUSLY) != 0)*/ {
+		if (!$this->renderCheckDispatchState()) return '';
+
+		$topMostParentCtrl = $this->parentController === NULL;
+		
+		// If this is child controller - set up view store with parent controller view store, do not overwrite existing keys:
+		if (!$topMostParentCtrl)
+			$this->view->SetUpStore($this->parentController->GetView(), FALSE);
+		
+		// Set up child controllers into view if any of them is named by string index:
+		foreach ($this->childControllers as $ctrlKey => $childCtrl) {
+			if (!is_numeric($ctrlKey) && !isset($this->view->{$ctrlKey}))
+				$this->view->{$ctrlKey} = $childCtrl;
+		}
+
+		// Render this view or view with layout by render mode:
+		if (($this->renderMode & \MvcCore\IView::RENDER_WITH_OB_FROM_ACTION_TO_LAYOUT) != 0) {
+			$this->renderWithObFromActionToLayout(
+				$controllerOrActionNameDashed, $actionNameDashed, $topMostParentCtrl
+			);
+
+		} else /*if (($this->renderMode & \MvcCore\IView::RENDER_WITHOUT_OB_CONTINUOUSLY) != 0)*/ {
+			if ($topMostParentCtrl) {
 				$sessionClass = $this->GetApplication()->GetSessionClass();
 				if ($sessionClass::GetStarted() && !$this->response->IsSentHeaders()) {
 					$sessionClass::SendCookie();
@@ -67,16 +64,14 @@ trait Rendering {
 					$this->Terminate();
 					return '';
 				}
-				//if (ob_get_length() !== FALSE) // flush out any previous content
-				//	while (ob_get_level() > 0) ob_end_flush();
-				$this->renderWithoutObContinuously(
-					$controllerOrActionNameDashed,
-					$actionNameDashed,
-					$topMostParentCtrl
-				);
-				return '';
 			}
+			//if (ob_get_length() !== FALSE) // flush out any previous content
+			//	while (ob_get_level() > 0) ob_end_flush();
+			$this->renderWithoutObContinuously(
+				$controllerOrActionNameDashed,$actionNameDashed, $topMostParentCtrl
+			);
 		}
+		
 		$this->dispatchState = \MvcCore\IController::DISPATCH_STATE_RENDERED;
 		return '';
 	}
@@ -265,6 +260,24 @@ trait Rendering {
 	}
 
 	/**
+	 * Check controller dispatch state before rendering.
+	 * Call `Init()` or `PreDispatch()` method if necessary 
+	 * and return `TRUE` if view could be rendered.
+	 * @return bool
+	 */
+	protected function renderCheckDispatchState () {
+		if ($this->dispatchState >= \MvcCore\IController::DISPATCH_STATE_RENDERED)
+			return FALSE;
+		if ($this->dispatchState < \MvcCore\IController::DISPATCH_STATE_INITIALIZED)
+			$this->Init();
+		if ($this->dispatchState < \MvcCore\IController::DISPATCH_STATE_PRE_DISPATCHED)
+			$this->PreDispatch();
+		if ($this->dispatchState >= \MvcCore\IController::DISPATCH_STATE_RENDERED || !$this->viewEnabled) 
+			return FALSE;
+		return TRUE;
+	}
+
+	/**
 	 * Default rendering mode.
 	 * Render action view first into output buffer, then render layout view
 	 * wrapped around rendered action view string also into output buffer.
@@ -285,8 +298,8 @@ trait Rendering {
 		);
 		$actionResult = $this->view->RenderScript($viewScriptPath);
 		if (!$topMostParentCtrl) {
-			$this->dispatchState = \MvcCore\IController::DISPATCH_STATE_RENDERED;
 			unset($actionResult, $this->view);
+			$this->dispatchState = \MvcCore\IController::DISPATCH_STATE_RENDERED;
 			return;
 		}
 		// create top most parent layout view, set up and render to outputResult
@@ -334,7 +347,10 @@ trait Rendering {
 		} else {
 			// complete paths
 			$viewScriptPath = $this->GetViewScriptPath($controllerOrActionNameDashed, $actionNameDashed);
-			// render action view into string
+			// render sub view into output
+			$this->view->SetUpRender(
+				$this->renderMode, $controllerOrActionNameDashed, $actionNameDashed
+			);
 			$this->view->RenderScript($viewScriptPath);
 			unset($this->view);
 		}
