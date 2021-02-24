@@ -140,6 +140,7 @@ trait Rendering {
 	 * @return string
 	 */
 	public static function GetViewScriptFullPath ($typePath = '', $corectedRelativePath = '') {
+		/** @var $this \MvcCore\View */
 		if (static::$viewScriptsFullPathBase === NULL)
 			static::initViewScriptsFullPathBase();
 		return implode('/', [
