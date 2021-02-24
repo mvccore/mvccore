@@ -32,21 +32,23 @@ trait Rendering {
 	 */
 	public function Render ($controllerOrActionNameDashed = NULL, $actionNameDashed = NULL) {
 		/** @var $this \MvcCore\Controller */
+		if ($this->dispatchState >= \MvcCore\IController::DISPATCH_STATE_RENDERED)
+			return '';
 		if ($this->dispatchState < \MvcCore\IController::DISPATCH_STATE_INITIALIZED)
 			$this->Init();
 		if ($this->dispatchState < \MvcCore\IController::DISPATCH_STATE_PRE_DISPATCHED)
 			$this->PreDispatch();
 		if ($this->dispatchState < \MvcCore\IController::DISPATCH_STATE_RENDERED && $this->viewEnabled) {
 			$topMostParentCtrl = $this->parentController === NULL;
-			// if this is child controller - set up view store with parent controller view store
+			// If this is child controller - set up view store with parent controller view store, do not overwrite existing keys:
 			if (!$topMostParentCtrl)
 				$this->view->SetUpStore($this->parentController->GetView(), FALSE);
-			// set up child controllers into view if any of them is named by string index
+			// Set up child controllers into view if any of them is named by string index:
 			foreach ($this->childControllers as $ctrlKey => $childCtrl) {
 				if (!is_numeric($ctrlKey) && !isset($this->view->{$ctrlKey}))
 					$this->view->{$ctrlKey} = $childCtrl;
 			}
-			// render this view or view with layout by render mode:
+			// Render this view or view with layout by render mode:
 			if (($this->renderMode & \MvcCore\IView::RENDER_WITH_OB_FROM_ACTION_TO_LAYOUT) != 0) {
 				$this->renderWithObFromActionToLayout(
 					$controllerOrActionNameDashed,

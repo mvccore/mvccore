@@ -280,7 +280,7 @@ trait Dispatching {
 	/**
 	 * @inheritDocs
 	 * @param  \MvcCore\Controller $controller
-	 * @param  string|int          $index
+	 * @param  string|int|NULL     $index
 	 * @return \MvcCore\Controller
 	 */
 	public function AddChildController (\MvcCore\IController $controller, $index = NULL) {
