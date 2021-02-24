@@ -140,8 +140,6 @@ trait InternalInits {
 			. $this->globalServer['HTTP_HOST'];
 		if (isset($this->globalServer['UNENCODED_URL'])) {
 			$uri .= rawurldecode($this->globalServer['UNENCODED_URL']);
-		} else if (isset($this->globalServer['UNENCODED_URL'])) {
-			$uri .= rawurldecode($this->globalServer['UNENCODED_URL']);
 		} else {
 			$uri .= rawurldecode($this->globalServer['REQUEST_URI']);
 		}
