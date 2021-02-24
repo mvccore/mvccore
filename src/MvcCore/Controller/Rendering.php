@@ -78,8 +78,7 @@ trait Rendering {
 			}
 		}
 		$this->dispatchState = \MvcCore\IController::DISPATCH_STATE_RENDERED;
-		$result = '';
-		return $result;
+		return '';
 	}
 
 	/**
@@ -281,9 +280,7 @@ trait Rendering {
 		// complete paths
 		$viewScriptPath = $this->GetViewScriptPath($controllerOrActionNameDashed, $actionNameDashed);
 		// render action view into string
-		$this->view->SetUpRender(
-			$this->renderMode, $controllerOrActionNameDashed, $actionNameDashed
-		);
+		$this->view->SetUpRender($this->renderMode);
 		$actionResult = $this->view->RenderScript($viewScriptPath);
 		if (!$topMostParentCtrl) {
 			$this->dispatchState = \MvcCore\IController::DISPATCH_STATE_RENDERED;
@@ -296,9 +293,7 @@ trait Rendering {
 		$layout = $viewClass::CreateInstance()
 			->SetController($this)
 			->SetUpStore($this->view, TRUE)
-			->SetUpRender(
-				$this->renderMode, $controllerOrActionNameDashed, $actionNameDashed
-			);
+			->SetUpRender($this->renderMode);
 		$outputResult = $layout->RenderLayoutAndContent($this->layout, $actionResult);
 		unset($layout, $this->view);
 		// set up response only
@@ -326,9 +321,7 @@ trait Rendering {
 			$layout = $viewClass::CreateInstance()
 				->SetController($this)
 				->SetUpStore($this->view, TRUE)
-				->SetUpRender(
-					$this->renderMode, $controllerOrActionNameDashed, $actionNameDashed
-				);
+				->SetUpRender($this->renderMode);
 			// render layout continuously with action view inside
 			$layout->RenderLayout($this->layout);
 			unset($layout, $this->view);

@@ -50,12 +50,10 @@ trait Rendering {
 
 	/**
 	 * @inheritDocs
-	 * @param  int    $renderMode
-	 * @param  string $controllerOrActionNameDashed
-	 * @param  string $actionNameDashed
+	 * @param  int $renderMode
 	 * @return \MvcCore\View
 	 */
-	public function SetUpRender ($renderMode = \MvcCore\IView::RENDER_WITH_OB_FROM_ACTION_TO_LAYOUT, $controllerOrActionNameDashed = NULL, $actionNameDashed = NULL) {
+	public function SetUpRender ($renderMode = \MvcCore\IView::RENDER_WITH_OB_FROM_ACTION_TO_LAYOUT) {
 		/** @var $this \MvcCore\View */
 		$this->__protected['renderArgs'] = func_get_args();
 		// initialize helpers before rendering:
@@ -187,16 +185,16 @@ trait Rendering {
 			return $this->__protected['content'];
 		} else {
 			// complete paths
-			$viewScriptPath = $this->controller->GetViewScriptPath($controllerOrActionNameDashed, $actionNameDashed);
+			$viewScriptPath = $this->controller->GetViewScriptPath(
+				$controllerOrActionNameDashed, $actionNameDashed
+			);
 			// render action view into string
 			$viewClass = $this->controller->GetApplication()->GetViewClass();
 			/** @var $layout \MvcCore\View */
 			$actionView = $viewClass::CreateInstance()
 				->SetController($this->controller)
 				->SetUpStore($this, TRUE)
-				->SetUpRender(
-					$renderMode, $controllerOrActionNameDashed, $actionNameDashed
-				);
+				->SetUpRender($renderMode);
 			$actionView->RenderScript($viewScriptPath);
 			$result = '';
 			return $result;
