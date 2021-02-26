@@ -235,7 +235,7 @@ interface IView extends \MvcCore\View\IConstants {
 	 * If render mode is continuous, this method renders action view.
 	 * @return string
 	 */
-	public function & GetContent ();
+	public function GetContent ();
 
 	/**
 	 * Get currently rendered view file full path.
@@ -279,7 +279,7 @@ interface IView extends \MvcCore\View\IConstants {
 	 * @param  string $relativePath
 	 * @return string
 	 */
-	public function & RenderScript ($relativePath = '');
+	public function RenderScript ($relativePath = '');
 
 	/**
 	 * Render layout template script or any include script and return it's result as reference.
@@ -287,28 +287,38 @@ interface IView extends \MvcCore\View\IConstants {
 	 * @param  string $relativePath
 	 * @return string
 	 */
-	public function & RenderLayout ($relativePath = '');
+	public function RenderLayout ($relativePath = '');
 
 	/**
 	 * This method is INTERNAL, always called from `\MvcCore\Controller::Render();`.
 	 * Do not use this method in templates!
 	 * Method renders whole configured layout template and return it's result
 	 * as string reference with inner rendered action template content.
+	 * @internal
 	 * @param  string      $relativePath
 	 * @param  string|NULL $content
 	 * @return string
 	 */
-	public function & RenderLayoutAndContent ($relativePath = '', & $content = NULL);
+	public function RenderLayoutAndContent ($relativePath = '', & $content = NULL);
 
 	/**
 	 * Render controller template and all necessary layout
-	 * templates and return rendered result as string reference.
+	 * templates and return rendered result as string reference
+	 * or render it into output buffer.
 	 * @param  string $typePath     By default: `"Layouts" | "Scripts"`. It could be `"Forms" | "Forms/Fields"` etc...
 	 * @param  string $relativePath
 	 * @throws \InvalidArgumentException Template not found in path: `$viewScriptFullPath`.
 	 * @return string
 	 */
-	public function & Render ($typePath = '', $relativePath = '');
+	public function Render ($typePath = '', $relativePath = '');
+
+	/**
+	 * Render template by previously configured view object by given full path.
+	 * @internal
+	 * @param  string $viewScriptFullPath 
+	 * @return string
+	 */
+	public function RenderByFullPath ($viewScriptFullPath);
 
 	/**
 	 * Evaluate given template code as PHP code by `eval()` in current view

@@ -20,7 +20,7 @@ trait Rendering {
 	 * @param  string $relativePath
 	 * @return string
 	 */
-	public function & RenderScript ($relativePath = '') {
+	public function RenderScript ($relativePath = '') {
 		/** @var $this \MvcCore\View */
 		return $this->Render(static::$scriptsDir, $relativePath);
 	}
@@ -30,18 +30,19 @@ trait Rendering {
 	 * @param  string $relativePath
 	 * @return string
 	 */
-	public function & RenderLayout ($relativePath = '') {
+	public function RenderLayout ($relativePath = '') {
 		/** @var $this \MvcCore\View */
 		return $this->Render(static::$layoutsDir, $relativePath);
 	}
 
 	/**
 	 * @inheritDocs
+	 * @internal
 	 * @param  string      $relativePath
 	 * @param  string|NULL $content
 	 * @return string
 	 */
-	public function & RenderLayoutAndContent ($relativePath = '', & $content = NULL) {
+	public function RenderLayoutAndContent ($relativePath = '', & $content = NULL) {
 		/** @var $this \MvcCore\View */
 		if ($relativePath === NULL) return $content; // no layout defined
 		$this->__protected['content'] = & $content;
@@ -90,20 +91,28 @@ trait Rendering {
 	 * @throws \InvalidArgumentException Template not found in path: `$viewScriptFullPath`.
 	 * @return string
 	 */
-	public function & Render ($typePath = '', $relativePath = '') {
+	public function Render ($typePath = '', $relativePath = '') {
 		/** @var $this \MvcCore\View */
 		if (!$typePath)
 			$typePath = static::$scriptsDir;
-		$result = '';
 		$relativePath = $this->correctRelativePath(
 			$typePath, $relativePath
 		);
 		$viewScriptFullPath = static::GetViewScriptFullPath($typePath, $relativePath);
-		if (!file_exists($viewScriptFullPath)) {
+		if (!file_exists($viewScriptFullPath)) 
 			throw new \InvalidArgumentException(
 				"[".get_class()."] Template not found in path: `{$viewScriptFullPath}`."
 			);
-		}
+		return $this->RenderByFullPath($viewScriptFullPath);
+	}
+
+	/**
+	 * @inheritDocs
+	 * @internal
+	 * @param  string $viewScriptFullPath 
+	 * @return string
+	 */
+	public function RenderByFullPath ($viewScriptFullPath) {
 		$renderedFullPaths = & $this->__protected['renderedFullPaths'];
 		$renderedFullPaths[] = $viewScriptFullPath;
 		// get render mode
@@ -126,11 +135,9 @@ trait Rendering {
 			\array_pop($renderedFullPaths); // unset last
 			return $result;
 		} else {
-			$result = '';
 			\array_pop($renderedFullPaths); // unset last
-			return $result;
+			return '';
 		}
-
 	}
 
 	/**
@@ -174,7 +181,7 @@ trait Rendering {
 	 * @inheritDocs
 	 * @return string
 	 */
-	public function & GetContent () {
+	public function GetContent () {
 		/** @var $this \MvcCore\View */
 		list(
 			$renderMode,
@@ -207,7 +214,7 @@ trait Rendering {
 	 * @param  string $content
 	 * @return string
 	 */
-	public function & Evaluate ($content) {
+	public function Evaluate ($content) {
 		/** @var $this \MvcCore\View */
 		if ($content === NULL || mb_strlen(strval($content)) === 0)
 			return '';
