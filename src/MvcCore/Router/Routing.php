@@ -58,20 +58,18 @@ trait Routing {
 		if ($controllerNamePcNotNull) {
 			$ctrlNameDc = str_replace(['\\', '_'], '/', $toolClass::GetDashedFromPascalCase($controllerNamePc));
 			$matchedParams[static::URL_PARAM_CONTROLLER] = $ctrlNameDc;
-			
-			// TODO: set as rewrite params of there are no inner request flags already
-			$this->request->SetControllerName($ctrlNameDc)->SetParam(static::URL_PARAM_CONTROLLER, $ctrlNameDc);
-
+			$this->request->SetControllerName($ctrlNameDc)->SetParam(
+				static::URL_PARAM_CONTROLLER, $ctrlNameDc, \MvcCore\IRequest::PARAM_TYPE_URL_REWRITE
+			);
 			if (isset($this->requestedParams[static::URL_PARAM_CONTROLLER])) $this->requestedParams[static::URL_PARAM_CONTROLLER] = $ctrlNameDc;
 			$currentRoute->SetController($controllerNamePc);
 		}
 		if ($actionNamePcNotNull) {
 			$actionNameDc = $toolClass::GetDashedFromPascalCase($actionNamePc);
 			$matchedParams[static::URL_PARAM_ACTION] = $actionNameDc;
-			
-			// TODO: set as rewrite params of there are no inner request flags already
-			$this->request->SetActionName($actionNameDc)->SetParam(static::URL_PARAM_ACTION, $ctrlNameDc);
-
+			$this->request->SetActionName($actionNameDc)->SetParam(
+				static::URL_PARAM_ACTION, $ctrlNameDc, \MvcCore\IRequest::PARAM_TYPE_URL_REWRITE
+			);
 			if (isset($this->requestedParams[static::URL_PARAM_ACTION])) $this->requestedParams[static::URL_PARAM_ACTION] = $actionNameDc;
 			$currentRoute->SetAction($actionNamePc);
 		}
@@ -139,11 +137,12 @@ trait Routing {
 			$this->AddRoute($defaultRoute, NULL, TRUE, FALSE);
 			$this->anyRoutesConfigured = $anyRoutesConfigured;
 			if (!$request->IsInternalRequest()) 
-
-				// TODO: set as rewrite params of there are no inner request flags already
-				$request->SetParam(static::URL_PARAM_PATH, ($request->HasParam(static::URL_PARAM_PATH)
-					? $request->GetParam(static::URL_PARAM_PATH, '.*')
-					: $request->GetPath())
+				$request->SetParam(
+					static::URL_PARAM_PATH, 
+					$request->HasParam(static::URL_PARAM_PATH)
+						? $request->GetParam(static::URL_PARAM_PATH, '.*')
+						: $request->GetPath(),
+					\MvcCore\IRequest::PARAM_TYPE_URL_REWRITE
 				);
 		}
 		$toolClass = self::$toolClass;
