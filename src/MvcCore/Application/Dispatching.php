@@ -340,14 +340,9 @@ trait Dispatching {
 			);
 			$exceptionCode = $e->getCode();
 			$exceptionCode = $exceptionCode > 0 ? $exceptionCode : 500;
-			$newParams = array_merge($this->request->GetParams(FALSE), [
-				'code'		=> $exceptionCode,
-				'message'	=> $exceptionMessage,
-			]);
-
-			// TODO: set as input params of there are no inner request flags already
-			$this->request->SetParams($newParams);
-
+			$this->request
+				->SetParam('code', $exceptionCode, \MvcCore\IRequest::PARAM_TYPE_URL_REWRITE)
+				->SetParam('message', $exceptionMessage, \MvcCore\IRequest::PARAM_TYPE_URL_REWRITE);
 			$this->response->SetCode($exceptionCode);
 			$this->controller = NULL;
 			$this->DispatchControllerAction(
@@ -393,14 +388,9 @@ trait Dispatching {
 				$this->defaultControllerNotFoundActionName,
 				TRUE
 			);
-			$newParams = array_merge($this->request->GetParams(FALSE), [
-				'code'		=> 404,
-				'message'	=> $exceptionMessage,
-			]);
-
-			// TODO: set as input params of there are no inner request flags already
-			$this->request->SetParams($newParams);
-
+			$this->request
+				->SetParam('code', 404, \MvcCore\IRequest::PARAM_TYPE_URL_REWRITE)
+				->SetParam('message', $exceptionMessage, \MvcCore\IRequest::PARAM_TYPE_URL_REWRITE);
 			$this->response->SetCode(404);
 			$this->controller = NULL;
 			$this->DispatchControllerAction(
