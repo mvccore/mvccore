@@ -349,7 +349,7 @@ trait UrlBuilding {
 			$pathPart = str_replace('//', '/', $pathPart);	
 		} else {
 			$pathPart = str_replace('//', '/', mb_substr($pathPart, 0, $questionMarkPos))
-				. mb_substr($pathPart, $questionMarkPos);
+				. rtrim(mb_substr($pathPart, $questionMarkPos), '?');
 		}
 		$basePart = mb_substr($resultUrl, 0, $basePathPlaceHolderPos);
 		$basePathParamName = $router::URL_PARAM_BASEPATH;
@@ -428,7 +428,7 @@ trait UrlBuilding {
 				$pathAndQueryPart = str_replace('//', '/', $pathAndQueryPart);	
 			} else {
 				$pathAndQueryPart = str_replace('//', '/', mb_substr($pathAndQueryPart, 0, $questionMarkPos))
-					. mb_substr($pathAndQueryPart, $questionMarkPos);
+					. rtrim(mb_substr($pathAndQueryPart, $questionMarkPos), '?');
 			}
 			return [$basePart, $pathAndQueryPart];
 		}
@@ -495,7 +495,7 @@ trait UrlBuilding {
 			$resultUrl = str_replace('//', '/', $resultUrl);	
 		} else {
 			$resultUrl = str_replace('//', '/', mb_substr($resultUrl, 0, $questionMarkPos))
-				. mb_substr($resultUrl, $questionMarkPos);
+				. rtrim(mb_substr($resultUrl, $questionMarkPos), '?');
 		}
 		if ($splitUrl) return [$basePart, $resultUrl];
 		return [$basePart . $resultUrl];

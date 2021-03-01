@@ -27,6 +27,7 @@ trait UrlByRoutes {
 		if ($urlParamRouteName == 'self')
 			$params = array_merge($this->requestedParams ?: [], $params);
 		$defaultParams = $this->GetDefaultParams() ?: [];
+		/** @var $route \MvcCore\Route */
 		list ($resultUrl) = $route->Url(
 			$this->request, $params, $defaultParams, $this->getQueryStringParamsSepatator(), FALSE
 		);
