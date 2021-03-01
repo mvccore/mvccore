@@ -118,13 +118,15 @@ trait CollectionsMethods {
 	) {
 		/** @var $this \MvcCore\Request */
 		$this->params = & $params;
-		if ($sourceType && isset($this->paramsSources[$sourceType])) {
-			$sourceTypeParams = & $this->paramsSources[$sourceType];
+		if ($sourceType) {
+			$qsFlag = ($sourceType & \MvcCore\IRequest::PARAM_TYPE_QUERY_STRING) != 0;
+			$urFlag = ($sourceType & \MvcCore\IRequest::PARAM_TYPE_URL_REWRITE) != 0;
 			$sourceTypeParamsQs = & $this->paramsSources[\MvcCore\IRequest::PARAM_TYPE_QUERY_STRING];
 			$sourceTypeParamsUr = & $this->paramsSources[\MvcCore\IRequest::PARAM_TYPE_URL_REWRITE];
 			foreach ($this->params as $name => $value) {
 				unset($sourceTypeParamsQs[$name], $sourceTypeParamsUr[$name]);
-				$sourceTypeParams[$name] = TRUE;
+				if ($qsFlag) $sourceTypeParamsQs[$name] = TRUE;	
+				if ($urFlag) $sourceTypeParamsUr[$name] = TRUE;	
 			}
 		}
 		return $this;
@@ -144,35 +146,60 @@ trait CollectionsMethods {
 	) {
 		/** @var $this \MvcCore\Request */
 		if ($this->params === NULL) $this->initParams();
+
+		if ($sourceType) {
+			$qsFlag = $sourceType && ($sourceType & \MvcCore\IRequest::PARAM_TYPE_QUERY_STRING) != 0;
+			$urFlag = $sourceType && ($sourceType & \MvcCore\IRequest::PARAM_TYPE_URL_REWRITE) != 0;
+			$inFlag = $sourceType && ($sourceType & \MvcCore\IRequest::PARAM_TYPE_INPUT) != 0;
+			$flagsCount = ($qsFlag ? 1 : 0) + ($urFlag ? 1 : 0) + ($inFlag ? 1 : 0);
+			$sourceTypeParamsQs = $this->paramsSources[\MvcCore\IRequest::PARAM_TYPE_QUERY_STRING];
+			$sourceTypeParamsUr = $this->paramsSources[\MvcCore\IRequest::PARAM_TYPE_URL_REWRITE];
+		}
+
 		if ($pregReplaceAllowedChars === FALSE || $pregReplaceAllowedChars === '' || $pregReplaceAllowedChars === '.*') {
 			if ($onlyKeys) {
 				$result = array_intersect_key($this->params, array_flip($onlyKeys));
 			} else {
 				$result = & $this->params;
 			}
-			return $result;
+			if (!$sourceType) return $result;
+			$sourceTypesResult = [];
+			
+			foreach ($result as $key => $value) {
+				$notFoundFlagsCount = 0;
+				if ($qsFlag && !isset($sourceTypeParamsQs[$key])) $notFoundFlagsCount++;
+				if ($urFlag && !isset($sourceTypeParamsUr[$key])) $notFoundFlagsCount++;
+				if ($inFlag && !$qsFlag && isset($sourceTypeParamsQs[$key])) $notFoundFlagsCount++;
+				if ($inFlag && !$urFlag && isset($sourceTypeParamsUr[$key])) $notFoundFlagsCount++;
+				if ($notFoundFlagsCount >= $flagsCount) continue;
+				$sourceTypesResult[$key] = $value;
+			}
+			return $sourceTypesResult;
 		}
+
 		$cleanedParams = [];
-		$sourceTypeInput = $sourceType && ($sourceType & \MvcCore\IRequest::PARAM_TYPE_INPUT) != 0;
-		$sourceTypeParamsQs = $this->paramsSources[\MvcCore\IRequest::PARAM_TYPE_QUERY_STRING];
-		$sourceTypeParamsUr = $this->paramsSources[\MvcCore\IRequest::PARAM_TYPE_URL_REWRITE];
-		$sourceTypeParams = isset($this->paramsSources[$sourceType])
-			? $this->paramsSources[$sourceType]
-			: [];
-		foreach ($this->params as $key => & $value) {
-			if ($onlyKeys && !in_array($key, $onlyKeys, TRUE)) continue;
+		if ($sourceType) {
+			foreach ($this->params as $key => $value) {
+				if ($onlyKeys && !in_array($key, $onlyKeys, TRUE)) continue;
 
-			if ($sourceType && (
-				($sourceTypeInput && (
-					isset($sourceTypeParamsQs[$key]) || isset($sourceTypeParamsUr[$key])
-				)) || (
-					$sourceTypeParams && !isset($sourceTypeParams[$key])
-				)
-			)) continue;
-
-			$cleanedKey = $this->cleanParamValue($key, $pregReplaceAllowedChars);
-			$cleanedParams[$cleanedKey] = $this->GetParam($key, $pregReplaceAllowedChars);
+				$notFoundFlagsCount = 0;
+				if ($qsFlag && !isset($sourceTypeParamsQs[$key])) $notFoundFlagsCount++;
+				if ($urFlag && !isset($sourceTypeParamsUr[$key])) $notFoundFlagsCount++;
+				if ($inFlag && !$qsFlag && isset($sourceTypeParamsQs[$key])) $notFoundFlagsCount++;
+				if ($inFlag && !$urFlag && isset($sourceTypeParamsUr[$key])) $notFoundFlagsCount++;
+				if ($notFoundFlagsCount >= $flagsCount) continue;
+			
+				$cleanedKey = $this->cleanParamValue($key, $pregReplaceAllowedChars);
+				$cleanedParams[$cleanedKey] = $this->GetParam($key, $pregReplaceAllowedChars);
+			}
+		} else {
+			foreach ($this->params as $key => $value) {
+				if ($onlyKeys && !in_array($key, $onlyKeys, TRUE)) continue;
+				$cleanedKey = $this->cleanParamValue($key, $pregReplaceAllowedChars);
+				$cleanedParams[$cleanedKey] = $this->GetParam($key, $pregReplaceAllowedChars);
+			}
 		}
+
 		return $cleanedParams;
 	}
 
@@ -195,12 +222,15 @@ trait CollectionsMethods {
 		/** @var $this \MvcCore\Request */
 		if ($this->params === NULL) $this->initParams();
 		$this->params[$name] = $value;
-		if ($sourceType && isset($this->paramsSources[$sourceType])) {
+		if ($sourceType) {
 			unset(
 				$this->paramsSources[\MvcCore\IRequest::PARAM_TYPE_QUERY_STRING][$name],
 				$this->paramsSources[\MvcCore\IRequest::PARAM_TYPE_URL_REWRITE][$name]
 			);
-			$this->paramsSources[$sourceType][$name] = TRUE;	
+			if (($sourceType & \MvcCore\IRequest::PARAM_TYPE_QUERY_STRING) != 0)
+				$this->paramsSources[\MvcCore\IRequest::PARAM_TYPE_QUERY_STRING][$name] = TRUE;	
+			if (($sourceType & \MvcCore\IRequest::PARAM_TYPE_URL_REWRITE) != 0)
+				$this->paramsSources[\MvcCore\IRequest::PARAM_TYPE_URL_REWRITE][$name] = TRUE;	
 		}
 		return $this;
 	}
@@ -224,15 +254,7 @@ trait CollectionsMethods {
 	) {
 		/** @var $this \MvcCore\Request */
 		if ($this->params === NULL) $this->initParams();
-		if ($sourceType && (
-			(($sourceType & \MvcCore\IRequest::PARAM_TYPE_INPUT) != 0 && (
-				isset($this->paramsSources[\MvcCore\IRequest::PARAM_TYPE_QUERY_STRING][$name]) ||
-				isset($this->paramsSources[\MvcCore\IRequest::PARAM_TYPE_URL_REWRITE][$name])
-			)) || (
-				isset($this->paramsSources[$sourceType]) &&
-				!isset($this->paramsSources[$sourceType][$name])
-			)
-		)) return NULL;
+		if ($sourceType && !$this->HasParam($name, $sourceType)) return NULL;
 		return $this->getParamFromCollection(
 			$this->params, $name, $pregReplaceAllowedChars, $ifNullValue, $targetType
 		);
@@ -248,7 +270,9 @@ trait CollectionsMethods {
 			return \MvcCore\IRequest::PARAM_TYPE_QUERY_STRING;
 		if (isset($this->paramsSources[\MvcCore\IRequest::PARAM_TYPE_URL_REWRITE][$name]))
 			return \MvcCore\IRequest::PARAM_TYPE_URL_REWRITE;
-		return \MvcCore\IRequest::PARAM_TYPE_INPUT;
+		if (isset($this->params[$name]))
+			return \MvcCore\IRequest::PARAM_TYPE_INPUT;
+		return \MvcCore\IRequest::PARAM_TYPE_ANY;
 	}
 	
 	/**
@@ -263,23 +287,28 @@ trait CollectionsMethods {
 	) {
 		/** @var $this \MvcCore\Request */
 		if ($this->params === NULL) $this->initParams();
-		if ($sourceType) {
-			if (($sourceType & \MvcCore\IRequest::PARAM_TYPE_INPUT) != 0) {
-				return (
-					isset($this->params[$name]) &&
-					!isset($this->paramsSources[\MvcCore\IRequest::PARAM_TYPE_QUERY_STRING][$name]) &&
-					!isset($this->paramsSources[\MvcCore\IRequest::PARAM_TYPE_URL_REWRITE][$name])
-				);
-			} else {
-				return (
-					isset($this->params[$name]) &&
-					isset($this->paramsSources[$sourceType]) &&
-					isset($this->paramsSources[$sourceType][$name])
-				);
-			}
-		} else {
-			return isset($this->params[$name]);
-		}
+		// if there is no param - return false:
+		if (!isset($this->params[$name])) return FALSE;
+		// if there is not defined source type and param value exists, return true:
+		if (!$sourceType) return TRUE;
+		// if source type has query string flag and there is query string param type, return true:
+		if (
+			($sourceType & \MvcCore\IRequest::PARAM_TYPE_QUERY_STRING) != 0 &&
+			isset($this->paramsSources[\MvcCore\IRequest::PARAM_TYPE_QUERY_STRING][$name])
+		) return TRUE;
+		// if source type has url rewrite flag and there is url rewrite param type, return true:
+		if (
+			($sourceType & \MvcCore\IRequest::PARAM_TYPE_URL_REWRITE) != 0 &&
+			isset($this->paramsSources[\MvcCore\IRequest::PARAM_TYPE_URL_REWRITE][$name])
+		) return TRUE;
+		// if source type has input param flag and there is input param type, return true:
+		if (
+			($sourceType & \MvcCore\IRequest::PARAM_TYPE_INPUT) != 0 &&
+			!isset($this->paramsSources[\MvcCore\IRequest::PARAM_TYPE_QUERY_STRING][$name]) &&
+			!isset($this->paramsSources[\MvcCore\IRequest::PARAM_TYPE_URL_REWRITE][$name])
+		) return TRUE;
+		// if there is defined param sorce type and key is not set in proper collections, return false:
+		return FALSE;
 	}
 
 	/**
