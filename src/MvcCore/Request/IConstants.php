@@ -145,6 +145,27 @@ interface IConstants {
 	 */
 	const METHOD_TRACE = 'TRACE';
 
+	
+	/**
+	 * Param type from URL query string, from URL rewrite, from `$_POST` or from `php://input`.
+	 */
+	const PARAM_TYPE_ANY			= 0;
+
+	/**
+	 * Param type from URL query string.
+	 */
+	const PARAM_TYPE_QUERY_STRING	= 1;
+
+	/**
+	 * Param type declared always from router instance, from URL rewrite process.
+	 */
+	const PARAM_TYPE_URL_REWRITE	= 2;
+	
+	/**
+	 * Param type from other sources like `$_POST` or `php://input`.
+	 */
+	const PARAM_TYPE_INPUT			= 4;
+
 
 	/**
 	 * Lower case and upper case alphabet characters only.
