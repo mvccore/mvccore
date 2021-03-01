@@ -140,9 +140,12 @@ interface IRequest extends \MvcCore\Request\IConstants {
 
 	/**
 	 * Set directly all raw parameters without any conversion at once.
-	 * @param  array $params     Keys are param names, values are param values.
-	 * @param  int   $sourceType Param source collection flag(s). If param has defined 
-	 *                           source type flag already, this given flag is not used.
+	 * @param  array $params
+	 *               Keys are param names, values are param values.
+	 * @param  int   $sourceType
+	 *               Param source collection flag(s). If param has defined 
+	 *               source type flag already, this given flag is used 
+	 *               to overwrite already defined flag.
 	 * @return \MvcCore\Request
 	 */
 	public function SetParams (
