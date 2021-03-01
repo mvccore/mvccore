@@ -58,14 +58,20 @@ trait Routing {
 		if ($controllerNamePcNotNull) {
 			$ctrlNameDc = str_replace(['\\', '_'], '/', $toolClass::GetDashedFromPascalCase($controllerNamePc));
 			$matchedParams[static::URL_PARAM_CONTROLLER] = $ctrlNameDc;
+			
+			// TODO: set as rewrite params of there are no inner request flags already
 			$this->request->SetControllerName($ctrlNameDc)->SetParam(static::URL_PARAM_CONTROLLER, $ctrlNameDc);
+
 			if (isset($this->requestedParams[static::URL_PARAM_CONTROLLER])) $this->requestedParams[static::URL_PARAM_CONTROLLER] = $ctrlNameDc;
 			$currentRoute->SetController($controllerNamePc);
 		}
 		if ($actionNamePcNotNull) {
 			$actionNameDc = $toolClass::GetDashedFromPascalCase($actionNamePc);
 			$matchedParams[static::URL_PARAM_ACTION] = $actionNameDc;
+			
+			// TODO: set as rewrite params of there are no inner request flags already
 			$this->request->SetActionName($actionNameDc)->SetParam(static::URL_PARAM_ACTION, $ctrlNameDc);
+
 			if (isset($this->requestedParams[static::URL_PARAM_ACTION])) $this->requestedParams[static::URL_PARAM_ACTION] = $actionNameDc;
 			$currentRoute->SetAction($actionNamePc);
 		}
@@ -133,6 +139,8 @@ trait Routing {
 			$this->AddRoute($defaultRoute, NULL, TRUE, FALSE);
 			$this->anyRoutesConfigured = $anyRoutesConfigured;
 			if (!$request->IsInternalRequest()) 
+
+				// TODO: set as rewrite params of there are no inner request flags already
 				$request->SetParam(static::URL_PARAM_PATH, ($request->HasParam(static::URL_PARAM_PATH)
 					? $request->GetParam(static::URL_PARAM_PATH, '.*')
 					: $request->GetPath())
@@ -214,7 +222,10 @@ trait Routing {
 		);
 		// default params are merged with previous default params to have 
 		// possibility to add domain params by extended module router
+		
+		// TODO: get only rewrited params from url and query string params:
 		$this->defaultParams = array_merge([], $this->defaultParams, $this->request->GetParams(FALSE));
+
 		$this->requestedParams = array_merge([], $this->defaultParams);
 	}
 
@@ -271,7 +282,10 @@ trait Routing {
 					);
 					// set up requested params from query string if there are any 
 					// (and path if there is path from previous function)
+					
+					// TODO: get only rewrited params from url and query string params:
 					$requestParams = array_merge([], $this->request->GetParams(FALSE));
+
 					unset($requestParams[static::URL_PARAM_CONTROLLER], $requestParams[static::URL_PARAM_ACTION]);
 					$this->requestedParams = & $requestParams;
 				}

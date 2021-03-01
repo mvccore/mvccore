@@ -160,7 +160,10 @@ trait RewriteRouting {
 		// `action`, always with a value, never with `NULL`
 		/** @var $request \MvcCore\Request */
 		$request = $this->request;
+
+		// TODO: get only rewrited params from url and query string params:
 		$rawQueryParams = array_merge([], $request->GetParams(FALSE));
+
 		// complete controller and action from any possible source
 		list($ctrlDfltNamePc, $actionDfltNamePc) = $this->application->GetDefaultControllerAndActionNames();
 		$toolClass = self::$toolClass;
@@ -237,7 +240,10 @@ trait RewriteRouting {
 			return TRUE;
 		}
 		$requestParamsFiltered = $requestParamsFiltered ?: $requestParams;
+
+		// TODO: set as rewrite params of there are no inner request flags already
 		$request->SetParams($requestParamsFiltered);
+		
 		if (isset($requestParamsFiltered[static::URL_PARAM_CONTROLLER]))
 			$request->SetControllerName($requestParamsFiltered[static::URL_PARAM_CONTROLLER]);
 		if (isset($requestParamsFiltered[static::URL_PARAM_ACTION]))

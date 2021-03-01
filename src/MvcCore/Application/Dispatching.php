@@ -344,7 +344,10 @@ trait Dispatching {
 				'code'		=> $exceptionCode,
 				'message'	=> $exceptionMessage,
 			]);
+
+			// TODO: set as input params of there are no inner request flags already
 			$this->request->SetParams($newParams);
+
 			$this->response->SetCode($exceptionCode);
 			$this->controller = NULL;
 			$this->DispatchControllerAction(
@@ -394,7 +397,10 @@ trait Dispatching {
 				'code'		=> 404,
 				'message'	=> $exceptionMessage,
 			]);
+
+			// TODO: set as input params of there are no inner request flags already
 			$this->request->SetParams($newParams);
+
 			$this->response->SetCode(404);
 			$this->controller = NULL;
 			$this->DispatchControllerAction(
