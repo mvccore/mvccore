@@ -120,6 +120,10 @@ trait InternalInits {
 		}
 		$this->params = $params;
 		$this->globalGet = $params;
+		$this->paramsSources = [
+			\MvcCore\IRequest::PARAM_TYPE_QUERY_STRING	=> array_fill_keys(array_keys($params), TRUE),
+			\MvcCore\IRequest::PARAM_TYPE_URL_REWRITE	=> [],
+		];
 	}
 
 	/**
@@ -239,7 +243,11 @@ trait InternalInits {
 	 */
 	protected function initParams () {
 		/** @var $this \MvcCore\Request */
-		$params = array_merge($this->globalGet);
+		$params = array_merge([], $this->globalGet);
+		$this->paramsSources = [
+			\MvcCore\IRequest::PARAM_TYPE_QUERY_STRING	=> array_fill_keys(array_keys($params), TRUE),
+			\MvcCore\IRequest::PARAM_TYPE_URL_REWRITE	=> [],
+		];
 		$method = $this->GetMethod();
 		if ($method == self::METHOD_POST || $method == self::METHOD_PUT) {
 			$postValues = [];

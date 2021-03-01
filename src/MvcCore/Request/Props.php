@@ -289,6 +289,12 @@ trait Props {
 	protected $params			= NULL;
 
 	/**
+	 * Array with colections defining params collection sources.
+	 * @var \array[]
+	 */
+	protected $paramsSources	= [];
+
+	/**
 	 * Request flag if request targets internal package asset or not,
 	 * - 0 => Means request is `Controller:Asset` call for internal package asset.
 	 * - 1 => Means request is classic application request.

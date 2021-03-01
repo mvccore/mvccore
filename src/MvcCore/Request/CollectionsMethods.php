@@ -114,6 +114,15 @@ trait CollectionsMethods {
 	) {
 		/** @var $this \MvcCore\Request */
 		$this->params = & $params;
+		if ($sourceType && isset($this->paramsSources[$sourceType])) {
+			$sourceTypeCollection = & $this->paramsSources[$sourceType];
+			$oppositeTypeCollection = ($sourceType & \MvcCore\IRequest::PARAM_TYPE_QUERY_STRING) != 0
+				? $this->paramsSources[\MvcCore\IRequest::PARAM_TYPE_URL_REWRITE]
+				: $this->paramsSources[\MvcCore\IRequest::PARAM_TYPE_QUERY_STRING];
+			foreach ($this->params as $name => $value)
+				if (!isset($oppositeTypeCollection[$name]))
+					$sourceTypeCollection[$name] = TRUE;
+		}
 		return $this;
 	}
 
@@ -140,8 +149,23 @@ trait CollectionsMethods {
 			return $result;
 		}
 		$cleanedParams = [];
+		$sourceTypeInput = $sourceType && ($sourceType & \MvcCore\IRequest::PARAM_TYPE_INPUT) != 0;
+		$sourceTypeParamsQs = $this->paramsSources[\MvcCore\IRequest::PARAM_TYPE_QUERY_STRING];
+		$sourceTypeParamsUr = $this->paramsSources[\MvcCore\IRequest::PARAM_TYPE_URL_REWRITE];
+		$sourceTypeParams = isset($this->paramsSources[$sourceType])
+			? $this->paramsSources[$sourceType]
+			: [];
 		foreach ($this->params as $key => & $value) {
 			if ($onlyKeys && !in_array($key, $onlyKeys, TRUE)) continue;
+
+			if ($sourceType && (
+				($sourceTypeInput && (
+					isset($sourceTypeParamsQs[$key]) || isset($sourceTypeParamsUr[$key])
+				)) || (
+					$sourceTypeParams && !isset($sourceTypeParams[$key])
+				)
+			)) continue;
+
 			$cleanedKey = $this->cleanParamValue($key, $pregReplaceAllowedChars);
 			$cleanedParams[$cleanedKey] = $this->GetParam($key, $pregReplaceAllowedChars);
 		}
@@ -164,6 +188,15 @@ trait CollectionsMethods {
 		/** @var $this \MvcCore\Request */
 		if ($this->params === NULL) $this->initParams();
 		$this->params[$name] = $value;
+		if ($sourceType && (
+			(
+				($sourceType & \MvcCore\IRequest::PARAM_TYPE_QUERY_STRING) != 0 && 
+				!isset($this->paramsSources[\MvcCore\IRequest::PARAM_TYPE_URL_REWRITE][$name])
+			) || (
+				($sourceType & \MvcCore\IRequest::PARAM_TYPE_URL_REWRITE) != 0 && 
+				!isset($this->paramsSources[\MvcCore\IRequest::PARAM_TYPE_QUERY_STRING][$name])
+			)
+		)) $this->paramsSources[$sourceType][$name] = TRUE;
 		return $this;
 	}
 	
@@ -186,6 +219,15 @@ trait CollectionsMethods {
 	) {
 		/** @var $this \MvcCore\Request */
 		if ($this->params === NULL) $this->initParams();
+		if ($sourceType && (
+			(($sourceType & \MvcCore\IRequest::PARAM_TYPE_INPUT) != 0 && (
+				isset($this->paramsSources[\MvcCore\IRequest::PARAM_TYPE_QUERY_STRING][$name]) ||
+				isset($this->paramsSources[\MvcCore\IRequest::PARAM_TYPE_URL_REWRITE][$name])
+			)) || (
+				isset($this->paramsSources[$sourceType]) &&
+				!isset($this->paramsSources[$sourceType][$name])
+			)
+		)) return NULL;
 		return $this->getParamFromCollection(
 			$this->params, $name, $pregReplaceAllowedChars, $ifNullValue, $targetType
 		);
@@ -199,11 +241,27 @@ trait CollectionsMethods {
 	 */
 	public function HasParam (
 		$name, 
-		$type = \MvcCore\IRequest::PARAM_TYPE_ANY
+		$sourceType = \MvcCore\IRequest::PARAM_TYPE_ANY
 	) {
 		/** @var $this \MvcCore\Request */
 		if ($this->params === NULL) $this->initParams();
-		return isset($this->params[$name]);
+		if ($sourceType) {
+			if (($sourceType & \MvcCore\IRequest::PARAM_TYPE_INPUT) != 0) {
+				return (
+					isset($this->params[$name]) &&
+					!isset($this->paramsSources[\MvcCore\IRequest::PARAM_TYPE_QUERY_STRING][$name]) &&
+					!isset($this->paramsSources[\MvcCore\IRequest::PARAM_TYPE_URL_REWRITE][$name])
+				);
+			} else {
+				return (
+					isset($this->params[$name]) &&
+					isset($this->paramsSources[$sourceType]) &&
+					isset($this->paramsSources[$sourceType][$name])
+				);
+			}
+		} else {
+			return isset($this->params[$name]);
+		}
 	}
 
 	/**
@@ -214,7 +272,11 @@ trait CollectionsMethods {
 	public function RemoveParam ($name) {
 		/** @var $this \MvcCore\Request */
 		if ($this->params === NULL) $this->initParams();
-		unset($this->params[$name]);
+		unset(
+			$this->params[$name],
+			$this->paramsSources[\MvcCore\IRequest::PARAM_TYPE_QUERY_STRING][$name],
+			$this->paramsSources[\MvcCore\IRequest::PARAM_TYPE_URL_REWRITE][$name]
+		);
 		return $this;
 	}
 
