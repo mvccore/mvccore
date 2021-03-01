@@ -141,7 +141,8 @@ interface IRequest extends \MvcCore\Request\IConstants {
 	/**
 	 * Set directly all raw parameters without any conversion at once.
 	 * @param  array $params     Keys are param names, values are param values.
-	 * @param  int   $sourceType Param source collection flag(s). If param has defined source type flag already, this given flag is not used.
+	 * @param  int   $sourceType Param source collection flag(s). If param has defined 
+	 *                           source type flag already, this given flag is not used.
 	 * @return \MvcCore\Request
 	 */
 	public function SetParams (
@@ -168,7 +169,10 @@ interface IRequest extends \MvcCore\Request\IConstants {
 	 * Set directly raw parameter value without any conversion.
 	 * @param  string                $name       Param raw name.
 	 * @param  string|\string[]|NULL $value      Param raw value.
-	 * @param  int                   $sourceType Param source collection flag(s). If param has defined source type flag already, this given flag is not used.
+	 * @param  int                   $sourceType
+	 *                               Param source collection flag(s). If param has defined 
+	 *                               source type flag already, this given flag is used 
+	 *                               to overwrite already defined flag.
 	 * @return \MvcCore\Request
 	 */
 	public function SetParam (
@@ -196,6 +200,16 @@ interface IRequest extends \MvcCore\Request\IConstants {
 		$targetType = NULL,
 		$sourceType = \MvcCore\IRequest::PARAM_TYPE_ANY
 	);
+
+	/**
+	 * Get param source type flag as integer:
+	 * - `1` - `\MvcCore\IRequest::PARAM_TYPE_QUERY_STRING`
+	 * - `2` - `\MvcCore\IRequest::PARAM_TYPE_URL_REWRITE`
+	 * - `4` - `\MvcCore\IRequest::PARAM_TYPE_INPUT`
+	 * @param  string $name 
+	 * @return int
+	 */
+	public function GetParamSourceType ($name);
 	
 	/**
 	 * Get `TRUE` if any non `NULL` param value exists in `$_GET`, `$_POST`, `php://input` or in any other source.

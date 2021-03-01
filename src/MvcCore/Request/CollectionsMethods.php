@@ -105,7 +105,8 @@ trait CollectionsMethods {
 	/**
 	 * @inheritDocs
 	 * @param  array $params     Keys are param names, values are param values.
-	 * @param  int   $sourceType Param source collection flag(s). If param has defined source type flag already, this given flag is not used.
+	 * @param  int   $sourceType Param source collection flag(s). If param has defined 
+	 *                           source type flag already, this given flag is not used.
 	 * @return \MvcCore\Request
 	 */
 	public function SetParams (
@@ -177,7 +178,10 @@ trait CollectionsMethods {
 	 * Set directly raw parameter value without any conversion.
 	 * @param  string                $name       Param raw name.
 	 * @param  string|\string[]|NULL $value      Param raw value.
-	 * @param  int                   $sourceType Param source collection flag(s). If param has defined source type flag already, this given flag is not used.
+	 * @param  int                   $sourceType
+	 *                               Param source collection flag(s). If param has defined 
+	 *                               source type flag already, this given flag is used 
+	 *                               to overwrite already defined flag.
 	 * @return \MvcCore\Request
 	 */
 	public function SetParam (
@@ -188,15 +192,13 @@ trait CollectionsMethods {
 		/** @var $this \MvcCore\Request */
 		if ($this->params === NULL) $this->initParams();
 		$this->params[$name] = $value;
-		if ($sourceType && (
-			(
-				($sourceType & \MvcCore\IRequest::PARAM_TYPE_QUERY_STRING) != 0 && 
-				!isset($this->paramsSources[\MvcCore\IRequest::PARAM_TYPE_URL_REWRITE][$name])
-			) || (
-				($sourceType & \MvcCore\IRequest::PARAM_TYPE_URL_REWRITE) != 0 && 
-				!isset($this->paramsSources[\MvcCore\IRequest::PARAM_TYPE_QUERY_STRING][$name])
-			)
-		)) $this->paramsSources[$sourceType][$name] = TRUE;
+		if ($sourceType && isset($this->paramsSources[$sourceType])) {
+			unset(
+				$this->paramsSources[\MvcCore\IRequest::PARAM_TYPE_QUERY_STRING][$name],
+				$this->paramsSources[\MvcCore\IRequest::PARAM_TYPE_URL_REWRITE][$name]
+			);
+			$this->paramsSources[$sourceType][$name] = TRUE;	
+		}
 		return $this;
 	}
 	
@@ -231,6 +233,19 @@ trait CollectionsMethods {
 		return $this->getParamFromCollection(
 			$this->params, $name, $pregReplaceAllowedChars, $ifNullValue, $targetType
 		);
+	}
+
+	/**
+	 * @inheritDocs
+	 * @param  string $name 
+	 * @return int
+	 */
+	public function GetParamSourceType ($name) {
+		if (isset($this->paramsSources[\MvcCore\IRequest::PARAM_TYPE_QUERY_STRING][$name]))
+			return \MvcCore\IRequest::PARAM_TYPE_QUERY_STRING;
+		if (isset($this->paramsSources[\MvcCore\IRequest::PARAM_TYPE_URL_REWRITE][$name]))
+			return \MvcCore\IRequest::PARAM_TYPE_URL_REWRITE;
+		return \MvcCore\IRequest::PARAM_TYPE_INPUT;
 	}
 	
 	/**
