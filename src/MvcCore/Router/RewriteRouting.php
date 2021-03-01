@@ -191,8 +191,8 @@ trait RewriteRouting {
 			$request->SetActionName($defaultActionNameDashed);
 			$allMatchedParams[static::URL_PARAM_ACTION] = $defaultActionNameDashed;
 		}
-		$request->SetParam(static::URL_PARAM_CONTROLLER, $request->GetControllerName(), \MvcCore\IRequest::PARAM_TYPE_URL_REWRITE);
-		$request->SetParam(static::URL_PARAM_ACTION, $request->GetActionName(), \MvcCore\IRequest::PARAM_TYPE_URL_REWRITE);
+		$request->SetParamSourceType(static::URL_PARAM_CONTROLLER, \MvcCore\IRequest::PARAM_TYPE_URL_REWRITE);
+		$request->SetParamSourceType(static::URL_PARAM_ACTION, \MvcCore\IRequest::PARAM_TYPE_URL_REWRITE);
 		// complete params for request object - there have to be everything including ctrl and action
 		$this->defaultParams = array_merge(
 			// default params are merged with previous default params to have 
@@ -249,18 +249,14 @@ trait RewriteRouting {
 			if (!$sourceType) $sourceType = \MvcCore\IRequest::PARAM_TYPE_URL_REWRITE;
 			$request->SetParam($requestParamName, $requestParamValue, $sourceType);
 		}
-		if (isset($requestParamsFiltered[static::URL_PARAM_CONTROLLER])) {
-			$ctrlParamFiltered = $requestParamsFiltered[static::URL_PARAM_CONTROLLER];
+		if (isset($requestParamsFiltered[static::URL_PARAM_CONTROLLER])) 
 			$request
-				->SetControllerName($ctrlParamFiltered)
-				->SetParam(static::URL_PARAM_CONTROLLER, $ctrlParamFiltered, \MvcCore\IRequest::PARAM_TYPE_URL_REWRITE);
-		}
-		if (isset($requestParamsFiltered[static::URL_PARAM_ACTION])) {
-			$actionParamFiltered = $requestParamsFiltered[static::URL_PARAM_ACTION];
+				->SetControllerName($requestParamsFiltered[static::URL_PARAM_CONTROLLER])
+				->SetParamSourceType(static::URL_PARAM_CONTROLLER, \MvcCore\IRequest::PARAM_TYPE_URL_REWRITE);
+		if (isset($requestParamsFiltered[static::URL_PARAM_ACTION])) 
 			$request
-				->SetActionName($actionParamFiltered)
-				->SetParam(static::URL_PARAM_ACTION, $actionParamFiltered, \MvcCore\IRequest::PARAM_TYPE_URL_REWRITE);
-		}
+				->SetActionName($requestParamsFiltered[static::URL_PARAM_ACTION])
+				->SetParamSourceType(static::URL_PARAM_ACTION, \MvcCore\IRequest::PARAM_TYPE_URL_REWRITE);
 		return FALSE;
 	}
 

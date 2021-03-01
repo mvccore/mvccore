@@ -61,8 +61,8 @@ trait Routing {
 		if ($controllerNamePcNotNull) {
 			$ctrlNameDc = str_replace(['\\', '_'], '/', $toolClass::GetDashedFromPascalCase($controllerNamePc));
 			$matchedParams[static::URL_PARAM_CONTROLLER] = $ctrlNameDc;
-			$this->request->SetControllerName($ctrlNameDc)->SetParam(
-				static::URL_PARAM_CONTROLLER, $ctrlNameDc, $ctrlActionParamType
+			$this->request->SetControllerName($ctrlNameDc)->SetParamSourceType(
+				static::URL_PARAM_CONTROLLER, $ctrlActionParamType
 			);
 			if (isset($this->requestedParams[static::URL_PARAM_CONTROLLER])) $this->requestedParams[static::URL_PARAM_CONTROLLER] = $ctrlNameDc;
 			$currentRoute->SetController($controllerNamePc);
@@ -70,8 +70,8 @@ trait Routing {
 		if ($actionNamePcNotNull) {
 			$actionNameDc = $toolClass::GetDashedFromPascalCase($actionNamePc);
 			$matchedParams[static::URL_PARAM_ACTION] = $actionNameDc;
-			$this->request->SetActionName($actionNameDc)->SetParam(
-				static::URL_PARAM_ACTION, $actionNameDc, $ctrlActionParamType
+			$this->request->SetActionName($actionNameDc)->SetParamSourceType(
+				static::URL_PARAM_ACTION, $ctrlActionParamType
 			);
 			if (isset($this->requestedParams[static::URL_PARAM_ACTION])) $this->requestedParams[static::URL_PARAM_ACTION] = $actionNameDc;
 			$currentRoute->SetAction($actionNamePc);
@@ -118,6 +118,9 @@ trait Routing {
 		$controllerPc = strtr($controllerPc, '/', '\\');
 		$ctrlActionRouteName = $controllerPc.':'. $actionPc;
 		$request = $this->request;
+		$ctrlActionParamType = $this->routeByQueryString
+			? \MvcCore\IRequest::PARAM_TYPE_QUERY_STRING
+			: \MvcCore\IRequest::PARAM_TYPE_URL_REWRITE;
 		if (isset($this->routes[$ctrlActionRouteName])) {
 			$defaultRoute = $this->routes[$ctrlActionRouteName];
 		} else if (isset($this->routes[$routeName])) {
@@ -145,20 +148,17 @@ trait Routing {
 					$request->HasParam(static::URL_PARAM_PATH)
 						? $request->GetParam(static::URL_PARAM_PATH, '.*')
 						: $request->GetPath(),
-					\MvcCore\IRequest::PARAM_TYPE_URL_REWRITE
+					$ctrlActionParamType
 				);
 		}
 		$toolClass = self::$toolClass;
-		$ctrlActionParamType = $this->routeByQueryString
-			? \MvcCore\IRequest::PARAM_TYPE_QUERY_STRING
-			: \MvcCore\IRequest::PARAM_TYPE_URL_REWRITE;
-		$reqCtrlName = str_replace('\\', '/', $toolClass::GetDashedFromPascalCase($defaultRoute->GetController()));
-		$reqActionName = $toolClass::GetDashedFromPascalCase($defaultRoute->GetAction());
 		$request
-			->SetControllerName($reqCtrlName)
-			->SetActionName($reqActionName)
-			->SetParam(static::URL_PARAM_CONTROLLER, $reqCtrlName, $ctrlActionParamType)
-			->SetParam(static::URL_PARAM_ACTION, $reqActionName, $ctrlActionParamType);
+			->SetControllerName(str_replace('\\', '/', 
+				$toolClass::GetDashedFromPascalCase($defaultRoute->GetController())
+			))
+			->SetActionName($toolClass::GetDashedFromPascalCase($defaultRoute->GetAction()))
+			->SetParamSourceType(static::URL_PARAM_CONTROLLER, $ctrlActionParamType)
+			->SetParamSourceType(static::URL_PARAM_ACTION, $ctrlActionParamType);
 		$this->currentRoute = $defaultRoute;
 		if (!$fallbackCall) $this->selfRouteName = $routeName;
 		return $defaultRoute;
@@ -228,8 +228,10 @@ trait Routing {
 		// default params are merged with previous default params to have 
 		// possibility to add domain params by extended module router
 		$this->defaultParams = array_merge(
-			[], $this->defaultParams, $this->request->GetParams(
-				FALSE, [], \MvcCore\IRequest::PARAM_TYPE_QUERY_STRING | \MvcCore\IRequest::PARAM_TYPE_URL_REWRITE
+			[], 
+			$this->defaultParams, 
+			$this->request->GetParams(
+				FALSE, [], \MvcCore\IRequest::PARAM_TYPE_QUERY_STRING
 			)
 		);
 		$this->requestedParams = array_merge([], $this->defaultParams);

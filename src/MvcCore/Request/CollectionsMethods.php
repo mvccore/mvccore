@@ -277,6 +277,24 @@ trait CollectionsMethods {
 	
 	/**
 	 * @inheritDocs
+	 * @param  string $name 
+	 * @return int
+	 */
+	public function SetParamSourceType ($name, $sourceType = \MvcCore\IRequest::PARAM_TYPE_ANY) {
+		if (!isset($this->params[$name])) return $this;
+		unset(
+			$this->paramsSources[\MvcCore\IRequest::PARAM_TYPE_QUERY_STRING][$name],
+			$this->paramsSources[\MvcCore\IRequest::PARAM_TYPE_URL_REWRITE][$name]
+		);
+		if (($sourceType & \MvcCore\IRequest::PARAM_TYPE_QUERY_STRING) != 0)
+			$this->paramsSources[\MvcCore\IRequest::PARAM_TYPE_QUERY_STRING][$name] = TRUE;
+		if (($sourceType & \MvcCore\IRequest::PARAM_TYPE_URL_REWRITE) != 0)
+			$this->paramsSources[\MvcCore\IRequest::PARAM_TYPE_URL_REWRITE][$name] = TRUE;
+		return $this;
+	}
+	
+	/**
+	 * @inheritDocs
 	 * @param  string $name       Parameter string name.
 	 * @param  int    $sourceType Param source collection flag(s). If defined, there is returned `TRUE` only for param in given collection type(s).
 	 * @return bool

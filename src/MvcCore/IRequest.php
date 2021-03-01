@@ -213,6 +213,17 @@ interface IRequest extends \MvcCore\Request\IConstants {
 	 * @return int
 	 */
 	public function GetParamSourceType ($name);
+
+	/**
+	 * Change existing param source type flag:
+	 * - `1` - `\MvcCore\IRequest::PARAM_TYPE_QUERY_STRING`
+	 * - `2` - `\MvcCore\IRequest::PARAM_TYPE_URL_REWRITE`
+	 * - `4` - `\MvcCore\IRequest::PARAM_TYPE_INPUT`
+	 * @param  string $name       Existing param name.
+	 * @param  int    $sourceType Param source collection flag(s).
+	 * @return \MvcCore\Request
+	 */
+	public function SetParamSourceType ($name, $sourceType = \MvcCore\IRequest::PARAM_TYPE_ANY);
 	
 	/**
 	 * Get `TRUE` if any non `NULL` param value exists in `$_GET`, `$_POST`, `php://input` or in any other source.
