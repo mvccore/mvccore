@@ -140,10 +140,14 @@ interface IRequest extends \MvcCore\Request\IConstants {
 
 	/**
 	 * Set directly all raw parameters without any conversion at once.
-	 * @param  array $params
+	 * @param  array $params     Keys are param names, values are param values.
+	 * @param  int   $sourceType Param source collection flag(s). If param has defined source type flag already, this given flag is not used.
 	 * @return \MvcCore\Request
 	 */
-	public function SetParams (array & $params = []);
+	public function SetParams (
+		array & $params = [], 
+		$sourceType = \MvcCore\IRequest::PARAM_TYPE_ANY
+	);
 
 	/**
 	 * Get directly all raw parameters at once (with/without conversion).
@@ -151,24 +155,27 @@ interface IRequest extends \MvcCore\Request\IConstants {
 	 * all params filtered by given rule in `preg_replace()`.
 	 * @param  string|array|bool $pregReplaceAllowedChars If String - list of regular expression characters to only keep, if array - `preg_replace()` pattern and reverse, if `FALSE`, raw value is returned.
 	 * @param  array             $onlyKeys                Array with keys to get only. If empty (by default), all possible params are returned.
+	 * @param  int               $sourceType              Param source collection flag(s). If defined, there are returned only params from given collection types.
 	 * @return array
 	 */
-	public function & GetParams ($pregReplaceAllowedChars = ['#[\<\>\'"]#', ''], $onlyKeys = []);
+	public function & GetParams (
+		$pregReplaceAllowedChars = ['#[\<\>\'"]#', ''], 
+		$onlyKeys = [], 
+		$sourceType = \MvcCore\IRequest::PARAM_TYPE_ANY
+	);
 
 	/**
 	 * Set directly raw parameter value without any conversion.
-	 * @param  string           $name
-	 * @param  string|\string[] $value
+	 * @param  string                $name       Param raw name.
+	 * @param  string|\string[]|NULL $value      Param raw value.
+	 * @param  int                   $sourceType Param source collection flag(s). If param has defined source type flag already, this given flag is not used.
 	 * @return \MvcCore\Request
 	 */
-	public function SetParam ($name = '', $value = '');
-
-	/**
-	 * Remove parameter by name.
-	 * @param  string $name
-	 * @return \MvcCore\Request
-	 */
-	public function RemoveParam ($name = '');
+	public function SetParam (
+		$name, 
+		$value = NULL, 
+		$sourceType = \MvcCore\IRequest::PARAM_TYPE_ANY
+	);
 
 	/**
 	 * Get param value from `$_GET`, `$_POST` or `php://input`, filtered by
@@ -178,22 +185,35 @@ interface IRequest extends \MvcCore\Request\IConstants {
 	 * @param  string|array|bool $pregReplaceAllowedChars If String - list of regular expression characters to only keep, if array - `preg_replace()` pattern and reverse, if `FALSE`, raw value is returned.
 	 * @param  mixed             $ifNullValue             Default value returned if given param name is null.
 	 * @param  string            $targetType              Target type to retype param value or default if-null value. If param is an array, every param item will be retyped into given target type.
+	 * @param  int               $sourceType              Param source collection flag(s). If defined, there is returned only param from given collection type(s).
 	 * @throws \InvalidArgumentException                  `$name` must be a `$targetType`, not an `array`.
 	 * @return string|\string[]|int|\int[]|bool|\bool[]|array|mixed
 	 */
 	public function GetParam (
-		$name = '',
+		$name,
 		$pregReplaceAllowedChars = "a-zA-Z0-9_;, /\-\@\:",
 		$ifNullValue = NULL,
-		$targetType = NULL
+		$targetType = NULL,
+		$sourceType = \MvcCore\IRequest::PARAM_TYPE_ANY
 	);
-
+	
 	/**
-	 * Get if any param value exists in `$_GET`, `$_POST` or `php://input`
-	 * @param  string $name Parameter string name.
+	 * Get `TRUE` if any non `NULL` param value exists in `$_GET`, `$_POST`, `php://input` or in any other source.
+	 * @param  string $name       Parameter string name.
+	 * @param  int    $sourceType Param source collection flag(s). If defined, there is returned `TRUE` only for param in given collection type(s).
 	 * @return bool
 	 */
-	public function HasParam ($name = '');
+	public function HasParam (
+		$name, 
+		$sourceType = \MvcCore\IRequest::PARAM_TYPE_ANY
+	);
+	
+	/**
+	 * Remove parameter by name.
+	 * @param  string $name
+	 * @return \MvcCore\Request
+	 */
+	public function RemoveParam ($name);
 
 
 	/**
