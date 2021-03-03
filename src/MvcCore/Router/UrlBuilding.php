@@ -100,7 +100,29 @@ trait UrlBuilding {
 				$params, $controllerActionOrRouteName
 			);
 		}
-		return $result;
+		return $this->EncodeUrl($result);
+	}
+	
+	/**
+	 * @inheritDocs
+	 * @param  string $url 
+	 * @return string
+	 */
+	public function EncodeUrl ($url) {
+		return preg_replace_callback(
+			'/[^\x21\x23-\x26\x28-\x3B\x3D\x3F-\x5B\x5D-\x7E]+/', 
+			'static::encodeUrlCallback', 
+			$url
+		);
+	}
+
+	/**
+	 * Returm first array item encoded by `rawurlencode()`.
+	 * @param  array $match
+	 * @return string
+	 */
+	protected static function encodeUrlCallback ($match) {
+		return rawurlencode($match[0]);
 	}
 
 	/**

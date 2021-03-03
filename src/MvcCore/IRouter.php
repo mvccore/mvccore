@@ -636,6 +636,17 @@ interface IRouter extends \MvcCore\Router\IConstants {
 	 * @return string
 	 */
 	public function Url ($controllerActionOrRouteName = 'Index:Index', array $params = []);
+	
+	/**
+	 * Encode URL special chars to percent (%) sign followed by two hex digits:
+	 * - encode ASCII chars with lower index than 33 (including space)
+	 * - encode ASCII special chars for HTML `" ' < > \`
+	 * - keep ASCII special chars `! # $ % & ( ) * + ´- . / : ; = ? @ [ ] ^ _ \` { } ~`
+	 * - keep ASCII alphanumeric chars
+	 * @param  string $url 
+	 * @return string
+	 */
+	public function EncodeUrl ($url);
 
 	/**
 	 * Complete optionally absolute, non-localized URL with all params in query string.

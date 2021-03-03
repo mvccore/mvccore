@@ -23,14 +23,14 @@ trait Matching {
 	 * @return array                     Matched and params array, keys are matched
 	 *                                   params or controller and action params.
 	 */
-	public function & Matches (\MvcCore\IRequest $request) {
+	public function Matches (\MvcCore\IRequest $request) {
 		/** @var $this \MvcCore\Route */
 		$matchedParams = NULL;
 		$pattern = $this->matchesGetPattern();
 		$subject = $this->matchesGetSubject($request);
-		$matchedValues = & $this->match($pattern, $subject);
+		$matchedValues = $this->match($pattern, $subject);
 		if (isset($matchedValues[0]) && count($matchedValues[0]) > 0) {
-			$defaultParams = & $this->GetDefaults();
+			$defaultParams = $this->GetDefaults();
 			$matchedParams = $this->matchesParseRewriteParams($matchedValues, $defaultParams);
 			if (isset($matchedParams[$this->lastPatternParam])) 
 				$matchedParams[$this->lastPatternParam] = rtrim(
@@ -90,7 +90,7 @@ trait Matching {
 	 * @param  string $subject 
 	 * @return array
 	 */
-	protected function & match ($pattern, & $subject) {
+	protected function match ($pattern, & $subject) {
 		/** @var $this \MvcCore\Route */
 		// add UTF-8 modifier to pattern if subject string contains higher chars than ASCII
 		if (preg_match('#[^\x20-\x7f]#', $subject)) {
@@ -202,7 +202,7 @@ trait Matching {
 	 * @param  array $defaults 
 	 * @return array
 	 */
-	protected function & matchesParseRewriteParams (& $matchedValues, & $defaults) {
+	protected function matchesParseRewriteParams (& $matchedValues, & $defaults) {
 		/** @var $this \MvcCore\Route */
 		/** @var $toolClass \MvcCore\Tool */
 		$toolClass = \MvcCore\Application::GetInstance()->GetToolClass();

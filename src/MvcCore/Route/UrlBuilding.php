@@ -22,7 +22,7 @@ trait UrlBuilding {
 	 * @param  string $direction
 	 * @return array  Filtered params array.
 	 */
-	public function Filter (array & $params = [], array & $defaultParams = [], $direction = \MvcCore\IRoute::CONFIG_FILTER_IN) {
+	public function Filter (array $params = [], array $defaultParams = [], $direction = \MvcCore\IRoute::CONFIG_FILTER_IN) {
 		/** @var $this \MvcCore\Route */
 		if (!$this->filters || !isset($this->filters[$direction]))
 			return [TRUE, $params];
@@ -71,7 +71,7 @@ trait UrlBuilding {
 	 *                          in two parts - domain part with base path and 
 	 *                          path part with query string.
 	 */
-	public function Url (\MvcCore\IRequest $request, array & $params = [], array & $defaultUrlParams = [], $queryStringParamsSepatator = '&', $splitUrl = FALSE) {
+	public function Url (\MvcCore\IRequest $request, array $params = [], array $defaultUrlParams = [], $queryStringParamsSepatator = '&', $splitUrl = FALSE) {
 		/** @var $this \MvcCore\Route */
 		// check reverse initialization
 		if ($this->reverseParams === NULL) $this->initReverse();
@@ -107,7 +107,7 @@ trait UrlBuilding {
 		);
 		// add all remaining params to query string
 		if ($filteredParams) {
-			// `http_build_query()` automatically converts all XSS chars to entities (`< > & " ' &`):
+			// `http_build_query()` automatically converts all XSS chars to entities (`< > " '`):
 			$result .= (mb_strpos($result, '?') !== FALSE ? $queryStringParamsSepatator : '?')
 				. str_replace('%2F', '/', http_build_query($filteredParams, '', $queryStringParamsSepatator, PHP_QUERY_RFC3986));
 		}
@@ -181,7 +181,7 @@ trait UrlBuilding {
 			$sections[] = $sectionResult;
 		}
 		$result = implode('', $sections);
-		$result = & $this->urlCorrectTrailingSlashBehaviour($result);
+		$result = $this->urlCorrectTrailingSlashBehaviour($result);
 		return $result;
 	}
 
@@ -548,7 +548,7 @@ trait UrlBuilding {
 	 * @param  string $urlPath
 	 * @return string
 	 */
-	protected function & urlCorrectTrailingSlashBehaviour (& $urlPath) {
+	protected function urlCorrectTrailingSlashBehaviour ($urlPath) {
 		/** @var $this \MvcCore\Route */
 		$trailingSlashBehaviour = $this->_trailingSlashBehaviour ?: (
 			$this->_trailingSlashBehaviour = $this->router->GetTrailingSlashBehaviour()

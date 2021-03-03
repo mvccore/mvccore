@@ -377,7 +377,7 @@ interface IRoute extends \MvcCore\Route\IConstants {
 	 * Example: `["name" => "default-name", "color" => "red",]`.
 	 * @return array|\array[]
 	 */
-	public function & GetDefaults ();
+	public function GetDefaults ();
 
 	/**
 	 * Set route rewrite params default values and also any other query string 
@@ -436,7 +436,7 @@ interface IRoute extends \MvcCore\Route\IConstants {
 	 * 'parent::methodName']` and `[$childInstance, 'parent::methodName']`.
 	 * @return array|\callable[]
 	 */
-	public function & GetFilters ();
+	public function GetFilters ();
 
 	/**
 	 * Set URL address params filters to filter URL params in and out. By route 
@@ -615,7 +615,7 @@ interface IRoute extends \MvcCore\Route\IConstants {
 	 * action if any.
 	 * @return array|NULL
 	 */
-	public function & GetMatchedParams ();
+	public function GetMatchedParams ();
 	
 	/**
 	 * Get router instance reference, used mostly in route URL building process.
@@ -662,7 +662,7 @@ interface IRoute extends \MvcCore\Route\IConstants {
 	 * @return array                     Matched and params array, keys are matched
 	 *                                   params or controller and action params.
 	 */
-	public function & Matches (\MvcCore\IRequest $request);
+	public function Matches (\MvcCore\IRequest $request);
 
 	/**
 	 * Filter given `array $params` by configured `"in" | "out"` filter `callable`.
@@ -673,7 +673,7 @@ interface IRoute extends \MvcCore\Route\IConstants {
 	 * @param  string $direction 
 	 * @return array  Filtered params array.
 	 */
-	public function Filter (array & $params = [], array & $defaultParams = [], $direction = \MvcCore\IRoute::CONFIG_FILTER_IN);
+	public function Filter (array $params = [], array $defaultParams = [], $direction = \MvcCore\IRoute::CONFIG_FILTER_IN);
 
 	/**
 	 * Complete route URL by given params array and route internal reverse 
@@ -728,7 +728,7 @@ interface IRoute extends \MvcCore\Route\IConstants {
 	 *                          in two parts - domain part with base path and 
 	 *                          path part with query string.
 	 */
-	public function Url (\MvcCore\IRequest $request, array & $params = [], array & $defaultUrlParams = [], $queryStringParamsSepatator = '&', $splitUrl = FALSE);
+	public function Url (\MvcCore\IRequest $request, array $params = [], array $defaultUrlParams = [], $queryStringParamsSepatator = '&', $splitUrl = FALSE);
 
 	/**
 	 * Initialize all possible protected values (`match`, `reverse` etc...). This 

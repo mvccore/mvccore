@@ -162,7 +162,7 @@ trait GettersSetters {
 	 * @inheritDocs
 	 * @return array|\array[]
 	 */
-	public function & GetDefaults () {
+	public function GetDefaults () {
 		/** @var $this \MvcCore\Route */
 		return $this->defaults;
 	}
@@ -205,7 +205,7 @@ trait GettersSetters {
 	 * @inheritDocs
 	 * @return array|\callable[]
 	 */
-	public function & GetFilters () {
+	public function GetFilters () {
 		/** @var $this \MvcCore\Route */
 		$filters = [];
 		foreach ($this->filters as $direction => $handler) 
@@ -365,7 +365,7 @@ trait GettersSetters {
 	 * @inheritDocs
 	 * @return array|NULL
 	 */
-	public function & GetMatchedParams () {
+	public function GetMatchedParams () {
 		/** @var $this \MvcCore\Route */
 		return $this->matchedParams;
 	}

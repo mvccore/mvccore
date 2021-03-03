@@ -106,7 +106,7 @@ trait UrlByQuery {
 			$sep = $amp;
 		}
 		if ($params) 
-			// `http_build_query()` automatically converts all XSS chars to entities (`< > & " ' &`):
+			// `http_build_query()` automatically converts all XSS chars to entities (`< > " '`):
 			$result .= $sep . str_replace('%2F', '/', http_build_query($params, '', $amp, PHP_QUERY_RFC3986));
 		$result = rtrim($result, '?');
 		if ($result == '') 

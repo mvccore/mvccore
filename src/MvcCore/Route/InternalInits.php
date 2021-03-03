@@ -222,7 +222,7 @@ trait InternalInits {
 	 *                                property is empty.
 	 * @return \stdClass[][]          An array with `\stdClass` objects.
 	 */
-	protected function & initSectionsInfo (& $pattern) {
+	protected function initSectionsInfo (& $pattern) {
 		/** @var $this \MvcCore\Route */
 		$result = [];
 		$index = 0;
@@ -279,7 +279,7 @@ trait InternalInits {
 	 * @return array       An array with keys as param names and values as
 	 *                     `\stdClass` objects with data about each reverse param.
 	 */
-	protected function & initReverseParams (& $reverse, & $reverseSectionsInfo, & $constraints, & $match = NULL) {
+	protected function initReverseParams (& $reverse, & $reverseSectionsInfo, & $constraints, & $match = NULL) {
 		/** @var $this \MvcCore\Route */
 		$result = [];
 		$completeMatch = $match !== NULL;
