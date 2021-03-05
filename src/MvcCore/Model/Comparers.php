@@ -32,11 +32,14 @@ trait Comparers {
 		$valuasAreTheSame = FALSE;
 		$value1IsNull = $value1 === NULL;
 		$value2IsNull = $value2 === NULL;
+		$floatEpsilon = defined('PHP_FLOAT_EPSILON')
+			? PHP_FLOAT_EPSILON
+			: floatval('2.220446049250313E-16');
 		if ($value1IsNull && $value2IsNull) {
 			$valuasAreTheSame = TRUE;
 		} else if (!$value1IsNull && !$value2IsNull) {
 			if (is_float($value1) && is_float($value2)) {
-				$valuasAreTheSame = abs($value1 - $value2) < PHP_FLOAT_EPSILON;
+				$valuasAreTheSame = abs($value1 - $value2) < $floatEpsilon;
 				
 			} else if (
 				(is_scalar($value1) && is_scalar($value2)) ||
@@ -52,7 +55,7 @@ trait Comparers {
 				$valuasAreTheSame = abs(
 					static::convertIntervalToFloat($value1) - 
 					static::convertIntervalToFloat($value2)
-				) < PHP_FLOAT_EPSILON;
+				) < $floatEpsilon;
 
 			} else if ($value1 instanceof \DateTimeZone && $value2 instanceof \DateTimeZone) {
 				$now = new \DateTime('now');
@@ -65,7 +68,7 @@ trait Comparers {
 					abs(
 						static::convertIntervalToFloat($value1->getDateInterval()) - 
 						static::convertIntervalToFloat($value2->getDateInterval())
-					) < PHP_FLOAT_EPSILON
+					) < $floatEpsilon
 				);
 
 			} else if (is_resource($value1) && is_resource($value2)) {

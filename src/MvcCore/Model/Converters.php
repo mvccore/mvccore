@@ -25,7 +25,7 @@ trait Converters {
 	protected static function convertToScalar ($value, $formatArgs = []) {
 		if (is_bool($value)) {
 			return $value ? 1 : 0 ;
-		} else if (is_iterable($value)) {
+		} else if (is_array($value) || $value instanceof \Traversable) { // `is_iterable()`
 			$items = [];
 			foreach ($value as $item)
 				if ($item !== NULL)
