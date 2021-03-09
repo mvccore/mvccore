@@ -501,8 +501,10 @@ trait CollectionsMethods {
 		/** @var $this \MvcCore\Request */
 		if ($rawValue === NULL) {
 			// if there is NULL in target collection
-			if ($targetType === NULL) return $ifNullValue;
-			$result = is_scalar($ifNullValue) ? $ifNullValue : clone $ifNullValue;
+			if ($targetType === NULL || $ifNullValue === NULL) return $ifNullValue;
+			$result = is_scalar($ifNullValue) 
+				? $ifNullValue 
+				: clone $ifNullValue;
 			settype($result, $targetType);
 			return $result;
 		} else {
@@ -510,8 +512,10 @@ trait CollectionsMethods {
 			if (is_string($rawValue) && mb_strlen(trim($rawValue)) === 0) {
 				// if value after trim is empty string, return empty string (retyped if necessary)
 				$result = "";
-				if ($targetType === NULL) return $result;
-				$result = is_scalar($ifNullValue) ? $ifNullValue : clone $ifNullValue;
+				if ($targetType === NULL || $ifNullValue === NULL) return $result;
+				$result = is_scalar($ifNullValue) 
+					? $ifNullValue 
+					: clone $ifNullValue;
 				settype($result, $targetType);
 				return $result;
 			} else if ($pregReplaceAllowedChars === FALSE || $pregReplaceAllowedChars === '.*') {
