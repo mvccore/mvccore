@@ -31,7 +31,7 @@ trait UrlHelpers {
 	 * @param  string $path
 	 * @return string
 	 */
-	public function AssetUrl ($path = '') {
+	public function AssetUrl ($path) {
 		/** @var $this \MvcCore\View */
 		return $this->controller->AssetUrl($path);
 	}

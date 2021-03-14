@@ -279,7 +279,7 @@ interface IView extends \MvcCore\View\IConstants {
 	 * @param  string $relativePath
 	 * @return string
 	 */
-	public function RenderScript ($relativePath = '');
+	public function RenderScript ($relativePath);
 
 	/**
 	 * Render layout template script or any include script and return it's result as reference.
@@ -287,7 +287,7 @@ interface IView extends \MvcCore\View\IConstants {
 	 * @param  string $relativePath
 	 * @return string
 	 */
-	public function RenderLayout ($relativePath = '');
+	public function RenderLayout ($relativePath);
 
 	/**
 	 * This method is INTERNAL, always called from `\MvcCore\Controller::Render();`.
@@ -299,7 +299,7 @@ interface IView extends \MvcCore\View\IConstants {
 	 * @param  string|NULL $content
 	 * @return string
 	 */
-	public function RenderLayoutAndContent ($relativePath = '', & $content = NULL);
+	public function RenderLayoutAndContent ($relativePath, & $content = NULL);
 
 	/**
 	 * Render controller template and all necessary layout
@@ -310,7 +310,7 @@ interface IView extends \MvcCore\View\IConstants {
 	 * @throws \InvalidArgumentException Template not found in path: `$viewScriptFullPath`.
 	 * @return string
 	 */
-	public function Render ($typePath = '', $relativePath = '');
+	public function Render ($typePath, $relativePath);
 
 	/**
 	 * Render template by previously configured view object by given full path.
@@ -357,7 +357,7 @@ interface IView extends \MvcCore\View\IConstants {
 	 * @param  string $path
 	 * @return string
 	 */
-	public function AssetUrl ($path = '');
+	public function AssetUrl ($path);
 
 	/**
 	 * Escape string for use inside HTML/XHTML/HTML5 

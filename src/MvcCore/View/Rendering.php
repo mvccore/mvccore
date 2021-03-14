@@ -20,7 +20,7 @@ trait Rendering {
 	 * @param  string $relativePath
 	 * @return string
 	 */
-	public function RenderScript ($relativePath = '') {
+	public function RenderScript ($relativePath) {
 		/** @var $this \MvcCore\View */
 		return $this->Render(static::$scriptsDir, $relativePath);
 	}
@@ -30,7 +30,7 @@ trait Rendering {
 	 * @param  string $relativePath
 	 * @return string
 	 */
-	public function RenderLayout ($relativePath = '') {
+	public function RenderLayout ($relativePath) {
 		/** @var $this \MvcCore\View */
 		return $this->Render(static::$layoutsDir, $relativePath);
 	}
@@ -42,7 +42,7 @@ trait Rendering {
 	 * @param  string|NULL $content
 	 * @return string
 	 */
-	public function RenderLayoutAndContent ($relativePath = '', & $content = NULL) {
+	public function RenderLayoutAndContent ($relativePath, & $content = NULL) {
 		/** @var $this \MvcCore\View */
 		if ($relativePath === NULL) return $content; // no layout defined
 		$this->__protected['content'] = & $content;
@@ -91,7 +91,7 @@ trait Rendering {
 	 * @throws \InvalidArgumentException Template not found in path: `$viewScriptFullPath`.
 	 * @return string
 	 */
-	public function Render ($typePath = '', $relativePath = '') {
+	public function Render ($typePath, $relativePath) {
 		/** @var $this \MvcCore\View */
 		if (!$typePath)
 			$typePath = static::$scriptsDir;
