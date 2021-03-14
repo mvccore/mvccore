@@ -34,7 +34,7 @@ trait GettersSetters {
 		/** @var $this \MvcCore\Application */
 		if ($this->compiled === NULL) {
 			$compiled = static::NOT_COMPILED;
-			if (strpos(__FILE__, 'phar://') === 0) {
+			if (strlen(\Phar::running()) > 0) {
 				$compiled = static::COMPILED_PHAR;
 			} else if (class_exists('\Packager_Php_Wrapper')) {
 				$compiled = constant('\Packager_Php_Wrapper::FS_MODE');
