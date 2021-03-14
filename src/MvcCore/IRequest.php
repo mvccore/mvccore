@@ -468,18 +468,53 @@ interface IRequest extends \MvcCore\Request\IConstants {
 
 
 	/**
-	 * Php requested script name path from application root.
+	 * Get PHP requested script name path from application root.
 	 * Example: `"/index.php"`
 	 * @return string
 	 */
 	public function GetScriptName ();
 
 	/**
-	 * Get application root path on hard drive.
-	 * Example: `"C:/www/my/development/directory/www"`
+	 * Set PHP requested script name path from application root.
+	 * Example: `"/index.php"`
+	 * @param  string $scriptName
+	 * @return \MvcCore\Request
+	 */
+	public function SetScriptName ($scriptName);
+
+	/**
+	 * Get application root path.
+	 * This value is always the same with webserver document root for single file projects.
+	 * Example: `"C:/www/my/development/project"`
 	 * @return string
 	 */
 	public function GetAppRoot ();
+	
+	/**
+	 * Set application root path.
+	 * This value has to be the same with webserver document root for single file projects.
+	 * Example: `"C:/www/my/development/project"`
+	 * @param  string $appRoot
+	 * @return \MvcCore\Request
+	 */
+	public function SetAppRoot ($appRoot);
+
+	/**
+	 * Get webserver document root path, where is `/index.php` located.
+	 * This value is always the same with application root for single file projects. 
+	 * Example: `"C:/www/my/development/project/www"`
+	 * @return string
+	 */
+	public function GetDocumentRoot ();
+	
+	/**
+	 * Set webserver document root path, where is `/index.php` located.
+	 * This value is always the same with application root for single file projects. 
+	 * Example: `"C:/www/my/development/project/www"`
+	 * @param  string $documentRoot
+	 * @return \MvcCore\Request
+	 */
+	public function SetDocumentRoot ($documentRoot);
 
 	/**
 	 * Set upper cased http method from global `$_SERVER['REQUEST_METHOD']`.

@@ -241,7 +241,7 @@ trait GettersSetters {
 		return $this->{$name} = $value;
 	}
 
-
+	
 	/**
 	 * @inheritDocs
 	 * @return string
@@ -251,21 +251,74 @@ trait GettersSetters {
 		if ($this->scriptName === NULL) $this->initScriptNameAndBasePath();
 		return $this->scriptName;
 	}
-
+	
+	/**
+	 * @inheritDocs
+	 * @param  string $scriptName
+	 * @return \MvcCore\Request
+	 */
+	public function SetScriptName ($scriptName) {
+		/** @var $this \MvcCore\Request */
+		$this->scriptName = $scriptName;
+		return $this;
+	}
+	
 	/**
 	 * @inheritDocs
 	 * @return string
 	 */
 	public function GetAppRoot () {
 		/** @var $this \MvcCore\Request */
-		if ($this->appRoot === NULL) {
-			// `ucfirst()` - cause IIS has lower case drive name here - different from __DIR__ value
-			$indexFilePath = ucfirst(str_replace(['\\', '//'], '/', $this->globalServer['SCRIPT_FILENAME']));
-			$this->appRoot = strpos(__FILE__, 'phar://') === 0
-				? 'phar://' . $indexFilePath
-				: dirname($indexFilePath);
-		}
+		if ($this->appRoot === NULL) 
+			$this->appRoot = defined('MVCCORE_APP_ROOT')
+				? constant('MVCCORE_APP_ROOT')
+				: $this->GetDocumentRoot();
 		return $this->appRoot;
+	}
+	
+	/**
+	 * @inheritDocs
+	 * @param  string $appRoot
+	 * @return \MvcCore\Request
+	 */
+	public function SetAppRoot ($appRoot) {
+		/** @var $this \MvcCore\Request */
+		$this->appRoot = $appRoot;
+		return $this;
+	}
+	
+	/**
+	 * @inheritDocs
+	 * @return string
+	 */
+	public function GetDocumentRoot () {
+		/** @var $this \MvcCore\Request */
+		if ($this->documentRoot === NULL) {
+			if (defined('MVCCORE_DOCUMENT_ROOT')) {
+				$this->documentRoot = constant('MVCCORE_DOCUMENT_ROOT');
+			} else {
+				// `ucfirst()` - cause IIS has lower case drive name here - different from __DIR__ value
+				$indexFilePath = ucfirst(str_replace(
+					['\\', '//'], '/', 
+					$this->globalServer['SCRIPT_FILENAME']
+				));
+				$this->documentRoot = strlen(\Phar::running()) > 0 
+					? 'phar://' . $indexFilePath
+					: dirname($indexFilePath);
+			}
+		}
+		return $this->documentRoot;
+	}
+	
+	/**
+	 * @inheritDocs
+	 * @param  string $documentRoot
+	 * @return \MvcCore\Request
+	 */
+	public function SetDocumentRoot ($documentRoot) {
+		/** @var $this \MvcCore\Request */
+		$this->documentRoot = $documentRoot;
+		return $this;
 	}
 
 	/**

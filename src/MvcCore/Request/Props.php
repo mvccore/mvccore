@@ -160,11 +160,20 @@ trait Props {
 	protected $scriptName		= NULL;
 
 	/**
-	 * Application root path on hard drive.
-	 * Example: `"C:/www/my/development/directory/www"`
+	 * Application root path.
+	 * This value is always the same with webserver document root for single file projects.
+	 * Example: `"C:/www/my/development/project"`
 	 * @var string|NULL
 	 */
 	protected $appRoot			= NULL;
+
+	/**
+	 * Webserver document root path.
+	 * This value is always the same with application root for single file projects.
+	 * Example: `"C:/www/my/development/project/www"`
+	 * @var string|NULL
+	 */
+	protected $documentRoot		= NULL;
 
 	/**
 	 * Base app directory path after domain, if application is placed in domain subdirectory
