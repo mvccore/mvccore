@@ -48,6 +48,29 @@ trait Connection {
 	}
 
 	/**
+	 * @inheritDocs
+	 * @param  string|int|NULL $connectionName
+	 * @throws \InvalidArgumentException
+	 * @return bool
+	 */
+	public static function CloseConnection ($connectionName = NULL) {
+		$connectionName = (is_string($connectionName) || is_int($connectionName))
+			? $connectionName
+			: static::resolveConnectionName($connectionName);
+		if (!isset(self::$connections[$connectionName]))
+			return FALSE;
+		$connection = self::$connections[$connectionName];
+		unset(self::$connections[$connectionName]);
+		try {
+			$closeMethod = new \ReflectionMethod($connection, 'close');
+			if (!$closeMethod->isPublic()) $closeMethod->setAccessible(TRUE);
+			$closeMethod->invoke($connection);
+		} catch (\Throwable $e) {}
+		$connection = NULL;
+		return TRUE;
+	}
+
+	/**
 	 * Resolve connection name or connection index or connection 
 	 * configuration into single string or integer coresponding to 
 	 * database config record.
