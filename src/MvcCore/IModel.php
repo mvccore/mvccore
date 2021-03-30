@@ -53,6 +53,15 @@ interface IModel extends \MvcCore\Model\IConstants {
 	 * @return \PDO
 	 */
 	public static function GetConnection ($connectionNameOrConfig = NULL, $strict = TRUE);
+	
+	/**
+	 * Unsets connection from the global connections store and calls `Close()` 
+	 * method (if exists) on connection instance to close the connection.
+	 * @param  string|int|NULL $connectionName
+	 * @throws \InvalidArgumentException
+	 * @return bool
+	 */
+	public static function CloseConnection ($connectionName = NULL);
 
 	/**
 	 * Get all known database connection config records as indexed/named array with `\stdClass` objects.
