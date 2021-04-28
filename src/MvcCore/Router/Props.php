@@ -13,6 +13,9 @@
 
 namespace MvcCore\Router;
 
+/**
+ * @mixin \MvcCore\Router
+ */
 trait Props {
 
 	/**

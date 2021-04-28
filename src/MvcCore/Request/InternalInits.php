@@ -13,6 +13,9 @@
 
 namespace MvcCore\Request;
 
+/**
+ * @mixin \MvcCore\Request
+ */
 trait InternalInits {
 
 	/**
@@ -60,7 +63,6 @@ trait InternalInits {
 	 * @return void
 	 */
 	protected function initCli () {
-		/** @var $this \MvcCore\Request */
 		$hostName = gethostname();
 		$this->scheme = 'file:';
 		$this->secure = FALSE;
@@ -133,7 +135,6 @@ trait InternalInits {
 	 * @return void
 	 */
 	protected function initUrlSegments () {
-		/** @var $this \MvcCore\Request */
 		$this->portDefined = FALSE;
 		$this->port = '';
 		$this->path = '';
@@ -219,7 +220,6 @@ trait InternalInits {
 	 * @return void
 	 */
 	protected function initHeaders () {
-		/** @var $this \MvcCore\Request */
 		if (function_exists('getallheaders')) {
 			$headers = getallheaders();
 		} else {
@@ -242,7 +242,6 @@ trait InternalInits {
 	 * @return void
 	 */
 	protected function initParams () {
-		/** @var $this \MvcCore\Request */
 		$params = array_merge([], $this->globalGet);
 		$this->paramsSources = [
 			\MvcCore\IRequest::PARAM_TYPE_QUERY_STRING	=> array_fill_keys(array_keys($params), TRUE),
@@ -276,7 +275,6 @@ trait InternalInits {
 	 * @return void
 	 */
 	protected function initBody () {
-		/** @var $this \MvcCore\Request */
 		$this->body = file_get_contents($this->inputStream);
 	}
 
@@ -286,7 +284,6 @@ trait InternalInits {
 	 * @return array
 	 */
 	protected function parseBodyParams ($contentType) {
-		/** @var $this \MvcCore\Request */
 		$result = [];
 		$app = self::$app ?: (self::$app = \MvcCore\Application::GetInstance());
 		$toolClass = $app->GetToolClass();
@@ -345,7 +342,6 @@ trait InternalInits {
 		$ifNullValue = NULL,
 		$targetType = NULL
 	) {
-		/** @var $this \MvcCore\Request */
 		if (!isset($paramsCollection[$name])) return $ifNullValue;
 		if (is_array($paramsCollection[$name])) {
 			if ($targetType !== NULL) {
@@ -382,7 +378,6 @@ trait InternalInits {
 	 * @return void
 	 */
 	protected function initScriptNameAndBasePath () {
-		/** @var $this \MvcCore\Request */
 		$this->basePath = '';
 		$this->scriptName = str_replace('\\', '/', $this->globalServer['SCRIPT_NAME']);
 		$lastSlashPos = mb_strrpos($this->scriptName, '/');
@@ -433,7 +428,6 @@ trait InternalInits {
 	 * @return void
 	 */
 	protected function initLangAndLocale () {
-		/** @var $this \MvcCore\Request */
 		if (!isset($this->globalServer['HTTP_ACCEPT_LANGUAGE'])) {
 			$this->lang = '';
 			$this->locale = '';
@@ -465,7 +459,6 @@ trait InternalInits {
 	 * @return void
 	 */
 	protected function initDomainSegments () {
-		/** @var $this \MvcCore\Request */
 		$hostName = $this->GetHostName();
 		$this->domainParts = [];
 		$lastDotPos = mb_strrpos($hostName, '.');

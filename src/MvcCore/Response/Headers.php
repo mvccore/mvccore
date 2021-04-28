@@ -13,6 +13,9 @@
 
 namespace MvcCore\Response;
 
+/**
+ * @mixin \MvcCore\Response
+ */
 trait Headers {
 
 	/**
@@ -20,7 +23,6 @@ trait Headers {
 	 * @return bool
 	 */
 	public function IsSentHeaders () {
-		/** @var $this \MvcCore\Response */
 		return headers_sent();
 	}
 
@@ -32,7 +34,6 @@ trait Headers {
 	 * @return \MvcCore\Response
 	 */
 	public function SetHeaders (array $headers = [], $cleanAllPrevious = FALSE) {
-		/** @var $this \MvcCore\Response */
 		if ($cleanAllPrevious) {
 			header_remove();
 			$this->headers = [];
@@ -50,7 +51,6 @@ trait Headers {
 	 * @return \MvcCore\Response
 	 */
 	public function SetHeader ($name, $value) {
-		/** @var $this \MvcCore\Response */
 		if (isset($this->disabledHeaders[$name]))
 			return $this;
 		header($name . ": " . $value);
@@ -76,7 +76,6 @@ trait Headers {
 	 * @return string|NULL
 	 */
 	public function GetHeader ($name) {
-		/** @var $this \MvcCore\Response */
 		$this->UpdateHeaders();
 		return isset($this->headers[$name])
 			? $this->headers[$name]
@@ -89,7 +88,6 @@ trait Headers {
 	 * @return bool
 	 */
 	public function HasHeader ($name) {
-		/** @var $this \MvcCore\Response */
 		$this->UpdateHeaders();
 		return isset($this->headers[$name]);
 	}
@@ -99,7 +97,6 @@ trait Headers {
 	 * @return \MvcCore\Response
 	 */
 	public function UpdateHeaders () {
-		/** @var $this \MvcCore\Response */
 		$rawHeaders = headers_list();
 		$name = '';
 		$value = '';
@@ -124,7 +121,6 @@ trait Headers {
 	 * @return \MvcCore\Response
 	 */
 	public function SetDisabledHeaders ($disabledHeaders) {
-		/** @var $this \MvcCore\Response */
 		$this->disabledHeaders = [];
 		$args = func_get_args();
 		if (count($args) === 1 && is_array($args[0])) $args = $args[0];
@@ -138,7 +134,6 @@ trait Headers {
 	 * @return \string[]
 	 */
 	public function GetDisabledHeaders () {
-		/** @var $this \MvcCore\Response */
 		return array_keys($this->disabledHeaders);
 	}
 }

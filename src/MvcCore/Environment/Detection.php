@@ -13,6 +13,9 @@
 
 namespace MvcCore\Environment;
 
+/**
+ * @mixin \MvcCore\Environment
+ */
 trait Detection {
 
 	/**

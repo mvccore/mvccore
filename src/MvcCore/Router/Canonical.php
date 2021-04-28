@@ -13,6 +13,9 @@
 
 namespace MvcCore\Router;
 
+/**
+ * @mixin \MvcCore\Router
+ */
 trait Canonical {
 
 	/**
@@ -24,7 +27,6 @@ trait Canonical {
 	 * @return bool
 	 */
 	protected function canonicalRedirectIfAny () {
-		/** @var $this \MvcCore\Router */
 		if (
 			$this->internalRequest || !$this->autoCanonizeRequests || 
 			$this->request->GetMethod() !== \MvcCore\IRequest::METHOD_GET
@@ -46,7 +48,6 @@ trait Canonical {
 	 * @return bool
 	 */
 	protected function canonicalRedirectQueryStringStrategy () {
-		/** @var $this \MvcCore\Router */
 		$request = $this->request;
 		$redirectToCanonicalUrl = FALSE;
 		$requestGlobalGet = & $request->GetGlobalCollection('get');
@@ -81,7 +82,6 @@ trait Canonical {
 	 * @return bool
 	 */
 	protected function canonicalRedirectRewriteRoutesStrategy () {
-		/** @var $this \MvcCore\Router */
 		$request = $this->request;
 		$redirectToCanonicalUrl = FALSE;
 		$defaultParams =  $this->GetDefaultParams() ?: [];

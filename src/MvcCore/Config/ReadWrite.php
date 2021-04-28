@@ -13,6 +13,9 @@
 
 namespace MvcCore\Config;
 
+/**
+ * @mixin \MvcCore\Config
+ */
 trait ReadWrite {
 
 	/**
@@ -22,7 +25,7 @@ trait ReadWrite {
 	 * @return \MvcCore\Config
 	 */
 	public static function CreateInstance (array $mergedData = [], $configFullPath = NULL) {
-		/** @var $config \MvcCore\Config */
+		/** @var \MvcCore\Config $config */
 		$config = new static();
 		if ($mergedData)
 			$config->mergedData = & $mergedData;
@@ -37,7 +40,7 @@ trait ReadWrite {
 	 * @return \MvcCore\Config|NULL
 	 */
 	public static function GetSystem () {
-		/** @var $config \MvcCore\Config */
+		/** @var \MvcCore\Config $config */
 		$app = self::$app ?: self::$app = \MvcCore\Application::GetInstance();
 		$configClass = $app->GetConfigClass();
 		$toolClass = $app->GetToolClass();
@@ -73,7 +76,7 @@ trait ReadWrite {
 	 * @return \MvcCore\Config|NULL
 	 */
 	public static function GetConfig ($appRootRelativePath) {
-		/** @var $config \MvcCore\Config */
+		/** @var \MvcCore\Config $config */
 		$appRootRelativePath = ltrim($appRootRelativePath, '/');
 		$app = self::$app ?: self::$app = \MvcCore\Application::GetInstance();
 		$appRoot = self::$appRoot ?: self::$appRoot = $app->GetRequest()->GetAppRoot();
@@ -109,7 +112,6 @@ trait ReadWrite {
 	 * @return bool
 	 */
 	public function Save () {
-		/** @var $this \MvcCore\Config */
 		$rawContent = $this->Dump();
 		if ($rawContent === NULL)
 			throw new \Exception('Configuration data was not possible to dump.');
@@ -140,7 +142,7 @@ trait ReadWrite {
 	 * @return \MvcCore\Config|bool
 	 */
 	public static function LoadConfig ($configFullPath, $systemConfigClass, $isSystemConfig = FALSE) {
-		/** @var $config \MvcCore\Config */
+		/** @var \MvcCore\Config $config */
 		$config = $systemConfigClass::CreateInstance([], $configFullPath);
 		if (!file_exists($configFullPath)) {
 			$config = NULL;

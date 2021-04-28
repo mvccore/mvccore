@@ -13,6 +13,9 @@
 
 namespace MvcCore\View;
 
+/**
+ * @mixin \MvcCore\View
+ */
 trait ViewHelpers {
 
 	/**
@@ -66,7 +69,6 @@ trait ViewHelpers {
 	 * @return string|mixed              View helper string result or any other view helper result type or view helper instance, always as `\MvcCore\Ext\Views\Helpers\AbstractHelper|\MvcCore\Ext\Views\Helpers\IHelper` instance.
 	 */
 	public function __call ($method, $arguments) {
-		/** @var $this \MvcCore\View */
 		$result = '';
 		$methodCamelCase = lcfirst($method);
 		$instance = & $this->GetHelper($methodCamelCase, TRUE);
@@ -92,7 +94,6 @@ trait ViewHelpers {
 	 * @return \MvcCore\Ext\Views\Helpers\AbstractHelper|\MvcCore\Ext\Views\Helpers\IHelper|\Closure|mixed View helper instance.
 	 */
 	public function & GetHelper ($helperNameCamelCase, $asClosure = FALSE) {
-		/** @var $this \MvcCore\View */
 		$setUpView = FALSE;
 		$needsClosureFn = FALSE;
 		$instance = NULL;
@@ -166,7 +167,6 @@ trait ViewHelpers {
 	 * @return \MvcCore\View
 	 */
 	public function SetHelper ($helperNameCamelCase, $instance, $forAllTemplates = TRUE) {
-		/** @var $this \MvcCore\View */
 		$implementsIHelper = FALSE;
 		$toolClass = self::$toolClass ?: self::$toolClass = \MvcCore\Application::GetInstance()->GetToolClass();
 		$helpersInterface = self::HELPERS_INTERFACE_CLASS_NAME;

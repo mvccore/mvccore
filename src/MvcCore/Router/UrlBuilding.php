@@ -13,6 +13,9 @@
 
 namespace MvcCore\Router;
 
+/**
+ * @mixin \MvcCore\Router
+ */
 trait UrlBuilding {
 
 	/**
@@ -25,7 +28,6 @@ trait UrlBuilding {
 	 * @return string
 	 */
 	public function Url ($controllerActionOrRouteName = 'Index:Index', array $params = []) {
-		/** @var $this \MvcCore\Router */
 		$result = '';
 		$ctrlActionOrRouteNameKey = $this->urlGetCompletedCtrlActionKey(
 			$controllerActionOrRouteName
@@ -136,7 +138,6 @@ trait UrlBuilding {
 	 * @return mixed
 	 */
 	protected function urlGetCompletedCtrlActionKey ($controllerActionOrRouteName) {
-		/** @var $this \MvcCore\Router */
 		$result = $controllerActionOrRouteName;
 		if (strpos($controllerActionOrRouteName, ':') !== FALSE) {
 			list($ctrlPc, $actionPc) = explode(':', $controllerActionOrRouteName);

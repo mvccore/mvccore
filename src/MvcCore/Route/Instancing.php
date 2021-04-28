@@ -13,6 +13,9 @@
 
 namespace MvcCore\Route;
 
+/**
+ * @mixin \MvcCore\Route
+ */
 trait Instancing {
 
 	/**
@@ -44,7 +47,6 @@ trait Instancing {
 		$constraints = [],
 		$advancedConfiguration = []
 	) {
-		/** @var $this \MvcCore\Route */
 		return (new \ReflectionClass(get_called_class()))
 			->newInstanceArgs(func_get_args());
 	}
@@ -113,7 +115,6 @@ trait Instancing {
 		$constraints = [],
 		$advancedConfiguration = []
 	) {
-		/** @var $this \MvcCore\Route */
 		if (count(func_get_args()) === 0) return;
 		if (is_array($patternOrConfig)) {
 			$data = (object) $patternOrConfig;
@@ -142,7 +143,6 @@ trait Instancing {
 	 * @return void
 	 */
 	protected function constructDataPatternsDefaultsConstraintsFilters (& $data) {
-		/** @var $this \MvcCore\Route */
 		if (isset($data->pattern))
 			$this->pattern = $data->pattern;
 		if (isset($data->match))
@@ -166,7 +166,6 @@ trait Instancing {
 	 * @return void
 	 */
 	protected function constructDataCtrlActionName (& $data) {
-		/** @var $this \MvcCore\Route */
 		if (isset($data->controllerAction)) {
 			list($ctrl, $action) = explode(':', $data->controllerAction);
 			if ($ctrl) $this->controller = $ctrl;
@@ -198,7 +197,6 @@ trait Instancing {
 	 * @return void
 	 */
 	protected function constructDataAdvConf (& $data) {
-		/** @var $this \MvcCore\Route */
 		$methodParam = static::CONFIG_METHOD;
 		if (isset($data->{$methodParam}))
 			$this->method = strtoupper((string) $data->{$methodParam});
@@ -229,7 +227,6 @@ trait Instancing {
 	 * @return void
 	 */
 	protected function constructVarsPatternDefaultsConstraintsFilters (& $pattern, & $defaults, & $constraints, & $advCfg) {
-		/** @var $this \MvcCore\Route */
 		if ($pattern !== NULL)
 			$this->pattern = $pattern;
 		if ($defaults !== NULL)
@@ -254,7 +251,6 @@ trait Instancing {
 	 * @return void
 	 */
 	protected function constructVarCtrlActionNameByData (& $ctrlAction) {
-		/** @var $this \MvcCore\Route */
 		if ($ctrlAction !== NULL) {
 			list($ctrl, $action) = explode(':', $ctrlAction);
 			if ($ctrl) $this->controller = $ctrl;
@@ -270,7 +266,6 @@ trait Instancing {
 	 * @return void
 	 */
 	protected function constructVarAdvConf (& $advCfg) {
-		/** @var $this \MvcCore\Route */
 		$methodParam = static::CONFIG_METHOD;
 		if (isset($advCfg[$methodParam]))
 			$this->method = strtoupper((string) $advCfg[$methodParam]);
@@ -291,7 +286,6 @@ trait Instancing {
 	 * @return void
 	 */
 	protected function constructCtrlOrActionByName () {
-		/** @var $this \MvcCore\Route */
 		if (!$this->controller && !$this->action && strpos($this->name, ':') !== FALSE && strlen($this->name) > 1) {
 			list($ctrl, $action) = explode(':', $this->name);
 			if ($ctrl) $this->controller = $ctrl;

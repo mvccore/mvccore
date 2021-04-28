@@ -13,6 +13,9 @@
 
 namespace MvcCore\Model;
 
+/**
+ * @mixin \MvcCore\Model
+ */
 trait Comparers {
 
 	/**

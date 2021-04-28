@@ -13,6 +13,9 @@
 
 namespace MvcCore\Request;
 
+/**
+ * @mixin \MvcCore\Request
+ */
 trait Props {
 
 	/**

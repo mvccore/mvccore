@@ -13,6 +13,9 @@
 
 namespace MvcCore\Controller;
 
+/**
+ * @mixin \MvcCore\Controller
+ */
 trait Rendering {
 
 	/**
@@ -20,7 +23,6 @@ trait Rendering {
 	 * @return string
 	 */
 	public function __toString () {
-		/** @var $this \MvcCore\Controller */
 		return $this->Render();
 	}
 
@@ -31,7 +33,6 @@ trait Rendering {
 	 * @return string
 	 */
 	public function Render ($controllerOrActionNameDashed = NULL, $actionNameDashed = NULL) {
-		/** @var $this \MvcCore\Controller */
 		if (!$this->renderCheckDispatchState()) return '';
 
 		$topMostParentCtrl = $this->parentController === NULL;
@@ -45,7 +46,7 @@ trait Rendering {
 			if (!is_numeric($ctrlKey) && !isset($this->view->{$ctrlKey}))
 				$this->view->{$ctrlKey} = $childCtrl;
 		}
-
+		
 		// Render this view or view with layout by render mode:
 		if (($this->renderMode & \MvcCore\IView::RENDER_WITH_OB_FROM_ACTION_TO_LAYOUT) != 0) {
 			$this->renderWithObFromActionToLayout(
@@ -83,7 +84,6 @@ trait Rendering {
 	 * @return void
 	 */
 	public function HtmlResponse ($output = '', $terminate = TRUE) {
-		/** @var $this \MvcCore\Controller */
 		if (!$this->response->HasHeader('Content-Type')) {
 			$viewClass = $this->application->GetViewClass();
 			$contentTypeHeaderValue = strpos(
@@ -104,7 +104,6 @@ trait Rendering {
 	 * @return void
 	 */
 	public function XmlResponse ($output = '', $terminate = TRUE) {
-		/** @var $this \MvcCore\Controller */
 		$res = $this->response;
 		if (!$res->HasHeader('Content-Type'))
 			$res->SetHeader('Content-Type', 'application/xml');
@@ -121,7 +120,6 @@ trait Rendering {
 	 * @return void
 	 */
 	public function TextResponse ($output = '', $terminate = TRUE) {
-		/** @var $this \MvcCore\Controller */
 		$res = $this->response;
 		if (!$res->HasHeader('Content-Type'))
 			$res->SetHeader('Content-Type', 'text/plain');
@@ -139,7 +137,6 @@ trait Rendering {
 	 * @return void
 	 */
 	public function JsonResponse ($data = NULL, $terminate = TRUE) {
-		/** @var $this \MvcCore\Controller */
 		$res = $this->response;
 		$toolClass = $this->application->GetToolClass();
 		$output = $toolClass::EncodeJson($data);
@@ -163,7 +160,6 @@ trait Rendering {
 	 * @return void
 	 */
 	public function JsonpResponse ($data = NULL, $callbackParamName = 'callback', $terminate = TRUE) {
-		/** @var $this \MvcCore\Controller */
 		$res = $this->response;
 		$toolClass = $this->application->GetToolClass();
 		$output = $toolClass::EncodeJson($data);
@@ -186,7 +182,6 @@ trait Rendering {
 	 * @return void
 	 */
 	public function RenderError ($exceptionMessage = '') {
-		/** @var $this \MvcCore\Controller */
 		if ($this->application->IsErrorDispatched()) return;
 		throw new \ErrorException(
 			$exceptionMessage 
@@ -201,7 +196,6 @@ trait Rendering {
 	 * @return void
 	 */
 	public function RenderNotFound () {
-		/** @var $this \MvcCore\Controller */
 		if ($this->application->IsNotFoundDispatched()) return;
 		throw new \ErrorException(
 			"Page not found: `" . htmlspecialchars($this->request->GetFullUrl()) . "`.", 
@@ -216,7 +210,6 @@ trait Rendering {
 	 * @return string
 	 */
 	public function GetViewScriptPath ($controllerOrActionNameDashed = NULL, $actionNameDashed = NULL) {
-		/** @var $this \MvcCore\Controller */
 		$currentCtrlIsTopMostParent = $this->parentController === NULL;
 		if ($this->viewScriptsPath !== NULL) {
 			$resultPathItems = [$this->viewScriptsPath];
@@ -289,7 +282,6 @@ trait Rendering {
 	 * @return void
 	 */
 	protected function renderWithObFromActionToLayout ($controllerOrActionNameDashed, $actionNameDashed, $topMostParentCtrl) {
-		/** @var $this \MvcCore\Controller */
 		// complete paths
 		$viewScriptPath = $this->GetViewScriptPath($controllerOrActionNameDashed, $actionNameDashed);
 		// render action view into string
@@ -304,7 +296,7 @@ trait Rendering {
 		}
 		// create top most parent layout view, set up and render to outputResult
 		$viewClass = $this->application->GetViewClass();
-		/** @var $layout \MvcCore\View */
+		/** @var \MvcCore\View $layout */
 		$layout = $viewClass::CreateInstance()
 			->SetController($this)
 			->SetUpStore($this->view, TRUE)
@@ -330,11 +322,10 @@ trait Rendering {
 	 * @return void
 	 */
 	protected function renderWithoutObContinuously ($controllerOrActionNameDashed, $actionNameDashed, $topMostParentCtrl) {
-		/** @var $this \MvcCore\Controller */
 		if ($topMostParentCtrl) {
 			// render layout view and action view inside it:
 			$viewClass = $this->application->GetViewClass();
-			/** @var $layout \MvcCore\View */
+			/** @var \MvcCore\View $layout */
 			$layout = $viewClass::CreateInstance()
 				->SetController($this)
 				->SetUpStore($this->view, TRUE)

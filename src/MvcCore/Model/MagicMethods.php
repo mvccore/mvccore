@@ -13,6 +13,9 @@
 
 namespace MvcCore\Model;
 
+/**
+ * @mixin \MvcCore\Model
+ */
 trait MagicMethods {
 	
 	/**
@@ -23,7 +26,6 @@ trait MagicMethods {
 	 * @return mixed|\MvcCore\Model
 	 */
 	public function __call ($rawName, $arguments = []) {
-		/** @var $this \MvcCore\Model */
 		$nameBegin = strtolower(substr($rawName, 0, 3));
 		$name = substr($rawName, 3);
 		if ($nameBegin == 'get') {
@@ -54,7 +56,6 @@ trait MagicMethods {
 	 * @return bool
 	 */
 	public function __set ($name, $value) {
-		/** @var $this \MvcCore\Model */
 		if (isset(static::$protectedProperties[$name]))
 			throw new \InvalidArgumentException(
 				"[".get_class()."] It's not possible to change strongly property: `{$name}`."
@@ -71,7 +72,6 @@ trait MagicMethods {
 	 * @return mixed
 	 */
 	public function __get ($name) {
-		/** @var $this \MvcCore\Model */
 		if (isset(static::$protectedProperties[$name]))
 			throw new \InvalidArgumentException(
 				"[".get_class()."] It's not possible to get strongly protected property: `{$name}`."
@@ -88,7 +88,6 @@ trait MagicMethods {
 	 * @return \string[]
 	 */
 	public function __sleep () {
-		/** @var $this \MvcCore\Model */
 		static $__serializePropsNames = NULL;
 		if ($__serializePropsNames == NULL) {
 			$rawPropNames = array_keys(

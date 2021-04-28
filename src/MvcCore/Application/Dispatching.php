@@ -20,6 +20,7 @@ namespace MvcCore\Application;
  *   - Calling pre/post handlers.
  *   - Controller/action dispatching.
  *   - Error handling and error responses.
+ * @mixin \MvcCore\Application
  */
 trait Dispatching {
 
@@ -32,7 +33,6 @@ trait Dispatching {
 	 * @return \MvcCore\Application
 	 */
 	public function Dispatch () {
-		/** @var $this \MvcCore\Application */
 		try {
 			// all 3 getters triggers creation:
 			$this->GetEnvironment();
@@ -61,8 +61,7 @@ trait Dispatching {
 	 * @return void
 	 */
 	public function SessionStart () {
-		/** @var $this \MvcCore\Application */
-		/** @var $sessionClass \MvcCore\Session */
+		/** @var \MvcCore\Session $sessionClass */
 		$sessionClass = $this->sessionClass;
 		$sessionClass::Start();
 	}
@@ -72,7 +71,6 @@ trait Dispatching {
 	 * @return bool
 	 */
 	public function RouteRequest () {
-		/** @var $this \MvcCore\Application */
 		$router = $this->GetRouter()->SetRequest($this->GetRequest());
 		try {
 			/**
@@ -97,7 +95,6 @@ trait Dispatching {
 	 * @return bool
 	 */
 	public function ProcessCustomHandlers (& $handlers = []) {
-		/** @var $this \MvcCore\Application */
 		if (!$handlers || $this->request->IsInternalRequest() === TRUE) return TRUE;
 		$result = TRUE;
 		foreach ($handlers as $handlerRecord) {
@@ -131,8 +128,7 @@ trait Dispatching {
 	 * @return bool
 	 */
 	public function DispatchRequest () {
-		/** @var $this \MvcCore\Application */
-		/** @var $route \MvcCore\Route */
+		/** @var \MvcCore\Route $route */
 		$route = $this->router->GetCurrentRoute();
 		if ($route === NULL) return $this->DispatchException('No route for request', 404);
 		list ($ctrlPc, $actionPc) = [$route->GetController(), $route->GetAction()];
@@ -183,7 +179,6 @@ trait Dispatching {
 		$viewScriptFullPath,
 		callable $exceptionCallback
 	) {
-		/** @var $this \MvcCore\Application */
 		if ($this->controller === NULL) {
 			$controller = NULL;
 			try {
@@ -195,9 +190,8 @@ trait Dispatching {
 			}
 			$this->controller = $controller;
 		}
-		/** @var $ctrl \MvcCore\Controller */
+		/** @var \MvcCore\Controller $ctrl */
 		$ctrl = $this->controller;
-		/** @var $this \MvcCore\Application */
 		$ctrl
 			->SetApplication($this)
 			->SetEnvironment($this->environment)
@@ -237,7 +231,6 @@ trait Dispatching {
 	 * @return string
 	 */
 	public function Url ($controllerActionOrRouteName = 'Index:Index', $params = []) {
-		/** @var $this \MvcCore\Application */
 		return $this->router->Url($controllerActionOrRouteName, $params);
 	}
 
@@ -246,7 +239,6 @@ trait Dispatching {
 	 * @return \MvcCore\Application
 	 */
 	public function Terminate () {
-		/** @var $this \MvcCore\Application */
 		if ($this->terminated) return $this;
 		/** @var $this->response \MvcCore\Response */
 		$this->ProcessCustomHandlers($this->postDispatchHandlers);
@@ -290,7 +282,6 @@ trait Dispatching {
 	 * @return bool
 	 */
 	public function DispatchException ($exceptionOrMessage, $code = NULL) {
-		/** @var $this \MvcCore\Application */
 		if (class_exists('\Packager_Php')) return FALSE; // packing process
 		$exception = NULL;
 		if ($exceptionOrMessage instanceof \Throwable) {
@@ -324,7 +315,6 @@ trait Dispatching {
 	 * @return bool
 	 */
 	public function RenderError ($e) {
-		/** @var $this \MvcCore\Application */
 		$defaultCtrlFullName = $this->GetDefaultControllerIfHasAction(
 			$this->defaultControllerErrorActionName
 		);
@@ -374,7 +364,6 @@ trait Dispatching {
 	 * @return bool
 	 */
 	public function RenderNotFound ($exceptionMessage = '') {
-		/** @var $this \MvcCore\Application */
 		if (!$exceptionMessage) $exceptionMessage = 'Page not found.';
 		$defaultCtrlFullName = $this->GetDefaultControllerIfHasAction(
 			$this->defaultControllerNotFoundActionName
@@ -422,7 +411,6 @@ trait Dispatching {
 	 * @return bool
 	 */
 	public function RenderError500PlainText ($text = '') {
-		/** @var $this \MvcCore\Application */
 		$htmlResponse = FALSE;
 		$responseClass = $this->responseClass;
 		if (!$this->environment->IsDevelopment()) {
@@ -451,7 +439,6 @@ trait Dispatching {
 	 * @return bool
 	 */
 	public function RenderError404PlainText ($text = '') {
-		/** @var $this \MvcCore\Application */
 		$htmlResponse = FALSE;
 		$responseClass = $this->responseClass;
 		if (!$this->environment->IsDevelopment()) {

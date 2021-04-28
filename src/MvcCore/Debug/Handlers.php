@@ -13,6 +13,9 @@
 
 namespace MvcCore\Debug;
 
+/**
+ * @mixin \MvcCore\Debug
+ */
 trait Handlers {
 
 	/**

@@ -13,6 +13,9 @@
 
 namespace MvcCore\Config;
 
+/**
+ * @mixin \MvcCore\Config
+ */
 trait MagicMethods {
 
 	/**
@@ -20,7 +23,6 @@ trait MagicMethods {
 	 * @return \string[]
 	 */
 	public function __sleep () {
-		/** @var $this \MvcCore\Config */
 		if (!$this->mergedData) {
 			$app = self::$app ?: self::$app = \MvcCore\Application::GetInstance();
 			$envName = $app->GetEnvironment()->GetName();
@@ -49,7 +51,6 @@ trait MagicMethods {
 	 * @return mixed
 	 */
 	public function __get ($key) {
-		/** @var $this \MvcCore\Config */
 		if (array_key_exists($key, $this->currentData))
 			return $this->currentData[$key];
 		return NULL;
@@ -62,7 +63,6 @@ trait MagicMethods {
 	 * @return mixed
 	 */
 	public function __set ($key, $value) {
-		/** @var $this \MvcCore\Config */
 		return $this->currentData[$key] = $value;
 	}
 
@@ -72,7 +72,6 @@ trait MagicMethods {
 	 * @return bool
 	 */
 	public function __isset ($key) {
-		/** @var $this \MvcCore\Config */
 		return isset($this->currentData[$key]);
 	}
 
@@ -82,7 +81,6 @@ trait MagicMethods {
 	 * @return void
 	 */
 	public function __unset ($key) {
-		/** @var $this \MvcCore\Config */
 		if (isset($this->currentData[$key])) unset($this->currentData[$key]);
 	}
 
@@ -94,7 +92,6 @@ trait MagicMethods {
 	 * @return mixed
 	 */
 	public function current () {
-		/** @var $this \MvcCore\Config */
 		return current($this->currentData);
 	}
 
@@ -103,7 +100,6 @@ trait MagicMethods {
 	 * @return string|int
 	 */
 	public function key () {
-		/** @var $this \MvcCore\Config */
 		return key($this->currentData);
 	}
 
@@ -112,7 +108,6 @@ trait MagicMethods {
 	 * @return void
 	 */
 	public function next () {
-		/** @var $this \MvcCore\Config */
 		return next($this->currentData);
 	}
 
@@ -121,7 +116,6 @@ trait MagicMethods {
 	 * @return void
 	 */
 	public function rewind () {
-		/** @var $this \MvcCore\Config */
 		reset($this->currentData);
 	}
 
@@ -130,7 +124,6 @@ trait MagicMethods {
 	 * @return bool
 	 */
 	public function valid () {
-		/** @var $this \MvcCore\Config */
 		return key($this->currentData) !== NULL;
 	}
 
@@ -144,7 +137,6 @@ trait MagicMethods {
 	 * @return bool
 	 */
 	public function offsetExists ($offset) {
-		/** @var $this \MvcCore\Config */
 		return isset($this->currentData[$offset]);
 	}
 
@@ -155,7 +147,6 @@ trait MagicMethods {
 	 * @return mixed
 	 */
 	public function offsetGet ($offset) {
-		/** @var $this \MvcCore\Config */
 		return isset($this->currentData[$offset]) ? $this->currentData[$offset] : NULL;
 	}
 
@@ -167,7 +158,6 @@ trait MagicMethods {
 	 * @return void
 	 */
 	public function offsetSet ($offset, $value) {
-		/** @var $this \MvcCore\Config */
 		if ($offset === NULL) {
 			$this->currentData[] = $value;
 		} else {
@@ -182,7 +172,6 @@ trait MagicMethods {
 	 * @return void
 	 */
 	public function offsetUnset ($offset) {
-		/** @var $this \MvcCore\Config */
 		unset($this->currentData[$offset]);
 	}
 
@@ -195,7 +184,6 @@ trait MagicMethods {
 	 * @return int
 	 */
 	public function count () {
-		/** @var $this \MvcCore\Config */
 		return count($this->currentData);
 	}
 

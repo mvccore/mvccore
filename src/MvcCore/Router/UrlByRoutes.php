@@ -13,6 +13,9 @@
 
 namespace MvcCore\Router;
 
+/**
+ * @mixin \MvcCore\Router
+ */
 trait UrlByRoutes {
 
 	/**
@@ -23,11 +26,10 @@ trait UrlByRoutes {
 	 * @return string
 	 */
 	public function UrlByRoute (\MvcCore\IRoute $route, array & $params = [], $urlParamRouteName = NULL) {
-		/** @var $this \MvcCore\Router */
 		if ($urlParamRouteName == 'self')
 			$params = array_merge($this->requestedParams ?: [], $params);
 		$defaultParams = $this->GetDefaultParams() ?: [];
-		/** @var $route \MvcCore\Route */
+		/** @var \MvcCore\Route $route */
 		list ($resultUrl) = $route->Url(
 			$this->request, $params, $defaultParams, $this->getQueryStringParamsSepatator(), FALSE
 		);
@@ -43,7 +45,6 @@ trait UrlByRoutes {
 	 * @return string
 	 */
 	protected function getQueryStringParamsSepatator () {
-		/** @var $this \MvcCore\Router */
 		if ($this->queryParamsSepatator === NULL) {
 			$response = \MvcCore\Application::GetInstance()->GetResponse();
 			if ($response->HasHeader('Content-Type')) {

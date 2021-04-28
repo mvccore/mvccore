@@ -17,6 +17,7 @@ namespace MvcCore\Application;
  * Trait as partial class for `\MvcCore\Application`:
  * - Helper methods for normal requests and error requests dispatching.
  * - Helper methods for core classes configuration.
+ * @mixin \MvcCore\Application
  */
 trait Helpers {
 
@@ -93,7 +94,6 @@ trait Helpers {
 			[$this->toolClass, 'CheckClassInterface'], 
 			$newCoreClassName, $coreClassInterface, TRUE, TRUE // check static methods and throw an exception if false
 		)) $this->$coreClassVar = $newCoreClassName;
-		/** @var $this \MvcCore\Application */
 		return $this;
 	}
 
@@ -121,7 +121,6 @@ trait Helpers {
 				$handlers[$priorityIndex] = [$closureCalling, $handler];
 			}
 		}
-		/** @var $this \MvcCore\Application */
 		return $this;
 	}
 }

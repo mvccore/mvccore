@@ -13,6 +13,9 @@
 
 namespace MvcCore\Session;
 
+/**
+ * @mixin \MvcCore\Session
+ */
 trait NamespaceMethods {
 
 	/**
@@ -26,7 +29,7 @@ trait NamespaceMethods {
 		if (!static::GetStarted())
 			static::Start();
 		if (!isset(static::$instances[$name])) {
-			/** @var $instance \MvcCore\Session */
+			/** @var \MvcCore\Session $instance */
 			$instance = new static();
 			$instance->__name = $name;
 			static::$meta->names[$name] = 1;
@@ -43,7 +46,6 @@ trait NamespaceMethods {
 	 * @return \MvcCore\Session
 	 */
 	public function SetExpirationHoops ($hoops) {
-		/** @var $this \MvcCore\Session */
 		static::$meta->hoops[$this->__name] = $hoops;
 		return $this;
 	}
@@ -54,7 +56,6 @@ trait NamespaceMethods {
 	 * @return \MvcCore\Session
 	 */
 	public function SetExpirationSeconds ($seconds = 0) {
-		/** @var $this \MvcCore\Session */
 		if ($seconds > 0)
 			static::$meta->expirations[$this->__name] = static::$sessionStartTime + $seconds;
 		return $this;
@@ -67,7 +68,6 @@ trait NamespaceMethods {
 	 * @return void
 	 */
 	public function Destroy () {
-		/** @var $this \MvcCore\Session */
 		$name = $this->__name;
 		$names = & static::$meta->names;
 		$hoops = & static::$meta->hoops;

@@ -13,6 +13,9 @@
 
 namespace MvcCore\Response;
 
+/**
+ * @mixin \MvcCore\Response
+ */
 trait Instancing {
 
 	/**
@@ -44,7 +47,6 @@ trait Instancing {
 		$headers = [],
 		$body = ''
 	) {
-		/** @var $this \MvcCore\Response */
 		$this->code = $code ?: \MvcCore\IResponse::OK;
 		$this->headers = $headers;
 		$this->body = $body;

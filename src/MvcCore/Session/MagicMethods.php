@@ -13,6 +13,9 @@
 
 namespace MvcCore\Session;
 
+/**
+ * @mixin \MvcCore\Session
+ */
 trait MagicMethods {
 
 	/** Classic PHP magic methods for object access ***************************/
@@ -23,7 +26,6 @@ trait MagicMethods {
 	 * @return mixed
 	 */
 	public function __get ($key) {
-		/** @var $this \MvcCore\Session */
 		$name = $this->__name;
 		if (isset($_SESSION[$name][$key])) return $_SESSION[$name][$key];
 		return NULL;
@@ -36,7 +38,6 @@ trait MagicMethods {
 	 * @return mixed
 	 */
 	public function __set ($key, $value) {
-		/** @var $this \MvcCore\Session */
 		return $_SESSION[$this->__name][$key] = $value;
 	}
 
@@ -46,7 +47,6 @@ trait MagicMethods {
 	 * @return bool
 	 */
 	public function __isset ($key) {
-		/** @var $this \MvcCore\Session */
 		return isset($_SESSION[$this->__name][$key]);
 	}
 
@@ -56,7 +56,6 @@ trait MagicMethods {
 	 * @return void
 	 */
 	public function __unset ($key) {
-		/** @var $this \MvcCore\Session */
 		$name = $this->__name;
 		if (array_key_exists($key, $_SESSION[$name])) 
 			unset($_SESSION[$name][$key]);
@@ -67,7 +66,6 @@ trait MagicMethods {
 	 * @return array
 	 */
 	public function __debugInfo () {
-		/** @var $this \MvcCore\Session */
 		$hoops = isset(static::$meta->hoops[$this->__name])
 			? static::$meta->hoops[$this->__name]
 			: NULL;
@@ -91,7 +89,6 @@ trait MagicMethods {
 	 * @return int
 	 */
 	public function count () {
-		/** @var $this \MvcCore\Session */
 		return count((array) $_SESSION[$this->__name]);
 	}
 
@@ -103,7 +100,6 @@ trait MagicMethods {
 	 * @return mixed
 	 */
 	public function current () {
-		/** @var $this \MvcCore\Session */
 		return current($_SESSION[$this->__name]);
 	}
 
@@ -112,7 +108,6 @@ trait MagicMethods {
 	 * @return string|int
 	 */
 	public function key () {
-		/** @var $this \MvcCore\Session */
 		return key($_SESSION[$this->__name]);
 	}
 
@@ -121,7 +116,6 @@ trait MagicMethods {
 	 * @return void
 	 */
 	public function next () {
-		/** @var $this \MvcCore\Session */
 		return next($_SESSION[$this->__name]);
 	}
 
@@ -130,7 +124,6 @@ trait MagicMethods {
 	 * @return void
 	 */
 	public function rewind () {
-		/** @var $this \MvcCore\Session */
 		reset($_SESSION[$this->__name]);
 	}
 
@@ -139,7 +132,6 @@ trait MagicMethods {
 	 * @return bool
 	 */
 	public function valid () {
-		/** @var $this \MvcCore\Session */
 		return key($_SESSION[$this->__name]) !== NULL;
 	}
 
@@ -153,7 +145,6 @@ trait MagicMethods {
 	 * @param mixed $value
 	 */
 	public function offsetSet ($offset, $value) {
-		/** @var $this \MvcCore\Session */
 		$data = & $_SESSION[$this->__name];
 		if ($offset === NULL) {
 			$data[] = $value;
@@ -169,7 +160,6 @@ trait MagicMethods {
 	 * @return mixed
 	 */
 	public function offsetGet ($offset) {
-		/** @var $this \MvcCore\Session */
 		$data = & $_SESSION[$this->__name];
 		return isset($data[$offset]) ? $data[$offset] : NULL;
 	}
@@ -181,7 +171,6 @@ trait MagicMethods {
 	 * @return bool
 	 */
 	public function offsetExists ($offset) {
-		/** @var $this \MvcCore\Session */
 		return isset($_SESSION[$this->__name][$offset]);
 	}
 
@@ -191,7 +180,6 @@ trait MagicMethods {
 	 * @param mixed $offset
 	 */
 	public function offsetUnset ($offset) {
-		/** @var $this \MvcCore\Session */
 		unset($_SESSION[$this->__name][$offset]);
 	}
 }

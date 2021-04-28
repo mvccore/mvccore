@@ -13,8 +13,11 @@
 
 namespace MvcCore\Session;
 
-trait Starting
-{
+/**
+ * @mixin \MvcCore\Session
+ */
+trait Starting {
+
 	/**
 	 * @inheritDocs
 	 * @return void

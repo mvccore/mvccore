@@ -13,6 +13,9 @@
 
 namespace MvcCore\Router;
 
+/**
+ * @mixin \MvcCore\Router
+ */
 trait Instancing {
 
 	/**
@@ -33,7 +36,7 @@ trait Instancing {
 	 */
 	public static function GetInstance (array $routes = [], $autoInitialize = TRUE) {
 		if (!self::$instance) {
-			/** @var $app \MvcCore\Application */
+			/** @var \MvcCore\Application $app */
 			$app = \MvcCore\Application::GetInstance();
 			self::$routeClass = $app->GetRouteClass();
 			self::$routerClass = $app->GetRouterClass();
@@ -114,7 +117,6 @@ trait Instancing {
 	 * @return void
 	 */
 	public function __construct (array $routes = [], $autoInitialize = TRUE) {
-		/** @var $this \MvcCore\Router */
 		if ($routes) $this->SetRoutes($routes, NULL, $autoInitialize);
 	}
 }

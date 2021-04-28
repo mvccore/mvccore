@@ -13,6 +13,9 @@
 
 namespace MvcCore\Router;
 
+/**
+ * @mixin \MvcCore\Router
+ */
 trait Routing {
 
 	/**
@@ -22,7 +25,6 @@ trait Routing {
 	 * @return bool
 	 */
 	public function Route () {
-		/** @var $this \MvcCore\Router */
 		$this->internalRequest = $this->request->IsInternalRequest();
 		if (!$this->internalRequest) 
 			if (!$this->redirectToProperTrailingSlashIfNecessary()) return FALSE;
@@ -46,7 +48,6 @@ trait Routing {
 	 * @return bool
 	 */
 	public function RedefineRoutedTarget ($controllerNamePc = NULL, $actionNamePc = NULL, $changeSelfRoute = FALSE) {
-		/** @var $this \MvcCore\Router */
 		$toolClass = self::$toolClass;
 		$ctrlNameDc = NULL;
 		$actionNameDc = NULL;
@@ -114,7 +115,6 @@ trait Routing {
 	 * @return \MvcCore\Route
 	 */
 	public function SetOrCreateDefaultRouteAsCurrent ($routeName, $controllerPc, $actionPc, $fallbackCall = FALSE) {
-		/** @var $this \MvcCore\Router */
 		$controllerPc = strtr($controllerPc, '/', '\\');
 		$ctrlActionRouteName = $controllerPc.':'. $actionPc;
 		$request = $this->request;
@@ -175,7 +175,6 @@ trait Routing {
 	 * @return \string[]
 	 */
 	protected function routeDetectStrategy () {
-		/** @var $this \MvcCore\Router */
 		$request = $this->request;
 		$requestCtrlName = $request->GetControllerName();
 		$requestActionName = $request->GetActionName();
@@ -217,7 +216,6 @@ trait Routing {
 	 * @return void
 	 */
 	protected function queryStringRouting ($requestCtrlName, $requestActionName) {
-		/** @var $this \MvcCore\Router */
 		$toolClass = self::$toolClass;
 		list($ctrlDfltName, $actionDfltName) = $this->application->GetDefaultControllerAndActionNames();
 		$this->SetOrCreateDefaultRouteAsCurrent(
@@ -247,7 +245,6 @@ trait Routing {
 	 * @return bool
 	 */
 	protected function routeProcessRouteRedirectionIfAny () {
-		/** @var $this \MvcCore\Router */
 		if ($this->currentRoute instanceof \MvcCore\IRoute) {
 			$redirectRouteName = $this->currentRoute->GetRedirect();
 			if ($redirectRouteName !== NULL) {
@@ -275,7 +272,6 @@ trait Routing {
 	 * @return \MvcCore\Router
 	 */
 	protected function routeSetUpDefaultForHomeIfNoMatch () {
-		/** @var $this \MvcCore\Router */
 		if ($this->currentRoute === NULL) {
 			$request = $this->request;
 			if ($this->routeToDefaultIfNotMatch) {
@@ -310,7 +306,6 @@ trait Routing {
 	 * @return \MvcCore\Router
 	 */
 	protected function routeSetUpSelfRouteNameIfAny () {
-		/** @var $this \MvcCore\Router */
 		if ($this->currentRoute instanceof \MvcCore\IRoute) 
 			$this->selfRouteName = $this->anyRoutesConfigured
 				? $this->currentRoute->GetName()

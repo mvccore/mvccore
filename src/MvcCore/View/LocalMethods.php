@@ -13,6 +13,9 @@
 
 namespace MvcCore\View;
 
+/**
+ * @mixin \MvcCore\View
+ */
 trait LocalMethods {
 
 	/**
@@ -23,7 +26,6 @@ trait LocalMethods {
 	 * @return string full path
 	 */
 	protected function correctRelativePath ($typePath, $relativePath) {
-		/** @var $this \MvcCore\View */
 		$result = str_replace('\\', '/', $relativePath);
 		// if relative path starts with dot:
 		if (mb_substr($relativePath, 0, 1) === '.') {

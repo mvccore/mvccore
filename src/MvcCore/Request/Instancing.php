@@ -13,6 +13,9 @@
 
 namespace MvcCore\Request;
 
+/**
+ * @mixin \MvcCore\Request
+ */
 trait Instancing {
 
 	/**
@@ -63,7 +66,6 @@ trait Instancing {
 		array & $files = [],
 		$inputStream = NULL
 	) {
-		/** @var $this \MvcCore\Request */
 		$app = self::$app ?: (self::$app = \MvcCore\Application::GetInstance());
 		self::$routerClass = self::$routerClass ?: $app->GetRouterClass();
 		$this->globalServer = & $server;
@@ -87,7 +89,6 @@ trait Instancing {
 	 * @return \MvcCore\Request
 	 */
 	public function InitAll () {
-		/** @var $this \MvcCore\Request */
 		$this->GetScriptName();
 		$this->GetAppRoot();
 		$this->GetMethod();

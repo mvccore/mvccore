@@ -13,6 +13,9 @@
 
 namespace MvcCore\View;
 
+/**
+ * @mixin \MvcCore\View
+ */
 trait DirectoryMethods {
 
 	/**

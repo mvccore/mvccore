@@ -13,6 +13,9 @@
 
 namespace MvcCore\Router;
 
+/**
+ * @mixin \MvcCore\Router
+ */
 trait RewriteRouting {
 
 	/**
@@ -39,14 +42,13 @@ trait RewriteRouting {
 	 * @return void
 	 */
 	protected function rewriteRouting ($requestCtrlName, $requestActionName) {
-		/** @var $this \MvcCore\Router */
 		$request = $this->request;
 		$requestedPathFirstWord = $this->rewriteRoutingGetReqPathFirstWord();
 		$this->rewriteRoutingProcessPreHandler($requestedPathFirstWord);
 		$routes = $this->rewriteRoutingGetRoutesToMatch($requestedPathFirstWord);
 		$requestMethod = $request->GetMethod();
 		foreach ($routes as & $route) {
-			/** @var $route \MvcCore\Route */
+			/** @var \MvcCore\Route $route */
 			if ($this->rewriteRoutingCheckRoute($route, [$requestMethod])) continue;
 			$allMatchedParams = $route->Matches($request);
 			if ($allMatchedParams !== NULL) {
@@ -71,7 +73,6 @@ trait RewriteRouting {
 	 * @return string
 	 */
 	protected function rewriteRoutingGetReqPathFirstWord () {
-		/** @var $this \MvcCore\Router */
 		$requestedPath = ltrim($this->request->GetPath(), '/');
 		$nextSlashPos = mb_strpos($requestedPath, '/');
 		if ($nextSlashPos === FALSE) $nextSlashPos = mb_strlen($requestedPath);
@@ -86,7 +87,6 @@ trait RewriteRouting {
 	 * @return void
 	 */
 	protected function rewriteRoutingProcessPreHandler ($firstPathWord) {
-		/** @var $this \MvcCore\Router */
 		if ($this->preRouteMatchingHandler === NULL) return;
 		call_user_func($this->preRouteMatchingHandler, $this, $this->request, $firstPathWord);
 	}
@@ -100,7 +100,6 @@ trait RewriteRouting {
 	 * @return array|\MvcCore\Route[]
 	 */
 	protected function rewriteRoutingGetRoutesToMatch ($firstPathWord) {
-		/** @var $this \MvcCore\Router */
 		if (isset($this->routesGroups[$firstPathWord])) {
 			$routes = $this->routesGroups[$firstPathWord];
 		} else if (isset($this->routesGroups[''])) {
@@ -122,7 +121,6 @@ trait RewriteRouting {
 	 * @return bool
 	 */
 	protected function rewriteRoutingCheckRoute (\MvcCore\IRoute $route, array $additionalInfo) {
-		/** @var $this \MvcCore\Router */
 		list ($requestMethod,) = $additionalInfo;
 		$routeMethod = $route->GetMethod();
 		if ($routeMethod !== NULL && $routeMethod !== $requestMethod) return TRUE;
@@ -154,11 +152,10 @@ trait RewriteRouting {
 	 * @return void
 	 */
 	protected function rewriteRoutingSetRequestedAndDefaultParams (array & $allMatchedParams, $requestCtrlName = NULL, $requestActionName = NULL) {
-		/** @var $this \MvcCore\Router */
 		// in array `$allMatchedParams` - there could be sometimes presented matched 
 		// or route specified values from configuration already, under keys `controller` and 
 		// `action`, always with a value, never with `NULL`
-		/** @var $request \MvcCore\Request */
+		/** @var \MvcCore\Request $request */
 		$request = $this->request;
 		// get only rewrited params from url and query string params:
 		$rawQueryParams = array_merge(
@@ -228,7 +225,6 @@ trait RewriteRouting {
 	 * @return bool
 	 */
 	protected function rewriteRoutingSetRequestParams (array & $allMatchedParams) {
-		/** @var $this \MvcCore\Router */
 		$request = $this->request;
 		$defaultParamsBefore = array_merge([], $this->defaultParams);
 		$requestParams = array_merge([], $this->defaultParams);
@@ -266,7 +262,6 @@ trait RewriteRouting {
 	 * @return void
 	 */
 	protected function rewriteRoutingSetUpCurrentRouteByRequest () {
-		/** @var $this \MvcCore\Router */
 		$request = $this->request;
 		$toolClass = self::$toolClass;
 		$this->currentRoute

@@ -13,6 +13,9 @@
 
 namespace MvcCore\Model;
 
+/**
+ * @mixin \MvcCore\Model
+ */
 trait MetaData {
 	
 	/**
@@ -21,7 +24,7 @@ trait MetaData {
 	 * @return array
 	 */
 	public static function GetMetaData ($propsFlags = 0) {
-		/** @var $this \MvcCore\Model */
+		/** @var \MvcCore\Model $this */
 
 		/**
 		 * This is static hidden property, so it has different values 
@@ -67,7 +70,7 @@ trait MetaData {
 		$phpWithUnionTypes = PHP_VERSION_ID >= 80000;
 		$props = (new \ReflectionClass($classFullName))
 			->getProperties($accessModFlags);
-		/** @var $prop \ReflectionProperty */
+		/** @var \ReflectionProperty $prop */
 		foreach ($props as $prop) {
 			if (
 				$prop->isStatic() ||
@@ -100,7 +103,7 @@ trait MetaData {
 			if ($refType !== NULL) {
 				if ($phpWithUnionTypes && $refType instanceof \ReflectionUnionType) {
 					$refTypes = $refType->getTypes();
-					/** @var $refTypesItem \ReflectionNamedType */
+					/** @var \ReflectionNamedType $refTypesItem */
 					$strIndex = NULL;
 					foreach ($refTypes as $index => $refTypesItem) {
 						$typeName = $refTypesItem->getName();

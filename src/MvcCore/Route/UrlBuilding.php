@@ -13,6 +13,9 @@
 
 namespace MvcCore\Route;
 
+/**
+ * @mixin \MvcCore\Route
+ */
 trait UrlBuilding {
 
 	/**
@@ -23,7 +26,6 @@ trait UrlBuilding {
 	 * @return array  Filtered params array.
 	 */
 	public function Filter (array $params = [], array $defaultParams = [], $direction = \MvcCore\IRoute::CONFIG_FILTER_IN) {
-		/** @var $this \MvcCore\Route */
 		if (!$this->filters || !isset($this->filters[$direction]))
 			return [TRUE, $params];
 		list($closureCalling, $handler) = $this->filters[$direction];
@@ -72,7 +74,6 @@ trait UrlBuilding {
 	 *                          path part with query string.
 	 */
 	public function Url (\MvcCore\IRequest $request, array $params = [], array $defaultUrlParams = [], $queryStringParamsSepatator = '&', $splitUrl = FALSE) {
-		/** @var $this \MvcCore\Route */
 		// check reverse initialization
 		if ($this->reverseParams === NULL) $this->initReverse();
 		// unset all params with the same values as route defaults configuration
@@ -134,7 +135,6 @@ trait UrlBuilding {
 	 * @return string
 	 */
 	protected function urlComposeByReverseSectionsAndParams (& $reverse, & $reverseSections, & $reverseParams, & $params, & $defaults) {
-		/** @var $this \MvcCore\Route */
 		$sections = [];
 		$paramIndex = 0;
 		$reverseParamsKeys = array_keys($reverseParams);
@@ -211,7 +211,6 @@ trait UrlBuilding {
 	 *                         path part with query string.
 	 */
 	protected function urlAbsPartAndSplit (\MvcCore\IRequest $request, $resultUrl, & $domainParams, $splitUrl) {
-		/** @var $this \MvcCore\Route */
 		$domainParamsFlag = $this->flags[1];
 		$basePathInReverse = FALSE;
 		if ($domainParamsFlag >= static::FLAG_HOST_BASEPATH) {
@@ -257,7 +256,6 @@ trait UrlBuilding {
 	 * @return void
 	 */
 	protected function urlReplaceDomainReverseParams (\MvcCore\IRequest $request, & $resultUrl, & $domainParams, $domainParamsFlag) {
-		/** @var $this \MvcCore\Route */
 		$replacements = [];
 		$values = [];
 		$router = $this->router;
@@ -330,8 +328,7 @@ trait UrlBuilding {
 	 *                          path part with query string.
 	 */
 	protected function urlAbsPartAndSplitByReverseBasePath (\MvcCore\IRequest $request, $resultUrl, & $domainParams, $splitUrl) {
-		/** @var $this \MvcCore\Route */
-		/** @var $doubleSlashPos int */
+		/** @var int $doubleSlashPos */
 		$doubleSlashPos = mb_strpos($resultUrl, '//');
 		$doubleSlashPos = $doubleSlashPos === FALSE
 			? 0
@@ -387,7 +384,6 @@ trait UrlBuilding {
 	 *                          path part with query string.
 	 */
 	protected function urlAbsPartAndSplitByRequestedBasePath (\MvcCore\IRequest $request, $resultUrl, $splitUrl) {
-		/** @var $this \MvcCore\Route */
 		$doubleSlashPos = mb_strpos($resultUrl, '//');
 		$doubleSlashPos = $doubleSlashPos === FALSE
 			? 0
@@ -465,8 +461,7 @@ trait UrlBuilding {
 	 *                          path part with query string.
 	 */
 	protected function urlAbsPartAndSplitByGlobalSwitchOrBasePath (\MvcCore\IRequest $request, $resultUrl, & $domainParams, $domainParamsFlag, $splitUrl) {
-		/** @var $this \MvcCore\Route */
-		/** @var $router \MvcCore\Router */
+		/** @var \MvcCore\Router $router */
 		$router = $this->router;
 		$basePathParamName = $router::URL_PARAM_BASEPATH;
 		$basePart = isset($domainParams[$basePathParamName])
@@ -510,7 +505,6 @@ trait UrlBuilding {
 	 * @return array
 	 */
 	protected function urlGetAndRemoveDomainPercentageParams (array & $params = []) {
-		/** @var $this \MvcCore\Route */
 		static $domainPercentageParams = [];
 		$absolute = FALSE;
 		$router = $this->router;
@@ -549,7 +543,6 @@ trait UrlBuilding {
 	 * @return string
 	 */
 	protected function urlCorrectTrailingSlashBehaviour ($urlPath) {
-		/** @var $this \MvcCore\Route */
 		$trailingSlashBehaviour = $this->_trailingSlashBehaviour ?: (
 			$this->_trailingSlashBehaviour = $this->router->GetTrailingSlashBehaviour()
 		);

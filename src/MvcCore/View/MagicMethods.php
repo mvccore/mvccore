@@ -13,6 +13,9 @@
 
 namespace MvcCore\View;
 
+/**
+ * @mixin \MvcCore\View
+ */
 trait MagicMethods {
 
 	/**
@@ -22,7 +25,6 @@ trait MagicMethods {
 	 * @return bool
 	 */
 	public function __set ($name, $value) {
-		/** @var $this \MvcCore\View */
 		return $this->__protected['store'][$name] = & $value;
 	}
 
@@ -32,7 +34,6 @@ trait MagicMethods {
 	 * @return mixed
 	 */
 	public function __get ($name) {
-		/** @var $this \MvcCore\View */
 		$store = & $this->__protected['store'];
 		// if property is in view store - return it
 		if (array_key_exists($name, $store))
@@ -40,7 +41,7 @@ trait MagicMethods {
 		// if property is not in view store - try to get it from controller and set it into local view store
 		if ($controllerType = $this->getReflectionClass('controller')) {
 			if ($controllerType->hasProperty($name)) {
-				/** @var $property \ReflectionProperty */
+				/** @var \ReflectionProperty $property */
 				$property = $controllerType->getProperty($name);
 				if (!$property->isStatic()) {
 					if (!$property->isPublic())
@@ -67,7 +68,6 @@ trait MagicMethods {
 	 * @return bool
 	 */
 	public function __isset ($name) {
-		/** @var $this \MvcCore\View */
 		$store = & $this->__protected['store'];
 		// if property is in view store - return it
 		if (array_key_exists($name, $store)) 
@@ -75,7 +75,7 @@ trait MagicMethods {
 		// if property is not in view store - try to get it from controller and set it into local view store
 		if ($controllerType = $this->getReflectionClass('controller')) {
 			if ($controllerType->hasProperty($name)) {
-				/** @var $property \ReflectionProperty */
+				/** @var \ReflectionProperty $property */
 				$property = $controllerType->getProperty($name);
 				if (!$property->isStatic()) {
 					if (!$property->isPublic())
@@ -102,7 +102,6 @@ trait MagicMethods {
 	 * @return void
 	 */
 	public function __unset ($name) {
-		/** @var $this \MvcCore\View */
 		$store = & $this->__protected['store'];
 		if (array_key_exists($name, $store)) 
 			unset($store[$name]);
@@ -115,7 +114,6 @@ trait MagicMethods {
 	 * @return \ReflectionClass|NULL
 	 */
 	protected function getReflectionClass ($currentContextObjectName) {
-		/** @var $this \MvcCore\View */
 		$privates = & $this->__protected;
 
 		$reflectionTypes = & $privates['reflectionTypes'];

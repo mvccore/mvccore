@@ -13,6 +13,9 @@
 
 namespace MvcCore\Config;
 
+/**
+ * @mixin \MvcCore\Config
+ */
 trait Environment {
 
 	/**
@@ -90,7 +93,6 @@ trait Environment {
 	 * @return array
 	 */
 	public function & GetData ($environmentName = NULL) {
-		/** @var $this \MvcCore\Config */
 		$result = [];
 		if ($environmentName === NULL) {
 			if ($this->currentData) {
@@ -123,7 +125,6 @@ trait Environment {
 	 * @return \MvcCore\Config
 	 */
 	public function SetData (array $data = [], $environmentName = NULL) {
-		/** @var $this \MvcCore\Config */
 		$app = self::$app ?: self::$app = \MvcCore\Application::GetInstance();
 		$currentEnvName = $app->GetEnvironment()->GetName();
 		if ($environmentName === NULL) {

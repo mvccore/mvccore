@@ -13,6 +13,9 @@
 
 namespace MvcCore\View;
 
+/**
+ * @mixin \MvcCore\View
+ */
 trait Escaping {
 
 	/**
@@ -22,7 +25,6 @@ trait Escaping {
 	 * @return string
 	 */
 	public function Escape ($str, $encoding = 'UTF-8') {
-		/** @var $this \MvcCore\View */
 		return htmlspecialchars(
 			(string) $str, $this->escapeGetFlags(ENT_QUOTES), $encoding
 		);
@@ -35,7 +37,6 @@ trait Escaping {
 	 * @return string
 	 */
 	public function EscapeHtml ($str, $encoding = 'UTF-8') {
-		/** @var $this \MvcCore\View */
 		return htmlspecialchars(
 			(string) $str, $this->escapeGetFlags(ENT_NOQUOTES), $encoding
 		);
@@ -49,7 +50,6 @@ trait Escaping {
 	 * @return string
 	 */
 	public function EscapeAttr ($str, $double = TRUE, $encoding = 'UTF-8') {
-		/** @var $this \MvcCore\View */
 		$str = (string) $str;
 		if (mb_strpos($str, '`') !== FALSE && strpbrk($str, ' <>"\'') === FALSE) 
 			$str .= ' '; // protection against innerHTML mXSS vulnerability
@@ -65,7 +65,6 @@ trait Escaping {
 	 * @return string
 	 */
 	public function EscapeXml ($str, $encoding = 'UTF-8') {
-		/** @var $this \MvcCore\View */
 		$str = preg_replace('#[\x00-\x08\x0B\x0C\x0E-\x1F]#', "\u{FFFD}", (string) $str);
 		return htmlspecialchars(
 			$str, $this->escapeGetFlags(ENT_XML1 | ENT_QUOTES), $encoding
@@ -80,7 +79,6 @@ trait Escaping {
 	 * @return string
 	 */
 	public function EscapeJs ($str, $flags = 0, $depth = 512) {
-		/** @var $this \MvcCore\View */
 		$toolClass = self::$toolClass;
 		$json = $toolClass::EncodeJson($str, JSON_UNESCAPED_UNICODE);
 		return str_replace([']]>', '<!'], [']]\x3E', '\x3C!'], $json);
@@ -93,7 +91,6 @@ trait Escaping {
 	 * @return string
 	 */
 	public function EscapeCss ($str) {
-		/** @var $this \MvcCore\View */
 		return addcslashes((string) $str, "\x00..\x1F!\"#$%&'()*+,./:;<=>?@[\\]^`{|}~");
 	}
 	
@@ -104,7 +101,6 @@ trait Escaping {
 	 * @return string
 	 */
 	public function EscapeICal ($str) {
-		/** @var $this \MvcCore\View */
 		$str = str_replace("\r", '', (string) $str);
 		$str = preg_replace('#[\x00-\x08\x0B-\x1F]#', "\u{FFFD}", $str);
 		return addcslashes($str, "\";\\,:\n");
@@ -116,7 +112,6 @@ trait Escaping {
 	 * @return int
 	 */
 	protected function escapeGetFlags ($flagsToAdd) {
-		/** @var $this \MvcCore\View */
 		static $allEscapeFlags = [
 			\MvcCore\IView::DOCTYPE_HTML4	=> ENT_HTML401,
 			\MvcCore\IView::DOCTYPE_XHTML	=> ENT_XHTML,

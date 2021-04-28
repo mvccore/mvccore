@@ -13,6 +13,9 @@
 
 namespace MvcCore\Model;
 
+/**
+ * @mixin \MvcCore\Model
+ */
 trait DataMethods {
 
 	/**
@@ -27,7 +30,6 @@ trait DataMethods {
 	 * @return array
 	 */
 	public function GetValues ($propsFlags = 0, $getNullValues = FALSE) {
-		/** @var $this \MvcCore\Model */
 		$metaData = static::GetMetaData($propsFlags);
 		
 		$phpWithTypes = PHP_VERSION_ID >= 70400;
@@ -81,7 +83,6 @@ trait DataMethods {
 	 * @return \MvcCore\Model    Current `$this` context.
 	 */
 	public function SetValues ($data = [], $propsFlags = 0) {
-		/** @var $this \MvcCore\Model */
 		$completeInitialValues = ($propsFlags & \MvcCore\IModel::PROPS_INITIAL_VALUES) != 0;
 
 		$metaData = static::GetMetaData($propsFlags);
@@ -141,7 +142,6 @@ trait DataMethods {
 	 * @return array 
 	 */
 	public function GetTouched ($propsFlags = 0) {
-		/** @var $this \MvcCore\Model */
 		$metaData = static::GetMetaData($propsFlags);
 		
 		$phpWithTypes = PHP_VERSION_ID >= 70400;

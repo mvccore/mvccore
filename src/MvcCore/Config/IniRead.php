@@ -13,6 +13,9 @@
 
 namespace MvcCore\Config;
 
+/**
+ * @mixin \MvcCore\Config
+ */
 trait IniRead {
 
 	/**
@@ -20,7 +23,6 @@ trait IniRead {
 	 * @return bool
 	 */
 	public function Read () {
-		/** @var $this \MvcCore\Config */
 		if ($this->envData) return TRUE;
 		/**
 		 * INI scanner mode. For old PHP versions, lower than `5.6.1`
@@ -59,7 +61,6 @@ trait IniRead {
 	 * @return array
 	 */
 	protected static function & readAllEnvironmentsSections (array & $rawIniData) {
-		/** @var $this \MvcCore\Config */
 		$allEnvsIniData = [];
 		$commonEnvDataKey = static::$commonEnvironmentDataKey;
 		$environmentNamesFilter = static::$environmentNamesFilter;
@@ -103,7 +104,6 @@ trait IniRead {
 	 * @return array
 	 */
 	protected static function readExpandLevelsAndReType (array & $iniData, $iniScannerMode) {
-		/** @var $this \MvcCore\Config */
 		$result = [];
 		$objectTypes = [];
 		//$objectTypes[''] = [0, & $result];
@@ -164,7 +164,6 @@ trait IniRead {
 	 * @return array|float|int|string
 	 */
 	protected static function readTypedValue ($rawValue) {
-		/** @var $this \MvcCore\Config */
 		if (gettype($rawValue) == "array") {
 			foreach ($rawValue as $key => $value) {
 				$rawValue[$key] = static::readTypedValue($value);
@@ -187,7 +186,6 @@ trait IniRead {
 	 * @return float|int|string
 	 */
 	protected static function readTypedValueFloatOrInt ($rawValue) {
-		/** @var $this \MvcCore\Config */
 		if (strpos($rawValue, '.') !== FALSE || strpos($rawValue, 'e') !== FALSE || strpos($rawValue, 'E') !== FALSE) {
 			return floatval($rawValue); // float
 		} else {
@@ -205,7 +203,6 @@ trait IniRead {
 	 * @return bool|NULL|string
 	 */
 	protected static function readTypedSpecialValueOrString ($rawValue) {
-		/** @var $this \MvcCore\Config */
 		$lowerRawValue = strtolower($rawValue);
 		if (isset(static::$specialValues[$lowerRawValue])) {
 			return static::$specialValues[$lowerRawValue]; // bool or null

@@ -13,6 +13,9 @@
 
 namespace MvcCore\Controller;
 
+/**
+ * @mixin \MvcCore\Controller
+ */
 trait Props {
 
 	/**

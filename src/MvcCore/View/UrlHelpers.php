@@ -13,6 +13,9 @@
 
 namespace MvcCore\View;
 
+/**
+ * @mixin \MvcCore\View
+ */
 trait UrlHelpers {
 
 	/**
@@ -22,7 +25,6 @@ trait UrlHelpers {
 	 * @return string
 	 */
 	public function Url ($controllerActionOrRouteName = 'Index:Index', array $params = []) {
-		/** @var $this \MvcCore\View */
 		return $this->controller->GetRouter()->Url($controllerActionOrRouteName, $params);
 	}
 
@@ -32,7 +34,6 @@ trait UrlHelpers {
 	 * @return string
 	 */
 	public function AssetUrl ($path) {
-		/** @var $this \MvcCore\View */
 		return $this->controller->AssetUrl($path);
 	}
 }

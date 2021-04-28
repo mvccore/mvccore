@@ -13,6 +13,9 @@
 
 namespace MvcCore\Response;
 
+/**
+ * @mixin \MvcCore\Response
+ */
 trait PropsGettersSetters {
 
 	protected static $codeMessages = [
@@ -95,7 +98,6 @@ trait PropsGettersSetters {
 	 * @return string
 	 */
 	public function GetHttpVersion () {
-		/** @var $this \MvcCore\Response */
 		if ($this->httpVersion === NULL) {
 			$server = & $this->request->GetGlobalCollection('server');
 			$this->httpVersion = isset($server['SERVER_PROTOCOL'])
@@ -111,7 +113,6 @@ trait PropsGettersSetters {
 	 * @return \MvcCore\Response
 	 */
 	public function SetHttpVersion ($httpVersion) {
-		/** @var $this \MvcCore\Response */
 		$this->httpVersion = $httpVersion;
 		return $this;
 	}
@@ -123,7 +124,6 @@ trait PropsGettersSetters {
 	 * @return \MvcCore\Response
 	 */
 	public function SetCode ($code, $codeMessage = NULL) {
-		/** @var $this \MvcCore\Response */
 		$this->code = $code;
 		if ($codeMessage !== NULL) $this->codeMessage = $codeMessage;
 		http_response_code($code);
@@ -135,7 +135,6 @@ trait PropsGettersSetters {
 	 * @return int
 	 */
 	public function GetCode () {
-		/** @var $this \MvcCore\Response */
 		if ($this->code === NULL) {
 			$phpCode = http_response_code();
 			$this->code = $phpCode === FALSE ? \MvcCore\IResponse::OK : $phpCode;
@@ -149,7 +148,6 @@ trait PropsGettersSetters {
 	 * @return \MvcCore\Response
 	 */
 	public function SetEncoding ($encoding = 'utf-8') {
-		/** @var $this \MvcCore\Response */
 		$this->encoding = $encoding;
 		$this->headers['Content-Encoding'] = $encoding;
 		header('Content-Encoding: ' . $encoding);
@@ -163,7 +161,6 @@ trait PropsGettersSetters {
 	 * @return string|NULL
 	 */
 	public function GetEncoding () {
-		/** @var $this \MvcCore\Response */
 		if ($this->encoding === NULL) {
 			if (isset($this->headers['Content-Encoding'])) {
 				$this->encoding = $this->headers['Content-Encoding'];
@@ -187,7 +184,6 @@ trait PropsGettersSetters {
 	 * @return bool
 	 */
 	public function IsRedirect () {
-		/** @var $this \MvcCore\Response */
 		return isset($this->headers['Location']);
 	}
 
@@ -196,7 +192,6 @@ trait PropsGettersSetters {
 	 * @return bool
 	 */
 	public function IsSent () {
-		/** @var $this \MvcCore\Response */
 		return $this->bodySent && headers_sent();
 	}
 }

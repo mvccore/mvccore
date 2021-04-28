@@ -13,6 +13,9 @@
 
 namespace MvcCore\Environment;
 
+/**
+ * @mixin \MvcCore\Environment
+ */
 trait PropsGettersSetters {
 
 	/**
@@ -79,7 +82,6 @@ trait PropsGettersSetters {
 	 * @return bool
 	 */
 	public function IsDevelopment () {
-		/** @var $this \MvcCore\Environment */
 		if ($this->name === NULL) $this->GetName();
 		return $this->values[\MvcCore\IEnvironment::DEVELOPMENT];
 	}
@@ -89,7 +91,6 @@ trait PropsGettersSetters {
 	 * @return bool
 	 */
 	public function IsBeta () {
-		/** @var $this \MvcCore\Environment */
 		if ($this->name === NULL) $this->GetName();
 		return $this->values[\MvcCore\IEnvironment::BETA];
 	}
@@ -99,7 +100,6 @@ trait PropsGettersSetters {
 	 * @return bool
 	 */
 	public function IsAlpha () {
-		/** @var $this \MvcCore\Environment */
 		if ($this->name === NULL) $this->GetName();
 		return $this->values[\MvcCore\IEnvironment::ALPHA];
 	}
@@ -109,7 +109,6 @@ trait PropsGettersSetters {
 	 * @return bool
 	 */
 	public function IsProduction () {
-		/** @var $this \MvcCore\Environment */
 		if ($this->name === NULL) $this->GetName();
 		return $this->values[\MvcCore\IEnvironment::PRODUCTION];
 	}
@@ -119,7 +118,6 @@ trait PropsGettersSetters {
 	 * @return bool
 	 */
 	public function IsDetected () {
-		/** @var $this \MvcCore\Environment */
 		return $this->name !== NULL;
 	}
 
@@ -129,7 +127,6 @@ trait PropsGettersSetters {
 	 * @return string
 	 */
 	public function SetName ($name = \MvcCore\IEnvironment::PRODUCTION) {
-		/** @var $this \MvcCore\Environment */
 		$this->name = $name;
 		foreach (static::GetAllNames() as $envName)
 			$this->values[$envName] = FALSE;
@@ -142,7 +139,6 @@ trait PropsGettersSetters {
 	 * @return string
 	 */
 	public function GetName () {
-		/** @var $this \MvcCore\Environment */
 		if ($this->name === NULL) {
 			if (static::$detectionBySystemConfig) {
 				$app = self::$app ?: (self::$app = \MvcCore\Application::GetInstance());

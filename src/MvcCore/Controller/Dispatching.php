@@ -13,6 +13,9 @@
 
 namespace MvcCore\Controller;
 
+/**
+ * @mixin \MvcCore\Controller
+ */
 trait Dispatching {
 
 	/**
@@ -20,7 +23,7 @@ trait Dispatching {
 	 * @return \MvcCore\Controller
 	 */
 	public static function CreateInstance () {
-		/** @var $instance \MvcCore\Controller */
+		/** @var \MvcCore\Controller $instance */
 		$instance = new static();
 		self::$allControllers[spl_object_hash($instance)] = $instance;
 		return $instance;
@@ -58,7 +61,7 @@ trait Dispatching {
 	 * @return void
 	 */
 	public function Dispatch ($actionName = "IndexAction") {
-		/** @var $this \MvcCore\Controller */
+		/** @var \MvcCore\Controller $this */
 
 		// \MvcCore\Debug::Timer('dispatch');
 		$actionNameStart = $this->actionName;
@@ -118,7 +121,6 @@ trait Dispatching {
 	 * @return void
 	 */
 	public function Init () {
-		/** @var $this \MvcCore\Controller */
 		if ($this->dispatchState > \MvcCore\IController::DISPATCH_STATE_CREATED) 
 			return;
 		self::$allControllers[spl_object_hash($this)] = $this;
@@ -160,8 +162,7 @@ trait Dispatching {
 	 * @return void
 	 */
 	protected function autoInitializeProperties () {
-		/** @var $this \MvcCore\Controller */
-		/** @var $ctrl \ReflectionClass */
+		/** @var \ReflectionClass $ctrl */
 		$ctrl = new \ReflectionClass($this);
 		/** @var $props \ReflectionProperty[] */
 		$props = $ctrl->getProperties(
@@ -257,7 +258,6 @@ trait Dispatching {
 	 * @return void
 	 */
 	public function PreDispatch () {
-		/** @var $this \MvcCore\Controller */
 		if ($this->dispatchState > \MvcCore\IController::DISPATCH_STATE_INITIALIZED) 
 			return;
 		if ($this->dispatchState == \MvcCore\IController::DISPATCH_STATE_CREATED) 
@@ -284,8 +284,7 @@ trait Dispatching {
 	 * @return \MvcCore\Controller
 	 */
 	public function AddChildController (\MvcCore\IController $controller, $index = NULL) {
-		/** @var $this \MvcCore\Controller */
-		/** @var $controller \MvcCore\Controller */
+		/** @var \MvcCore\Controller $controller */
 		self::$allControllers[spl_object_hash($controller)] = $controller;
 		if (!in_array($controller, $this->childControllers, TRUE)) {
 			if ($index === NULL) {
@@ -318,7 +317,6 @@ trait Dispatching {
 	 * @return \MvcCore\Session
 	 */
 	public function GetSessionNamespace ($name = \MvcCore\ISession::DEFAULT_NAMESPACE_NAME) {
-		/** @var $this \MvcCore\Controller */
 		$sessionClass = $this->application->GetSessionClass();
 		return $sessionClass::GetNamespace($name);
 	}
@@ -348,7 +346,6 @@ trait Dispatching {
 	 * @return void
 	 */
 	public function Terminate () {
-		/** @var $this \MvcCore\Controller */
 		$this->dispatchState = \MvcCore\IController::DISPATCH_STATE_TERMINATED;
 		self::$allControllers = [];
 		$this->application->Terminate();
@@ -360,7 +357,6 @@ trait Dispatching {
 	 * @return void
 	 */
 	public function AssetAction () {
-		/** @var $this \MvcCore\Controller */
 		$ext = '';
 		$path = $this->GetParam('path', 'a-zA-Z0-9_\-\/\.');
 		$path = '/' . ltrim(str_replace('..', '', $path), '/');

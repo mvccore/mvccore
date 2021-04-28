@@ -13,8 +13,11 @@
 
 namespace MvcCore\Model;
 
-trait Props
-{
+/**
+ * @mixin \MvcCore\Model
+ */
+trait Props {
+
 	/**
 	 * `\PDO` connection arguments.
 	 *

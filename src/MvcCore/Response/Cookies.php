@@ -13,6 +13,9 @@
 
 namespace MvcCore\Response;
 
+/**
+ * @mixin \MvcCore\Response
+ */
 trait Cookies {
 
 	/**
@@ -32,7 +35,6 @@ trait Cookies {
 		$lifetime = 0, $path = '/',
 		$domain = NULL, $secure = NULL, $httpOnly = TRUE
 	) {
-		/** @var $this \MvcCore\Response */
 		if ($this->IsSentHeaders())
 			throw new \RuntimeException(
 				"[".get_class()."] Cannot set cookie after HTTP headers have been sent."
@@ -74,7 +76,6 @@ trait Cookies {
 	 * @return bool              True if cookie has been set.
 	 */
 	public function DeleteCookie ($name, $path = '/', $domain = NULL, $secure = NULL) {
-		/** @var $this \MvcCore\Response */
 		return $this->SetCookie($name, '',  -3600, $path, $domain, $secure);
 	}
 }

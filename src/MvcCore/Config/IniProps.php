@@ -13,6 +13,9 @@
 
 namespace MvcCore\Config;
 
+/**
+ * @mixin \MvcCore\Config
+ */
 trait IniProps {
 
 	/**

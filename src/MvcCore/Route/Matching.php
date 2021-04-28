@@ -13,6 +13,9 @@
 
 namespace MvcCore\Route;
 
+/**
+ * @mixin \MvcCore\Route
+ */
 trait Matching {
 
 	/**
@@ -24,7 +27,6 @@ trait Matching {
 	 *                                   params or controller and action params.
 	 */
 	public function Matches (\MvcCore\IRequest $request) {
-		/** @var $this \MvcCore\Route */
 		$matchedParams = NULL;
 		$pattern = $this->matchesGetPattern();
 		$subject = $this->matchesGetSubject($request);
@@ -54,7 +56,6 @@ trait Matching {
 	 * @return string
 	 */
 	protected function matchesGetPattern () {
-		/** @var $this \MvcCore\Route */
 		if ($this->match === NULL) {
 			$this->initMatchAndReverse();
 		} else {
@@ -74,7 +75,6 @@ trait Matching {
 	 * @return string
 	 */
 	protected function matchesGetSubject (\MvcCore\IRequest $request) {
-		/** @var $this \MvcCore\Route */
 		$subject = $this->matchesGetSubjectHostAndBase($request) 
 			. $request->GetPath(TRUE);
 		if ($this->flags[2]) 
@@ -91,7 +91,6 @@ trait Matching {
 	 * @return array
 	 */
 	protected function match ($pattern, & $subject) {
-		/** @var $this \MvcCore\Route */
 		// add UTF-8 modifier to pattern if subject string contains higher chars than ASCII
 		if (preg_match('#[^\x20-\x7f]#', $subject)) {
 			$lastHashPos = mb_strrpos($pattern, '#');
@@ -114,7 +113,6 @@ trait Matching {
 	 * @return string
 	 */
 	protected function matchesGetSubjectHostAndBase (\MvcCore\IRequest $request) {
-		/** @var $this \MvcCore\Route */
 		$schemeFlag = $this->flags[0];
 		$basePathDefined = FALSE;
 		$basePath = '';
@@ -145,7 +143,6 @@ trait Matching {
 	 * @return string
 	 */
 	protected function matchesGetSubjectScheme (& $schemeFlag) {
-		/** @var $this \MvcCore\Route */
 		static $prefixes = NULL;
 		if ($prefixes === NULL) $prefixes = [
 			static::FLAG_SCHEME_NO		=> '',			// 0
@@ -167,7 +164,6 @@ trait Matching {
 	 * @return string
 	 */
 	protected function matchesGetSubjectHost (\MvcCore\IRequest $request, & $hostFlag) {
-		/** @var $this \MvcCore\Route */
 		$hostPart = '';
 		if ($hostFlag == static::FLAG_HOST_NO /* 0 */) {
 			$hostPart = $request->GetHostName();
@@ -203,8 +199,7 @@ trait Matching {
 	 * @return array
 	 */
 	protected function matchesParseRewriteParams (& $matchedValues, & $defaults) {
-		/** @var $this \MvcCore\Route */
-		/** @var $toolClass \MvcCore\Tool */
+		/** @var \MvcCore\Tool $toolClass */
 		$toolClass = \MvcCore\Application::GetInstance()->GetToolClass();
 		$matchedParams = [];
 		$router = $this->router;

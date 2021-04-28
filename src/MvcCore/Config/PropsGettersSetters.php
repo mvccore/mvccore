@@ -13,6 +13,9 @@
 
 namespace MvcCore\Config;
 
+/**
+ * @mixin \MvcCore\Config
+ */
 trait PropsGettersSetters {
 
 	/**
@@ -97,7 +100,6 @@ trait PropsGettersSetters {
 	 * @return string
 	 */
 	public static function GetSystemConfigPath () {
-		/** @var $this \MvcCore\Config */
 		return static::$systemConfigPath;
 	}
 
@@ -107,7 +109,6 @@ trait PropsGettersSetters {
 	 * @return string
 	 */
 	public static function SetSystemConfigPath ($systemConfigPath) {
-		/** @var $this \MvcCore\Config */
 		return static::$systemConfigPath = $systemConfigPath;
 	}
 
@@ -118,8 +119,7 @@ trait PropsGettersSetters {
 	 * @return \MvcCore\Config
 	 */
 	public static function SetConfigCache ($appRootRelativePath, \MvcCore\IConfig $config) {
-		/** @var $this \MvcCore\Config */
-		/** @var $config \MvcCore\Config */
+		/** @var \MvcCore\Config $config */
 		return static::$configsCache[$appRootRelativePath] = $config;
 	}
 
@@ -129,7 +129,6 @@ trait PropsGettersSetters {
 	 * @return bool
 	 */
 	public static function ClearConfigCache ($appRootRelativePath = NULL) {
-		/** @var $this \MvcCore\Config */
 		if ($appRootRelativePath === NULL) {
 			static::$configsCache = [];
 		} else {
@@ -143,7 +142,6 @@ trait PropsGettersSetters {
 	 * @return string
 	 */
 	public function GetFullPath () {
-		/** @var $this \MvcCore\Config */
 		return $this->fullPath;
 	}
 
@@ -152,7 +150,6 @@ trait PropsGettersSetters {
 	 * @return int
 	 */
 	public function GetLastChanged () {
-		/** @var $this \MvcCore\Config */
 		return $this->lastChanged;
 	}
 
@@ -161,7 +158,6 @@ trait PropsGettersSetters {
 	 * @return bool
 	 */
 	public function IsSystem () {
-		/** @var $this \MvcCore\Config */
 		return $this->system;
 	}
 }

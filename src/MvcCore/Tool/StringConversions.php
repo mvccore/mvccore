@@ -13,6 +13,9 @@
 
 namespace MvcCore\Tool;
 
+/**
+ * @mixin \MvcCore\Tool
+ */
 trait StringConversions {
 
 	/**

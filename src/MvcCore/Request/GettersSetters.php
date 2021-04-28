@@ -13,6 +13,9 @@
 
 namespace MvcCore\Request;
 
+/**
+ * @mixin \MvcCore\Request
+ */
 trait GettersSetters {
 
 	/**
@@ -57,7 +60,6 @@ trait GettersSetters {
 	 * @return \MvcCore\Request
 	 */
 	public function SetControllerName ($controllerName) {
-		/** @var $this \MvcCore\Request */
 		$this->controllerName = $controllerName;
 		$routerClass = self::$routerClass;
 		$router = $routerClass::GetInstance();
@@ -70,7 +72,6 @@ trait GettersSetters {
 	 * @return string
 	 */
 	public function GetControllerName () {
-		/** @var $this \MvcCore\Request */
 		if ($this->controllerName === NULL) {
 			$routerClass = self::$routerClass;
 			$router = $routerClass::GetInstance();
@@ -86,7 +87,6 @@ trait GettersSetters {
 	 * @return \MvcCore\Request
 	 */
 	public function SetActionName ($actionName) {
-		/** @var $this \MvcCore\Request */
 		$this->actionName = $actionName;
 		$routerClass = self::$routerClass;
 		$router = $routerClass::GetInstance();
@@ -99,7 +99,6 @@ trait GettersSetters {
 	 * @return string
 	 */
 	public function GetActionName () {
-		/** @var $this \MvcCore\Request */
 		if ($this->actionName === NULL) {
 			$routerClass = self::$routerClass;
 			$router = $routerClass::GetInstance();
@@ -114,7 +113,6 @@ trait GettersSetters {
 	 * @return bool
 	 */
 	public function IsCli () {
-		/** @var $this \MvcCore\Request */
 		return $this->cli;
 	}
 
@@ -124,7 +122,6 @@ trait GettersSetters {
 	 * @return \MvcCore\Request
 	 */
 	public function SetLang ($lang) {
-		/** @var $this \MvcCore\Request */
 		$this->lang = $lang;
 		return $this;
 	}
@@ -134,7 +131,6 @@ trait GettersSetters {
 	 * @return string|NULL
 	 */
 	public function GetLang () {
-		/** @var $this \MvcCore\Request */
 		if ($this->lang === NULL) $this->initLangAndLocale();
 		return $this->lang;
 	}
@@ -145,7 +141,6 @@ trait GettersSetters {
 	 * @return \MvcCore\Request
 	 */
 	public function SetLocale ($locale) {
-		/** @var $this \MvcCore\Request */
 		$this->locale = $locale;
 		return $this;
 	}
@@ -155,7 +150,6 @@ trait GettersSetters {
 	 * @return string|NULL
 	 */
 	public function GetLocale () {
-		/** @var $this \MvcCore\Request */
 		if ($this->locale === NULL) $this->initLangAndLocale();
 		return $this->locale;
 	}
@@ -166,7 +160,6 @@ trait GettersSetters {
 	 * @return \MvcCore\Request
 	 */
 	public function SetMediaSiteVersion ($mediaSiteVersion) {
-		/** @var $this \MvcCore\Request */
 		$this->mediaSiteVersion = $mediaSiteVersion;
 		return $this;
 	}
@@ -176,7 +169,6 @@ trait GettersSetters {
 	 * @return string|NULL
 	 */
 	public function GetMediaSiteVersion () {
-		/** @var $this \MvcCore\Request */
 		return $this->mediaSiteVersion;
 	}
 
@@ -189,7 +181,6 @@ trait GettersSetters {
 	 * @return mixed|\MvcCore\Request
 	 */
 	public function __call ($rawName, $arguments = []) {
-		/** @var $this \MvcCore\Request */
 		$nameBegin = strtolower(substr($rawName, 0, 3));
 		$name = substr($rawName, 3);
 		$lcName = lcfirst($name);
@@ -218,7 +209,6 @@ trait GettersSetters {
 	 * @return mixed
 	 */
 	public function __get ($name) {
-		/** @var $this \MvcCore\Request */
 		$lcPropName = lcfirst($name);
 		if (isset($this->{$lcPropName}))
 			return $this->{$lcPropName};
@@ -234,7 +224,6 @@ trait GettersSetters {
 	 * @return \MvcCore\Request
 	 */
 	public function __set ($name, $value) {
-		/** @var $this \MvcCore\Request */
 		$lcPropName = lcfirst($name);
 		if (property_exists($this, $lcPropName))
 			return $this->{$lcPropName} = $value;
@@ -247,7 +236,6 @@ trait GettersSetters {
 	 * @return string
 	 */
 	public function GetScriptName () {
-		/** @var $this \MvcCore\Request */
 		if ($this->scriptName === NULL) $this->initScriptNameAndBasePath();
 		return $this->scriptName;
 	}
@@ -258,7 +246,6 @@ trait GettersSetters {
 	 * @return \MvcCore\Request
 	 */
 	public function SetScriptName ($scriptName) {
-		/** @var $this \MvcCore\Request */
 		$this->scriptName = $scriptName;
 		return $this;
 	}
@@ -268,7 +255,6 @@ trait GettersSetters {
 	 * @return string
 	 */
 	public function GetAppRoot () {
-		/** @var $this \MvcCore\Request */
 		if ($this->appRoot === NULL) 
 			$this->appRoot = defined('MVCCORE_APP_ROOT')
 				? constant('MVCCORE_APP_ROOT')
@@ -282,7 +268,6 @@ trait GettersSetters {
 	 * @return \MvcCore\Request
 	 */
 	public function SetAppRoot ($appRoot) {
-		/** @var $this \MvcCore\Request */
 		$this->appRoot = $appRoot;
 		return $this;
 	}
@@ -292,7 +277,6 @@ trait GettersSetters {
 	 * @return string
 	 */
 	public function GetDocumentRoot () {
-		/** @var $this \MvcCore\Request */
 		if ($this->documentRoot === NULL) {
 			if (defined('MVCCORE_DOCUMENT_ROOT')) {
 				$this->documentRoot = constant('MVCCORE_DOCUMENT_ROOT');
@@ -316,7 +300,6 @@ trait GettersSetters {
 	 * @return \MvcCore\Request
 	 */
 	public function SetDocumentRoot ($documentRoot) {
-		/** @var $this \MvcCore\Request */
 		$this->documentRoot = $documentRoot;
 		return $this;
 	}
@@ -327,7 +310,6 @@ trait GettersSetters {
 	 * @return \MvcCore\Request
 	 */
 	public function SetMethod ($rawMethod) {
-		/** @var $this \MvcCore\Request */
 		$this->method = $rawMethod;
 		return $this;
 	}
@@ -337,7 +319,6 @@ trait GettersSetters {
 	 * @return string
 	 */
 	public function GetMethod () {
-		/** @var $this \MvcCore\Request */
 		if ($this->method === NULL) {
 			$this->method = strtoupper($this->globalServer['REQUEST_METHOD']);
 		}
@@ -350,7 +331,6 @@ trait GettersSetters {
 	 * @return \MvcCore\Request
 	 */
 	public function SetBasePath ($rawBasePath) {
-		/** @var $this \MvcCore\Request */
 		$this->basePath = $rawBasePath;
 		$this->baseUrl = NULL;
 		$this->requestUrl = NULL;
@@ -363,7 +343,6 @@ trait GettersSetters {
 	 * @return string
 	 */
 	public function GetBasePath () {
-		/** @var $this \MvcCore\Request */
 		if ($this->basePath === NULL) $this->initScriptNameAndBasePath();
 		return $this->basePath;
 	}
@@ -374,7 +353,6 @@ trait GettersSetters {
 	 * @return \MvcCore\Request
 	 */
 	public function SetScheme ($rawProtocol) {
-		/** @var $this \MvcCore\Request */
 		$this->scheme = $rawProtocol;
 		$this->domainUrl = NULL;
 		$this->baseUrl = NULL;
@@ -388,7 +366,6 @@ trait GettersSetters {
 	 * @return string
 	 */
 	public function GetScheme () {
-		/** @var $this \MvcCore\Request */
 		if ($this->scheme === NULL) {
 			$this->scheme = (
 				(isset($this->globalServer['HTTPS']) && strtolower($this->globalServer['HTTPS']) == 'on') ||
@@ -405,7 +382,6 @@ trait GettersSetters {
 	 * @return bool
 	 */
 	public function IsSecure () {
-		/** @var $this \MvcCore\Request */
 		if ($this->secure === NULL)
 			$this->secure = in_array($this->GetScheme(), [
 				static::SCHEME_HTTPS,
@@ -422,7 +398,6 @@ trait GettersSetters {
 	 * @return string
 	 */
 	public function GetReferer ($rawInput = FALSE) {
-		/** @var $this \MvcCore\Request */
 		if ($this->referer === NULL) {
 			$referer = isset($this->globalServer['HTTP_REFERER'])
 				? $this->globalServer['HTTP_REFERER']
@@ -440,7 +415,6 @@ trait GettersSetters {
 	 * @return float
 	 */
 	public function GetStartTime () {
-		/** @var $this \MvcCore\Request */
 		if ($this->microtime === NULL) $this->microtime = $this->globalServer['REQUEST_TIME_FLOAT'];
 		return $this->microtime;
 	}
@@ -451,7 +425,6 @@ trait GettersSetters {
 	 * @return \MvcCore\Request
 	 */
 	public function SetTopLevelDomain ($topLevelDomain) {
-		/** @var $this \MvcCore\Request */
 		if ($this->domainParts === NULL) $this->initDomainSegments();
 		$this->domainParts[2] = $topLevelDomain;
 		$this->hostName = trim(implode('.', $this->domainParts), '.');
@@ -469,7 +442,6 @@ trait GettersSetters {
 	 * @return string|NULL
 	 */
 	public function GetTopLevelDomain () {
-		/** @var $this \MvcCore\Request */
 		if ($this->domainParts === NULL) $this->initDomainSegments();
 		return $this->domainParts[2];
 	}
@@ -480,7 +452,6 @@ trait GettersSetters {
 	 * @return \MvcCore\Request
 	 */
 	public function SetSecondLevelDomain ($secondLevelDomain) {
-		/** @var $this \MvcCore\Request */
 		if ($this->domainParts === NULL) $this->initDomainSegments();
 		$this->domainParts[1] = $secondLevelDomain;
 		$this->hostName = trim(implode('.', $this->domainParts), '.');
@@ -498,7 +469,6 @@ trait GettersSetters {
 	 * @return string|NULL
 	 */
 	public function GetSecondLevelDomain () {
-		/** @var $this \MvcCore\Request */
 		if ($this->domainParts === NULL) $this->initDomainSegments();
 		return isset($this->domainParts[1]) ? $this->domainParts[1] : NULL;
 	}
@@ -509,7 +479,6 @@ trait GettersSetters {
 	 * @return \MvcCore\Request
 	 */
 	public function SetThirdLevelDomain ($thirdLevelDomain) {
-		/** @var $this \MvcCore\Request */
 		if ($this->domainParts === NULL) $this->initDomainSegments();
 		$this->domainParts[0] = $thirdLevelDomain;
 		$this->hostName = trim(implode('.', $this->domainParts), '.');
@@ -527,7 +496,6 @@ trait GettersSetters {
 	 * @return string|NULL
 	 */
 	public function GetThirdLevelDomain () {
-		/** @var $this \MvcCore\Request */
 		if ($this->domainParts === NULL) $this->initDomainSegments();
 		return isset($this->domainParts[0]) ? $this->domainParts[0] : NULL;
 	}
@@ -538,7 +506,6 @@ trait GettersSetters {
 	 * @return \MvcCore\Request
 	 */
 	public function SetHostName ($rawHostName) {
-		/** @var $this \MvcCore\Request */
 		if ($this->hostName !== $rawHostName) $this->domainParts = NULL;
 		$this->hostName = $rawHostName;
 		$this->domainUrl = NULL;
@@ -555,7 +522,6 @@ trait GettersSetters {
 	 * @return string
 	 */
 	public function GetHostName () {
-		/** @var $this \MvcCore\Request */
 		if ($this->hostName === NULL)
 			$this->hostName = $this->globalServer['SERVER_NAME'];
 		return $this->hostName;
@@ -567,7 +533,6 @@ trait GettersSetters {
 	 * @return \MvcCore\Request
 	 */
 	public function SetHost ($rawHost) {
-		/** @var $this \MvcCore\Request */
 		$this->host = $rawHost;
 		$this->domainUrl = NULL;
 		$this->baseUrl = NULL;
@@ -590,7 +555,6 @@ trait GettersSetters {
 	 * @return string
 	 */
 	public function GetHost () {
-		/** @var $this \MvcCore\Request */
 		if ($this->host === NULL) $this->host = $this->globalServer['HTTP_HOST'];
 		return $this->host;
 	}
@@ -601,7 +565,6 @@ trait GettersSetters {
 	 * @return \MvcCore\Request
 	 */
 	public function SetPort ($rawPort) {
-		/** @var $this \MvcCore\Request */
 		$this->port = $rawPort;
 		$this->domainUrl = NULL;
 		$this->baseUrl = NULL;
@@ -622,7 +585,6 @@ trait GettersSetters {
 	 * @return string
 	 */
 	public function GetPort () {
-		/** @var $this \MvcCore\Request */
 		if ($this->port === NULL) $this->initUrlSegments();
 		return $this->port;
 	}
@@ -633,7 +595,6 @@ trait GettersSetters {
 	 * @return \MvcCore\Request
 	 */
 	public function SetPath ($rawPathValue) {
-		/** @var $this \MvcCore\Request */
 		$this->path = $rawPathValue;
 		$this->requestUrl = NULL;
 		$this->requestPath = NULL;
@@ -647,7 +608,6 @@ trait GettersSetters {
 	 * @return string
 	 */
 	public function GetPath ($rawInput = FALSE) {
-		/** @var $this \MvcCore\Request */
 		if ($this->path === NULL)
 			$this->initUrlSegments();
 		return $rawInput ? $this->path : static::HtmlSpecialChars($this->path);
@@ -659,7 +619,6 @@ trait GettersSetters {
 	 * @return \MvcCore\Request
 	 */
 	public function SetQuery ($rawQuery) {
-		/** @var $this \MvcCore\Request */
 		$this->query = ltrim($rawQuery, '?');
 		$this->fullUrl = NULL;
 		$this->requestPath = NULL;
@@ -681,7 +640,6 @@ trait GettersSetters {
 	 * @return string
 	 */
 	public function GetQuery ($withQuestionMark = FALSE, $rawInput = FALSE) {
-		/** @var $this \MvcCore\Request */
 		if ($this->query === NULL)
 			$this->initUrlSegments();
 		$result = ($withQuestionMark && mb_strlen($this->query) > 0)
@@ -696,7 +654,6 @@ trait GettersSetters {
 	 * @return string
 	 */
 	public function GetRequestPath ($rawInput = FALSE) {
-		/** @var $this \MvcCore\Request */
 		if ($this->requestPath === NULL) {
 			$this->requestPath = $this->GetPath(TRUE) . $this->GetQuery(TRUE, TRUE) . $this->GetFragment(TRUE, TRUE);
 		}
@@ -708,7 +665,6 @@ trait GettersSetters {
 	 * @return string
 	 */
 	public function GetDomainUrl () {
-		/** @var $this \MvcCore\Request */
 		if ($this->domainUrl === NULL)
 			$this->domainUrl = $this->GetScheme() . '//' . $this->GetHost();
 		return $this->domainUrl;
@@ -719,7 +675,6 @@ trait GettersSetters {
 	 * @return string
 	 */
 	public function GetBaseUrl () {
-		/** @var $this \MvcCore\Request */
 		if ($this->baseUrl === NULL)
 			$this->baseUrl = $this->GetDomainUrl() . $this->GetBasePath();
 		return $this->baseUrl;
@@ -731,7 +686,6 @@ trait GettersSetters {
 	 * @return string
 	 */
 	public function GetRequestUrl ($rawInput = FALSE) {
-		/** @var $this \MvcCore\Request */
 		if ($this->requestUrl === NULL)
 			$this->requestUrl = $this->GetBaseUrl() . $this->GetPath(TRUE);
 		return $rawInput ? $this->requestUrl : static::HtmlSpecialChars($this->requestUrl);
@@ -743,7 +697,6 @@ trait GettersSetters {
 	 * @return string
 	 */
 	public function GetFullUrl ($rawInput = FALSE) {
-		/** @var $this \MvcCore\Request */
 		if ($this->fullUrl === NULL)
 			$this->fullUrl = $this->GetRequestUrl(TRUE) . $this->GetQuery(TRUE, TRUE) . $this->GetFragment(TRUE, TRUE);
 		return $rawInput ? $this->fullUrl : static::HtmlSpecialChars($this->fullUrl);
@@ -763,7 +716,6 @@ trait GettersSetters {
 	 * @return string
 	 */
 	public function GetFragment ($withHash = FALSE, $rawInput = FALSE) {
-		/** @var $this \MvcCore\Request */
 		if ($this->fragment === NULL)
 			$this->initUrlSegments();
 		$result = ($withHash && mb_strlen($this->fragment) > 0)
@@ -777,7 +729,6 @@ trait GettersSetters {
 	 * @return string
 	 */
 	public function GetServerIp () {
-		/** @var $this \MvcCore\Request */
 		if ($this->serverIp === NULL) {
 			$this->serverIp = (isset($this->globalServer['SERVER_ADDR'])
 				? $this->globalServer['SERVER_ADDR']
@@ -793,7 +744,6 @@ trait GettersSetters {
 	 * @return string
 	 */
 	public function GetClientIp () {
-		/** @var $this \MvcCore\Request */
 		if ($this->clientIp === NULL) {
 			$this->clientIp = (isset($this->globalServer['REMOTE_ADDR'])
 				? $this->globalServer['REMOTE_ADDR']
@@ -810,7 +760,6 @@ trait GettersSetters {
 	 * @return bool
 	 */
 	public function IsAjax () {
-		/** @var $this \MvcCore\Request */
 		if ($this->ajax === NULL) {
 			$rawHeader = isset($this->globalServer['HTTP_X_REQUESTED_WITH'])
 				? $this->globalServer['HTTP_X_REQUESTED_WITH']
@@ -825,7 +774,6 @@ trait GettersSetters {
 	 * @return int|NULL
 	 */
 	public function GetContentLength () {
-		/** @var $this \MvcCore\Request */
 		if ($this->contentLength === NULL) {
 			if (
 				isset($this->globalServer['CONTENT_LENGTH']) &&
@@ -846,7 +794,6 @@ trait GettersSetters {
 	 * @return string
 	 */
 	public function GetBody () {
-		/** @var $this \MvcCore\Request */
 		if ($this->body === NULL) $this->initBody();
 		return $this->body;
 	}

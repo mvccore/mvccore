@@ -13,6 +13,9 @@
 
 namespace MvcCore\Router;
 
+/**
+ * @mixin \MvcCore\Router
+ */
 trait UrlByQuery {
 
 	/**
@@ -23,7 +26,6 @@ trait UrlByQuery {
 	 * @return string
 	 */
 	public function UrlByQueryString ($controllerActionOrRouteName = 'Index:Index', array & $params = [], $givenRouteName = NULL) {
-		/** @var $this \MvcCore\Router */
 		if ($givenRouteName == 'self') {
 			$params = array_merge($this->requestedParams ?: [], $params);
 			if (isset($params[static::URL_PARAM_PATH])) {
@@ -58,7 +60,6 @@ trait UrlByQuery {
 	 * @return array
 	 */
 	protected function urlByQueryStringCompleteCtrlAction ($controllerActionOrRouteName, array & $params) {
-		/** @var $this \MvcCore\Router */
 		list($ctrlPc, $actionPc) = strpos($controllerActionOrRouteName, ':') !== FALSE
 			? explode(':', $controllerActionOrRouteName)
 			: [NULL, NULL];
@@ -87,7 +88,6 @@ trait UrlByQuery {
 	 * @return string
 	 */
 	protected function urlByQueryStringCompleteResult ($ctrlPc, $actionPc, array & $params) {
-		/** @var $this \MvcCore\Router */
 		$result = '';
 		$toolClass = self::$toolClass;
 		$amp = $this->getQueryStringParamsSepatator();
@@ -123,7 +123,6 @@ trait UrlByQuery {
 	 * @return boolean
 	 */
 	protected function urlGetAbsoluteParam (array & $params = []) {
-		/** @var $this \MvcCore\Router */
 		$absolute = FALSE;
 		$absoluteParamName = static::URL_PARAM_ABSOLUTE;
 		if ($params && isset($params[$absoluteParamName])) {

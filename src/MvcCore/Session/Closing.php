@@ -13,6 +13,9 @@
 
 namespace MvcCore\Session;
 
+/**
+ * @mixin \MvcCore\Session
+ */
 trait Closing {
 
 	/**

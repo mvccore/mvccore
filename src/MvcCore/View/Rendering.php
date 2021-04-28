@@ -13,6 +13,9 @@
 
 namespace MvcCore\View;
 
+/**
+ * @mixin \MvcCore\View
+ */
 trait Rendering {
 
 	/**
@@ -21,7 +24,6 @@ trait Rendering {
 	 * @return string
 	 */
 	public function RenderScript ($relativePath) {
-		/** @var $this \MvcCore\View */
 		return $this->Render(static::$scriptsDir, $relativePath);
 	}
 
@@ -31,7 +33,6 @@ trait Rendering {
 	 * @return string
 	 */
 	public function RenderLayout ($relativePath) {
-		/** @var $this \MvcCore\View */
 		return $this->Render(static::$layoutsDir, $relativePath);
 	}
 
@@ -43,7 +44,6 @@ trait Rendering {
 	 * @return string
 	 */
 	public function RenderLayoutAndContent ($relativePath, & $content = NULL) {
-		/** @var $this \MvcCore\View */
 		if ($relativePath === NULL) return $content; // no layout defined
 		$this->__protected['content'] = & $content;
 		return $this->Render(static::$layoutsDir, $relativePath);
@@ -55,7 +55,6 @@ trait Rendering {
 	 * @return \MvcCore\View
 	 */
 	public function SetUpRender ($renderMode = \MvcCore\IView::RENDER_WITH_OB_FROM_ACTION_TO_LAYOUT, $controllerOrActionNameDashed = NULL, $actionNameDashed = NULL) {
-		/** @var $this \MvcCore\View */
 		$this->__protected['renderArgs'] = func_get_args();
 		// initialize helpers before rendering:
 		$helpers = & $this->__protected['helpers'];
@@ -92,7 +91,6 @@ trait Rendering {
 	 * @return string
 	 */
 	public function Render ($typePath, $relativePath) {
-		/** @var $this \MvcCore\View */
 		if (!$typePath)
 			$typePath = static::$scriptsDir;
 		$relativePath = $this->correctRelativePath(
@@ -147,7 +145,6 @@ trait Rendering {
 	 * @return string
 	 */
 	public static function GetViewScriptFullPath ($typePath = '', $corectedRelativePath = '') {
-		/** @var $this \MvcCore\View */
 		if (static::$viewScriptsFullPathBase === NULL)
 			static::initViewScriptsFullPathBase();
 		return implode('/', [
@@ -164,7 +161,6 @@ trait Rendering {
 	 * @return \MvcCore\View
 	 */
 	public function SetUpStore (\MvcCore\IView $view, $overwriteExistingKeys = TRUE) {
-		/** @var $this \MvcCore\View */
 		$currentStore = & $this->__protected['store'];
 		$viewStore = & $view->__protected['store'];
 		if ($overwriteExistingKeys) {
@@ -182,7 +178,6 @@ trait Rendering {
 	 * @return string
 	 */
 	public function GetContent () {
-		/** @var $this \MvcCore\View */
 		list(
 			$renderMode,
 			$controllerOrActionNameDashed,
@@ -198,7 +193,7 @@ trait Rendering {
 			);
 			// render action view into string
 			$viewClass = $this->controller->GetApplication()->GetViewClass();
-			/** @var $layout \MvcCore\View */
+			/** @var \MvcCore\View $layout */
 			$actionView = $viewClass::CreateInstance()
 				->SetController($this->controller)
 				->SetUpStore($this, TRUE)
@@ -215,7 +210,6 @@ trait Rendering {
 	 * @return string
 	 */
 	public function Evaluate ($content) {
-		/** @var $this \MvcCore\View */
 		if ($content === NULL || mb_strlen(strval($content)) === 0)
 			return '';
 		ob_start();
@@ -236,44 +230,36 @@ trait Rendering {
 	 * @return void
 	 */
 	protected function setUpRenderBuildInHelpers (& $helpers) {
-		/** @var $this \MvcCore\View */
 		$router = $this->controller->GetRouter();
 		$helpers += [
 			'url' => function ($controllerActionOrRouteName = 'Index:Index', array $params = []) use (& $router) {
-				/** @var $router \MvcCore\Router */
+				/** @var \MvcCore\Router $router */
 				return $router->Url($controllerActionOrRouteName, $params);
 			},
 			'assetUrl' => function ($path = '') use (& $router) {
-				/** @var $router \MvcCore\Router */
+				/** @var \MvcCore\Router $router */
 				return $router->Url('Controller:Asset', ['path' => $path]);
 			},
 			'escape' => function ($str, $encoding = 'UTF-8') {
-				/** @var $this \MvcCore\View */
-				return $this->Escape($str, $encoding);
+						return $this->Escape($str, $encoding);
 			},
 			'escapeHtml' => function ($str, $encoding = 'UTF-8') {
-				/** @var $this \MvcCore\View */
-				return $this->EscapeHtml($str, $encoding);
+						return $this->EscapeHtml($str, $encoding);
 			},
 			'escapeAttr' => function ($str, $double = TRUE, $encoding = 'UTF-8') {
-				/** @var $this \MvcCore\View */
-				return $this->EscapeAttr($str, $double, $encoding);
+						return $this->EscapeAttr($str, $double, $encoding);
 			},
 			'escapeXml' => function ($str, $encoding = 'UTF-8') {
-				/** @var $this \MvcCore\View */
-				return $this->EscapeXml($str, $encoding);
+						return $this->EscapeXml($str, $encoding);
 			},
 			'escapeJs' => function ($str, $flags = 0, $depth = 512) {
-				/** @var $this \MvcCore\View */
-				return $this->EscapeJs($str, $flags, $depth);
+						return $this->EscapeJs($str, $flags, $depth);
 			},
 			'escapeCss' => function ($str) {
-				/** @var $this \MvcCore\View */
-				return $this->EscapeCss($str);
+						return $this->EscapeCss($str);
 			},
 			'escapeICal' => function ($str) {
-				/** @var $this \MvcCore\View */
-				return $this->EscapeICal($str);
+						return $this->EscapeICal($str);
 			},
 		];
 	}

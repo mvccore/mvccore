@@ -13,6 +13,9 @@
 
 namespace MvcCore\Config;
 
+/**
+ * @mixin \MvcCore\Config
+ */
 trait IniDump {
 
 	/**
@@ -20,7 +23,6 @@ trait IniDump {
 	 * @return string
 	 */
 	public function Dump () {
-		/** @var $this \MvcCore\Config */
 		$environmentNames = array_keys($this->mergedData);
 		// Split merged data into environment specific and common environment collections:
 		static::dumpSplitData($this, $environmentNames);

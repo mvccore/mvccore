@@ -13,6 +13,9 @@
 
 namespace MvcCore\View;
 
+/**
+ * @mixin \MvcCore\View
+ */
 trait GettersSetters {
 
 	/**
@@ -20,7 +23,7 @@ trait GettersSetters {
 	 * @return \MvcCore\View
 	 */
 	public static function CreateInstance () {
-		/** @var $result \MvcCore\View */
+		/** @var \MvcCore\View $result */
 		$result = new static();
 		return $result;
 	}
@@ -99,7 +102,6 @@ trait GettersSetters {
 	 * @return \MvcCore\View
 	 */
 	public function SetController (\MvcCore\IController $controller) {
-		/** @var $this \MvcCore\View */
 		$this->controller = $controller;
 		return $this;
 	}
@@ -109,7 +111,6 @@ trait GettersSetters {
 	 * @return \MvcCore\Controller
 	 */
 	public function GetController () {
-		/** @var $this \MvcCore\View */
 		return $this->controller;
 	}
 }

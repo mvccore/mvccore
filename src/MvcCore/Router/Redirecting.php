@@ -13,6 +13,9 @@
 
 namespace MvcCore\Router;
 
+/**
+ * @mixin \MvcCore\Router
+ */
 trait Redirecting {
 
 	/**
@@ -23,7 +26,6 @@ trait Redirecting {
 	 * @return bool
 	 */
 	protected function redirectToProperTrailingSlashIfNecessary () {
-		/** @var $this \MvcCore\Router */
 		if (!$this->trailingSlashBehaviour) return TRUE;
 		// path is still not modified by media or localization router in this moment
 		$path = $this->request->GetPath();
@@ -75,7 +77,6 @@ trait Redirecting {
 	 * @return void
 	 */
 	protected function redirect ($url, $code = 301, $reason = NULL) {
-		/** @var $this \MvcCore\Router */
 		$app = \MvcCore\Application::GetInstance();
 		$response = $app->GetResponse();
 		$response

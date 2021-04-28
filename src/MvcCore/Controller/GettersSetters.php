@@ -13,6 +13,9 @@
 
 namespace MvcCore\Controller;
 
+/**
+ * @mixin \MvcCore\Controller
+ */
 trait GettersSetters {
 
 	/**
@@ -29,7 +32,6 @@ trait GettersSetters {
 		$ifNullValue = NULL,
 		$targetType = NULL
 	) {
-		/** @var $this \MvcCore\Controller */
 		return $this->request->GetParam(
 			$name, $pregReplaceAllowedChars, $ifNullValue, $targetType
 		);
@@ -40,7 +42,6 @@ trait GettersSetters {
 	 * @return \MvcCore\Application
 	 */
 	public function GetApplication () {
-		/** @var $this \MvcCore\Controller */
 		return $this->application;
 	}
 
@@ -50,8 +51,7 @@ trait GettersSetters {
 	 * @return \MvcCore\Controller
 	 */
 	public function SetApplication (\MvcCore\IApplication $application) {
-		/** @var $this \MvcCore\Controller */
-		/** @var $application \MvcCore\Application */
+		/** @var \MvcCore\Application $application */
 		$this->application = $application;
 		return $this;
 	}
@@ -61,7 +61,6 @@ trait GettersSetters {
 	 * @return \MvcCore\Environment
 	 */
 	public function GetEnvironment() {
-		/** @var $this \MvcCore\Controller */
 		return $this->environment;
 	}
 
@@ -71,8 +70,7 @@ trait GettersSetters {
 	 * @return \MvcCore\Controller
 	 */
 	public function SetEnvironment (\MvcCore\IEnvironment $environment) {
-		/** @var $this \MvcCore\Controller */
-		/** @var $environment \MvcCore\Environment */
+		/** @var \MvcCore\Environment $environment */
 		$this->environment = $environment;
 		return $this;
 	}
@@ -82,7 +80,6 @@ trait GettersSetters {
 	 * @return \MvcCore\Request
 	 */
 	public function GetRequest () {
-		/** @var $this \MvcCore\Controller */
 		return $this->request;
 	}
 
@@ -92,8 +89,7 @@ trait GettersSetters {
 	 * @return \MvcCore\Controller
 	 */
 	public function SetRequest (\MvcCore\IRequest $request) {
-		/** @var $this \MvcCore\Controller */
-		/** @var $request \MvcCore\Request */
+		/** @var \MvcCore\Request $request */
 		$this->request = $request;
 		$this->controllerName = ltrim($request->GetControllerName(), '/');
 		$this->actionName = $request->GetActionName();
@@ -106,7 +102,6 @@ trait GettersSetters {
 	 * @return string
 	 */
 	public function GetControllerName () {
-		/** @var $this \MvcCore\Controller */
 		return $this->controllerName;
 	}
 
@@ -116,7 +111,6 @@ trait GettersSetters {
 	 * @return \MvcCore\Controller
 	 */
 	public function SetControllerName ($controllerName) {
-		/** @var $this \MvcCore\Controller */
 		$this->controllerName = $controllerName;
 		return $this;
 	}
@@ -126,7 +120,6 @@ trait GettersSetters {
 	 * @return string
 	 */
 	public function GetActionName () {
-		/** @var $this \MvcCore\Controller */
 		return $this->actionName;
 	}
 
@@ -136,7 +129,6 @@ trait GettersSetters {
 	 * @return \MvcCore\Controller
 	 */
 	public function SetActionName ($actionName) {
-		/** @var $this \MvcCore\Controller */
 		$this->actionName = $actionName;
 		return $this;
 	}
@@ -146,7 +138,6 @@ trait GettersSetters {
 	 * @return \MvcCore\Response
 	 */
 	public function GetResponse () {
-		/** @var $this \MvcCore\Controller */
 		return $this->response;
 	}
 
@@ -156,8 +147,7 @@ trait GettersSetters {
 	 * @return \MvcCore\Controller
 	 */
 	public function SetResponse (\MvcCore\IResponse $response) {
-		/** @var $this \MvcCore\Controller */
-		/** @var $response \MvcCore\Response */
+		/** @var \MvcCore\Response $response */
 		$this->response = $response;
 		return $this;
 	}
@@ -167,7 +157,6 @@ trait GettersSetters {
 	 * @return \MvcCore\Router
 	 */
 	public function GetRouter () {
-		/** @var $this \MvcCore\Controller */
 		return $this->router;
 	}
 
@@ -177,8 +166,7 @@ trait GettersSetters {
 	 * @return \MvcCore\Controller
 	 */
 	public function SetRouter (\MvcCore\IRouter $router) {
-		/** @var $this \MvcCore\Controller */
-		/** @var $router \MvcCore\Router */
+		/** @var \MvcCore\Router $router */
 		$this->router = $router;
 		return $this;
 	}
@@ -188,7 +176,6 @@ trait GettersSetters {
 	 * @return boolean
 	 */
 	public function IsAjax () {
-		/** @var $this \MvcCore\Controller */
 		return $this->ajax;
 	}
 	
@@ -198,7 +185,6 @@ trait GettersSetters {
 	 * @return \MvcCore\Controller
 	 */
 	public function SetIsAjax ($ajax) {
-		/** @var $this \MvcCore\Controller */
 		$this->ajax = $ajax;
 		return $this;
 	}
@@ -208,7 +194,6 @@ trait GettersSetters {
 	 * @return int
 	 */
 	public function GetDispatchState () {
-		/** @var $this \MvcCore\Controller */
 		return $this->dispatchState;
 	}
 
@@ -218,7 +203,6 @@ trait GettersSetters {
 	 * @return \MvcCore\Controller
 	 */
 	public function SetDispatchState ($dispatchState) {
-		/** @var $this \MvcCore\Controller */
 		$this->dispatchState = $dispatchState;
 		return $this;
 	}
@@ -228,7 +212,6 @@ trait GettersSetters {
 	 * @return \MvcCore\Model
 	 */
 	public function GetUser () {
-		/** @var $this \MvcCore\Controller */
 		return $this->user;
 	}
 
@@ -238,7 +221,6 @@ trait GettersSetters {
 	 * @return \MvcCore\Controller
 	 */
 	public function SetUser ($user) {
-		/** @var $this \MvcCore\Controller */
 		$this->user = $user;
 		return $this;
 	}
@@ -248,7 +230,6 @@ trait GettersSetters {
 	 * @return \MvcCore\View|NULL
 	 */
 	public function GetView () {
-		/** @var $this \MvcCore\Controller */
 		return $this->view;
 	}
 
@@ -258,8 +239,7 @@ trait GettersSetters {
 	 * @return \MvcCore\Controller
 	 */
 	public function SetView (\MvcCore\IView $view) {
-		/** @var $this \MvcCore\Controller */
-		/** @var $view \MvcCore\View */
+		/** @var \MvcCore\View $view */
 		$this->view = $view;
 		return $this;
 	}
@@ -269,7 +249,6 @@ trait GettersSetters {
 	 * @return int
 	 */
 	public function GetRenderMode () {
-		/** @var $this \MvcCore\Controller */
 		return $this->renderMode;
 	}
 
@@ -279,7 +258,6 @@ trait GettersSetters {
 	 * @return \MvcCore\Controller
 	 */
 	public function SetRenderMode ($renderMode = \MvcCore\IView::RENDER_WITH_OB_FROM_ACTION_TO_LAYOUT) {
-		/** @var $this \MvcCore\Controller */
 		$this->renderMode = $renderMode;
 		return $this;
 	}
@@ -289,7 +267,6 @@ trait GettersSetters {
 	 * @return string
 	 */
 	public function GetLayout () {
-		/** @var $this \MvcCore\Controller */
 		return $this->layout;
 	}
 
@@ -299,7 +276,6 @@ trait GettersSetters {
 	 * @return \MvcCore\Controller
 	 */
 	public function SetLayout ($layout = '') {
-		/** @var $this \MvcCore\Controller */
 		$this->layout = $layout;
 		return $this;
 	}
@@ -309,7 +285,6 @@ trait GettersSetters {
 	 * @return string|NULL
 	 */
 	public function GetViewScriptsPath () {
-		/** @var $this \MvcCore\Controller */
 		return $this->viewScriptsPath;
 	}
 
@@ -319,7 +294,6 @@ trait GettersSetters {
 	 * @return \MvcCore\Controller
 	 */
 	public function SetViewScriptsPath ($viewScriptsPath = NULL) {
-		/** @var $this \MvcCore\Controller */
 		$this->viewScriptsPath = $viewScriptsPath;
 		return $this;
 	}
@@ -329,7 +303,6 @@ trait GettersSetters {
 	 * @return bool
 	 */
 	public function GetViewEnabled () {
-		/** @var $this \MvcCore\Controller */
 		return $this->viewEnabled;
 	}
 
@@ -339,7 +312,6 @@ trait GettersSetters {
 	 * @return \MvcCore\Controller
 	 */
 	public function SetViewEnabled ($viewEnabled = TRUE) {
-		/** @var $this \MvcCore\Controller */
 		$this->viewEnabled = $viewEnabled;
 		return $this;
 	}
@@ -349,7 +321,6 @@ trait GettersSetters {
 	 * @return \MvcCore\Controller|NULL
 	 */
 	public function GetParentController () {
-		/** @var $this \MvcCore\Controller */
 		return $this->parentController;
 	}
 
@@ -359,8 +330,7 @@ trait GettersSetters {
 	 * @return \MvcCore\Controller
 	 */
 	public function SetParentController (\MvcCore\IController $parentController = NULL) {
-		/** @var $this \MvcCore\Controller */
-		/** @var $parentController \MvcCore\Controller */
+		/** @var \MvcCore\Controller $parentController */
 		$this->parentController = $parentController;
 		return $this;
 	}
@@ -370,7 +340,6 @@ trait GettersSetters {
 	 * @return \MvcCore\Controller[]
 	 */
 	public function GetChildControllers () {
-		/** @var $this \MvcCore\Controller */
 		return $this->childControllers;
 	}
 
@@ -380,7 +349,6 @@ trait GettersSetters {
 	 * @return \MvcCore\Controller
 	 */
 	public function SetChildControllers (array $childControllers = []) {
-		/** @var $this \MvcCore\Controller */
 		$this->childControllers = $childControllers;
 		return $this;
 	}
@@ -391,7 +359,6 @@ trait GettersSetters {
 	 * @return \MvcCore\Controller
 	 */
 	public function GetChildController ($index = NULL) {
-		/** @var $this \MvcCore\Controller */
 		return $this->childControllers[$index];
 	}
 
@@ -401,7 +368,6 @@ trait GettersSetters {
 	 * @return \MvcCore\Config|NULL
 	 */
 	public function GetConfig ($appRootRelativePath) {
-		/** @var $this \MvcCore\Controller */
 		$configClass = $this->application->GetConfigClass();
 		return $configClass::GetConfig($appRootRelativePath);
 	}
@@ -411,7 +377,6 @@ trait GettersSetters {
 	 * @return \MvcCore\Config|NULL
 	 */
 	public function GetSystemConfig () {
-		/** @var $this \MvcCore\Controller */
 		$configClass = $this->application->GetConfigClass();
 		return $configClass::GetSystem();
 	}
@@ -423,7 +388,6 @@ trait GettersSetters {
 	 * @return string
 	 */
 	public function Url ($controllerActionOrRouteName = 'Index:Index', array $params = []) {
-		/** @var $this \MvcCore\Controller */
 		return $this->router->Url($controllerActionOrRouteName, $params);
 	}
 
@@ -433,7 +397,6 @@ trait GettersSetters {
 	 * @return string
 	 */
 	public function AssetUrl ($path = '') {
-		/** @var $this \MvcCore\Controller */
 		return $this->router->Url('Controller:Asset', ['path' => $path]);
 	}
 }
