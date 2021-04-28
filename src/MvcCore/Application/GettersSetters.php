@@ -19,6 +19,7 @@ namespace MvcCore\Application;
  * - MvcCore compile mode managing (single file mode, php, phar, or no package).
  * - Global store for all main core class names, to use them as modules,
  *   to be changed any time (request class, response class, debug class, etc.).
+ * @mixin \MvcCore\Application
  */
 trait GettersSetters {
 
@@ -28,10 +29,20 @@ trait GettersSetters {
 
 	/**
 	 * @inheritDocs
+	 * @param  string $propName 
+	 * @return mixed
+	 */
+	public function __get ($propName) {
+		if (isset($this->{$propName}))
+			return $this->{$propName};
+		return NULL;
+	}
+
+	/**
+	 * @inheritDocs
 	 * @return string
 	 */
 	public function GetCompiled () {
-		/** @var $this \MvcCore\Application */
 		if ($this->compiled === NULL) {
 			$compiled = static::NOT_COMPILED;
 			if (strlen(\Phar::running()) > 0) {
@@ -50,7 +61,6 @@ trait GettersSetters {
 	 * @return \MvcCore\Environment|string
 	 */
 	public function GetEnvironmentClass () {
-		/** @var $this \MvcCore\Application */
 		return $this->environmentClass;
 	}
 
@@ -59,7 +69,6 @@ trait GettersSetters {
 	 * @return \MvcCore\Config|string
 	 */
 	public function GetConfigClass () {
-		/** @var $this \MvcCore\Application */
 		return $this->configClass;
 	}
 
@@ -68,7 +77,6 @@ trait GettersSetters {
 	 * @return \MvcCore\Controller|string
 	 */
 	public function GetControllerClass () {
-		/** @var $this \MvcCore\Application */
 		return $this->controllerClass;
 	}
 
@@ -77,7 +85,6 @@ trait GettersSetters {
 	 * @return \MvcCore\Debug|string
 	 */
 	public function GetDebugClass () {
-		/** @var $this \MvcCore\Application */
 		return $this->debugClass;
 	}
 
@@ -86,7 +93,6 @@ trait GettersSetters {
 	 * @return \MvcCore\Request|string
 	 */
 	public function GetRequestClass () {
-		/** @var $this \MvcCore\Application */
 		return $this->requestClass;
 	}
 
@@ -95,7 +101,6 @@ trait GettersSetters {
 	 * @return \MvcCore\Response|string
 	 */
 	public function GetResponseClass () {
-		/** @var $this \MvcCore\Application */
 		return $this->responseClass;
 	}
 
@@ -104,7 +109,6 @@ trait GettersSetters {
 	 * @return \MvcCore\Route|string
 	 */
 	public function GetRouteClass () {
-		/** @var $this \MvcCore\Application */
 		return $this->routeClass;
 	}
 
@@ -113,7 +117,6 @@ trait GettersSetters {
 	 * @return \MvcCore\Router|string
 	 */
 	public function GetRouterClass () {
-		/** @var $this \MvcCore\Application */
 		return $this->routerClass;
 	}
 
@@ -122,7 +125,6 @@ trait GettersSetters {
 	 * @return \MvcCore\Session|string
 	 */
 	public function GetSessionClass () {
-		/** @var $this \MvcCore\Application */
 		return $this->sessionClass;
 	}
 
@@ -131,7 +133,6 @@ trait GettersSetters {
 	 * @return \MvcCore\Tool|string
 	 */
 	public function GetToolClass () {
-		/** @var $this \MvcCore\Application */
 		return $this->toolClass;
 	}
 
@@ -140,7 +141,6 @@ trait GettersSetters {
 	 * @return \MvcCore\View|string
 	 */
 	public function GetViewClass () {
-		/** @var $this \MvcCore\Application */
 		return $this->viewClass;
 	}
 
@@ -149,7 +149,6 @@ trait GettersSetters {
 	 * @var \MvcCore\Environment
 	 */
 	public function GetEnvironment () {
-		/** @var $this \MvcCore\Application */
 		if ($this->environment === NULL) {
 			$environmentClass = $this->environmentClass;
 			$this->environment = $environmentClass::CreateInstance();
@@ -162,7 +161,6 @@ trait GettersSetters {
 	 * @return \MvcCore\Controller
 	 */
 	public function GetController () {
-		/** @var $this \MvcCore\Application */
 		return $this->controller;
 	}
 
@@ -171,7 +169,6 @@ trait GettersSetters {
 	 * @return \MvcCore\Request
 	 */
 	public function GetRequest () {
-		/** @var $this \MvcCore\Application */
 		if ($this->request === NULL) {
 			$requestClass = $this->requestClass;
 			$this->request = $requestClass::CreateInstance();
@@ -184,7 +181,6 @@ trait GettersSetters {
 	 * @return \MvcCore\Response
 	 */
 	public function GetResponse () {
-		/** @var $this \MvcCore\Application */
 		if ($this->response === NULL) {
 			$responseClass = $this->responseClass;
 			$this->response = $responseClass::CreateInstance();
@@ -197,7 +193,6 @@ trait GettersSetters {
 	 * @return \MvcCore\Router
 	 */
 	public function GetRouter () {
-		/** @var $this \MvcCore\Application */
 		if ($this->router === NULL) {
 			$routerClass = $this->routerClass;
 			$this->router = $routerClass::GetInstance();
@@ -210,7 +205,6 @@ trait GettersSetters {
 	 * @return string
 	 */
 	public function GetAppDir () {
-		/** @var $this \MvcCore\Application */
 		return $this->appDir;
 	}
 
@@ -219,7 +213,6 @@ trait GettersSetters {
 	 * @return string
 	 */
 	public function GetControllersDir () {
-		/** @var $this \MvcCore\Application */
 		return $this->controllersDir;
 	}
 
@@ -228,7 +221,6 @@ trait GettersSetters {
 	 * @return string
 	 */
 	public function GetViewsDir () {
-		/** @var $this \MvcCore\Application */
 		return $this->viewsDir;
 	}
 
@@ -237,7 +229,6 @@ trait GettersSetters {
 	 * @return \string[]
 	 */
 	public function GetDefaultControllerAndActionNames () {
-		/** @var $this \MvcCore\Application */
 		return [$this->defaultControllerName, $this->defaultControllerDefaultActionName];
 	}
 
@@ -252,7 +243,6 @@ trait GettersSetters {
 	 * @return \MvcCore\Application
 	 */
 	public function SetCompiled ($compiled = '') {
-		/** @var $this \MvcCore\Application */
 		$this->compiled = $compiled;
 		return $this;
 	}
@@ -264,7 +254,6 @@ trait GettersSetters {
 	 * @return \MvcCore\Application
 	 */
 	public function SetEnvironmentClass ($environmentClass) {
-		/** @var $this \MvcCore\Application */
 		return $this->setCoreClass($environmentClass, 'environmentClass', 'MvcCore\IEnvironment');
 	}
 
@@ -274,7 +263,6 @@ trait GettersSetters {
 	 * @return \MvcCore\Application
 	 */
 	public function SetConfigClass ($configClass) {
-		/** @var $this \MvcCore\Application */
 		return $this->setCoreClass($configClass, 'configClass', 'MvcCore\IConfig');
 	}
 
@@ -284,7 +272,6 @@ trait GettersSetters {
 	 * @return \MvcCore\Application
 	 */
 	public function SetControllerClass ($controllerClass) {
-		/** @var $this \MvcCore\Application */
 		return $this->setCoreClass($controllerClass, 'controllerClass', 'MvcCore\IController');
 	}
 
@@ -294,7 +281,6 @@ trait GettersSetters {
 	 * @return \MvcCore\Application
 	 */
 	public function SetDebugClass ($debugClass) {
-		/** @var $this \MvcCore\Application */
 		return $this->setCoreClass($debugClass, 'debugClass', 'MvcCore\IDebug');
 	}
 
@@ -304,7 +290,6 @@ trait GettersSetters {
 	 * @return \MvcCore\Application
 	 */
 	public function SetRequestClass ($requestClass) {
-		/** @var $this \MvcCore\Application */
 		return $this->setCoreClass($requestClass, 'requestClass', 'MvcCore\IRequest');
 	}
 
@@ -314,7 +299,6 @@ trait GettersSetters {
 	 * @return \MvcCore\Application
 	 */
 	public function SetResponseClass ($responseClass) {
-		/** @var $this \MvcCore\Application */
 		return $this->setCoreClass($responseClass, 'responseClass', 'MvcCore\IResponse');
 	}
 
@@ -324,7 +308,6 @@ trait GettersSetters {
 	 * @return \MvcCore\Application
 	 */
 	public function SetRouteClass ($routeClass) {
-		/** @var $this \MvcCore\Application */
 		return $this->setCoreClass($routeClass, 'routeClass', 'MvcCore\IRoute');
 	}
 
@@ -334,7 +317,6 @@ trait GettersSetters {
 	 * @return \MvcCore\Application
 	 */
 	public function SetRouterClass ($routerClass) {
-		/** @var $this \MvcCore\Application */
 		return $this->setCoreClass($routerClass, 'routerClass', 'MvcCore\IRouter');
 	}
 
@@ -344,7 +326,6 @@ trait GettersSetters {
 	 * @return \MvcCore\Application
 	 */
 	public function SetSessionClass ($sessionClass) {
-		/** @var $this \MvcCore\Application */
 		return $this->setCoreClass($sessionClass, 'sessionClass', 'MvcCore\ISession');
 	}
 
@@ -354,7 +335,6 @@ trait GettersSetters {
 	 * @return \MvcCore\Application
 	 */
 	public function SetToolClass ($toolClass) {
-		/** @var $this \MvcCore\Application */
 		return $this->setCoreClass($toolClass, 'toolClass', 'MvcCore\ITool');
 	}
 
@@ -364,7 +344,6 @@ trait GettersSetters {
 	 * @return \MvcCore\Application
 	 */
 	public function SetViewClass ($viewClass) {
-		/** @var $this \MvcCore\Application */
 		return $this->setCoreClass($viewClass, 'viewClass', 'MvcCore\IView');
 	}
 
@@ -375,7 +354,6 @@ trait GettersSetters {
 	 * @return \MvcCore\Application
 	 */
 	public function SetController (\MvcCore\IController $controller) {
-		/** @var $this \MvcCore\Application */
 		$this->controller = $controller;
 		return $this;
 	}
@@ -387,7 +365,6 @@ trait GettersSetters {
 	 * @return \MvcCore\Application
 	 */
 	public function SetAppDir ($appDir) {
-		/** @var $this \MvcCore\Application */
 		$this->appDir = $appDir;
 		return $this;
 	}
@@ -398,7 +375,6 @@ trait GettersSetters {
 	 * @return \MvcCore\Application
 	 */
 	public function SetControllersDir ($controllersDir) {
-		/** @var $this \MvcCore\Application */
 		$this->controllersDir = $controllersDir;
 		return $this;
 	}
@@ -409,7 +385,6 @@ trait GettersSetters {
 	 * @return \MvcCore\Application
 	 */
 	public function SetViewsDir ($viewsDir) {
-		/** @var $this \MvcCore\Application */
 		$this->viewsDir = $viewsDir;
 		return $this;
 	}
@@ -420,7 +395,6 @@ trait GettersSetters {
 	 * @return \MvcCore\Application
 	 */
 	public function SetDefaultControllerName ($defaultControllerName) {
-		/** @var $this \MvcCore\Application */
 		$this->defaultControllerName = $defaultControllerName;
 		return $this;
 	}
@@ -431,7 +405,6 @@ trait GettersSetters {
 	 * @return \MvcCore\Application
 	 */
 	public function SetDefaultControllerDefaultActionName ($defaultActionName) {
-		/** @var $this \MvcCore\Application */
 		$this->defaultControllerDefaultActionName = $defaultActionName;
 		return $this;
 	}
@@ -442,7 +415,6 @@ trait GettersSetters {
 	 * @return \MvcCore\Application
 	 */
 	public function SetDefaultControllerErrorActionName ($defaultControllerErrorActionName) {
-		/** @var $this \MvcCore\Application */
 		$this->defaultControllerErrorActionName = $defaultControllerErrorActionName;
 		return $this;
 	}
@@ -453,7 +425,6 @@ trait GettersSetters {
 	 * @return \MvcCore\Application
 	 */
 	public function SetDefaultControllerNotFoundActionName ($defaultControllerNotFoundActionName) {
-		/** @var $this \MvcCore\Application */
 		$this->defaultControllerNotFoundActionName = $defaultControllerNotFoundActionName;
 		return $this;
 	}
@@ -465,7 +436,6 @@ trait GettersSetters {
 	 * @return \MvcCore\Application
 	 */
 	public function AddPreRouteHandler (callable $handler, $priorityIndex = NULL) {
-		/** @var $this \MvcCore\Application */
 		if (!is_callable($handler))
 			throw new \InvalidArgumentException(
 				"[".get_class()."] Pre route handler is not callable (handler: {$handler}, priorityIndex: {$priorityIndex})."
@@ -480,7 +450,6 @@ trait GettersSetters {
 	 * @return \MvcCore\Application
 	 */
 	public function AddPostRouteHandler (callable $handler, $priorityIndex = NULL) {
-		/** @var $this \MvcCore\Application */
 		if (!is_callable($handler))
 			throw new \InvalidArgumentException(
 				"[".get_class()."] Post route handler is not callable (handler: {$handler}, priorityIndex: {$priorityIndex})."
@@ -494,8 +463,35 @@ trait GettersSetters {
 	 * @param  int|NULL $priorityIndex
 	 * @return \MvcCore\Application
 	 */
+	public function AddPreSentHeadersHandler (callable $handler, $priorityIndex = NULL) {
+		if (!is_callable($handler))
+			throw new \InvalidArgumentException(
+				"[".get_class()."] Pre sent headers handler is not callable (handler: {$handler}, priorityIndex: {$priorityIndex})."
+			);
+		return $this->setHandler($this->preSentHeadersHandlers, $handler, $priorityIndex);
+	}
+
+	/**
+	 * @inheritDocs
+	 * @param  callable $handler
+	 * @param  int|NULL $priorityIndex
+	 * @return \MvcCore\Application
+	 */
+	public function AddPreSentBodyHandler (callable $handler, $priorityIndex = NULL) {
+		if (!is_callable($handler))
+			throw new \InvalidArgumentException(
+				"[".get_class()."] Pre sent body handler is not callable (handler: {$handler}, priorityIndex: {$priorityIndex})."
+			);
+		return $this->setHandler($this->preSentBodyHandlers, $handler, $priorityIndex);
+	}
+
+	/**
+	 * @inheritDocs
+	 * @param  callable $handler
+	 * @param  int|NULL $priorityIndex
+	 * @return \MvcCore\Application
+	 */
 	public function AddPreDispatchHandler (callable $handler, $priorityIndex = NULL) {
-		/** @var $this \MvcCore\Application */
 		if (!is_callable($handler))
 			throw new \InvalidArgumentException(
 				"[".get_class()."] Pre dispatch handler is not callable (handler: {$handler}, priorityIndex: {$priorityIndex})."
@@ -510,7 +506,6 @@ trait GettersSetters {
 	 * @return \MvcCore\Application
 	 */
 	public function AddPostDispatchHandler (callable $handler, $priorityIndex = NULL) {
-		/** @var $this \MvcCore\Application */
 		if (!is_callable($handler))
 			throw new \InvalidArgumentException(
 				"[".get_class()."] Post dispatch handler is not callable (handler: {$handler}, priorityIndex: {$priorityIndex})."
@@ -525,7 +520,6 @@ trait GettersSetters {
 	 * @return \MvcCore\Application
 	 */
 	public function AddPostTerminateHandler (callable $handler, $priorityIndex = NULL) {
-		/** @var $this \MvcCore\Application */
 		if (!is_callable($handler))
 			throw new \InvalidArgumentException(
 				"[".get_class()."] Post terminate handler is not callable (handler: {$handler}, priorityIndex: {$priorityIndex})."

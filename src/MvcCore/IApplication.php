@@ -44,6 +44,13 @@ interface IApplication extends \MvcCore\Application\IConstants {
 	 ***********************************************************************************/
 
 	/**
+	 * Return internal property in raw form.
+	 * @param  string $propName 
+	 * @return mixed
+	 */
+	public function __get ($propName);
+
+	/**
 	 * Get if application is running as standard php project or as single file application.
 	 * It should has values from:
 	 * - `\MvcCore\IApplication::COMPILED_PHP`
@@ -462,6 +469,49 @@ interface IApplication extends \MvcCore\Application\IConstants {
 	 * @return \MvcCore\Application
 	 */
 	public function AddPreDispatchHandler (callable $handler, $priorityIndex = NULL);
+
+	/**
+	 * Pre sent headers custom calls storage.
+	 * Handlers are not executed if request is via CLI.
+	 * Every item in this array has to be `callable`.
+	 * Params in `callable` should be two with following types:
+	 * - `\MvcCore\Request`
+	 * - `\MvcCore\Response`
+	 * Example:
+	 * ````
+	 *   \MvcCore\Application::GetInstance()->AddPreSentHeadersHandler(function(
+	 *       \MvcCore\Request $request,
+	 *       \MvcCore\Response $response
+	 *   ) {
+	 *       $request->customVar = 'custom_value';
+	 *   });
+	 * ````
+	 * @param  callable $handler
+	 * @param  int|NULL $priorityIndex
+	 * @return \MvcCore\Application
+	 */
+	public function AddPreSentHeadersHandler (callable $handler, $priorityIndex = NULL);
+
+	/**
+	 * Add pre sent body custom calls storage.
+	 * Every item in this array has to be `callable`.
+	 * Params in `callable` should be two with following types:
+	 * - `\MvcCore\Request`
+	 * - `\MvcCore\Response`
+	 * Example:
+	 * ````
+	 *   \MvcCore\Application::GetInstance()->AddPreSentBodyHandler(function(
+	 *       \MvcCore\Request $request,
+	 *       \MvcCore\Response $response
+	 *   ) {
+	 *       $request->customVar = 'custom_value';
+	 *   });
+	 * ````
+	 * @param  callable $handler
+	 * @param  int|NULL $priorityIndex
+	 * @return \MvcCore\Application
+	 */
+	public function AddPreSentBodyHandler (callable $handler, $priorityIndex = NULL);
 
 	/**
 	 * Add post dispatch handler into post dispatch handlers queue to process them

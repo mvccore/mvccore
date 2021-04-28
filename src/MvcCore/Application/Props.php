@@ -19,6 +19,7 @@ namespace MvcCore\Application;
  * - MvcCore compile mode managing (single file mode, php, phar, or no package).
  * - Global store for all main core class names, to use them as modules,
  *   to be changed any time (request class, response class, debug class, etc.).
+ * @mixin \MvcCore\Application
  */
 trait Props {
 
@@ -131,6 +132,44 @@ trait Props {
 	 * @var \array[]
 	 */
 	protected $preDispatchHandlers = [];
+
+	/**
+	 * Pre sent headers custom calls storage.
+	 * Every item in this array has to be `callable`.
+	 * Params in `callable` should be two with following types:
+	 * - `\MvcCore\Request`
+	 * - `\MvcCore\Response`
+	 * Example:
+	 * ````
+	 *   \MvcCore\Application::GetInstance()->AddPreSentHeadersHandler(function(
+	 *       \MvcCore\Request $request,
+	 *       \MvcCore\Response $response
+	 *   ) {
+	 *       $request->customVar = 'custom_value';
+	 *   });
+	 * ````
+	 * @var \array[]
+	 */
+	protected $preSentHeadersHandlers = [];
+
+	/**
+	 * Pre sent body custom calls storage.
+	 * Every item in this array has to be `callable`.
+	 * Params in `callable` should be two with following types:
+	 * - `\MvcCore\Request`
+	 * - `\MvcCore\Response`
+	 * Example:
+	 * ````
+	 *   \MvcCore\Application::GetInstance()->AddPreSentBodyHandler(function(
+	 *       \MvcCore\Request $request,
+	 *       \MvcCore\Response $response
+	 *   ) {
+	 *       $request->customVar = 'custom_value';
+	 *   });
+	 * ````
+	 * @var \array[]
+	 */
+	protected $preSentBodyHandlers = [];
 
 	/**
 	 * Post dispatch custom calls storage.

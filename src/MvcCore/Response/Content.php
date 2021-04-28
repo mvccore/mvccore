@@ -13,6 +13,9 @@
 
 namespace MvcCore\Response;
 
+/**
+ * @mixin \MvcCore\Response
+ */
 trait Content {
 
 	/**
@@ -21,7 +24,6 @@ trait Content {
 	 * @return \MvcCore\Response
 	 */
 	public function SetBody ($body) {
-		/** @var $this \MvcCore\Response */
 		$this->body = & $body;
 		return $this;
 	}
@@ -32,7 +34,6 @@ trait Content {
 	 * @return \MvcCore\Response
 	 */
 	public function PrependBody ($body) {
-		/** @var $this \MvcCore\Response */
 		$this->body = $body . $this->body;
 		return $this;
 	}
@@ -43,7 +44,6 @@ trait Content {
 	 * @return \MvcCore\Response
 	 */
 	public function AppendBody ($body) {
-		/** @var $this \MvcCore\Response */
 		$this->body .= $body;
 		return $this;
 	}
@@ -53,7 +53,6 @@ trait Content {
 	 * @return string|NULL
 	 */
 	public function & GetBody () {
-		/** @var $this \MvcCore\Response */
 		return $this->body;
 	}
 
@@ -62,7 +61,6 @@ trait Content {
 	 * @return bool
 	 */
 	public function IsHtmlOutput () {
-		/** @var $this \MvcCore\Response */
 		if (isset($this->headers['Content-Type'])) {
 			$value = $this->headers['Content-Type'];
 			return strpos($value, 'text/html') !== FALSE || strpos($value, 'application/xhtml+xml') !== FALSE;
@@ -75,7 +73,6 @@ trait Content {
 	 * @return bool
 	 */
 	public function IsXmlOutput () {
-		/** @var $this \MvcCore\Response */
 		if (isset($this->headers['Content-Type'])) {
 			$value = $this->headers['Content-Type'];
 			return strpos($value, 'xml') !== FALSE;
@@ -88,7 +85,6 @@ trait Content {
 	 * @return bool
 	 */
 	public function IsSentBody () {
-		/** @var $this \MvcCore\Response */
 		return $this->bodySent;
 	}
 
@@ -97,7 +93,6 @@ trait Content {
 	 * @return \MvcCore\Response
 	 */
 	public function Send () {
-		/** @var $this \MvcCore\Response */
 		return $this
 			->SendHeaders()
 			->SendBody();
@@ -108,7 +103,6 @@ trait Content {
 	 * @return \MvcCore\Response
 	 */
 	public function SendHeaders () {
-		/** @var $this \MvcCore\Response */
 		if (headers_sent()) return $this;
 		$httpVersion = $this->GetHttpVersion();
 		$code = $this->GetCode();
@@ -120,6 +114,11 @@ trait Content {
 		$this->UpdateHeaders();
 		if (!isset($this->headers['Content-Encoding']))
 			$this->headers['Content-Encoding'] = $this->GetEncoding();
+		if (!$this->request->IsCli()) {
+			$app = \MvcCore\Application::GetInstance();
+			$preSentHeadersHandlers = $app->__get('preSentHeadersHandlers');
+			$app->ProcessCustomHandlers($preSentHeadersHandlers);
+		}
 		//http_response_code($code);
 		header($httpVersion . ' ' . $code . $status);
 		header('Host: ' . $this->request->GetHost());
@@ -150,8 +149,10 @@ trait Content {
 	 * @return \MvcCore\Response
 	 */
 	public function SendBody () {
-		/** @var $this \MvcCore\Response */
 		if ($this->bodySent) return $this;
+		$app = \MvcCore\Application::GetInstance();
+		$preSentBodyHandlers = $app->__get('preSentBodyHandlers');
+		$app->ProcessCustomHandlers($preSentBodyHandlers);
 		echo $this->body;
 		if (ob_get_level())
 			ob_end_flush();
@@ -165,7 +166,6 @@ trait Content {
 	 * @return void
 	 */
 	protected function addTimeAndMemoryHeader () {
-		/** @var $this \MvcCore\Response */
 		$headerName = static::HEADER_X_MVCCORE_CPU_RAM;
 		if (isset($this->disabledHeaders[$headerName])) return;
 		$mtBegin = $this->request->GetStartTime();
