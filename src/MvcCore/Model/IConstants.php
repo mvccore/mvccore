@@ -51,7 +51,7 @@ interface IConstants {
 	/**
 	 * Get result array with keys by properties names from code
 	 * (this flag is not used in core, you have to install any 
-	 * extension by `composer require mvccore/ext-database-*`).
+	 * extension by `composer require mvccore/ext-model-db-*`).
 	 * @var int
 	 */
 	const PROPS_NAMES_BY_CODE						= 32;
@@ -59,7 +59,7 @@ interface IConstants {
 	/**
 	 * Get result array with keys by columns names from database
 	 * (this flag is not used in core, you have to install any 
-	 * extension by `composer require mvccore/ext-database-*`).
+	 * extension by `composer require mvccore/ext-model-db-*`).
 	 * @var int
 	 */
 	const PROPS_NAMES_BY_DATABASE					= 64;
