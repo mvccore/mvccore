@@ -28,8 +28,8 @@ trait Rendering {
 
 	/**
 	 * @inheritDocs
-	 * @param  string $controllerOrActionNameDashed
-	 * @param  string $actionNameDashed
+	 * @param  string|NULL $controllerOrActionNameDashed
+	 * @param  string|NULL $actionNameDashed
 	 * @return string
 	 */
 	public function Render ($controllerOrActionNameDashed = NULL, $actionNameDashed = NULL) {
@@ -83,7 +83,7 @@ trait Rendering {
 	 * @param  bool   $terminate
 	 * @return void
 	 */
-	public function HtmlResponse ($output = '', $terminate = TRUE) {
+	public function HtmlResponse ($output, $terminate = TRUE) {
 		if (!$this->response->HasHeader('Content-Type')) {
 			$viewClass = $this->application->GetViewClass();
 			$contentTypeHeaderValue = strpos(
@@ -103,7 +103,7 @@ trait Rendering {
 	 * @param  bool   $terminate
 	 * @return void
 	 */
-	public function XmlResponse ($output = '', $terminate = TRUE) {
+	public function XmlResponse ($output, $terminate = TRUE) {
 		$res = $this->response;
 		if (!$res->HasHeader('Content-Type'))
 			$res->SetHeader('Content-Type', 'application/xml');
@@ -119,7 +119,7 @@ trait Rendering {
 	 * @param  bool   $terminate
 	 * @return void
 	 */
-	public function TextResponse ($output = '', $terminate = TRUE) {
+	public function TextResponse ($output, $terminate = TRUE) {
 		$res = $this->response;
 		if (!$res->HasHeader('Content-Type'))
 			$res->SetHeader('Content-Type', 'text/plain');
@@ -136,7 +136,7 @@ trait Rendering {
 	 * @throws \Exception JSON encoding error.
 	 * @return void
 	 */
-	public function JsonResponse ($data = NULL, $terminate = TRUE) {
+	public function JsonResponse ($data, $terminate = TRUE) {
 		$res = $this->response;
 		$toolClass = $this->application->GetToolClass();
 		$output = $toolClass::EncodeJson($data);
@@ -159,7 +159,7 @@ trait Rendering {
 	 * @throws \Exception JSON encoding error.
 	 * @return void
 	 */
-	public function JsonpResponse ($data = NULL, $callbackParamName = 'callback', $terminate = TRUE) {
+	public function JsonpResponse ($data, $callbackParamName = 'callback', $terminate = TRUE) {
 		$res = $this->response;
 		$toolClass = $this->application->GetToolClass();
 		$output = $toolClass::EncodeJson($data);
@@ -181,7 +181,7 @@ trait Rendering {
 	 * @param  string $exceptionMessage
 	 * @return void
 	 */
-	public function RenderError ($exceptionMessage = '') {
+	public function RenderError ($exceptionMessage) {
 		if ($this->application->IsErrorDispatched()) return;
 		throw new \ErrorException(
 			$exceptionMessage 

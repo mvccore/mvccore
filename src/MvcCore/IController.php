@@ -541,8 +541,8 @@ interface IController extends \MvcCore\Controller\IConstants {
 	 * - If controller has no other parent controller, render layout view around action view.
 	 * - For top most parent controller - store rendered action and layout view in response object and return empty string.
 	 * - For child controller - return rendered action view as string.
-	 * @param  string $controllerOrActionNameDashed
-	 * @param  string $actionNameDashed
+	 * @param  string|NULL $controllerOrActionNameDashed
+	 * @param  string|NULL $actionNameDashed
 	 * @return string
 	 */
 	public function Render ($controllerOrActionNameDashed = NULL, $actionNameDashed = NULL);
@@ -554,7 +554,7 @@ interface IController extends \MvcCore\Controller\IConstants {
 	 * @param  bool   $terminate
 	 * @return void
 	 */
-	public function HtmlResponse ($output = "", $terminate = TRUE);
+	public function HtmlResponse ($output, $terminate = TRUE);
 
 	/**
 	 * Store rendered XML output inside `\MvcCore\Controller::$response`
@@ -563,7 +563,7 @@ interface IController extends \MvcCore\Controller\IConstants {
 	 * @param  bool   $terminate
 	 * @return void
 	 */
-	public function XmlResponse ($output = "", $terminate = TRUE);
+	public function XmlResponse ($output, $terminate = TRUE);
 
 	/**
 	 * Store rendered text output inside `\MvcCore\Controller::$response`
@@ -572,7 +572,7 @@ interface IController extends \MvcCore\Controller\IConstants {
 	 * @param  bool   $terminate
 	 * @return void
 	 */
-	public function TextResponse ($output = '', $terminate = TRUE);
+	public function TextResponse ($output, $terminate = TRUE);
 
 	/**
 	 * Serialize any PHP value into `JSON string` and store
@@ -583,7 +583,7 @@ interface IController extends \MvcCore\Controller\IConstants {
 	 * @throws \Exception JSON encoding error.
 	 * @return void
 	 */
-	public function JsonResponse ($data = NULL, $terminate = TRUE);
+	public function JsonResponse ($data, $terminate = TRUE);
 
 	/**
 	 * Serialize any PHP value into `JSON string`, wrap around prepared public
@@ -597,7 +597,7 @@ interface IController extends \MvcCore\Controller\IConstants {
 	 * @throws \Exception JSON encoding error.
 	 * @return void
 	 */
-	public function JsonpResponse ($data = NULL, $callbackParamName = 'callback', $terminate = TRUE);
+	public function JsonpResponse ($data, $callbackParamName = 'callback', $terminate = TRUE);
 
 	/**
 	 * Generates url:
@@ -642,7 +642,7 @@ interface IController extends \MvcCore\Controller\IConstants {
 	 * @param  string $exceptionMessage
 	 * @return void
 	 */
-	public function RenderError ($exceptionMessage = '');
+	public function RenderError ($exceptionMessage);
 
 	/**
 	 * Render not found controller and not found action
