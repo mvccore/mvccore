@@ -106,8 +106,11 @@ trait Parsers {
 				$formatArgs = substr($formatArgs, 0, 5);
 			}
 		}
-		if (strpos($dateTimeStr, '.') !== FALSE) 
-			$formatArgs .= '.u';
+		$dotPos = strpos($dateTimeStr, '.');
+		if ($dotPos !== FALSE) {
+			$msDigitsCount = strlen($dateTimeStr) - $dotPos - 1;
+			$formatArgs .= $msDigitsCount === 3 ? '.v' : '.u';
+		}
 		return \date_create_from_format($formatArgs, $dateTimeStr);
 	}
 }
