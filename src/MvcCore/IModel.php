@@ -258,4 +258,18 @@ interface IModel extends \MvcCore\Model\IConstants {
 	 * @return \string[]
 	 */
 	public function __sleep ();
+
+	/**
+	 * Returns data which can be serialized by `json_encode()`, 
+	 * which is a value of any type other than a resource.
+	 * Possible reading flags:
+	 *  - `\MvcCore\IModel::PROPS_INHERIT`	- default
+	 *  - `\MvcCore\IModel::PROPS_PRIVATE`
+	 *  - `\MvcCore\IModel::PROPS_PROTECTED`- default
+	 *  - `\MvcCore\IModel::PROPS_PUBLIC`
+	 * @param  int $propsFlags Flags used by default:
+	 * `\MvcCore\IModel::PROPS_PROTECTED | \MvcCore\IModel::PROPS_INHERIT`
+	 * @return mixed
+	 */
+	public function jsonSerialize ($propsFlags = 0);
 }
