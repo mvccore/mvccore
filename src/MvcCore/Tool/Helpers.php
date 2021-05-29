@@ -106,7 +106,7 @@ trait Helpers {
 							? $internalFnOrHandler[1]
 							: strval($internalFnOrHandler)
 						);
-					$errMessage = preg_replace("#^$funcNameStr\(.*?\): #", '', $errMessage);
+					$errMessage = preg_replace("#^{$funcNameStr}\(.*?\): #", '', $errMessage);
 					if ($onError($errMessage, $errLevel, $errFile, $errLine) !== FALSE)
 						return TRUE;
 				}
