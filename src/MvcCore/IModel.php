@@ -170,10 +170,11 @@ interface IModel extends \MvcCore\Model\IConstants {
 	 *  - `\MvcCore\IModel::PROPS_PRIVATE`
 	 *  - `\MvcCore\IModel::PROPS_PROTECTED`
 	 *  - `\MvcCore\IModel::PROPS_PUBLIC`
-	 * @param  int $propsFlags
+	 * @param  int    $propsFlags
+	 * @param  \int[] $additionalMaps Compatible format for extension `mvccore/ext-model-db`.
 	 * @return array
 	 */
-	public static function GetMetaData ($propsFlags = 0);
+	public static function GetMetaData ($propsFlags = 0, $additionalMaps = []);
 
 	/**
 	 * Collect all model class properties values into array.
