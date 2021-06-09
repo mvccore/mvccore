@@ -77,12 +77,30 @@ trait Parsers {
 					$conversionResult = TRUE;
 				}
 			}
+		} else if ($typeStr === 'bool' || $typeStr === 'boolean') {
+			$rawValue = static::parseToBool($rawValue);
+			$conversionResult = TRUE;
 		} else {
-			// bool, int, float, string, array, object, null:
+			// int, float, string, array, object, null:
 			if (settype($rawValue, $typeStr)) 
 				$conversionResult = TRUE;
 		}
 		return [$conversionResult, $rawValue];
+	}
+	
+	/**
+	 * Convert int, float or string value into bool.
+	 * @param  int|float|string|NULL $rawValue 
+	 * @return bool
+	 */
+	protected static function parseToBool ($rawValue) {
+		if (is_bool($rawValue)) {
+			return $rawValue;
+		} else if (is_string($rawValue)) {
+			return mb_strtolower($rawValue) === 'true' || $rawValue === '1';
+		} else {
+			return (bool) $rawValue;
+		}
 	}
 
 	/**
