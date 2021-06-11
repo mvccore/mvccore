@@ -133,13 +133,15 @@ trait Rendering {
 	 * @inheritDocs
 	 * @param  mixed $data
 	 * @param  bool  $terminate
+	 * @param  int   $jsonEncodeFlags
 	 * @throws \Exception JSON encoding error.
 	 * @return void
 	 */
-	public function JsonResponse ($data, $terminate = TRUE) {
+	public function JsonResponse ($data, $terminate = TRUE, $jsonEncodeFlags = 0) {
 		$res = $this->response;
+		/** @var \MvcCore\Tool|string $toolClass */ 
 		$toolClass = $this->application->GetToolClass();
-		$output = $toolClass::EncodeJson($data);
+		$output = $toolClass::EncodeJson($data, $jsonEncodeFlags);
 		ob_clean(); // remove any possible warnings to break client's `JSON.parse();`
 		if (!$res->HasHeader('Content-Type'))
 			$res->SetHeader('Content-Type', 'text/javascript');
@@ -156,13 +158,15 @@ trait Rendering {
 	 * @param  mixed      $data
 	 * @param  string     $callbackParamName
 	 * @param  bool       $terminate
+	 * @param  int        $jsonEncodeFlags
 	 * @throws \Exception JSON encoding error.
 	 * @return void
 	 */
-	public function JsonpResponse ($data, $callbackParamName = 'callback', $terminate = TRUE) {
+	public function JsonpResponse ($data, $callbackParamName = 'callback', $terminate = TRUE, $jsonEncodeFlags = 0) {
 		$res = $this->response;
+		/** @var \MvcCore\Tool|string $toolClass */ 
 		$toolClass = $this->application->GetToolClass();
-		$output = $toolClass::EncodeJson($data);
+		$output = $toolClass::EncodeJson($data, $jsonEncodeFlags);
 		ob_clean(); // remove any possible warnings to break client's `JSON.parse();`
 		if (!$res->HasHeader('Content-Type'))
 			$res->SetHeader('Content-Type', 'text/javascript');
