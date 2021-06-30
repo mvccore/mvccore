@@ -403,7 +403,7 @@ trait GettersSetters {
 				? $this->globalServer['HTTP_REFERER']
 				: '';
 			if ($referer) 
-				while (mb_strpos($referer, '%') !== FALSE)
+				while (preg_match("#%([0-9a-zA-Z]{2})#", $referer))
 					$referer = rawurldecode($referer);
 			$this->referer = $referer;
 		}
