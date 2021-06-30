@@ -112,7 +112,7 @@ trait UrlBuilding {
 	 */
 	public function EncodeUrl ($url) {
 		return preg_replace_callback(
-			'/[^\x21\x23-\x26\x28-\x3B\x3D\x3F-\x5B\x5D-\x7E]+/', 
+			'/[^\x21\x23\x25\x26\x2D-\x3A\x3D\x3F-\x5B\x5D\x5F\x7E]+/',
 			'static::encodeUrlCallback', 
 			$url
 		);
