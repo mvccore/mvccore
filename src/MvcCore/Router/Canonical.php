@@ -82,6 +82,7 @@ trait Canonical {
 	 * @return bool
 	 */
 	protected function canonicalRedirectRewriteRoutesStrategy () {
+		/** @var \MvcCore\Request $request */
 		$request = $this->request;
 		$redirectToCanonicalUrl = FALSE;
 		$defaultParams =  $this->GetDefaultParams() ?: [];
@@ -96,12 +97,11 @@ trait Canonical {
 		) {
 			$redirectToCanonicalUrl = TRUE;
 		} else if (mb_strlen($selfUrlPathAndQueryPart) > 0) {
-			$path = $request->GetPath(FALSE);
+			$path = $request->GetPath(TRUE);
 			$requestedUrl = $path === '' ? '/' : $path ;
-			if (mb_strpos($selfUrlPathAndQueryPart, '?') !== FALSE) {
-				$selfUrlPathAndQueryPart = rawurldecode($selfUrlPathAndQueryPart);
-				$requestedUrl .= $request->GetQuery(TRUE, FALSE);
-			}
+			$selfUrlPathAndQueryPart = rawurldecode($selfUrlPathAndQueryPart);
+			if (mb_strpos($selfUrlPathAndQueryPart, '?') !== FALSE) 
+				$requestedUrl .= $request->GetQuery(TRUE, TRUE);
 			if ($selfUrlPathAndQueryPart !== $requestedUrl) 
 				$redirectToCanonicalUrl = TRUE;
 		}
