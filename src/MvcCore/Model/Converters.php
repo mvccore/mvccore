@@ -35,7 +35,7 @@ trait Converters {
 					$items[] = static::convertToScalar($item, $formatArgs);
 			if (count($items) === 0) return NULL;
 			return implode(',', $items);
-		} else if ($value instanceof \DateTimeInterface) {
+		} else if ($value instanceof \DateTime || $value instanceof \DateTimeImmutable) { // PHP 5.4 compatible
 			$formatArgsCount = is_array($formatArgs) ? count($formatArgs) : 0;
 			if ($formatArgsCount > 0) {
 				$formatMask = $formatArgs[0];

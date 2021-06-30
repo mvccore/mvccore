@@ -113,4 +113,10 @@ interface IConstants {
 	 * @var int
 	 */
 	const PROPS_CONVERT_CASE_INSENSITIVE			= 8192;
+
+	/**
+	 * Equivalent for `\MvcCore\IModel::PROPS_INHERIT | \MvcCore\IModel::PROPS_PROTECTED`.
+	 * @var int
+	 */
+	const PROPS_INHERIT_PROTECTED					= 10; // 2 | 8;
 }

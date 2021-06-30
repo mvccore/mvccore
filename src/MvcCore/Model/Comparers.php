@@ -51,7 +51,10 @@ trait Comparers {
 			) {
 				$valuasAreTheSame = $value1 === $value2;
 				
-			} else if ($value1 instanceof \DateTimeInterface && $value2 instanceof \DateTimeInterface) {
+			} else if (
+				($value1 instanceof \DateTime || $value1 instanceof \DateTimeImmutable) && // PHP 5.4 compatible
+				($value2 instanceof \DateTime || $value2 instanceof \DateTimeImmutable)
+			) {
 				$valuasAreTheSame = $value1 == $value2;
 				
 			} else if ($value1 instanceof \DateInterval && $value2 instanceof \DateInterval) {
