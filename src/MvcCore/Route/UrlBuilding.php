@@ -164,7 +164,8 @@ trait UrlBuilding {
 							$paramValueStr == strval($defaults[$paramName])
 						)
 					) $defaultValuesCount++;
-					$sectionResult .= htmlspecialchars($paramValueStr, ENT_QUOTES);
+					//$sectionResult .= htmlspecialchars($paramValueStr, ENT_QUOTES);
+					$sectionResult .= str_replace('%2F', '/', rawurlencode($paramValueStr));// param could contain slash
 					unset($params[$paramName]);
 					$paramIndex += 1;
 					$sectionOffset = $reverseParam->reverseEnd;
