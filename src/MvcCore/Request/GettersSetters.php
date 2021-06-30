@@ -405,6 +405,7 @@ trait GettersSetters {
 			if ($referer) 
 				while (preg_match("#%([0-9a-zA-Z]{2})#", $referer))
 					$referer = rawurldecode($referer);
+				$referer = str_replace('%', '%25', $referer);
 			$this->referer = $referer;
 		}
 		return $rawInput ? $this->referer : static::HtmlSpecialChars($this->referer);
