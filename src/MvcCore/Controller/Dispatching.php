@@ -263,11 +263,8 @@ trait Dispatching {
 		if ($this->dispatchState == \MvcCore\IController::DISPATCH_STATE_CREATED) 
 			$this->Init();
 		// check if view is still `NULL`, because it could be created by some parent class
-		if ($this->viewEnabled && $this->view === NULL) {
-			$viewClass = $this->application->GetViewClass();
-			$this->view = $viewClass::CreateInstance()
-				->SetController($this);
-		}
+		if ($this->viewEnabled && $this->view === NULL) 
+			$this->view = $this->createView();
 		foreach ($this->childControllers as $controller) {
 			$controller->PreDispatch();
 			if ($controller->dispatchState == \MvcCore\IController::DISPATCH_STATE_TERMINATED) 
@@ -275,6 +272,15 @@ trait Dispatching {
 		}
 		if ($this->dispatchState < \MvcCore\IController::DISPATCH_STATE_PRE_DISPATCHED)
 			$this->dispatchState = \MvcCore\IController::DISPATCH_STATE_PRE_DISPATCHED;
+	}
+
+	/**
+	 * View instance factory method.
+	 * @return \MvcCore\View
+	 */
+	protected function createView () {
+		$viewClass = $this->application->GetViewClass();
+		return $viewClass::CreateInstance()->SetController($this);
 	}
 
 	/**
