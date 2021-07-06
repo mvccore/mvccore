@@ -490,9 +490,10 @@ trait CollectionsMethods {
 		} else {
 			// if there is not NULL in target collection
 			if (is_string($rawValue) && mb_strlen(trim($rawValue)) === 0) {
-				// if value after trim is empty string, return empty string (retyped if necessary)
+				// if value after trim is empty string, return NULL 
+				// (or retyped if null value if necessary)
 				$result = "";
-				if ($targetType === NULL || $ifNullValue === NULL) return $result;
+				if ($targetType === NULL || $ifNullValue === NULL) return NULL;
 				$result = is_scalar($ifNullValue) 
 					? $ifNullValue 
 					: clone $ifNullValue;
