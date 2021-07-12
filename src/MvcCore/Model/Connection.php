@@ -46,8 +46,26 @@ trait Connection {
 		// connect:
 		$connection = static::connect($cfg);
 		// store new connection under config index for all other model classes:
-		self::$connections[$connectionName] = $connection;
-		return $connection;
+		return self::SetConnection($connectionName, $connection);
+	}
+	
+	/**
+	 * @inheritDocs
+	 * @param  string|int $connectionName
+	 * @param  \PDO       $connection
+	 * @return \PDO
+	 */
+	public static function SetConnection ($connectionName, $connection) {
+		return self::$connections[$connectionName] = $connection;
+	}
+	
+	/**
+	 * @inheritDocs
+	 * @param  string|int $connectionName
+	 * @return bool
+	 */
+	public static function HasConnection ($connectionName) {
+		return isset(self::$connections[$connectionName]);
 	}
 
 	/**
