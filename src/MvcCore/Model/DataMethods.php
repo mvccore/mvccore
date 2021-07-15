@@ -176,7 +176,7 @@ trait DataMethods {
 				$currentValue = $this->{$propertyName};
 			}
 
-			if (static::isEqual($initialValue, $currentValue)) continue;
+			if (static::IsEqual($initialValue, $currentValue)) continue;
 			
 			$resultKey = $propertyName;
 			if ($stringKeyConversions) 

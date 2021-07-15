@@ -192,6 +192,21 @@ interface IModel extends \MvcCore\Model\IConstants {
 	public static function GetMetaData ($propsFlags = 0, $additionalMaps = []);
 
 	/**
+	 * Compare two values. Supported types are:
+	 *  - NULL
+	 *  - scalar (int, float, string, bool)
+	 *  - array
+	 *  - \stdClass
+	 *  - \DateTimeInterface, \DateInterval, \DateTimeZone, \DatePeriod
+	 *  - resource (only by `intval($value1) == intval($value2)`)
+	 *  - object instances (only by `===` comparison)
+	 * @param  mixed $value1 
+	 * @param  mixed $value2 
+	 * @return bool
+	 */
+	public static function IsEqual ($value1, $value2);
+
+	/**
 	 * Collect all model class properties values into array.
 	 * Result keys could be converted by any conversion flag.
 	 * @param  int  $propsFlags    All properties flags are available except flags: 

@@ -19,19 +19,12 @@ namespace MvcCore\Model;
 trait Comparers {
 
 	/**
-	 * Compare two values. Supported types are:
-	 *  - NULL
-	 *  - scalar (int, float, string, bool)
-	 *  - array
-	 *  - \stdClass
-	 *  - \DateTimeInterface, \DateInterval, \DateTimeZone, \DatePeriod
-	 *  - resource (only by `intval($value1) == intval($value2)`)
-	 *  - object instances (only by `===` comparison)
+	 * @inheritDocs
 	 * @param  mixed $value1 
 	 * @param  mixed $value2 
 	 * @return bool
 	 */
-	protected static function isEqual ($value1, $value2) {
+	public static function IsEqual ($value1, $value2) {
 		$valuasAreTheSame = FALSE;
 		$value1IsNull = $value1 === NULL;
 		$value2IsNull = $value2 === NULL;
