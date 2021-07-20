@@ -125,21 +125,23 @@ trait Props {
 	 * @var array
 	 */
 	protected static $sysConfigProperties = [
-		'sectionName'	=> 'db',			// db section root node
-		'defaultName'	=> 'defaultName',	// default db connection name
-		'defaultClass'	=> 'defaultClass',	// custom \PDO implementation full class name
-		'retryAttempts'	=> 'retryAttempts',	// reconnection tries count if connection has been lost, extension required
-		'retryDelay'	=> 'retryDelay',	// delay before every reconnection, extension required
-		'name'			=> 'name',			// runtime configuration definition property for connection name
-		'index'			=> 'index',			// runtime configuration definition property for connection index
-		'driver'		=> 'driver',		// connection driver
-		'host'			=> 'host',			// connection host
-		'port'			=> 'port',			// connection port
-		'user'			=> 'user',			// connection user
-		'password'		=> 'password',		// connection password
-		'database'		=> 'database',		// connection database
-		'options'		=> 'options',		// connection options
-		'class'			=> 'class',			// custom connection class full name
+		'sectionName'		=> 'db',				// db section root node
+		'defaultName'		=> 'defaultName',		// default db connection name
+		'defaultClass'		=> 'defaultClass',		// custom \PDO implementation full class name for all connections
+		'defaultDebugger'	=> 'defaultDebugger',	// custom \PDO implementation full class name for all connections
+		'retryAttempts'		=> 'retryAttempts',		// reconnection tries count if connection has been lost, extension required
+		'retryDelay'		=> 'retryDelay',		// delay before every reconnection, extension required
+		'config'			=> 'config',				// connection options key for used config values
+		'name'				=> 'name',				// runtime configuration definition property for connection name
+		'driver'			=> 'driver',			// connection driver
+		'host'				=> 'host',				// connection host
+		'port'				=> 'port',				// connection port
+		'user'				=> 'user',				// connection user
+		'password'			=> 'password',			// connection password
+		'database'			=> 'database',			// connection database
+		'options'			=> 'options',			// connection options
+		'class'				=> 'class',				// custom \PDO implementation full class name for single connections
+		'debugger'			=> 'debugger',			// debugger class implementing `\MvcCore\Ext\Models\Db\IDebugger`, you need to install extension `mvccore/ext-model-db-*`.
 	];
 
 	/**

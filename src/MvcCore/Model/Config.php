@@ -43,7 +43,12 @@ trait Config {
 	 */
 	public static function SetConfigs (array $configs = [], $defaultConnectionName = NULL) {
 		self::$configs = [];
-		foreach ($configs as $key => $value) self::$configs[$key] = (object) $value;
+		$sysCfgProps = static::GetSysConfigProperties();
+		foreach ($configs as $key => $value) {
+			$valueObj = (object) $value;
+			$valueObj->{$sysCfgProps->name} = $key;
+			self::$configs[$key] = $valueObj;
+		}
 		self::$configs = & $configs;
 		if ($defaultConnectionName !== NULL)
 			self::$defaultConnectionName = $defaultConnectionName;
@@ -57,13 +62,19 @@ trait Config {
 	 */
 	public static function & GetConfig ($connectionName = NULL) {
 		if (self::$configs === NULL) static::loadConfigs(TRUE);
-		if ($connectionName === NULL && isset(static::$connectionName)) $connectionName = static::$connectionName;
-		if ($connectionName === NULL && isset(self::$connectionName)) $connectionName = self::$connectionName;
-		if ($connectionName === NULL) $connectionName = self::$defaultConnectionName;
+		if ($connectionName === NULL && isset(static::$connectionName)) 
+			$connectionName = static::$connectionName;
+		if ($connectionName === NULL && isset(self::$connectionName)) 
+			$connectionName = self::$connectionName;
+		if ($connectionName === NULL) 
+			$connectionName = self::$defaultConnectionName;
 		if ($connectionName === NULL) {
 			$result = NULL;
 			return $result;
 		}
+		$configs = self::$configs[$connectionName];
+		$sysCfgProps = static::GetSysConfigProperties();
+		$configs->{$sysCfgProps->name} = $connectionName;
 		return self::$configs[$connectionName];
 	}
 
@@ -77,11 +88,10 @@ trait Config {
 		if (self::$configs === NULL) static::loadConfigs(FALSE);
 		$sysCfgProps = (object) static::$sysConfigProperties;
 		if ($connectionName === NULL) {
-			if (isset($config[$sysCfgProps->name])) {
+			if (isset($config[$sysCfgProps->name])) 
 				$connectionName = $config[$sysCfgProps->name];
-			} else if (isset($config[$sysCfgProps->index])) {
-				$connectionName = $config[$sysCfgProps->index];
-			}
+		} else {
+			$config[$sysCfgProps->name] = $connectionName;
 		}
 		if ($connectionName === NULL) {
 			$configNumericKeys = array_filter(array_keys(self::$configs), 'is_numeric');
@@ -134,13 +144,14 @@ trait Config {
 		$defaultConnectionClass = NULL;
 		$configsConnectionsNames = [];
 		// `db.defaultName` - default connection index for models,
-		// where is no connection name/index defined inside class.
+		// where is no connection name defined inside class.
 		if (isset($systemCfgDb->{$sysCfgProps->defaultName}))
 			$defaultConnectionName = $systemCfgDb->{$sysCfgProps->defaultName};
 		// `db.defaultClass` - default connection class for all models extended from `\PDO`.
 		if (isset($systemCfgDb->{$sysCfgProps->defaultClass}))
 			$defaultConnectionClass = $systemCfgDb->{$sysCfgProps->defaultClass};
 		if (isset($systemCfgDb->driver)) {
+			$systemCfgDb->{$sysCfgProps->name} = '0';
 			$configs[0] = $systemCfgDb;
 			$configsConnectionsNames[] = '0';
 		} else {
@@ -148,7 +159,9 @@ trait Config {
 				if (is_scalar($value)) {
 					$configs[$key] = $value;
 				} else {
-					$configs[$key] = (object) $value;
+					$valueObj = (object) $value;
+					$valueObj->{$sysCfgProps->name} = $key;
+					$configs[$key] = $valueObj;
 					$configsConnectionsNames[] = (string) $key;
 				}
 			}
