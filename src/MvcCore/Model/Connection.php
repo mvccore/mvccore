@@ -193,11 +193,12 @@ trait Connection {
 				$options[$optionKey] = $optionValue;
 			}
 		}
+		$options[$sysCfgProps->config] = $dbConfig;
 		if ($conArgs->auth && !$credentialsInDsn) {
 			$connection = new $connectionClass(
 				$dsn,
-				$dbConfig->{$sysCfgProps->user},
-				(string) $dbConfig->{$sysCfgProps->password},
+				strval($dbConfig->{$sysCfgProps->user}),
+				strval($dbConfig->{$sysCfgProps->password}),
 				$options
 			);
 		} else {
