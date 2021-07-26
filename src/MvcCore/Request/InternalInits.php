@@ -299,7 +299,7 @@ trait InternalInits {
 			);
 			if ($jsonType) {
 				try {
-					$result = $toolClass::DecodeJson($this->body);
+					$result = $toolClass::JsonDecode($this->body);
 				} catch (\Exception $e) { // backward compatibility
 				} catch (\Throwable $e) {
 				}
@@ -309,7 +309,7 @@ trait InternalInits {
 				$probablyAJsonType = !$toolClass::IsQueryString($this->body);
 				if ($probablyAJsonType) {
 					try {
-						$result = $toolClass::DecodeJson($this->body);
+						$result = $toolClass::JsonDecode($this->body);
 					} catch (\Exception $e) { // backward compatibility
 						$probablyAJsonType = FALSE; // fall back to query string parsing
 					} catch (\Throwable $e) {

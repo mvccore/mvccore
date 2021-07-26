@@ -141,7 +141,7 @@ trait Rendering {
 		$res = $this->response;
 		/** @var \MvcCore\Tool|string $toolClass */ 
 		$toolClass = $this->application->GetToolClass();
-		$output = $toolClass::EncodeJson($data, $jsonEncodeFlags);
+		$output = $toolClass::JsonEncode($data, $jsonEncodeFlags);
 		ob_clean(); // remove any possible warnings to break client's `JSON.parse();`
 		if (!$res->HasHeader('Content-Type'))
 			$res->SetHeader('Content-Type', 'text/javascript');
@@ -166,7 +166,7 @@ trait Rendering {
 		$res = $this->response;
 		/** @var \MvcCore\Tool|string $toolClass */ 
 		$toolClass = $this->application->GetToolClass();
-		$output = $toolClass::EncodeJson($data, $jsonEncodeFlags);
+		$output = $toolClass::JsonEncode($data, $jsonEncodeFlags);
 		ob_clean(); // remove any possible warnings to break client's `JSON.parse();`
 		if (!$res->HasHeader('Content-Type'))
 			$res->SetHeader('Content-Type', 'text/javascript');

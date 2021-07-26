@@ -423,7 +423,7 @@ trait Reflection {
 						$localResult[] = $className;
 					try {
 						$jsonStr = str_replace(["\n"], "", $matches[3][0]);
-						$parsedData = static::DecodeJson($jsonStr);
+						$parsedData = static::JsonDecode($jsonStr);
 						$localResult[] = $parsedData;
 						$classCtorParsed = TRUE;
 					} catch (\Exception $e) {

@@ -114,7 +114,7 @@ interface ITool {
 	 * @throws \RuntimeException|\JsonException JSON encoding error.
 	 * @return string
 	 */
-	public static function EncodeJson ($data, $flags = 0, $depth = 512);
+	public static function JsonEncode ($data, $flags = 0, $depth = 512);
 
 	/**
 	 * Safely decode json string into php `stdClass/array`.
@@ -139,7 +139,7 @@ interface ITool {
 	 * @throws \RuntimeException|\JsonException JSON decoding error.
 	 * @return object
 	 */
-	public static function DecodeJson ($jsonStr, $flags = 0, $depth = 512);
+	public static function JsonDecode ($jsonStr, $flags = 0, $depth = 512);
 
 	/**
 	 * Recognize if given string is JSON or not without JSON parsing.

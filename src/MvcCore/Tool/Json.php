@@ -27,7 +27,7 @@ trait Json {
 	 * @throws \RuntimeException|\JsonException JSON encoding error.
 	 * @return string
 	 */
-	public static function EncodeJson ($data, $flags = 0, $depth = 512) {
+	public static function JsonEncode ($data, $flags = 0, $depth = 512) {
 		if (!defined('JSON_PRESERVE_ZERO_FRACTION'))
 			define('JSON_PRESERVE_ZERO_FRACTION', 1024);
 		$flags |= (
@@ -62,7 +62,7 @@ trait Json {
 	 * @throws \RuntimeException|\JsonException JSON decoding error.
 	 * @return object
 	 */
-	public static function DecodeJson ($jsonStr, $flags = 0, $depth = 512) {
+	public static function JsonDecode ($jsonStr, $flags = 0, $depth = 512) {
 		$assoc = ($flags & JSON_OBJECT_AS_ARRAY) != 0;
 		//var_dump(decbin($flags));
 		$result = @json_decode($jsonStr, $assoc, $depth, $flags);
