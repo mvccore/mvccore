@@ -296,6 +296,14 @@ trait Dispatching {
 				$exception = $e;
 			}
 		}
+		static $lastExceptionStr = NULL;
+		if ($lastExceptionStr === NULL) {
+			$lastExceptionStr = $exception->getMessage();
+		} else if ($lastExceptionStr === $exception->getMessage()) {
+			return $code === 404
+			? $this->RenderError404PlainText($lastExceptionStr)
+			: $this->RenderError500PlainText($lastExceptionStr);
+		}
 		$debugClass = $this->debugClass;
 		if ($exception->getCode() == 404) {
 			$debugClass::Log($exception->getMessage().": ".$this->request->GetFullUrl(), \MvcCore\IDebug::INFO);
