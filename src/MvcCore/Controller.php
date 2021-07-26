@@ -20,5 +20,6 @@ class Controller implements \MvcCore\IController {
 	use \MvcCore\Controller\Props;
 	use \MvcCore\Controller\GettersSetters;
 	use \MvcCore\Controller\Dispatching;
+	use \MvcCore\Controller\FlashMessages;
 	use \MvcCore\Controller\Rendering;
 }

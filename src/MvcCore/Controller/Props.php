@@ -31,6 +31,36 @@ trait Props {
 	protected static $tmpPath = '/Var/Tmp';
 
 	/**
+	 * All registered controllers instances.
+	 * @var \MvcCore\Controller[]
+	 */
+	protected static $allControllers = [];
+
+	/**
+	 * Flash messages static definition for type flags and type strings.
+	 * @var array
+	 */
+	protected static $flashMessagesTypes = [
+		self::FLASH_MESSAGE_TYPE_SUCCESS	=> 'success',
+		self::FLASH_MESSAGE_TYPE_HELP		=> 'help',
+		self::FLASH_MESSAGE_TYPE_INFO		=> 'info',
+		self::FLASH_MESSAGE_TYPE_WARN		=> 'warn',
+		self::FLASH_MESSAGE_TYPE_ERROR		=> 'error',
+		self::FLASH_MESSAGE_TYPE_CRITICAL	=> 'critical',
+	];
+
+	/**
+	 * Flash messages reading speed configuration to automatically
+	 * calculate messages autohide timeout.
+	 * @var array
+	 */
+	protected static $flashMessagesReadingSpeedCfg = [
+		'averageWordsPerMinute'	=> 100,		// 100 words per minute
+		'minimalMessageTimeout'	=> 5000,	// ms
+	];
+	
+
+	/**
 	 * Reference to `\MvcCore\Application` singleton object.
 	 * @var \MvcCore\Application
 	 */
@@ -176,10 +206,13 @@ trait Props {
 	protected $childControllers = [];
 
 	/**
-	 * All registered controllers instances.
-	 * @var \MvcCore\Controller[]
+	 * Flash messages store to complete messages for next request.
+	 * This store is always saved before application terminates
+	 * and it's used only the most parent application controller.
+	 * @var \stdClass[]|NULL
 	 */
-	protected static $allControllers = [];
+	protected $flashMessages = NULL;
+
 
 	/**
 	 * All asset mime types possibly called through `\MvcCore\Controller::AssetAction();`.

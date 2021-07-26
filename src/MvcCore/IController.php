@@ -534,6 +534,25 @@ interface IController extends \MvcCore\Controller\IConstants {
 	public function __toString ();
 
 	/**
+	 * Add flash message to show it in next request(s).
+	 * @param  string    $msg          Flash message text to display in next request(s).
+	 * @param  int|array $options      Could be defined as integer or as array with integer 
+	 *                                 keys and values. Use flags like 
+	 *                                 `\MvcCore\IController::FLASH_MESSAGE_*`.
+	 * @param  array     $replacements Array with integer (`{0},{1},{2}...`) or 
+	 *                                 named (`{two},{two},{three}...`) replacements.
+	 * @return \MvcCore\Controller     Returns current controller context.
+	 */
+	public function FlashMessageAdd ($msg, $options = \MvcCore\IController::FLASH_MESSAGE_TYPE_DEFAULT, array $replacements = []);
+
+	/**
+	 * Get flash messages from previous request 
+	 * to render it and clean flash messages records.
+	 * @return array
+	 */
+	public function FlashMessagesGetClean ();
+
+	/**
 	 * - This method is called INTERNALLY in lifecycle dispatching process,
 	 *   but you can use it sooner or in any different time for custom render purposes.
 	 * - Render prepared controller/action view in path by default:
