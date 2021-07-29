@@ -93,10 +93,17 @@ trait InternalInits {
 		// sometimes `$_SERVER['SCRIPT_FILENAME']` is missing, when script
 		// is running in CLI or it could have relative path only
 		$backtraceItems = debug_backtrace(DEBUG_BACKTRACE_IGNORE_ARGS);
-		$indexFilePath = str_replace('\\', '/', $backtraceItems[count($backtraceItems) - 1]['file']);
+		$indexFilePath = ucfirst(str_replace('\\', '/', $backtraceItems[count($backtraceItems) - 1]['file']));
 		$lastSlashPos = mb_strrpos($indexFilePath, '/');
 
-		$this->appRoot = mb_substr($indexFilePath, 0, $lastSlashPos);
+		$this->documentRoot = defined('MVCCORE_DOCUMENT_ROOT')
+			? ucfirst(constant('MVCCORE_DOCUMENT_ROOT'))
+			: (strlen(\Phar::running()) > 0 
+				? 'phar://' . $indexFilePath
+				: mb_substr($indexFilePath, 0, $lastSlashPos));
+		$this->appRoot = defined('MVCCORE_APP_ROOT')
+			? ucfirst(constant('MVCCORE_APP_ROOT'))
+			: $this->documentRoot;
 		$this->scriptName = mb_substr($indexFilePath, $lastSlashPos);
 
 		$args = $this->globalServer['argv'];

@@ -257,7 +257,7 @@ trait GettersSetters {
 	public function GetAppRoot () {
 		if ($this->appRoot === NULL) 
 			$this->appRoot = defined('MVCCORE_APP_ROOT')
-				? constant('MVCCORE_APP_ROOT')
+				? ucfirst(constant('MVCCORE_APP_ROOT'))
 				: $this->GetDocumentRoot();
 		return $this->appRoot;
 	}
@@ -278,10 +278,10 @@ trait GettersSetters {
 	 */
 	public function GetDocumentRoot () {
 		if ($this->documentRoot === NULL) {
+			// `ucfirst()` - cause IIS has lower case drive name here - different from __DIR__ value
 			if (defined('MVCCORE_DOCUMENT_ROOT')) {
-				$this->documentRoot = constant('MVCCORE_DOCUMENT_ROOT');
+				$this->documentRoot = ucfirst(constant('MVCCORE_DOCUMENT_ROOT'));
 			} else {
-				// `ucfirst()` - cause IIS has lower case drive name here - different from __DIR__ value
 				$indexFilePath = ucfirst(str_replace(
 					['\\', '//'], '/', 
 					$this->globalServer['SCRIPT_FILENAME']
