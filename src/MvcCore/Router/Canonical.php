@@ -28,7 +28,9 @@ trait Canonical {
 	 */
 	protected function canonicalRedirectIfAny () {
 		if (
-			$this->internalRequest || !$this->autoCanonizeRequests || 
+			$this->request->IsCli() ||
+			$this->internalRequest || 
+			!$this->autoCanonizeRequests || 
 			$this->request->GetMethod() !== \MvcCore\IRequest::METHOD_GET
 		) return TRUE;
 		if ($this->routeByQueryString) {
