@@ -91,11 +91,14 @@ trait Matching {
 	 * @return array
 	 */
 	protected function match ($pattern, & $subject) {
-		// add UTF-8 modifier to pattern if subject string contains higher chars than ASCII
-		if (preg_match('#[^\x20-\x7f]#', $subject)) {
+		// convert pattern to UTF-8 with UTF-8 regexp flag
+		// if subject string contains UTF-8 chars:
+		if ($this->getStrIsUtf8($subject)) {
 			$lastHashPos = mb_strrpos($pattern, '#');
-			if (mb_strpos($pattern, 'u', $lastHashPos + 1) === FALSE)
-				$pattern .= 'u';
+			$patternHasUtf8Flag = mb_strpos($pattern, 'u', $lastHashPos + 1) !== FALSE;
+			if (!$patternHasUtf8Flag) $pattern .= 'u';
+			$patternEncoding = mb_detect_encoding($pattern, NULL);
+			$pattern = iconv($patternEncoding, 'UTF-8', $pattern);
 		}
 		preg_match_all($pattern, $subject, $matchedValues);
 		return $matchedValues;

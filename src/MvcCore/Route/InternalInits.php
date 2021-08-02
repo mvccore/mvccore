@@ -535,7 +535,19 @@ trait InternalInits {
 					$trailingSlash = '/?';
 				}}}
 		// always add UTF-8 modifier to match UTF-8 request paths
-		return '#^' . implode('', $sections) . $trailingSlash . '$#u';
+		$result = '#^' . implode('', $sections) . $trailingSlash . '$#';
+		if ($this->getStrIsUtf8($result)) $result .= 'u';
+		return $result;
+	}
+
+	/**
+	 * Check if string contains any UTF-8 character.
+	 * This function doesn't work for encodings like UTF-16 and higher.
+	 * @param  string $str 
+	 * @return bool
+	 */
+	protected function getStrIsUtf8 ($str) {
+		return !mb_check_encoding($str, 'ASCII') && mb_check_encoding($str, 'UTF-8');
 	}
 
 	/**
