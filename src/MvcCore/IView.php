@@ -451,7 +451,7 @@ interface IView extends \MvcCore\View\IConstants {
 	 * Set any value into view context internal store.
 	 * @param  string $name
 	 * @param  mixed  $value
-	 * @return bool
+	 * @return mixed
 	 */
 	public function __set ($name, $value);
 
@@ -462,7 +462,7 @@ interface IView extends \MvcCore\View\IConstants {
 	 * @param  string $name
 	 * @return mixed
 	 */
-	public function __get ($name);
+	public function & __get ($name);
 
 	/**
 	 * Get `TRUE` if any value by given name exists in

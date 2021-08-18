@@ -22,7 +22,7 @@ trait MagicMethods {
 	 * @inheritDocs
 	 * @param  string $name
 	 * @param  mixed $value
-	 * @return bool
+	 * @return mixed
 	 */
 	public function __set ($name, $value) {
 		return $this->__protected['store'][$name] = & $value;
@@ -33,7 +33,7 @@ trait MagicMethods {
 	 * @param  string $name
 	 * @return mixed
 	 */
-	public function __get ($name) {
+	public function & __get ($name) {
 		$store = & $this->__protected['store'];
 		// if property is in view store - return it
 		if (array_key_exists($name, $store))
@@ -59,7 +59,8 @@ trait MagicMethods {
 			}
 		}
 		// return null, if property is not in local store an even not in controller
-		return NULL;
+		$null = NULL;
+		return $null;
 	}
 
 	/**
