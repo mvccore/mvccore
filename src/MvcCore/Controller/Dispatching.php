@@ -55,16 +55,16 @@ trait Dispatching {
 
 	/**
 	 * @inheritDocs
-	 * @param  string $actionName PHP code action name in PascalCase.
-	 *                            This value is used to call your desired function
-	 *                            in controller without any change.
+	 * @param  string|NULL $actionName PHP code action name has to be in PascalCase + 'Action'.
+	 *                                 This value is used to call your desired function
+	 *                                 in controller without any change.
 	 * @return void
 	 */
-	public function Dispatch ($actionName = "IndexAction") {
+	public function Dispatch ($actionName = NULL) {
 		/** @var \MvcCore\Controller $this */
-
+		
 		// \MvcCore\Debug::Timer('dispatch');
-		$actionNameStart = $this->actionName;
+		list ($actionName, $actionNameStart) = $this->dispatchSetUpAction($actionName);
 
 		// Call `Init()` method only if dispatch state is not initialized yet:
 		if ($this->dispatchState < \MvcCore\IController::DISPATCH_STATE_INITIALIZED)
@@ -88,12 +88,11 @@ trait Dispatching {
 			$this->dispatchState = \MvcCore\IController::DISPATCH_STATE_PRE_DISPATCHED;
 		// \MvcCore\Debug::Timer('dispatch');
 
-
+		// Call action method only if dispatch state is not action-executed yet:
 		if ($this->actionName !== $actionNameStart) {
 			$toolClass = $this->application->GetToolClass();
 			$actionName = $toolClass::GetPascalCaseFromDashed($this->actionName) . 'Action';
 		}
-		// Call action method only if dispatch state is not action-executed yet:
 		if (
 			$this->dispatchState < \MvcCore\IController::DISPATCH_STATE_ACTION_EXECUTED && 
 			method_exists($this, $actionName)
@@ -143,6 +142,29 @@ trait Dispatching {
 		}
 		if ($this->dispatchState < \MvcCore\IController::DISPATCH_STATE_INITIALIZED)
 			$this->dispatchState = \MvcCore\IController::DISPATCH_STATE_INITIALIZED;
+	}
+
+	/**
+	 * If given first argument `$actionName` param is `NULL`, return pascal case and dashed 
+	 * case action by `$this->actionName`, if not, set up `$this->actionName` by first argument
+	 * and return pascal and dashed case by that.
+	 * @param  string|NULL $actionName PHP code action name has to be in PascalCase + 'Action'.
+	 *                                 This value is used to call your desired function
+	 *                                 in controller without any change.
+	 * @return array
+	 */
+	protected function dispatchSetUpAction ($actionName = NULL) {
+		$toolClass = $this->application->GetToolClass();
+		if ($actionName === NULL) {
+			$actionName = $toolClass::GetPascalCaseFromDashed($this->actionName) . 'Action';
+		} else {
+			$actionWordPos = mb_strrpos($actionName, 'Action');
+			$actionNameWithoutActionWord = $actionWordPos === mb_strlen($actionName) - 6
+				? mb_substr($actionName, 0, $actionWordPos)
+				: $actionName;
+			$this->actionName = $toolClass::GetDashedFromPascalCase($actionNameWithoutActionWord);
+		}
+		return [$actionName, $this->actionName];
 	}
 
 	/**

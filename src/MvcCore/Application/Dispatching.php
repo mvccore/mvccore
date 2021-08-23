@@ -215,7 +215,7 @@ trait Dispatching {
 		}
 		if (!$this->ProcessCustomHandlers($this->preDispatchHandlers)) return FALSE;
 		try {
-			$this->controller->Dispatch($actionNamePc);
+			$this->controller->Dispatch();
 		} catch (\Exception $e) { // backward compatibility
 			return $exceptionCallback($e);
 		} catch (\Throwable $e) {

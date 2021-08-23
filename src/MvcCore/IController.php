@@ -105,12 +105,12 @@ interface IController extends \MvcCore\Controller\IConstants {
 	 * which you can send to client browser by method
 	 * `\MvcCore\Controller::Terminate()` or which you can store
 	 * anywhere in cache to use it later etc.
-	 * @param  string $actionName PHP code action name in PascalCase.
-	 *                            This value is used to call your desired function
-	 *                            in controller without any change.
+	 * @param  string|NULL $actionName PHP code action name has to be in PascalCase + 'Action'.
+	 *                                 This value is used to call your desired function
+	 *                                 in controller without any change.
 	 * @return void
 	 */
-	public function Dispatch ($actionName = "IndexAction");
+	public function Dispatch ($actionName = NULL);
 
 	/**
 	 * TEMPLATE method. Call `parent::Init();` at the method very beginning.
