@@ -37,7 +37,6 @@ interface IModel extends \MvcCore\Model\IConstants {
 	 * @thrown \InvalidArgumentException Class `{$resourceClassName}` doesn't exist.
 	 * @return \MvcCore\IModel
 	 */
-	 */
 	public static function GetCommonResource ($args = NULL, $classPath = '{self}s\CommonResource');
 
 	/**
@@ -224,7 +223,6 @@ interface IModel extends \MvcCore\Model\IConstants {
 	 *                               keyword, which is automatically replaced with current class name.
 	 * @thrown \InvalidArgumentException Class `{$resourceClassName}` doesn't exist.
 	 * @return \MvcCore\IModel
-	 */
 	 */
 	public function GetResource ($args = NULL, $classPath = '{self}s\Resource');
 

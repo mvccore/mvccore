@@ -97,7 +97,9 @@ trait Resources {
 		// Do not create resource instance if resource class doesn't exist:
 		if (class_exists($resourceClassName)) {
 			$reflectionClass = new \ReflectionClass($resourceClassName);
-			$resource = $reflectionClass->newInstanceArgs($args);
+			$resource = $args === NULL
+				? $reflectionClass->newInstanceWithoutConstructor()
+				: $reflectionClass->newInstanceArgs($args);
 			return $resource;
 		} else {
 			throw new \InvalidArgumentException("Class `{$resourceClassName}` doesn't exist.");

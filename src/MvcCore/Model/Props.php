@@ -210,7 +210,7 @@ trait Props {
 	/**
 	 * Model resource instance - second model layer 
 	 * with SQL queries for more complex applications.
-	 * @var \MvcCore\Model
+	 * @var \MvcCore\Model|\MvcCore\Ext\Models\Db\Resource
 	 */
 	protected $resource = NULL;
 }
