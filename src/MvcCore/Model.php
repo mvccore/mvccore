@@ -20,7 +20,7 @@ class Model implements \MvcCore\IModel {
 	use \MvcCore\Model\Props;
 	use \MvcCore\Model\Config;
 	use \MvcCore\Model\Connection;
-	use \MvcCore\Model\Resource;
+	use \MvcCore\Model\Resources;
 	use \MvcCore\Model\MetaData;
 	use \MvcCore\Model\Converters;
 	use \MvcCore\Model\Parsers;

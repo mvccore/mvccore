@@ -27,11 +27,18 @@ interface IModel extends \MvcCore\Model\IConstants {
 	
 	/**
 	 * Returns (or creates if necessary) model resource instance.
- 	 * @param  array|NULL $args              Values array with variables to pass into resource `__construct()` method.
-	 * @param  string     $resourceClassPath Automatically initialized with string replaced with `%SELF%` by `static::class` (or by `get_called_class()`).
-	 * @return \MvcCore\Model
+	 * Common resource instance is stored all the time in static store
+	 * under key from resource full class name and constructor arguments.
+	 * @param  array|NULL $args      Values array with variables to pass into resource `__construct()` method.
+	 *                               If `NULL`, recource class will be created without `__construct()` method call.
+	 * @param  string     $classPath Relative namespace path to resource class. It could contains `.` or `..`
+	 *                               to traverse over namespaces (directories) and it could contains `{self}` 
+	 *                               keyword, which is automatically replaced with current class name.
+	 * @thrown \InvalidArgumentException Class `{$resourceClassName}` doesn't exist.
+	 * @return \MvcCore\IModel
 	 */
-	public static function GetResource ($args = [], $resourceClassPath = '%SELF%s\Resource');
+	 */
+	public static function GetCommonResource ($args = NULL, $classPath = '{self}s\CommonResource');
 
 	/**
 	 * Return system configuration file database section properties names.
@@ -205,6 +212,21 @@ interface IModel extends \MvcCore\Model\IConstants {
 	 * @return bool
 	 */
 	public static function IsEqual ($value1, $value2);
+	
+		
+	/**
+	 * Returns (or creates if doesn`t exist) model resource instance.
+	 * Resource instance is stored in protected instance property `resource`.
+	 * @param  array|NULL $args      Values array with variables to pass into resource `__construct()` method.
+	 *                               If `NULL`, recource class will be created without `__construct()` method call.
+	 * @param  string     $classPath Relative namespace path to resource class. It could contains `.` or `..`
+	 *                               to traverse over namespaces (directories) and it could contains `{self}` 
+	 *                               keyword, which is automatically replaced with current class name.
+	 * @thrown \InvalidArgumentException Class `{$resourceClassName}` doesn't exist.
+	 * @return \MvcCore\IModel
+	 */
+	 */
+	public function GetResource ($args = NULL, $classPath = '{self}s\Resource');
 
 	/**
 	 * Collect all model class properties values into array.

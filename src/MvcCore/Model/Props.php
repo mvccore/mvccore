@@ -46,28 +46,36 @@ trait Props {
 			'dsn'		=> '{driver}:host={host};port={port};dbname={database}',
 			'auth'		=> TRUE,
 			'fileDb'	=> FALSE,
-			'options'	=> [],
+			'options'	=> [
+				'\PDO::ATTR_ERRMODE'				=> '\PDO::ERRMODE_EXCEPTION',
+			],
 			'defaults'	=> ['port' => 33000,],
 		],
 		'firebird'		=> [
 			'dsn'		=> '{driver}:dbname={host}:{database};charset={charset}',
 			'auth'		=> TRUE,
 			'fileDb'	=> TRUE,
-			'options'	=> [],
+			'options'	=> [
+				'\PDO::ATTR_ERRMODE'				=> '\PDO::ERRMODE_EXCEPTION',
+			],
 			'defaults'	=> ['charset' => 'UTF-8',],
 		],
 		'ibm'			=> [
-			'dsn'		=> 'ibm:DRIVER={IBM DB2 ODBC DRIVER};DATABASE={database};HOSTNAME={host};PORT={port};PROTOCOL={protocol};UID={user};PWD={password}',
+			'dsn'		=> '{driver}:DRIVER={IBM DB2 ODBC DRIVER};DATABASE={database};HOSTNAME={host};PORT={port};PROTOCOL={protocol};UID={user};PWD={password}',
 			'auth'		=> TRUE,
 			'fileDb'	=> FALSE,
-			'options'	=> [],
+			'options'	=> [
+				'\PDO::ATTR_ERRMODE'				=> '\PDO::ERRMODE_EXCEPTION',
+			],
 			'defaults'	=> ['port' => 56789, 'protocol' => 'TCPIP',],
 		],
 		'informix'		=> [
 			'dsn'		=> "{driver}:host={host}; service={service}; \ndatabase={database}; server={server}; protocol={protocol}; \nEnableScrollableCursors=1",
 			'auth'		=> TRUE,
 			'fileDb'	=> FALSE,
-			'options'	=> [],
+			'options'	=> [
+				'\PDO::ATTR_ERRMODE'				=> '\PDO::ERRMODE_EXCEPTION',
+			],
 			'defaults'	=> ['service' => 9800, 'protocol' => 'onsoctcp',],
 		],
 		'mysql'			=> [
@@ -78,7 +86,9 @@ trait Props {
 				'\PDO::ATTR_TIMEOUT'				=> 30,
 				'\PDO::ATTR_EMULATE_PREPARES'		=> TRUE,
 				'\PDO::MYSQL_ATTR_MULTI_STATEMENTS'	=> TRUE,
+				'\PDO::MYSQL_ATTR_FOUND_ROWS'		=> TRUE,
 				'\PDO::MYSQL_ATTR_INIT_COMMAND'		=> "SET NAMES 'UTF8'",
+				'\PDO::ATTR_ERRMODE'				=> '\PDO::ERRMODE_EXCEPTION',
 			],
 			'defaults'	=> ['port' => 3306,],
 		],
@@ -86,7 +96,9 @@ trait Props {
 			'dsn'		=> '{driver}:{database}',
 			'auth'		=> FALSE,
 			'fileDb'	=> TRUE,
-			'options'	=> [],
+			'options'	=> [
+				'\PDO::ATTR_ERRMODE'				=> '\PDO::ERRMODE_EXCEPTION',
+			],
 			'defaults'	=> [
 				'\PDO::ATTR_TIMEOUT'				=> 30,
 				'\PDO::ATTR_EMULATE_PREPARES'		=> TRUE,
@@ -96,7 +108,9 @@ trait Props {
 			'dsn'		=> '{driver}:host={host};port={port};dbname={database};user={user};password={password}',
 			'auth'		=> TRUE,
 			'fileDb'	=> FALSE,
-			'options'	=> [],
+			'options'	=> [
+				'\PDO::ATTR_ERRMODE'				=> '\PDO::ERRMODE_EXCEPTION',
+			],
 			'defaults'	=> ['port' => 5432,],
 		],
 		'sqlsrv'		=> [
@@ -106,6 +120,7 @@ trait Props {
 			'options'	=> [
 				'\PDO::SQLSRV_ATTR_QUERY_TIMEOUT'	=> 30,
 				'\PDO::SQLSRV_ATTR_DIRECT_QUERY'	=> FALSE,
+				'\PDO::ATTR_ERRMODE'				=> '\PDO::ERRMODE_EXCEPTION',
 			],
 			'defaults'	=> ['port' => 1433,],
 		],
@@ -180,6 +195,9 @@ trait Props {
 	 */
 	protected static $protectedProperties = [
 		'initialValues'	=> FALSE,
+		'resource'		=> FALSE,
+		// properties in extensions `mvccore/ext-model-db` and `mvccore/ext-model-db-*`:
+		'editResource'	=> FALSE,
 	];
 
 	/**
@@ -188,4 +206,11 @@ trait Props {
 	 * @var array
 	 */
 	protected $initialValues = [];
+
+	/**
+	 * Model resource instance - second model layer 
+	 * with SQL queries for more complex applications.
+	 * @var \MvcCore\Model
+	 */
+	protected $resource = NULL;
 }
