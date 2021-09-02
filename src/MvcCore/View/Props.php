@@ -151,6 +151,7 @@ trait Props {
 	 * @var array
 	 */
 	protected static $helpersNamespaces = [
+		/*'\App\Views\Helpers\',*/
 		/*'\MvcCore\Ext\Views\Helpers\'*/
 	];
 

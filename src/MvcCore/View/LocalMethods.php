@@ -90,13 +90,13 @@ trait LocalMethods {
 	protected static function initHelpersNamespaces () {
 		$app = \MvcCore\Application::GetInstance();
 		static::$helpersNamespaces = [
-			'\\MvcCore\\Ext\\Views\Helpers\\',
 			// and '\App\Views\Helpers\' by default:
 			'\\' . implode('\\', [
 				$app->GetAppDir(),
 				$app->GetViewsDir(),
 				static::$helpersDir
 			]) . '\\',
+			'\\MvcCore\\Ext\\Views\Helpers\\',
 		];
 	}
 }
