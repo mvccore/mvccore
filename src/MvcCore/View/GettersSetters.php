@@ -113,4 +113,22 @@ trait GettersSetters {
 	public function GetController () {
 		return $this->controller;
 	}
+
+	/**
+	 * @inheritDocs
+	 * @param  string $controller
+	 * @return \MvcCore\View
+	 */
+	public function SetEncoding ($encoding) {
+		$this->__protected['encoding'] = strtoupper($encoding);
+		return $this;
+	}
+
+	/**
+	 * @inheritDocs
+	 * @return string
+	 */
+	public function GetEncoding () {
+		return $this->__protected['encoding'];
+	}
 }

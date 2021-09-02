@@ -87,6 +87,13 @@ trait Props {
 		  * @var string|NULL
 		  */
 		'reflectionName'	=> NULL,
+		/**
+		  * Default template encoding, used mostly as default 
+		  * encoding param in escaping methods, initialized
+		  * from controller response.
+		  * @var string|NULL
+		  */
+		'encoding'			=> 'UTF-8',
 	];
 
 	/**

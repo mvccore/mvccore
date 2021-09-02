@@ -240,26 +240,26 @@ trait Rendering {
 				/** @var \MvcCore\Router $router */
 				return $router->Url('Controller:Asset', ['path' => $path]);
 			},
-			'escape' => function ($str, $encoding = 'UTF-8') {
-						return $this->Escape($str, $encoding);
+			'escape' => function ($str, $encoding = NULL) {
+				return $this->Escape($str, $encoding);
 			},
-			'escapeHtml' => function ($str, $encoding = 'UTF-8') {
-						return $this->EscapeHtml($str, $encoding);
+			'escapeHtml' => function ($str, $encoding = NULL) {
+				return $this->EscapeHtml($str, $encoding);
 			},
-			'escapeAttr' => function ($str, $double = TRUE, $encoding = 'UTF-8') {
-						return $this->EscapeAttr($str, $double, $encoding);
+			'escapeAttr' => function ($str, $double = TRUE, $encoding = NULL) {
+				return $this->EscapeAttr($str, $double, $encoding);
 			},
-			'escapeXml' => function ($str, $encoding = 'UTF-8') {
-						return $this->EscapeXml($str, $encoding);
+			'escapeXml' => function ($str, $encoding = NULL) {
+				return $this->EscapeXml($str, $encoding);
 			},
 			'escapeJs' => function ($str, $flags = 0, $depth = 512) {
-						return $this->EscapeJs($str, $flags, $depth);
+				return $this->EscapeJs($str, $flags, $depth);
 			},
 			'escapeCss' => function ($str) {
-						return $this->EscapeCss($str);
+				return $this->EscapeCss($str);
 			},
 			'escapeICal' => function ($str) {
-						return $this->EscapeICal($str);
+				return $this->EscapeICal($str);
 			},
 		];
 	}

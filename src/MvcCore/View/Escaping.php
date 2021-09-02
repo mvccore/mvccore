@@ -20,54 +20,63 @@ trait Escaping {
 
 	/**
 	 * @inheritDocs
-	 * @param  string $str 
-	 * @param  string $encoding 
+	 * @param  string      $str 
+	 * @param  string|NULL $encoding 
 	 * @return string
 	 */
-	public function Escape ($str, $encoding = 'UTF-8') {
+	public function Escape ($str, $encoding = NULL) {
 		return htmlspecialchars(
-			(string) $str, $this->escapeGetFlags(ENT_QUOTES), $encoding
+			(string) $str, 
+			$this->escapeGetFlags(ENT_QUOTES), 
+			$encoding ?: $this->__protected['encoding']
 		);
 	}
 	
 	/**
 	 * @inheritDocs
-	 * @param  string $str 
-	 * @param  string $encoding 
+	 * @param  string      $str 
+	 * @param  string|NULL $encoding 
 	 * @return string
 	 */
-	public function EscapeHtml ($str, $encoding = 'UTF-8') {
+	public function EscapeHtml ($str, $encoding = NULL) {
 		return htmlspecialchars(
-			(string) $str, $this->escapeGetFlags(ENT_NOQUOTES), $encoding
+			(string) $str, 
+			$this->escapeGetFlags(ENT_NOQUOTES), 
+			$encoding ?: $this->__protected['encoding']
 		);
 	}
 	
 	/**
 	 * @inheritDocs
-	 * @param  string $str 
-	 * @param  bool   $double 
-	 * @param  string $encoding 
+	 * @param  string      $str 
+	 * @param  bool        $double 
+	 * @param  string|NULL $encoding 
 	 * @return string
 	 */
-	public function EscapeAttr ($str, $double = TRUE, $encoding = 'UTF-8') {
+	public function EscapeAttr ($str, $double = TRUE, $encoding = NULL) {
 		$str = (string) $str;
 		if (mb_strpos($str, '`') !== FALSE && strpbrk($str, ' <>"\'') === FALSE) 
 			$str .= ' '; // protection against innerHTML mXSS vulnerability
 		return htmlspecialchars(
-			$str, $this->escapeGetFlags(ENT_QUOTES), $encoding, $double
+			$str, 
+			$this->escapeGetFlags(ENT_QUOTES), 
+			$encoding ?: $this->__protected['encoding'], 
+			$double
 		);
 	}
 	
 	/**
 	 * @inheritDocs
-	 * @param  string $str 
-	 * @param  string $encoding 
+	 * @param  string      $str 
+	 * @param  string|NULL $encoding 
 	 * @return string
 	 */
-	public function EscapeXml ($str, $encoding = 'UTF-8') {
+	public function EscapeXml ($str, $encoding = NULL) {
 		$str = preg_replace('#[\x00-\x08\x0B\x0C\x0E-\x1F]#', "\u{FFFD}", (string) $str);
 		return htmlspecialchars(
-			$str, $this->escapeGetFlags(ENT_XML1 | ENT_QUOTES), $encoding
+			$str, 
+			$this->escapeGetFlags(ENT_XML1 | ENT_QUOTES), 
+			$encoding ?: $this->__protected['encoding']
 		);
 	}
 	

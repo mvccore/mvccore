@@ -207,6 +207,23 @@ interface IView extends \MvcCore\View\IConstants {
 	public function GetController ();
 
 	/**
+	 * Set default template encoding, used mostly as default 
+	 * encoding param in escaping methods, initialized
+	 * from controller response.
+	 * @param  string $controller
+	 * @return \MvcCore\View
+	 */
+	public function SetEncoding ($encoding);
+
+	/**
+	 * Get default template encoding, used mostly as default 
+	 * encoding param in escaping methods, initialized
+	 * from controller response.
+	 * @return string
+	 */
+	public function GetEncoding ();
+
+	/**
 	 * Set up view rendering arguments  to render layout and action view in both modes properly.
 	 * Set up view instance helpers before rendering.
 	 * @param  int    $renderMode
@@ -362,40 +379,40 @@ interface IView extends \MvcCore\View\IConstants {
 	/**
 	 * Escape string for use inside HTML/XHTML/HTML5 
 	 * node as text content.
-	 * @param  string $str 
-	 * @param  string $encoding 
+	 * @param  string      $str 
+	 * @param  string|NULL $encoding 
 	 * @return string
 	 */
-	public function Escape ($str, $encoding = 'UTF-8');
+	public function Escape ($str, $encoding = NULL);
 	
 	/**
 	 * Escape string for use inside HTML/XHTML/HTML5 
 	 * node between `<` and `>` for attributes definitions.
-	 * @param  string $str 
-	 * @param  string $encoding 
+	 * @param  string      $str 
+	 * @param  string|NULL $encoding 
 	 * @return string
 	 */
-	public function EscapeHtml ($str, $encoding = 'UTF-8');
+	public function EscapeHtml ($str, $encoding = NULL);
 	
 	/**
 	 * Escape string for use inside HTML/XHTML/HTML5 attribute.
-	 * @param  string $str 
-	 * @param  bool   $double 
-	 * @param  string $encoding 
+	 * @param  string      $str 
+	 * @param  bool        $double 
+	 * @param  string|NULL $encoding 
 	 * @return string
 	 */
-	public function EscapeAttr ($str, $double = TRUE, $encoding = 'UTF-8');
+	public function EscapeAttr ($str, $double = TRUE, $encoding = NULL);
 	
 	/**
 	 * Escape string for use inside XML template.
 	 * XML 1.0: \x09 \x0A \x0D and C1 allowed directly, C0 forbidden.
 	 * XML 1.1: \x00 forbidden directly and as a character reference,
 	 *          \x09 \x0A \x0D \x85 allowed directly, C0, C1 and \x7F allowed as character references.
-	 * @param  string $str 
-	 * @param  string $encoding 
+	 * @param  string      $str 
+	 * @param  string|NULL $encoding 
 	 * @return string
 	 */
-	public function EscapeXml ($str, $encoding = 'UTF-8');
+	public function EscapeXml ($str, $encoding = NULL);
 	
 	/**
 	 * Escape string for use inside JS context, including trailing double quotes.

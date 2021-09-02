@@ -302,7 +302,9 @@ trait Dispatching {
 	 */
 	protected function createView () {
 		$viewClass = $this->application->GetViewClass();
-		return $viewClass::CreateInstance()->SetController($this);
+		return $viewClass::CreateInstance()
+			->SetController($this)
+			->SetEncoding($this->response->GetEncoding());
 	}
 
 	/**
