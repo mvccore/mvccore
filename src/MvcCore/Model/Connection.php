@@ -26,7 +26,7 @@ trait Connection {
 	 *         index found, exception is thrown. `TRUE` by default.
 	 *         If `FALSE`, there could be returned connection by
 	 *         first available configuration.
-	 * @throws \InvalidArgumentException
+	 * @throws \InvalidArgumentException|\PDOException|\Throwable
 	 * @return \PDO
 	 */
 	public static function GetConnection ($connectionNameOrConfig = NULL, $strict = TRUE) {
@@ -127,6 +127,7 @@ trait Connection {
 	 * Always create new `\PDO` database connection.
 	 * @param  \stdClass $dbConfig `\stdClass` with members:
 	 *                             driver, host, user, password, database, options, class
+	 * @throws \PDOException|\Throwable
 	 * @return \PDO
 	 */
 	protected static function connect ($dbConfig) {

@@ -55,7 +55,7 @@ interface IModel extends \MvcCore\Model\IConstants {
 	 *                                         index found, exception is thrown. `TRUE` by default.
 	 *                                         If `FALSE`, there could be returned connection by
 	 *                                         first available configuration.
-	 * @throws \InvalidArgumentException
+	 * @throws \InvalidArgumentException|\PDOException|\Throwable
 	 * @return \PDO
 	 */
 	public static function GetConnection ($connectionNameOrConfig = NULL, $strict = TRUE);
