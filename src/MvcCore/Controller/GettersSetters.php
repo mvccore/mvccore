@@ -264,7 +264,7 @@ trait GettersSetters {
 
 	/**
 	 * @inheritDocs
-	 * @return string
+	 * @return string|NULL
 	 */
 	public function GetLayout () {
 		return $this->layout;
@@ -272,10 +272,10 @@ trait GettersSetters {
 
 	/**
 	 * @inheritDocs
-	 * @param  string $layout
+	 * @param  string|NULL $layout
 	 * @return \MvcCore\Controller
 	 */
-	public function SetLayout ($layout = '') {
+	public function SetLayout ($layout) {
 		$this->layout = $layout;
 		return $this;
 	}
@@ -396,7 +396,7 @@ trait GettersSetters {
 	 * @param  string $path
 	 * @return string
 	 */
-	public function AssetUrl ($path = '') {
+	public function AssetUrl ($path) {
 		return $this->router->Url('Controller:Asset', ['path' => $path]);
 	}
 }

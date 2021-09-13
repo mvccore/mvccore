@@ -382,17 +382,17 @@ interface IController extends \MvcCore\Controller\IConstants {
 	/**
 	 * Get layout name to render html wrapper around rendered action view.
 	 * Example: `"front" | "admin" | "account"...`.
-	 * @return string
+	 * @return string|NULL
 	 */
 	public function GetLayout ();
 
 	/**
 	 * Set layout name to render html wrapper around rendered action view.
 	 * Example: `"front" | "admin" | "account"...`.
-	 * @param  string $layout
+	 * @param  string|NULL $layout
 	 * @return \MvcCore\Controller
 	 */
-	public function SetLayout ($layout = '');
+	public function SetLayout ($layout);
 
 	/**
 	 * Get customized sub-controllers template path value. `NULL` by default.
@@ -720,7 +720,7 @@ interface IController extends \MvcCore\Controller\IConstants {
 	 * @param  string $path
 	 * @return string
 	 */
-	public function AssetUrl ($path = '');
+	public function AssetUrl ($path);
 
 	/**
 	 * Alias for `\MvcCore\Session::GetNamespace($name);`
