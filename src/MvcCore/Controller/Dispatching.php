@@ -70,7 +70,7 @@ trait Dispatching {
 		if ($this->dispatchState < \MvcCore\IController::DISPATCH_STATE_INITIALIZED)
 			$this->Init();
 		// If terminated or redirected inside `Init()` method:
-		if ($this->dispatchState == \MvcCore\IController::DISPATCH_STATE_TERMINATED) 
+		if ($this->dispatchState === \MvcCore\IController::DISPATCH_STATE_TERMINATED) 
 			return;
 		// For cases somebody forget to call parent `Init()`:
 		if ($this->dispatchState < \MvcCore\IController::DISPATCH_STATE_INITIALIZED) 
@@ -81,7 +81,7 @@ trait Dispatching {
 		if ($this->dispatchState < \MvcCore\IController::DISPATCH_STATE_PRE_DISPATCHED)
 			$this->PreDispatch();
 		// If terminated or redirected inside `PreDispatch()` method:
-		if ($this->dispatchState == \MvcCore\IController::DISPATCH_STATE_TERMINATED) 
+		if ($this->dispatchState === \MvcCore\IController::DISPATCH_STATE_TERMINATED) 
 			return;
 		// For cases somebody forget to call parent `PreDispatch()`:
 		if ($this->dispatchState < \MvcCore\IController::DISPATCH_STATE_PRE_DISPATCHED) 
@@ -99,7 +99,7 @@ trait Dispatching {
 		)
 			$this->{$actionName}();
 		// If terminated or redirected inside action method:
-		if ($this->dispatchState == \MvcCore\IController::DISPATCH_STATE_TERMINATED) 
+		if ($this->dispatchState === \MvcCore\IController::DISPATCH_STATE_TERMINATED) 
 			return;
 		// For cases somebody forget to call parent action method:
 		if ($this->dispatchState < \MvcCore\IController::DISPATCH_STATE_ACTION_EXECUTED) 
@@ -319,6 +319,10 @@ trait Dispatching {
 		if (!in_array($controller, $this->childControllers, TRUE)) {
 			if ($index === NULL) {
 				$this->childControllers[] = $controller;
+			} else if (isset($this->childControllers[$index]) && $this->childControllers[$index] !== $controller) {
+				throw new \InvalidArgumentException(
+					"[".get_class($this)."] Child controller with type `".get_class($this->childControllers[$index])."` under index `$index` already exists."
+				);
 			} else {
 				$this->childControllers[$index] = $controller;
 			}
@@ -377,6 +381,8 @@ trait Dispatching {
 	 */
 	public function Terminate () {
 		$this->dispatchState = \MvcCore\IController::DISPATCH_STATE_TERMINATED;
+		foreach (self::$allControllers as $controller) 
+			$controller->dispatchState = \MvcCore\IController::DISPATCH_STATE_TERMINATED;
 		self::$allControllers = [];
 		$this->application->Terminate();
 	}
