@@ -76,10 +76,11 @@ interface ISession extends \MvcCore\Session\IConstants {
 
 	/**
 	 * Set MvcCore session namespace expiration by page request(s) count.
-	 * @param  int $hoops
+	 * @param  int $hoopsCount           Requests count.
+	 * @param  int $ignoredRequestsFlags Ignored requests flags, 1022 by default.
 	 * @return \MvcCore\Session
 	 */
-	public function SetExpirationHoops ($hoops);
+	public function SetExpirationHoops ($hoopsCount, $ignoredRequestsFlags = \MvcCore\ISession::EXPIRATION_HOOPS_IGNORE_DEFAULT);
 
 	/**
 	 * Set MvcCore session namespace expiration by expiration seconds.

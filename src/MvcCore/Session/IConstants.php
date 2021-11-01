@@ -57,4 +57,80 @@ interface IConstants {
 	 * Number of seconds for 1 year, 365 days (60 * 60 * 24 * 365 = 3600).
 	 */
 	const EXPIRATION_SECONDS_YEAR	= 31536000;
+
+
+	
+	/**
+	 * Session hoops expiration flag to include all requests.
+	 * @var int
+	 */
+	const EXPIRATION_HOOPS_ALL_REQUESTS		= 0;
+	
+	/**
+	 * Session hoops expiration flag to ignore `GET` requests.
+	 * @var int
+	 */
+	const EXPIRATION_HOOPS_IGNORE_GET		= 1;
+	
+	/**
+	 * Session hoops expiration flag to ignore `POST` requests.
+	 * @var int
+	 */
+	const EXPIRATION_HOOPS_IGNORE_POST		= 2;
+	
+	/**
+	 * Session hoops expiration flag to ignore `HEAD` requests.
+	 * @var int
+	 */
+	const EXPIRATION_HOOPS_IGNORE_HEAD		= 4;
+	
+	/**
+	 * Session hoops expiration flag to ignore `PUT` requests.
+	 * @var int
+	 */
+	const EXPIRATION_HOOPS_IGNORE_PUT		= 8;
+	
+	/**
+	 * Session hoops expiration flag to ignore `DELETE` requests.
+	 * @var int
+	 */
+	const EXPIRATION_HOOPS_IGNORE_DELETE	= 16;
+	
+	/**
+	 * Session hoops expiration flag to ignore `OPTIONS` requests.
+	 * @var int
+	 */
+	const EXPIRATION_HOOPS_IGNORE_OPTIONS	= 32;
+	
+	/**
+	 * Session hoops expiration flag to ignore `PATCH` requests.
+	 * @var int
+	 */
+	const EXPIRATION_HOOPS_IGNORE_PATCH		= 64;
+	
+	/**
+	 * Session hoops expiration flag to ignore `TRACE` requests.
+	 * @var int
+	 */
+	const EXPIRATION_HOOPS_IGNORE_TRACE		= 128;
+	
+	/**
+	 * Session hoops expiration flag to ignore ajax requests.
+	 * @var int
+	 */
+	const EXPIRATION_HOOPS_IGNORE_AJAX		= 256;
+	
+	/**
+	 * Session hoops expiration flag to ignore redirect requests.
+	 * @var int
+	 */
+	const EXPIRATION_HOOPS_IGNORE_REDIRECTS	= 512;
+	
+	/**
+	 * Session hoops expiration flag to ignore all request 
+	 * types except `GET` non ajax non redirect requests.
+	 * @var int
+	 */
+	const EXPIRATION_HOOPS_IGNORE_DEFAULT	= 1022; // 512 | 256 | 128 | 64 | 32 | 16 | 8 | 4 | 2
+
 }

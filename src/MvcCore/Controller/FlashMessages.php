@@ -164,7 +164,7 @@ trait FlashMessages {
 	 */
 	protected static function flashMessagesGetSession (\MvcCore\IController $mainCtrl) {
 		$session = $mainCtrl->GetSessionNamespace($mainCtrl::FLASH_MESSAGES_SESSION_NAMESPACE)
-			->SetExpirationHoops(1)
+			->SetExpirationHoops(1, \MvcCore\ISession::EXPIRATION_HOOPS_IGNORE_DEFAULT)
 			->SetExpirationSeconds(0);
 		if ($session->store === NULL) 
 			$session->store = [];

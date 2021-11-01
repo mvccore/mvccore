@@ -42,11 +42,12 @@ trait NamespaceMethods {
 
 	/**
 	 * @inheritDocs
-	 * @param  int $hoops
+	 * @param  int $hoopsCount           Requests count.
+	 * @param  int $ignoredRequestsFlags Ignored requests flags, 1022 by default.
 	 * @return \MvcCore\Session
 	 */
-	public function SetExpirationHoops ($hoops) {
-		static::$meta->hoops[$this->__name] = $hoops;
+	public function SetExpirationHoops ($hoopsCount, $ignoredRequestsFlags = \MvcCore\ISession::EXPIRATION_HOOPS_IGNORE_DEFAULT) {
+		static::$meta->hoops[$this->__name] = [$hoopsCount, $ignoredRequestsFlags];
 		return $this;
 	}
 

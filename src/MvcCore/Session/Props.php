@@ -39,11 +39,23 @@ trait Props {
 	 * @var array|\stdClass
 	 */
 	protected static $meta = [
-		/** @var \string[] Array with all namespace records names. */
+		/**
+		 * Array with all namespace records names.
+		 * @var \string[]
+		 */
 		'names'			=> [],
-		/** @var \int[] Array with all namespace records page requests count to expire. Keyed by namespace names. */
+		/**
+		 * Array with all namespace records page requests count to expire. 
+		 * Keys are namespace names, values are arrays with first item to be
+		 * hoops count and second item to be ignoring requests flags to ignore
+		 * specific request to be counted.
+		 * @var \int[][]
+		 */
 		'hoops'			=> [],
-		/** @var \int[] Array with all records expiration times. Keyed by namespace names. */
+		/**
+		 * Array with all records expiration times. Keyed by namespace names.
+		 * @var \int[]
+		 */
 		'expirations'	=> [],
 	];
 
@@ -72,4 +84,10 @@ trait Props {
 	 * @var \MvcCore\Request
 	 */
 	protected static $req = NULL;
+
+	/**
+	 * Response instance reference.
+	 * @var \MvcCore\Response
+	 */
+	protected static $res = NULL;
 }

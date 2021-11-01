@@ -41,7 +41,7 @@ trait Starting {
 		static::$sessionStartTime = time();
 		static::$sessionMaxTime = static::$sessionStartTime;
 		static::setUpMeta();
-		static::setUpData();
+		static::setUpData($req);
 	}
 
 	/**
@@ -66,7 +66,7 @@ trait Starting {
 					static::$sessionStartTime = time();
 					static::$sessionMaxTime = static::$sessionStartTime;
 					static::setUpMeta();
-					static::setUpData();
+					static::setUpData($req);
 				}
 				static::$started = $alreadyStarted;
 			}
