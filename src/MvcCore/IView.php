@@ -293,18 +293,22 @@ interface IView extends \MvcCore\View\IConstants {
 	/**
 	 * Render action template script or any include script and return it's result as reference.
 	 * Do not use this method in layout sub-templates, use method `RenderLayout()` instead.
-	 * @param  string $relativePath
+	 * @param  string $relativePath Relative path from current view script.
+	 * @param  array  $variables    Associative array with variables to pass it 
+	 *                              into view script inside view store or as local variables.
 	 * @return string
 	 */
-	public function RenderScript ($relativePath);
+	public function RenderScript ($relativePath, $variables = []);
 
 	/**
 	 * Render layout template script or any include script and return it's result as reference.
 	 * Do not use this method in action sub-templates, use method `RenderScript()` instead.
-	 * @param  string $relativePath
+	 * @param  string $relativePath Relative path from current view script.
+	 * @param  array  $variables    Associative array with variables to pass it 
+	 *                              into view script inside view store or as local variables.
 	 * @return string
 	 */
-	public function RenderLayout ($relativePath);
+	public function RenderLayout ($relativePath, $variables = []);
 
 	/**
 	 * This method is INTERNAL, always called from `\MvcCore\Controller::Render();`.

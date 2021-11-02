@@ -20,19 +20,33 @@ trait Rendering {
 
 	/**
 	 * @inheritDocs
-	 * @param  string $relativePath
+	 * @param  string $relativePath Relative path from current view script.
+	 * @param  array  $variables    Associative array with variables to pass it 
+	 *                              into view script inside view store or as local variables.
 	 * @return string
 	 */
-	public function RenderScript ($relativePath) {
+	public function RenderScript ($relativePath, $variables = []) {
+		if (count($variables) > 0) {
+			$currentStore = & $this->__protected['store'];
+			// always overvrite existing keys:
+			$this->__protected['store'] = array_merge($currentStore, $variables);
+		}
 		return $this->Render(static::$scriptsDir, $relativePath);
 	}
 
 	/**
 	 * @inheritDocs
-	 * @param  string $relativePath
+	 * @param  string $relativePath Relative path from current view script.
+	 * @param  array  $variables    Associative array with variables to pass it 
+	 *                              into view script inside view store or as local variables.
 	 * @return string
 	 */
-	public function RenderLayout ($relativePath) {
+	public function RenderLayout ($relativePath, $variables = []) {
+		if (count($variables) > 0) {
+			$currentStore = & $this->__protected['store'];
+			// always overvrite existing keys:
+			$this->__protected['store'] = array_merge($currentStore, $variables);
+		}
 		return $this->Render(static::$layoutsDir, $relativePath);
 	}
 
