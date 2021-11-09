@@ -143,6 +143,13 @@ interface IApplication extends \MvcCore\Application\IConstants {
 	public function GetViewClass ();
 
 	/**
+	 * Get (optionally cached) system config INI file as `stdClass` or `array`,
+	 * placed by default in: `"/App/config.ini"`.
+	 * @return \MvcCore\Config|NULL
+	 */
+	public function GetConfig ();
+
+	/**
 	 * Returns environment detection instance.
 	 * @return \MvcCore\Environment
 	 */

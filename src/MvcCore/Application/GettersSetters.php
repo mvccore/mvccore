@@ -146,6 +146,18 @@ trait GettersSetters {
 
 	/**
 	 * @inheritDocs
+	 * @var \MvcCore\Config|NULL
+	 */
+	public function GetConfig () {
+		if ($this->config === NULL) {
+			$configClass = $this->configClass;
+			$this->config = $configClass::GetSystem();
+		}
+		return $this->config;
+	}
+
+	/**
+	 * @inheritDocs
 	 * @var \MvcCore\Environment
 	 */
 	public function GetEnvironment () {
