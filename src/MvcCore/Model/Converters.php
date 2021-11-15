@@ -28,6 +28,10 @@ trait Converters {
 	protected static function convertToScalar ($value, $formatArgs = []) {
 		if (is_bool($value)) {
 			return $value ? 1 : 0 ;
+		} else if (is_float($value)) {
+			if (is_array($formatArgs) && count($formatArgs) > 0) 
+				return call_user_func_array('round', array_merge([$value], $formatArgs));
+			return $value;
 		} else if (is_array($value) || $value instanceof \Traversable) { // `is_iterable()`
 			$items = [];
 			foreach ($value as $item)
