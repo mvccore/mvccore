@@ -106,7 +106,9 @@ trait InternalInits {
 			: $this->documentRoot;
 		$this->scriptName = mb_substr($indexFilePath, $lastSlashPos);
 
-		$args = $this->globalServer['argv'];
+		$args = isset($this->globalServer['argv']) 
+			? $this->globalServer['argv'] 
+			: []; // to be able to init any empty dummy request object in CLI
 		array_shift($args);
 		$params = [];
 		if ($args) {
