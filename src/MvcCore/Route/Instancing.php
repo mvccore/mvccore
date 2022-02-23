@@ -286,7 +286,13 @@ trait Instancing {
 	 * @return void
 	 */
 	protected function constructCtrlOrActionByName () {
-		if (!$this->controller && !$this->action && strpos($this->name, ':') !== FALSE && strlen($this->name) > 1) {
+		if (
+			!$this->controller && 
+			!$this->action && 
+			$this->name !== NULL &&
+			strpos($this->name, ':') !== FALSE && 
+			strlen($this->name) > 1
+		) {
 			list($ctrl, $action) = explode(':', $this->name);
 			if ($ctrl) $this->controller = $ctrl;
 			if ($action) $this->action = $action;

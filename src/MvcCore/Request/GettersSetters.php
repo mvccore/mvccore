@@ -765,7 +765,7 @@ trait GettersSetters {
 			$rawHeader = isset($this->globalServer['HTTP_X_REQUESTED_WITH'])
 				? $this->globalServer['HTTP_X_REQUESTED_WITH']
 				: $this->GetHeader('X-Requested-With', FALSE);
-			$this->ajax = mb_strtolower($rawHeader) === 'xmlhttprequest';
+			$this->ajax = $rawHeader !== NULL && mb_strtolower($rawHeader) === 'xmlhttprequest';
 		}
 		return $this->ajax;
 	}

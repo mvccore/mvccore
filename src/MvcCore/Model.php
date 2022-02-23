@@ -16,7 +16,7 @@ namespace MvcCore;
 /**
  * @inheritDocs
  */
-class Model implements \MvcCore\IModel {
+class Model implements \MvcCore\IModel, \JsonSerializable {
 	use \MvcCore\Model\Props;
 	use \MvcCore\Model\Config;
 	use \MvcCore\Model\Connection;

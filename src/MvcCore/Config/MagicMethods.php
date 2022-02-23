@@ -91,6 +91,7 @@ trait MagicMethods {
 	 * Return the current element.
 	 * @return mixed
 	 */
+	#[\ReturnTypeWillChange]
 	public function current () {
 		return current($this->currentData);
 	}
@@ -99,6 +100,7 @@ trait MagicMethods {
 	 * Return the key of the current element.
 	 * @return string|int
 	 */
+	#[\ReturnTypeWillChange]
 	public function key () {
 		return key($this->currentData);
 	}
@@ -107,6 +109,7 @@ trait MagicMethods {
 	 * Move forward to next element.
 	 * @return void
 	 */
+	#[\ReturnTypeWillChange]
 	public function next () {
 		return next($this->currentData);
 	}
@@ -115,6 +118,7 @@ trait MagicMethods {
 	 * Rewind the Iterator to the first element.
 	 * @return void
 	 */
+	#[\ReturnTypeWillChange]
 	public function rewind () {
 		reset($this->currentData);
 	}
@@ -123,6 +127,7 @@ trait MagicMethods {
 	 * Checks if current position is valid.
 	 * @return bool
 	 */
+	#[\ReturnTypeWillChange]
 	public function valid () {
 		return key($this->currentData) !== NULL;
 	}
@@ -136,6 +141,7 @@ trait MagicMethods {
 	 * @param  mixed $offset
 	 * @return bool
 	 */
+	#[\ReturnTypeWillChange]
 	public function offsetExists ($offset) {
 		return isset($this->currentData[$offset]);
 	}
@@ -146,6 +152,7 @@ trait MagicMethods {
 	 * @param  mixed $offset
 	 * @return mixed
 	 */
+	#[\ReturnTypeWillChange]
 	public function offsetGet ($offset) {
 		return isset($this->currentData[$offset]) ? $this->currentData[$offset] : NULL;
 	}
@@ -157,6 +164,7 @@ trait MagicMethods {
 	 * @param  mixed $value
 	 * @return void
 	 */
+	#[\ReturnTypeWillChange]
 	public function offsetSet ($offset, $value) {
 		if ($offset === NULL) {
 			$this->currentData[] = $value;
@@ -171,6 +179,7 @@ trait MagicMethods {
 	 * @param  mixed $offset
 	 * @return void
 	 */
+	#[\ReturnTypeWillChange]
 	public function offsetUnset ($offset) {
 		unset($this->currentData[$offset]);
 	}
@@ -183,6 +192,7 @@ trait MagicMethods {
 	 * Example: `count($cfg);`
 	 * @return int
 	 */
+	#[\ReturnTypeWillChange]
 	public function count () {
 		return count($this->currentData);
 	}

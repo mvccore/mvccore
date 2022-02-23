@@ -117,8 +117,9 @@ trait MagicMethods {
 	/**
 	 * @inheritDocs
 	 * @param  int $propsFlags
-	 * @return mixed
+	 * @return array|mixed
 	 */
+	#[\ReturnTypeWillChange]
 	public function jsonSerialize ($propsFlags = 0) {
 		$data = static::GetValues($propsFlags, TRUE);
 		return array_filter($data, function ($val) { return !is_resource($val); });

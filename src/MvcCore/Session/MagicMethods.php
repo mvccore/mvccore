@@ -88,6 +88,7 @@ trait MagicMethods {
 	 * Example: `count($sessionNamespace);`
 	 * @return int
 	 */
+	#[\ReturnTypeWillChange]
 	public function count () {
 		return count((array) $_SESSION[$this->__name]);
 	}
@@ -99,6 +100,7 @@ trait MagicMethods {
 	 * Return the current element.
 	 * @return mixed
 	 */
+	#[\ReturnTypeWillChange]
 	public function current () {
 		return current($_SESSION[$this->__name]);
 	}
@@ -107,6 +109,7 @@ trait MagicMethods {
 	 * Return the key of the current element.
 	 * @return string|int
 	 */
+	#[\ReturnTypeWillChange]
 	public function key () {
 		return key($_SESSION[$this->__name]);
 	}
@@ -115,6 +118,7 @@ trait MagicMethods {
 	 * Move forward to next element.
 	 * @return void
 	 */
+	#[\ReturnTypeWillChange]
 	public function next () {
 		return next($_SESSION[$this->__name]);
 	}
@@ -123,6 +127,7 @@ trait MagicMethods {
 	 * Rewind the Iterator to the first element.
 	 * @return void
 	 */
+	#[\ReturnTypeWillChange]
 	public function rewind () {
 		reset($_SESSION[$this->__name]);
 	}
@@ -131,6 +136,7 @@ trait MagicMethods {
 	 * Checks if current position is valid.
 	 * @return bool
 	 */
+	#[\ReturnTypeWillChange]
 	public function valid () {
 		return key($_SESSION[$this->__name]) !== NULL;
 	}
@@ -144,6 +150,7 @@ trait MagicMethods {
 	 * @param mixed $offset
 	 * @param mixed $value
 	 */
+	#[\ReturnTypeWillChange]
 	public function offsetSet ($offset, $value) {
 		$data = & $_SESSION[$this->__name];
 		if ($offset === NULL) {
@@ -159,6 +166,7 @@ trait MagicMethods {
 	 * @param  mixed $offset
 	 * @return mixed
 	 */
+	#[\ReturnTypeWillChange]
 	public function offsetGet ($offset) {
 		$data = & $_SESSION[$this->__name];
 		return isset($data[$offset]) ? $data[$offset] : NULL;
@@ -170,6 +178,7 @@ trait MagicMethods {
 	 * @param  mixed $offset
 	 * @return bool
 	 */
+	#[\ReturnTypeWillChange]
 	public function offsetExists ($offset) {
 		return isset($_SESSION[$this->__name][$offset]);
 	}
@@ -179,6 +188,7 @@ trait MagicMethods {
 	 * Example: `unset($sessionNamespace['any']);`
 	 * @param mixed $offset
 	 */
+	#[\ReturnTypeWillChange]
 	public function offsetUnset ($offset) {
 		unset($_SESSION[$this->__name][$offset]);
 	}
