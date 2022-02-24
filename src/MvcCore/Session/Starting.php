@@ -96,7 +96,8 @@ trait Starting {
 	 */
 	protected static function preventSessionFixation (\MvcCore\IRequest $req) {
 		$sessionCookieName = session_name();
-		$rawCookieHeader = ';' . trim($req->GetHeader('Cookie', '-,=;a-zA-Z0-9'), ';') . ';';
+		$rawCookieHeader = $req->GetHeader('Cookie', '-,=;a-zA-Z0-9');
+		$rawCookieHeader = ';' . trim($rawCookieHeader ?: '', ';') . ';';
 		$sessionCookieNameExtended = ';' . $sessionCookieName . '=';
 		// check if there has been executed any potentional client XSS for session fixation:
 		if (substr_count($rawCookieHeader, $sessionCookieNameExtended) > 1) {
