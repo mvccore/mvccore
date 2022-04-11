@@ -71,7 +71,8 @@ trait UrlByQuery {
 			$actionPc = $params[static::URL_PARAM_ACTION];
 			unset($params[static::URL_PARAM_ACTION]);
 		}
-		$ctrlPc = str_replace('\\', '/', $ctrlPc);
+		if ($ctrlPc !== null) 
+			$ctrlPc = str_replace('\\', '/', $ctrlPc);
 		return [$ctrlPc, $actionPc];
 	}
 
@@ -92,8 +93,8 @@ trait UrlByQuery {
 		$toolClass = self::$toolClass;
 		$amp = $this->getQueryStringParamsSepatator();
 		list($dfltCtrlPc, $dftlActionPc) = $this->application->GetDefaultControllerAndActionNames();
-		$ctrlIsNotDefault = $ctrlPc !== $dfltCtrlPc;
-		$actionIsNotDefault = $actionPc !== $dftlActionPc;
+		$ctrlIsNotDefault = $ctrlPc !== $dfltCtrlPc && $ctrlPc !== NULL;
+		$actionIsNotDefault = $actionPc !== $dftlActionPc && $actionPc !== NULL;
 		$sep = '?';
 		if ($params || $ctrlIsNotDefault || $actionIsNotDefault) 
 			$result .= $this->request->GetScriptName();
