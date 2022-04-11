@@ -35,7 +35,7 @@ interface ITool {
 	 * @param  string $pascalCase
 	 * @return string
 	 */
-	public static function GetDashedFromPascalCase ($pascalCase = '');
+	public static function GetDashedFromPascalCase ($pascalCase);
 
 	/**
 	 * Convert all string `"from" => "to"`:
@@ -46,7 +46,7 @@ interface ITool {
 	 * @param  string $dashed
 	 * @return string
 	 */
-	public static function GetPascalCaseFromDashed ($dashed = '');
+	public static function GetPascalCaseFromDashed ($dashed);
 
 	/**
 	 * Convert all string `"from" => "to"`:
@@ -57,7 +57,7 @@ interface ITool {
 	 * @param  string $pascalCase
 	 * @return string
 	 */
-	public static function GetUnderscoredFromPascalCase ($pascalCase = '');
+	public static function GetUnderscoredFromPascalCase ($pascalCase);
 
 	/**
 	 * Convert all string `"from" => "to"`:
@@ -68,7 +68,7 @@ interface ITool {
 	 * @param  string $underscored
 	 * @return string
 	 */
-	public static function GetPascalCaseFromUnderscored ($underscored = '');
+	public static function GetPascalCaseFromUnderscored ($underscored);
 
 	/**
 	 * Safely encode json string from php value.

@@ -23,7 +23,7 @@ trait StringConversions {
 	 * @param  string $pascalCase
 	 * @return string
 	 */
-	public static function GetDashedFromPascalCase ($pascalCase = '') {
+	public static function GetDashedFromPascalCase ($pascalCase) {
 		/*
 		// This commented version converts `MyWFTValue` to `my-wtf-value`, which 
 		// is cool, but inputs `MyWFTValue` and `MyWtfValue` have the same 
@@ -56,7 +56,7 @@ trait StringConversions {
 	 * @param  string $dashed
 	 * @return string
 	 */
-	public static function GetPascalCaseFromDashed ($dashed = '') {
+	public static function GetPascalCaseFromDashed ($dashed) {
 		$a = explode('/', $dashed);
 		if (PHP_VERSION_ID < 50432) {
 			foreach ($a as & $b) $b = ucfirst(str_replace('-', '', static::upperCaseWords($b, '-')));
@@ -71,7 +71,7 @@ trait StringConversions {
 	 * @param  string $pascalCase
 	 * @return string
 	 */
-	public static function GetUnderscoredFromPascalCase ($pascalCase = '') {
+	public static function GetUnderscoredFromPascalCase ($pascalCase) {
 		/*
 		// This commented version converts `MyWFTValue` to `my_wtf_value`, which 
 		// is cool, but inputs `MyWFTValue` and `MyWtfValue` have the same 
@@ -103,7 +103,7 @@ trait StringConversions {
 	 * @param  string $underscored
 	 * @return string
 	 */
-	public static function GetPascalCaseFromUnderscored ($underscored = '') {
+	public static function GetPascalCaseFromUnderscored ($underscored) {
 		$a = explode('/', $underscored);
 		if (PHP_VERSION_ID < 50432) {
 			foreach ($a as & $b) $b = ucfirst(str_replace('_', '', static::upperCaseWords($b, '_')));
