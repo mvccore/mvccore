@@ -109,16 +109,29 @@ trait Helpers {
 		// except forms like `'ClassName::methodName'` and `['childClassName', 'parent::methodName']`
 		// and `[$childInstance, 'parent::methodName']`.
 		$closureCalling = (
+			$handler instanceof \Closure || !(
 			(is_string($handler) && strpos($handler, '::') !== FALSE) ||
 			(is_array($handler) && strpos($handler[1], '::') !== FALSE)
-		) ? FALSE : TRUE;
-		if ($priorityIndex === NULL) {
-			$handlers[] = [$closureCalling, $handler];
-		} else {
+		));
+		
+		if ($priorityIndex !== NULL) {
 			if (isset($handlers[$priorityIndex])) {
-				array_splice($handlers, $priorityIndex, 0, [$closureCalling, $handler]);
+				$handlers[$priorityIndex][] = [$closureCalling, $handler];
 			} else {
-				$handlers[$priorityIndex] = [$closureCalling, $handler];
+				$handlers[$priorityIndex] = [[$closureCalling, $handler]];
+			}
+		} else {
+			// check if there could be an array overflow
+			if (PHP_VERSION_ID >= 70300) {
+				$lastHandlerKey = array_key_last($handlers);
+			} else {
+				$handlersKeys = array_keys($handlers);
+				$lastHandlerKey = $handlersKeys[count($handlersKeys) - 1];
+				if ($lastHandlerKey === PHP_INT_MAX) {
+					$handlers[PHP_INT_MAX][] = [$closureCalling, $handler];
+				} else {
+					$handlers[] = [[$closureCalling, $handler]];
+				}
 			}
 		}
 		return $this;

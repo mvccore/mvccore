@@ -97,27 +97,30 @@ trait Dispatching {
 	public function ProcessCustomHandlers (& $handlers = []) {
 		if (!$handlers || $this->request->IsInternalRequest() === TRUE) return TRUE;
 		$result = TRUE;
-		foreach ($handlers as $handlerRecord) {
-			list ($closureCalling, $handler) = $handlerRecord;
-			$subResult = NULL;
-			try {
-				if ($closureCalling) {
-					$subResult = $handler($this->request, $this->response);
-				} else {
-					$subResult = call_user_func($handler, $this->request, $this->response);
-				}
-				if ($subResult === FALSE) {
+		reset($handlers);
+		ksort($handlers, SORT_NUMERIC);
+		foreach ($handlers as $handlerRecords) {
+			foreach ($handlerRecords as list($closureCalling, $handler)) {
+				$subResult = NULL;
+				try {
+					if ($closureCalling) {
+						$subResult = $handler($this->request, $this->response);
+					} else {
+						$subResult = call_user_func($handler, $this->request, $this->response);
+					}
+					if ($subResult === FALSE) {
+						$result = FALSE;
+						break;
+					}
+				} catch (\Exception $e) { // backward compatibility
+					$this->DispatchException($e);
+					$result = FALSE;
+					break;
+				} catch (\Throwable $e) {
+					$this->DispatchException($e);
 					$result = FALSE;
 					break;
 				}
-			} catch (\Exception $e) { // backward compatibility
-				$this->DispatchException($e);
-				$result = FALSE;
-				break;
-			} catch (\Throwable $e) {
-				$this->DispatchException($e);
-				$result = FALSE;
-				break;
 			}
 		}
 		return $result;
