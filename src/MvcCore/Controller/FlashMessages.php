@@ -55,7 +55,7 @@ trait FlashMessages {
 			$session->Destroy();
 		} else {
 			$flashMessagesToKeep = [];
-			$reqStartDatetime = (new \DateTime)->setTimestamp($this->request->GetStartTime());
+			$reqStartDatetime = (new \DateTime)->setTimestamp(round($this->request->GetStartTime()));
 			foreach ($store as $hash => $flashMessage) {
 				$hoops = $flashMessage->hoops - 1;
 				$expirationIsNull = $flashMessage->expiration === NULL;
