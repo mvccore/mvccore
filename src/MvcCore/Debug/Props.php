@@ -77,6 +77,7 @@ trait Props {
 	 */
 	protected static $systemConfigDebugProps = [
 		'sectionName'		=> 'debug',				// debug section root node
+		'enabled'			=> 'enabled',			// force property to enable or disable debugging
 		'emailRecepient'	=> 'emailRecepient',	// debug email, `admin@localhost` by default
 		'logDirectory'		=> 'logDirectory',		// log directory, `/Var/Logs` by default
 		'strictExceptions'	=> 'strictExceptions',	// strict exceptions mode, `TRUE` by default

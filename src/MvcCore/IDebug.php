@@ -26,12 +26,12 @@ interface IDebug extends \MvcCore\Debug\IConstants {
 
 	/**
 	 * Initialize debugging and logging, once only.
-	 * @param  bool $forceDevelopmentMode If defined as `TRUE` or `FALSE`,
-	 *                                    debugging mode will be set not 
-	 *                                    by config but by this value.
+	 * @param  bool $forceDebugging If defined as `TRUE` or `FALSE`,
+	 *                              debugging mode will be set not 
+	 *                              by config but by this value.
 	 * @return void
 	 */
-	public static function Init ($forceDevelopmentMode = NULL);
+	public static function Init ($forceDebugging = NULL);
 
 	/**
 	 * Configure strict exceptions mode, mode is enabled by default.
@@ -43,6 +43,24 @@ interface IDebug extends \MvcCore\Debug\IConstants {
 	 * @return bool|NULL
 	 */
 	public static function SetStrictExceptionsMode ($strictExceptionsMode, array $errorLevelsToExceptions = []);
+
+	/**
+	 * Get debugging boolean if debugging is enabled.
+	 * This value is automatically resolved in debug 
+	 * class static method `Init()` by many conditions.
+	 * It's mostly `TRUE` if environment is not production.
+	 * @return bool
+	 */
+	public static function GetDebugging ();
+
+	/**
+	 * Try to load system config data by configured config class 
+	 * and try to find and read `[debug]` section as `\stdClass` 
+	 * or if there is no config or nothing in config,
+	 * return the object with all records with `NULL` values.
+	 * @return \stdClass
+	 */
+	public static function GetSystemCfgDebugSection ();
 
 	/**
 	 * Starts/stops stopwatch.

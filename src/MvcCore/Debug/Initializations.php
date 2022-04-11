@@ -20,12 +20,12 @@ trait Initializations {
 
 	/**
 	 * @inheritDocs
-	 * @param  bool $forceDevelopmentMode If defined as `TRUE` or `FALSE`,
-	 *                                    debugging mode will be set not
-	 *                                    by config but by this value.
+	 * @param  bool $forceDebugging If defined as `TRUE` or `FALSE`,
+	 *                              debugging mode will be set not
+	 *                              by config but by this value.
 	 * @return void
 	 */
-	public static function Init ($forceDevelopmentMode = NULL) {
+	public static function Init ($forceDebugging = NULL) {
 		if (static::$debugging !== NULL) return;
 
 		if (static::$strictExceptionsMode === NULL)
@@ -33,12 +33,17 @@ trait Initializations {
 
 		$app = static::$app ?: (static::$app = \MvcCore\Application::GetInstance());
 		static::$requestBegin = $app->GetRequest()->GetStartTime();
-
-		if (gettype($forceDevelopmentMode) == 'boolean') {
-			static::$debugging = $forceDevelopmentMode;
+		
+		if (is_bool($forceDebugging)) {
+			static::$debugging = $forceDebugging;
 		} else {
-			$environment = $app->GetEnvironment();
-			static::$debugging = !$environment->IsProduction();
+			$sysCfgDebug = static::GetSystemCfgDebugSection();
+			if (isset($sysCfgDebug->enabled)) {
+				static::$debugging = !!$sysCfgDebug->enabled;
+			} else {
+				$environment = $app->GetEnvironment();
+				static::$debugging = !$environment->IsProduction();	
+			}
 		}
 		
 		// do not initialize log directory here every time, initialize log
@@ -88,6 +93,45 @@ trait Initializations {
 	}
 
 	/**
+	 * @inheritDocs
+	 * @return bool
+	 */
+	public static function GetDebugging () {
+		return static::$debugging;
+	}
+
+	/**
+	 * @inheritDocs
+	 * @return \stdClass
+	 */
+	public static function GetSystemCfgDebugSection () {
+		if (self::$systemConfigDebugValues !== NULL) 
+			return self::$systemConfigDebugValues;
+		$sysConfigProps = array_merge([], static::$systemConfigDebugProps);
+		$sectionName = $sysConfigProps['sectionName'];
+		unset($sysConfigProps['sectionName']);
+		$app = static::$app ?: (static::$app = \MvcCore\Application::GetInstance());
+		$configClass = $app->GetConfigClass();
+		$cfg = $configClass::GetSystem();
+		if ($cfg === FALSE) 
+			return (object) array_fill_keys($sysConfigProps, NULL);
+		if (isset($cfg->{$sectionName})) {
+			$result = $cfg->{$sectionName};
+			if (is_array($result)) {
+				foreach ($sysConfigProps as $prop)
+					if (!isset($result[$prop]))
+						$result[$prop] = NULL;
+			} else {
+				foreach ($sysConfigProps as $prop)
+					if (!isset($result->{$prop}))
+						$result->{$prop} = NULL;
+			}
+		}
+		self::$systemConfigDebugValues = $result;
+		return $result;
+	}
+
+	/**
 	 * Initialize strict exceptions mode in default levels or in customized
 	 * levels from system config.
 	 * @param  bool|NULL $strictExceptionsMode
@@ -96,9 +140,9 @@ trait Initializations {
 	protected static function initStrictExceptionsMode ($strictExceptionsMode) {
 		$errorLevelsToExceptions = [];
 		if ($strictExceptionsMode !== FALSE) {
-			$sysCfgDebug = static::getSystemCfgDebugSection();
-			if (isset($sysCfgDebug['strictExceptions'])) {
-				$rawStrictExceptions = $sysCfgDebug['strictExceptions'];
+			$sysCfgDebug = static::GetSystemCfgDebugSection();
+			if ($sysCfgDebug->strictExceptions !== NULL) {
+				$rawStrictExceptions = $sysCfgDebug->strictExceptions;
 				if (
 					$rawStrictExceptions === 0 ||
 					$rawStrictExceptions === FALSE
@@ -143,10 +187,8 @@ trait Initializations {
 	 */
 	protected static function initLogDirectory () {
 		//if (static::$logDirectoryInitialized) return;
-		$sysCfgDebug = static::getSystemCfgDebugSection();
-		$logDirConfiguredPath = isset($sysCfgDebug['logDirectory'])
-			? $sysCfgDebug['logDirectory']
-			: static::$LogDirectory;
+		$sysCfgDebug = static::GetSystemCfgDebugSection();
+		$logDirConfiguredPath = $sysCfgDebug->logDirectory ?: static::$LogDirectory;
 		if (mb_substr($logDirConfiguredPath, 0, 1) === '~') {
 			$app = static::$app ?: (static::$app = \MvcCore\Application::GetInstance());
 			$logDirAbsPath = $app->GetRequest()->GetAppRoot() . '/' . ltrim(mb_substr($logDirConfiguredPath, 1), '/');
@@ -173,28 +215,4 @@ trait Initializations {
 		return $logDirAbsPath;
 	}
 
-	/**
-	 * Try to load system config by configured config class and try to find and
-	 * read `debug` section as associative array (or return an empty array).
-	 * @return array
-	 */
-	protected static function getSystemCfgDebugSection () {
-		if (self::$systemConfigDebugValues !== NULL) return self::$systemConfigDebugValues;
-		$result = [];
-		$app = static::$app ?: (static::$app = \MvcCore\Application::GetInstance());
-		$configClass = $app->GetConfigClass();
-		$cfg = $configClass::GetSystem();
-		if ($cfg === FALSE) return $result;
-		$cfgProps = (object) static::$systemConfigDebugProps;
-		if (!isset($cfg->{$cfgProps->sectionName})) return $result;
-		$cfgDebug = & $cfg->{$cfgProps->sectionName};
-		if (isset($cfgDebug->{$cfgProps->emailRecepient}))
-			$result['emailRecepient'] = $cfgDebug->{$cfgProps->emailRecepient};
-		if (isset($cfgDebug->{$cfgProps->logDirectory}))
-			$result['logDirectory'] = $cfgDebug->{$cfgProps->logDirectory};
-		if (isset($cfgDebug->{$cfgProps->strictExceptions}))
-			$result['strictExceptions'] = $cfgDebug->{$cfgProps->strictExceptions};
-		self::$systemConfigDebugValues = $result;
-		return $result;
-	}
 }
