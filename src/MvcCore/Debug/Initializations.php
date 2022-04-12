@@ -113,7 +113,7 @@ trait Initializations {
 		$app = static::$app ?: (static::$app = \MvcCore\Application::GetInstance());
 		$configClass = $app->GetConfigClass();
 		$cfg = $configClass::GetSystem();
-		if ($cfg === FALSE) 
+		if ($cfg === NULL) 
 			return (object) array_fill_keys($sysConfigProps, NULL);
 		if (isset($cfg->{$sectionName})) {
 			$result = $cfg->{$sectionName};
