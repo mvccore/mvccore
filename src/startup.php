@@ -21,8 +21,23 @@ call_user_func(function () {
 	}
 	if (!defined('MVCCORE_DOCUMENT_ROOT')) {
 		if (\PHP_SAPI === 'cli') {
-			$backtraceItems = debug_backtrace(DEBUG_BACKTRACE_IGNORE_ARGS, 1);
+			$backtraceItems = debug_backtrace(DEBUG_BACKTRACE_IGNORE_ARGS);
 			$scriptFilename = $backtraceItems[count($backtraceItems) - 1]['file'];
+			// If php is running by direct input like `php -r "/* php code */":
+			if (
+				mb_strpos($scriptFilename, DIRECTORY_SEPARATOR) === FALSE &&
+				empty($_SERVER['SCRIPT_FILENAME'])
+			) {
+				// Try to define app root and document root by possible Composer class location:
+				$composerFullClassName = 'Composer\\Autoload\\ClassLoader';
+				if (class_exists($composerFullClassName, TRUE)) {
+					$ccType = new \ReflectionClass($composerFullClassName);
+					$scriptFilename = dirname($ccType->getFileName(), 2);
+				} else {
+					// If there is no composer class, define app root and document root by called current working directory:
+					$scriptFilename = getcwd() . '/php';
+				}
+			}
 		} else {
 			$scriptFilename = $_SERVER['SCRIPT_FILENAME'];
 		}

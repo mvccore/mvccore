@@ -93,9 +93,26 @@ trait InternalInits {
 		// sometimes `$_SERVER['SCRIPT_FILENAME']` is missing, when script
 		// is running in CLI or it could have relative path only
 		$backtraceItems = debug_backtrace(DEBUG_BACKTRACE_IGNORE_ARGS);
-		$indexFilePath = ucfirst(str_replace('\\', '/', $backtraceItems[count($backtraceItems) - 1]['file']));
+		$indexFilePath = $backtraceItems[count($backtraceItems) - 1]['file'];
+		// If php is running by direct input like `php -r "/* php code */":
+		if (
+			mb_strpos($indexFilePath, DIRECTORY_SEPARATOR) === FALSE && // $indexFilePath = "Command line code"
+			empty($this->globalServer['SCRIPT_FILENAME'])
+		) {
+			// Try to define app root and document root by possible Composer class location:
+			$composerFullClassName = 'Composer\\Autoload\\ClassLoader';
+			if (class_exists($composerFullClassName, TRUE)) {
+				$ccType = new \ReflectionClass($composerFullClassName);
+				$indexFilePath = dirname($ccType->getFileName(), 2);
+			} else {
+				// If there is no composer class, define app root and document root by called current working directory:
+				$indexFilePath = getcwd() . '/php';
+			}
+		}
+		// `ucfirst()` - cause IIS has lower case drive name here - different from __DIR__ value
+		$indexFilePath = ucfirst(str_replace(['\\', '//'], '/', $indexFilePath));
 		$lastSlashPos = mb_strrpos($indexFilePath, '/');
-
+		
 		$this->documentRoot = defined('MVCCORE_DOCUMENT_ROOT')
 			? ucfirst(constant('MVCCORE_DOCUMENT_ROOT'))
 			: (strlen(\Phar::running()) > 0 
