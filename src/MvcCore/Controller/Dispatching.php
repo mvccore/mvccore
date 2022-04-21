@@ -58,7 +58,7 @@ trait Dispatching {
 	 * @param  string|NULL $actionName PHP code action name has to be in PascalCase + 'Action'.
 	 *                                 This value is used to call your desired function
 	 *                                 in controller without any change.
-	 * @return void
+	 * @return bool                    Return `FALSE` if application has been already terminated.
 	 */
 	public function Dispatch ($actionName = NULL) {
 		/** @var \MvcCore\Controller $this */
@@ -71,7 +71,7 @@ trait Dispatching {
 			$this->Init();
 		// If terminated or redirected inside `Init()` method:
 		if ($this->dispatchState === \MvcCore\IController::DISPATCH_STATE_TERMINATED) 
-			return;
+			return FALSE;
 		// For cases somebody forget to call parent `Init()`:
 		if ($this->dispatchState < \MvcCore\IController::DISPATCH_STATE_INITIALIZED) 
 			$this->dispatchState = \MvcCore\IController::DISPATCH_STATE_INITIALIZED;
@@ -82,7 +82,7 @@ trait Dispatching {
 			$this->PreDispatch();
 		// If terminated or redirected inside `PreDispatch()` method:
 		if ($this->dispatchState === \MvcCore\IController::DISPATCH_STATE_TERMINATED) 
-			return;
+			return FALSE;
 		// For cases somebody forget to call parent `PreDispatch()`:
 		if ($this->dispatchState < \MvcCore\IController::DISPATCH_STATE_PRE_DISPATCHED) 
 			$this->dispatchState = \MvcCore\IController::DISPATCH_STATE_PRE_DISPATCHED;
@@ -100,7 +100,7 @@ trait Dispatching {
 			$this->{$actionName}();
 		// If terminated or redirected inside action method:
 		if ($this->dispatchState === \MvcCore\IController::DISPATCH_STATE_TERMINATED) 
-			return;
+			return FALSE;
 		// For cases somebody forget to call parent action method:
 		if ($this->dispatchState < \MvcCore\IController::DISPATCH_STATE_ACTION_EXECUTED) 
 			$this->dispatchState = \MvcCore\IController::DISPATCH_STATE_ACTION_EXECUTED;
@@ -113,6 +113,7 @@ trait Dispatching {
 				$this->actionName		// dashed action name
 			);
 		// \MvcCore\Debug::Timer('dispatch');
+		return TRUE;
 	}
 
 	/**

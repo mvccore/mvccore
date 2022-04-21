@@ -63,7 +63,7 @@ interface IController extends \MvcCore\Controller\IConstants {
 
 	/**
 	 * Return always new instance of statically called class, no singleton.
-	 * Always called from `\MvcCore::DispatchControllerAction()` before controller is dispatched,
+	 * Always called from `\MvcCore\Application::CreateController()` before controller is dispatched,
 	 * or always called in `\MvcCore\Controller::autoInitMembers();` in base controller initialization.
 	 * This is place where to customize any controller creation process,
 	 * before it's created by MvcCore framework to dispatch it.
@@ -92,7 +92,7 @@ interface IController extends \MvcCore\Controller\IConstants {
 	/**
 	 * Dispatching controller life cycle by given action.
 	 * This is INTERNAL, not TEMPLATE method, internally
-	 * called in `\MvcCore::DispatchControllerAction();`.
+	 * called in `\MvcCore\Application::DispatchExec();`.
 	 * Call this immediately after calling controller methods:
 	 * - `\MvcCore\Controller::__construct()`
 	 * - `\MvcCore\Controller::SetApplication($application)`
@@ -108,7 +108,7 @@ interface IController extends \MvcCore\Controller\IConstants {
 	 * @param  string|NULL $actionName PHP code action name has to be in PascalCase + 'Action'.
 	 *                                 This value is used to call your desired function
 	 *                                 in controller without any change.
-	 * @return void
+	 * @return bool                    Return `FALSE` if application has been already terminated.
 	 */
 	public function Dispatch ($actionName = NULL);
 
@@ -162,7 +162,7 @@ interface IController extends \MvcCore\Controller\IConstants {
 	/**
 	 * Sets up `\MvcCore\Application` singleton object.
 	 * This is INTERNAL, not TEMPLATE method, internally called in
-	 * `\MvcCore::DispatchControllerAction()` before controller is dispatched.
+	 * `\MvcCore\Application::CreateController()` before controller is dispatched.
 	 * Usually call this as soon as possible after controller creation.
 	 * @param  \MvcCore\Application $application
 	 * @return \MvcCore\Controller
@@ -218,7 +218,7 @@ interface IController extends \MvcCore\Controller\IConstants {
 	/**
 	 * Sets up `\MvcCore\Request` object and other protected properties.
 	 * This is INTERNAL, not TEMPLATE method, internally called in
-	 * `\MvcCore::DispatchControllerAction();` before controller is dispatched.
+	 * `\MvcCore\Application::CreateController();` before controller is dispatched.
 	 * Usually call this as soon as possible after controller creation
 	 * to set up following controller properties:
 	 * - `\MvcCore\Controller::$request`
@@ -239,7 +239,7 @@ interface IController extends \MvcCore\Controller\IConstants {
 	/**
 	 * Sets up `\MvcCore\Response` object.
 	 * This is INTERNAL, not TEMPLATE method, internally called in
-	 * `\MvcCore::DispatchControllerAction()` before controller is dispatched.
+	 * `\MvcCore\Application::CreateController()` before controller is dispatched.
 	 * Usually call this as soon as possible after controller creation.
 	 * @param  \MvcCore\Response $response
 	 * @return \MvcCore\Controller
@@ -255,7 +255,7 @@ interface IController extends \MvcCore\Controller\IConstants {
 	/**
 	 * Sets up `\MvcCore\Router` object.
 	 * This is INTERNAL, not TEMPLATE method, internally called in
-	 * `\MvcCore::DispatchControllerAction()` before controller is dispatched.
+	 * `\MvcCore\Application::CreateController()` before controller is dispatched.
 	 * Usually call this as soon as possible after controller creation.
 	 * @param  \MvcCore\Router $router
 	 * @return \MvcCore\Controller

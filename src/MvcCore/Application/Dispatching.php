@@ -12,6 +12,7 @@
  */
 
 namespace MvcCore\Application;
+use MvcCore\Ext\Models\Db\Exception;
 
 /**
  * Trait as partial class for `\MvcCore\Application`:
@@ -34,59 +35,67 @@ trait Dispatching {
 	 */
 	public function Dispatch () {
 		try {
-			// all 3 getters triggers creation:
-			$this->GetEnvironment();
-			$this->GetRequest();
-			$this->GetResponse();
-			$debugClass = $this->debugClass;
-			$debugClass::Init();
-		} catch (\Exception $e) { // backward compatibility
-			$this->DispatchException($e);
-			return $this->Terminate();
+			$this->DispatchInit();
+			if ($this->DispatchExec() !== NULL)
+				$this->Terminate();
 		} catch (\Throwable $e) {
 			$this->DispatchException($e);
-			return $this->Terminate();
+			$this->Terminate();
 		}
-		if (!$this->ProcessCustomHandlers($this->preRouteHandlers))		return $this->Terminate();
-		if (!$this->RouteRequest())										return $this->Terminate();
-		if (!$this->ProcessCustomHandlers($this->postRouteHandlers))	return $this->Terminate();
-		if (!$this->DispatchRequest())									return $this->Terminate();
 		// Post-dispatch handlers processing moved to: `$this->Terminate();` to process them every time.
 		// if (!$this->processCustomHandlers($this->postDispatchHandlers))	return $this->Terminate();
-		return $this->Terminate();
+		return $this;
 	}
 
 	/**
 	 * @inheritDocs
+	 * @throws \Throwable
 	 * @return void
 	 */
-	public function SessionStart () {
-		/** @var \MvcCore\Session $sessionClass */
-		$sessionClass = $this->sessionClass;
-		$sessionClass::Start();
+	public function DispatchInit () {
+		// all 3 getters bellow triggers class instance creation:
+		$this->GetEnvironment();
+		$this->GetRequest();
+		$this->GetResponse();
+		$debugClass = $this->debugClass;
+		$debugClass::Init();
+	}
+	
+	/**
+	 * @inheritDocs
+	 * @throws \Throwable
+	 * @return bool|NULL
+	 */
+	public function DispatchExec () {
+		if (!$this->ProcessCustomHandlers($this->preRouteHandlers))	
+			return FALSE; // stopped, go to termination
+		if (!$this->RouteRequest())	
+			return FALSE; // stopped, go to termination
+		if (!$this->ProcessCustomHandlers($this->postRouteHandlers))
+			return FALSE; // stopped, go to termination
+		$this->SetUpController();
+		if (!$this->ProcessCustomHandlers($this->preDispatchHandlers)) 
+			return FALSE; // stopped, go to termination
+		if (!$this->controller->Dispatch())
+			return NULL; // stopped and already terminated
+		if (!$this->processCustomHandlers($this->postDispatchHandlers))	
+			return FALSE; // stopped, go to termination
+		return TRUE; // everything processed, go to termination
 	}
 
 	/**
 	 * @inheritDocs
+	 * @throws \LogicException|\InvalidArgumentException
 	 * @return bool
 	 */
 	public function RouteRequest () {
-		$router = $this->GetRouter()->SetRequest($this->GetRequest());
-		try {
-			/**
-			 * `Route()` method could throws those exceptions:
-			 * @throws \LogicException Route configuration property is missing.
-			 * @throws \InvalidArgumentException Wrong route pattern format.
-			 */
-			$result = $router->Route();
-		} catch (\Exception $e) { // backward compatibility
-			$this->DispatchException($e);
-			$result = FALSE;
-		} catch (\Throwable $e) {
-			$this->DispatchException($e);
-			$result = FALSE;
-		}
-		return $result;
+		$router = $this->GetRouter()->SetRequest($this->request);
+		/**
+			* `Route()` method could throws those exceptions:
+			* @throws \LogicException Route configuration property is missing.
+			* @throws \InvalidArgumentException Wrong route pattern format.
+			*/
+		return $router->Route();
 	}
 
 	/**
@@ -102,22 +111,12 @@ trait Dispatching {
 		foreach ($handlers as $handlerRecords) {
 			foreach ($handlerRecords as list($closureCalling, $handler)) {
 				$subResult = NULL;
-				try {
-					if ($closureCalling) {
-						$subResult = $handler($this->request, $this->response);
-					} else {
-						$subResult = call_user_func($handler, $this->request, $this->response);
-					}
-					if ($subResult === FALSE) {
-						$result = FALSE;
-						break;
-					}
-				} catch (\Exception $e) { // backward compatibility
-					$this->DispatchException($e);
-					$result = FALSE;
-					break;
-				} catch (\Throwable $e) {
-					$this->DispatchException($e);
+				if ($closureCalling) {
+					$subResult = $handler($this->request, $this->response);
+				} else {
+					$subResult = call_user_func($handler, $this->request, $this->response);
+				}
+				if ($subResult === FALSE) {
 					$result = FALSE;
 					break;
 				}
@@ -128,12 +127,14 @@ trait Dispatching {
 
 	/**
 	 * @inheritDocs
+	 * @throws \Exception
 	 * @return bool
 	 */
-	public function DispatchRequest () {
+	public function SetUpController () {
 		/** @var \MvcCore\Route $route */
 		$route = $this->router->GetCurrentRoute();
-		if ($route === NULL) return $this->DispatchException('No route for request', 404);
+		if ($route === NULL) 
+			throw new \Exception('No route for request', 404);
 		list ($ctrlPc, $actionPc) = [$route->GetController(), $route->GetAction()];
 		$actionName = $actionPc . 'Action';
 		$viewClass = $this->viewClass;
@@ -148,23 +149,20 @@ trait Dispatching {
 		} else {
 			// `App_Controllers_<$ctrlPc>`
 			$controllerName = $this->CompleteControllerName($ctrlPc);
-			if (!class_exists($controllerName)) {
+			// Controller file or view file could contain syntax error:
+			if (!class_exists($controllerName, TRUE)) {
 				// if controller doesn't exists - check if at least view exists
-				if (file_exists($viewScriptFullPath)) {
-					// if view exists - change controller name to core controller, if not let it go to exception
-					$controllerName = $this->controllerClass;
-				} else {
-					return $this->DispatchException("Controller class `{$controllerName}` doesn't exist.", 404);
-				}
+				if (!file_exists($viewScriptFullPath)) 
+					throw new \Exception(
+						"Controller class `{$controllerName}` doesn't exist.", 404
+					);
+				// if view exists - change controller name to core 
+				// controller, if not let it go to exception:
+				$controllerName = $this->controllerClass;
 			}
 		}
-		return $this->DispatchControllerAction(
-			$controllerName,
-			$actionName,
-			$viewScriptFullPath,
-			function ($e) {
-				return $this->DispatchException($e);
-			}
+		return $this->CreateController(
+			$controllerName, $actionName, $viewScriptFullPath
 		);
 	}
 
@@ -173,23 +171,18 @@ trait Dispatching {
 	 * @param  string   $ctrlClassFullName
 	 * @param  string   $actionNamePc
 	 * @param  string   $viewScriptFullPath
-	 * @param  callable $exceptionCallback
+	 * @throws \Exception
 	 * @return bool
 	 */
-	public function DispatchControllerAction (
-		$ctrlClassFullName,
-		$actionNamePc,
-		$viewScriptFullPath,
-		callable $exceptionCallback
+	public function CreateController (
+		$ctrlClassFullName, $actionNamePc, $viewScriptFullPath
 	) {
 		if ($this->controller === NULL) {
 			$controller = NULL;
 			try {
 				$controller = $ctrlClassFullName::CreateInstance();
-			} catch (\Exception $e) { // backward compatibility
-				return $this->DispatchException($e->getMessage(), 404);
 			} catch (\Throwable $e) {
-				return $this->DispatchException($e->getMessage(), 404);
+				throw new \Exception($e->getMessage(), 404);
 			}
 			$this->controller = $controller;
 		}
@@ -208,7 +201,7 @@ trait Dispatching {
 					? $viewScriptFullPath
 					: mb_substr($viewScriptFullPath, mb_strlen($appRoot));
 				$ctrlClassFullName = $this->request->GetControllerName();
-				return $this->DispatchException(
+				throw new \Exception(
 					"Controller class `{$ctrlClassFullName}` "
 					."has not method `{$actionNamePc}` \n"
 					."or view doesn't exist: `{$viewScriptPath}`.",
@@ -216,17 +209,19 @@ trait Dispatching {
 				);
 			}
 		}
-		if (!$this->ProcessCustomHandlers($this->preDispatchHandlers)) return FALSE;
-		try {
-			$this->controller->Dispatch();
-		} catch (\Exception $e) { // backward compatibility
-			return $exceptionCallback($e);
-		} catch (\Throwable $e) {
-			return $exceptionCallback($e);
-		}
 		return TRUE;
 	}
-
+	
+	/**
+	 * @inheritDocs
+	 * @return void
+	 */
+	public function SessionStart () {
+		/** @var \MvcCore\Session $sessionClass */
+		$sessionClass = $this->sessionClass;
+		$sessionClass::Start();
+	}
+	
 	/**
 	 * @inheritDocs
 	 * @param  string $controllerActionOrRouteName Should be `"Controller:Action"` combination or just any route name as custom specific string.
@@ -243,7 +238,6 @@ trait Dispatching {
 	 */
 	public function Terminate () {
 		if ($this->terminated) return $this;
-		/** @var $this->response \MvcCore\Response */
 		$this->ProcessCustomHandlers($this->postDispatchHandlers);
 		if (!$this->response->IsSentHeaders()) {
 			// headers (if still possible) and echo
@@ -293,8 +287,6 @@ trait Dispatching {
 			try {
 				if ($code === NULL) throw new \Exception($exceptionOrMessage);
 				throw new \ErrorException($exceptionOrMessage, $code);
-			} catch (\Exception $e) { // backward compatibility
-				$exception = $e;
 			} catch (\Throwable $e) {
 				$exception = $e;
 			}
@@ -304,14 +296,24 @@ trait Dispatching {
 			$lastExceptionStr = $exception->getMessage();
 		} else if ($lastExceptionStr === $exception->getMessage()) {
 			return $code === 404
-			? $this->RenderError404PlainText($lastExceptionStr)
-			: $this->RenderError500PlainText($lastExceptionStr);
+				? $this->RenderError404PlainText($lastExceptionStr)
+				: $this->RenderError500PlainText($lastExceptionStr);
 		}
 		$debugClass = $this->debugClass;
 		if ($exception->getCode() == 404) {
 			$debugClass::Log($exception->getMessage().": ".$this->request->GetFullUrl(), \MvcCore\IDebug::INFO);
 			return $this->RenderNotFound($exception->getMessage());
 		} else if ($this->environment->IsDevelopment()) {
+			$this->ProcessCustomHandlers($this->postDispatchHandlers);
+			if (!$this->response->IsSentHeaders()) {
+				// headers (if still possible) and echo
+				$sessionClass = $this->sessionClass;
+				if ($sessionClass::GetStarted()) {
+					$sessionClass::SendCookie();
+					$sessionClass::Close();
+				}
+				$this->response->SendHeaders();
+			}
 			$debugClass::Exception($exception);
 			return FALSE;
 		} else {
@@ -346,23 +348,25 @@ trait Dispatching {
 				->SetParam('message', $exceptionMessage, \MvcCore\IRequest::PARAM_TYPE_URL_REWRITE);
 			$this->response->SetCode($exceptionCode);
 			$this->controller = NULL;
-			$this->DispatchControllerAction(
-				$defaultCtrlFullName,
-				$this->defaultControllerErrorActionName . "Action",
-				$viewClass::GetViewScriptFullPath(
-					$viewClass::GetScriptsDir(),
-					$this->request->GetControllerName() . '/' . $this->request->GetActionName()
-				),
-				function (\Throwable $e2) use ($exceptionMessage, $debugClass) {
-					$this->router->RemoveRoute(\MvcCore\IRouter::DEFAULT_ROUTE_NAME_NOT_FOUND);
-					if ($this->environment->IsDevelopment()) {
-						$debugClass::Exception($e2);
-					} else {
-						$debugClass::Log($e2, \MvcCore\IDebug::EXCEPTION);
-						$this->RenderError500PlainText($exceptionMessage . PHP_EOL . PHP_EOL . $e2->getMessage());
-					}
+			try {
+				$this->CreateController(
+					$defaultCtrlFullName,
+					$this->defaultControllerErrorActionName . "Action",
+					$viewClass::GetViewScriptFullPath(
+						$viewClass::GetScriptsDir(),
+						$this->request->GetControllerName() . '/' . $this->request->GetActionName()
+					)
+				);
+				$this->controller->Dispatch();
+			} catch (\Throwable $e2) {
+				$this->router->RemoveRoute(\MvcCore\IRouter::DEFAULT_ROUTE_NAME_NOT_FOUND);
+				if ($this->environment->IsDevelopment()) {
+					$debugClass::Exception($e2);
+				} else {
+					$debugClass::Log($e2, \MvcCore\IDebug::EXCEPTION);
+					$this->RenderError500PlainText($exceptionMessage . PHP_EOL . PHP_EOL . $e2->getMessage());
 				}
-			);
+			}
 			return FALSE;
 		} else {
 			return $this->RenderError500PlainText($exceptionMessage);
@@ -393,23 +397,25 @@ trait Dispatching {
 				->SetParam('message', $exceptionMessage, \MvcCore\IRequest::PARAM_TYPE_URL_REWRITE);
 			$this->response->SetCode(404);
 			$this->controller = NULL;
-			$this->DispatchControllerAction(
-				$defaultCtrlFullName,
-				$this->defaultControllerNotFoundActionName . "Action",
-				$viewClass::GetViewScriptFullPath(
-					$viewClass::GetScriptsDir(),
-					$this->request->GetControllerName() . '/' . $this->request->GetActionName()
-				),
-				function (\Throwable $e) use ($exceptionMessage, $debugClass) {
-					$this->router->RemoveRoute(\MvcCore\IRouter::DEFAULT_ROUTE_NAME_NOT_FOUND);
-					if ($this->environment->IsDevelopment()) {
-						$debugClass::Exception($e);
-					} else {
-						$debugClass::Log($e, \MvcCore\IDebug::EXCEPTION);
-						$this->RenderError404PlainText($exceptionMessage);
-					}
+			try {
+				$this->CreateController(
+					$defaultCtrlFullName,
+					$this->defaultControllerNotFoundActionName . "Action",
+					$viewClass::GetViewScriptFullPath(
+						$viewClass::GetScriptsDir(),
+						$this->request->GetControllerName() . '/' . $this->request->GetActionName()
+					)
+				);
+				$this->controller->Dispatch();
+			} catch (\Throwable $e) {
+				$this->router->RemoveRoute(\MvcCore\IRouter::DEFAULT_ROUTE_NAME_NOT_FOUND);
+				if ($this->environment->IsDevelopment()) {
+					$debugClass::Exception($e);
+				} else {
+					$debugClass::Log($e, \MvcCore\IDebug::EXCEPTION);
+					$this->RenderError404PlainText($exceptionMessage);
 				}
-			);
+			}
 			return FALSE;
 		} else {
 			return $this->RenderError404PlainText($exceptionMessage);

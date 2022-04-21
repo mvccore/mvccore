@@ -595,12 +595,23 @@ interface IApplication extends \MvcCore\Application\IConstants {
 	public function Dispatch ();
 
 	/**
-	 * Starts a session, standardly called from `\MvcCore\Controller::Init();`.
-	 * But is should be called anytime sooner, for example in any pre request handler
-	 * to redesign request before MVC dispatching or anywhere else.
+	 * Initialize environment if necessary,
+	 * Initialize requst object if necessary,
+	 * initialize response object if necessary
+	 * and call debug class static `Init()` method.
+	 * @throws \Throwable
 	 * @return void
 	 */
-	public function SessionStart ();
+	public function DispatchInit ();
+
+	/**
+	 * Return `TRUE` for successfully executed request from start to end.
+	 * Return `FALSE` for redirected or stopped request by any other way.
+	 * Return `NULL` if request is already terminated.
+	 * @throws \Throwable
+	 * @return bool|NULL
+	 */
+	public function DispatchExec ();
 
 	/**
 	 * Route request by router obtained by default by calling:
@@ -608,6 +619,7 @@ interface IApplication extends \MvcCore\Application\IConstants {
 	 * Store requested route inside configured
 	 * router class to get it later by calling:
 	 * `\MvcCore\Router::GetCurrentRoute();`
+	 * @throws \LogicException|\InvalidArgumentException
 	 * @return bool
 	 */
 	public function RouteRequest ();
@@ -618,37 +630,49 @@ interface IApplication extends \MvcCore\Application\IConstants {
 	 * in try catch mode to catch any exceptions to call:
 	 * `\MvcCore\Application::DispatchException($e);`.
 	 * @param  \callable[] $handlers
+	 * @throws \Throwable
 	 * @return bool
 	 */
 	public function ProcessCustomHandlers (& $handlers = []);
 
 	/**
-	 * If controller class exists - try to dispatch controller,
-	 * if only view file exists - try to render targeted view file
-	 * with configured core controller instance (`\MvcCore\Controller` by default).
+	 * Resolve controller class name and create controller instance.
+	 * If controller class from current route exists - create controller 
+	 * instance by the class. If controller class doesn't exist but
+	 * if view file for routed controller exists - create controller 
+	 * instance by core controller (`\MvcCore\Controller` by default).
+	 * @throws \Exception No route for request (404), 
+	 *                    controller class `...` doesn't exist. (404),
+	 *                    syntax error in controller or view (500) or
+	 *                    error by controller instancing (500) or
+	 *                    controller class `...` has not method `...` or 
+	 *                    view doesn't exist: `...` (404).
 	 * @return bool
 	 */
-	public function DispatchRequest ();
+	public function SetUpController ();
 
 	/**
-	 * Dispatch controller by:
-	 * - By full class name and by action name
-	 * - Or by view script full path
-	 * Call exception callback if there is caught any
-	 * exception in controller life-cycle dispatching process
-	 * with first argument as caught exception.
+	 * Create controller instance by given full class name.
+	 * Verify if controller instance has method by
+	 * current route or if at least view exists by full path.
 	 * @param  string   $ctrlClassFullName
 	 * @param  string   $actionNamePc
 	 * @param  string   $viewScriptFullPath
-	 * @param  callable $exceptionCallback
+	 * @throws \Exception Controller class `...` has not method `...` or 
+	 *                    view doesn't exist: `...` (404).
 	 * @return bool
 	 */
-	public function DispatchControllerAction (
-		$ctrlClassFullName,
-		$actionNamePc,
-		$viewScriptFullPath,
-		callable $exceptionCallback
+	public function CreateController (
+		$ctrlClassFullName, $actionNamePc, $viewScriptFullPath
 	);
+	
+	/**
+	 * Starts a session, standardly called from `\MvcCore\Controller::Init();`.
+	 * But is should be called anytime sooner, for example in any pre request handler
+	 * to redesign request before MVC dispatching or anywhere else.
+	 * @return void
+	 */
+	public function SessionStart ();
 
 	/**
 	 * Generates url:
