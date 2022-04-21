@@ -63,7 +63,7 @@ namespace {
 					echo '<pre><code>';
 					foreach ($args as $arg) {
 						$dumpedArg = \MvcCore\Debug::Dump($arg, TRUE, TRUE);
-						echo preg_replace("#\[([^\]]*)\]=>([^\n]*)\n(\s*)#", "[$1] => ", $dumpedArg);
+						echo $dumpedArg;
 						echo '</code></pre>';
 					}
 				}

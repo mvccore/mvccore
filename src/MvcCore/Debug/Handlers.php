@@ -105,7 +105,8 @@ trait Handlers {
 				$exception, NULL, ['bar' => !$exit, 'backtraceIndex' => 1]
 			);
 			if (static::$debugging) {
-				echo $dumpedValue;
+				$heading = $exception instanceof \Throwable ? get_class($exception) : 'Error';
+				echo '<h1>'.$heading.'</h1><pre>',$dumpedValue,'</pre>';
 			} else {
 				static::storeLogRecord($dumpedValue, \MvcCore\IDebug::EXCEPTION);
 			}
@@ -160,6 +161,7 @@ trait Handlers {
 		// format xdebug first small element with file:
 		$content = preg_replace("#\</small\>\n#", '</small>', ob_get_clean(), 1);
 		$content = preg_replace("#\<small\>([^\>]*)\>#", '', $content, 1);
+		$content = preg_replace("#\[([^\]]*)\]=>([^\n]*)\n(\s*)#", "[$1] => ", $content);
 		$backtraceIndex = isset($options['backtraceIndex']) ? $options['backtraceIndex'] : 2 ;
 		$backtrace = debug_backtrace(DEBUG_BACKTRACE_IGNORE_ARGS, $backtraceIndex + 1);
 		$originalPlace = (object) $backtrace[$backtraceIndex];
