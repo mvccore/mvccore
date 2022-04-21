@@ -326,7 +326,6 @@ trait InternalInits {
 			if ($jsonType) {
 				try {
 					$result = $toolClass::JsonDecode($this->body);
-				} catch (\Exception $e) { // backward compatibility
 				} catch (\Throwable $e) {
 				}
 			} else {
@@ -336,8 +335,6 @@ trait InternalInits {
 				if ($probablyAJsonType) {
 					try {
 						$result = $toolClass::JsonDecode($this->body);
-					} catch (\Exception $e) { // backward compatibility
-						$probablyAJsonType = FALSE; // fall back to query string parsing
 					} catch (\Throwable $e) {
 						$probablyAJsonType = FALSE; // fall back to query string parsing
 					}

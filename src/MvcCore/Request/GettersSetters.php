@@ -38,9 +38,6 @@ trait GettersSetters {
 			try {
 				$ctrl = $this->GetControllerName();
 				$action = $this->GetActionName();
-			} catch (\Exception $e) { // backward compatibility
-				$ctrl = NULL;
-				$action = NULL;
 			} catch (\Throwable $e) {
 				$ctrl = NULL;
 				$action = NULL;
