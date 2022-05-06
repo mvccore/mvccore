@@ -102,6 +102,15 @@ trait Initializations {
 
 	/**
 	 * @inheritDocs
+	 * @param  bool $debugging
+	 * @return bool
+	 */
+	public static function SetDebugging ($debugging) {
+		return static::$debugging = $debugging;
+	}
+
+	/**
+	 * @inheritDocs
 	 * @return \stdClass
 	 */
 	public static function GetSystemCfgDebugSection () {
@@ -113,22 +122,21 @@ trait Initializations {
 		$app = static::$app ?: (static::$app = \MvcCore\Application::GetInstance());
 		$configClass = $app->GetConfigClass();
 		$cfg = $configClass::GetSystem();
-		if ($cfg === NULL) 
-			return (object) array_fill_keys($sysConfigProps, NULL);
-		if (isset($cfg->{$sectionName})) {
-			$result = $cfg->{$sectionName};
-			if (is_array($result)) {
-				foreach ($sysConfigProps as $prop)
-					if (!isset($result[$prop]))
-						$result[$prop] = NULL;
-			} else {
-				foreach ($sysConfigProps as $prop)
-					if (!isset($result->{$prop}))
-						$result->{$prop} = NULL;
-			}
+		if ($cfg === NULL || ($cfg !== NULL && !isset($cfg->{$sectionName}))) {
+			$result = (object) array_fill_keys($sysConfigProps, NULL);
+			return self::$systemConfigDebugValues = $result;
 		}
-		self::$systemConfigDebugValues = $result;
-		return $result;
+		$result = $cfg->{$sectionName};
+		if (is_array($result)) {
+			foreach ($sysConfigProps as $prop)
+				if (!isset($result[$prop]))
+					$result[$prop] = NULL;
+		} else {
+			foreach ($sysConfigProps as $prop)
+				if (!isset($result->{$prop}))
+					$result->{$prop} = NULL;
+		}
+		return self::$systemConfigDebugValues = $result;
 	}
 
 	/**

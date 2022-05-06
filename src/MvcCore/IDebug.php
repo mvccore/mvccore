@@ -52,6 +52,16 @@ interface IDebug extends \MvcCore\Debug\IConstants {
 	 * @return bool
 	 */
 	public static function GetDebugging ();
+	
+	/**
+	 * Set debugging boolean if debugging is enabled.
+	 * This value is automatically resolved in debug 
+	 * class static method `Init()` by many conditions.
+	 * It's mostly `TRUE` if environment is not production.
+	 * @param  bool $debugging
+	 * @return bool
+	 */
+	public static function SetDebugging ($debugging);
 
 	/**
 	 * Try to load system config data by configured config class 
