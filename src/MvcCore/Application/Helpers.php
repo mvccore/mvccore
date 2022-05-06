@@ -126,12 +126,15 @@ trait Helpers {
 				$lastHandlerKey = array_key_last($handlers);
 			} else {
 				$handlersKeys = array_keys($handlers);
-				$lastHandlerKey = $handlersKeys[count($handlersKeys) - 1];
-				if ($lastHandlerKey === PHP_INT_MAX) {
-					$handlers[PHP_INT_MAX][] = [$closureCalling, $handler];
-				} else {
-					$handlers[] = [[$closureCalling, $handler]];
-				}
+				$handlersKeysCount = count($handlersKeys);
+				$lastHandlerKey = ($handlersKeysCount > 0)
+					? $handlersKeys[count($handlersKeys) - 1]
+					: NULL;
+			}
+			if ($lastHandlerKey === PHP_INT_MAX) {
+				$handlers[PHP_INT_MAX][] = [$closureCalling, $handler];
+			} else {
+				$handlers[] = [[$closureCalling, $handler]];
 			}
 		}
 		return $this;
