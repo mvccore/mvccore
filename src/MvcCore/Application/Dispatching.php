@@ -54,7 +54,7 @@ trait Dispatching {
 	 */
 	public function DispatchInit () {
 		// all 3 getters bellow triggers class instance creation:
-		$this->GetEnvironment();
+		$this->GetEnvironment()->GetName();
 		$this->GetRequest();
 		$this->GetResponse();
 		$debugClass = $this->debugClass;
@@ -109,7 +109,8 @@ trait Dispatching {
 		reset($handlers);
 		ksort($handlers, SORT_NUMERIC);
 		foreach ($handlers as $handlerRecords) {
-			foreach ($handlerRecords as list($closureCalling, $handler)) {
+			foreach ($handlerRecords as $closureCallingAndHandler) {
+				list($closureCalling, $handler) = $closureCallingAndHandler;
 				$subResult = NULL;
 				if ($closureCalling) {
 					$subResult = $handler($this->request, $this->response);
@@ -314,6 +315,8 @@ trait Dispatching {
 				}
 				$this->response->SendHeaders();
 			}
+			if ($debugClass::GetDebugging() === NULL)
+				$debugClass::SetDebugging(TRUE);
 			$debugClass::Exception($exception);
 			return FALSE;
 		} else {
