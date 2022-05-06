@@ -67,10 +67,7 @@ trait Closing {
 				($maxExpiration > static::$sessionStartTime
 					? (static::$sessionMaxTime - static::$sessionStartTime)
 					: (isset($params->lifetime) ? $params->lifetime : 0)),
-				$params->path,
-				$params->domain,
-				$params->secure,
-				TRUE
+				$params->path
 			);
 		}
 	}
