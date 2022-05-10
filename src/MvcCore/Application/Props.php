@@ -296,6 +296,13 @@ trait Props {
 	 * @var string
 	 */
 	protected $appDir = 'App';
+	
+	/**
+	 * CLI scripts directory name as `"Cli"` by default.
+	 * It should by reconfigured to custom value in the very application beginning.
+	 * @var string
+	 */
+	protected $cliDir = 'Cli';
 
 	/**
 	 * Controllers directory name as `"Controllers"` by default, for all controller classes,

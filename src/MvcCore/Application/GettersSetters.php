@@ -219,6 +219,14 @@ trait GettersSetters {
 	public function GetAppDir () {
 		return $this->appDir;
 	}
+	
+	/**
+	 * @inheritDocs
+	 * @return string
+	 */
+	public function GetCliDir () {
+		return $this->cliDir;
+	}
 
 	/**
 	 * @inheritDocs
@@ -378,6 +386,16 @@ trait GettersSetters {
 	 */
 	public function SetAppDir ($appDir) {
 		$this->appDir = $appDir;
+		return $this;
+	}
+	
+	/**
+	 * @inheritDocs
+	 * @param  string $cliDir
+	 * @return \MvcCore\Application
+	 */
+	public function SetCliDir ($cliDir) {
+		$this->cliDir = $cliDir;
 		return $this;
 	}
 
