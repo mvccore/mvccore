@@ -193,10 +193,9 @@ interface IApplication extends \MvcCore\Application\IConstants {
 	/**
 	 * Get CLI scripts directory name as `"Cli"` by default.
 	 * It should by reconfigured to custom value in the very application beginning.
-	 * @param  string $cliDir
 	 * @return \MvcCore\Application
 	 */
-	public function GetCliDir ($cliDir);
+	public function GetCliDir ();
 
 	/**
 	 * Get controllers directory name as `"Controllers"` by default, for all controller classes,
