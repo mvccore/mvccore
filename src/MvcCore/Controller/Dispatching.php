@@ -287,7 +287,7 @@ trait Dispatching {
 			$this->Init();
 		// check if view is still `NULL`, because it could be created by some parent class
 		if ($this->viewEnabled && $this->view === NULL) 
-			$this->view = $this->createView();
+			$this->view = $this->createView(TRUE);
 		foreach ($this->childControllers as $controller) {
 			$controller->PreDispatch();
 			if ($controller->dispatchState == \MvcCore\IController::DISPATCH_STATE_TERMINATED) 
@@ -299,9 +299,10 @@ trait Dispatching {
 
 	/**
 	 * View instance factory method.
+	 * @param  bool $actionView
 	 * @return \MvcCore\View
 	 */
-	protected function createView () {
+	protected function createView ($actionView = TRUE) {
 		$viewClass = $this->application->GetViewClass();
 		return $viewClass::CreateInstance()
 			->SetController($this)

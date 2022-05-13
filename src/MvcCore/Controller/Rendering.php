@@ -299,10 +299,8 @@ trait Rendering {
 			return;
 		}
 		// create top most parent layout view, set up and render to outputResult
-		$viewClass = $this->application->GetViewClass();
 		/** @var \MvcCore\View $layout */
-		$layout = $viewClass::CreateInstance()
-			->SetController($this)
+		$layout = $this->createView(FALSE)
 			->SetUpStore($this->view, TRUE)
 			->SetUpRender(
 				$this->renderMode, $controllerOrActionNameDashed, $actionNameDashed
@@ -328,10 +326,8 @@ trait Rendering {
 	protected function renderWithoutObContinuously ($controllerOrActionNameDashed, $actionNameDashed, $topMostParentCtrl) {
 		if ($topMostParentCtrl) {
 			// render layout view and action view inside it:
-			$viewClass = $this->application->GetViewClass();
 			/** @var \MvcCore\View $layout */
-			$layout = $viewClass::CreateInstance()
-				->SetController($this)
+			$layout = $this->createView(FALSE)
 				->SetUpStore($this->view, TRUE)
 				->SetUpRender(
 					$this->renderMode, $controllerOrActionNameDashed, $actionNameDashed
