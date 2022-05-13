@@ -368,4 +368,16 @@ interface ITool {
 	 * @return array|NULL
 	 */
 	public static function GetPhpDocsTagArgs ($reflectionObject, $phpDocsTagName);
+
+	/**
+	 * Return serializable properties names for `__sleep()` method result.
+	 * First argument is instance, where is called magic method `__sleep()`,
+	 * second argument is optional and it's array with keys as properties
+	 * names and values as booleans about not to serialize. If boolean value
+	 * is `FALSE`, property will not be used for serialization.
+	 * @param  mixed $instance 
+	 * @param  array $propNamesNotToSerialize 
+	 * @return \string[]
+	 */
+	public static function GetSleepPropNames ($instance, $propNamesNotToSerialize = []);
 }

@@ -88,30 +88,8 @@ trait MagicMethods {
 	 * @return \string[]
 	 */
 	public function __sleep () {
-		static $__serializePropsNames = NULL;
-		if ($__serializePropsNames == NULL) {
-			$rawPropNames = array_keys(
-				$this instanceof \ArrayObject
-					? $this
-					: (array) $this
-			);
-			$__serializePropsNames = [];
-			// for private and protected properties:
-			$protectedPropNames = & static::$protectedProperties;
-			foreach ($rawPropNames as $rawPropName) {
-				$pos = strrpos($rawPropName, "\0");
-				$propName = $pos === FALSE
-					? $rawPropName
-					: substr($rawPropName, $pos + 1);
-				$doNotSerialize = (
-					isset($protectedPropNames[$propName]) &&
-					!$protectedPropNames[$propName]
-				);
-				if (!$doNotSerialize)
-					$__serializePropsNames[] = $rawPropName;
-			}
-		}
-		return $__serializePropsNames;
+		$toolsClass = \MvcCore\Application::GetInstance()->GetToolClass();
+		return $toolsClass::GetSleepPropNames($this, static::$protectedProperties);
 	}
 
 	/**
@@ -121,7 +99,11 @@ trait MagicMethods {
 	 */
 	#[\ReturnTypeWillChange]
 	public function jsonSerialize ($propsFlags = 0) {
+		if ($propsFlags === 0) 
+			$propsFlags = \MvcCore\IModel::PROPS_INHERIT | \MvcCore\IModel::PROPS_PROTECTED;
 		$data = static::GetValues($propsFlags, TRUE);
-		return array_filter($data, function ($val) { return !is_resource($val); });
+		return array_filter($data, function ($val) {
+			return !is_resource($val) && !($val instanceof \Closure);
+		});
 	}
 }

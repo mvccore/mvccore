@@ -38,10 +38,13 @@ trait Props {
 
 	/**
 	 * Properties names with request specific values to not serialize in cache.
+	 * Keys are properties names, values are bools, if to serialize their values
+	 * or not to.
 	 * @var array
 	 */
 	protected static $protectedProperties = [
-		'router' => 1, 'matchedParams' => 1,
+		'router'		=> FALSE, 
+		'matchedParams' => FALSE,
 	];
 
 	/**

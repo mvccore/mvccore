@@ -36,7 +36,8 @@ trait InternalInits {
 	 * @return \string[]
 	 */
 	public function __sleep () {
-		return static::__getPropsNames();
+		$toolsClass = \MvcCore\Application::GetInstance()->GetToolClass();
+		return $toolsClass::GetSleepPropNames($this, static::$protectedProperties);
 	}
 
 	/**
@@ -45,6 +46,7 @@ trait InternalInits {
 	 */
 	public function __wakeup () {
 		$this->router = \MvcCore\Application::GetInstance()->GetRouter();
+		$this->matchedParams = [];
 	}
 
 	/**
@@ -590,33 +592,11 @@ trait InternalInits {
 			$value = NULL;
 			try {
 				$value = $prop->getValue($this);
+				if ($value instanceof \MvcCore\Router) continue;
 			} catch (\Throwable $e) {
 			};
 			$result[] = '"' . $prop->getName() . '":"' . ($value === NULL ? 'NULL' : var_export($value)) . '"';
 		}
 		return '{'.implode(', ', $result) . '}';
-	}
-
-	/**
-	 * Return property names to be serialized.
-	 * @return \string[]
-	 */
-	private static function __getPropsNames () {
-		static $__propsNames = NULL;
-		if ($__propsNames == NULL) {
-			$props = (new \ReflectionClass(get_called_class()))->getProperties(
-				\ReflectionProperty::IS_PUBLIC |
-				\ReflectionProperty::IS_PROTECTED |
-				\ReflectionProperty::IS_PRIVATE
-			);
-			$__propsNames = [];
-			foreach ($props as $prop)
-				if (
-					!$prop->isStatic() &&
-					!isset(static::$protectedProperties[$prop->name])
-				)
-					$__propsNames[] = $prop->name;
-		}
-		return $__propsNames;
 	}
 }

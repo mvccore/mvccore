@@ -39,6 +39,15 @@ trait Reflection {
 	 */
 	protected static $attributesAnotation = FALSE;
 
+	/**
+	 * Global store for all classes with variable names 
+	 * used as `__sleep()` method result set. Each key 
+	 * is class full name, each value is array of strings
+	 * with properties names used to serialized object.
+	 * @var array
+	 */
+	protected static $sleepProps = [];
+
 
 	/**
 	 * @inheritDocs
@@ -462,5 +471,52 @@ trait Reflection {
 				)
 			);
 		return static::$cacheInterfStaticMths[$interfaceName];
+	}
+
+	/**
+	 * @inheritDocs
+	 * @param  mixed $instance 
+	 * @param  array $propNamesNotToSerialize 
+	 * @return \string[]
+	 */
+	public static function GetSleepPropNames ($instance, $propNamesNotToSerialize = []) {
+		$calledClass = get_class($instance);
+		if (!isset(self::$sleepProps[$calledClass])) {
+			$extendedPropNames = array_keys(
+				$instance instanceof \ArrayObject
+					? $instance
+					: (array) $instance
+			);
+			self::$sleepProps[$calledClass] = [];
+			$sleepPropsLocal = & self::$sleepProps[$calledClass];
+			foreach ($extendedPropNames as $extendedPropName) {
+				$origClass = $calledClass;
+				$propName = $extendedPropName;
+				$pos = strrpos($extendedPropName, "\0");
+				if ($pos !== FALSE) {
+					if (strpos($extendedPropName, "\0*") === FALSE)
+						$origClass = substr($extendedPropName, 1, $pos - 1);
+					$propName = substr($extendedPropName, $pos + 1);
+				}
+				if (
+					isset($propNamesNotToSerialize[$propName]) &&
+					!$propNamesNotToSerialize[$propName]
+				) continue;
+				$reflectionProp = new \ReflectionProperty(
+					$origClass, $propName
+				);
+				if ($reflectionProp->isStatic())
+					continue;
+				if ($reflectionProp->isPrivate()) 
+					$reflectionProp->setAccessible(TRUE);
+				$propVal = $reflectionProp->getValue($instance);
+				if (
+					is_resource($propVal) ||
+					$propVal instanceof \Closure
+				) continue;
+				$sleepPropsLocal[] = $extendedPropName;
+			}
+		}
+		return self::$sleepProps[$calledClass];
 	}
 }
