@@ -221,6 +221,24 @@ interface IApplication extends \MvcCore\Application\IConstants {
 	 */
 	public function GetDefaultControllerAndActionNames ();
 
+	/**
+	 * Get default controller name, `"Index"` by default.
+	 * @return string
+	 */
+	public function GetDefaultControllerName ();
+	
+	/**
+	 * Get default controller error action name, `"Error"` by default.
+	 * @return string
+	 */
+	public function GetDefaultControllerErrorActionName ();
+
+	/**
+	 * Get default controller not found error action name, `"NotFound"` by default.
+	 * @return string
+	 */
+	public function GetDefaultControllerNotFoundActionName ();
+
 
 	/***********************************************************************************
 	 *                        `\MvcCore\Application` - Setters                         *

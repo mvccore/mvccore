@@ -153,7 +153,13 @@ trait UrlBuilding {
 			}
 			$result = "{$ctrlPc}:{$actionPc}";
 		} else if ($controllerActionOrRouteName == 'self') {
-			$result = $this->selfRouteName;
+			if ($this->selfRouteName !== NULL) {
+				$result = $this->selfRouteName;	
+			} else {
+				$defaultCtrlName = $this->application->GetDefaultControllerName();
+				$notFoundActionName = $this->application->GetDefaultControllerNotFoundActionName();
+				$result = "{$defaultCtrlName}:{$notFoundActionName}";
+			}
 		}
 		return $result;
 	}

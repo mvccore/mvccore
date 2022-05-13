@@ -252,6 +252,30 @@ trait GettersSetters {
 		return [$this->defaultControllerName, $this->defaultControllerDefaultActionName];
 	}
 
+	/**
+	 * @inheritDocs
+	 * @return string
+	 */
+	public function GetDefaultControllerName () {
+		return $this->defaultControllerName;
+	}
+
+	/**
+	 * @inheritDocs
+	 * @return string
+	 */
+	public function GetDefaultControllerErrorActionName () {
+		return $this->defaultControllerErrorActionName;
+	}
+
+	/**
+	 * @inheritDocs
+	 * @return string
+	 */
+	public function GetDefaultControllerNotFoundActionName () {
+		return $this->defaultControllerNotFoundActionName;
+	}
+
 
 	/***********************************************************************************
 	 *                        `\MvcCore\Application` - Setters                         *
