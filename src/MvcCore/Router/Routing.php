@@ -115,7 +115,10 @@ trait Routing {
 	 * @return \MvcCore\Route
 	 */
 	public function SetOrCreateDefaultRouteAsCurrent ($routeName, $controllerPc, $actionPc, $fallbackCall = FALSE) {
+		$ctrlAbsPath = mb_strpos($controllerPc, '//') === 0;
+		if ($ctrlAbsPath) $controllerPc = mb_substr($controllerPc, 2);
 		$controllerPc = strtr($controllerPc, '/', '\\');
+		if ($ctrlAbsPath) $controllerPc = '//' . $controllerPc;
 		$ctrlActionRouteName = $controllerPc.':'. $actionPc;
 		$request = $this->request;
 		$ctrlActionParamType = $this->routeByQueryString

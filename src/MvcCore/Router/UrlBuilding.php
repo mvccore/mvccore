@@ -143,9 +143,13 @@ trait UrlBuilding {
 			list($ctrlPc, $actionPc) = explode(':', $controllerActionOrRouteName);
 			if (!$ctrlPc) {
 				$toolClass = self::$toolClass;
+				$reqCtrlName = $this->request->GetControllerName();
+				$ctrlAbsPath = mb_strpos($reqCtrlName, '//') === 0;
+				if ($ctrlAbsPath) $reqCtrlName = mb_substr($reqCtrlName, 2);
 				$ctrlPc = str_replace('/', '\\', 
-					$toolClass::GetPascalCaseFromDashed($this->request->GetControllerName())
+					$toolClass::GetPascalCaseFromDashed($reqCtrlName)
 				);
+				if ($ctrlAbsPath) $ctrlPc = '//' . $ctrlPc;
 			}
 			if (!$actionPc) {
 				$toolClass = self::$toolClass;
