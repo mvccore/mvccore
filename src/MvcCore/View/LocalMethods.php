@@ -29,19 +29,16 @@ trait LocalMethods {
 		$result = str_replace('\\', '/', $relativePath);
 		// if relative path starts with dot:
 		if (mb_substr($relativePath, 0, 1) === '.') {
-			if (static::$viewScriptsFullPathBase === NULL)
-				static::initViewScriptsFullPathBase();
-			$typedViewDirFullPath = implode('/', [
-				static::$viewScriptsFullPathBase, $typePath
-			]);
+			$typedViewDirFullPath = $this->GetTypedViewsDirFullPath($typePath);
+			$viewsDirFullPath = mb_substr($typedViewDirFullPath, 0, mb_strlen($typedViewDirFullPath) - mb_strlen($typePath) - 1);
 			// get current view script full path:
 			$renderedFullPaths = & $this->__protected['renderedFullPaths'];
 			$lastRenderedFullPath = $renderedFullPaths[count($renderedFullPaths) - 1];
 			// create `$renderedRelPath` by cutting directory with typed view scripts:
 			if (mb_strpos($lastRenderedFullPath, $typedViewDirFullPath) === 0) {
 				$renderedRelPath = mb_substr($lastRenderedFullPath, mb_strlen($typedViewDirFullPath));
-			} else if (mb_strpos($lastRenderedFullPath, static::$viewScriptsFullPathBase) === 0) {
-				$renderedRelPath = mb_substr($lastRenderedFullPath, mb_strlen(static::$viewScriptsFullPathBase));
+			} else if (mb_strpos($lastRenderedFullPath, $viewsDirFullPath) === 0) {
+				$renderedRelPath = mb_substr($lastRenderedFullPath, mb_strlen($viewsDirFullPath));
 			} else {
 				$lastSlashPos = mb_strrpos($lastRenderedFullPath, '/');
 				$renderedRelPath = $lastSlashPos !== FALSE
@@ -64,21 +61,6 @@ trait LocalMethods {
 			$result = ltrim($renderedRelPath . $relativePath, '/');
 		}
 		return $result;
-	}
-
-	/**
-	 * Init view scripts full class string for methods:
-	 * - `\MvcCore\View::GetViewScriptFullPath();`
-	 * - `\MvcCore\View::correctRelativePath();`
-	 * @return void
-	 */
-	protected static function initViewScriptsFullPathBase () {
-		$app = \MvcCore\Application::GetInstance();
-		static::$viewScriptsFullPathBase = implode('/', [
-			$app->GetRequest()->GetAppRoot(),
-			$app->GetAppDir(),
-			$app->GetViewsDir()
-		]);
 	}
 
 	/**

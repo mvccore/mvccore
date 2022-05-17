@@ -163,32 +163,78 @@ interface IView extends \MvcCore\View\IConstants {
 	 * @return string
 	 */
 	public static function SetHelpersDir ($helpersDir = 'Helpers');
-
+	
 	/**
-	 * Add view helpers classes namespace(s),
-	 * Example: `\MvcCore\View::AddHelpersNamespaces('Any\Other\ViewHelpers\Place', '...');`.
+	 * Prepend view helpers classes namespace(s),
+	 * Example: `\MvcCore\View::PrependHelpersNamespaces('Any\Other\ViewHelpers\Place', '...');`.
 	 * @param  string $helperNamespaces,... View helper classes namespace(s).
 	 * @return void
 	 */
-	public static function AddHelpersNamespaces ($helperNamespaces);
+	public static function PrependHelpersNamespaces ($helperNamespaces);
+
+	/**
+	 * Append view helpers classes namespace(s),
+	 * Example: `\MvcCore\View::AppendHelpersNamespaces('Any\Other\ViewHelpers\Place', '...');`.
+	 * @param  string $helperNamespaces,... View helper classes namespace(s).
+	 * @return void
+	 */
+	public static function AppendHelpersNamespaces ($helperNamespaces);
 
 	/**
 	 * Set view helpers classes namespace(s). This method replace all previously configured namespaces.
-	 * If you want only to add namespace, use `\MvcCore\View::AddHelpersNamespaces();` instead.
+	 * If you want only to add namespace, use `\MvcCore\View::AppendHelpersNamespaces();` instead.
 	 * Example: `\MvcCore\View::SetHelpersClassNamespaces('Any\Other\ViewHelpers\Place', '...');`.
 	 * @param  string $helperNamespaces,... View helper classes namespace(s).
 	 * @return void
 	 */
 	public static function SetHelpersNamespaces ($helperNamespaces);
-
+	
 	/**
-	 * Get view script full path by internal application configuration,
-	 * by `$typePath` param and by `$corectedRelativePath` param.
-	 * @param  string $typePath             Usually `"Layouts"` or `"Scripts"`.
-	 * @param  string $corectedRelativePath
+	 * Get default application views directory full path.
+	 * Example: `/abs/doc/root/App/Views`.
+	 * @param  \MvcCore\IApplication $app 
 	 * @return string
 	 */
-	public static function GetViewScriptFullPath ($typePath = '', $corectedRelativePath = '');
+	public static function GetDefaultViewsDirFullPath (\MvcCore\IApplication $app);
+
+	/**
+	 * Get application views directory full path by controller name used inside view instance.
+	 * Controller class file could be placed inside application or in any vendor package:
+	 *  - in application:    `/abs/doc/root/App/Controllers/MyModule/MyCtrl.php`
+	 *  - in vendor package: `/abs/doc/root/vendor/package/extension/src/App/Controllers/MyModule/MyCtrl.php`
+	 * The result views directory absolute path could be:
+	 *  - for controller in application:    `/abs/doc/root/App/Views`
+	 *  - for controller in vendor package: `/abs/doc/root/vendor/package/extension/src/App/Views`.
+	 * @param  \MvcCore\IApplication $app 
+	 * @param  string                $controllerClassFullName
+	 * @return string
+	 */
+	public static function GetExtViewsDirFullPath (\MvcCore\IApplication $app, $controllerClassFullName);
+
+	/**
+	 * Get view script full path including view file extension 
+	 * by typed views absolute directory and relative path without `./` and `../`.
+	 * Example: 
+	 * ```php
+	 * $viewScriptFp = \MvcCore\View::GetViewScriptFullPath(
+	 *    '/abs/doc/root/App/Views/Scripts', // could end with: `/Layouts` | `/Forms` | `/Scripts`
+	 *    'my-module/ctrl-name/action-name'
+	 * );
+	 * // `/abs/doc/root/App/Views/Scripts/my-module/ctrl-name/action-name.phtml`
+	 * ```
+	 * @param  string $typedViewsDirFullPath Example: `/abs/doc/root/App/Views/{Layouts,Forms,Scripts}`.
+	 * @param  string $corectedRelativePath  Example: `ctrl-name/action-name`.
+	 * @return string
+	 */
+	public static function GetViewScriptFullPath ($typedViewsDirFullPath, $corectedRelativePath);
+	
+	/**
+	 * Get typed views directory full path, cached in current view instance.
+	 * Layouts directory could be only inside application, not in vendor packages.
+	 * @param  string $typePath
+	 * @return string
+	 */
+	public function GetTypedViewsDirFullPath ($typePath);
 
 	/**
 	 * This is INTERNAL method, do not use it in templates.

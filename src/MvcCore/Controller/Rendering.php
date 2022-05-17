@@ -216,30 +216,40 @@ trait Rendering {
 	public function GetViewScriptPath ($controllerOrActionNameDashed = NULL, $actionNameDashed = NULL) {
 		$currentCtrlIsTopMostParent = $this->parentController === NULL;
 		if ($this->viewScriptsPath !== NULL) {
+			// subcontrollers views path customization:
 			$resultPathItems = [$this->viewScriptsPath];
-			if ($controllerOrActionNameDashed !== NULL) $resultPathItems[] = $controllerOrActionNameDashed;
-			if ($actionNameDashed !== NULL) $resultPathItems[] = $actionNameDashed;
+			if ($controllerOrActionNameDashed !== NULL) 
+				$resultPathItems[] = $controllerOrActionNameDashed;
+			if ($actionNameDashed !== NULL) {
+				$resultPathItems = [
+					$this->getViewScriptPathCtrlName($controllerOrActionNameDashed),
+					$actionNameDashed
+				];
+			}
 			$viewScriptPath = str_replace(['_', '\\'], '/', implode('/', $resultPathItems));
 			$viewScriptPath = preg_replace("#//+#", '/', $viewScriptPath);
 			return $viewScriptPath;
 		}
 		if ($actionNameDashed !== NULL) { // if action defined - take first argument controller
-			$controllerNameDashed = $controllerOrActionNameDashed;
+			$controllerNameDashed = $this->getViewScriptPathCtrlName($controllerOrActionNameDashed);
 		} else { // if no action defined - we need to complete controller dashed name
 			$toolClass = '';
 			if ($currentCtrlIsTopMostParent) { // if controller is tom most one - take routed controller name
-				$controllerNameDashed = $this->controllerName;
+				$controllerNameDashed = $this->getViewScriptPathCtrlName($this->controllerName);
 			} else {
 				// if controller is child controller - translate class name
 				// without default controllers directory into dashed name
-				$ctrlsDefaultNamespace = $this->application->GetAppDir() . '\\'
-					. $this->application->GetControllersDir();
+				$ctrlsDefaultNamespace = (
+					$this->application->GetAppDir() . '\\' . $this->application->GetControllersDir()
+				);
 				$currentCtrlClassName = get_class($this);
 				if (mb_strpos($currentCtrlClassName, $ctrlsDefaultNamespace) === 0)
 					$currentCtrlClassName = mb_substr($currentCtrlClassName, mb_strlen($ctrlsDefaultNamespace) + 1);
 				$currentCtrlClassName = str_replace('\\', '/', $currentCtrlClassName);
 				$toolClass = $this->application->GetToolClass();
-				$controllerNameDashed = $toolClass::GetDashedFromPascalCase($currentCtrlClassName);
+				$controllerNameDashed = $this->getViewScriptPathCtrlName(
+					$toolClass::GetDashedFromPascalCase($currentCtrlClassName)
+				);
 			}
 			if ($controllerOrActionNameDashed !== NULL) {
 				$actionNameDashed = $controllerOrActionNameDashed;
@@ -254,6 +264,26 @@ trait Rendering {
 		}
 		$controllerPath = str_replace(['_', '\\'], '/', $controllerNameDashed);
 		return implode('/', [$controllerPath, $actionNameDashed]);
+	}
+
+	/**
+	 * Get relative path to view script by controller name
+	 * inside `./App`Views/Scripts/` directory without view file extension.
+	 * @param string $controllerNameDashed 
+	 * @return string
+	 */
+	protected function getViewScriptPathCtrlName (string $controllerNameDashed): string {
+		$currentRoute = $this->router->GetCurrentRoute();
+		$ctrlHasAbsNamespace = $currentRoute !== NULL
+			? $currentRoute->GetControllerHasAbsoluteNamespace()
+			: FALSE;
+		if (!$ctrlHasAbsNamespace) {
+			return $controllerNameDashed;
+		} else {
+			// remove substring `app/controllers/`
+			$ctrlNameParts = explode('/', $controllerNameDashed);
+			return implode('/', array_slice($ctrlNameParts, 2));
+		}
 	}
 
 	/**

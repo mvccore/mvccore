@@ -40,7 +40,20 @@ trait ViewHelpers {
 	 * @param  string $helperNamespaces,... View helper classes namespace(s).
 	 * @return void
 	 */
-	public static function AddHelpersNamespaces ($helperNamespaces) {
+	public static function PrependHelpersNamespaces ($helperNamespaces) {
+		if (!static::$helpersNamespaces) self::initHelpersNamespaces();
+		$args = func_get_args();
+		if (count($args) === 1 && is_array($args[0])) $args = $args[0];
+		$helpersNamespaces = array_map(function ($arg) { return '\\' . trim($arg, '\\') . '\\'; }, $args);
+		static::$helpersNamespaces = array_merge($helpersNamespaces, static::$helpersNamespaces);
+	}
+	
+	/**
+	 * @inheritDocs
+	 * @param  string $helperNamespaces,... View helper classes namespace(s).
+	 * @return void
+	 */
+	public static function AppendHelpersNamespaces ($helperNamespaces) {
 		if (!static::$helpersNamespaces) self::initHelpersNamespaces();
 		$args = func_get_args();
 		if (count($args) === 1 && is_array($args[0])) $args = $args[0];

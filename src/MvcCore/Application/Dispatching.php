@@ -139,10 +139,16 @@ trait Dispatching {
 		list ($ctrlPc, $actionPc) = [$route->GetController(), $route->GetAction()];
 		$actionName = $actionPc . 'Action';
 		$viewClass = $this->viewClass;
+
+		$viewsDirFullPath = $route->GetControllerHasAbsoluteNamespace()
+			? $viewClass::GetExtViewsDirFullPath($this, mb_substr($route->GetController(), 2))
+			: $viewClass::GetDefaultViewsDirFullPath($this);
+
 		$viewScriptFullPath = $viewClass::GetViewScriptFullPath(
-			$viewClass::GetScriptsDir(),
+			$viewsDirFullPath . '/' . $viewClass::GetScriptsDir(),
 			$this->request->GetControllerName() . '/' . $this->request->GetActionName()
 		);
+
 		if ($ctrlPc == 'Controller') {
 			$controllerName = $this->controllerClass;
 		} else if ($this->controller !== NULL) {
@@ -356,7 +362,7 @@ trait Dispatching {
 					$defaultCtrlFullName,
 					$this->defaultControllerErrorActionName . "Action",
 					$viewClass::GetViewScriptFullPath(
-						$viewClass::GetScriptsDir(),
+						$viewClass::GetDefaultViewsDirFullPath($this) . '/' . $viewClass::GetScriptsDir(),
 						$this->request->GetControllerName() . '/' . $this->request->GetActionName()
 					)
 				);
@@ -405,7 +411,7 @@ trait Dispatching {
 					$defaultCtrlFullName,
 					$this->defaultControllerNotFoundActionName . "Action",
 					$viewClass::GetViewScriptFullPath(
-						$viewClass::GetScriptsDir(),
+						$viewClass::GetDefaultViewsDirFullPath($this) . '/' . $viewClass::GetScriptsDir(),
 						$this->request->GetControllerName() . '/' . $this->request->GetActionName()
 					)
 				);

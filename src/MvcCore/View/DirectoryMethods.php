@@ -50,6 +50,7 @@ trait DirectoryMethods {
 	 */
 	public function GetParentViewFullPath () {
 		$result = NULL;
+		/** @var \string[] $renderedFullPaths */
 		$renderedFullPaths = & $this->__protected['renderedFullPaths'];
 		$count = count($renderedFullPaths);
 		if ($count > 1) {
@@ -70,7 +71,10 @@ trait DirectoryMethods {
 			}
 			if ($result === NULL) {
 				$relativePath = $this->correctRelativePath(static::$layoutsDir, $controller->GetLayout());
-				return static::GetViewScriptFullPath(static::$layoutsDir, $relativePath);
+				return static::GetViewScriptFullPath(
+					$this->GetTypedViewsDirFullPath(static::$layoutsDir), 
+					$relativePath
+				);
 			}
 		}
 		return $result;
@@ -88,4 +92,5 @@ trait DirectoryMethods {
 		}
 		return $result;
 	}
+
 }

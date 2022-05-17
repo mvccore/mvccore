@@ -94,6 +94,15 @@ trait Props {
 		  * @var string|NULL
 		  */
 		'encoding'			=> 'UTF-8',
+		/**
+		 * Cached typed views directories full paths for method calls:
+		 * `\MvcCore\View::GetParentViewFullPath();`,
+		 * `\MvcCore\View::correctRelativePath();`,
+		 * `\MvcCore\View::Render($typePath, $relativePath);`,
+		 * `\MvcCore\Ext\Controllers\DataGrids::Render($typePath, $relativePath, $internalTemplate = FALSE);`;
+		 * @var \string[]|NULL
+		 */
+		'viewsDirsFullPaths'=> NULL,
 	];
 
 	/**
@@ -164,10 +173,10 @@ trait Props {
 	protected static $globalHelpers = [];
 
 	/**
-	 * Cached base full path for repeat method calls `\MvcCore\View::GetViewScriptFullPath();`.
+	 * Static cache for application views directory full path.
 	 * @var string|NULL
 	 */
-	protected static $viewScriptsFullPathBase = NULL;
+	protected static $defaultViewsDirFullPath = NULL;
 
 	/**
 	 * Reference to `\MvcCore\Application::GetInstance()->GetToolClass();`.

@@ -110,7 +110,9 @@ trait Rendering {
 		$relativePath = $this->correctRelativePath(
 			$typePath, $relativePath
 		);
-		$viewScriptFullPath = static::GetViewScriptFullPath($typePath, $relativePath);
+		$viewScriptFullPath = static::GetViewScriptFullPath(
+			$this->GetTypedViewsDirFullPath($typePath), $relativePath
+		);
 		if (!file_exists($viewScriptFullPath)) 
 			throw new \InvalidArgumentException(
 				"[".get_class()."] Template not found in path: `{$viewScriptFullPath}`."
@@ -151,21 +153,86 @@ trait Rendering {
 			return '';
 		}
 	}
+	
+	/**
+	 * @inheritDocs
+	 * @param  \MvcCore\Application $app 
+	 * @return string
+	 */
+	public static function GetDefaultViewsDirFullPath (\MvcCore\IApplication $app) {
+		return static::$defaultViewsDirFullPath ?: (
+			static::$defaultViewsDirFullPath = implode('/', [
+				$app->GetRequest()->GetAppRoot(),
+				$app->GetAppDir(),
+				$app->GetViewsDir()
+			])
+		);
+	}
 
 	/**
 	 * @inheritDocs
-	 * @param  string $typePath Usually `"Layouts"` or `"Scripts"`.
-	 * @param  string $corectedRelativePath
+	 * @param  \MvcCore\Application $app 
+	 * @param  string               $controllerClassFullName
 	 * @return string
 	 */
-	public static function GetViewScriptFullPath ($typePath = '', $corectedRelativePath = '') {
-		if (static::$viewScriptsFullPathBase === NULL)
-			static::initViewScriptsFullPathBase();
+	public static function GetExtViewsDirFullPath (\MvcCore\IApplication $app, $controllerClassFullName) {
+		// TODO: test in packed application:
+		$ctrlType = new \ReflectionClass($controllerClassFullName);
+		$ctrlFileFullPath = $ctrlType->getFileName();
+		$extensionRoot = mb_substr(
+			$ctrlFileFullPath, 0, mb_strlen($ctrlFileFullPath) - (mb_strlen($controllerClassFullName) + 5)
+		);
+		// 
 		return implode('/', [
-			static::$viewScriptsFullPathBase,
-			$typePath,
-			$corectedRelativePath . static::$extension
+			$extensionRoot,
+			$app->GetAppDir(),
+			$app->GetViewsDir()
 		]);
+	}
+
+	/**
+	 * @inheritDocs
+	 * @param  string $typedViewsDirFullPath Example: `/abs/doc/root/App/Views/{Layouts,Forms,Scripts}`.
+	 * @param  string $corectedRelativePath  Example: `ctrl-name/action-name`.
+	 * @return string
+	 */
+	public static function GetViewScriptFullPath ($typedViewsDirFullPath, $scriptRelativePath) {
+		return implode('/', [
+			$typedViewsDirFullPath,
+			$scriptRelativePath . static::$extension
+		]);
+	}
+
+	/**
+	 * @inhertDocs
+	 * @param  string $typePath
+	 * @return string
+	 */
+	public function GetTypedViewsDirFullPath ($typePath) {
+		$viewsDirsFullPaths = [];
+		if ($this->__protected['viewsDirsFullPaths'] !== NULL) {
+			$viewsDirsFullPaths = & $this->__protected['viewsDirsFullPaths'];
+			if (isset($viewsDirsFullPaths[$typePath]))
+				return $viewsDirsFullPaths[$typePath] . '/' . $typePath;
+		}
+		$app = $this->controller->GetApplication();
+		$defaultViewsDirFullPath = static::GetDefaultViewsDirFullPath($app);
+		if ($this->controller->GetParentController() !== NULL) {
+			$typedFullPath = static::GetExtViewsDirFullPath(
+				$app, get_class($this->controller)
+			);
+		} else {
+			$currentRoute = $this->controller->GetRouter()->GetCurrentRoute();
+			if ($currentRoute !== NULL) 
+				$ctrlHasAbsNamespace = $currentRoute->GetControllerHasAbsoluteNamespace();
+			$typedFullPath = $ctrlHasAbsNamespace
+				? static::GetExtViewsDirFullPath($app, get_class($this->controller))
+				: $defaultViewsDirFullPath;
+		}
+		$viewsDirsFullPaths[$typePath] = $typedFullPath;
+		$viewsDirsFullPaths[static::$layoutsDir] = $defaultViewsDirFullPath;
+		$this->__protected['viewsDirsFullPaths'] = $viewsDirsFullPaths;
+		return $viewsDirsFullPaths[$typePath] . '/' . $typePath;
 	}
 
 	/**
