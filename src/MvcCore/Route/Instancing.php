@@ -168,19 +168,27 @@ trait Instancing {
 	protected function constructDataCtrlActionName (& $data) {
 		if (isset($data->controllerAction)) {
 			list($ctrl, $action) = explode(':', $data->controllerAction);
-			if ($ctrl) $this->controller = $ctrl;
-			if ($action) $this->action = $action;
+			if ($ctrl) {
+				$this->controller = $ctrl;
+				$this->initCtrlHasAbsNamespace();
+			};
+			if ($action) 
+				$this->action = $action;
 			if (isset($data->name)) {
 				$this->name = $data->name;
 			} else {
 				$this->name = $data->controllerAction;
 			}
 		} else {
-			$this->controller = isset($data->controller) ? $data->controller : NULL;
-			$this->action = isset($data->action) ? $data->action : NULL;
+			if (isset($data->controller)) {
+				$this->controller = $data->controller;
+				$this->initCtrlHasAbsNamespace();
+			}
+			if (isset($data->action))
+				$this->action = $data->action;
 			if (isset($data->name)) {
 				$this->name = $data->name;
-			} else if ($this->controller !== NULL && $this->action !== NULL) {
+			} else if ($this->controller !== '' && $this->action !== '') {
 				$this->name = $this->controller . ':' . $this->action;
 			} else {
 				$this->name = NULL;
@@ -253,7 +261,10 @@ trait Instancing {
 	protected function constructVarCtrlActionNameByData (& $ctrlAction) {
 		if ($ctrlAction !== NULL) {
 			list($ctrl, $action) = explode(':', $ctrlAction);
-			if ($ctrl) $this->controller = $ctrl;
+			if ($ctrl) {
+				$this->controller = $ctrl;
+				$this->initCtrlHasAbsNamespace();
+			}
 			if ($action) $this->action = $action;
 		}
 	}
@@ -294,7 +305,10 @@ trait Instancing {
 			strlen($this->name) > 1
 		) {
 			list($ctrl, $action) = explode(':', $this->name);
-			if ($ctrl) $this->controller = $ctrl;
+			if ($ctrl) {
+				$this->controller = $ctrl;
+				$this->initCtrlHasAbsNamespace();
+			}
 			if ($action) $this->action = $action;
 		}
 	}

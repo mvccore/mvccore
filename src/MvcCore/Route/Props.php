@@ -333,19 +333,10 @@ trait Props {
 	protected $lastPatternParam	= NULL;
 
 	/**
-	 * Array with route reverse pattern flags. First item is integer flag about
-	 * defined scheme in `pattern` (or `reverse`), second flag is about domain parts
-	 * founded in `pattern` (or `reverse`) and third flag is about existing query 
-	 * string part in `pattern` (or in `reverse`)
-	 * absolute or relative reverse form and second item is about query string
-	 * inside reverse string.
-	 * @var \int[]
+	 * Bit flags about advanced route info.
+	 * @var int
 	 */
-	protected $flags			= [
-		/* \MvcCore\IRoute::FLAG_SHEME_NO, */
-		/* \MvcCore\IRoute::FLAG_HOST_NO,  */
-		/* \MvcCore\IRoute::FLAG_QUERY_NO, */
-	];
+	protected $flags			= 0;
 
 	/**
 	 * Router instance reference used mostly in route URL building process.

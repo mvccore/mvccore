@@ -50,6 +50,15 @@ trait InternalInits {
 	}
 
 	/**
+	 * Init route flags value for controller with absolute namespace.
+	 * @return void
+	 */
+	protected function initCtrlHasAbsNamespace () {
+		if (mb_strpos($this->controller, '//') === 0)
+			$this->flags |= static::FLAG_CONTROLLER_ABSOLUTE_NAMESPACE;
+	}
+
+	/**
 	 * Initialize properties `match`, `reverse` and other internal properties
 	 * about those values, when there is necessary to prepare `pattern` value
 	 * for: a) PHP `preg_match_all()` route match processing, b) for `reverse`
@@ -417,8 +426,9 @@ trait InternalInits {
 		} else if (mb_strpos($pattern, 'https://') === 0) {
 			$scheme = static::FLAG_SCHEME_HTTPS;
 		}
-		$host = static::FLAG_HOST_NO;
-		if ($scheme) {
+		$this->flags |= $scheme;
+		$host = 0;
+		if (($scheme & static::FLAG_SCHEME_ANY) != 0) {
 			if (mb_strpos($pattern, static::PLACEHOLDER_HOST) !== FALSE) {
 				$host = static::FLAG_HOST_HOST;
 			} else if (mb_strpos($pattern, static::PLACEHOLDER_DOMAIN) !== FALSE) {
@@ -432,10 +442,13 @@ trait InternalInits {
 			if (mb_strpos($pattern, static::PLACEHOLDER_BASEPATH) !== FALSE)
 				$host += static::FLAG_HOST_BASEPATH;
 		}
+		if ($host === 0)
+			$host = static::FLAG_HOST_NO;
+		$this->flags |= $host;
 		$queryString = mb_strpos($pattern, '?') !== FALSE
 			? static::FLAG_QUERY_INCL
 			: static::FLAG_QUERY_NO;
-		$this->flags = [$scheme, $host, $queryString];
+		$this->flags |= $queryString;
 	}
 
 	/**
@@ -464,16 +477,20 @@ trait InternalInits {
 		$anyParams = $paramsCount > 0;
 		$defaultPathConstraint = static::$defaultPathConstraint;
 		$defaultDomainConstraint = static::$defaultDomainConstraint;
-		$schemeFlag = $this->flags[0];
-		$matchIsAbsolute = (bool) $schemeFlag;
+		$matchIsAbsolute = ($this->flags & static::FLAG_SCHEME_ANY) != 0;
 		$firstPathSlashPos = 0;
 		if ($matchIsAbsolute) {
-			$matchIsAbsolute = TRUE;
 			$defaultConstraint = $defaultDomainConstraint;
 			// if scheme flag is `http://` or `https://`, there is necessary to increase
 			// `mb_strpos()` index by one, because there is always backslash in match pattern
 			// before `:` - like `http\://` or `https\://`
-			$firstPathSlashPos = mb_strpos($match, '/', $schemeFlag + ($schemeFlag > static::FLAG_SCHEME_ANY ? 1 : 0));
+			$schemeMatchPatternLen = 2;
+			if (($this->flags & static::FLAG_SCHEME_HTTP) != 0) {
+				$schemeMatchPatternLen = 8;
+			} else if (($this->flags & static::FLAG_SCHEME_HTTPS) != 0) {
+				$schemeMatchPatternLen = 9;
+			}
+			$firstPathSlashPos = mb_strpos($match, '/', $schemeMatchPatternLen);
 		} else {
 			$defaultConstraint = $defaultPathConstraint;
 		}

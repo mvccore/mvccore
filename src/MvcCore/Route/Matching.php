@@ -77,7 +77,7 @@ trait Matching {
 	protected function matchesGetSubject (\MvcCore\IRequest $request) {
 		$subject = $this->matchesGetSubjectHostAndBase($request) 
 			. $request->GetPath(TRUE);
-		if ($this->flags[2]) 
+		if (($this->flags & static::FLAG_QUERY_INCL) != 0)
 			$subject .= $request->GetQuery(TRUE, TRUE);
 		return $subject;
 	}
@@ -116,20 +116,17 @@ trait Matching {
 	 * @return string
 	 */
 	protected function matchesGetSubjectHostAndBase (\MvcCore\IRequest $request) {
-		$schemeFlag = $this->flags[0];
 		$basePathDefined = FALSE;
 		$basePath = '';
-		$hostFlag = $this->flags[1];
-		if ($hostFlag >= static::FLAG_HOST_BASEPATH /* 10 */) {
-			$hostFlag -= static::FLAG_HOST_BASEPATH;
-			$basePath = static::PLACEHOLDER_BASEPATH;
+		if (($this->flags & static::FLAG_HOST_BASEPATH) != 0) {
 			$basePathDefined = TRUE;
+			$basePath = static::PLACEHOLDER_BASEPATH;
 		}
-		if ($schemeFlag) {
+		if (($this->flags & static::FLAG_SCHEME_ANY) != 0) {
 			if (!$basePathDefined)
 				$basePath = $request->GetBasePath();
-			$subject = $this->matchesGetSubjectScheme($schemeFlag)
-				. $this->matchesGetSubjectHost($request, $hostFlag)
+			$subject = $this->matchesGetSubjectScheme()
+				. $this->matchesGetSubjectHost($request)
 				. $basePath;
 		} else {
 			$subject = $basePathDefined ? $basePath : '';
@@ -142,18 +139,18 @@ trait Matching {
 	 * match processing. Given flag value contains scheme part string length,  
 	 * which is an array index inside local static property to return real scheme 
 	 * string by the flag.
-	 * @param  int $schemeFlag 
 	 * @return string
 	 */
-	protected function matchesGetSubjectScheme (& $schemeFlag) {
-		static $prefixes = NULL;
-		if ($prefixes === NULL) $prefixes = [
-			static::FLAG_SCHEME_NO		=> '',			// 0
-			static::FLAG_SCHEME_ANY		=> '//',		// 2
-			static::FLAG_SCHEME_HTTP	=> 'http://',	// 7
-			static::FLAG_SCHEME_HTTPS	=> 'https://',	// 8
-		];
-		return $prefixes[$schemeFlag];
+	protected function matchesGetSubjectScheme () {
+		$httpScheme = ($this->flags & static::FLAG_SCHEME_HTTP) != 0;
+		$httpsScheme = ($this->flags & static::FLAG_SCHEME_HTTPS) != 0;
+		if ($httpScheme && $httpsScheme) 
+			return '//';
+		if ($httpScheme)
+			return 'http://';
+		if ($httpsScheme) 
+			return 'https://';
+		return '';
 	}
 	
 	/**
@@ -163,26 +160,28 @@ trait Matching {
 	 * domain part with requested domain parts or placeholders to match pattern 
 	 * and subject in match processing.
 	 * @param  \MvcCore\Request $request 
-	 * @param  int              $hostFlag 
 	 * @return string
 	 */
-	protected function matchesGetSubjectHost (\MvcCore\IRequest $request, & $hostFlag) {
+	protected function matchesGetSubjectHost (\MvcCore\IRequest $request) {
 		$hostPart = '';
-		if ($hostFlag == static::FLAG_HOST_NO /* 0 */) {
+		if (($this->flags & static::FLAG_HOST_NO) != 0) {
 			$hostPart = $request->GetHostName();
-		} else if ($hostFlag == static::FLAG_HOST_HOST /* 1 */) {
+		} else if (($this->flags & static::FLAG_HOST_HOST) != 0) {
 			$hostPart = static::PLACEHOLDER_HOST;
-		} else if ($hostFlag == static::FLAG_HOST_DOMAIN /* 2 */) {
+		} else if (($this->flags & static::FLAG_HOST_DOMAIN) != 0) {
 			$hostPart = $request->GetThirdLevelDomain() . '.' . static::PLACEHOLDER_DOMAIN;
-		} else if ($hostFlag == static::FLAG_HOST_TLD /* 3 */) {
+		} else if (($this->flags & static::FLAG_HOST_TLD) != 0) {
 			$hostPart = $request->GetThirdLevelDomain() 
 				. '.' . $request->GetSecondLevelDomain()
 				. '.' . static::PLACEHOLDER_TLD;
-		} else if ($hostFlag == static::FLAG_HOST_SLD /* 4 */) {
+		} else if (($this->flags & static::FLAG_HOST_SLD) != 0) {
 			$hostPart = $request->GetThirdLevelDomain() 
 				. '.' . static::PLACEHOLDER_SLD
 				. '.' . $request->GetTopLevelDomain();
-		} else if ($hostFlag == static::FLAG_HOST_TLD + static::FLAG_HOST_SLD /* 7 */) {
+		} else if (
+			($this->flags & static::FLAG_HOST_TLD) != 0 &&
+			($this->flags & static::FLAG_HOST_SLD) != 0
+		) {
 			$hostPart = $request->GetThirdLevelDomain() 
 				. '.' . static::PLACEHOLDER_SLD
 				. '.' . static::PLACEHOLDER_TLD;

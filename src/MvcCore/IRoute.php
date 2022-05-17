@@ -644,6 +644,14 @@ interface IRoute extends \MvcCore\Route\IConstants {
 	 * @return mixed
 	 */
 	public function GetAdvancedConfigProperty ($propertyName);
+	
+	/**
+	 * Get `TRUE` if controller contains absolute namespace (starting with `//` substring).
+	 * Controller usually doesn`t contain absolute namespace, only if controller
+	 * is places somewhere else then standard application controllers directory.
+	 * @return bool
+	 */
+	public function GetControllerHasAbsoluteNamespace ();
 
 	/**
 	 * Return array of matched params if incoming request match this route

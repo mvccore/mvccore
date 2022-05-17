@@ -106,6 +106,8 @@ trait GettersSetters {
 	 */
 	public function SetController ($controller) {
 		$this->controller = $controller;
+		if ($this->controller)
+			$this->initCtrlHasAbsNamespace();
 		return $this;
 	}
 
@@ -142,7 +144,10 @@ trait GettersSetters {
 	 */
 	public function SetControllerAction ($controllerAction) {
 		list($ctrl, $action) = explode(':', $controllerAction);
-		if ($ctrl)		$this->controller = $ctrl;
+		if ($ctrl) {
+			$this->controller = $ctrl;
+			$this->initCtrlHasAbsNamespace();
+		}
 		if ($action)	$this->action = $action;
 		return $this;
 	}
@@ -281,7 +286,7 @@ trait GettersSetters {
 	 * @return bool
 	 */
 	public function GetAbsolute () {
-		return $this->absolute || (isset($this->flags[0]) && ((bool)$this->flags[0]));
+		return $this->absolute || ($this->flags & static::FLAG_SCHEME_ANY) != 0;
 	}
 
 	/**
@@ -357,6 +362,14 @@ trait GettersSetters {
 		/** @var \MvcCore\Router $router */
 		$this->router = $router;
 		return $this;
+	}
+	
+	/**
+	 * @inheritDocs
+	 * @return bool
+	 */
+	public function GetControllerHasAbsoluteNamespace () {
+		return ($this->flags & static::FLAG_CONTROLLER_ABSOLUTE_NAMESPACE) != 0;
 	}
 
 	/**

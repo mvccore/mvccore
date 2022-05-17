@@ -212,16 +212,14 @@ trait UrlBuilding {
 	 *                         path part with query string.
 	 */
 	protected function urlAbsPartAndSplit (\MvcCore\IRequest $request, $resultUrl, & $domainParams, $splitUrl) {
-		$domainParamsFlag = $this->flags[1];
 		$basePathInReverse = FALSE;
-		if ($domainParamsFlag >= static::FLAG_HOST_BASEPATH) {
+		if (($this->flags & static::FLAG_HOST_BASEPATH) != 0) {
 			$basePathInReverse = TRUE;
-			$domainParamsFlag -= static::FLAG_HOST_BASEPATH;
 		}
-		if ($this->flags[0]) {
+		if (($this->flags & static::FLAG_SCHEME_ANY) != 0) {
 			// route is defined as absolute with possible `%domain%` and other params
 			// process possible replacements in reverse result - `%host%`, `%domain%`, `%tld%` and `%sld%`
-			$this->urlReplaceDomainReverseParams($request, $resultUrl, $domainParams, $domainParamsFlag);
+			$this->urlReplaceDomainReverseParams($request, $resultUrl, $domainParams);
 			// try to find URL position after domain part and after base path part
 			if ($basePathInReverse) {
 				return $this->urlAbsPartAndSplitByReverseBasePath($request, $resultUrl, $domainParams, $splitUrl);
@@ -233,7 +231,7 @@ trait UrlBuilding {
 			// in domain params array to complete absolute URL by developer
 			// and there could be also `basePath` param defined.
 			return $this->urlAbsPartAndSplitByGlobalSwitchOrBasePath(
-				$request, $resultUrl, $domainParams, (bool) $domainParamsFlag, $splitUrl
+				$request, $resultUrl, $domainParams, $splitUrl
 			);
 		}
 	}
@@ -249,43 +247,41 @@ trait UrlBuilding {
 	 *                                            or base path replacements.
 	 * @param  array            $domainParams     Array with params for first URL
 	 *                                            part (scheme, domain, base path).
-	 * @param  mixed            $domainParamsFlag Second route flag about domain
-	 *                                            without value about base path.
-	 *                                            This value contains info what
-	 *                                            percentage replacements was
-	 *                                            contained in reverse pattern.
 	 * @return void
 	 */
-	protected function urlReplaceDomainReverseParams (\MvcCore\IRequest $request, & $resultUrl, & $domainParams, $domainParamsFlag) {
+	protected function urlReplaceDomainReverseParams (\MvcCore\IRequest $request, & $resultUrl, & $domainParams) {
 		$replacements = [];
 		$values = [];
 		$router = $this->router;
-		if ($domainParamsFlag == static::FLAG_HOST_HOST) {
+		if (($this->flags & static::FLAG_HOST_HOST) != 0) {
 			$hostParamName = $router::URL_PARAM_HOST;
 			$replacements[] = static::PLACEHOLDER_HOST;
 			$values[] = isset($domainParams[$hostParamName])
 				? $domainParams[$hostParamName]
 				: $request->GetHost();
-		} else if ($domainParamsFlag == static::FLAG_HOST_DOMAIN) {
+		} else if (($this->flags & static::FLAG_HOST_DOMAIN) != 0) {
 			$domainParamName = $router::URL_PARAM_DOMAIN;
 			$replacements[] = static::PLACEHOLDER_DOMAIN;
 			$values[] = isset($domainParams[$domainParamName])
 				? $domainParams[$domainParamName]
 				: $request->GetSecondLevelDomain() . '.' . $request->GetTopLevelDomain();
 		} else {
-			if ($domainParamsFlag == static::FLAG_HOST_TLD) {
+			if (($this->flags & static::FLAG_HOST_TLD) != 0) {
 				$tldParamName = $router::URL_PARAM_TLD;
 				$replacements[] = static::PLACEHOLDER_TLD;
 				$values[] = isset($domainParams[$tldParamName])
 					? $domainParams[$tldParamName]
 					: $request->GetTopLevelDomain();
-			} else if ($domainParamsFlag == static::FLAG_HOST_SLD) {
+			} else if (($this->flags & static::FLAG_HOST_SL) != 0) {
 				$sldParamName = $router::URL_PARAM_SLD;
 				$replacements[] = static::PLACEHOLDER_SLD;
 				$values[] = isset($domainParams[$sldParamName])
 					? $domainParams[$sldParamName]
 					: $request->GetSecondLevelDomain();
-			} else if ($domainParamsFlag == static::FLAG_HOST_TLD + static::FLAG_HOST_SLD) {
+			} else if (
+				($this->flags & static::FLAG_HOST_TLD != 0) &&
+				($this->flags & static::FLAG_HOST_SLD != 0)
+			) {
 				$tldParamName = $router::URL_PARAM_TLD;
 				$sldParamName = $router::URL_PARAM_SLD;
 				$replacements[] = static::PLACEHOLDER_TLD;
@@ -354,7 +350,7 @@ trait UrlBuilding {
 		$basePart .= isset($domainParams[$basePathParamName])
 			? $domainParams[$basePathParamName]
 			: $request->GetBasePath();
-		if ($this->flags[0] === static::FLAG_SCHEME_ANY)
+		if (($this->flags & static::FLAG_SCHEME_ANY) != 0)
 			$basePart = $request->GetScheme() . $basePart;
 		if ($splitUrl) return [$basePart, $pathPart];
 		return [$basePart . $pathPart];
@@ -393,7 +389,7 @@ trait UrlBuilding {
 			$resultSchemePart = mb_substr($resultUrl, 0, $doubleSlashPos);
 			$resultAfterScheme = mb_substr($resultUrl, $doubleSlashPos);
 			$resultAfterScheme = str_replace('//', '/', $resultAfterScheme);
-			if ($this->flags[0] === static::FLAG_SCHEME_ANY) {
+			if (($this->flags & static::FLAG_SCHEME_ANY) != 0) {
 				$resultUrl = $request->GetScheme() . '//' . $resultAfterScheme;
 			} else {
 				$resultUrl = $resultSchemePart . $resultAfterScheme;
@@ -417,7 +413,7 @@ trait UrlBuilding {
 					$baseUrlPartEndPos += $basePathLength;
 			}
 			$basePart = mb_substr($resultUrl, 0, $baseUrlPartEndPos);
-			if ($this->flags[0] === static::FLAG_SCHEME_ANY)
+			if (($this->flags & static::FLAG_SCHEME_ANY) != 0)
 				$basePart = $request->GetScheme() . $basePart;
 			$pathAndQueryPart = mb_substr($resultUrl, $baseUrlPartEndPos);
 			$questionMarkPos = mb_strpos($pathAndQueryPart, '?');
@@ -446,8 +442,6 @@ trait UrlBuilding {
 	 * @param  array            $domainParams
 	 *                          Array with params for first URL part (scheme,
 	 *                          domain, base path).
-	 * @param  bool             $domainParamsFlag
-	 *                          Route second int flag value without base path.
 	 * @param  bool             $splitUrl
 	 *                          Boolean value about to split completed result URL
 	 *                          into two parts or not. Default is FALSE to return
@@ -461,7 +455,7 @@ trait UrlBuilding {
 	 *                          in two parts - domain part with base path and
 	 *                          path part with query string.
 	 */
-	protected function urlAbsPartAndSplitByGlobalSwitchOrBasePath (\MvcCore\IRequest $request, $resultUrl, & $domainParams, $domainParamsFlag, $splitUrl) {
+	protected function urlAbsPartAndSplitByGlobalSwitchOrBasePath (\MvcCore\IRequest $request, $resultUrl, & $domainParams, $splitUrl) {
 		/** @var \MvcCore\Router $router */
 		$router = $this->router;
 		$basePathParamName = $router::URL_PARAM_BASEPATH;
@@ -471,7 +465,8 @@ trait UrlBuilding {
 		// If there is `%basePath%` placeholder in reverse, put before `$basePart`
 		// what is before matched `%basePath%` placeholder and edit `$resultUrl`
 		// to use only part after `%basePath%` placeholder:
-		if ($domainParamsFlag) {
+		$noDomainParamsFlag = ($this->flags & static::FLAG_HOST_NO) != 0;
+		if (!$noDomainParamsFlag) {
 			$placeHolderBasePath = static::PLACEHOLDER_BASEPATH;
 			$basePathPlaceHolderPos = mb_strpos($resultUrl, $placeHolderBasePath);
 			if ($basePathPlaceHolderPos !== FALSE) {
