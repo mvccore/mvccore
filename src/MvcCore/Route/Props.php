@@ -124,9 +124,9 @@ trait Props {
 	 * by given params in router method: `\MvcCore\Router:Url($name, $params);`.
 	 *
 	 * Example: `"products_list" | "Products:Gallery"`
-	 * @var string
+	 * @var string|NULL
 	 */
-	protected $name			= '';
+	protected $name			= NULL;
 
 	/**
 	 * Controller name/path to dispatch, in pascal case. This property is not 
@@ -151,9 +151,9 @@ trait Props {
 	 *   - placed in `/App/Controllers/Front/Business/Products.php`
 	 * - `"//Anywhere\Else\Controllers\Products"
 	 *   - placed in `/Anywhere/Else/Controllers/Products.php`
-	 * @var string
+	 * @var string|NULL
 	 */
-	protected $controller	= '';
+	protected $controller	= NULL;
 
 	/**
 	 * Action name to call in dispatched controller, in pascal case. This 
@@ -167,9 +167,9 @@ trait Props {
 	 * controller has to be named as: `public function ListAction () {...}`.
 	 *
 	 * Example: `"List"`
-	 * @var string
+	 * @var string|NULL
 	 */
-	protected $action		= '';
+	protected $action		= NULL;
 
 	/**
 	 * Route rewrite params default values and also any other query string 

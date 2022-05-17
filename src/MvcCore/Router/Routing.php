@@ -117,7 +117,7 @@ trait Routing {
 	public function SetOrCreateDefaultRouteAsCurrent ($routeName, $controllerPc, $actionPc, $fallbackCall = FALSE) {
 		$ctrlAbsPath = mb_strpos($controllerPc, '//') === 0;
 		if ($ctrlAbsPath) $controllerPc = mb_substr($controllerPc, 2);
-		$controllerPc = strtr($controllerPc, '/', '\\');
+		$controllerPc = str_replace('/', '\\', $controllerPc);
 		if ($ctrlAbsPath) $controllerPc = '//' . $controllerPc;
 		$ctrlActionRouteName = $controllerPc.':'. $actionPc;
 		$request = $this->request;
@@ -156,8 +156,8 @@ trait Routing {
 		}
 		$toolClass = self::$toolClass;
 		$request
-			->SetControllerName(str_replace('\\', '/', 
-				$toolClass::GetDashedFromPascalCase($defaultRoute->GetController())
+			->SetControllerName(str_replace(
+				'\\', '/', $toolClass::GetDashedFromPascalCase($defaultRoute->GetController())
 			))
 			->SetActionName($toolClass::GetDashedFromPascalCase($defaultRoute->GetAction()))
 			->SetParamSourceType(static::URL_PARAM_CONTROLLER, $ctrlActionParamType)

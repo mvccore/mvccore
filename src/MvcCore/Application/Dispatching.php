@@ -139,7 +139,7 @@ trait Dispatching {
 		list ($ctrlPc, $actionPc) = [$route->GetController(), $route->GetAction()];
 		$actionName = $actionPc . 'Action';
 		$viewClass = $this->viewClass;
-
+		
 		$viewsDirFullPath = $route->GetControllerHasAbsoluteNamespace()
 			? $viewClass::GetExtViewsDirFullPath($this, mb_substr($route->GetController(), 2))
 			: $viewClass::GetDefaultViewsDirFullPath($this);
