@@ -291,6 +291,7 @@ trait Handlers {
 		$request = $app->GetRequest();
 		if ($request->IsInternalRequest()) return FALSE;
 		$response = $app->GetResponse();
-		return $response->HasHeader('Content-Type') && $response->IsHtmlOutput();
+		$hasContentType = $response->HasHeader('Content-Type');
+		return !$hasContentType || ($hasContentType && $response->IsHtmlOutput());
 	}
 }
