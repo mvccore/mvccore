@@ -176,13 +176,18 @@ trait Rendering {
 	 * @return string
 	 */
 	public static function GetExtViewsDirFullPath (\MvcCore\IApplication $app, $controllerClassFullName) {
-		// TODO: test in packed application:
-		$ctrlType = new \ReflectionClass($controllerClassFullName);
-		$ctrlFileFullPath = $ctrlType->getFileName();
-		$extensionRoot = str_replace('\\', '/', mb_substr(
-			$ctrlFileFullPath, 0, mb_strlen($ctrlFileFullPath) - (mb_strlen($controllerClassFullName) + 5)
-		));
-		// 
+		//$appCompiledMode = $app->GetCompiled();
+		$extensionRoot = NULL;
+		/*if ($appCompiledMode && $appCompiledMode !== \MvcCore\IApplication::COMPILED_SFU)	{ // PHAR, PHP or PHP_*
+			// TODO: test with view with controller in vendor directory in PHAR or in PHP package
+			$extensionRoot = $app->GetRequest()->GetAppRoot();
+		} else {*/
+			$ctrlType = new \ReflectionClass($controllerClassFullName);
+			$ctrlFileFullPath = str_replace('\\', '/', $ctrlType->getFileName());
+			$extensionRoot = mb_substr(
+				$ctrlFileFullPath, 0, mb_strlen($ctrlFileFullPath) - (mb_strlen($controllerClassFullName) + 5)
+			);
+		//}
 		return implode('/', [
 			$extensionRoot,
 			$app->GetAppDir(),

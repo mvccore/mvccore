@@ -47,7 +47,7 @@ trait Helpers {
 	 * @return string
 	 */
 	public function CompleteControllerName ($controllerNamePascalCase) {
-		if (substr($controllerNamePascalCase, 0, 2) == '//') 
+		if (mb_strpos($controllerNamePascalCase, '//') === 0) 
 			return '\\' . ltrim($controllerNamePascalCase, '/');
 		return '\\' . implode('\\', [
 			$this->appDir,

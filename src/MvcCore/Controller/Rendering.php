@@ -269,10 +269,10 @@ trait Rendering {
 	/**
 	 * Get relative path to view script by controller name
 	 * inside `./App`Views/Scripts/` directory without view file extension.
-	 * @param string $controllerNameDashed 
+	 * @param  string $controllerNameDashed 
 	 * @return string
 	 */
-	protected function getViewScriptPathCtrlName (string $controllerNameDashed): string {
+	protected function getViewScriptPathCtrlName ($controllerNameDashed) {
 		$currentRoute = $this->router->GetCurrentRoute();
 		$ctrlHasAbsNamespace = $currentRoute !== NULL
 			? $currentRoute->GetControllerHasAbsoluteNamespace()
