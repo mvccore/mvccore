@@ -41,9 +41,12 @@ call_user_func(function () {
 		} else {
 			$scriptFilename = $_SERVER['SCRIPT_FILENAME'];
 		}
+		$insidePhar = strlen(\Phar::running()) > 0;
 		// `ucfirst()` - cause IIS has lower case drive name here - different from __DIR__ value
-		$scriptFilename = ucfirst(str_replace(['\\', '//'], '/', $scriptFilename));
-		define('MVCCORE_DOCUMENT_ROOT', strlen(\Phar::running()) > 0 
+		$scriptFilename = str_replace(['\\', '//'], '/', $scriptFilename);
+		if (!$insidePhar)
+			$scriptFilename = ucfirst($scriptFilename);
+		define('MVCCORE_DOCUMENT_ROOT', $insidePhar
 			? 'phar://' . $scriptFilename
 			: dirname($scriptFilename)
 		);

@@ -255,6 +255,8 @@ trait Helpers {
 	 * @return string
 	 */
 	public static function RealPathVirtual ($path) {
+		$insidePhar = strlen(\Phar::running()) > 0;
+		if ($insidePhar) $path = mb_substr($path, 7);
 		$path = str_replace('\\', '/', $path);
 		$rawParts = explode('/', $path);
 		$parts = array_filter($rawParts, 'strlen');
@@ -269,7 +271,9 @@ trait Helpers {
 				$items[] = $part;
 			}
 		}
-		return implode('/', $items);
+		$result = implode('/', $items);
+		if ($insidePhar) $result = 'phar://' . $result;
+		return $result;
 	}
 
 	/**

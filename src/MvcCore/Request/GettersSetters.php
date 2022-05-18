@@ -252,10 +252,14 @@ trait GettersSetters {
 	 * @return string
 	 */
 	public function GetAppRoot () {
-		if ($this->appRoot === NULL) 
+		if ($this->appRoot === NULL) {
+			$insidePhar = strlen(\Phar::running()) > 0;
 			$this->appRoot = defined('MVCCORE_APP_ROOT')
-				? ucfirst(constant('MVCCORE_APP_ROOT'))
+				? constant('MVCCORE_APP_ROOT')
 				: $this->GetDocumentRoot();
+			if (!$insidePhar)
+				$this->appRoot = ucfirst($this->appRoot);
+		}
 		return $this->appRoot;
 	}
 	
@@ -276,14 +280,17 @@ trait GettersSetters {
 	public function GetDocumentRoot () {
 		if ($this->documentRoot === NULL) {
 			// `ucfirst()` - cause IIS has lower case drive name here - different from __DIR__ value
+			$insidePhar = strlen(\Phar::running()) > 0;
 			if (defined('MVCCORE_DOCUMENT_ROOT')) {
-				$this->documentRoot = ucfirst(constant('MVCCORE_DOCUMENT_ROOT'));
+				$this->documentRoot = constant('MVCCORE_DOCUMENT_ROOT');
+				if (!$insidePhar)
+					$this->documentRoot = ucfirst($this->documentRoot);
 			} else {
 				$indexFilePath = ucfirst(str_replace(
 					['\\', '//'], '/', 
 					$this->globalServer['SCRIPT_FILENAME']
 				));
-				$this->documentRoot = strlen(\Phar::running()) > 0 
+				$this->documentRoot = $insidePhar
 					? 'phar://' . $indexFilePath
 					: dirname($indexFilePath);
 			}
