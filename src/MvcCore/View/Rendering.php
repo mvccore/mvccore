@@ -179,9 +179,9 @@ trait Rendering {
 		// TODO: test in packed application:
 		$ctrlType = new \ReflectionClass($controllerClassFullName);
 		$ctrlFileFullPath = $ctrlType->getFileName();
-		$extensionRoot = mb_substr(
+		$extensionRoot = str_replace('\\', '/', mb_substr(
 			$ctrlFileFullPath, 0, mb_strlen($ctrlFileFullPath) - (mb_strlen($controllerClassFullName) + 5)
-		);
+		));
 		// 
 		return implode('/', [
 			$extensionRoot,
