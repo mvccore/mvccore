@@ -162,7 +162,7 @@ trait Content {
 				$finishOutputBuffers = FALSE;
 		}
 		if ($finishOutputBuffers) {
-			if (ob_get_level())
+			while (ob_get_level())
 				ob_end_flush();
 		}
 		flush();
