@@ -24,8 +24,8 @@ trait Closing {
 	 */
 	public static function Close () {
 		if (!static::GetStarted()) return;
-		$req = self::$req ?: self::$req = \MvcCore\Application::GetInstance()->GetRequest();
-		$res = self::$res ?: self::$res = \MvcCore\Application::GetInstance()->GetResponse();
+		$req = self::$req ?: (self::$req = \MvcCore\Application::GetInstance()->GetRequest());
+		$res = self::$res ?: (self::$res = \MvcCore\Application::GetInstance()->GetResponse());
 		$resIsRedirect = $res->HasHeader('Location');
 		register_shutdown_function(function () use ($req, $resIsRedirect) {
 			foreach (static::$instances as & $instance)

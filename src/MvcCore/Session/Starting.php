@@ -24,11 +24,9 @@ trait Starting {
 	 */
 	public static function Start () {
 		if (static::GetStarted()) return;
-		$req = self::$req ?: self::$req = \MvcCore\Application::GetInstance()->GetRequest();
+		$req = self::$req ?: (self::$req = \MvcCore\Application::GetInstance()->GetRequest());
 		if ($req->IsInternalRequest() === TRUE) return;
-
-		static::preventSessionFixation($req);
-
+		static::setUpSessionId($req);
 		$sessionStartOptions = [
 			// $sentSessionId
 			'cookie_secure'		=> $req->IsSecure(),
@@ -58,7 +56,7 @@ trait Starting {
 	 */
 	public static function GetStarted () {
 		if (static::$started === NULL) {
-			$req = self::$req ?: self::$req = \MvcCore\Application::GetInstance()->GetRequest();
+			$req = self::$req ?: (self::$req = \MvcCore\Application::GetInstance()->GetRequest());
 			if (!$req->IsCli()) {
 				$alreadyStarted = session_status() === PHP_SESSION_ACTIVE && session_id() !== '';
 				if ($alreadyStarted) {
@@ -75,50 +73,86 @@ trait Starting {
 	}
 
 	/**
-	 * When there is a situation in client browser, when there is executed
-	 * some XSS session fixation script manipulation with HTTP only session id,
-	 * then there could be schizofrenic situation in browser local storrage.
-	 *
-	 * The script could look like this:
-	 * `document.cookie="PHPSESSID=evil_value";`
-	 *
-	 * This creates in browser two cookies with the same name.
-	 * First cookie is from server side with HTTP ONLY
-	 * flag and the second cookie exists for javascript environment.
-	 *
-	 * Then user could continue to next document and browser always sent both cookies.
-	 * But the HTTP only cookie is always send as second in Cookie header value cookies list.
-	 * But PHP engine takes always the first cookie value to start session.
-	 * To prevent atacks like that, take always the last session id value 
-	 * in Cookie header list by fixing session id before session has been started.
+	 * Get session if from request header. If there is no session id
+	 * or if there are more session ids, generate new session id.
 	 * @param  \MvcCore\Request $req
 	 * @return void
 	 */
-	protected static function preventSessionFixation (\MvcCore\IRequest $req) {
+	protected static function setUpSessionId (\MvcCore\IRequest $req) {
 		$sessionCookieName = session_name();
-		$rawCookieHeader = $req->GetHeader('Cookie', '-,=;a-zA-Z0-9');
-		$rawCookieHeader = ';' . trim($rawCookieHeader ?: '', ';') . ';';
-		$sessionCookieNameExtended = ';' . $sessionCookieName . '=';
-		// check if there has been executed any potentional client XSS for session fixation:
-		if (substr_count($rawCookieHeader, $sessionCookieNameExtended) > 1) {
-			$sentSessionId = '';
-			$lastPoss = mb_strrpos($rawCookieHeader, $sessionCookieNameExtended);
-			if ($lastPoss !== FALSE) {
-				$rawSentSessionId = mb_substr($rawCookieHeader, $lastPoss + mb_strlen($sessionCookieNameExtended));
-				$valueEndPos = mb_strpos($rawSentSessionId, ';');
-				if ($valueEndPos === FALSE) {
-					$sentSessionId = $rawSentSessionId;
-				} else {
-					$sentSessionId = mb_substr($rawSentSessionId, 0, $valueEndPos);
-				}
-				if (mb_strlen($sentSessionId) > 128)
-					$sentSessionId = mb_substr($sentSessionId, 0, 128);
-				$sentSessionId = str_replace('=', '', $sentSessionId);
-				// Use the last session id in Cookies header potentional list.
-				// The last one is always the right with htttp only flag.
-				$_COOKIE[$sessionCookieName] = $sentSessionId;
-				session_id($sentSessionId);
-			}
+		$rawCookieHeader = ';' . trim($req->GetHeader('Cookie', '-,=;a-zA-Z0-9') ?: '', ';') . ';';
+		
+		$sessionId = NULL;
+		if (preg_match_all("#;\s?{$sessionCookieName}\s?\=([^;]+)#", $rawCookieHeader, $matches)) {
+			$rawSessionIds = isset($matches[1]) ? $matches[1] : [];
+			if (count($rawSessionIds) === 1)
+				$sessionId = $matches[1][0];
+			// if count is higher than 1, it's session fixation atack request, 
+			// then generate new session id for response.
 		}
+		if ($sessionId === NULL) 
+			$sessionId = static::createId();
+		$_COOKIE[$sessionCookieName] = $sessionId;
+		session_id($sessionId);
+	}
+
+	/**
+	 * Create new session id. It's used to create new session id 
+	 * for the current session. It returns collision free session id.
+	 * If session is not active, collision check is omitted.
+	 * Session ID is created according to php.ini settings.
+	 * It is important to use the same user ID of your web server for 
+	 * GC task script. Otherwise, you may have permission problems 
+	 * especially with files save handler.
+	 * @see https://www.php.net/manual/en/function.session-create-id.php#121945
+	 * @see https://www.php.net/manual/en/function.random-bytes.php#118932
+	 * @param  string|NULL $prefix
+	 * @param  int         $outputLen 
+	 * @return string
+	 */
+	protected static function createId ($prefix = NULL, $outputLen = 26) {
+		if (PHP_VERSION_ID > 70100) 
+			return session_create_id($prefix);
+		if ($prefix !== NULL && !preg_match("#^([a-zA-Z0-9\-,]+)$#", $prefix))
+			trigger_error(
+				"Prefix cannot contain special characters. Only the `A-Z`, `a-z`, `0-9`, ".
+				"`-`, and `,` characters are allowed.", E_USER_WARNING
+			);
+		// The below is translated from function bin_to_readable in the PHP source (ext/session/session.c)
+		static $hexconvtab = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ,-';
+		$randLen = ceil($outputLen / 2);
+		if (function_exists('random_bytes')) {
+			$randomBytes = bin2hex(random_bytes($randLen));
+		} else if (function_exists('mcrypt_create_iv')) {
+			$randomBytes = bin2hex(mcrypt_create_iv($randLen, MCRYPT_DEV_URANDOM));
+		} else if (function_exists('openssl_random_pseudo_bytes')) {
+			$randomBytes = bin2hex(openssl_random_pseudo_bytes($randLen));
+		}
+		$rawBitsPerChar = @ini_get('session.hash_bits_per_character');
+		$bitsPerChar = $rawBitsPerChar ? intval($rawBitsPerChar) : 6;
+		$out = '';
+		$p = 0;
+		$q = strlen($randomBytes);
+		$w = 0;
+		$have = 0;
+		$mask = (1 << $bitsPerChar) - 1;
+		$chars_remaining = $outputLen;
+		while ($chars_remaining--) {
+			if ($have < $bitsPerChar) {
+				if ($p < $q) {
+					$byte = ord( $randomBytes[$p++] );
+					$w |= ($byte << $have);
+					$have += 8;
+				} else {
+					// Should never happen. Input must be large enough.
+					break;
+				}
+			}
+			// consume $bitsPerChar bits
+			$out .= $hexconvtab[$w & $mask];
+			$w >>= $bitsPerChar;
+			$have -= $bitsPerChar;
+		}
+		return ($prefix ?: '') . $out;
 	}
 }
