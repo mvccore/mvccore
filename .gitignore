@@ -56,3 +56,4 @@ Temporary Items
 *.phpproj
 *.phpproj.user
 composer.dev.json
+composer.dev.lock

@@ -406,10 +406,13 @@ trait GettersSetters {
 			$referer = isset($this->globalServer['HTTP_REFERER'])
 				? $this->globalServer['HTTP_REFERER']
 				: '';
-			if ($referer) 
-				while (preg_match("#%([0-9a-zA-Z]{2})#", $referer))
+			if ($referer) {
+				$safetyCounter = 0;
+				while (preg_match("#%([0-9a-zA-Z]{2})#", $referer) && $safetyCounter++ < 5) {
 					$referer = rawurldecode($referer);
+				}
 				$referer = str_replace('%', '%25', $referer);
+			}
 			$this->referer = $referer;
 		}
 		return $rawInput ? $this->referer : static::HtmlSpecialChars($this->referer);
