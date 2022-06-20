@@ -111,8 +111,8 @@ trait Starting {
 	 * @return string
 	 */
 	protected static function createId ($prefix = NULL, $outputLen = 26) {
-		if (PHP_VERSION_ID > 70100) 
-			return session_create_id($prefix);
+		if (PHP_VERSION_ID > 70100)
+			return $prefix === NULL ? session_create_id() : session_create_id($prefix);
 		if ($prefix !== NULL && !preg_match("#^([a-zA-Z0-9\-,]+)$#", $prefix))
 			trigger_error(
 				"Prefix cannot contain special characters. Only the `A-Z`, `a-z`, `0-9`, ".
