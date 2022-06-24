@@ -115,14 +115,15 @@ trait Helpers {
 					: FALSE;
 			}
 		);
+		$result = NULL;
 		try {
-			return call_user_func_array($internalFnOrHandler, $args);
+			$result = call_user_func_array($internalFnOrHandler, $args);
 		} catch (\Throwable $e) {
 		} /* finally {
 			restore_error_handler();
 		}*/
 		restore_error_handler();
-		return NULL;
+		return $result;
 	}
 
 	/**
