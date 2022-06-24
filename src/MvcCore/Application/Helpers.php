@@ -122,6 +122,7 @@ trait Helpers {
 			}
 		} else {
 			// check if there could be an array overflow
+			ksort($handlers);
 			if (PHP_VERSION_ID >= 70300) {
 				$lastHandlerKey = array_key_last($handlers);
 			} else {
