@@ -81,12 +81,11 @@ trait Starting {
 	protected static function setUpSessionId (\MvcCore\IRequest $req) {
 		$sessionCookieName = session_name();
 		$rawCookieHeader = ';' . trim($req->GetHeader('Cookie', '-,=;a-zA-Z0-9') ?: '', ';') . ';';
-		
 		$sessionId = NULL;
 		if (preg_match_all("#;\s?{$sessionCookieName}\s?\=([^;]+)#", $rawCookieHeader, $matches)) {
 			$rawSessionIds = isset($matches[1]) ? $matches[1] : [];
 			if (count($rawSessionIds) === 1)
-				$sessionId = $matches[1][0];
+				$sessionId = $rawSessionIds[0];
 			// if count is higher than 1, it's session fixation atack request, 
 			// then generate new session id for response.
 		}
