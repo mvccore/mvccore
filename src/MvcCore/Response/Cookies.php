@@ -41,7 +41,6 @@ trait Cookies {
 			);
 		$request = \MvcCore\Application::GetInstance()->GetRequest();
 		$expires = $lifetime === 0 ? 0 : time() + $lifetime;
-		$domain = ($domain === NULL ? $request->GetHostName() : (string) $domain);
 		$secure = $secure === NULL ? $request->IsSecure() : $secure;
 		if (PHP_VERSION_ID < 70300) {
 			return \setcookie(
