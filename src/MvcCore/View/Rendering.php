@@ -113,10 +113,19 @@ trait Rendering {
 		$viewScriptFullPath = static::GetViewScriptFullPath(
 			$this->GetTypedViewsDirFullPath($typePath), $relativePath
 		);
-		if (!file_exists($viewScriptFullPath)) 
-			throw new \InvalidArgumentException(
-				"[".get_class()."] Template not found in path: `{$viewScriptFullPath}`."
+		if (!file_exists($viewScriptFullPath)) {
+			// fallback - try to found template in default view dir:
+			$viewScriptFullPathDefault = static::GetViewScriptFullPath(
+				$this->GetTypedViewsDirFullPathDefault($typePath), $relativePath
 			);
+			if (file_exists($viewScriptFullPathDefault)) {
+				$viewScriptFullPath = $viewScriptFullPathDefault;
+			} else {
+				throw new \InvalidArgumentException(
+					"[".get_class()."] Template not found in path: `{$viewScriptFullPath}`."
+				);
+			}
+		}
 		return $this->RenderByFullPath($viewScriptFullPath);
 	}
 
@@ -207,7 +216,7 @@ trait Rendering {
 			$scriptRelativePath . static::$extension
 		]);
 	}
-
+	
 	/**
 	 * @inhertDocs
 	 * @param  string $typePath
@@ -238,6 +247,26 @@ trait Rendering {
 		$viewsDirsFullPaths[static::$layoutsDir] = $defaultViewsDirFullPath;
 		$this->__protected['viewsDirsFullPaths'] = $viewsDirsFullPaths;
 		return $viewsDirsFullPaths[$typePath] . '/' . $typePath;
+	}
+
+	/**
+	 * @inhertDocs
+	 * @param  string $typePath
+	 * @return string
+	 */
+	public function GetTypedViewsDirFullPathDefault ($typePath) {
+		$layoutsDir = static::$layoutsDir;
+		$viewsDirsFullPaths = [];
+		if ($this->__protected['viewsDirsFullPaths'] !== NULL) {
+			$viewsDirsFullPaths = & $this->__protected['viewsDirsFullPaths'];
+			if (isset($viewsDirsFullPaths[$layoutsDir]))
+				return $viewsDirsFullPaths[$layoutsDir] . '/' . $typePath;
+		}
+		$app = $this->controller->GetApplication();
+		$defaultViewsDirFullPath = static::GetDefaultViewsDirFullPath($app);
+		$viewsDirsFullPaths[$layoutsDir] = $defaultViewsDirFullPath;
+		$this->__protected['viewsDirsFullPaths'] = $viewsDirsFullPaths;
+		return $viewsDirsFullPaths[$layoutsDir] . '/' . $typePath;
 	}
 
 	/**

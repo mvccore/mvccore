@@ -235,6 +235,15 @@ interface IView extends \MvcCore\View\IConstants {
 	 * @return string
 	 */
 	public function GetTypedViewsDirFullPath ($typePath);
+	
+	/**
+	 * Get typed views directory full path, cached in current view instance.
+	 * This method always returns project main views directory, 
+	 * where is placed main Layouts directory. Methods serves for fallback cases.
+	 * @param  string $typePath
+	 * @return string
+	 */
+	public function GetTypedViewsDirFullPathDefault ($typePath);
 
 	/**
 	 * This is INTERNAL method, do not use it in templates.
