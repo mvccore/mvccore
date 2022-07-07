@@ -34,7 +34,8 @@ trait Props {
 	protected static $instance;
 
 	/**
-	 * Describes if application is running as standard php project or as single file application.
+	 * Describes if application is running as standard 
+	 * php project or as single file application.
 	 * It should has values from:
 	 * - `\MvcCore\IApplication::COMPILED_PHP`
 	 * - `\MvcCore\IApplication::COMPILED_PHAR`
@@ -44,6 +45,24 @@ trait Props {
 	 * @var string|NULL
 	 */
 	protected $compiled = NULL;
+
+	/**
+	 * Describes if main application controller
+	 * is from any composer vendor project.
+	 * Compilled applications doesn't support 
+	 * dispatching in vendor directories.
+	 * @var bool|NULL
+	 */
+	protected $vendorAppDispatch = NULL;
+
+	/**
+	 * Application root in composer vendor project, 
+	 * determinated by dispatched main controller.
+	 * Compilled applications doesn't support 
+	 * dispatching in vendor directories.
+	 * @var string|NULL
+	 */
+	protected $vendorAppRoot = NULL;
 
 	/**
 	 * System config INI file as `stdClass` or `array`,

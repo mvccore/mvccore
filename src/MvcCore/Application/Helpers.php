@@ -81,6 +81,53 @@ trait Helpers {
 	}
 
 	/**
+	 * @inheritDocs
+	 * @throws \Exception
+	 * @return bool
+	 */
+	public function GetVendorAppDispatch () {
+		if ($this->vendorAppDispatch !== NULL)
+			return $this->vendorAppDispatch;
+		$this->initVendorProps();
+		return $this->vendorAppDispatch;
+	}
+
+	/**
+	 * @inheritDocs
+	 * @throws \Exception
+	 * @return string|NULL
+	 */
+	public function GetVendorAppRoot () {
+		if ($this->vendorAppDispatch !== NULL)
+			return $this->vendorAppRoot;
+		$this->initVendorProps();
+		return $this->vendorAppRoot;
+	}
+
+	/**
+	 * 
+	 * @throws \Exception
+	 * @return void
+	 */
+	protected function initVendorProps () {
+		if ($this->controller === NULL) throw new \Exception(
+			"[".__CLASS__."] There was not possible to detect vendor app"
+			." dispatching, because controller still doesn't exists."
+		);
+		$ctrlClassFullName = get_class($this->controller);
+		$ctrlType = new \ReflectionClass($ctrlClassFullName);
+		$ctrlFileFullPath = str_replace('\\', '/', $ctrlType->getFileName());
+		$this->vendorAppRoot = mb_substr(
+			$ctrlFileFullPath, 0, mb_strlen($ctrlFileFullPath) - (mb_strlen($ctrlClassFullName) + 5)
+		);
+		$appRoot = $this->GetRequest()->GetAppRoot();
+		$this->vendorAppDispatch = $appRoot !== $this->vendorAppRoot;
+		if (!$this->vendorAppDispatch) 
+			$this->vendorAppRoot = NULL;
+	}
+
+
+	/**
 	 * Set core class name only if given class string implements
 	 * given core interface, else thrown an exception.
 	 * @param  string $newCoreClassName

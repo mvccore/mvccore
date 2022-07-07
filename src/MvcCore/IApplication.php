@@ -830,4 +830,26 @@ interface IApplication extends \MvcCore\Application\IConstants {
 	 * @return bool
 	 */
 	public function IsNotFoundDispatched ();
+
+	/**
+	 * Get `TRUE` if main application controller
+	 * is from any composer vendor project.
+	 * Compilled applications doesn't support 
+	 * dispatching in vendor directories.
+	 * @throws \Exception
+	 * @return bool
+	 */
+	public function GetVendorAppDispatch ();
+
+	/**
+	 * Get application root in composer vendor project, 
+	 * determinated by dispatched main controller.
+	 * Compilled applications doesn't support 
+	 * dispatching in vendor directories.
+	 * If main controller is not dispatched from
+	 * composer vendor project, `NULL` is returned.
+	 * @throws \Exception
+	 * @return string|NULL
+	 */
+	public function GetVendorAppRoot ();
 }

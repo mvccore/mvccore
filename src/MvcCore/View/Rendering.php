@@ -182,21 +182,23 @@ trait Rendering {
 	 * @inheritDocs
 	 * @param  \MvcCore\Application $app 
 	 * @param  string               $controllerClassFullName
+	 * @param  bool                 $detectByReflection
 	 * @return string
 	 */
-	public static function GetExtViewsDirFullPath (\MvcCore\IApplication $app, $controllerClassFullName) {
-		//$appCompiledMode = $app->GetCompiled();
+	public static function GetExtViewsDirFullPath (\MvcCore\IApplication $app, $controllerClassFullName, $detectByReflection = TRUE) {
 		$extensionRoot = NULL;
-		/*if ($appCompiledMode && $appCompiledMode !== \MvcCore\IApplication::COMPILED_SFU)	{ // PHAR, PHP or PHP_*
-			// TODO: test with view with controller in vendor directory in PHAR or in PHP package
-			$extensionRoot = $app->GetRequest()->GetAppRoot();
-		} else {*/
+		// compilled applications doesn't support dispatching in vendor directories
+		if ($detectByReflection) {
+			// child controller rendering
 			$ctrlType = new \ReflectionClass($controllerClassFullName);
 			$ctrlFileFullPath = str_replace('\\', '/', $ctrlType->getFileName());
 			$extensionRoot = mb_substr(
 				$ctrlFileFullPath, 0, mb_strlen($ctrlFileFullPath) - (mb_strlen($controllerClassFullName) + 5)
 			);
-		//}
+		} else {
+			// main controller rendering
+			$extensionRoot = $app->GetVendorAppRoot();
+		}
 		return implode('/', [
 			$extensionRoot,
 			$app->GetAppDir(),
@@ -232,15 +234,14 @@ trait Rendering {
 		$app = $this->controller->GetApplication();
 		$defaultViewsDirFullPath = static::GetDefaultViewsDirFullPath($app);
 		if ($this->controller->GetParentController() !== NULL) {
+			// child controller dispatching
 			$typedFullPath = static::GetExtViewsDirFullPath(
-				$app, get_class($this->controller)
+				$app, get_class($this->controller), TRUE
 			);
 		} else {
-			$currentRoute = $this->controller->GetRouter()->GetCurrentRoute();
-			if ($currentRoute !== NULL) 
-				$ctrlHasAbsNamespace = $currentRoute->GetControllerHasAbsoluteNamespace();
-			$typedFullPath = $ctrlHasAbsNamespace
-				? static::GetExtViewsDirFullPath($app, get_class($this->controller))
+			// main controller dispatching
+			$typedFullPath = $app->GetVendorAppDispatch()
+				? static::GetExtViewsDirFullPath($app, get_class($this->controller), FALSE)
 				: $defaultViewsDirFullPath;
 		}
 		$viewsDirsFullPaths[$typePath] = $typedFullPath;

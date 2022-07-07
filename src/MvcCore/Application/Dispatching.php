@@ -151,8 +151,9 @@ trait Dispatching {
 			$checkViewIfNoCtrl = TRUE;
 		}
 
+		/** @var \MvcCore\View $viewClass */
 		$viewsDirFullPath = $route->GetControllerHasAbsoluteNamespace()
-			? $viewClass::GetExtViewsDirFullPath($this, ltrim($controllerName, '\\'))
+			? $viewClass::GetExtViewsDirFullPath($this, ltrim($controllerName, '\\'), TRUE)
 			: $viewClass::GetDefaultViewsDirFullPath($this);
 
 		$viewScriptFullPath = $viewClass::GetViewScriptFullPath(
@@ -172,38 +173,6 @@ trait Dispatching {
 			$controllerName = $this->controllerClass;
 		}
 
-		/*
-		x($route->GetController());
-		//$viewClass::GetExtViewsDirFullPath($this, mb_substr($route->GetController(), 2));
-
-		$viewsDirFullPath = $route->GetControllerHasAbsoluteNamespace()
-			? $viewClass::GetExtViewsDirFullPath($this, mb_substr($route->GetController(), 2))
-			: $viewClass::GetDefaultViewsDirFullPath($this);
-
-		$viewScriptFullPath = $viewClass::GetViewScriptFullPath(
-			$viewsDirFullPath . '/' . $viewClass::GetScriptsDir(),
-			$this->request->GetControllerName() . '/' . $this->request->GetActionName()
-		);
-
-		if ($ctrlPc == 'Controller') {
-			$controllerName = $this->controllerClass;
-		} else if ($this->controller !== NULL) {
-			$controllerName = '\\'.get_class($this->controller);
-		} else {
-			// `App_Controllers_<$ctrlPc>`
-			$controllerName = $this->CompleteControllerName($ctrlPc);
-			// Controller file or view file could contain syntax error:
-			if (!class_exists($controllerName, TRUE)) {
-				// if controller doesn't exists - check if at least view exists
-				if (!file_exists($viewScriptFullPath)) 
-					throw new \Exception(
-						"Controller class `{$controllerName}` doesn't exist.", 404
-					);
-				// if view exists - change controller name to core 
-				// controller, if not let it go to exception:
-				$controllerName = $this->controllerClass;
-			}
-		}*/
 		return $this->CreateController(
 			$controllerName, $actionName, $viewScriptFullPath
 		);
