@@ -95,11 +95,28 @@ interface IConfig {
 	/**
 	 * Get (optionally cached) config INI file as `stdClass` or `array`,
 	 * placed relatively from application document root.
-	 * @param  string $appRootRelativePath Any config relative path like `'/%appPath%/website.ini'`.
+	 * @param  string $appRootRelativePath Any config relative path from application root dir like `'~/%appPath%/website.ini'`.
 	 * @throws \RuntimeException
 	 * @return \MvcCore\Config|NULL
 	 */
 	public static function GetConfig ($appRootRelativePath);
+
+	/**
+	 * @inheritDocs
+	 * @param  string $vendorAppRootRelativePath Any config relative path from vendor package root dir like `'~/%appPath%/website.ini'`.
+	 * @throws \RuntimeException
+	 * @return \MvcCore\Config|NULL
+	 */
+	public static function GetVendorConfig ($vendorAppRootRelativePath);
+
+	/**
+	 * @inheritDocs
+	 * @param  string $configFullPath Full path to config file.
+	 * @param  bool   $isSystem       `TRUE` for system config, false otherwise.
+	 * @throws \RuntimeException
+	 * @return \MvcCore\Config|NULL
+	 */
+	public static function GetConfigByFullPath ($configFullPath, $isSystem = FALSE);
 
 	/**
 	 * Try to load and parse config file by absolute path.

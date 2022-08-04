@@ -23,7 +23,7 @@ trait IniProps {
 	 * This value could be changed to any value at the very application start.
 	 * @var string
 	 */
-	protected static $systemConfigPath = '/%appPath%/config.ini';
+	protected static $systemConfigPath = '~/%appPath%/config.ini';
 
 	/**
 	 * INI special values to type into `bool` or `NULL`.

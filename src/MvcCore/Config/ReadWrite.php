@@ -43,12 +43,14 @@ trait ReadWrite {
 		/** @var \MvcCore\Config $config */
 		$app = self::$app ?: self::$app = \MvcCore\Application::GetInstance();
 		$configClass = $app->GetConfigClass();
+		$systemConfigPath = $configClass::GetSystemConfigPath();
+		$systemConfigPath = str_replace('%appPath%', $app->GetAppDir(), $systemConfigPath);
+		if (mb_strpos($systemConfigPath, '~/') === 0) {
+			$appRoot = self::$appRoot ?: self::$appRoot = $app->GetRequest()->GetAppRoot();	
+			$systemConfigPath = $appRoot . mb_substr($systemConfigPath, 1);
+		}
 		$toolClass = $app->GetToolClass();
-		$appRootRelativePath = $configClass::GetSystemConfigPath();
-		$appRoot = self::$appRoot ?: self::$appRoot = $app->GetRequest()->GetAppRoot();
-		$configFullPath = $toolClass::RealPathVirtual($appRoot . '/' . str_replace(
-			'%appPath%', $app->GetAppDir(), ltrim($appRootRelativePath, '/')
-		));
+		$configFullPath = $toolClass::RealPathVirtual($systemConfigPath);
 		if (!array_key_exists($configFullPath, self::$configsCache)) {
 			$config = $configClass::LoadConfig($configFullPath, $configClass, TRUE);
 			if ($config) {
@@ -71,26 +73,67 @@ trait ReadWrite {
 
 	/**
 	 * @inheritDocs
-	 * @param  string $appRootRelativePath Any config relative path like `'/%appPath%/website.ini'`.
+	 * @param  string $appRootRelativePath Any config relative path from application root dir like `'~/%appPath%/website.ini'`.
 	 * @throws \RuntimeException
 	 * @return \MvcCore\Config|NULL
 	 */
 	public static function GetConfig ($appRootRelativePath) {
 		/** @var \MvcCore\Config $config */
-		$appRootRelativePath = ltrim($appRootRelativePath, '/');
+		//$appRootRelativePath = ltrim($appRootRelativePath, '/');
 		$app = self::$app ?: self::$app = \MvcCore\Application::GetInstance();
-		$appRoot = self::$appRoot ?: self::$appRoot = $app->GetRequest()->GetAppRoot();
+		$appRootRelativePath = str_replace('%appPath%', $app->GetAppDir(), $appRootRelativePath);
+		if (mb_strpos($appRootRelativePath, '~/') === 0) {
+			$appRoot = self::$appRoot ?: self::$appRoot = $app->GetRequest()->GetAppRoot();	
+			$appRootRelativePath = $appRoot . mb_substr($appRootRelativePath, 1);
+		}
 		$toolClass = $app->GetToolClass();
-		$configFullPath = $toolClass::RealPathVirtual($appRoot . '/' . str_replace(
-			'%appPath%', $app->GetAppDir(), $appRootRelativePath
-		));
+		$configFullPath = $toolClass::RealPathVirtual($appRootRelativePath);
+		$systemConfigClass = $app->GetConfigClass();
+		$isSystem = $systemConfigClass::GetSystemConfigPath() === '/' . $appRootRelativePath;
+		return static::GetConfigByFullPath(
+			$configFullPath, $isSystem
+		);
+	}
+
+	/**
+	 * @inheritDocs
+	 * @param  string $vendorAppRootRelativePath Any config relative path from application root dir like `'~/%appPath%/website.ini'`.
+	 * @throws \RuntimeException
+	 * @return \MvcCore\Config|NULL
+	 */
+	public static function GetVendorConfig ($vendorAppRootRelativePath) {
+		/** @var \MvcCore\Config $config */
+		$vendorAppRootRelativePath = ltrim($vendorAppRootRelativePath, '/');
+		$app = self::$app ?: self::$app = \MvcCore\Application::GetInstance();
+		$vendorAppRootRelativePath = str_replace('%appPath%', $app->GetAppDir(), $vendorAppRootRelativePath);
+		if (mb_strpos($vendorAppRootRelativePath, '~/') === 0) {
+			if (!$app->GetVendorAppDispatch()) throw new \RuntimeException(
+				"The vendor configuration file cannot be loaded, ".
+				"because dispatched main controller is not from any vendor package."
+			);
+			$vendorPackageRoot = $app->GetVendorAppRoot();
+			$vendorAppRootRelativePath = $vendorPackageRoot . mb_substr($vendorAppRootRelativePath, 1);
+		}
+		$toolClass = $app->GetToolClass();
+		$configFullPath = $toolClass::RealPathVirtual($vendorAppRootRelativePath);
+		return static::GetConfigByFullPath($configFullPath, FALSE);
+	}
+
+	/**
+	 * @inheritDocs
+	 * @param  string $configFullPath Full path to config file.
+	 * @param  bool   $isSystem       `TRUE` for system config, false otherwise.
+	 * @throws \RuntimeException
+	 * @return \MvcCore\Config|NULL
+	 */
+	public static function GetConfigByFullPath ($configFullPath, $isSystem = FALSE) {
 		if (!array_key_exists($configFullPath, self::$configsCache)) {
+			$app = self::$app ?: self::$app = \MvcCore\Application::GetInstance();
 			$systemConfigClass = $app->GetConfigClass();
-			$isSystem = $systemConfigClass::GetSystemConfigPath() === '/' . $appRootRelativePath;
 			$config = $systemConfigClass::LoadConfig($configFullPath, $systemConfigClass, $isSystem);
 			if ($config) {
 				$environment = $app->GetEnvironment();
-				$doNotThrownError = func_num_args() > 1 ? func_get_arg(1) : FALSE;
+				$doNotThrownError = func_num_args() > 2 ? func_get_arg(2) : FALSE;
 				if ($environment->IsDetected()) {
 					$systemConfigClass::SetUpEnvironmentData($config, $environment->GetName());
 				} else if (!$doNotThrownError) {
