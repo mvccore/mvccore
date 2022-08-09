@@ -44,4 +44,30 @@ interface IConstants {
 	 * MvcCore internal header always sent in every response.
 	 */
 	const HEADER_X_MVCCORE_CPU_RAM = 'X-MvcCore-Cpu-Ram';
+
+	
+	/**
+	 * Default CSRF cookie name: `__MCP`.
+	 * @var string
+	 */
+	const COOKIE_CSRF_DEFAULT_NAME = '__MCP';
+
+
+	/**
+	 * Cookie `SameSite` mode `None`.
+	 * @var string
+	 */
+	const COOKIE_SAMESITE_NONE = 'None';
+	
+	/**
+	 * Cookie `SameSite` mode `Lax`.
+	 * @var string
+	 */
+	const COOKIE_SAMESITE_LAX = 'Lax';
+	
+	/**
+	 * Cookie `SameSite` mode `Strict`.
+	 * @var string
+	 */
+	const COOKIE_SAMESITE_STRICT = 'Strict';
 }

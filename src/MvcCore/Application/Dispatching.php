@@ -255,7 +255,8 @@ trait Dispatching {
 			// headers (if still possible) and echo
 			$sessionClass = $this->sessionClass;
 			if ($sessionClass::GetStarted()) {
-				$sessionClass::SendCookie();
+				$sessionClass::SendSessionIdCookie();
+				$sessionClass::SendRefreshedCsrfCookie();
 				$sessionClass::Close();
 			}
 			$this->response->SendHeaders();
@@ -321,7 +322,8 @@ trait Dispatching {
 				// headers (if still possible) and echo
 				$sessionClass = $this->sessionClass;
 				if ($sessionClass::GetStarted()) {
-					$sessionClass::SendCookie();
+					$sessionClass::SendSessionIdCookie();
+					$sessionClass::SendRefreshedCsrfCookie();
 					$sessionClass::Close();
 				}
 				$this->response->SendHeaders();

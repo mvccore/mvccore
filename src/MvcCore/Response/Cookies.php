@@ -27,13 +27,15 @@ trait Cookies {
 	 * @param  string $domain    If not set, value is completed by `\MvcCore\Application::GetInstance()->GetRequest()->GetHostName();` .
 	 * @param  bool   $secure    If not set, value is completed by `\MvcCore\Application::GetInstance()->GetRequest()->IsSecure();`.
 	 * @param  bool   $httpOnly  HTTP only cookie, `TRUE` by default.
+	 * @param  string $sameSite  HTTP cookie `SameSite` attribute. Default value is `None`.
 	 * @throws \RuntimeException If HTTP headers have been sent.
 	 * @return bool              True if cookie has been set.
 	 */
 	public function SetCookie (
 		$name, $value,
 		$lifetime = 0, $path = '/',
-		$domain = NULL, $secure = NULL, $httpOnly = TRUE
+		$domain = NULL, $secure = NULL, 
+		$httpOnly = TRUE, $sameSite = \MvcCore\Response::COOKIE_SAMESITE_NONE
 	) {
 		if ($this->IsSentHeaders())
 			throw new \RuntimeException(
@@ -47,7 +49,7 @@ trait Cookies {
 				$name, $value,
 				$expires,
 				$path,
-				$domain . '; SameSite=Strict', // https://stackoverflow.com/questions/39750906/php-setcookie-samesite-strict
+				$domain . '; SameSite=' . $sameSite, // https://stackoverflow.com/questions/39750906/php-setcookie-samesite-strict
 				$secure,
 				$httpOnly
 			);
@@ -59,7 +61,7 @@ trait Cookies {
 					'domain'	=> $domain,
 					'secure'	=> $secure,
 					'httponly'	=> $httpOnly,
-					'samesite'	=> 'Strict',
+					'samesite'	=> $sameSite,
 				]
 			);
 		}

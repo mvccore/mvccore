@@ -18,6 +18,10 @@ namespace MvcCore\Response;
  */
 trait PropsGettersSetters {
 
+	/**
+	 * Response codes and text messages.
+	 * @var array<int, string>
+	 */
 	protected static $codeMessages = [
 		\MvcCore\IResponse::OK						=> 'OK',
 		\MvcCore\IResponse::MOVED_PERMANENTLY		=> 'Moved Permanently',
@@ -25,6 +29,17 @@ trait PropsGettersSetters {
 		\MvcCore\IResponse::NOT_FOUND				=> 'Not Found',
 		\MvcCore\IResponse::INTERNAL_SERVER_ERROR	=> 'Internal Server Error',
 	];
+
+	protected static $multiplyHeaders = [
+		'Set-Cookie'				=> TRUE,
+		'Content-Security-Policy'	=> TRUE,
+	];
+	
+	/**
+	 * CSRF protection cookie name. `__MCP` by default.
+	 * @var string
+	 */
+	protected static $csrfProtectionCookieName = \MvcCore\IResponse::COOKIE_CSRF_DEFAULT_NAME;
 
 	/**
 	 * Response HTTP protocol version by `$_SERVER['SERVER_PROTOCOL']`.
@@ -92,6 +107,44 @@ trait PropsGettersSetters {
 	 */
 	protected $request = NULL;
 
+	
+	/**
+	 * @inheritDocs
+	 * @return string
+	 */
+	public static function GetCsrfProtectionCookieName () {
+		return static::$csrfProtectionCookieName;
+	}
+	
+	/**
+	 * @inheritDocs
+	 * @param  string $csrfProtectionCookieName 
+	 * @return string
+	 */
+	public static function SetCsrfProtectionCookieName ($csrfProtectionCookieName) {
+		return static::$csrfProtectionCookieName = $csrfProtectionCookieName;
+	}
+	
+	/**
+	 * @inheritDocs
+	 * @return \string[]
+	 */
+	public static function GetMultiplyHeaders () {
+		return array_keys(static::$multiplyHeaders);
+	}
+	
+	/**
+	 * @inheritDocs
+	 * @param  \string[] $multiplyHeaders 
+	 * @return \string[]
+	 */
+	public static function SetMultiplyHeaders ($multiplyHeaders) {
+		static::$multiplyHeaders = [];
+		foreach ($multiplyHeaders as $multiplyHeader)
+			static::$multiplyHeaders[$multiplyHeader] = TRUE;
+		return $multiplyHeaders;
+		
+	}
 
 	/**
 	 * @inheritDocs

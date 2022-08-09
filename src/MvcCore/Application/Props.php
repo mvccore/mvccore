@@ -65,8 +65,30 @@ trait Props {
 	protected $vendorAppRoot = NULL;
 
 	/**
+	 * CSRF protection mode. Only one mode could be used.
+	 * Default protection is by hidden form input for older browsers
+	 * because of maximum compatibility.
+	 * Modes:
+	 * - `\MvcCore\IApplication::CSRF_DISABLED`              - both modes disabled.
+	 * - `\MvcCore\IApplication::CSRF_PROTECTION_FORM_INPUT` - enabled mode for older 
+	 *                                                         browser by form hidden input.
+	 * - `\MvcCore\IApplication::CSRF_PROTECTION_COOKIE`     - enabled mode for newer
+	 *                                                         browsers by http cookie.
+	 * @var int
+	 */
+	protected $csrfProtection = \MvcCore\IApplication::CSRF_PROTECTION_FORM_INPUT;
+
+	/**
+	 * Prefered PHP classes and properties anontation.
+	 * `FALSE` by default, older PHP Docs tags anotations are default
+	 * because of maximum compatibility.
+	 * @var bool
+	 */
+	protected $attributesAnotation = FALSE;
+
+	/**
 	 * System config INI file as `stdClass` or `array`,
-	 * placed by default in: `"/App/config.ini"`.
+	 * placed by default in: `"~/%appPath%/config.ini"`.
 	 * @var \MvcCore\Config|NULL
 	 */
 	protected $config = NULL;
@@ -104,136 +126,147 @@ trait Props {
 
 	/**
 	 * Pre route custom closure calls storage.
-	 * Every item in this array has to be `callable`.
 	 * Params in callable should be two with following types:
 	 * - `\MvcCore\Request`
 	 * - `\MvcCore\Response`
 	 * Example:
-	 * ````
+	 * ```
 	 *   \MvcCore\Application::GetInstance()->AddPreRouteHandler(function(
 	 *       \MvcCore\Request $request,
 	 *       \MvcCore\Response $response
 	 *   ) {
 	 *       $request->customVar = 'custom_value';
 	 *   });
-	 * ````
+	 * ```
 	 * @var \array[]
 	 */
 	protected $preRouteHandlers = [];
 
 	/**
 	 * Post route custom closure calls storage.
-	 * Every item in this array has to be `callable`.
 	 * Params in callable should be two with following types:
 	 * - `\MvcCore\Request`
 	 * - `\MvcCore\Response`
 	 * Example:
-	 * ````
+	 * ```
 	 *   \MvcCore\Application::GetInstance()->AddPostRouteHandler(function(
 	 *       \MvcCore\Request $request,
 	 *       \MvcCore\Response $response
 	 *   ) {
 	 *       $request->customVar = 'custom_value';
 	 *   });
-	 * ````
+	 * ```
 	 * @var \array[]
 	 */
 	protected $postRouteHandlers = [];
 
 	/**
 	 * Pre dispatch custom calls storage.
-	 * Every item in this array has to be `callable`.
 	 * Params in `callable` should be two with following types:
 	 * - `\MvcCore\Request`
 	 * - `\MvcCore\Response`
 	 * Example:
-	 * ````
+	 * ```
 	 *   \MvcCore\Application::GetInstance()->AddPreDispatchHandler(function(
 	 *       \MvcCore\Request $request,
 	 *       \MvcCore\Response $response
 	 *   ) {
 	 *       $request->customVar = 'custom_value';
 	 *   });
-	 * ````
+	 * ```
 	 * @var \array[]
 	 */
 	protected $preDispatchHandlers = [];
 
 	/**
 	 * Pre sent headers custom calls storage.
-	 * Every item in this array has to be `callable`.
 	 * Params in `callable` should be two with following types:
 	 * - `\MvcCore\Request`
 	 * - `\MvcCore\Response`
 	 * Example:
-	 * ````
+	 * ```
 	 *   \MvcCore\Application::GetInstance()->AddPreSentHeadersHandler(function(
 	 *       \MvcCore\Request $request,
 	 *       \MvcCore\Response $response
 	 *   ) {
 	 *       $request->customVar = 'custom_value';
 	 *   });
-	 * ````
+	 * ```
 	 * @var \array[]
 	 */
 	protected $preSentHeadersHandlers = [];
 
 	/**
 	 * Pre sent body custom calls storage.
-	 * Every item in this array has to be `callable`.
 	 * Params in `callable` should be two with following types:
 	 * - `\MvcCore\Request`
 	 * - `\MvcCore\Response`
 	 * Example:
-	 * ````
+	 * ```
 	 *   \MvcCore\Application::GetInstance()->AddPreSentBodyHandler(function(
 	 *       \MvcCore\Request $request,
 	 *       \MvcCore\Response $response
 	 *   ) {
 	 *       $request->customVar = 'custom_value';
 	 *   });
-	 * ````
+	 * ```
 	 * @var \array[]
 	 */
 	protected $preSentBodyHandlers = [];
 
 	/**
 	 * Post dispatch custom calls storage.
-	 * Every item in this array has to be `callable`.
 	 * Params in `callable` should be two with following types:
 	 * - `\MvcCore\Request`
 	 * - `\MvcCore\Response`
 	 * Example:
-	 * ````
+	 * ```
 	 *   \MvcCore\Application::GetInstance()->AddPostDispatchHandler(function(
 	 *       \MvcCore\Request $request,
 	 *       \MvcCore\Response $response
 	 *   ) {
 	 *       $request->customVar = 'custom_value';
 	 *   });
-	 * ````
+	 * ```
 	 * @var \array[]
 	 */
 	protected $postDispatchHandlers = [];
 
 	/**
 	 * Post terminate custom calls storage.
-	 * Every item in this array has to be `callable`.
 	 * Params in `callable` should be two with following types:
 	 * - `\MvcCore\Request`
 	 * - `\MvcCore\Response`
 	 * Example:
-	 * ````
+	 * ```
 	 * \MvcCore\Application::GetInstance()->AddPostTerminateHandler(function(
 	 *       \MvcCore\Request $request,
 	 *       \MvcCore\Response $response
 	 *   ) {
 	 *       $request->customVar = 'custom_value';
 	 *   });
-	 * ````
+	 * ```
 	 * @var \array[]
 	 */
 	protected $postTerminateHandlers = [];
+	
+	/**
+	 * CSRF protection error custom calls storage.
+	 * Params in `callable` should be two with following types:
+	 * - `\MvcCore\Request`
+	 * - `\MvcCore\Response`
+	 * Example:
+	 * ```
+	 * \MvcCore\Application::GetInstance()->AddCsrfErrorHandlers(function(
+	 *       \MvcCore\Request $request,
+	 *       \MvcCore\Response $response
+	 *   ) {
+	 *       $request->customVar = 'custom_value';
+	 *   });
+	 * ```
+	 * @var \array[]
+	 */
+	protected $csrfErrorHandlers = [];
 
 
 	/**

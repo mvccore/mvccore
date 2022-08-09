@@ -29,51 +29,96 @@ trait Headers {
 	/**
 	 * @inheritDocs
 	 * @param  array $headers
-	 * @param  bool  $cleanAllPrevious `FALSE` by default. If `TRUE`, all previous headers
-	 *                                 set by PHP `header()` or by this object will be removed.
 	 * @return \MvcCore\Response
 	 */
-	public function SetHeaders (array $headers = [], $cleanAllPrevious = FALSE) {
-		if ($cleanAllPrevious) {
-			header_remove();
-			$this->headers = [];
-		}
+	public function SetHeaders (array $headers = []) {
+		header_remove();
+		$this->headers = [];
 		foreach ($headers as $name => $value) {
 			$this->SetHeader($name, $value);
 		}
 		return $this;
 	}
-
+	
 	/**
 	 * @inheritDocs
-	 * @param  string $name
-	 * @param  string $value
+	 * @param  array $headers
+	 * @param  bool  $cleanAllPrevious `FALSE` by default. If `TRUE`, all previous headers
+	 *                                 set by PHP `header()` or by this object will be removed.
 	 * @return \MvcCore\Response
 	 */
-	public function SetHeader ($name, $value) {
-		if (isset($this->disabledHeaders[$name]))
-			return $this;
-		header($name . ": " . $value);
-		$this->headers[$name] = $value;
-		$nameLower = mb_strtolower($name);
-		if ($nameLower === 'content-type') {
-			$charsetPos = strpos($value, 'charset');
-			if ($charsetPos !== FALSE) {
-				$equalPos = strpos($value, '=', $charsetPos);
-				if ($equalPos !== FALSE) $this->SetEncoding(
-					trim(substr($value, $equalPos + 1))
-				);
-			}
-		}
-		if ($nameLower === 'content-encoding') 
-			$this->SetEncoding($value);
+	public function AddHeaders (array $headers = []) {
+		foreach ($headers as $name => $value)
+			$this->AddHeader($name, $value);
 		return $this;
 	}
 
 	/**
 	 * @inheritDocs
 	 * @param  string $name
-	 * @return string|NULL
+	 * @param  string|\string[] $value
+	 * @return \MvcCore\Response
+	 */
+	public function SetHeader ($name, $value) {
+		if (isset($this->disabledHeaders[$name]))
+			return $this;
+		if (!isset(static::$multiplyHeaders[$name])) {
+			header($name . ": " . $value, TRUE);
+			$this->headers[$name] = $value;
+		} else {
+			if (!is_array($value)) {
+				header($name . ": " . $value, TRUE);
+				$this->headers[$name] = [$value];
+			} else {
+				$this->headers[$name] = [];
+				header_remove($name);
+				foreach ($value as $item) {
+					header($name . ": " . $item, FALSE);
+					$this->headers[$name][] = $item;
+				}
+			}
+		}
+		return $this->setUpContentEncAndTypeByNew($name, $value);
+	}
+	
+	/**
+	 * @inheritDocs
+	 * @param  string $name
+	 * @param  string|\string[] $value
+	 * @return \MvcCore\Response
+	 */
+	public function AddHeader ($name, $value) {
+		if (isset($this->disabledHeaders[$name]))
+			return $this;
+		if (!isset(static::$multiplyHeaders[$name])) {
+			header($name . ": " . $value);
+			$this->headers[$name] = $value;
+		} else {
+			if (!is_array($value)) {
+				header($name . ": " . $value, FALSE);
+				if (isset($this->headers[$name])) {
+					$this->headers[$name][] = $value;
+				} else {
+					$this->headers[$name] = [$value];
+				}
+			} else {
+				foreach ($value as $item) {
+					header($name . ": " . $item, FALSE);
+					if (isset($this->headers[$name])) {
+						$this->headers[$name][] = $item;
+					} else {
+						$this->headers[$name] = [$item];
+					}
+				}
+			}
+		}
+		return $this->setUpContentEncAndTypeByNew($name, $value);
+	}
+
+	/**
+	 * @inheritDocs
+	 * @param  string $name
+	 * @return string|\string[]|NULL
 	 */
 	public function GetHeader ($name) {
 		$this->UpdateHeaders();
@@ -109,8 +154,17 @@ trait Headers {
 				$name = $rawHeader;
 				$value = '';
 			}
-			if (!isset($this->disabledHeaders[$name]))
-  				$this->headers[$name] = $value;
+			if (isset($this->disabledHeaders[$name])) continue;
+			if (!isset(static::$multiplyHeaders[$name])) {
+				$this->headers[$name] = $value;
+			} else {
+				if (isset($this->headers[$name])) {
+					if (!in_array($value, $this->headers[$name], TRUE))
+						$this->headers[$name][] = $value;
+				} else {
+					$this->headers[$name] = [$value];
+				}
+			}	
 		}
 		return $this;
 	}
@@ -135,5 +189,28 @@ trait Headers {
 	 */
 	public function GetDisabledHeaders () {
 		return array_keys($this->disabledHeaders);
+	}
+
+	/**
+	 * Detect ouput `Content-Type` and `Content-Encoding`
+	 * by newly added/set http response header.
+	 * @param  string $name
+	 * @param  string|\string[] $value
+	 * @return \MvcCore\Response
+	 */
+	protected function setUpContentEncAndTypeByNew ($name, $value) {
+		$nameLower = mb_strtolower($name);
+		if ($nameLower === 'content-type') {
+			$charsetPos = strpos($value, 'charset');
+			if ($charsetPos !== FALSE) {
+				$equalPos = strpos($value, '=', $charsetPos);
+				if ($equalPos !== FALSE) $this->SetEncoding(
+					trim(substr($value, $equalPos + 1))
+				);
+			}
+		}
+		if ($nameLower === 'content-encoding') 
+			$this->SetEncoding($value);
+		return $this;
 	}
 }

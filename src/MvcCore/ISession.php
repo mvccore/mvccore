@@ -51,6 +51,7 @@ interface ISession extends \MvcCore\Session\IConstants {
 	 */
 	public static function GetStarted ();
 
+
 	/**
 	 * Get session metadata about session namespaces.
 	 * This method is used for debugging purposes.
@@ -58,13 +59,6 @@ interface ISession extends \MvcCore\Session\IConstants {
 	 */
 	public static function GetSessionMetadata ();
 
-	/**
-	 * Write and close session in `\MvcCore::Terminate();`.
-	 * Serialize all metadata and call php function to write session into php session storage.
-	 * (HDD, Redis, database, etc., depends on php configuration).
-	 * @return void
-	 */
-	public static function Close ();
 
 	/**
 	 * Get new or existing MvcCore session namespace instance.
@@ -90,21 +84,7 @@ interface ISession extends \MvcCore\Session\IConstants {
 	 * @return \MvcCore\Session
 	 */
 	public function SetExpirationSeconds ($seconds);
-
-	/**
-	 * Send `PHPSESSID` http cookie with session id hash before response body is sent.
-	 * This function is always called by `\MvcCore\Application::Terminate();` at the request end.
-	 * @return void
-	 */
-	public static function SendCookie ();
-
-	/**
-	 * Get the highest expiration in seconds for namespace with
-	 * the highest expiration to set expiration for `PHPSESSID` cookie.
-	 * @return int
-	 */
-	public static function GetSessionMaxTime ();
-
+	
 	/**
 	 * Destroy whole session namespace in `$_SESSION` storage
 	 * and internal static storages.
@@ -118,6 +98,51 @@ interface ISession extends \MvcCore\Session\IConstants {
 	 * @return void
 	 */
 	public static function DestroyAll ();
+
+	/**
+	 * Return CSRF protection session namespace with secret hash.
+	 * @return \MvcCore\Session
+	 */
+	public static function GetCsrfNamespace ();
+
+
+	/**
+	 * Write and close session in `\MvcCore::Terminate();`.
+	 * Serialize all metadata and call php function to write session into php session storage.
+	 * (HDD, Redis, database, etc., depends on php configuration).
+	 * @return void
+	 */
+	public static function Close ();
+
+	/**
+	 * Send `PHPSESSID` http(s) cookie with session id hash before response body is sent.
+	 * This function is always called by `\MvcCore\Application::Terminate();` at the request end.
+	 * @return void
+	 */
+	public static function SendSessionIdCookie ();
+
+	/**
+	 * Get the highest expiration in seconds for namespace with
+	 * the highest expiration to set expiration for `PHPSESSID` cookie.
+	 * @return int
+	 */
+	public static function GetSessionMaxTime ();
+
+	/**
+	 * Send `__MCP` http(s) cookie with CSRF protection secret before response body is sent.
+	 * This function is always called by `\MvcCore\Application::Terminate();` at the request end.
+	 * @return void
+	 */
+	public static function SendRefreshedCsrfCookie ();
+
+	/**
+	 * Get CSRF protection cookie expiration in seconds, `0` by default,
+	 * means "until the browser is closed". If there is found any Authentication 
+	 * class installed, result is returned by authorization expiration.
+	 * @return int
+	 */
+	public static function GetSessionCsrfMaxTime ();
+
 
 	/**
 	 * Magic function triggered by: `$value = \MvcCore\Session->key;`.

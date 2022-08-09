@@ -193,8 +193,8 @@ trait Dispatching {
 			\ReflectionProperty::IS_PROTECTED |
 			\ReflectionProperty::IS_PRIVATE
 		);
+		$attrsAnotations = $this->application->GetAttributesAnotations();
 		$toolsClass = $this->application->GetToolClass();
-		$attrsAnotations = $toolsClass::GetAttributesAnotations();
 		$attrClassName = '\\MvcCore\\Controller\\AutoInit';
 		$attrClassNameWithoutSlash = mb_substr($attrClassName, 1);
 		$phpDocsTagName = $attrClassName::PHP_DOCS_TAG_NAME;

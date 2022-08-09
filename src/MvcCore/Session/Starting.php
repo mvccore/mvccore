@@ -117,41 +117,8 @@ trait Starting {
 				"Prefix cannot contain special characters. Only the `A-Z`, `a-z`, `0-9`, ".
 				"`-`, and `,` characters are allowed.", E_USER_WARNING
 			);
-		// The below is translated from function bin_to_readable in the PHP source (ext/session/session.c)
-		static $hexconvtab = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ,-';
-		$randLen = ceil($outputLen / 2);
-		if (function_exists('random_bytes')) {
-			$randomBytes = bin2hex(random_bytes($randLen));
-		} else if (function_exists('mcrypt_create_iv')) {
-			$randomBytes = bin2hex(mcrypt_create_iv($randLen, MCRYPT_DEV_URANDOM));
-		} else if (function_exists('openssl_random_pseudo_bytes')) {
-			$randomBytes = bin2hex(openssl_random_pseudo_bytes($randLen));
-		}
-		$rawBitsPerChar = @ini_get('session.hash_bits_per_character');
-		$bitsPerChar = $rawBitsPerChar ? intval($rawBitsPerChar) : 6;
-		$out = '';
-		$p = 0;
-		$q = strlen($randomBytes);
-		$w = 0;
-		$have = 0;
-		$mask = (1 << $bitsPerChar) - 1;
-		$chars_remaining = $outputLen;
-		while ($chars_remaining--) {
-			if ($have < $bitsPerChar) {
-				if ($p < $q) {
-					$byte = ord( $randomBytes[$p++] );
-					$w |= ($byte << $have);
-					$have += 8;
-				} else {
-					// Should never happen. Input must be large enough.
-					break;
-				}
-			}
-			// consume $bitsPerChar bits
-			$out .= $hexconvtab[$w & $mask];
-			$w >>= $bitsPerChar;
-			$have -= $bitsPerChar;
-		}
-		return ($prefix ?: '') . $out;
+		$toolClass = \MvcCore\Application::GetInstance()->GetToolClass();
+		$randomBytes = $toolClass::GetRandomHash($outputLen);
+		return ($prefix ?: '') . $randomBytes;
 	}
 }

@@ -32,14 +32,6 @@ trait Reflection {
 	protected static $cacheAttrsArgs = [];
 
 	/**
-	 * Prefered PHP classes and properties anontation.
-	 * `FALSE` by default, older PHP Docs tags anotations are default
-	 * because of maximum compatibility.
-	 * @var bool
-	 */
-	protected static $attributesAnotation = FALSE;
-
-	/**
 	 * Global store for all classes with variable names 
 	 * used as `__sleep()` method result set. Each key 
 	 * is class full name, each value is array of strings
@@ -48,23 +40,6 @@ trait Reflection {
 	 */
 	protected static $sleepProps = [];
 
-
-	/**
-	 * @inheritDocs
-	 * @param  bool $attributesAnotation 
-	 * @return bool
-	 */
-	public static function SetAttributesAnotations ($attributesAnotation = TRUE) {
-		return self::$attributesAnotation = $attributesAnotation;
-	}
-	
-	/**
-	 * @inheritDocs
-	 * @return bool
-	 */
-	public static function GetAttributesAnotations () {
-		return self::$attributesAnotation;
-	}
 
 	/**
 	 * @inheritDocs

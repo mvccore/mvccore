@@ -36,6 +36,30 @@ interface IResponse extends \MvcCore\Response\IConstants {
 		$body = ''
 	);
 
+	/**
+	 * Get CSRF protection cookie name. `__MCP` by default.
+	 * @return string
+	 */
+	public static function GetCsrfProtectionCookieName ();
+	
+	/**
+	 * Set CSRF protection cookie name. `__MCP` by default.
+	 * @return string
+	 */
+	public static function SetCsrfProtectionCookieName ($csrfProtectionCookieName);
+
+	/**
+	 * Get HTTP response headers names, which are allowed to use multiple times.
+	 * @return \string[]
+	 */
+	public static function GetMultiplyHeaders ();
+	
+	/**
+	 * Set HTTP response headers names, which are allowed to use multiple times.
+	 * @param  \string[] $multiplyHeaders 
+	 * @return \string[]
+	 */
+	public static function SetMultiplyHeaders ($multiplyHeaders);
 
 	/**
 	 * Get response protocol HTTP version by `$_SERVER['SERVER_PROTOCOL']`,
@@ -67,39 +91,65 @@ interface IResponse extends \MvcCore\Response\IConstants {
 
 	/**
 	 * Set multiple HTTP response headers as `key => value` array.
-	 * All given headers are automatically merged with previously setted headers.
-	 * If you change second argument to true, all previous request object and PHP
-	 * headers are removed and given headers will be only headers for output.
+	 * All previous request object and PHP headers are removed 
+	 * and given headers will be only headers for output.
 	 * There is automatically set response encoding from value for
 	 * `Content-Type` header, if contains any `charset=...`.
 	 * There is automatically set response encoding from value for
 	 * `Content-Encoding` header.
 	 * Example: `$request->SetHeader(array('Content-Type' => 'text/plain; charset=utf-8'));`
 	 * @param  array $headers
-	 * @param  bool  $cleanAllPrevious `FALSE` by default. If `TRUE`, all previous headers
-	 *                                 set by PHP `header()` or by this object will be removed.
 	 * @return \MvcCore\Response
 	 */
-	public function SetHeaders (array $headers = [], $cleanAllPrevious = FALSE);
+	public function SetHeaders (array $headers = []);
 
 	/**
-	 * Set HTTP response header.
+	 * Add multiple HTTP response headers as `key => value` array.
+	 * All given headers are automatically merged with previously setted headers.
+	 * There is automatically set response encoding from value for
+	 * `Content-Type` header, if contains any `charset=...`.
+	 * There is automatically set response encoding from value for
+	 * `Content-Encoding` header.
+	 * Example: `$request->SetHeader(array('Content-Type' => 'text/plain; charset=utf-8'));`
+	 * @param  array $headers
+	 * @return \MvcCore\Response
+	 */
+	public function AddHeaders (array $headers = []);
+
+	/**
+	 * Set HTTP response header, all previous header values will be overwritten.
 	 * There is automatically set response encoding from value for
 	 * `Content-Type` header, if contains any `charset=...`.
 	 * There is automatically set response encoding from value for
 	 * `Content-Encoding` header.
 	 * Example: `$request->SetHeader('Content-Type', 'text/plain; charset=utf-8');`
 	 * @param  string $name
-	 * @param  string $value
+	 * @param  string|\string[] $value
 	 * @return \MvcCore\Response
 	 */
 	public function SetHeader ($name, $value);
 
 	/**
+	 * Add HTTP response header, if there is any previous header value
+	 * and header is allowed with multiple values, value is added.
+	 * If header is ingle value header, value is overwritten.
+	 * There is automatically set response encoding from value for
+	 * `Content-Type` header, if contains any `charset=...`.
+	 * There is automatically set response encoding from value for
+	 * `Content-Encoding` header.
+	 * Example: `$request->SetHeader('Content-Type', 'text/plain; charset=utf-8');`
+	 * @param  string $name
+	 * @param  string|\string[] $value
+	 * @return \MvcCore\Response
+	 */
+	public function AddHeader ($name, $value);
+
+	/**
 	 * Get HTTP response header by name. If header doesn't exists, null is returned.
 	 * Example: `$response->GetHeader('Content-Type'); // returns 'text/plain; charset=utf-8'`
+	 * Example: `$response->GetHeader('Set-Cookie');   // returns ['PHPSESSID=...; path=/; secure; HttpOnly'`]
 	 * @param  string $name
-	 * @return string|NULL
+	 * @return string|\string[]|NULL
 	 */
 	public function GetHeader ($name);
 
@@ -228,13 +278,15 @@ interface IResponse extends \MvcCore\Response\IConstants {
 	 * @param  string $domain    If not set, value is completed by `\MvcCore\Application::GetInstance()->GetRequest()->GetHostName();` .
 	 * @param  bool   $secure    If not set, value is completed by `\MvcCore\Application::GetInstance()->GetRequest()->IsSecure();`.
 	 * @param  bool   $httpOnly  HTTP only cookie, `TRUE` by default.
+	 * @param  string $sameSite  HTTP cookie `SameSite` attribute. Default value is `None`.
 	 * @throws \RuntimeException If HTTP headers have been sent.
 	 * @return bool              True if cookie has been set.
 	 */
 	public function SetCookie (
 		$name, $value,
 		$lifetime = 0, $path = '/',
-		$domain = NULL, $secure = NULL, $httpOnly = TRUE
+		$domain = NULL, $secure = NULL, 
+		$httpOnly = TRUE, $sameSite = \MvcCore\Response::COOKIE_SAMESITE_NONE
 	);
 
 	/**

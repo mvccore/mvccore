@@ -84,6 +84,27 @@ trait Helpers {
 
 	/**
 	 * @inheritDocs
+	 * @param  int $hashCharLen 
+	 * @return string
+	 */
+	public static function GetRandomHash ($charsLen = 64) {
+		$randLen = ceil($charsLen / 2);
+		if (function_exists('random_bytes')) {
+			return bin2hex(random_bytes($randLen));
+		} else if (function_exists('mcrypt_create_iv')) {
+			return bin2hex(mcrypt_create_iv($randLen, MCRYPT_DEV_URANDOM));
+		} else if (function_exists('openssl_random_pseudo_bytes')) {
+			return bin2hex(openssl_random_pseudo_bytes($randLen));
+		} else {
+			$randomItems = [];
+			for ($i = 0; $i < 32; $i++) 
+				$randomItems[] = str_pad(dechex(mt_rand(0,255)),2,'0',STR_PAD_LEFT);
+			return implode('', $randomItems);
+		}
+	}
+
+	/**
+	 * @inheritDocs
 	 * @param  string|callable $internalFnOrHandler
 	 * @param  array           $args
 	 * @param  callable        $onError

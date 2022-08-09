@@ -57,7 +57,8 @@ trait Rendering {
 			if ($topMostParentCtrl) {
 				$sessionClass = $this->GetApplication()->GetSessionClass();
 				if ($sessionClass::GetStarted() && !$this->response->IsSentHeaders()) {
-					$sessionClass::SendCookie();
+					$sessionClass::SendSessionIdCookie();
+					$sessionClass::SendRefreshedCsrfCookie();
 					$sessionClass::Close();
 				}
 				$this->response->SendHeaders();

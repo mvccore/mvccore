@@ -24,8 +24,9 @@ trait Closing {
 	 */
 	public static function Close () {
 		if (!static::GetStarted()) return;
-		$req = self::$req ?: (self::$req = \MvcCore\Application::GetInstance()->GetRequest());
-		$res = self::$res ?: (self::$res = \MvcCore\Application::GetInstance()->GetResponse());
+		$app = self::$app ?: (self::$app = \MvcCore\Application::GetInstance());
+		$req = self::$req ?: (self::$req = $app->GetRequest());
+		$res = self::$res ?: (self::$res = $app->GetResponse());
 		$resIsRedirect = $res->HasHeader('Location');
 		register_shutdown_function(function () use ($req, $resIsRedirect) {
 			foreach (static::$instances as & $instance)
@@ -55,19 +56,34 @@ trait Closing {
 	 * @inheritDocs
 	 * @return void
 	 */
-	public static function SendCookie () {
+	public static function SendSessionIdCookie () {
 		if (!static::GetStarted()) return;
-		$maxExpiration = static::GetSessionMaxTime();
-		$res = self::$res ?: self::$res = \MvcCore\Application::GetInstance()->GetResponse();
+		$app = self::$app ?: (self::$app = \MvcCore\Application::GetInstance());
+		$res = self::$res ?: self::$res = $app->GetResponse();
 		if (!$res->IsSent()) {
+			// remove Set-Cookie header from session_start():
+			$setCookieHeaderName = 'Set-Cookie';
+			$sessionIdName = session_name();
+			$sessionIdValue = session_id();
+			
+			$cookieSubStr = "{$sessionIdName}={$sessionIdValue}";
+			$setCookies = $res->GetHeader('Set-Cookie');
+			$setCookiesNew = [];
+			foreach ($setCookies as $setCookie)
+				if (mb_strpos($setCookie, $cookieSubStr) === FALSE)
+					$setCookiesNew[] = $setCookie;
+			$res->SetHeader($setCookieHeaderName, $setCookiesNew);
+			// set up new session id cookie:
+			$sessionMaxTime = static::GetSessionMaxTime();
 			$params = (object) session_get_cookie_params();
+			if ($sessionMaxTime > static::$sessionStartTime) {
+				$cookieLifeTime = $sessionMaxTime - static::$sessionStartTime;
+			} else {
+				$cookieLifeTime = isset($params->lifetime) ? $params->lifetime : 0;
+			}
 			$res->SetCookie(
-				session_name(),
-				session_id(),
-				($maxExpiration > static::$sessionStartTime
-					? (static::$sessionMaxTime - static::$sessionStartTime)
-					: (isset($params->lifetime) ? $params->lifetime : 0)),
-				$params->path
+				$sessionIdName, $sessionIdValue, $cookieLifeTime, $params->path,
+				NULL, NULL, TRUE, \MvcCore\IResponse::COOKIE_SAMESITE_LAX
 			);
 		}
 	}
@@ -85,5 +101,67 @@ trait Closing {
 			}
 		}
 		return static::$sessionMaxTime;
+	}
+	
+	/**
+	 * @inheritDocs
+	 * @return void
+	 */
+	public static function SendRefreshedCsrfCookie () {
+		if (!static::GetStarted()) return;
+		$app = self::$app ?: (self::$app = \MvcCore\Application::GetInstance());
+		$res = self::$res ?: self::$res = $app->GetResponse();
+		if (
+			!$res->IsSent() &&
+			($app->GetCsrfProtection() & \MvcCore\IApplication::CSRF_PROTECTION_COOKIE) != 0
+		) {
+			$sessionNamespace = static::GetCsrfNamespace();
+			$toolClass = $app->GetToolClass();
+			$csrfSecret = $toolClass::GetRandomHash(64); // generate new value
+			$sessionNamespace->secret = $csrfSecret;
+			$csrfExpiration = static::GetSessionCsrfMaxTime();
+			$params = (object) session_get_cookie_params();
+			if ($csrfExpiration > static::$sessionStartTime) {
+				$cookieLifeTime = $csrfExpiration - static::$sessionStartTime;
+			} else {
+				$cookieLifeTime = isset($params->lifetime) ? $params->lifetime : 0;
+			}
+			$res->SetCookie(
+				$res::GetCsrfProtectionCookieName(), $csrfSecret, $cookieLifeTime, $params->path,
+				NULL, NULL, TRUE, \MvcCore\IResponse::COOKIE_SAMESITE_STRICT
+			);
+		}
+	}
+	
+	/**
+	 * @inheritDocs
+	 * @return int
+	 */
+	public static function GetSessionCsrfMaxTime () {
+		if (static::$sessionCsrfMaxTime !== NULL)
+			return static::$sessionCsrfMaxTime;
+		static $authClassesFullNames = [
+			"\\MvcCore\\Ext\\Auth",
+			"\\MvcCore\\Ext\\Auths\\Basic"
+		];
+		/** @var \MvcCore\Ext\Auths\Basic $auth */
+		$auth = NULL;
+		foreach ($authClassesFullNames as $authClassFullName) {
+			if (class_exists($authClassFullName, TRUE)) {
+				$auth = $authClassFullName::GetInstance();
+				break;
+			}
+		}
+		// If there is any authentication class, 
+		// try to get expiration seconds value:
+		if ($auth !== NULL) {
+			$sessionCsrfMaxSeconds = $auth->GetExpirationAuthorization();
+			if (is_int($sessionCsrfMaxSeconds) && $sessionCsrfMaxSeconds > 0)
+				static::$sessionCsrfMaxTime = time() + $sessionCsrfMaxSeconds;
+		}
+		// If there is nothing like that, set expiration until browser close:
+		if (static::$sessionCsrfMaxTime === NULL)
+			static::$sessionCsrfMaxTime = 0;
+		return static::$sessionCsrfMaxTime;
 	}
 }

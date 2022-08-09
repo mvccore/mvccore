@@ -62,8 +62,6 @@ trait NamespaceMethods {
 		return $this;
 	}
 
-
-
 	/**
 	 * @inheritDocs
 	 * @return void
@@ -99,5 +97,17 @@ trait NamespaceMethods {
 				$params->secure
 			);
 		}
+	}
+
+	/**
+	 * @inheritDocs
+	 * @return \MvcCore\Session
+	 */
+	public static function GetCsrfNamespace () {
+		$csrfExpiration = static::GetSessionCsrfMaxTime();
+		$namespaceName = "\\" . get_class() . "\\Csrf";
+		$sessionNamespace = static::GetNamespace($namespaceName);
+		$sessionNamespace->SetExpirationSeconds($csrfExpiration);
+		return $sessionNamespace;
 	}
 }

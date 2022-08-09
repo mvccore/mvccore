@@ -70,4 +70,23 @@ interface IConstants {
 	 * @var string
 	 */
 	const NOT_COMPILED = '';
+
+
+	/**
+	 * CSRF protection - disabled by form input and disabled by http cookie.
+	 * @var int
+	 */
+	const CSRF_PROTECTION_DISABLED		= 0;
+	
+	/**
+	 * CSRF protection - enabled by form input and disabled by http cookie.
+	 * @var int
+	 */
+	const CSRF_PROTECTION_FORM_INPUT	= 1;
+	
+	/**
+	 * CSRF protection - disabled by form input and enabled by http cookie.
+	 * @var int
+	 */
+	const CSRF_PROTECTION_COOKIE		= 2;
 }

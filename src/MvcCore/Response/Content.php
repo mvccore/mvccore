@@ -135,7 +135,16 @@ trait Content {
 			if (isset($this->disabledHeaders[$name])) {
 				header_remove($name);
 			} else {
-				header($name . ": " . $value);
+				if (
+					isset(static::$multiplyHeaders[$name]) &&
+					is_array($value)
+				) {
+					header_remove($name);
+					foreach ($value as $item)
+						header($name . ": " . $item, FALSE);
+				} else {
+					header($name . ": " . $value, TRUE);
+				}
 			}
 		}
 		foreach ($this->disabledHeaders as $name => $b)

@@ -61,7 +61,29 @@ interface IApplication extends \MvcCore\Application\IConstants {
 	 * @return string
 	 */
 	public function GetCompiled ();
+	
+	
+	/**
+	 * Get CSRF protection mode. Only one mode could be used.
+	 * Default protection is by hidden form input for older browsers
+	 * because of maximum compatibility.
+	 * Modes:
+	 * - `\MvcCore\IApplication::CSRF_DISABLED`              - both modes disabled.
+	 * - `\MvcCore\IApplication::CSRF_PROTECTION_FORM_INPUT` - enabled mode for older 
+	 *                                                         browser by form hidden input.
+	 * - `\MvcCore\IApplication::CSRF_PROTECTION_COOKIE`     - enabled mode for newer
+	 *                                                         browsers by http cookie.
+	 * @return int
+	 */
+	public function GetCsrfProtection ();
 
+	/**
+	 * Get prefered PHP classes and properties anontation preference.
+	 * PHP8+ attributes anotation is default. `FALSE` value means
+	 * to prefer PhpDocs tags anotation instead.
+	 * @return bool
+	 */
+	public function GetAttributesAnotations ();
 
 	/**
 	 * Get application environment class implementing `\MvcCore\IEnvironment`.
@@ -239,6 +261,12 @@ interface IApplication extends \MvcCore\Application\IConstants {
 	 */
 	public function GetDefaultControllerNotFoundActionName ();
 
+	/**
+	 * Return `TRUE` if application is already terminated, `FALSE` otherwise.
+	 * @return bool
+	 */
+	public function GetTerminated ();
+
 
 	/***********************************************************************************
 	 *                        `\MvcCore\Application` - Setters                         *
@@ -256,8 +284,32 @@ interface IApplication extends \MvcCore\Application\IConstants {
 	 * @param  string $compiled
 	 * @return \MvcCore\Application
 	 */
-	public function SetCompiled ($compiled = '');
+	public function SetCompiled ($compiled);
 
+	
+	/**
+	 * Set CSRF protection mode. Only one mode could be used.
+	 * Default protection is by hidden form input for older browsers
+	 * because of maximum compatibility.
+	 * Modes:
+	 * - `\MvcCore\IApplication::CSRF_DISABLED`              - both modes disabled.
+	 * - `\MvcCore\IApplication::CSRF_PROTECTION_FORM_INPUT` - enabled mode for older 
+	 *                                                         browser by form hidden input.
+	 * - `\MvcCore\IApplication::CSRF_PROTECTION_COOKIE`     - enabled mode for newer
+	 *                                                         browsers by http cookie.
+	 * @param  int $csrfProtection
+	 * @return \MvcCore\Application
+	 */
+	public function SetCsrfProtection ($csrfProtection = \MvcCore\IApplication::CSRF_PROTECTION_COOKIE);
+
+	/**
+	 * Set prefered PHP classes and properties anontation preference.
+	 * PHP8+ attributes anotation is default. Set value to `FALSE`
+	 * to prefer PhpDocs tags anotation instead.
+	 * @param  bool $attributesAnotation 
+	 * @return \MvcCore\Application
+	 */
+	public function SetAttributesAnotations ($attributesAnotation = TRUE);
 
 	/**
 	 * Set application environment class implementing `\MvcCore\IEnvironment`.
@@ -599,6 +651,27 @@ interface IApplication extends \MvcCore\Application\IConstants {
 	 */
 	public function AddPostTerminateHandler (callable $handler, $priorityIndex = NULL);
 
+	/**
+	 * Add CSRF protection error handler into handlers queue 
+	 * to process them when any CSRF calidation error happends.
+	 * Callable should be void and it's params should be two with following types:
+	 * - `\MvcCore\Request`
+	 * - `\MvcCore\Response`
+	 * Example:
+	 * ````
+	 *   \MvcCore\Application::GetInstance()->AddCsrfErrorHandler(function(
+	 *       \MvcCore\Request $request,
+	 *       \MvcCore\Response $response
+	 *   ) {
+	 *       // redirect user to homepage or sign out authenticated user.
+	 *   });
+	 * ````
+	 * @param callable $handler
+	 * @param int|NULL $priorityIndex
+	 * @return \MvcCore\Application
+	 */
+	public function AddCsrfErrorHandler (callable $handler, $priorityIndex = NULL);
+
 
 	/***********************************************************************************
 	 *                   `\MvcCore\Application` - Normal Dispatching                   *
@@ -852,4 +925,14 @@ interface IApplication extends \MvcCore\Application\IConstants {
 	 * @return string|NULL
 	 */
 	public function GetVendorAppRoot ();
+
+	/**
+	 * Validate CSRF protection by http(s) cookie and session secret value.
+	 * If CSRF protection is not enabled in cookie mode, return `NULL`.
+	 * If protection validation is enabled and validated successfully,
+	 * return `TRUE`, if validation fails, return `FALSE`.
+	 * @inheritDocs
+	 * @return bool|NULL
+	 */
+	public function ValidateCsrfProtection ();
 }

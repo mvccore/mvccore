@@ -80,6 +80,22 @@ trait Props {
 	protected static $sessionMaxTime = 0;
 
 	/**
+	 * Session expiration for CSRF protection in seconds. 
+	 * Default value is zero seconds (`0`).
+	 * Zero value (`0`) means "until the browser is closed".
+	 * If there is found any autorization service,
+	 * value is set by authorization expiration time.
+	 * @var int
+	 */
+	protected static $sessionCsrfMaxTime = NULL;
+
+	/**
+	 * Application instance reference.
+	 * @var \MvcCore\Request
+	 */
+	protected static $app = NULL;
+
+	/**
 	 * Request instance reference.
 	 * @var \MvcCore\Request
 	 */

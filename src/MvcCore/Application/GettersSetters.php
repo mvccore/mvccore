@@ -55,6 +55,22 @@ trait GettersSetters {
 		return $this->compiled;
 	}
 
+	
+	/**
+	 * @inheritDocs
+	 * @return int
+	 */
+	public function GetCsrfProtection () {
+		return $this->csrfProtection;
+	}
+
+	/**
+	 * @inheritDocs
+	 * @return bool
+	 */
+	public function GetAttributesAnotations () {
+		return $this->attributesAnotation;
+	}
 
 	/**
 	 * @inheritDocs
@@ -276,6 +292,14 @@ trait GettersSetters {
 		return $this->defaultControllerNotFoundActionName;
 	}
 
+	/**
+	 * @inheritDocs
+	 * @return bool
+	 */
+	public function GetTerminated () {
+		return $this->terminated;
+	}
+
 
 	/***********************************************************************************
 	 *                        `\MvcCore\Application` - Setters                         *
@@ -286,12 +310,32 @@ trait GettersSetters {
 	 * @param  string $compiled
 	 * @return \MvcCore\Application
 	 */
-	public function SetCompiled ($compiled = '') {
+	public function SetCompiled ($compiled) {
 		$this->compiled = $compiled;
 		return $this;
 	}
 
+	
+	/**
+	 * @inheritDocs
+	 * @param  int $csrfProtection
+	 * @return \MvcCore\Application
+	 */
+	public function SetCsrfProtection ($csrfProtection = \MvcCore\IApplication::CSRF_PROTECTION_COOKIE) {
+		$this->csrfProtection = $csrfProtection;
+		return $this;
+	}
 
+	/**
+	 * @inheritDocs
+	 * @param  bool $attributesAnotation
+	 * @return \MvcCore\Application
+	 */
+	public function SetAttributesAnotations ($attributesAnotation = TRUE) {
+		$this->attributesAnotation = $attributesAnotation;
+		return $this;
+	}
+	
 	/**
 	 * @inheritDocs
 	 * @param  string $environmentClass
@@ -579,5 +623,19 @@ trait GettersSetters {
 				"[".get_class()."] Post terminate handler is not callable (handler: {$handler}, priorityIndex: {$priorityIndex})."
 			);
 		return $this->setHandler($this->postTerminateHandlers, $handler, $priorityIndex);
+	}
+
+	/**
+	 * @inheritDocs
+	 * @param  callable $handler
+	 * @param  int|NULL $priorityIndex
+	 * @return \MvcCore\Application
+	 */
+	public function AddCsrfErrorHandler (callable $handler, $priorityIndex = NULL) {
+		if (!is_callable($handler))
+			throw new \InvalidArgumentException(
+				"[".get_class()."] CSRF error handler is not callable (handler: {$handler}, priorityIndex: {$priorityIndex})."
+			);
+		return $this->setHandler($this->csrfErrorHandlers, $handler, $priorityIndex);
 	}
 }
