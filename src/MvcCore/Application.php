@@ -23,7 +23,7 @@ class Application implements \MvcCore\IApplication {
 	 * Comparison by PHP function `version_compare();`.
 	 * @see http://php.net/manual/en/function.version-compare.php
 	 */
-	const VERSION = '5.1.33';
+	const VERSION = '5.1.34';
 
 	/**
 	 * Include traits with
