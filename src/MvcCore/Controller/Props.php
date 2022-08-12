@@ -19,16 +19,16 @@ namespace MvcCore\Controller;
 trait Props {
 
 	/**
-	 * Path to all static files - css, js, images and fonts.
+	 * Path to all static files - css, js, images and fonts, relative from document root.
 	 * @var string
 	 */
-	protected static $staticPath = '/static';
+	protected static $staticPath = '~/static';
 
 	/**
-	 * Path to temporary directory with generated css and js files.
+	 * Path to temporary directory with generated css and js files, relative from app root.
 	 * @var string
 	 */
-	protected static $tmpPath = '/Var/Tmp';
+	protected static $tmpPath = '~/Var/Tmp';
 
 	/**
 	 * All registered controllers instances.

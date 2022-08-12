@@ -398,9 +398,10 @@ trait Dispatching {
 		$ext = '';
 		$path = $this->GetParam('path', 'a-zA-Z0-9_\-\/\.');
 		$path = '/' . ltrim(str_replace('..', '', $path), '/');
+		$homePath = '~'.$path;
 		if (
-			strpos($path, static::$staticPath) !== 0 &&
-			strpos($path, static::$tmpPath) !== 0
+			strpos($homePath, static::$staticPath) !== 0 &&
+			strpos($homePath, static::$tmpPath) !== 0
 		)
 			throw new \ErrorException("[".get_class($this)."] File path: '{$path}' is not allowed.", 500);
 		$path = $this->request->GetDocumentRoot() . $path;
