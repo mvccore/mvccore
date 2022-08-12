@@ -114,6 +114,9 @@ trait Content {
 		$this->UpdateHeaders();
 		if (!isset($this->headers['Content-Encoding']))
 			$this->headers['Content-Encoding'] = $this->GetEncoding();
+		$zlibOutputCompression = @ini_get('zlib.output_compression');
+		if ($zlibOutputCompression)
+			$this->headers['Content-Encoding'] = 'gzip';
 		if (!$this->request->IsCli()) {
 			$app = \MvcCore\Application::GetInstance();
 			$preSentHeadersHandlers = $app->__get('preSentHeadersHandlers');
