@@ -482,7 +482,7 @@ trait Reflection {
 				);
 				if ($reflectionProp->isStatic())
 					continue;
-				if ($reflectionProp->isPrivate()) 
+				if (!$reflectionProp->isPublic()) 
 					$reflectionProp->setAccessible(TRUE);
 				$propVal = $reflectionProp->getValue($instance);
 				if (
