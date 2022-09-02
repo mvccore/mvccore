@@ -22,46 +22,34 @@ trait Converters {
 	 * Convert `bool`(s), `array`(s), `\DateTimeInterface` or `\DateInterval` 
 	 * value(s) into proper database (`scalar`) value if necessary.
 	 * @param  bool|int|float|string|\DateTimeInterface|\DateInterval|\bool[]|\int[]|\float[]|\string[]|\DateTimeInterface[]|\DateInterval[]|NULL $value 
-	 * @param  array                                                                                                                              $formatArgs 
+	 * @param  array                                                                                                                              $parserArgs 
 	 * @return int|float|string|NULL
 	 */
-	protected static function convertToScalar ($value, $formatArgs = []) {
+	protected static function convertToScalar ($value, $parserArgs = []) {
 		if (is_bool($value)) {
 			return $value ? 1 : 0 ;
 		} else if (is_float($value)) {
-			if (is_array($formatArgs) && count($formatArgs) > 0) 
-				return call_user_func_array('round', array_merge([$value], $formatArgs));
+			if (is_array($parserArgs) && count($parserArgs) > 0) 
+				return call_user_func_array('round', array_merge([$value], $parserArgs));
 			return $value;
 		} else if (is_array($value) || $value instanceof \Traversable) { // `is_iterable()`
 			$items = [];
 			foreach ($value as $item)
 				if ($item !== NULL)
-					$items[] = static::convertToScalar($item, $formatArgs);
+					$items[] = static::convertToScalar($item, $parserArgs);
 			if (count($items) === 0) return NULL;
 			return implode(',', $items);
 		} else if ($value instanceof \DateTime || $value instanceof \DateTimeImmutable) { // PHP 5.4 compatible
-			$formatArgsCount = is_array($formatArgs) ? count($formatArgs) : 0;
-			if ($formatArgsCount > 0) {
-				$formatMask = $formatArgs[0];
-				if (mb_substr($formatMask, 0, 1) === '+')
-					$formatMask = mb_substr($formatMask, 1);
-				if ($formatArgsCount > 2) {
-					$targetType = $formatArgs[2];
-					if ($targetType === 'int') {
-						$formatMask = 'U';
-					} else if ($targetType === 'float') {
-						$formatMask = 'U.u';
-					}
-				}
-				return $value->format($formatMask);
-			}
+			$parserArgsCount = is_array($parserArgs) ? count($parserArgs) : 0;
+			if ($parserArgsCount > 0)
+				return $value->format($parserArgs[0]);
 			return $value->format('Y-m-d H:i:s');
 		} else if ($value instanceof \DateInterval) {
-			$formatArgsCount = count($formatArgs);
-			if ($formatArgsCount > 0) {
-				$formatMask = $formatArgs[0];
-				if ($formatArgsCount > 2) {
-					$targetType = $formatArgs[2];
+			$parserArgsCount = count($parserArgs);
+			if ($parserArgsCount > 0) {
+				$formatMask = $parserArgs[0];
+				if ($parserArgsCount > 1) {
+					$targetType = $parserArgs[1];
 					if ($targetType === 'int') {
 						return intval(round(
 							static::convertIntervalToFloat($value)

@@ -106,29 +106,29 @@ trait Parsers {
 	/**
 	 * Convert int, float or string value into \DateTime.
 	 * @param  int|float|string|NULL $rawValue 
-	 * @param  string                $formatArgs 
+	 * @param  string                $parserArgs 
 	 * @return \DateTime|bool
 	 */
-	protected static function parseToDateTime ($rawValue, $formatArgs) {
+	protected static function parseToDateTime ($rawValue, $parserArgs) {
 		if (is_numeric($rawValue)) {
 			$rawValueStr = str_replace(['+','-','.'], '', (string) $rawValue);
 			$secData = mb_substr($rawValueStr, 0, 10);
-			$dateTimeStr = date($formatArgs, intval($secData));
+			$dateTimeStr = date($parserArgs, intval($secData));
 			if (strlen($rawValueStr) > 10)
 				$dateTimeStr .= '.' . mb_substr($rawValueStr, 10);
 		} else {
 			$dateTimeStr = (string) $rawValue;
 			if (strpos($dateTimeStr, '-') === FALSE) {
-				$formatArgs = substr($formatArgs, 6);
+				$parserArgs = substr($parserArgs, 6);
 			} else if (strpos($dateTimeStr, ':') === FALSE) {
-				$formatArgs = substr($formatArgs, 0, 5);
+				$parserArgs = substr($parserArgs, 0, 5);
 			}
 		}
 		$dotPos = strpos($dateTimeStr, '.');
 		if ($dotPos !== FALSE) {
 			$msDigitsCount = strlen($dateTimeStr) - $dotPos - 1;
-			$formatArgs .= $msDigitsCount === 3 ? '.v' : '.u';
+			$parserArgs .= $msDigitsCount === 3 ? '.v' : '.u';
 		}
-		return \date_create_from_format($formatArgs, $dateTimeStr);
+		return \date_create_from_format($parserArgs, $dateTimeStr);
 	}
 }
