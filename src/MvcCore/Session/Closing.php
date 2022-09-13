@@ -65,14 +65,15 @@ trait Closing {
 			$setCookieHeaderName = 'Set-Cookie';
 			$sessionIdName = session_name();
 			$sessionIdValue = session_id();
-			
-			$cookieSubStr = "{$sessionIdName}={$sessionIdValue}";
 			$setCookies = $res->GetHeader('Set-Cookie');
-			$setCookiesNew = [];
-			foreach ($setCookies as $setCookie)
-				if (mb_strpos($setCookie, $cookieSubStr) === FALSE)
-					$setCookiesNew[] = $setCookie;
-			$res->SetHeader($setCookieHeaderName, $setCookiesNew);
+			if ($setCookies !== NULL) {
+				$cookieSubStr = "{$sessionIdName}={$sessionIdValue}";
+				$setCookiesNew = [];
+				foreach ($setCookies as $setCookie)
+					if (mb_strpos($setCookie, $cookieSubStr) === FALSE)
+						$setCookiesNew[] = $setCookie;
+				$res->SetHeader($setCookieHeaderName, $setCookiesNew);
+			}
 			// set up new session id cookie:
 			$sessionMaxTime = static::GetSessionMaxTime();
 			$params = (object) session_get_cookie_params();
