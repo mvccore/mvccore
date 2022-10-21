@@ -91,6 +91,43 @@ trait MagicMethods {
 		$toolsClass = \MvcCore\Application::GetInstance()->GetToolClass();
 		return $toolsClass::GetSleepPropNames($this, static::$protectedProperties);
 	}
+	
+	/**
+	 * @return void
+	 */
+	public function __clone () {
+		$propsFlags = (
+			\MvcCore\IModel::PROPS_INHERIT | 
+			\MvcCore\IModel::PROPS_PRIVATE | 
+			\MvcCore\IModel::PROPS_PROTECTED | 
+			\MvcCore\IModel::PROPS_PUBLIC
+		);
+		$metaData = static::GetMetaData($propsFlags);
+		$phpWithTypes = PHP_VERSION_ID >= 70400;
+		foreach ($metaData as $propertyName => $propData) {
+			list ($propIsPrivate) = $propData;
+			$currentValue = NULL;
+			if ($propIsPrivate) {
+				$prop = new \ReflectionProperty($this, $propertyName);
+				$prop->setAccessible(TRUE);
+				if ($phpWithTypes)
+					if (!$prop->isInitialized($this))
+						continue;
+				$currentValue = $prop->getValue($this);
+			} else if (isset($this->{$propertyName})) {
+				$currentValue = $this->{$propertyName};
+			}
+			if (!is_object($currentValue)) continue;
+			$clonedValue = clone $currentValue;
+			if ($propIsPrivate) {
+				$prop->setValue($this, $clonedValue);
+			} else {
+				$this->{$propertyName} = $clonedValue;
+			}
+			if (isset($this->initialValues[$propertyName]))
+				$this->initialValues[$propertyName] = $clonedValue;
+		}
+	}
 
 	/**
 	 * @inheritDocs
