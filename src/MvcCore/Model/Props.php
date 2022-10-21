@@ -162,6 +162,17 @@ trait Props {
 	];
 
 	/**
+	 * Parsing types base definitions.
+	 * @var array|array<string, array<string, int>>
+	 */
+	protected static $parserTypes = [
+		'string'	=> ['string' => 1],
+		'numeric'	=> ['int' => 1, 'integer' => 1, 'long' => 1, 'float' => 1, 'real' => 1],
+		'boolean'	=> ['bool' => 1, 'boolean' => 1],
+		'dates'		=> ["\\DateTime", "\\DateTimeImmutable"],
+	];
+
+	/**
 	 * Default database connection name/index, in system config defined in section `db.default = name`.
 	 * In extended classes - use this for connection name/index of current model if different.
 	 * @var string|int|NULL

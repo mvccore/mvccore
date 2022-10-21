@@ -68,26 +68,80 @@ trait Parsers {
 	 */
 	protected static function parseToType ($rawValue, $typeStr) {
 		$conversionResult = FALSE;
-		$typeStr = trim($typeStr, '\\');
-		if ($typeStr == 'DateTime') {
-			if (!($rawValue instanceof \DateTime)) {
-				$dateTime = static::parseToDateTime($rawValue, '+Y-m-d H:i:s');
-				if ($dateTime instanceof \DateTime) {
+		$typeStr = trim($typeStr, '\\?');
+		if (static::parseIsTypeString($typeStr)) {
+			// string:
+			$rawValue = (string) $rawValue;
+			$conversionResult = TRUE;
+		} else if (static::parseIsTypeNumeric($typeStr)) {
+			// int or float:
+			if (settype($rawValue, $typeStr)) 
+				$conversionResult = TRUE;
+		} else if (static::parseIsTypeBoolean($typeStr)) {
+			// bool:
+			$rawValue = static::parseToBool($rawValue);
+			$conversionResult = TRUE;
+		} else if (static::parseIsTypeDateTime($typeStr)) {
+			// \DateTime, \DateTimeImmutable or it's extended class:
+			if (!($rawValue instanceof \DateTime || $rawValue instanceof \DateTimeImmutable)) {
+				$dateTime = static::parseToDateTime($typeStr, $rawValue, ['+Y-m-d H:i:s']);
+				if ($dateTime !== FALSE) {
 					$rawValue = $dateTime;
 					$conversionResult = TRUE;
 				}
 			}
-		} else if ($typeStr === 'bool' || $typeStr === 'boolean') {
-			$rawValue = static::parseToBool($rawValue);
-			$conversionResult = TRUE;
 		} else {
-			// int, float, string, array, object, null:
-			if (settype($rawValue, $typeStr)) 
-				$conversionResult = TRUE;
+			// array or object:
+			$rawValue = static::parseToArrayOrObject($typeStr, $rawValue);
+			$conversionResult = TRUE;
 		}
 		return [$conversionResult, $rawValue];
 	}
 	
+	/**
+	 * Get boolean `TRUE` if given full class name is `string`.
+	 * @param  string $typeStr 
+	 * @return bool
+	 */
+	protected static function parseIsTypeString ($typeStr) {
+		return isset(static::$parserTypes['string'][$typeStr]);
+	}
+	
+	/**
+	 * Get boolean `TRUE` if given full class name is 
+	 * `int`, `integer`, `long`, `float` or `real`.
+	 * @param  string $typeStr 
+	 * @return bool
+	 */
+	protected static function parseIsTypeNumeric ($typeStr) {
+		return isset(static::$parserTypes['numeric'][$typeStr]);
+	}
+	
+	/**
+	 * Get boolean `TRUE` if given full class name is `bool` or `boolean`.
+	 * @param  string $typeStr 
+	 * @return bool
+	 */
+	protected static function parseIsTypeBoolean ($typeStr) {
+		return isset(static::$parserTypes['boolean'][$typeStr]);
+	}
+
+	/**
+	 * Get boolean `TRUE` if given full class name is class 
+	 * or subclass of `DateTime` or `DateTimeImmutable`.
+	 * @param  string $typeStr 
+	 * @return bool
+	 */
+	protected static function parseIsTypeDateTime ($typeStr) {
+		list ($dateTimeStr, $dateTimeImmutable) = static::$parserTypes['dates'];
+		return (
+			is_a($typeStr, $dateTimeStr, TRUE) || 
+			is_subclass_of($typeStr, $dateTimeStr, TRUE) || 
+			is_a($typeStr, $dateTimeImmutable, TRUE) || 
+			is_subclass_of($typeStr, $dateTimeImmutable, TRUE)
+		);
+	}
+
 	/**
 	 * Convert int, float or string value into bool.
 	 * @param  int|float|string|NULL $rawValue 
@@ -105,30 +159,50 @@ trait Parsers {
 
 	/**
 	 * Convert int, float or string value into \DateTime.
+	 * @param  string                $typeStr
 	 * @param  int|float|string|NULL $rawValue 
-	 * @param  string                $parserArgs 
-	 * @return \DateTime|bool
+	 * @param  array                 $parserArgs 
+	 * @return \DateTime|\DateTimeImmutable|bool
 	 */
-	protected static function parseToDateTime ($rawValue, $parserArgs) {
+	protected static function parseToDateTime ($typeStr, $rawValue, $parserArgs = []) {
+		$format = $parserArgs[0];
 		if (is_numeric($rawValue)) {
 			$rawValueStr = str_replace(['+','-','.'], '', (string) $rawValue);
 			$secData = mb_substr($rawValueStr, 0, 10);
-			$dateTimeStr = date($parserArgs, intval($secData));
+			$dateTimeStr = date($format, intval($secData));
 			if (strlen($rawValueStr) > 10)
 				$dateTimeStr .= '.' . mb_substr($rawValueStr, 10);
 		} else {
 			$dateTimeStr = (string) $rawValue;
 			if (strpos($dateTimeStr, '-') === FALSE) {
-				$parserArgs = substr($parserArgs, 6);
+				$format = substr($format, 6);
 			} else if (strpos($dateTimeStr, ':') === FALSE) {
-				$parserArgs = substr($parserArgs, 0, 5);
+				$format = substr($format, 0, 5);
 			}
 		}
 		$dotPos = strpos($dateTimeStr, '.');
 		if ($dotPos !== FALSE) {
 			$msDigitsCount = strlen($dateTimeStr) - $dotPos - 1;
-			$parserArgs .= $msDigitsCount === 3 ? '.v' : '.u';
+			$format .= $msDigitsCount === 3 ? '.v' : '.u';
 		}
-		return \date_create_from_format($parserArgs, $dateTimeStr);
+		return $typeStr::createFromFormat($format, $dateTimeStr);
+	}
+
+	/**
+	 * Convert raw value into `array` or `\stdClass`.
+	 * @param  string                $typeStr
+	 * @param  int|float|string|NULL $rawValue 
+	 * @param  array                 $parserArgs 
+	 * @return \DateTime|\DateTimeImmutable|bool
+	 */
+	protected static function parseToArrayOrObject ($typeStr, $rawValue, $parserArgs = [0, 512]) {
+		$toolClass = \MvcCore\Application::GetInstance()->GetToolClass();
+		$flags = isset($parserArgs[0]) && is_int($parserArgs[0]) 
+			? $parserArgs[0] 
+			: 0;
+		$depth = isset($parserArgs[1]) && is_int($parserArgs[1]) 
+			? $parserArgs[1] 
+			: 512;
+		return $toolClass::JsonDecode($rawValue, $flags, $depth);
 	}
 }
