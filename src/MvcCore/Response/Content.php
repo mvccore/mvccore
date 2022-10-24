@@ -114,8 +114,8 @@ trait Content {
 		$this->UpdateHeaders();
 		if (!isset($this->headers['Content-Encoding']))
 			$this->headers['Content-Encoding'] = $this->GetEncoding();
-		$zlibOutputCompression = @ini_get('zlib.output_compression');
-		if ($zlibOutputCompression)
+		$outputCompression = $this->getOutputCompression();
+		if ($outputCompression)
 			$this->headers['Content-Encoding'] = 'gzip';
 		if (!$this->request->IsCli()) {
 			$app = \MvcCore\Application::GetInstance();
@@ -133,7 +133,10 @@ trait Content {
 					$equalPos = strpos($value, '=', $charsetPos);
 					if ($equalPos !== FALSE) $charsetMatched = TRUE;
 				}
-				if (!$charsetMatched) $value .= ';charset=' . $this->encoding;
+				if (!$charsetMatched) 
+					$value .= ';charset=' . $this->encoding;
+			} else if ($name == 'Content-Type' && $outputCompression) {
+				continue;
 			}
 			if (isset($this->disabledHeaders[$name])) {
 				header_remove($name);
@@ -166,8 +169,7 @@ trait Content {
 		$preSentBodyHandlers = $app->__get('preSentBodyHandlers');
 		$app->ProcessCustomHandlers($preSentBodyHandlers);
 		echo $this->body;
-		$zlibOutputCompression = @ini_get('zlib.output_compression');
-		if (!$zlibOutputCompression)
+		if (!$this->getOutputCompression())
 			while (ob_get_level() && @ob_end_flush());
 		flush();
 		$this->bodySent = TRUE;
@@ -185,5 +187,25 @@ trait Content {
 		$time = number_format((microtime(TRUE) - $mtBegin) * 1000, 1, '.', ' ');
 		$ram = function_exists('memory_get_peak_usage') ? number_format(memory_get_peak_usage() / 1000000, 2, '.', ' ') : 'n/a';
 		header("{$headerName}: {$time} ms, {$ram} MB");
+	}
+
+	/**
+	 * Return `TRUE` if `zlib.output_compression` is enabled.
+	 * @return bool
+	 */
+	protected function getOutputCompression () {
+		if ($this->outputCompression === NULL) {
+			$zlibOutputCompression = @ini_get('zlib.output_compression');
+			if ($zlibOutputCompression === FALSE) {
+				$this->outputCompression = FALSE;
+			} else {
+				$zlibOutputCompression = mb_strtolower($zlibOutputCompression);
+				$this->outputCompression = (
+					$zlibOutputCompression === '1' ||
+					$zlibOutputCompression === 'on'
+				);
+			}
+		}
+		return $this->outputCompression;
 	}
 }

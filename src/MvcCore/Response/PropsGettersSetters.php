@@ -95,6 +95,12 @@ trait PropsGettersSetters {
 	protected $bodySent = FALSE;
 
 	/**
+	 * `TRUE` if `zlib.output_compression` is enabled.
+	 * @var bool|NULL
+	 */
+	protected $outputCompression = NULL;
+
+	/**
 	 * Disabled headers, never sent except if there is
 	 * rendered exception in development environment.
 	 * @var array
@@ -202,11 +208,7 @@ trait PropsGettersSetters {
 	 */
 	public function SetEncoding ($encoding = 'utf-8') {
 		$this->encoding = $encoding;
-		unset(
-			$this->headers['content-encoding'],
-			$this->headers['Content-encoding'],
-			$this->headers['content-Encoding']
-		);
+		$this->removeMisMatchHeaders(['content-encoding', 'Content-encoding', 'content-Encoding']);
 		$this->headers['Content-Encoding'] = $encoding;
 		header('Content-Encoding: ' . $encoding);
 		if (isset($this->headers['Content-Type'])) 

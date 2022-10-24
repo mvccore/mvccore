@@ -63,6 +63,8 @@ trait Headers {
 		if (isset($this->disabledHeaders[$name]))
 			return $this;
 		if (!isset(static::$multiplyHeaders[$name])) {
+			if ($name == 'Content-Length' && $this->getOutputCompression())
+				return $this;
 			header($name . ": " . $value, TRUE);
 			$this->headers[$name] = $value;
 		} else {
@@ -91,6 +93,8 @@ trait Headers {
 		if (isset($this->disabledHeaders[$name]))
 			return $this;
 		if (!isset(static::$multiplyHeaders[$name])) {
+			if ($name == 'Content-Length' && $this->getOutputCompression())
+				return $this;
 			header($name . ": " . $value);
 			$this->headers[$name] = $value;
 		} else {
@@ -145,8 +149,10 @@ trait Headers {
 	public function RemoveHeader ($name) {
 		$this->UpdateHeaders();
 		$hasHeader = isset($this->headers[$name]);
-		if ($hasHeader) 
+		if ($hasHeader) {
+			header_remove($name);
 			unset($this->headers[$name]);
+		}
 		return $hasHeader;
 	}
 
@@ -214,11 +220,7 @@ trait Headers {
 	protected function setUpContentEncAndTypeByNew ($name, $value) {
 		$nameLower = mb_strtolower($name);
 		if ($nameLower === 'content-type') {
-			unset(
-				$this->headers['content-type'],
-				$this->headers['Content-type'],
-				$this->headers['content-Type']
-			);
+			$this->removeMisMatchHeaders(['content-type', 'Content-type', 'content-Type']);
 			$this->headers['Content-Type'] = $value;
 			header('Content-Type: ' . $value);
 			$charsetPos = strpos($value, 'charset');
@@ -231,6 +233,21 @@ trait Headers {
 		}
 		if ($nameLower === 'content-encoding')
 			$this->SetEncoding($value);
+		return $this;
+	}
+
+	/**
+	 * Remove HTTP headers with invalid names.
+	 * @param  array|\string[] $mismatchHeaderNames 
+	 * @return \MvcCore\Response
+	 */
+	protected function removeMisMatchHeaders (array $mismatchHeaderNames) {
+		foreach ($mismatchHeaderNames as $mismatchHeaderName) {
+			if (isset($this->headers[$mismatchHeaderName])) {
+				header_remove($mismatchHeaderName);
+				unset($this->headers[$mismatchHeaderName]);
+			}
+		}
 		return $this;
 	}
 }
