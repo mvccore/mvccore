@@ -202,6 +202,11 @@ trait PropsGettersSetters {
 	 */
 	public function SetEncoding ($encoding = 'utf-8') {
 		$this->encoding = $encoding;
+		unset(
+			$this->headers['content-encoding'],
+			$this->headers['Content-encoding'],
+			$this->headers['content-Encoding']
+		);
 		$this->headers['Content-Encoding'] = $encoding;
 		header('Content-Encoding: ' . $encoding);
 		if (isset($this->headers['Content-Type'])) 

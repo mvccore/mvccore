@@ -166,6 +166,19 @@ interface IResponse extends \MvcCore\Response\IConstants {
 	public function HasHeader ($name);
 
 	/**
+	 * Remove HTTP response header by given `$name`.
+	 * Return `TRUE` if header was there, `FALSE` otherwise.
+	 * Example:
+	 * ````
+	 *   $response->RemoveHeader('Content-type');
+	 *   $response->RemoveHeader('content-type');
+	 * ````
+	 * @param  string $name
+	 * @return bool
+	 */
+	public function RemoveHeader ($name);
+
+	/**
 	 * Set HTTP response content encoding.
 	 * Example: `$response->SetEncoding('utf-8');`
 	 * @param  string $encoding

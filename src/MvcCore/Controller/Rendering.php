@@ -85,14 +85,12 @@ trait Rendering {
 	 * @return void
 	 */
 	public function HtmlResponse ($output, $terminate = TRUE) {
-		if (!$this->response->HasHeader('Content-Type')) {
-			$viewClass = $this->application->GetViewClass();
-			$contentTypeHeaderValue = strpos(
-				$viewClass::GetDoctype(), \MvcCore\IView::DOCTYPE_XHTML
-			) !== FALSE ? 'application/xhtml+xml' : 'text/html' ;
-			$this->response->SetHeader('Content-Type', $contentTypeHeaderValue);
-		}
+		$viewClass = $this->application->GetViewClass();
+		$contentTypeHeaderValue = strpos(
+			$viewClass::GetDoctype(), \MvcCore\IView::DOCTYPE_XHTML
+		) !== FALSE ? 'application/xhtml+xml' : 'text/html' ;
 		$this->response
+			->SetHeader('Content-Type', $contentTypeHeaderValue)
 			->SetCode(\MvcCore\IResponse::OK)
 			->SetBody($output);
 		if ($terminate) $this->Terminate();
@@ -105,12 +103,11 @@ trait Rendering {
 	 * @return void
 	 */
 	public function XmlResponse ($output, $terminate = TRUE) {
-		$res = $this->response;
-		if (!$res->HasHeader('Content-Type'))
-			$res->SetHeader('Content-Type', 'application/xml');
-		$res->SetBody($output);
-		if ($res->GetCode() === NULL)
-			$res->SetCode(\MvcCore\IResponse::OK);
+		$this->response
+			->SetHeader('Content-Type', 'application/xml')
+			->SetBody($output);
+		if ($this->response->GetCode() === NULL)
+			$this->response->SetCode(\MvcCore\IResponse::OK);
 		if ($terminate) $this->Terminate();
 	}
 
@@ -121,12 +118,11 @@ trait Rendering {
 	 * @return void
 	 */
 	public function TextResponse ($output, $terminate = TRUE) {
-		$res = $this->response;
-		if (!$res->HasHeader('Content-Type'))
-			$res->SetHeader('Content-Type', 'text/plain');
-		$res->SetBody($output);
-		if ($res->GetCode() === NULL)
-			$res->SetCode(\MvcCore\IResponse::OK);
+		$this->response
+			->SetHeader('Content-Type', 'text/plain')
+			->SetBody($output);
+		if ($this->response->GetCode() === NULL)
+			$this->response->SetCode(\MvcCore\IResponse::OK);
 		if ($terminate) $this->Terminate();
 	}
 
@@ -139,18 +135,16 @@ trait Rendering {
 	 * @return void
 	 */
 	public function JsonResponse ($data, $terminate = TRUE, $jsonEncodeFlags = 0) {
-		$res = $this->response;
 		/** @var \MvcCore\Tool|string $toolClass */ 
 		$toolClass = $this->application->GetToolClass();
 		$output = $toolClass::JsonEncode($data, $jsonEncodeFlags);
 		ob_clean(); // remove any possible warnings to break client's `JSON.parse();`
-		if (!$res->HasHeader('Content-Type'))
-			$res->SetHeader('Content-Type', 'text/javascript');
-		$res
+		$this->response
+			->SetHeader('Content-Type', 'application/json')
 			->SetHeader('Content-Length', strlen($output))
 			->SetBody($output);
-		if ($res->GetCode() === NULL)
-			$res->SetCode(\MvcCore\IResponse::OK);
+		if ($this->response->GetCode() === NULL)
+			$this->response->SetCode(\MvcCore\IResponse::OK);
 		if ($terminate) $this->Terminate();
 	}
 
@@ -164,20 +158,18 @@ trait Rendering {
 	 * @return void
 	 */
 	public function JsonpResponse ($data, $callbackParamName = 'callback', $terminate = TRUE, $jsonEncodeFlags = 0) {
-		$res = $this->response;
 		/** @var \MvcCore\Tool|string $toolClass */ 
 		$toolClass = $this->application->GetToolClass();
 		$output = $toolClass::JsonEncode($data, $jsonEncodeFlags);
 		ob_clean(); // remove any possible warnings to break client's `JSON.parse();`
-		if (!$res->HasHeader('Content-Type'))
-			$res->SetHeader('Content-Type', 'text/javascript');
 		$callbackParam = $this->GetParam($callbackParamName, 'a-zA-Z0-9\.\-_\$', $callbackParamName, 'string');
 		$output = $callbackParam . '(' . $output . ');';
-		$res
+		$this->response
+			->SetHeader('Content-Type', 'application/javascript')
 			->SetHeader('Content-Length', strlen($output))
 			->SetBody($output);
-		if ($res->GetCode() === NULL)
-			$res->SetCode(\MvcCore\IResponse::OK);
+		if ($this->response->GetCode() === NULL)
+			$this->response->SetCode(\MvcCore\IResponse::OK);
 		if ($terminate) $this->Terminate();
 	}
 

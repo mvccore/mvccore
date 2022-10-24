@@ -166,17 +166,9 @@ trait Content {
 		$preSentBodyHandlers = $app->__get('preSentBodyHandlers');
 		$app->ProcessCustomHandlers($preSentBodyHandlers);
 		echo $this->body;
-		$finishOutputBuffers = TRUE;
 		$zlibOutputCompression = @ini_get('zlib.output_compression');
-		if ($zlibOutputCompression) {
-			$debugClass = \MvcCore\Application::GetInstance()->GetDebugClass();
-			if ($debugClass::GetDebugging())
-				$finishOutputBuffers = FALSE;
-		}
-		if ($finishOutputBuffers) {
-			if (ob_get_level())
-				ob_end_flush();
-		}
+		if (!$zlibOutputCompression)
+			while (ob_get_level() && @ob_end_flush());
 		flush();
 		$this->bodySent = TRUE;
 		return $this;

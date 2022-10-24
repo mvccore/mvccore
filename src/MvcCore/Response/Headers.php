@@ -139,6 +139,19 @@ trait Headers {
 
 	/**
 	 * @inheritDocs
+	 * @param  string $name
+	 * @return bool
+	 */
+	public function RemoveHeader ($name) {
+		$this->UpdateHeaders();
+		$hasHeader = isset($this->headers[$name]);
+		if ($hasHeader) 
+			unset($this->headers[$name]);
+		return $hasHeader;
+	}
+
+	/**
+	 * @inheritDocs
 	 * @return \MvcCore\Response
 	 */
 	public function UpdateHeaders () {
@@ -201,6 +214,13 @@ trait Headers {
 	protected function setUpContentEncAndTypeByNew ($name, $value) {
 		$nameLower = mb_strtolower($name);
 		if ($nameLower === 'content-type') {
+			unset(
+				$this->headers['content-type'],
+				$this->headers['Content-type'],
+				$this->headers['content-Type']
+			);
+			$this->headers['Content-Type'] = $value;
+			header('Content-Type: ' . $value);
 			$charsetPos = strpos($value, 'charset');
 			if ($charsetPos !== FALSE) {
 				$equalPos = strpos($value, '=', $charsetPos);
@@ -209,7 +229,7 @@ trait Headers {
 				);
 			}
 		}
-		if ($nameLower === 'content-encoding') 
+		if ($nameLower === 'content-encoding')
 			$this->SetEncoding($value);
 		return $this;
 	}
