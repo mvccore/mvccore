@@ -96,10 +96,13 @@ trait Helpers {
 		} else if (function_exists('openssl_random_pseudo_bytes')) {
 			return bin2hex(openssl_random_pseudo_bytes($randLen));
 		} else {
-			$randomItems = [];
-			for ($i = 0; $i < 32; $i++) 
-				$randomItems[] = str_pad(dechex(mt_rand(0,255)),2,'0',STR_PAD_LEFT);
-			return implode('', $randomItems);
+			$randomBytes = [];
+			for ($i = 0; $i < $randLen; $i++) {
+				/** @see https://github.com/php/php-src/blob/master/ext/standard/mt_rand.c */
+				$randomBytes[] = str_pad(dechex(mt_rand(0,255)),2,'0',STR_PAD_LEFT);
+			}
+			shuffle($randomBytes);
+			return implode('', $randomBytes);
 		}
 	}
 
