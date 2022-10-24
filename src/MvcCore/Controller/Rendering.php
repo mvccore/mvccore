@@ -103,9 +103,9 @@ trait Rendering {
 	 * @return void
 	 */
 	public function XmlResponse ($output, $terminate = TRUE) {
-		$this->response
-			->SetHeader('Content-Type', 'application/xml')
-			->SetBody($output);
+		if (!$this->response->HasHeader('Content-Type'))
+			$this->response->SetHeader('Content-Type', 'application/xml');
+		$this->response->SetBody($output);
 		if ($this->response->GetCode() === NULL)
 			$this->response->SetCode(\MvcCore\IResponse::OK);
 		if ($terminate) $this->Terminate();
