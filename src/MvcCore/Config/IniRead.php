@@ -45,7 +45,7 @@ trait IniRead {
 				$envIniData, $iniScannerMode
 			);
 			foreach ($objectTypes as & $objectType)
-				if ($objectType[0])
+				if ($objectType[0] && isset($objectType[1]))
 					$objectType[1] = (object) $objectType[1];
 			$this->envData[$envName] = $data;
 		}
