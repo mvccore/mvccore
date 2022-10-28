@@ -269,6 +269,12 @@ interface IModel extends \MvcCore\Model\IConstants {
 	public function GetTouched ($propsFlags = 0);
 
 	/**
+	 * Return original initial values completed in model creation.
+	 * @return array
+	 */
+	public function GetInitialValues ();
+
+	/**
 	 * Sets any custom property `"PropertyName"` by `\MvcCore\Model::SetPropertyName("value")`,
 	 * which is not necessary to define previously or gets previously defined
 	 * property `"PropertyName"` by `\MvcCore\Model::GetPropertyName();`.
