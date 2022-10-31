@@ -16,6 +16,7 @@ namespace MvcCore;
 /**
  * @inheritDocs
  */
+#[\AllowDynamicProperties]
 class Request implements IRequest {
 	use \MvcCore\Request\Props;
 	use \MvcCore\Request\GettersSetters;

@@ -16,6 +16,7 @@ namespace MvcCore;
 /**
  * @inheritDocs
  */
+#[\AllowDynamicProperties]
 class Model implements \MvcCore\IModel, \JsonSerializable {
 	use \MvcCore\Model\Props;
 	use \MvcCore\Model\Config;
