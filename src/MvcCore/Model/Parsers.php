@@ -151,7 +151,13 @@ trait Parsers {
 		if (is_bool($rawValue)) {
 			return $rawValue;
 		} else if (is_string($rawValue)) {
-			return mb_strtolower($rawValue) === 'true' || $rawValue === '1';
+			$rawValue = trim($rawValue);
+			return (
+				$rawValue === '0' || 
+				$rawValue === '' || 
+				$rawValue === '0.0' || 
+				mb_strtolower($rawValue) === 'false'
+			) ? FALSE : TRUE;
 		} else {
 			return (bool) $rawValue;
 		}
