@@ -159,7 +159,6 @@ trait CollectionsMethods {
 			}
 			if (!$sourceType) return $result;
 			$sourceTypesResult = [];
-			
 			foreach ($result as $key => $value) {
 				$notFoundFlagsCount = 0;
 				if ($qsFlag && !isset($sourceTypeParamsQs[$key])) $notFoundFlagsCount++;
