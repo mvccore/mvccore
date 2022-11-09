@@ -196,19 +196,33 @@ trait Parsers {
 
 	/**
 	 * Convert raw value into `array` or `\stdClass`.
-	 * @param  string                $typeStr
-	 * @param  int|float|string|NULL $rawValue 
-	 * @param  array                 $parserArgs 
-	 * @return \DateTime|\DateTimeImmutable|bool
+	 * @param  string $typeStr
+	 * @param  mixed  $rawValue 
+	 * @param  array  $parserArgs 
+	 * @return array|object|NULL
 	 */
 	protected static function parseToArrayOrObject ($typeStr, $rawValue, $parserArgs = [0, 512]) {
-		$toolClass = \MvcCore\Application::GetInstance()->GetToolClass();
-		$flags = isset($parserArgs[0]) && is_int($parserArgs[0]) 
-			? $parserArgs[0] 
-			: 0;
-		$depth = isset($parserArgs[1]) && is_int($parserArgs[1]) 
-			? $parserArgs[1] 
-			: 512;
-		return $toolClass::JsonDecode($rawValue, $flags, $depth);
+		if (!is_string($rawValue)) {
+			$value = $rawValue;
+		} else {
+			$toolClass = \MvcCore\Application::GetInstance()->GetToolClass();
+			if ($toolClass::IsJsonString($rawValue)) {
+				$value = $rawValue;
+			} else {
+				$flags = isset($parserArgs[0]) && is_int($parserArgs[0]) 
+					? $parserArgs[0] 
+					: 0;
+				$depth = isset($parserArgs[1]) && is_int($parserArgs[1]) 
+					? $parserArgs[1] 
+					: 512;
+				try {
+					$value = $toolClass::JsonDecode($rawValue, $flags, $depth);
+				} catch (\Throwable $e) {
+					\MvcCore\Debug::Log($e);
+				}
+			}
+		}
+		settype($value, $typeStr);
+		return $value;
 	}
 }
