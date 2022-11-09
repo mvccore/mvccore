@@ -161,6 +161,7 @@ trait Connection {
 		);
 		foreach ($cfgArr as $key => $value) {
 			if (
+				$value === NULL ||
 				is_numeric($key) || 
 				mb_strpos($key, '\\PDO::') === 0 ||
 				$key == 'options'
