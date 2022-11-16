@@ -17,6 +17,20 @@ namespace MvcCore\Request;
  * @mixin \MvcCore\Request
  */
 trait GettersSetters {
+	
+	/**
+	 * @inheritDocs
+	 * @param  \string[] $twoSegmentTlds,... List of two-segment top-level domains without leading dot.
+	 * @return void
+	 */
+	public static function SetTwoSegmentTlds ($twoSegmentTlds) {
+		$tlds = func_get_args();
+		if (count($tlds) === 1 && is_array($tlds[0])) $tlds = $tlds[0];
+		self::$twoSegmentTlds = [];
+		self::$twoSegmentTlds = array_combine(
+			$tlds, array_fill(0, count($tlds), TRUE)
+		);
+	}
 
 	/**
 	 * @inheritDocs
@@ -26,7 +40,38 @@ trait GettersSetters {
 	public static function AddTwoSegmentTlds ($twoSegmentTlds) {
 		$tlds = func_get_args();
 		if (count($tlds) === 1 && is_array($tlds[0])) $tlds = $tlds[0];
-		foreach ($tlds as $tld) self::$twoSegmentTlds[$tld] = TRUE;
+		self::$twoSegmentTlds = array_combine(
+			$tlds, array_fill(0, count($tlds), TRUE)
+		);
+	}
+	
+	/**
+	 * @inheritDocs
+	 * @param  \string[]|\int[] $defaultPorts,... List of default ports, not defined in server name by default.
+	 * @return void
+	 */
+	public static function SetDefaultPorts ($defaultPorts) {
+		$ports = func_get_args();
+		if (count($ports) === 1 && is_array($ports[0])) $ports = $ports[0];
+		self::$defaultPorts = [];
+		self::$defaultPorts = array_combine(
+			array_map('strval', $ports), 
+			array_fill(0, count($ports), TRUE)
+		);
+	}
+
+	/**
+	 * @inheritDocs
+	 * @param  \string[]|\int[] $defaultPorts,... List of default ports, not defined in server name by default.
+	 * @return void
+	 */
+	public static function AddDefaultPorts ($defaultPorts) {
+		$ports = func_get_args();
+		if (count($ports) === 1 && is_array($ports[0])) $ports = $ports[0];
+		self::$defaultPorts = array_combine(
+			array_map('strval', $ports), 
+			array_fill(0, count($ports), TRUE)
+		);
 	}
 
 	/**
@@ -372,8 +417,10 @@ trait GettersSetters {
 	public function GetScheme () {
 		if ($this->scheme === NULL) {
 			$this->scheme = (
-				(isset($this->globalServer['HTTPS']) && strtolower($this->globalServer['HTTPS']) == 'on') ||
-				$this->globalServer['SERVER_PORT'] == 443
+				(
+					isset($this->globalServer['HTTPS']) && 
+					strtolower($this->globalServer['HTTPS']) == 'on'
+				) || intval($this->globalServer['SERVER_PORT']) === 443
 			)
 				? static::SCHEME_HTTPS
 				: static::SCHEME_HTTP;
@@ -437,7 +484,7 @@ trait GettersSetters {
 		$this->domainParts[2] = $topLevelDomain;
 		$this->hostName = trim(implode('.', $this->domainParts), '.');
 		if ($this->hostName && $this->portDefined)
-			$this->host = $this->hostName . ':' . $this->port;
+			$this->host = $this->hostName . ':' . $this->GetPort();
 		$this->domainUrl = NULL;
 		$this->baseUrl = NULL;
 		$this->requestUrl = NULL;
@@ -464,7 +511,7 @@ trait GettersSetters {
 		$this->domainParts[1] = $secondLevelDomain;
 		$this->hostName = trim(implode('.', $this->domainParts), '.');
 		if ($this->hostName && $this->portDefined)
-			$this->host = $this->hostName . ':' . $this->port;
+			$this->host = $this->hostName . ':' . $this->GetPort();
 		$this->domainUrl = NULL;
 		$this->baseUrl = NULL;
 		$this->requestUrl = NULL;
@@ -491,7 +538,7 @@ trait GettersSetters {
 		$this->domainParts[0] = $thirdLevelDomain;
 		$this->hostName = trim(implode('.', $this->domainParts), '.');
 		if ($this->hostName && $this->portDefined)
-			$this->host = $this->hostName . ':' . $this->port;
+			$this->host = $this->hostName . ':' . $this->GetPort();
 		$this->domainUrl = NULL;
 		$this->baseUrl = NULL;
 		$this->requestUrl = NULL;
@@ -521,7 +568,7 @@ trait GettersSetters {
 		$this->requestUrl = NULL;
 		$this->fullUrl = NULL;
 		if ($rawHostName && $this->portDefined)
-			$this->host = $rawHostName . ':' . $this->port;
+			$this->host = $rawHostName . ':' . $this->GetPort();
 		return $this;
 	}
 
@@ -563,23 +610,30 @@ trait GettersSetters {
 	 * @return string
 	 */
 	public function GetHost () {
-		if ($this->host === NULL) $this->host = $this->globalServer['HTTP_HOST'];
+		if ($this->host === NULL) {
+			if ($this->port === NULL)
+				$this->initUrlSegments();
+			$hostName = $this->GetHostName();
+			$this->host = $this->portDefined
+				? $hostName . ':' . $this->port
+				: $hostName;
+		}
 		return $this->host;
 	}
 
 	/**
 	 * @inheritDocs
-	 * @param  string $rawPort
+	 * @param  string|int $rawPort
 	 * @return \MvcCore\Request
 	 */
 	public function SetPort ($rawPort) {
-		$this->port = $rawPort;
+		$this->port = trim((string) $rawPort);
 		$this->domainUrl = NULL;
 		$this->baseUrl = NULL;
 		$this->requestUrl = NULL;
 		$this->fullUrl = NULL;
-		if (strlen($rawPort) > 0) {
-			$this->host = $this->hostName . ':' . $rawPort;
+		if (strlen($this->port) > 0) {
+			$this->host = $this->hostName . ':' . $this->port;
 			$this->portDefined = TRUE;
 		} else {
 			$this->host = $this->hostName;

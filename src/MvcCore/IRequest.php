@@ -37,6 +37,18 @@ interface IRequest extends \MvcCore\Request\IConstants {
 	public static function ParseHttpAcceptLang ($languagesList);
 
 	/**
+	 * Set exceptional two-segment top-level domain like
+	 * `'co.jp', 'co.uk', 'co.kr', 'co.nf' ...` to parse
+	 * domain string correctly.
+	 * Example:
+	 * `\MvcCore\Request::SetTwoSegmentTlds('co.uk', 'co.jp');`
+	 * `\MvcCore\Request::SetTwoSegmentTlds(['co.uk', 'co.jp']);`
+	 * @param  \string[] $twoSegmentTlds,... List of two-segment top-level domains without leading dot.
+	 * @return void
+	 */
+	public static function SetTwoSegmentTlds ($twoSegmentTlds);
+	
+	/**
 	 * Add exceptional two-segment top-level domain like
 	 * `'co.jp', 'co.uk', 'co.kr', 'co.nf' ...` to parse
 	 * domain string correctly.
@@ -47,6 +59,26 @@ interface IRequest extends \MvcCore\Request\IConstants {
 	 * @return void
 	 */
 	public static function AddTwoSegmentTlds ($twoSegmentTlds);
+
+	/**
+	 * Set default ports, not defined in server name by default.
+	 * Example:
+	 * `\MvcCore\Request::SetDefaultPorts(80, '443');`
+	 * `\MvcCore\Request::SetDefaultPorts(['80', 443]);`
+	 * @param  \string[]|\int[] $defaultPorts,... List of default ports, not defined in server name by default.
+	 * @return void
+	 */
+	public static function SetDefaultPorts ($defaultPorts);
+
+	/**
+	 * Add default ports, not defined in server name by default.
+	 * Example:
+	 * `\MvcCore\Request::SetDefaultPorts(80, '443');`
+	 * `\MvcCore\Request::SetDefaultPorts(['80', 443]);`
+	 * @param  \string[]|\int[] $defaultPorts,... List of default ports, not defined in server name by default.
+	 * @return void
+	 */
+	public static function AddDefaultPorts ($defaultPorts);
 
 	/**
 	 * Static factory to get every time new instance of http request object.
@@ -576,6 +608,7 @@ interface IRequest extends \MvcCore\Request\IConstants {
 	/**
 	 * Get referer URL if any.
 	 * Example: `"http://foreing.domain.com/path/where/is/link/to/?my=app"`
+	 * Be carefull, value from `$_SERVER['HTTP_REFERER']` is generally unsafe.
 	 * @param  bool $rawInput Get raw input if `TRUE`. `FALSE` by default to get value through `htmlspecialchars($result);` without ampersand `&` escaping.
 	 * @return string
 	 */
@@ -598,6 +631,9 @@ interface IRequest extends \MvcCore\Request\IConstants {
 
 	/**
 	 * Set top level domain like `com` from `www.example.com`.
+	 * Be carefull on Apache web server, `$_SERVER['SERVER_NAME']`
+	 * could be spoofed without `UseCanonicalName On` configuration.
+	 * @see https://www.php.net/manual/en/reserved.variables.server.php#refsect1-reserved.variables.server-indices
 	 * @return string|NULL
 	 */
 	public function GetTopLevelDomain ();
@@ -612,6 +648,9 @@ interface IRequest extends \MvcCore\Request\IConstants {
 
 	/**
 	 * Get second level domain like `example` in `www.example.com`.
+	 * Be carefull on Apache web server, `$_SERVER['SERVER_NAME']`
+	 * could be spoofed without `UseCanonicalName On` configuration.
+	 * @see https://www.php.net/manual/en/reserved.variables.server.php#refsect1-reserved.variables.server-indices
 	 * @return string|NULL
 	 */
 	public function GetSecondLevelDomain ();
@@ -626,6 +665,9 @@ interface IRequest extends \MvcCore\Request\IConstants {
 
 	/**
 	 * Get third level domain like `www` from `www.example.com`.
+	 * Be carefull on Apache web server, `$_SERVER['SERVER_NAME']`
+	 * could be spoofed without `UseCanonicalName On` configuration.
+	 * @see https://www.php.net/manual/en/reserved.variables.server.php#refsect1-reserved.variables.server-indices
 	 * @return string|NULL
 	 */
 	public function GetThirdLevelDomain ();
@@ -642,6 +684,9 @@ interface IRequest extends \MvcCore\Request\IConstants {
 	/**
 	 * Get application server name - domain without any port.
 	 * Example: `"localhost"`
+	 * Be carefull on Apache web server, `$_SERVER['SERVER_NAME']`
+	 * could be spoofed without `UseCanonicalName On` configuration.
+	 * @see https://www.php.net/manual/en/reserved.variables.server.php#refsect1-reserved.variables.server-indices
 	 * @return string
 	 */
 	public function GetHostName ();
@@ -658,6 +703,10 @@ interface IRequest extends \MvcCore\Request\IConstants {
 	/**
 	 * Get application host with port if there is any.
 	 * Example: `"localhost:88"`
+	 * Be carefull on Apache web server, `$_SERVER['SERVER_NAME']`
+	 * and `$_SERVER['SERVER_PORT']` could be spoofed without 
+	 * `UseCanonicalName On` and `UseCanonicalPhysicalPort On` configuration.
+	 * @see https://www.php.net/manual/en/reserved.variables.server.php#refsect1-reserved.variables.server-indices
 	 * @return string
 	 */
 	public function GetHost ();
@@ -665,8 +714,10 @@ interface IRequest extends \MvcCore\Request\IConstants {
 	/**
 	 * Set http port defined in requested URL if any.
 	 * Empty string if there is no port number in requested address.`.
-	 * Example: `$request->SetPort("88")`
-	 * @param  string $rawPort
+	 * Examples: 
+	 * `$request->SetPort(88)`
+	 * `$request->SetPort("88")`
+	 * @param  string|int $rawPort
 	 * @return \MvcCore\Request
 	 */
 	public function SetPort ($rawPort);
@@ -675,13 +726,16 @@ interface IRequest extends \MvcCore\Request\IConstants {
 	 * Get http port defined in requested URL if any.
 	 * Empty string if there is no port number in requested address.`.
 	 * Example: `"88" | ""`
+	 * Be carefull on Apache web server, `$_SERVER['SERVER_PORT']` could be spoofed
+	 * without `UseCanonicalName On` and `UseCanonicalPhysicalPort On` configuration.
+	 * @see https://www.php.net/manual/en/reserved.variables.server.php#refsect1-reserved.variables.server-indices
 	 * @return string
 	 */
 	public function GetPort ();
 
 	/**
 	 * Set requested path in from application root (if `mod_rewrite` enabled), never with query string.
-	 * Example: `$request->SetPort("/products/page/2");`
+	 * Example: `$request->SetPath("/products/page/2");`
 	 * @param  string $rawPathValue
 	 * @return \MvcCore\Request
 	 */
@@ -727,6 +781,10 @@ interface IRequest extends \MvcCore\Request\IConstants {
 	/**
 	 * Get URL to requested domain and possible port.
 	 * Example: `"https://domain.com" | "http://domain:88"` if any port.
+	 * Be carefull on Apache web server, `$_SERVER['SERVER_NAME']`
+	 * and `$_SERVER['SERVER_PORT']` could be spoofed without 
+	 * `UseCanonicalName On` and `UseCanonicalPhysicalPort On` configuration.
+	 * @see https://www.php.net/manual/en/reserved.variables.server.php#refsect1-reserved.variables.server-indices
 	 * @return string
 	 */
 	public function GetDomainUrl ();
@@ -734,6 +792,10 @@ interface IRequest extends \MvcCore\Request\IConstants {
 	/**
 	 * Get base URL to application root.
 	 * Example: `"http://domain:88/my/development/direcotry/www"`
+	 * Be carefull on Apache web server, `$_SERVER['SERVER_NAME']`
+	 * and `$_SERVER['SERVER_PORT']` could be spoofed without 
+	 * `UseCanonicalName On` and `UseCanonicalPhysicalPort On` configuration.
+	 * @see https://www.php.net/manual/en/reserved.variables.server.php#refsect1-reserved.variables.server-indices
 	 * @return string
 	 */
 	public function GetBaseUrl ();
@@ -741,6 +803,10 @@ interface IRequest extends \MvcCore\Request\IConstants {
 	/**
 	 * Get request URL including scheme, domain, port, path, without any query string
 	 * Example: "`http://localhost:88/my/development/direcotry/www/requested/path/after/domain"`
+	 * Be carefull on Apache web server, `$_SERVER['SERVER_NAME']`
+	 * and `$_SERVER['SERVER_PORT']` could be spoofed without 
+	 * `UseCanonicalName On` and `UseCanonicalPhysicalPort On` configuration.
+	 * @see https://www.php.net/manual/en/reserved.variables.server.php#refsect1-reserved.variables.server-indices
 	 * @param  bool $rawInput Get raw input if `TRUE`. `FALSE` by default to get value through `htmlspecialchars($result);` without ampersand `&` escaping.
 	 * @return string
 	 */
@@ -749,6 +815,10 @@ interface IRequest extends \MvcCore\Request\IConstants {
 	/**
 	 * Get request URL including scheme, domain, port, path and with query string
 	 * Example: `"http://localhost:88/my/development/direcotry/www/requested/path/after/domain?with=possible&query=string"`
+	 * Be carefull on Apache web server, `$_SERVER['SERVER_NAME']`
+	 * and `$_SERVER['SERVER_PORT']` could be spoofed without 
+	 * `UseCanonicalName On` and `UseCanonicalPhysicalPort On` configuration.
+	 * @see https://www.php.net/manual/en/reserved.variables.server.php#refsect1-reserved.variables.server-indices
 	 * @param  bool $rawInput Get raw input if `TRUE`. `FALSE` by default to get value through `htmlspecialchars($result);` without ampersand `&` escaping.
 	 * @return string
 	 */

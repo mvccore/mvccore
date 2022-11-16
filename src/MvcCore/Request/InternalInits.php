@@ -161,20 +161,32 @@ trait InternalInits {
 	 * @return void
 	 */
 	protected function initUrlSegments () {
-		$this->portDefined = FALSE;
-		$this->port = '';
 		$this->path = '';
 		$this->query = '';
 		$this->fragment = '';
 		
-		$uri = $this->GetScheme() . '//'
-			. $this->globalServer['HTTP_HOST'];
+		$this->port = '';
+		$rawPort = trim((string) $this->globalServer['SERVER_PORT']);
+		$this->portDefined = !(
+			isset(self::$defaultPorts[$rawPort]) && 
+			self::$defaultPorts[$rawPort]
+		);
+		$this->port = $this->portDefined
+			? $rawPort
+			: '';
+
+		$uri = $this->GetScheme() . '//' . $this->GetHostName();
+		
+		if ($this->portDefined) {
+			$this->port = $rawPort;
+			$uri .= ':' . $rawPort;
+		}
+		
 		if (isset($this->globalServer['UNENCODED_URL'])) {
 			$uri .= rawurldecode($this->globalServer['UNENCODED_URL']);
 		} else {
 			$uri .= rawurldecode($this->globalServer['REQUEST_URI']);
 		}
-		
 		
 		$firstColonPos = FALSE;
 		if (preg_match("#^([a-z]+):#", $uri)) 
@@ -188,22 +200,7 @@ trait InternalInits {
 			$nextHashPos = mb_strpos($uri, '#', 2) ?: $uriLen;
 			$nextDelimPos = min($nextSlashPos, $nextQmPos, $nextHashPos);
 			if ($nextDelimPos === $uriLen) return;
-			$authority = mb_substr($uri, 2, $nextDelimPos - 2);
 			$uri = mb_substr($uri, $nextDelimPos);
-			$ipv6OpenPos = mb_strpos($authority, '[');
-			$ipv6ClosePos = mb_strrpos($authority, ']');
-			$uriPort = NULL;
-			if ($ipv6OpenPos !== FALSE && $ipv6ClosePos !== FALSE) {
-				$uriPort = mb_substr($authority, $ipv6ClosePos + 1);
-			} else {
-				$lastColonPos = mb_strrpos($authority, ':');
-				if ($lastColonPos !== FALSE) 
-					$uriPort = mb_substr($authority, $lastColonPos + 1);
-			}
-			if ($uriPort !== NULL && $uriPort !== '' && preg_match("#^\d+$#", $uriPort)) {
-				$this->port = $uriPort;
-				$this->portDefined = TRUE;
-			}
 		} else {
 			$this->path = $uri;
 			return;
@@ -317,6 +314,8 @@ trait InternalInits {
 		$urlEncType = mb_strpos($contentType, 'application/x-www-form-urlencoded') !== FALSE;
 		if ($urlEncType) {
 			parse_str(trim($this->body, '&='), $result);
+			if ($result === NULL)
+				$result = [];
 		} else {
 			$jsonType = (
 				mb_strpos($contentType, 'application/json') !== FALSE ||
@@ -326,6 +325,8 @@ trait InternalInits {
 			if ($jsonType) {
 				try {
 					$result = $toolClass::JsonDecode($this->body);
+					if ($result !== NULL && $result instanceof \stdClass)
+						$result = (array) $result;
 				} catch (\Throwable $e) {
 				}
 			} else {
@@ -335,12 +336,17 @@ trait InternalInits {
 				if ($probablyAJsonType) {
 					try {
 						$result = $toolClass::JsonDecode($this->body);
+						if ($result !== NULL && $result instanceof \stdClass)
+							$result = (array) $result;
 					} catch (\Throwable $e) {
 						$probablyAJsonType = FALSE; // fall back to query string parsing
 					}
 				}
-				if (!$probablyAJsonType)
+				if (!$probablyAJsonType) {
 					parse_str(trim($this->body, '&='), $result);
+					if ($result === NULL)
+						$result = [];
+				}
 			}
 		}
 		return $result;

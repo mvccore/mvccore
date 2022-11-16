@@ -22,9 +22,15 @@ trait Props {
 	 * List of exceptional two-segment top-level domain like
 	 * `'co.jp', 'co.uk', 'co.kr', 'co.nf' ...` to parse
 	 * domain string correctly.
-	 * @var \string[]
+	 * @var array|array<string,int|bool>
 	 */
 	protected static $twoSegmentTlds = ['co.jp'=>1,'ac.uk'=>1,'co.uk'=>1,'co.kr'=>1,'co.nl'=>1,'in.ua'=>1,'co.nf'=>1,'ny.us'=>1,'co.us'=>1];
+
+	/**
+	 * List of default ports, not defined in server name by default.
+	 * @var array|array<string,int|bool>
+	 */
+	protected static $defaultPorts = ['80'=>1,'443'=>1];
 
 	/**
 	 * Configured router full class name string from core, loaded in `__constructor()`.
