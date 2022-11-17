@@ -130,17 +130,24 @@ interface IConfig extends \MvcCore\Config\IConstants {
 	public static function GetConfig ($appRootRelativePath);
 
 	/**
-	 * @inheritDocs
-	 * @param  string $vendorAppRootRelativePath Any config relative path from vendor package root dir like `'~/%appPath%/website.ini'`.
+	 * Get (optionally cached) config INI file as `stdClass` or `array`,
+	 * placed relatively from current vendor package root directory.
+	 * Example: `'~/%appPath%/website.ini'`
+	 * @param  string $vendorAppRootRelativePath
 	 * @throws \RuntimeException
 	 * @return \MvcCore\Config|NULL
 	 */
 	public static function GetConfigVendor ($vendorAppRootRelativePath);
 
 	/**
-	 * @inheritDocs
-	 * @param  string $configFullPath Full path to config file.
-	 * @param  bool   $isSystem       `TRUE` for system config, false otherwise.
+	 * Get (optionally cached) config INI file 
+	 * as `stdClass` or `array` by full path.
+	 * Config type flag (advanced use):
+	 * - 0 - `\MvcCore\IConfig::TYPE_COMMON`		- Any common config.
+	 * - 1 - `\MvcCore\IConfig::TYPE_ENVIRONMENT`	- Environment config.
+	 * - 2 - `\MvcCore\IConfig::TYPE_SYSTEM`		- System config.
+	 * @param  string $configFullPath
+	 * @param  bool   $configType
 	 * @throws \RuntimeException
 	 * @return \MvcCore\Config|NULL
 	 */
@@ -148,6 +155,10 @@ interface IConfig extends \MvcCore\Config\IConstants {
 
 	/**
 	 * Try to load and parse config file by absolute path.
+	 * Config type flag (advanced use):
+	 * - 0 - `\MvcCore\IConfig::TYPE_COMMON`		- Any common config.
+	 * - 1 - `\MvcCore\IConfig::TYPE_ENVIRONMENT`	- Environment config.
+	 * - 2 - `\MvcCore\IConfig::TYPE_SYSTEM`		- System config.
 	 * @internal
 	 * @param  string $configFullPath
 	 * @param  string $systemConfigClass
