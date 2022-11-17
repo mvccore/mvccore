@@ -86,8 +86,8 @@ trait ReadWrite {
 			);
 			if ($config === NULL) {
 				$environment = $app->GetEnvironment();
-				$thrownError = func_num_args() > 0 ? func_get_arg(0) : FALSE;
-				if (!$environment->IsDetected() && $thrownError) {
+				$doNotThrownError = func_num_args() > 0 ? func_get_arg(0) : FALSE;
+				if (!$environment->IsDetected() && !$doNotThrownError) {
 					throw new \RuntimeException(
 						"Environment configuration not found in path: `{$configFullPath}`."
 					);
@@ -235,14 +235,14 @@ trait ReadWrite {
 					"because dispatched main controller is not from any vendor package."
 				);
 				$vendorPackageRoot = $app->GetVendorAppRoot();
-				$configFullPath = $vendorPackageRoot . mb_substr($configPath, 1);
+				$configPath = $vendorPackageRoot . mb_substr($configPath, 1);
 			} else {
 				$appRoot = self::$appRoot ?: self::$appRoot = $app->GetRequest()->GetAppRoot();	
-				$configFullPath = $appRoot . mb_substr($configPath, 1);
+				$configPath = $appRoot . mb_substr($configPath, 1);
 			}
 		}
 		$toolClass = $app->GetToolClass();
-		$configFullPath = $toolClass::RealPathVirtual($configFullPath);
+		$configFullPath = $toolClass::RealPathVirtual($configPath);
 		return $configFullPath;
 	}
 }
