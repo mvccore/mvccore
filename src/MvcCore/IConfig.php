@@ -24,20 +24,37 @@ namespace MvcCore;
  *     all other environment records.
  *   - Storing serialized config data in single process.
  */
-interface IConfig {
+interface IConfig extends \MvcCore\Config\IConstants {
 
 	/**
 	 * Get system config relative path from app root.
 	 * @return string
 	 */
-	public static function GetSystemConfigPath ();
+	public static function GetConfigSystemPath ();
 
 	/**
 	 * Set system config relative path from app root.
-	 * @param  string $systemConfigPath
+	 * This value could be changed to any value at the very application start.
+	 * Example: `\MvcCore\Config::SetConfigSystemPath('~/%appPath%/config.ini');`
+	 * @param  string $configSystemPath
 	 * @return string
 	 */
-	public static function SetSystemConfigPath ($systemConfigPath);
+	public static function SetConfigSystemPath ($configSystemPath);
+	
+	/**
+	 * Get environment config relative path from app root.
+	 * @return string
+	 */
+	public static function GetConfigEnvironmentPath ();
+
+	/**
+	 * Set environment config relative path from app root.
+	 * This value could be changed to any value at the very application start.
+	 * Example: `\MvcCore\Config::SetConfigEnvironmentPath('~/%appPath%/env.ini');`
+	 * @param  string $configSystemPath
+	 * @return string
+	 */
+	public static function SetConfigEnvironmentPath ($configEnvironmentPath);
 
 	/**
 	 * Set system config relative path from app root.
@@ -58,6 +75,7 @@ interface IConfig {
 	/**
 	 * Return environment configuration data from system config. Environment
 	 * configuration data are always stored under root level section `[environments]`.
+	 * If second param is `TRUE`, there is returned whole config content.
 	 * @param  \MvcCore\Config $config
 	 * @return array|\stdClass
 	 */
@@ -75,7 +93,7 @@ interface IConfig {
 	/**
 	 * This is INTERNAL method.
 	 * Return always new instance of statically called class, no singleton.
-	 * Always called from `\MvcCore\Config::GetSystem()` before system config is read.
+	 * Always called from `\MvcCore\Config::GetConfigSystem()` before system config is read.
 	 * This is place where to customize any config creation process,
 	 * before it's created by MvcCore framework.
 	 * @param  array  $mergedData          Configuration data for all environments.
@@ -90,7 +108,17 @@ interface IConfig {
 	 * @throws \RuntimeException
 	 * @return \MvcCore\Config|NULL
 	 */
-	public static function GetSystem ();
+	public static function GetConfigSystem ();
+
+	/**
+	 * Get (optionally cached) environment config INI file 
+	 * as `stdClass` or `array`, placed by default in: `"/App/env.ini"`.
+	 * To use separated environment config, you need to fill it's path first by: 
+	 * `\MvcCore\Config::SetConfigEnvironmentPath('~/%appPath%/env.ini');`
+	 * @throws \RuntimeException
+	 * @return \MvcCore\Config|NULL
+	 */
+	public static function GetConfigEnvironment ();
 
 	/**
 	 * Get (optionally cached) config INI file as `stdClass` or `array`,
@@ -107,7 +135,7 @@ interface IConfig {
 	 * @throws \RuntimeException
 	 * @return \MvcCore\Config|NULL
 	 */
-	public static function GetVendorConfig ($vendorAppRootRelativePath);
+	public static function GetConfigVendor ($vendorAppRootRelativePath);
 
 	/**
 	 * @inheritDocs
@@ -116,16 +144,29 @@ interface IConfig {
 	 * @throws \RuntimeException
 	 * @return \MvcCore\Config|NULL
 	 */
-	public static function GetConfigByFullPath ($configFullPath, $isSystem = FALSE);
+	public static function GetConfigByFullPath ($configFullPath, $configType = \MvcCore\IConfig::TYPE_COMMON);
 
 	/**
 	 * Try to load and parse config file by absolute path.
+	 * @internal
 	 * @param  string $configFullPath
 	 * @param  string $systemConfigClass
-	 * @param  bool   $isSystemConfig
+	 * @param  int    $configType
 	 * @return \MvcCore\Config|bool
 	 */
-	public static function LoadConfig ($configFullPath, $systemConfigClass, $isSystemConfig = FALSE);
+	public static function LoadConfig ($configFullPath, $systemConfigClass, $configType = \MvcCore\IConfig::TYPE_COMMON);
+
+	/**
+	 * Get absolute path for config path definition.
+	 * This method is always called by config class internally.
+	 * Example: `\MvcCore\Config::GetAbsoluteConfigPath('~/%appPath%/myConfig.ini');
+	 * @internal
+	 * @param  string $configPath   Relative from app root.
+	 * @param  bool   $vendorConfig `FALSE` by default.
+	 * @throws \RuntimeException
+	 * @return string
+	 */
+	public static function GetConfigFullPath ($configPath, $vendorConfig = FALSE);
 
 	/**
 	 * Encode all data into string and store it in `\MvcCore\Config::$fullPath`.
@@ -167,10 +208,13 @@ interface IConfig {
 	public function GetLastChanged ();
 
 	/**
-	 * If `TRUE`, config contains system data.
-	 * @return bool
+	 * Get config type flag:
+	 * - 0 - `\MvcCore\IConfig::TYPE_COMMON`		- Any common config.
+	 * - 1 - `\MvcCore\IConfig::TYPE_ENVIRONMENT`	- Environment config.
+	 * - 2 - `\MvcCore\IConfig::TYPE_SYSTEM`		- System config.
+	 * @return int
 	 */
-	public function IsSystem ();
+	public function GetType ();
 
 	/**
 	 * Load config file and return `TRUE` for success or `FALSE` in failure.

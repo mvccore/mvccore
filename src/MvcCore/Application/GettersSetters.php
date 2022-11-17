@@ -167,7 +167,7 @@ trait GettersSetters {
 	public function GetConfig () {
 		if ($this->config === NULL) {
 			$configClass = $this->configClass;
-			$this->config = $configClass::GetSystem();
+			$this->config = $configClass::GetConfigSystem();
 		}
 		return $this->config;
 	}

@@ -122,12 +122,12 @@ trait Config {
 	 */
 	protected static function loadConfigs ($throwExceptionIfNoSysConfig = TRUE, $strict = TRUE) {
 		$configClass = \MvcCore\Application::GetInstance()->GetConfigClass();
-		$systemCfg = $configClass::GetSystem();
+		$systemCfg = $configClass::GetConfigSystem();
 		if ($systemCfg === NULL) {
 			if ($throwExceptionIfNoSysConfig) 
 				throw new \Exception(
 					"[".get_class()."] System config not found in `"
-					. $configClass::GetSystemConfigPath() . "`."
+					. $configClass::GetConfigSystemPath() . "`."
 				);
 			return;
 		}
@@ -136,7 +136,7 @@ trait Config {
 		if (!isset($systemCfg->{$dbSectionName}) && $throwExceptionIfNoSysConfig)
 			throw new \Exception(
 				"[".get_class()."] No [" . $dbSectionName . "] section and no records matched "
-				."`" . $dbSectionName . ".*` found in system config in: `" . $configClass::GetSystemConfigPath() . "`."
+				."`" . $dbSectionName . ".*` found in system config in: `" . $configClass::GetConfigSystemPath() . "`."
 			);
 		$systemCfgDb = (object) $systemCfg->{$dbSectionName};
 		$configs = [];

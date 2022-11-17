@@ -517,7 +517,7 @@ interface IController extends \MvcCore\Controller\IConstants {
 	 * placed by default in: `"/App/config.ini"`.
 	 * @return \MvcCore\Config|NULL
 	 */
-	public function GetSystemConfig ();
+	public function GetConfigSystem ();
 
 	/**
 	 * Return small assets content with proper headers

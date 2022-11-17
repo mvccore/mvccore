@@ -121,7 +121,7 @@ trait Initializations {
 		unset($sysConfigProps['sectionName']);
 		$app = static::$app ?: (static::$app = \MvcCore\Application::GetInstance());
 		$configClass = $app->GetConfigClass();
-		$cfg = $configClass::GetSystem();
+		$cfg = $configClass::GetConfigSystem();
 		if ($cfg === NULL || ($cfg !== NULL && !isset($cfg->{$sectionName}))) {
 			$result = (object) array_fill_keys($sysConfigProps, NULL);
 			return self::$systemConfigDebugValues = $result;

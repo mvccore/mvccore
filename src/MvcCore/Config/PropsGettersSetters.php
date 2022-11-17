@@ -89,27 +89,47 @@ trait PropsGettersSetters {
 	protected $lastChanged = 0;
 
 	/**
-	 * If `TRUE`, config contains system data.
-	 * @var bool
+	 * Config type flag:
+	 * - 0 - `\MvcCore\IConfig::TYPE_COMMON`		- Any common config.
+	 * - 1 - `\MvcCore\IConfig::TYPE_ENVIRONMENT`	- Environment config.
+	 * - 2 - `\MvcCore\IConfig::TYPE_SYSTEM`		- System config.
+	 * @var int
 	 */
-	protected $system = FALSE;
+	protected $type = self::TYPE_COMMON;
 
 
 	/**
 	 * @inheritDocs
 	 * @return string
 	 */
-	public static function GetSystemConfigPath () {
-		return static::$systemConfigPath;
+	public static function GetConfigSystemPath () {
+		return static::$configSystemPath;
 	}
 
 	/**
 	 * @inheritDocs
-	 * @param  string $systemConfigPath
+	 * @param  string $configSystemPath
 	 * @return string
 	 */
-	public static function SetSystemConfigPath ($systemConfigPath) {
-		return static::$systemConfigPath = $systemConfigPath;
+	public static function SetConfigSystemPath ($configSystemPath) {
+		return static::$configSystemPath = $configSystemPath;
+	}
+	
+	/**
+	 * @inheritDocs
+	 * @return string|NULL
+	 */
+	public static function GetConfigEnvironmentPath () {
+		return static::$configEnvironmentPath;
+	}
+
+	/**
+	 * @inheritDocs
+	 * @param  string|NULL $configEnvironmentPath
+	 * @return string|NULL
+	 */
+	public static function SetConfigEnvironmentPath ($configEnvironmentPath) {
+		return static::$configEnvironmentPath = $configEnvironmentPath;
 	}
 
 	/**
@@ -155,9 +175,9 @@ trait PropsGettersSetters {
 
 	/**
 	 * @inheritDocs
-	 * @return bool
+	 * @return int
 	 */
-	public function IsSystem () {
-		return $this->system;
+	public function GetType () {
+		return $this->type;
 	}
 }

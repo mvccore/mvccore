@@ -143,12 +143,18 @@ trait PropsGettersSetters {
 			if (static::$detectionBySystemConfig) {
 				$app = self::$app ?: (self::$app = \MvcCore\Application::GetInstance());
 				$configClass = $app->GetConfigClass();
-				$sysConfig = $configClass::GetSystem(TRUE);
-				if ($sysConfig) {
-					$envDetectionData = & $configClass::GetEnvironmentDetectionData($sysConfig);
+				$envConfig = $configClass::GetConfigEnvironment(TRUE);
+				if ($envConfig) {
+					$envDetectionData = & $configClass::GetEnvironmentDetectionData($envConfig);
 					$this->name = static::DetectBySystemConfig((array) $envDetectionData);
-					// Set up system config current environment data collection for first time:
-					$configClass::SetUpEnvironmentData($sysConfig, $this->name);
+				} else {
+					$sysConfig = $configClass::GetConfigSystem(TRUE);
+					if ($sysConfig) {
+						$envDetectionData = & $configClass::GetEnvironmentDetectionData($sysConfig);
+						$this->name = static::DetectBySystemConfig((array) $envDetectionData);
+						// Set up system config current environment data collection for first time:
+						$configClass::SetUpEnvironmentData($sysConfig, $this->name);
+					}
 				}
 				// if not recognized by system config, recognize only
 				// by simplest way - by server and client IP:

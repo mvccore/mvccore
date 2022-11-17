@@ -376,9 +376,9 @@ trait GettersSetters {
 	 * @inheritDocs
 	 * @return \MvcCore\Config|NULL
 	 */
-	public function GetSystemConfig () {
+	public function GetConfigSystem () {
 		$configClass = $this->application->GetConfigClass();
-		return $configClass::GetSystem();
+		return $configClass::GetConfigSystem();
 	}
 
 	/**

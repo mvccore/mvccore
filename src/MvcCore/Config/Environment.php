@@ -37,7 +37,10 @@ trait Environment {
 	 */
 	public static function & GetEnvironmentDetectionData (\MvcCore\IConfig $config) {
 		$envConfData = [];
-		if (!$config->system)
+		if (
+			($config->type & \MvcCore\IConfig::TYPE_ENVIRONMENT) == 0 &&
+			($config->type & \MvcCore\IConfig::TYPE_SYSTEM) == 0
+		)
 			return $envConfData;
 		$commonEnvDataKey = static::$commonEnvironmentDataKey;
 		$someEnvironmentData = [];
@@ -50,13 +53,17 @@ trait Environment {
 			$someEnvironmentData = & $config->envData[$commonEnvDataKey];
 		}
 		if ($someEnvironmentData) {
-			$sysEnvSectionName = static::$systemEnvironmentsSectionName;
-			if (is_object($someEnvironmentData)) {
-				if (isset($someEnvironmentData->{$sysEnvSectionName}))
-					$envConfData = & $someEnvironmentData->{$sysEnvSectionName};
-			} else /*if (is_array($someEnvironmentData))*/ {
-				if (isset($someEnvironmentData[$sysEnvSectionName]))
-					$envConfData = & $someEnvironmentData[$sysEnvSectionName];
+			if (($config->GetType() & \MvcCore\IConfig::TYPE_ENVIRONMENT) != 0) {
+				$envConfData = & $someEnvironmentData;
+			} else {
+				$sysEnvSectionName = static::$systemEnvironmentsSectionName;
+				if (is_object($someEnvironmentData)) {
+					if (isset($someEnvironmentData->{$sysEnvSectionName}))
+						$envConfData = & $someEnvironmentData->{$sysEnvSectionName};
+				} else /*if (is_array($someEnvironmentData))*/ {
+					if (isset($someEnvironmentData[$sysEnvSectionName]))
+						$envConfData = & $someEnvironmentData[$sysEnvSectionName];
+				}
 			}
 		}
 		return $envConfData;

@@ -35,7 +35,7 @@ trait MagicMethods {
 			$cfgClass::SetUpEnvironmentData($this, $envName);
 		}
 		return [
-			'system',
+			'type',
 			'mergedData',
 			'fullPath',
 			'lastChanged',
