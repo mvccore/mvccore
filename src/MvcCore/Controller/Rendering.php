@@ -329,7 +329,7 @@ trait Rendering {
 				$this->renderMode, $controllerOrActionNameDashed, $actionNameDashed
 			);
 		$outputResult = $layout->RenderLayoutAndContent($this->layout, $actionResult);
-		unset($layout, $this->view);
+		unset($layout, $actionResult, $this->view);
 		// set up response only
 		$this->XmlResponse($outputResult, FALSE);
 		unset($outputResult);
