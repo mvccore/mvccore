@@ -222,7 +222,7 @@ interface IConstants {
 	const PARAM_FILTER_DIGITS = '0-9';
 
 	/**
-	 * Digits from 0 to 9 with dot, comma and minus and plus sign.
+	 * Digits from 0 to 9 with dot, comma, minus and plus sign and exponent letters.
 	 */
-	const PARAM_FILTER_NUMERICS = '-\+0-9\.\,';
+	const PARAM_FILTER_NUMERICS = '-\+0-9\.\,eE';
 }
