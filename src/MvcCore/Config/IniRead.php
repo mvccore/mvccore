@@ -79,9 +79,12 @@ trait IniRead {
 					$parsedEnvNames = explode(',', $envNames);
 				}
 				$newValues = [];
-				foreach ($valueOrSectionValues as $subKey => $subValue)
+				foreach ($valueOrSectionValues as $subKey => $subValue) {
+					if (mb_strpos($subKey, '#') === 0) continue;
 					$newValues[$key.'.'.$subKey] = $subValue;
+				}
 			} else {
+				if (mb_strpos($keyOrSectionName, '#') === 0) continue;
 				$newValues = [$keyOrSectionName => $valueOrSectionValues];
 			}
 			if (!$parsedEnvNames)
