@@ -107,12 +107,16 @@ interface IConstants {
 	 */
 	const PROPS_CONVERT_CAMELCASE_TO_PASCALCASE		= 4096;
 	
-
 	/**
 	 * Pass throught values with array keys case insensitive.
 	 * @var int
 	 */
 	const PROPS_CONVERT_CASE_INSENSITIVE			= 8192;
+
+	/**
+	 * Set via `SetValues()` method only defined class properties, not all data in given array.
+	 */
+	const PROPS_SET_DEFINED_ONLY					= 16384;
 
 	/**
 	 * Equivalent for `\MvcCore\IModel::PROPS_INHERIT | \MvcCore\IModel::PROPS_PROTECTED`.

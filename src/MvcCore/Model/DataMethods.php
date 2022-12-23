@@ -83,7 +83,16 @@ trait DataMethods {
 	 * @return \MvcCore\Model    Current `$this` context.
 	 */
 	public function SetValues ($data = [], $propsFlags = 0) {
-		$completeInitialValues = ($propsFlags & \MvcCore\IModel::PROPS_INITIAL_VALUES) != 0;
+		$completeInitialValues = FALSE;
+		$setOnlyDefinedProps = FALSE;
+		if (($propsFlags & \MvcCore\IModel::PROPS_INITIAL_VALUES) != 0) {
+			$completeInitialValues = TRUE;
+			$propsFlags = $propsFlags ^ \MvcCore\IModel::PROPS_INITIAL_VALUES;
+		}
+		if (($propsFlags & \MvcCore\IModel::PROPS_SET_DEFINED_ONLY) != 0) {
+			$setOnlyDefinedProps = TRUE;
+			$propsFlags = $propsFlags ^ \MvcCore\IModel::PROPS_SET_DEFINED_ONLY;
+		}
 
 		$metaData = static::GetMetaData($propsFlags);
 
@@ -116,6 +125,7 @@ trait DataMethods {
 					$value = static::parseToTypes($dbValue, $propTypes);	
 				}
 			} else {
+				if ($setOnlyDefinedProps) continue;
 				$value = $dbValue;
 			}
 
