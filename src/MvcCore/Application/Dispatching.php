@@ -312,11 +312,12 @@ trait Dispatching {
 				? $this->RenderError404PlainText($lastExceptionStr)
 				: $this->RenderError500PlainText($lastExceptionStr);
 		}
+		/** @var \MvcCore\Debug $debugClass */
 		$debugClass = $this->debugClass;
 		if ($exception->getCode() == 404) {
 			$debugClass::Log($exception->getMessage().": ".$this->request->GetFullUrl(), \MvcCore\IDebug::INFO);
 			return $this->RenderNotFound($exception->getMessage());
-		} else if ($this->environment->IsDevelopment()) {
+		} else if ($this->environment->IsDevelopment() && $debugClass::GetDebugging()) {
 			$this->ProcessCustomHandlers($this->postDispatchHandlers);
 			if (!$this->response->IsSentHeaders()) {
 				// headers (if still possible) and echo
