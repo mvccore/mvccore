@@ -477,14 +477,21 @@ trait Reflection {
 					isset($propNamesNotToSerialize[$propName]) &&
 					!$propNamesNotToSerialize[$propName]
 				) continue;
-				$reflectionProp = new \ReflectionProperty(
-					$origClass, $propName
-				);
-				if ($reflectionProp->isStatic())
-					continue;
-				if (!$reflectionProp->isPublic()) 
-					$reflectionProp->setAccessible(TRUE);
-				$propVal = $reflectionProp->getValue($instance);
+				try {
+					$reflectionProp = new \ReflectionProperty(
+						$origClass, $propName
+					);
+					if ($reflectionProp->isStatic())
+						continue;
+					if (!$reflectionProp->isPublic()) 
+						$reflectionProp->setAccessible(TRUE);
+					$propVal = $reflectionProp->getValue($instance);
+				} catch (\Throwable $re){
+					$objectVars = get_object_vars($instance);
+					$propVal = isset($objectVars[$propName])
+						? $objectVars[$propName]
+						: NULL;
+				}
 				if (
 					is_resource($propVal) ||
 					$propVal instanceof \Closure
