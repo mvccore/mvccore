@@ -96,19 +96,23 @@ trait MagicMethods {
 	 * @return void
 	 */
 	public function __clone () {
-		$propsFlags = (
-			\MvcCore\IModel::PROPS_INHERIT | 
-			\MvcCore\IModel::PROPS_PRIVATE | 
-			\MvcCore\IModel::PROPS_PROTECTED | 
-			\MvcCore\IModel::PROPS_PUBLIC
-		);
-		$metaData = static::GetMetaData($propsFlags);
 		$phpWithTypes = PHP_VERSION_ID >= 70400;
-		foreach ($metaData as $propertyName => $propData) {
-			list ($propIsPrivate) = $propData;
-			$currentValue = NULL;
+		$type = new \ReflectionClass($this);
+		/** @var \ReflectionProperty[] $props */
+		$props = $type->getProperties(
+			\ReflectionProperty::IS_PRIVATE |	
+			\ReflectionProperty::IS_PROTECTED |
+			\ReflectionProperty::IS_PUBLIC
+		);
+		/** @var \ReflectionProperty $prop */
+		foreach ($props as $prop) {
+			if (
+				$prop->isStatic() ||
+				isset(static::$protectedProperties[$prop->name])
+			) continue;
+			$propertyName = $prop->getName();
+			$propIsPrivate = $prop->isPrivate();
 			if ($propIsPrivate) {
-				$prop = new \ReflectionProperty($this, $propertyName);
 				$prop->setAccessible(TRUE);
 				if ($phpWithTypes)
 					if (!$prop->isInitialized($this))
@@ -117,8 +121,20 @@ trait MagicMethods {
 			} else if (isset($this->{$propertyName})) {
 				$currentValue = $this->{$propertyName};
 			}
-			if (!is_object($currentValue)) continue;
-			$clonedValue = clone $currentValue;
+			if (is_scalar($currentValue) || $currentValue === NULL) 
+				continue;
+			if (is_resource($currentValue)) {
+				$clonedValue = $currentValue;
+			} else if (is_array($currentValue)) {
+				$clonedValue = [];
+				foreach ($currentValue as $key => $value)
+					$clonedValue[$key] = is_object($value)
+						? clone $value
+						: $value;
+			} else {
+				// objects and \Closures
+				$clonedValue = clone $currentValue;
+			}
 			if ($propIsPrivate) {
 				$prop->setValue($this, $clonedValue);
 			} else {
