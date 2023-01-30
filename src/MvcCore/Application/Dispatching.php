@@ -329,8 +329,6 @@ trait Dispatching {
 				}
 				$this->response->SendHeaders();
 			}
-			if ($debugClass::GetDebugging() === NULL)
-				$debugClass::SetDebugging(TRUE);
 			$debugClass::Exception($exception);
 			return FALSE;
 		} else {
