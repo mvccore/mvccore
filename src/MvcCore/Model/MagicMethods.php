@@ -110,6 +110,7 @@ trait MagicMethods {
 				$prop->isStatic() ||
 				isset(static::$protectedProperties[$prop->name])
 			) continue;
+			$currentValue = NULL;
 			$propertyName = $prop->getName();
 			$propIsPrivate = $prop->isPrivate();
 			if ($propIsPrivate) {
