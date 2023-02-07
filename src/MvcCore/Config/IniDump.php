@@ -375,7 +375,7 @@ trait IniDump {
 			$valueStr = (string) $value;
 			$specialCharCaught = FALSE;
 			foreach ($specialChars as $specialChar) {
-				if (mb_strpos($valueStr, $specialChar)) {
+				if (mb_strpos($valueStr, $specialChar) !== FALSE) {
 					$specialCharCaught = TRUE;
 					break;
 				}
