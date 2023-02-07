@@ -119,6 +119,11 @@ interface IConstants {
 	const PROPS_SET_DEFINED_ONLY					= 16384;
 
 	/**
+	 * Get via `GetValues()` method only scalar model values, not object values.
+	 */
+	const PROPS_GET_SCALAR_VALUES					= 32768;
+
+	/**
 	 * Equivalent for `\MvcCore\IModel::PROPS_INHERIT | \MvcCore\IModel::PROPS_PROTECTED`.
 	 * @var int
 	 */
