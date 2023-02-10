@@ -30,7 +30,8 @@ class AutoInit {
 	 * `CreateInstance()` or by property type `__construct()` method 
 	 * with no arguments.
 	 * @param string|NULL $factoryMethodName
+	 * @param int|NULL    $initOrder
 	 */
-	public function __construct ($factoryMethodName = NULL) {
+	public function __construct ($factoryMethodName = NULL, $initOrder = NULL) {
 	}
 }

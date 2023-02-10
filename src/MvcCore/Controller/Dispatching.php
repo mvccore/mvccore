@@ -194,19 +194,21 @@ trait Dispatching {
 			\ReflectionProperty::IS_PRIVATE
 		);
 		$attrsAnotations = $this->application->GetAttributesAnotations();
+		/** @var \MvcCore\Tool $toolsClass */
 		$toolsClass = $this->application->GetToolClass();
 		$attrClassName = '\\MvcCore\\Controller\\AutoInit';
 		$attrClassNameWithoutSlash = mb_substr($attrClassName, 1);
 		$phpDocsTagName = $attrClassName::PHP_DOCS_TAG_NAME;
+		$autoInitsFixedSort = [];
+		$autoInitsNaturalSort = [];
 		foreach ($props as $prop) {
-
+			$factoryMethodName = NULL;
 			if ($attrsAnotations) {
-				$attrArgs = $toolsClass::GetAttrCtorArgs($prop, $attrClassNameWithoutSlash);
+				$attrArgs = $toolsClass::GetAttrCtorArgs($prop, $attrClassNameWithoutSlash, TRUE);
 			} else {
-				$attrArgs = $toolsClass::GetPhpDocsTagArgs($prop, $phpDocsTagName);
+				$attrArgs = $toolsClass::GetPhpDocsTagArgs($prop, $phpDocsTagName, TRUE);
 			}
 			if ($attrArgs === NULL) continue;
-
 			$factoryMethodName = isset($attrArgs[0]) && is_string($attrArgs[0])
 				? $attrArgs[0]
 				: 'create' . ucfirst($prop->name);
@@ -216,9 +218,29 @@ trait Dispatching {
 				if (!$ctrl->hasMethod($factoryMethodName))
 					$factoryMethodName = NULL;
 			}
-
-			$this->autoInitializeProperty($ctrl, $prop, $factoryMethodName);
+			if ($factoryMethodName === NULL) continue;
+			$initIndex = isset($attrArgs[1]) && is_numeric($attrArgs[1])
+				? intval($attrArgs[1])
+				: NULL;
+			if ($initIndex === NULL) {
+				$autoInitsNaturalSort[] = [$prop, $factoryMethodName];
+			} else {
+				if (isset($autoInitsFixedSort[$initIndex])) {
+					list($prevProp) = $autoInitsFixedSort[$initIndex];
+					throw new \Exception(
+						"Controller `{$ctrl->name}` has already occupied property "
+						."auto initialization index: {$initIndex}. `{$prevProp->name}`."
+					);
+				}
+				$autoInitsFixedSort[$initIndex] = [$prop, $factoryMethodName];
+			}
 		}
+		ksort($autoInitsFixedSort);
+		foreach ($autoInitsFixedSort as $propAndFactName)
+			$this->autoInitializeProperty($ctrl, $propAndFactName[0], $propAndFactName[1]);
+		foreach ($autoInitsNaturalSort as $propAndFactName)
+			$this->autoInitializeProperty($ctrl, $propAndFactName[0], $propAndFactName[1]);
+
 	}
 
 	/**
@@ -271,7 +293,7 @@ trait Dispatching {
 		}
 		if ($instance instanceof \MvcCore\IController)
 			$this->AddChildController($instance, $prop->name);
-		if (!$prop->isPublic()) $prop->setAccessible(TRUE);
+		if ($prop->isPrivate()) $prop->setAccessible(TRUE);
 		$prop->setValue($this, $instance);
 		return TRUE;
 	}
