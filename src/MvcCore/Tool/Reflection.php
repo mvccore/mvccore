@@ -268,11 +268,14 @@ trait Reflection {
 	 * @inheritDocs
 	 * @param  \ReflectionClass|\ReflectionMethod|\ReflectionProperty $reflectionObject 
 	 * @param  string                                                 $attributeClassFullName 
+	 * @param  bool|NULL                                              $traversing
 	 * @return array|NULL
 	 */
-	public static function GetAttrCtorArgs ($reflectionObject, $attributeClassFullName) {
+	public static function GetAttrCtorArgs ($reflectionObject, $attributeClassFullName, $traversing = NULL) {
 		$result = NULL;
-		$traversing = $reflectionObject instanceof \ReflectionClass;
+		$traversing = $traversing !== NULL
+			? $traversing
+			: $reflectionObject instanceof \ReflectionClass;
 		while (TRUE) {
 			$attrs = $reflectionObject->getAttributes($attributeClassFullName);
 			if (count($attrs) > 0) {
@@ -280,7 +283,7 @@ trait Reflection {
 				break;
 			}
 			if ($traversing) {
-				$reflectionObject = $reflectionObject->getParentClass();
+				$reflectionObject = static::getParentReflectionObject($reflectionObject);
 				if ($reflectionObject === FALSE) break;
 			} else {
 				break;
@@ -293,11 +296,14 @@ trait Reflection {
 	 * @inheritDocs
 	 * @param  \ReflectionClass|\ReflectionMethod|\ReflectionProperty $reflectionObject 
 	 * @param  string                                                 $phpDocsTagName
+	 * @param  bool|NULL                                              $traversing
 	 * @return array|NULL
 	 */
-	public static function GetPhpDocsTagArgs ($reflectionObject, $phpDocsTagName) {
+	public static function GetPhpDocsTagArgs ($reflectionObject, $phpDocsTagName, $traversing = NULL) {
 		$result = NULL;
-		$traversing = $reflectionObject instanceof \ReflectionClass;
+		$traversing = $traversing !== NULL
+			? $traversing
+			: $reflectionObject instanceof \ReflectionClass;
 		while (TRUE) {
 			$docComment = $reflectionObject->getDocComment();
 			if ($docComment !== FALSE) {
@@ -309,13 +315,41 @@ trait Reflection {
 				}
 			}
 			if ($traversing) {
-				$reflectionObject = $reflectionObject->getParentClass();
+				$reflectionObject = static::getParentReflectionObject($reflectionObject);
 				if ($reflectionObject === FALSE) break;
 			} else {
 				break;
 			}
 		}
 		return $result;
+	}
+
+	/**
+	 * 
+	 * @param  \ReflectionClass|\ReflectionMethod|\ReflectionProperty $reflectionObject 
+	 * @return \ReflectionClass|\ReflectionMethod|\ReflectionProperty|FALSE
+	 */
+	protected static function getParentReflectionObject ($reflectionObject) {
+		if ($reflectionObject instanceof \ReflectionClass) {
+			return $reflectionObject->getParentClass();
+		} else if ($reflectionObject instanceof \ReflectionProperty) {
+			$declaredClass = $reflectionObject->getDeclaringClass();
+			$parentClass = $declaredClass->getParentClass();
+			if ($parentClass === FALSE)
+				return FALSE;
+			if (!$parentClass->hasProperty($reflectionObject->name))
+				return FALSE;
+			return $parentClass->getProperty($reflectionObject->name);
+		} else if ($reflectionObject instanceof \ReflectionMethod) {
+			$declaredClass = $reflectionObject->getDeclaringClass();
+			$parentClass = $declaredClass->getParentClass();
+			if ($parentClass === FALSE)
+				return FALSE;
+			if (!$parentClass->hasMethod($reflectionObject->name))
+				return FALSE;
+			return $parentClass->getMethod($reflectionObject->name);
+		}
+		return FALSE;
 	}
 
 	/**

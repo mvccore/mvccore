@@ -333,9 +333,10 @@ interface ITool {
 	 * Return reflection object attribute constructor arguments.
 	 * @param  \ReflectionClass|\ReflectionMethod|\ReflectionProperty $reflectionObject 
 	 * @param  string                                                 $attributeClassFullName 
+	 * @param  bool|NULL                                              $traversing
 	 * @return array|NULL
 	 */
-	public static function GetAttrCtorArgs ($reflectionObject, $attributeClassFullName);
+	public static function GetAttrCtorArgs ($reflectionObject, $attributeClassFullName, $traversing);
 
 	/**
 	 * Return PhpDocs tag arguments, arguments could be in three different formats:
@@ -361,9 +362,10 @@ interface ITool {
 	 * ````
 	 * @param  \ReflectionClass|\ReflectionMethod|\ReflectionProperty $reflectionObject 
 	 * @param  string                                                 $phpDocsTagName
+	 * @param  bool|NULL                                              $traversing
 	 * @return array|NULL
 	 */
-	public static function GetPhpDocsTagArgs ($reflectionObject, $phpDocsTagName);
+	public static function GetPhpDocsTagArgs ($reflectionObject, $phpDocsTagName, $traversing = NULL);
 
 	/**
 	 * Return serializable properties names for `__sleep()` method result.
