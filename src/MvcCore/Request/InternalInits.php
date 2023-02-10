@@ -183,9 +183,9 @@ trait InternalInits {
 		}
 		
 		if (isset($this->globalServer['UNENCODED_URL'])) {
-			$uri .= rawurldecode($this->globalServer['UNENCODED_URL']);
+			$uri .= $this->globalServer['UNENCODED_URL'];
 		} else {
-			$uri .= rawurldecode($this->globalServer['REQUEST_URI']);
+			$uri .= $this->globalServer['REQUEST_URI'];
 		}
 		
 		$firstColonPos = FALSE;
@@ -202,7 +202,7 @@ trait InternalInits {
 			if ($nextDelimPos === $uriLen) return;
 			$uri = mb_substr($uri, $nextDelimPos);
 		} else {
-			$this->path = $uri;
+			$this->path = rawurldecode($uri);
 			return;
 		}
 		
@@ -234,6 +234,9 @@ trait InternalInits {
 			$this->path = mb_substr($uri, 0, $questionMarkPos);
 			$this->fragment = mb_substr($uri, $hashPos + 1);
 		}
+		$this->path = rawurldecode($this->path);
+		$this->query = rawurldecode($this->query);
+		$this->fragment = rawurldecode($this->fragment);
 	}
 
 	/**
