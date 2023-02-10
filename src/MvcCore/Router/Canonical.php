@@ -86,7 +86,7 @@ trait Canonical {
 	protected function canonicalRedirectRewriteRoutesStrategy () {
 		/** @var \MvcCore\Request $request */
 		$request = $this->request;
-		$redirectToCanonicalUrl = FALSE;
+		$redirectToCanonicalUrl = 0;
 		$defaultParams =  $this->GetDefaultParams() ?: [];
 		list($selfUrlDomainAndBasePart, $selfUrlPathAndQueryPart) =  $this->currentRoute->Url(
 			$request, $this->requestedParams, $defaultParams, $this->getQueryStringParamsSepatator(), TRUE
@@ -97,7 +97,7 @@ trait Canonical {
 			mb_strlen($selfUrlDomainAndBasePart) > 0 && 
 			$selfUrlDomainAndBasePart !== $request->GetBaseUrl()
 		) {
-			$redirectToCanonicalUrl = TRUE;
+			$redirectToCanonicalUrl = 1;
 		} else if (mb_strlen($selfUrlPathAndQueryPart) > 0) {
 			$path = $request->GetPath(TRUE);
 			$requestedUrl = $path === '' ? '/' : $path ;
@@ -105,11 +105,11 @@ trait Canonical {
 			if (mb_strpos($selfUrlPathAndQueryPart, '?') !== FALSE) 
 				$requestedUrl .= $request->GetQuery(TRUE, TRUE);
 			if ($selfUrlPathAndQueryPart !== $requestedUrl) 
-				$redirectToCanonicalUrl = TRUE;
+				$redirectToCanonicalUrl = 2;
 		}
-		if ($redirectToCanonicalUrl) {
+		if ($redirectToCanonicalUrl > 0) {
 			$selfCanonicalUrl = $this->Url($this->selfRouteName, $this->requestedParams);
-			$this->redirect($selfCanonicalUrl, \MvcCore\IResponse::MOVED_PERMANENTLY, 'Canonical url');
+			$this->redirect($selfCanonicalUrl, \MvcCore\IResponse::MOVED_PERMANENTLY, "Canonical url (state: {$redirectToCanonicalUrl})");
 			return FALSE;
 		}
 		return TRUE;
