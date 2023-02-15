@@ -218,7 +218,6 @@ trait Dispatching {
 				if (!$ctrl->hasMethod($factoryMethodName))
 					$factoryMethodName = NULL;
 			}
-			if ($factoryMethodName === NULL) continue;
 			$initIndex = isset($attrArgs[1]) && is_numeric($attrArgs[1])
 				? intval($attrArgs[1])
 				: NULL;
