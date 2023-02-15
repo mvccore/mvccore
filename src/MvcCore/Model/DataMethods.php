@@ -122,7 +122,7 @@ trait DataMethods {
 				if ($isNull) {
 					$value = $dbValue;
 				} else {
-					$value = static::parseToTypes($dbValue, $propTypes);	
+					$value = static::ParseToTypes($dbValue, $propTypes);	
 				}
 			} else {
 				if ($setOnlyDefinedProps) continue;

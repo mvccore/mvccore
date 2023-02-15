@@ -22,9 +22,9 @@ trait Parsers {
 	 * Try to convert raw database value into first type in target types.
 	 * @param  mixed     $rawValue
 	 * @param  \string[] $typesString
-	 * @return mixed Converted result.
+	 * @return mixed     Converted result.
 	 */
-	protected static function parseToTypes ($rawValue, $typesString) {
+	public static function ParseToTypes ($rawValue, $typesString) {
 		$targetTypeValue = NULL;
 		$value = $rawValue;
 		foreach ($typesString as $typeString) {

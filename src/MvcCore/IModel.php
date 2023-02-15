@@ -211,6 +211,14 @@ interface IModel extends \MvcCore\Model\IConstants {
 	 * @return bool
 	 */
 	public static function IsEqual ($value1, $value2);
+
+	/**
+	 * Try to convert raw database value into first type in target types.
+	 * @param  mixed     $rawValue
+	 * @param  \string[] $typesString
+	 * @return mixed     Converted result.
+	 */
+	public static function ParseToTypes ($rawValue, $typesString);
 	
 		
 	/**
