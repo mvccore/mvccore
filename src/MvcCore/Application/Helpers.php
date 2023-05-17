@@ -135,6 +135,10 @@ trait Helpers {
 			"[".__CLASS__."] There was not possible to detect vendor app"
 			." dispatching, because controller still doesn't exists."
 		);
+		if ($this->GetCompiled()) {
+			$this->vendorAppDispatch = FALSE;
+			return;
+		}
 		$ctrlClassFullName = get_class($this->controller);
 		$ctrlType = new \ReflectionClass($ctrlClassFullName);
 		$ctrlFileFullPath = str_replace('\\', '/', $ctrlType->getFileName());
