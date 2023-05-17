@@ -21,48 +21,43 @@ trait Escaping {
 	/**
 	 * @inheritDocs
 	 * @param  string      $str 
+	 * @param  int         $flags
 	 * @param  string|NULL $encoding 
-	 * @return string
-	 */
-	public function Escape ($str, $encoding = NULL) {
-		return htmlspecialchars(
-			(string) $str, 
-			$this->escapeGetFlags(ENT_QUOTES), 
-			$encoding ?: $this->__protected['encoding']
-		);
-	}
-	
-	/**
-	 * @inheritDocs
-	 * @param  string      $str 
-	 * @param  string|NULL $encoding 
-	 * @return string
-	 */
-	public function EscapeHtml ($str, $encoding = NULL) {
-		return htmlspecialchars(
-			(string) $str, 
-			$this->escapeGetFlags(ENT_NOQUOTES), 
-			$encoding ?: $this->__protected['encoding']
-		);
-	}
-	
-	/**
-	 * @inheritDocs
-	 * @param  string      $str 
 	 * @param  bool        $double 
-	 * @param  string|NULL $encoding 
+	 * @param  bool        $jsTemplate
 	 * @return string
 	 */
-	public function EscapeAttr ($str, $double = TRUE, $encoding = NULL) {
-		$str = (string) $str;
-		if (mb_strpos($str, '`') !== FALSE && strpbrk($str, ' <>"\'') === FALSE) 
-			$str .= ' '; // protection against innerHTML mXSS vulnerability
-		return htmlspecialchars(
-			$str, 
-			$this->escapeGetFlags(ENT_QUOTES), 
+	public function Escape ($str, $flags = ENT_QUOTES, $encoding = NULL, $double = TRUE, $jsTemplate = FALSE) {
+		$str = htmlspecialchars(
+			(string) $str, 
+			$this->escapeGetFlags($flags), 
 			$encoding ?: $this->__protected['encoding'], 
 			$double
 		);
+		return $jsTemplate
+			? str_replace('{{', '{<!-- -->{', $str)
+			: $str ;
+	}
+	
+	/**
+	 * @inheritDocs
+	 * @param  string      $str 
+	 * @param  int         $flags
+	 * @param  string|NULL $encoding 
+	 * @param  bool        $double 
+	 * @return string
+	 */
+	public function EscapeAttr ($str, $flags = ENT_QUOTES, $encoding = NULL, $double = TRUE) {
+		$str = (string) $str;
+		if (mb_strpos($str, '`') !== FALSE && strpbrk($str, ' <>"\'') === FALSE) 
+			$str .= ' '; // protection against innerHTML mXSS vulnerability
+		$str = htmlspecialchars(
+			$str, 
+			$this->escapeGetFlags($flags), 
+			$encoding ?: $this->__protected['encoding'], 
+			$double
+		);
+		return $this->escapeJsExecBegin($str);
 	}
 	
 	/**
@@ -71,26 +66,40 @@ trait Escaping {
 	 * @param  string|NULL $encoding 
 	 * @return string
 	 */
-	public function EscapeXml ($str, $encoding = NULL) {
+	public function EscapeXml ($str, $encoding = NULL, $double = TRUE) {
 		$str = preg_replace('#[\x00-\x08\x0B\x0C\x0E-\x1F]#', "\u{FFFD}", (string) $str);
 		return htmlspecialchars(
 			$str, 
 			$this->escapeGetFlags(ENT_XML1 | ENT_QUOTES), 
-			$encoding ?: $this->__protected['encoding']
+			$encoding ?: $this->__protected['encoding'],
+			$double
 		);
 	}
-	
+
 	/**
 	 * @inheritDocs
-	 * @param  string $str 
+	 * @param  mixed  $obj 
 	 * @param  int    $flags 
 	 * @param  int    $depth 
 	 * @return string
 	 */
-	public function EscapeJs ($str, $flags = 0, $depth = 512) {
+	public function EscapeJs ($obj, $flags = 0, $depth = 512) {
 		$toolClass = self::$toolClass;
-		$json = $toolClass::JsonEncode($str, JSON_UNESCAPED_UNICODE);
-		return str_replace([']]>', '<!'], [']]\x3E', '\x3C!'], $json);
+		$json = $toolClass::JsonEncode($obj, $flags | JSON_HEX_QUOT | JSON_HEX_APOS, $depth);
+		return strtr($json, [']]>' => ']]\x3E', '<!' => '\x3C!', '</script' => '<\/script']);
+	}
+
+	/**
+	 * @inheritDocs
+	 * @param  mixed  $obj 
+	 * @param  int    $flags 
+	 * @param  int    $depth 
+	 * @return string
+	 */
+	public function EscapeAttrJs ($obj, $flags = 0, $depth = 512) {
+		$toolClass = self::$toolClass;
+		$json = $toolClass::JsonEncode($obj, $flags | JSON_HEX_AMP | JSON_HEX_QUOT | JSON_HEX_APOS, $depth);
+		return str_replace('"', "'", $json);
 	}
 	
 	/**
@@ -132,5 +141,23 @@ trait Escaping {
 			? $allEscapeFlags[$doctype]
 			: ENT_QUOTES;
 		return $flags | ENT_SUBSTITUTE | $flagsToAdd;
+	}
+
+	/**
+	 * If given string starts with `  javascript:',
+	 * remove this string begin.
+	 * @param  string $str 
+	 * @return string
+	 */
+	protected function escapeJsExecBegin ($str) {
+		$result = ltrim($str);
+		$jsExecSubStr = 'javascript:';
+		$jsExecSubStrLen = mb_strlen($jsExecSubStr);
+		if (mb_strtolower(mb_substr($result, 0, $jsExecSubStrLen)) === $jsExecSubStr) {
+			$result = mb_substr($result, $jsExecSubStrLen);
+		} else {
+			$result = $str;
+		}
+		return $result;
 	}
 }
