@@ -38,6 +38,22 @@ trait Escaping {
 			? str_replace('{{', '{<!-- -->{', $str)
 			: $str ;
 	}
+
+	/**
+	 * @inheritDocs
+	 * @param  string      $str 
+	 * @param  string|NULL $encoding 
+	 * @param  bool        $double 
+	 * @return string
+	 */
+	public function EscapeHtml ($str, $encoding = NULL, $double = TRUE) {
+		return htmlspecialchars(
+			(string) $str, 
+			$this->escapeGetFlags(ENT_QUOTES), 
+			$encoding ?: $this->__protected['encoding'], 
+			$double
+		);
+	}
 	
 	/**
 	 * @inheritDocs

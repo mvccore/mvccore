@@ -446,6 +446,16 @@ interface IView extends \MvcCore\View\IConstants {
 	 * @return string
 	 */
 	public function Escape ($str, $flags = ENT_QUOTES, $encoding = NULL, $double = TRUE, $jsTemplate = FALSE);
+
+	/**
+	 * Escape string for use inside HTML/XHTML/HTML5 node in HTML content.
+	 * This method is always used to escape texts in view components.
+	 * @param  string      $str 
+	 * @param  string|NULL $encoding 
+	 * @param  bool        $double 
+	 * @return string
+	 */
+	public function EscapeHtml ($str, $encoding = NULL, $double = TRUE);
 	
 	/**
 	 * Escape string to use it inside HTML/XHTML/HTML5 attribute in HTML context.
