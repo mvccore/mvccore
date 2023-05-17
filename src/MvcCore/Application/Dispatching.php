@@ -35,11 +35,18 @@ trait Dispatching {
 	 */
 	public function Dispatch () {
 		try {
-			$this->DispatchInit();
-			if ($this->DispatchExec() !== NULL)
+			// PHP >= 7.0 compatible code
+			try {
+				$this->DispatchInit();
+				if ($this->DispatchExec() !== NULL)
+					$this->Terminate();
+			} catch (\Throwable $e1) {
+				$this->DispatchException($e1);
 				$this->Terminate();
-		} catch (\Throwable $e) {
-			$this->DispatchException($e);
+			}
+		} catch (\Exception $e2) {
+			// PHP < 7.0 compatible code
+			$this->DispatchException($e2, $e2->getCode());
 			$this->Terminate();
 		}
 		// Post-dispatch handlers processing moved to: `$this->Terminate();` to process them every time.
@@ -296,12 +303,20 @@ trait Dispatching {
 		$exception = NULL;
 		if ($exceptionOrMessage instanceof \Throwable) {
 			$exception = $exceptionOrMessage;
+		} else if ($exceptionOrMessage instanceof \Exception) {
+			$exception = $exceptionOrMessage;
 		} else {
 			try {
-				if ($code === NULL) throw new \Exception($exceptionOrMessage);
-				throw new \ErrorException($exceptionOrMessage, $code);
-			} catch (\Throwable $e) {
-				$exception = $e;
+				// PHP >= 7.0 compatible code
+				try {
+					if ($code === NULL) throw new \Exception($exceptionOrMessage);
+					throw new \ErrorException($exceptionOrMessage, $code);
+				} catch (\Throwable $e1) {
+					$exception = $e1;
+				}
+			} catch (\Exception $e2) {
+				// PHP < 7.0 compatible code
+				$exception = $e2;
 			}
 		}
 		static $lastExceptionStr = NULL;
