@@ -62,58 +62,66 @@ trait Dispatching {
 	 */
 	public function Dispatch ($actionName = NULL) {
 		/** @var \MvcCore\Controller $this */
+		$result = TRUE;
+		try {
+			// \MvcCore\Debug::Timer('dispatch');
+
+			list ($actionName, $actionNameStart) = $this->dispatchSetUpAction($actionName);
+
+			// Call `Init()` method only if dispatch state is not initialized yet:
+			if ($this->dispatchState < \MvcCore\IController::DISPATCH_STATE_INITIALIZED)
+				$this->Init();
+			
+			// For cases somebody forget to call parent `Init()`:
+			if ($this->dispatchState < \MvcCore\IController::DISPATCH_STATE_INITIALIZED) 
+				$this->dispatchState = \MvcCore\IController::DISPATCH_STATE_INITIALIZED;
+			
+			// \MvcCore\Debug::Timer('dispatch');
+
+			// Call `PreDispatch()` method only if dispatch state is not pre-dispatched yet:
+			if ($this->dispatchState < \MvcCore\IController::DISPATCH_STATE_PRE_DISPATCHED)
+				$this->PreDispatch();
+			
+			// For cases somebody forget to call parent `PreDispatch()`:
+			if ($this->dispatchState < \MvcCore\IController::DISPATCH_STATE_PRE_DISPATCHED) 
+				$this->dispatchState = \MvcCore\IController::DISPATCH_STATE_PRE_DISPATCHED;
+			
+			// \MvcCore\Debug::Timer('dispatch');
+
+			// Call action method only if dispatch state is not action-executed yet:
+			if ($this->actionName !== $actionNameStart) {
+				$toolClass = $this->application->GetToolClass();
+				$actionName = $toolClass::GetPascalCaseFromDashed($this->actionName) . 'Action';
+			}
+			if (
+				$this->dispatchState < \MvcCore\IController::DISPATCH_STATE_ACTION_EXECUTED && 
+				method_exists($this, $actionName)
+			)
+				$this->{$actionName}();
+			
+			// For cases somebody forget to call parent action method:
+			if ($this->dispatchState < \MvcCore\IController::DISPATCH_STATE_ACTION_EXECUTED) 
+				$this->dispatchState = \MvcCore\IController::DISPATCH_STATE_ACTION_EXECUTED;
+			
+			// \MvcCore\Debug::Timer('dispatch');
 		
-		// \MvcCore\Debug::Timer('dispatch');
-		list ($actionName, $actionNameStart) = $this->dispatchSetUpAction($actionName);
+			// Call `Render()` method only if dispatch state is not rendered yet:
+			if ($this->viewEnabled && $this->dispatchState < \MvcCore\IController::DISPATCH_STATE_RENDERED)
+				$this->Render(
+					$this->controllerName,	// dashed ctrl name
+					$this->actionName		// dashed action name
+				);
 
-		// Call `Init()` method only if dispatch state is not initialized yet:
-		if ($this->dispatchState < \MvcCore\IController::DISPATCH_STATE_INITIALIZED)
-			$this->Init();
-		// If terminated or redirected inside `Init()` method:
-		if ($this->dispatchState === \MvcCore\IController::DISPATCH_STATE_TERMINATED) 
-			return FALSE;
-		// For cases somebody forget to call parent `Init()`:
-		if ($this->dispatchState < \MvcCore\IController::DISPATCH_STATE_INITIALIZED) 
-			$this->dispatchState = \MvcCore\IController::DISPATCH_STATE_INITIALIZED;
-		// \MvcCore\Debug::Timer('dispatch');
+			// \MvcCore\Debug::Timer('dispatch');
 
-		// Call `PreDispatch()` method only if dispatch state is not pre-dispatched yet:
-		if ($this->dispatchState < \MvcCore\IController::DISPATCH_STATE_PRE_DISPATCHED)
-			$this->PreDispatch();
-		// If terminated or redirected inside `PreDispatch()` method:
-		if ($this->dispatchState === \MvcCore\IController::DISPATCH_STATE_TERMINATED) 
-			return FALSE;
-		// For cases somebody forget to call parent `PreDispatch()`:
-		if ($this->dispatchState < \MvcCore\IController::DISPATCH_STATE_PRE_DISPATCHED) 
-			$this->dispatchState = \MvcCore\IController::DISPATCH_STATE_PRE_DISPATCHED;
-		// \MvcCore\Debug::Timer('dispatch');
-
-		// Call action method only if dispatch state is not action-executed yet:
-		if ($this->actionName !== $actionNameStart) {
-			$toolClass = $this->application->GetToolClass();
-			$actionName = $toolClass::GetPascalCaseFromDashed($this->actionName) . 'Action';
+		} catch (\MvcCore\Controller\TerminateException $e) {
+			$result = FALSE;
+			if (!$this->application->GetTerminated()) {
+				$this->terminateControllers();
+				$this->application->Terminate();
+			}
 		}
-		if (
-			$this->dispatchState < \MvcCore\IController::DISPATCH_STATE_ACTION_EXECUTED && 
-			method_exists($this, $actionName)
-		)
-			$this->{$actionName}();
-		// If terminated or redirected inside action method:
-		if ($this->dispatchState === \MvcCore\IController::DISPATCH_STATE_TERMINATED) 
-			return FALSE;
-		// For cases somebody forget to call parent action method:
-		if ($this->dispatchState < \MvcCore\IController::DISPATCH_STATE_ACTION_EXECUTED) 
-			$this->dispatchState = \MvcCore\IController::DISPATCH_STATE_ACTION_EXECUTED;
-		// \MvcCore\Debug::Timer('dispatch');
-		
-		// Call `Render()` method only if dispatch state is not rendered yet:
-		if ($this->viewEnabled && $this->dispatchState < \MvcCore\IController::DISPATCH_STATE_RENDERED)
-			$this->Render(
-				$this->controllerName,	// dashed ctrl name
-				$this->actionName		// dashed action name
-			);
-		// \MvcCore\Debug::Timer('dispatch');
-		return TRUE;
+		return $result;
 	}
 
 	/**
@@ -400,14 +408,27 @@ trait Dispatching {
 
 	/**
 	 * @inheritDocs
+	 * @throws \MvcCore\Controller\TerminateException
 	 * @return void
 	 */
 	public function Terminate () {
-		$this->dispatchState = \MvcCore\IController::DISPATCH_STATE_TERMINATED;
-		foreach (self::$allControllers as $controller) 
-			$controller->dispatchState = \MvcCore\IController::DISPATCH_STATE_TERMINATED;
-		self::$allControllers = [];
+		$this->terminateControllers();
 		$this->application->Terminate();
+		throw new \MvcCore\Controller\TerminateException(__FILE__.":".__LINE__);
+	}
+
+	/**
+	 * Set up terminated dispatch state to all registered 
+	 * controllers and empty static controllers array.
+	 * @return void
+	 */
+	protected function terminateControllers () {
+		$state = \MvcCore\IController::DISPATCH_STATE_TERMINATED;
+		$this->dispatchState = $state;
+		$this->application->GetController()->dispatchState = $state;
+		foreach (self::$allControllers as $controller) 
+			$controller->dispatchState = $state;
+		self::$allControllers = [];
 	}
 
 	/**

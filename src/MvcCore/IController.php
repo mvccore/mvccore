@@ -756,14 +756,14 @@ interface IController extends \MvcCore\Controller\IConstants {
 	public function GetViewScriptPath ($controllerOrActionNameDashed = NULL, $actionNameDashed = NULL);
 
 	/**
-	 * Terminate request.
+	 * Terminates request by throwing terminate exception.
 	 * - Send headers if possible.
 	 * - Echo response body.
 	 * - Write session.
 	 * This method is always called INTERNALLY after controller
 	 * lifecycle has been dispatched. But you can use it any
 	 * time sooner for custom purposes.
-	 * This method is only shortcut for: `\MvcCore\Application::GetInstance()->Terminate();`.
+	 * @throws \MvcCore\Controller\TerminateException
 	 * @return void
 	 */
 	public function Terminate ();
