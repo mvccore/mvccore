@@ -370,7 +370,7 @@ trait IniDump {
 		} else {
 			static $specialChars = [
 				'=', '/', '.', '#', '&', '!', '?', '-', '@', "'", '"', '*', '^',
-				'[', ']', '(', ')', '{', '}', '<', '>', '\n', '\r',
+				'[', ']', '(', ')', '{', '}', '<', '>', '\n', '\r', '\t', ' ',
 			];
 			$valueStr = (string) $value;
 			$specialCharCaught = FALSE;
