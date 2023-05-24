@@ -19,67 +19,179 @@ namespace MvcCore\Model;
 trait Converters {
 
 	/**
-	 * Convert `bool`(s), `array`(s), `\DateTimeInterface` or `\DateInterval` 
-	 * value(s) into proper database (`scalar`) value if necessary.
+	 * Convert `int`(s), `float`(s), `bool`(s), `string`(s), `array`(s), 
+	 * `\DateTimeInterface`(s) or `\DateInterval`(s) or any other value(s)
+	 * into proper database (`scalar`) value if necessary.
+	 * @param  string                                                                                                                             $propName
 	 * @param  bool|int|float|string|\DateTimeInterface|\DateInterval|\bool[]|\int[]|\float[]|\string[]|\DateTimeInterface[]|\DateInterval[]|NULL $value 
 	 * @param  array                                                                                                                              $parserArgs 
 	 * @return int|float|string|NULL
 	 */
-	protected static function convertToScalar ($value, $parserArgs = []) {
-		if (is_bool($value)) {
-			return $value ? 1 : 0 ;
+	protected static function convertToScalar ($propName, $value, $parserArgs = []) {
+		if (is_int($value)) {
+			return static::convertToScalarInt($propName, $value, $parserArgs);
 		} else if (is_float($value)) {
-			if (is_array($parserArgs) && count($parserArgs) > 0) 
-				return call_user_func_array('round', array_merge([$value], $parserArgs));
-			return $value;
+			return static::convertToScalarFloat($propName, $value, $parserArgs);
+		} else if (is_bool($value)) {
+			return static::convertToScalarBool($propName, $value, $parserArgs);
+		} else if (is_string($value)) {
+			return static::convertToScalarString($propName, $value, $parserArgs);
 		} else if (is_array($value) || $value instanceof \Traversable) { // `is_iterable()`
-			$items = [];
-			foreach ($value as $item)
-				if ($item !== NULL)
-					$items[] = static::convertToScalar($item, $parserArgs);
-			if (count($items) === 0) return NULL;
-			return implode(',', $items);
+			return static::convertToScalarArray($propName, $value, $parserArgs);
 		} else if ($value instanceof \DateTime || $value instanceof \DateTimeImmutable) { // PHP 5.4 compatible
-			$parserArgsCount = is_array($parserArgs) ? count($parserArgs) : 0;
-			if ($parserArgsCount > 0)
-				return $value->format($parserArgs[0]);
-			return $value->format('Y-m-d H:i:s');
+			return static::convertToScalarDateTime($propName, $value, $parserArgs);
 		} else if ($value instanceof \DateInterval) {
-			$parserArgsCount = count($parserArgs);
-			if ($parserArgsCount > 0) {
-				$formatMask = $parserArgs[0];
-				if ($parserArgsCount > 1) {
-					$targetType = $parserArgs[1];
-					if ($targetType === 'int') {
-						return intval(round(
-							static::convertIntervalToFloat($value)
-						));
-					} else if ($targetType === 'float') {
-						return static::convertIntervalToFloat($value);
-					}
-				}
-				return $value->format($formatMask);
-			}
-			return static::convertIntervalToFloat($value);
+			return static::convertToScalarDateInterval($propName, $value, $parserArgs);
 		} else {
-			return $value;
+			return static::convertToScalarOther($propName, $value, $parserArgs);
 		}
+	}
+	
+	/**
+	 * Convert integer into database scalar value.
+	 * @param  string $propName
+	 * @param  int    $value 
+	 * @param  array  $parserArgs 
+	 * @return int
+	 */
+	protected static function convertToScalarInt ($propName, $value, $parserArgs = []) {
+		return $value;
+	}
+	
+	/**
+	 * Convert float into database scalar value.
+	 * @param  string $propName
+	 * @param  float  $value 
+	 * @param  array  $parserArgs 
+	 * @return float
+	 */
+	protected static function convertToScalarFloat ($propName, $value, $parserArgs = []) {
+		if (is_array($parserArgs) && count($parserArgs) > 0) 
+			return call_user_func_array('round', array_merge([$value], $parserArgs));
+		return $value;
+	}
+	
+	/**
+	 * Convert bool into database scalar value.
+	 * @param  string $propName
+	 * @param  bool   $value 
+	 * @param  array  $parserArgs 
+	 * @return int
+	 */
+	protected static function convertToScalarBool ($propName, $value, $parserArgs = []) {
+		return $value ? 1 : 0 ;
+	}
+	
+	/**
+	 * Convert string into database scalar value.
+	 * @param  string $propName
+	 * @param  string $value 
+	 * @param  array  $parserArgs 
+	 * @return string
+	 */
+	protected static function convertToScalarString ($propName, $value, $parserArgs = []) {
+		return $value;
+	}
+	
+	/**
+	 * Convert array into database scalar value.
+	 * @param  string $propName
+	 * @param  array  $value 
+	 * @param  array  $parserArgs 
+	 * @return string
+	 */
+	protected static function convertToScalarArray ($propName, $value, $parserArgs = []) {
+		$items = [];
+		foreach ($value as $key => $item) {
+			if ($item !== NULL) {
+				$propSubName = implode('.', [$propName, $key]);
+				$items[] = static::convertToScalar($propSubName, $item, $parserArgs);
+			}
+		}
+		if (count($items) === 0) return NULL;
+		return implode(',', $items);
+	}
+	
+	/**
+	 * Convert `\DateTime` or `\DateTimeImmutable` into database scalar value.
+	 * @param  string                       $propName
+	 * @param  \DateTime|\DateTimeImmutable $value 
+	 * @param  array                        $parserArgs 
+	 * @return string
+	 */
+	protected static function convertToScalarDateTime ($propName, $value, $parserArgs = []) {
+		$parserArgsCount = is_array($parserArgs) ? count($parserArgs) : 0;
+		if ($parserArgsCount > 0)
+			return $value->format($parserArgs[0]);
+		return $value->format('Y-m-d H:i:s');
+	}
+	
+	/**
+	 * Convert `\DateInterval` into database scalar value.
+	 * @param  string        $propName
+	 * @param  \DateInterval $value 
+	 * @param  array         $parserArgs 
+	 * @return string|int|float
+	 */
+	protected static function convertToScalarDateInterval ($propName, $value, $parserArgs = []) {
+		$parserArgsCount = count($parserArgs);
+		if ($parserArgsCount > 0) {
+			$formatMask = $parserArgs[0];
+			if ($parserArgsCount === 1) {
+				return $value->format($formatMask);
+			} else {
+				$floatResult = static::convertIntervalToFloat($propName, $value);
+				$targetType = $parserArgs[1];
+				if ($targetType === 'int') {
+					return intval(round($floatResult));
+				} else /*if ($targetType === 'float')*/ {
+					return $floatResult;
+				}
+			}
+		}
+		return static::convertIntervalToFloat($propName, $value);
+	}
+	
+	/**
+	 * Convert any other value type into database scalar value.
+	 * @param  string $propName
+	 * @param  mixed  $value 
+	 * @param  array  $parserArgs 
+	 * @return mixed
+	 */
+	protected static function convertToScalarOther ($propName, $value, $parserArgs = []) {
+		return $value;
 	}
 
 	/**
-	 * Convert date interval to total microseconds float.
+	 * Convert `\DateInterval` into database float value.
+	 * @param  string        $propName
 	 * @param  \DateInterval $interval 
 	 * @return float
 	 */
-	protected static function convertIntervalToFloat ($interval) {
+	protected static function convertIntervalToFloat ($propName, $interval) {
 		$result = floatval(
-			($interval->days * 86400) + 
 			($interval->h * 3600) + 
 			($interval->i * 60) + 
 			($interval->s)
 		);
+		if ($interval->days !== FALSE) {
+			// $interval->days -> total number of full days between the start and end dates.
+			$result += floatval(
+				$interval->days * 86400
+			);
+		} else {
+			$result += (floatval(
+				$interval->y * 365 * 86400
+			) + floatval(
+				$interval->m * (365/12) * 86400
+			));
+		}
+		// $interval->f -> number of microseconds, as a fraction of a second.
 		if (PHP_VERSION_ID >= 70100)
 			$result += $interval->f;
+		if ($interval->invert) 
+			$result *= -1;
 		return $result;
 	}
 
