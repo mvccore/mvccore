@@ -309,7 +309,7 @@ trait Detection {
 			}
 		}
 		if ($data->serverHostNames->check) {
-			$serverHostName = $serverHostName ?: gethostname();
+			$serverHostName = $serverHostName ?: $req->GetHostName();
 			// try to recognize environment by any configured internal server hostname value
 			// (value from `/etc/hostname` or Windows computer name)
 			if ($data->serverHostNames->values) {
