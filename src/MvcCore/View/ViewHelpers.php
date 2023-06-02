@@ -112,12 +112,11 @@ trait ViewHelpers {
 		$instance = NULL;
 		$helpers = & $this->__protected['helpers'];
 		$helperNamePascalCase = ucfirst($helperNameCamelCase);
-		if (isset($helpers[$helperNameCamelCase])) {
+		if (isset($helpers[$helperNameCamelCase]) && $asClosure) {
 			$instance = & $helpers[$helperNameCamelCase];
 		} else if (isset(self::$globalHelpers[$helperNamePascalCase])) {
 			$globalHelpersRecord = & self::$globalHelpers[$helperNamePascalCase];
 			$instance = & $globalHelpersRecord[0];
-			//$result = & $instance;
 			$setUpView = $globalHelpersRecord[1];
 			$needsClosureFn = $globalHelpersRecord[2];
 		} else {
