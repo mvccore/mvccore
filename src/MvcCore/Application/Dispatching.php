@@ -362,7 +362,7 @@ trait Dispatching {
 			$this->defaultControllerErrorActionName
 		);
 		$exceptionMessage = $e->getMessage();
-		if (!$this->GetRequest()->IsCli() && $defaultCtrlFullName) {
+		if (!$this->GetRequest()->IsCli() && $defaultCtrlFullName && $this->router !== NULL) {
 			$debugClass = $this->debugClass;
 			$viewClass = $this->viewClass;
 			$this->router->SetOrCreateDefaultRouteAsCurrent(
