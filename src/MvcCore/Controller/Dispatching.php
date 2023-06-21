@@ -93,11 +93,16 @@ trait Dispatching {
 				$toolClass = $this->application->GetToolClass();
 				$actionName = $toolClass::GetPascalCaseFromDashed($this->actionName) . 'Action';
 			}
+
 			if (
 				$this->dispatchState < \MvcCore\IController::DISPATCH_STATE_ACTION_EXECUTED && 
-				method_exists($this, $actionName)
-			)
-				$this->{$actionName}();
+				method_exists($this, $actionName) // case insensitive check
+			) {
+				$reflectionMethod = new \ReflectionMethod($this, $actionName); // case insensitive initialization
+				if ($reflectionMethod->isPublic() && $reflectionMethod->name === $actionName) // && case sensitive check
+					$this->{$actionName}();
+			}
+				
 			
 			// For cases somebody forget to call parent action method:
 			if ($this->dispatchState < \MvcCore\IController::DISPATCH_STATE_ACTION_EXECUTED) 
