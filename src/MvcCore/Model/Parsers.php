@@ -172,6 +172,7 @@ trait Parsers {
 	 */
 	protected static function parseToDateTime ($typeStr, $rawValue, $parserArgs = []) {
 		$format = $parserArgs[0];
+		$format = '!' . ltrim($format, '!'); // to reset all other values not included in format into zeros
 		if (is_numeric($rawValue)) {
 			$rawValueStr = str_replace(['+','-','.'], '', (string) $rawValue);
 			$secData = mb_substr($rawValueStr, 0, 10);
@@ -186,12 +187,7 @@ trait Parsers {
 				$format = substr($format, 0, 5);
 			}
 		}
-		$dotPos = strpos($dateTimeStr, '.');
-		if ($dotPos !== FALSE) {
-			$msDigitsCount = strlen($dateTimeStr) - $dotPos - 1;
-			$format .= $msDigitsCount === 3 ? '.v' : '.u';
-		}
-		return $typeStr::createFromFormat($format, $dateTimeStr);
+		return @$typeStr::createFromFormat($format, $dateTimeStr);
 	}
 
 	/**
