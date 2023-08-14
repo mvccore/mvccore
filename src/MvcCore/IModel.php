@@ -278,9 +278,13 @@ interface IModel extends \MvcCore\Model\IConstants {
 
 	/**
 	 * Return original initial values completed in model creation.
+	 * @param  int $propsFlags All properties flags are available except flags: 
+	 *                         - `\MvcCore\IModel::PROPS_INITIAL_VALUES`,
+	 *                         - `\MvcCore\IModel::PROPS_CONVERT_CASE_INSENSITIVE`,
+	 *                         - `\MvcCore\IModel::PROPS_SET_DEFINED_ONLY`.
 	 * @return array
 	 */
-	public function GetInitialValues ();
+	public function GetInitialValues ($propsFlags = 0);
 
 	/**
 	 * Sets any custom property `"PropertyName"` by `\MvcCore\Model::SetPropertyName("value")`,

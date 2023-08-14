@@ -202,9 +202,43 @@ trait DataMethods {
 
 	/**
 	 * @inheritDocs
+	 * @param  int $propsFlags All properties flags are available except flags: 
+	 *                         - `\MvcCore\IModel::PROPS_INITIAL_VALUES`,
+	 *                         - `\MvcCore\IModel::PROPS_CONVERT_CASE_INSENSITIVE`,
+	 *                         - `\MvcCore\IModel::PROPS_SET_DEFINED_ONLY`.
 	 * @return array
 	 */
-	public function GetInitialValues () {
-		return $this->initialValues;
+	public function GetInitialValues ($propsFlags = 0) {
+		$metaData = static::GetMetaData($propsFlags);
+		
+		$keyConversionsMethod = NULL;
+		$caseSensitiveKeysMap = '';
+		$stringKeyConversions = $propsFlags > 127;
+
+		if ($stringKeyConversions) {
+			$keyConversionsMethod = static::getKeyConversionMethod($propsFlags);
+			$toolsClass = \MvcCore\Application::GetInstance()->GetToolClass();
+			if ($propsFlags > 8191)
+				$caseSensitiveKeysMap = ','.implode(',', array_keys($metaData)).',';
+		};
+
+		$result = [];
+
+		foreach ($metaData as $propertyName => $propData) {
+			$initialValue = NULL;
+			if (array_key_exists($propertyName, $this->initialValues))
+				$initialValue = $this->initialValues[$propertyName];
+			
+			$resultKey = $propertyName;
+			if ($stringKeyConversions) 
+				$resultKey = static::{$keyConversionsMethod}(
+					$resultKey, $toolsClass, $caseSensitiveKeysMap
+				);
+			
+			$result[$resultKey] = $initialValue;
+		}
+
+		return $result;
 	}
+
 }
