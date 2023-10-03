@@ -28,7 +28,7 @@ trait GettersSetters {
 	 ***********************************************************************************/
 
 	/**
-	 * @inheritDocs
+	 * @inheritDoc
 	 * @param  string $propName 
 	 * @return mixed
 	 */
@@ -39,7 +39,7 @@ trait GettersSetters {
 	}
 
 	/**
-	 * @inheritDocs
+	 * @inheritDoc
 	 * @return string
 	 */
 	public function GetCompiled () {
@@ -57,7 +57,7 @@ trait GettersSetters {
 
 	
 	/**
-	 * @inheritDocs
+	 * @inheritDoc
 	 * @return int
 	 */
 	public function GetCsrfProtection () {
@@ -65,7 +65,7 @@ trait GettersSetters {
 	}
 
 	/**
-	 * @inheritDocs
+	 * @inheritDoc
 	 * @return bool
 	 */
 	public function GetAttributesAnotations () {
@@ -73,7 +73,7 @@ trait GettersSetters {
 	}
 
 	/**
-	 * @inheritDocs
+	 * @inheritDoc
 	 * @return \MvcCore\Environment|string
 	 */
 	public function GetEnvironmentClass () {
@@ -81,7 +81,7 @@ trait GettersSetters {
 	}
 
 	/**
-	 * @inheritDocs
+	 * @inheritDoc
 	 * @return \MvcCore\Config|string
 	 */
 	public function GetConfigClass () {
@@ -89,7 +89,7 @@ trait GettersSetters {
 	}
 
 	/**
-	 * @inheritDocs
+	 * @inheritDoc
 	 * @return \MvcCore\Controller|string
 	 */
 	public function GetControllerClass () {
@@ -97,7 +97,7 @@ trait GettersSetters {
 	}
 
 	/**
-	 * @inheritDocs
+	 * @inheritDoc
 	 * @return \MvcCore\Debug|string
 	 */
 	public function GetDebugClass () {
@@ -105,7 +105,7 @@ trait GettersSetters {
 	}
 
 	/**
-	 * @inheritDocs
+	 * @inheritDoc
 	 * @return \MvcCore\Request|string
 	 */
 	public function GetRequestClass () {
@@ -113,7 +113,7 @@ trait GettersSetters {
 	}
 
 	/**
-	 * @inheritDocs
+	 * @inheritDoc
 	 * @return \MvcCore\Response|string
 	 */
 	public function GetResponseClass () {
@@ -121,7 +121,7 @@ trait GettersSetters {
 	}
 
 	/**
-	 * @inheritDocs
+	 * @inheritDoc
 	 * @return \MvcCore\Route|string
 	 */
 	public function GetRouteClass () {
@@ -129,7 +129,7 @@ trait GettersSetters {
 	}
 
 	/**
-	 * @inheritDocs
+	 * @inheritDoc
 	 * @return \MvcCore\Router|string
 	 */
 	public function GetRouterClass () {
@@ -137,7 +137,7 @@ trait GettersSetters {
 	}
 
 	/**
-	 * @inheritDocs
+	 * @inheritDoc
 	 * @return \MvcCore\Session|string
 	 */
 	public function GetSessionClass () {
@@ -145,7 +145,7 @@ trait GettersSetters {
 	}
 
 	/**
-	 * @inheritDocs
+	 * @inheritDoc
 	 * @return \MvcCore\Tool|string
 	 */
 	public function GetToolClass () {
@@ -153,7 +153,7 @@ trait GettersSetters {
 	}
 
 	/**
-	 * @inheritDocs
+	 * @inheritDoc
 	 * @return \MvcCore\View|string
 	 */
 	public function GetViewClass () {
@@ -161,7 +161,7 @@ trait GettersSetters {
 	}
 
 	/**
-	 * @inheritDocs
+	 * @inheritDoc
 	 * @var \MvcCore\Config|NULL
 	 */
 	public function GetConfig () {
@@ -173,7 +173,7 @@ trait GettersSetters {
 	}
 
 	/**
-	 * @inheritDocs
+	 * @inheritDoc
 	 * @var \MvcCore\Environment
 	 */
 	public function GetEnvironment () {
@@ -185,7 +185,7 @@ trait GettersSetters {
 	}
 
 	/**
-	 * @inheritDocs
+	 * @inheritDoc
 	 * @return \MvcCore\Controller
 	 */
 	public function GetController () {
@@ -193,7 +193,7 @@ trait GettersSetters {
 	}
 
 	/**
-	 * @inheritDocs
+	 * @inheritDoc
 	 * @return \MvcCore\Request
 	 */
 	public function GetRequest () {
@@ -205,7 +205,7 @@ trait GettersSetters {
 	}
 
 	/**
-	 * @inheritDocs
+	 * @inheritDoc
 	 * @return \MvcCore\Response
 	 */
 	public function GetResponse () {
@@ -217,7 +217,7 @@ trait GettersSetters {
 	}
 
 	/**
-	 * @inheritDocs
+	 * @inheritDoc
 	 * @return \MvcCore\Router
 	 */
 	public function GetRouter () {
@@ -229,7 +229,7 @@ trait GettersSetters {
 	}
 
 	/**
-	 * @inheritDocs
+	 * @inheritDoc
 	 * @return string
 	 */
 	public function GetAppDir () {
@@ -237,7 +237,7 @@ trait GettersSetters {
 	}
 	
 	/**
-	 * @inheritDocs
+	 * @inheritDoc
 	 * @return string
 	 */
 	public function GetCliDir () {
@@ -245,7 +245,7 @@ trait GettersSetters {
 	}
 
 	/**
-	 * @inheritDocs
+	 * @inheritDoc
 	 * @return string
 	 */
 	public function GetControllersDir () {
@@ -253,7 +253,7 @@ trait GettersSetters {
 	}
 
 	/**
-	 * @inheritDocs
+	 * @inheritDoc
 	 * @return string
 	 */
 	public function GetViewsDir () {
@@ -261,7 +261,7 @@ trait GettersSetters {
 	}
 
 	/**
-	 * @inheritDocs
+	 * @inheritDoc
 	 * @return \string[]
 	 */
 	public function GetDefaultControllerAndActionNames () {
@@ -269,7 +269,7 @@ trait GettersSetters {
 	}
 
 	/**
-	 * @inheritDocs
+	 * @inheritDoc
 	 * @return string
 	 */
 	public function GetDefaultControllerName () {
@@ -277,7 +277,7 @@ trait GettersSetters {
 	}
 
 	/**
-	 * @inheritDocs
+	 * @inheritDoc
 	 * @return string
 	 */
 	public function GetDefaultControllerErrorActionName () {
@@ -285,7 +285,7 @@ trait GettersSetters {
 	}
 
 	/**
-	 * @inheritDocs
+	 * @inheritDoc
 	 * @return string
 	 */
 	public function GetDefaultControllerNotFoundActionName () {
@@ -293,7 +293,7 @@ trait GettersSetters {
 	}
 
 	/**
-	 * @inheritDocs
+	 * @inheritDoc
 	 * @return bool
 	 */
 	public function GetTerminated () {
@@ -306,7 +306,7 @@ trait GettersSetters {
 	 ***********************************************************************************/
 
 	/**
-	 * @inheritDocs
+	 * @inheritDoc
 	 * @param  string $compiled
 	 * @return \MvcCore\Application
 	 */
@@ -317,7 +317,7 @@ trait GettersSetters {
 
 	
 	/**
-	 * @inheritDocs
+	 * @inheritDoc
 	 * @param  int $csrfProtection
 	 * @return \MvcCore\Application
 	 */
@@ -327,7 +327,7 @@ trait GettersSetters {
 	}
 
 	/**
-	 * @inheritDocs
+	 * @inheritDoc
 	 * @param  bool $attributesAnotation
 	 * @return \MvcCore\Application
 	 */
@@ -337,7 +337,7 @@ trait GettersSetters {
 	}
 	
 	/**
-	 * @inheritDocs
+	 * @inheritDoc
 	 * @param  string $environmentClass
 	 * @return \MvcCore\Application
 	 */
@@ -346,7 +346,7 @@ trait GettersSetters {
 	}
 
 	/**
-	 * @inheritDocs
+	 * @inheritDoc
 	 * @param  string $configClass
 	 * @return \MvcCore\Application
 	 */
@@ -355,7 +355,7 @@ trait GettersSetters {
 	}
 
 	/**
-	 * @inheritDocs
+	 * @inheritDoc
 	 * @param  string $controllerClass
 	 * @return \MvcCore\Application
 	 */
@@ -364,7 +364,7 @@ trait GettersSetters {
 	}
 
 	/**
-	 * @inheritDocs
+	 * @inheritDoc
 	 * @param  string $debugClass
 	 * @return \MvcCore\Application
 	 */
@@ -373,7 +373,7 @@ trait GettersSetters {
 	}
 
 	/**
-	 * @inheritDocs
+	 * @inheritDoc
 	 * @param  string $requestClass
 	 * @return \MvcCore\Application
 	 */
@@ -382,7 +382,7 @@ trait GettersSetters {
 	}
 
 	/**
-	 * @inheritDocs
+	 * @inheritDoc
 	 * @param  string $responseClass
 	 * @return \MvcCore\Application
 	 */
@@ -391,7 +391,7 @@ trait GettersSetters {
 	}
 
 	/**
-	 * @inheritDocs
+	 * @inheritDoc
 	 * @param  string $routeClass
 	 * @return \MvcCore\Application
 	 */
@@ -400,7 +400,7 @@ trait GettersSetters {
 	}
 
 	/**
-	 * @inheritDocs
+	 * @inheritDoc
 	 * @param  string $routerClass
 	 * @return \MvcCore\Application
 	 */
@@ -409,7 +409,7 @@ trait GettersSetters {
 	}
 
 	/**
-	 * @inheritDocs
+	 * @inheritDoc
 	 * @param  string $sessionClass
 	 * @return \MvcCore\Application
 	 */
@@ -418,7 +418,7 @@ trait GettersSetters {
 	}
 
 	/**
-	 * @inheritDocs
+	 * @inheritDoc
 	 * @param  string $toolClass
 	 * @return \MvcCore\Application
 	 */
@@ -427,7 +427,7 @@ trait GettersSetters {
 	}
 
 	/**
-	 * @inheritDocs
+	 * @inheritDoc
 	 * @param  string $viewClass
 	 * @return \MvcCore\Application
 	 */
@@ -437,7 +437,7 @@ trait GettersSetters {
 
 
 	/**
-	 * @inheritDocs
+	 * @inheritDoc
 	 * @param  \MvcCore\Controller $controller
 	 * @return \MvcCore\Application
 	 */
@@ -448,7 +448,7 @@ trait GettersSetters {
 
 
 	/**
-	 * @inheritDocs
+	 * @inheritDoc
 	 * @param  string $appDir
 	 * @return \MvcCore\Application
 	 */
@@ -458,7 +458,7 @@ trait GettersSetters {
 	}
 	
 	/**
-	 * @inheritDocs
+	 * @inheritDoc
 	 * @param  string $cliDir
 	 * @return \MvcCore\Application
 	 */
@@ -468,7 +468,7 @@ trait GettersSetters {
 	}
 
 	/**
-	 * @inheritDocs
+	 * @inheritDoc
 	 * @param  string $controllersDir
 	 * @return \MvcCore\Application
 	 */
@@ -478,7 +478,7 @@ trait GettersSetters {
 	}
 
 	/**
-	 * @inheritDocs
+	 * @inheritDoc
 	 * @param  string $viewsDir
 	 * @return \MvcCore\Application
 	 */
@@ -488,7 +488,7 @@ trait GettersSetters {
 	}
 
 	/**
-	 * @inheritDocs
+	 * @inheritDoc
 	 * @param  string $defaultControllerName
 	 * @return \MvcCore\Application
 	 */
@@ -498,7 +498,7 @@ trait GettersSetters {
 	}
 
 	/**
-	 * @inheritDocs
+	 * @inheritDoc
 	 * @param  string $defaultActionName
 	 * @return \MvcCore\Application
 	 */
@@ -508,7 +508,7 @@ trait GettersSetters {
 	}
 
 	/**
-	 * @inheritDocs
+	 * @inheritDoc
 	 * @param  string $defaultControllerErrorActionName
 	 * @return \MvcCore\Application
 	 */
@@ -518,7 +518,7 @@ trait GettersSetters {
 	}
 
 	/**
-	 * @inheritDocs
+	 * @inheritDoc
 	 * @param  string $defaultControllerNotFoundActionName
 	 * @return \MvcCore\Application
 	 */
@@ -528,7 +528,7 @@ trait GettersSetters {
 	}
 
 	/**
-	 * @inheritDocs`
+	 * @inheritDoc`
 	 * @param  callable $handler
 	 * @param  int|NULL $priorityIndex
 	 * @return \MvcCore\Application
@@ -542,7 +542,7 @@ trait GettersSetters {
 	}
 
 	/**
-	 * @inheritDocs
+	 * @inheritDoc
 	 * @param  callable $handler
 	 * @param  int|NULL $priorityIndex
 	 * @return \MvcCore\Application
@@ -556,7 +556,7 @@ trait GettersSetters {
 	}
 
 	/**
-	 * @inheritDocs
+	 * @inheritDoc
 	 * @param  callable $handler
 	 * @param  int|NULL $priorityIndex
 	 * @return \MvcCore\Application
@@ -570,7 +570,7 @@ trait GettersSetters {
 	}
 
 	/**
-	 * @inheritDocs
+	 * @inheritDoc
 	 * @param  callable $handler
 	 * @param  int|NULL $priorityIndex
 	 * @return \MvcCore\Application
@@ -584,7 +584,7 @@ trait GettersSetters {
 	}
 
 	/**
-	 * @inheritDocs
+	 * @inheritDoc
 	 * @param  callable $handler
 	 * @param  int|NULL $priorityIndex
 	 * @return \MvcCore\Application
@@ -598,7 +598,7 @@ trait GettersSetters {
 	}
 
 	/**
-	 * @inheritDocs
+	 * @inheritDoc
 	 * @param  callable $handler
 	 * @param  int|NULL $priorityIndex
 	 * @return \MvcCore\Application
@@ -612,7 +612,7 @@ trait GettersSetters {
 	}
 
 	/**
-	 * @inheritDocs
+	 * @inheritDoc
 	 * @param  callable $handler
 	 * @param  int|NULL $priorityIndex
 	 * @return \MvcCore\Application
@@ -626,7 +626,7 @@ trait GettersSetters {
 	}
 
 	/**
-	 * @inheritDocs
+	 * @inheritDoc
 	 * @param  callable $handler
 	 * @param  int|NULL $priorityIndex
 	 * @return \MvcCore\Application

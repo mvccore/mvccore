@@ -14,7 +14,7 @@
 namespace MvcCore;
 
 /**
- * @inheritDocs
+ * @inheritDoc
  */
 class Session implements \Iterator, \ArrayAccess, \Countable, ISession {
 	use \MvcCore\Session\Props;

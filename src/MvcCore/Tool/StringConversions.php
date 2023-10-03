@@ -19,7 +19,7 @@ namespace MvcCore\Tool;
 trait StringConversions {
 
 	/**
-	 * @inheritDocs
+	 * @inheritDoc
 	 * @param  string $pascalCase
 	 * @return string
 	 */
@@ -52,7 +52,7 @@ trait StringConversions {
 	}
 
 	/**
-	 * @inheritDocs
+	 * @inheritDoc
 	 * @param  string $dashed
 	 * @return string
 	 */
@@ -67,7 +67,7 @@ trait StringConversions {
 	}
 
 	/**
-	 * @inheritDocs
+	 * @inheritDoc
 	 * @param  string $pascalCase
 	 * @return string
 	 */
@@ -99,7 +99,7 @@ trait StringConversions {
 	}
 
 	/**
-	 * @inheritDocs
+	 * @inheritDoc
 	 * @param  string $underscored
 	 * @return string
 	 */

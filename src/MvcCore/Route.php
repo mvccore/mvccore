@@ -14,7 +14,7 @@
 namespace MvcCore;
 
 /**
- * @inheritDocs
+ * @inheritDoc
  */
 class Route implements IRoute {
 	use \MvcCore\Route\Props;

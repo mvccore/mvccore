@@ -42,7 +42,7 @@ trait Reflection {
 
 
 	/**
-	 * @inheritDocs
+	 * @inheritDoc
 	 * @param  string $testClassName      Full test class name.
 	 * @param  string $interfaceName      Full interface class name.
 	 * @param  bool   $checkStaticMethods Check implementation of all static methods by interface static methods.
@@ -83,7 +83,7 @@ trait Reflection {
 	}
 
 	/**
-	 * @inheritDocs
+	 * @inheritDoc
 	 * @param  string $testClassName      Full test class name.
 	 * @param  string $traitName          Full trait class name.
 	 * @param  bool   $checkParentClasses If `TRUE`, trait implementation will be checked on all parent classes until success. Default is `FALSE`.
@@ -122,7 +122,7 @@ trait Reflection {
 
 
 	/**
-	 * @inheritDocs
+	 * @inheritDoc
 	 * @param string|object $classFullNameOrInstance
 	 *                      Class instance or full class name.
 	 * @param \string[]     $attrsClassesOrDocsTags
@@ -151,7 +151,7 @@ trait Reflection {
 	}
 	
 	/**
-	 * @inheritDocs
+	 * @inheritDoc
 	 * @param  string|object $classFullNameOrInstance
 	 *                       Class instance or full class name.
 	 * @param  string        $methodName
@@ -186,7 +186,7 @@ trait Reflection {
 	}
 	
 	/**
-	 * @inheritDocs
+	 * @inheritDoc
 	 * @param  string|object $classFullNameOrInstance
 	 *                       Class instance or full class name.
 	 * @param  string        $propertyName
@@ -265,7 +265,7 @@ trait Reflection {
 	}
 
 	/**
-	 * @inheritDocs
+	 * @inheritDoc
 	 * @param  \ReflectionClass|\ReflectionMethod|\ReflectionProperty $reflectionObject 
 	 * @param  string                                                 $attributeClassFullName 
 	 * @param  bool|NULL                                              $traversing
@@ -293,7 +293,7 @@ trait Reflection {
 	}
 
 	/**
-	 * @inheritDocs
+	 * @inheritDoc
 	 * @param  \ReflectionClass|\ReflectionMethod|\ReflectionProperty $reflectionObject 
 	 * @param  string                                                 $phpDocsTagName
 	 * @param  bool|NULL                                              $traversing
@@ -483,7 +483,7 @@ trait Reflection {
 	}
 
 	/**
-	 * @inheritDocs
+	 * @inheritDoc
 	 * @param  mixed $instance 
 	 * @param  array $propNamesNotToSerialize 
 	 * @return \string[]

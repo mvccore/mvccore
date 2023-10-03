@@ -19,7 +19,7 @@ namespace MvcCore\Route;
 trait Matching {
 
 	/**
-	 * @inheritDocs
+	 * @inheritDoc
 	 * @param  \MvcCore\Request $request The request object instance.
 	 * @throws \LogicException           Route configuration property is missing.
 	 * @throws \InvalidArgumentException Wrong route pattern format.

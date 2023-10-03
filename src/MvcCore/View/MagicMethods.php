@@ -19,7 +19,7 @@ namespace MvcCore\View;
 trait MagicMethods {
 
 	/**
-	 * @inheritDocs
+	 * @inheritDoc
 	 * @param  string $name
 	 * @param  mixed $value
 	 * @return mixed
@@ -29,7 +29,7 @@ trait MagicMethods {
 	}
 
 	/**
-	 * @inheritDocs
+	 * @inheritDoc
 	 * @param  string $name
 	 * @return mixed
 	 */
@@ -64,7 +64,7 @@ trait MagicMethods {
 	}
 
 	/**
-	 * @inheritDocs
+	 * @inheritDoc
 	 * @param  string $name
 	 * @return bool
 	 */
@@ -98,7 +98,7 @@ trait MagicMethods {
 	}
 
 	/**
-	 * @inheritDocs
+	 * @inheritDoc
 	 * @param  string $name
 	 * @return void
 	 */

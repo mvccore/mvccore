@@ -21,7 +21,7 @@ trait MagicMethods {
 	/** Classic PHP magic methods for object access ***************************/
 
 	/**
-	 * @inheritDocs
+	 * @inheritDoc
 	 * @param  string $key
 	 * @return mixed
 	 */
@@ -32,7 +32,7 @@ trait MagicMethods {
 	}
 
 	/**
-	 * @inheritDocs
+	 * @inheritDoc
 	 * @param  string $key
 	 * @param  mixed  $value
 	 * @return mixed
@@ -42,7 +42,7 @@ trait MagicMethods {
 	}
 
 	/**
-	 * @inheritDocs
+	 * @inheritDoc
 	 * @param  string $key
 	 * @return bool
 	 */
@@ -51,7 +51,7 @@ trait MagicMethods {
 	}
 
 	/**
-	 * @inheritDocs
+	 * @inheritDoc
 	 * @param  string $key
 	 * @return void
 	 */

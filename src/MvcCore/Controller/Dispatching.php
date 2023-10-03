@@ -19,7 +19,7 @@ namespace MvcCore\Controller;
 trait Dispatching {
 
 	/**
-	 * @inheritDocs
+	 * @inheritDoc
 	 * @return \MvcCore\Controller
 	 */
 	public static function CreateInstance () {
@@ -30,7 +30,7 @@ trait Dispatching {
 	}
 
 	/**
-	 * @inheritDocs
+	 * @inheritDoc
 	 * @return \MvcCore\Controller|NULL
 	 */
 	public static function GetCallerControllerInstance () {
@@ -54,7 +54,7 @@ trait Dispatching {
 	}
 
 	/**
-	 * @inheritDocs
+	 * @inheritDoc
 	 * @param  string|NULL $actionName PHP code action name has to be in PascalCase + 'Action'.
 	 *                                 This value is used to call your desired function
 	 *                                 in controller without any change.
@@ -130,7 +130,7 @@ trait Dispatching {
 	}
 
 	/**
-	 * @inheritDocs
+	 * @inheritDoc
 	 * @return void
 	 */
 	public function Init () {
@@ -311,7 +311,7 @@ trait Dispatching {
 	}
 
 	/**
-	 * @inheritDocs
+	 * @inheritDoc
 	 * @return void
 	 */
 	public function PreDispatch () {
@@ -344,7 +344,7 @@ trait Dispatching {
 	}
 
 	/**
-	 * @inheritDocs
+	 * @inheritDoc
 	 * @param  \MvcCore\Controller $controller
 	 * @param  string|int|NULL     $index
 	 * @return \MvcCore\Controller
@@ -382,7 +382,7 @@ trait Dispatching {
 	}
 
 	/**
-	 * @inheritDocs
+	 * @inheritDoc
 	 * @param  mixed $name
 	 * @return \MvcCore\Session
 	 */
@@ -392,7 +392,7 @@ trait Dispatching {
 	}
 
 	/**
-	 * @inheritDocs
+	 * @inheritDoc
 	 * @param  string      $location
 	 * @param  int         $code
 	 * @param  string|NULL $reason   Any optional text header for reason why.
@@ -412,7 +412,7 @@ trait Dispatching {
 	}
 
 	/**
-	 * @inheritDocs
+	 * @inheritDoc
 	 * @throws \MvcCore\Controller\TerminateException
 	 * @return void
 	 */
@@ -437,7 +437,7 @@ trait Dispatching {
 	}
 
 	/**
-	 * @inheritDocs
+	 * @inheritDoc
 	 * @throws \Exception If file path is not allowed (500) or file not found (404).
 	 * @return void
 	 */

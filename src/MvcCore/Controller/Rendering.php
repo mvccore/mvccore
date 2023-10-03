@@ -19,7 +19,7 @@ namespace MvcCore\Controller;
 trait Rendering {
 
 	/**
-	 * @inheritDocs
+	 * @inheritDoc
 	 * @return string
 	 */
 	public function __toString () {
@@ -27,7 +27,7 @@ trait Rendering {
 	}
 
 	/**
-	 * @inheritDocs
+	 * @inheritDoc
 	 * @param  string|NULL $controllerOrActionNameDashed
 	 * @param  string|NULL $actionNameDashed
 	 * @return string
@@ -79,7 +79,7 @@ trait Rendering {
 	}
 
 	/**
-	 * @inheritDocs
+	 * @inheritDoc
 	 * @param  string $output
 	 * @param  bool   $terminate
 	 * @return void
@@ -97,7 +97,7 @@ trait Rendering {
 	}
 
 	/**
-	 * @inheritDocs
+	 * @inheritDoc
 	 * @param  string $output
 	 * @param  bool   $terminate
 	 * @return void
@@ -112,7 +112,7 @@ trait Rendering {
 	}
 
 	/**
-	 * @inheritDocs
+	 * @inheritDoc
 	 * @param  string $output
 	 * @param  bool   $terminate
 	 * @return void
@@ -127,7 +127,7 @@ trait Rendering {
 	}
 
 	/**
-	 * @inheritDocs
+	 * @inheritDoc
 	 * @param  mixed $data
 	 * @param  bool  $terminate
 	 * @param  int   $jsonEncodeFlags
@@ -149,7 +149,7 @@ trait Rendering {
 	}
 
 	/**
-	 * @inheritDocs
+	 * @inheritDoc
 	 * @param  mixed      $data
 	 * @param  string     $callbackParamName
 	 * @param  bool       $terminate
@@ -174,7 +174,7 @@ trait Rendering {
 	}
 
 	/**
-	 * @inheritDocs
+	 * @inheritDoc
 	 * @param  string $exceptionMessage
 	 * @return void
 	 */
@@ -189,7 +189,7 @@ trait Rendering {
 	}
 
 	/**
-	 * @inheritDocs
+	 * @inheritDoc
 	 * @return void
 	 */
 	public function RenderNotFound () {
@@ -201,7 +201,7 @@ trait Rendering {
 	}
 
 	/**
-	 * @inheritDocs
+	 * @inheritDoc
 	 * @param  string $controllerOrActionNameDashed
 	 * @param  string $actionNameDashed
 	 * @return string

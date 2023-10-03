@@ -19,7 +19,7 @@ namespace MvcCore\Debug;
 trait Initializations {
 
 	/**
-	 * @inheritDocs
+	 * @inheritDoc
 	 * @param  bool $forceDebugging If defined as `TRUE` or `FALSE`,
 	 *                              debugging mode will be set not
 	 *                              by config but by this value.
@@ -56,7 +56,7 @@ trait Initializations {
 	}
 
 	/**
-	 * @inheritDocs
+	 * @inheritDoc
 	 * @param  bool   $strictExceptionsMode
 	 * @param  \int[] $errorLevelsToExceptions E_ERROR, E_RECOVERABLE_ERROR, E_CORE_ERROR, E_USER_ERROR, E_WARNING, E_CORE_WARNING, E_USER_WARNING
 	 * @return bool|NULL
@@ -93,7 +93,7 @@ trait Initializations {
 	}
 
 	/**
-	 * @inheritDocs
+	 * @inheritDoc
 	 * @return bool
 	 */
 	public static function GetDebugging () {
@@ -101,7 +101,7 @@ trait Initializations {
 	}
 
 	/**
-	 * @inheritDocs
+	 * @inheritDoc
 	 * @param  bool $debugging
 	 * @return bool
 	 */
@@ -110,7 +110,7 @@ trait Initializations {
 	}
 
 	/**
-	 * @inheritDocs
+	 * @inheritDoc
 	 * @return \stdClass
 	 */
 	public static function GetSystemCfgDebugSection () {

@@ -19,7 +19,7 @@ namespace MvcCore\Request;
 trait Instancing {
 
 	/**
-	 * @inheritDocs
+	 * @inheritDoc
 	 * @param  array       $server
 	 * @param  array       $get
 	 * @param  array       $post
@@ -85,7 +85,7 @@ trait Instancing {
 	}
 
 	/**
-	 * @inheritDocs
+	 * @inheritDoc
 	 * @return \MvcCore\Request
 	 */
 	public function InitAll () {

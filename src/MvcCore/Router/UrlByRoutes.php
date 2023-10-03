@@ -19,7 +19,7 @@ namespace MvcCore\Router;
 trait UrlByRoutes {
 
 	/**
-	 * @inheritDocs
+	 * @inheritDoc
 	 * @param  \MvcCore\Route $route
 	 * @param  array          $params
 	 * @param  string         $urlParamRouteName

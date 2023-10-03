@@ -19,7 +19,7 @@ namespace MvcCore\Config;
 trait ReadWrite {
 
 	/**
-	 * @inheritDocs
+	 * @inheritDoc
 	 * @param  array  $mergedData     Configuration data for all environments.
 	 * @param  string $configFullPath Config absolute path.
 	 * @return \MvcCore\Config
@@ -35,7 +35,7 @@ trait ReadWrite {
 	}
 
 	/**
-	 * @inheritDocs
+	 * @inheritDoc
 	 * @throws \RuntimeException
 	 * @return \MvcCore\Config|NULL
 	 */
@@ -69,7 +69,7 @@ trait ReadWrite {
 	}
 	
 	/**
-	 * @inheritDocs
+	 * @inheritDoc
 	 * @throws \RuntimeException
 	 * @return \MvcCore\Config|NULL
 	 */
@@ -99,7 +99,7 @@ trait ReadWrite {
 	}
 
 	/**
-	 * @inheritDocs
+	 * @inheritDoc
 	 * @param  string $appRootRelativePath Any config relative path from application root dir like `'~/%appPath%/website.ini'`.
 	 * @throws \RuntimeException
 	 * @return \MvcCore\Config|NULL
@@ -121,7 +121,7 @@ trait ReadWrite {
 	}
 	
 	/**
-	 * @inheritDocs
+	 * @inheritDoc
 	 * @param  string $vendorAppRootRelativePath Any config relative path from application root dir like `'~/%appPath%/website.ini'`.
 	 * @throws \RuntimeException
 	 * @return \MvcCore\Config|NULL
@@ -135,7 +135,7 @@ trait ReadWrite {
 	}
 
 	/**
-	 * @inheritDocs
+	 * @inheritDoc
 	 * @param  string $configFullPath Full path to config file.
 	 * @param  int    $configType
 	 * @throws \RuntimeException
@@ -167,7 +167,7 @@ trait ReadWrite {
 	}
 
 	/**
-	 * @inheritDocs
+	 * @inheritDoc
 	 * @throws \Exception Configuration data was not possible to dump or write.
 	 * @return bool
 	 */
@@ -193,7 +193,7 @@ trait ReadWrite {
 	}
 
 	/**
-	 * @inheritDocs
+	 * @inheritDoc
 	 * @internal
 	 * @param  string $configFullPath
 	 * @param  string $systemConfigClass
@@ -218,7 +218,7 @@ trait ReadWrite {
 	}
 
 	/**
-	 * @inheritDocs
+	 * @inheritDoc
 	 * @internal
 	 * @param  string $configPath   Relative from app root.
 	 * @param  bool   $vendorConfig `FALSE` by default.

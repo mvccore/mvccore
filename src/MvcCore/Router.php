@@ -14,7 +14,7 @@
 namespace MvcCore;
 
 /**
- * @inheritDocs
+ * @inheritDoc
  */
 class Router implements IRouter {
 	use \MvcCore\Router\Props;

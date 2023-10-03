@@ -19,7 +19,7 @@ namespace MvcCore\Request;
 trait CollectionsMethods {
 
 	/**
-	 * @inheritDocs
+	 * @inheritDoc
 	 * @param  string $type
 	 * @return array
 	 */
@@ -29,7 +29,7 @@ trait CollectionsMethods {
 	}
 
 	/**
-	 * @inheritDocs
+	 * @inheritDoc
 	 * @param  array $headers
 	 * @return \MvcCore\Request
 	 */
@@ -39,7 +39,7 @@ trait CollectionsMethods {
 	}
 
 	/**
-	 * @inheritDocs
+	 * @inheritDoc
 	 * @param  string|array|bool $pregReplaceAllowedChars If String - list of regular expression characters to only keep, if array - `preg_replace()` pattern and reverse, if `FALSE`, raw value is returned.
 	 * @return array
 	 */
@@ -56,7 +56,7 @@ trait CollectionsMethods {
 	}
 
 	/**
-	 * @inheritDocs
+	 * @inheritDoc
 	 * @param  string          $name
 	 * @param  string|string[] $value
 	 * @return \MvcCore\Request
@@ -68,7 +68,7 @@ trait CollectionsMethods {
 	}
 
 	/**
-	 * @inheritDocs
+	 * @inheritDoc
 	 * @param  string            $name                    Http header string name.
 	 * @param  string|array|bool $pregReplaceAllowedChars If String - list of regular expression characters to only keep, if array - `preg_replace()` pattern and reverse, if `FALSE`, raw value is returned.
 	 * @param  mixed             $ifNullValue             Default value returned if given param name is null.
@@ -89,7 +89,7 @@ trait CollectionsMethods {
 	}
 
 	/**
-	 * @inheritDocs
+	 * @inheritDoc
 	 * @param  string $name Http header string name.
 	 * @return bool
 	 */
@@ -100,7 +100,7 @@ trait CollectionsMethods {
 
 
 	/**
-	 * @inheritDocs
+	 * @inheritDoc
 	 * @param  array $params
 	 *               Keys are param names, values are param values.
 	 * @param  int   $sourceType
@@ -129,7 +129,7 @@ trait CollectionsMethods {
 	}
 
 	/**
-	 * @inheritDocs
+	 * @inheritDoc
 	 * @param  string|array|bool $pregReplaceAllowedChars If String - list of regular expression characters to only keep, if array - `preg_replace()` pattern and reverse, if `FALSE`, raw value is returned.
 	 * @param  array             $onlyKeys                Array with keys to get only. If empty (by default), all possible params are returned.
 	 * @param  int               $sourceType              Param source collection flag(s). If defined, there are returned only params from given collection types.
@@ -198,7 +198,7 @@ trait CollectionsMethods {
 	}
 
 	/**
-	 * @inheritDocs
+	 * @inheritDoc
 	 * Set directly raw parameter value without any conversion.
 	 * @param  string                $name       Param raw name.
 	 * @param  string|\string[]|NULL $value      Param raw value.
@@ -229,7 +229,7 @@ trait CollectionsMethods {
 	}
 	
 	/**
-	 * @inheritDocs
+	 * @inheritDoc
 	 * @param  string            $name                    Parameter string name.
 	 * @param  string|array|bool $pregReplaceAllowedChars If String - list of regular expression characters to only keep, if array - `preg_replace()` pattern and reverse, if `FALSE`, raw value is returned.
 	 * @param  mixed             $ifNullValue             Default value returned if given param name is null.
@@ -253,7 +253,7 @@ trait CollectionsMethods {
 	}
 
 	/**
-	 * @inheritDocs
+	 * @inheritDoc
 	 * @param  string $name 
 	 * @return int
 	 */
@@ -268,7 +268,7 @@ trait CollectionsMethods {
 	}
 	
 	/**
-	 * @inheritDocs
+	 * @inheritDoc
 	 * @param  string $name 
 	 * @return int
 	 */
@@ -286,7 +286,7 @@ trait CollectionsMethods {
 	}
 	
 	/**
-	 * @inheritDocs
+	 * @inheritDoc
 	 * @param  string $name       Parameter string name.
 	 * @param  int    $sourceType Param source collection flag(s). If defined, there is returned `TRUE` only for param in given collection type(s).
 	 * @return bool
@@ -321,7 +321,7 @@ trait CollectionsMethods {
 	}
 
 	/**
-	 * @inheritDocs
+	 * @inheritDoc
 	 * @param  string $name
 	 * @return \MvcCore\Request
 	 */
@@ -337,7 +337,7 @@ trait CollectionsMethods {
 
 
 	/**
-	 * @inheritDocs
+	 * @inheritDoc
 	 * @param  array $files
 	 * @return \MvcCore\Request
 	 */
@@ -347,7 +347,7 @@ trait CollectionsMethods {
 	}
 
 	/**
-	 * @inheritDocs
+	 * @inheritDoc
 	 * @return array
 	 */
 	public function & GetFiles () {
@@ -355,7 +355,7 @@ trait CollectionsMethods {
 	}
 
 	/**
-	 * @inheritDocs
+	 * @inheritDoc
 	 * @param  string $file Uploaded file string name.
 	 * @param  array  $data
 	 * @return \MvcCore\Request
@@ -366,7 +366,7 @@ trait CollectionsMethods {
 	}
 
 	/**
-	 * @inheritDocs
+	 * @inheritDoc
 	 * @param  string $file Uploaded file string name.
 	 * @return array
 	 */
@@ -381,7 +381,7 @@ trait CollectionsMethods {
 	}
 
 	/**
-	 * @inheritDocs
+	 * @inheritDoc
 	 * @param  string $file Uploaded file string name.
 	 * @return bool
 	 */
@@ -391,7 +391,7 @@ trait CollectionsMethods {
 
 
 	/**
-	 * @inheritDocs
+	 * @inheritDoc
 	 * @param  array $cookies
 	 * @return \MvcCore\Request
 	 */
@@ -401,7 +401,7 @@ trait CollectionsMethods {
 	}
 
 	/**
-	 * @inheritDocs
+	 * @inheritDoc
 	 * @param  string|array|bool $pregReplaceAllowedChars If String - list of regular expression characters to only keep, if array - `preg_replace()` pattern and reverse, if `FALSE`, raw value is returned.
 	 * @param  array             $onlyKeys                Array with keys to get only. If empty (by default), all possible cookies are returned.
 	 * @return array
@@ -425,7 +425,7 @@ trait CollectionsMethods {
 	}
 
 	/**
-	 * @inheritDocs
+	 * @inheritDoc
 	 * @param  string           $name
 	 * @param  string|\string[] $value
 	 * @return \MvcCore\Request
@@ -436,7 +436,7 @@ trait CollectionsMethods {
 	}
 
 	/**
-	 * @inheritDocs
+	 * @inheritDoc
 	 * @param  string            $name                    Cookie string name.
 	 * @param  string|array|bool $pregReplaceAllowedChars If String - list of regular expression characters to only keep, if array - `preg_replace()` pattern and reverse, if `FALSE`, raw value is returned.
 	 * @param  mixed             $ifNullValue             Default value returned if given param name is null.
@@ -456,7 +456,7 @@ trait CollectionsMethods {
 	}
 
 	/**
-	 * @inheritDocs
+	 * @inheritDoc
 	 * @param  string $name Cookie string name.
 	 * @return bool
 	 */

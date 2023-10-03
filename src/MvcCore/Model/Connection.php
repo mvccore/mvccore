@@ -19,7 +19,7 @@ namespace MvcCore\Model;
 trait Connection {
 	
 	/**
-	 * @inheritDocs
+	 * @inheritDoc
 	 * @param  string|int|array|\stdClass|NULL $connectionNameOrConfig
 	 * @param  bool                            $strict
 	 *         If `TRUE` and no connection under given name or given
@@ -50,7 +50,7 @@ trait Connection {
 	}
 	
 	/**
-	 * @inheritDocs
+	 * @inheritDoc
 	 * @param  string|int $connectionName
 	 * @param  \PDO       $connection
 	 * @return \PDO
@@ -60,7 +60,7 @@ trait Connection {
 	}
 	
 	/**
-	 * @inheritDocs
+	 * @inheritDoc
 	 * @param  string|int $connectionName
 	 * @return bool
 	 */
@@ -69,7 +69,7 @@ trait Connection {
 	}
 
 	/**
-	 * @inheritDocs
+	 * @inheritDoc
 	 * @param  string|int|NULL $connectionName
 	 * @throws \InvalidArgumentException
 	 * @return bool

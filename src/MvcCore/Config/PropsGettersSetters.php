@@ -99,7 +99,7 @@ trait PropsGettersSetters {
 
 
 	/**
-	 * @inheritDocs
+	 * @inheritDoc
 	 * @return string
 	 */
 	public static function GetConfigSystemPath () {
@@ -107,7 +107,7 @@ trait PropsGettersSetters {
 	}
 
 	/**
-	 * @inheritDocs
+	 * @inheritDoc
 	 * @param  string $configSystemPath
 	 * @return string
 	 */
@@ -116,7 +116,7 @@ trait PropsGettersSetters {
 	}
 	
 	/**
-	 * @inheritDocs
+	 * @inheritDoc
 	 * @return string|NULL
 	 */
 	public static function GetConfigEnvironmentPath () {
@@ -124,7 +124,7 @@ trait PropsGettersSetters {
 	}
 
 	/**
-	 * @inheritDocs
+	 * @inheritDoc
 	 * @param  string|NULL $configEnvironmentPath
 	 * @return string|NULL
 	 */
@@ -133,7 +133,7 @@ trait PropsGettersSetters {
 	}
 
 	/**
-	 * @inheritDocs
+	 * @inheritDoc
 	 * @param  string          $appRootRelativePath
 	 * @param  \MvcCore\Config $config
 	 * @return \MvcCore\Config
@@ -144,7 +144,7 @@ trait PropsGettersSetters {
 	}
 
 	/**
-	 * @inheritDocs
+	 * @inheritDoc
 	 * @param  string|NULL $appRootRelativePath
 	 * @return bool
 	 */
@@ -158,7 +158,7 @@ trait PropsGettersSetters {
 	}
 
 	/**
-	 * @inheritDocs
+	 * @inheritDoc
 	 * @return string
 	 */
 	public function GetFullPath () {
@@ -166,7 +166,7 @@ trait PropsGettersSetters {
 	}
 
 	/**
-	 * @inheritDocs
+	 * @inheritDoc
 	 * @return int
 	 */
 	public function GetLastChanged () {
@@ -174,7 +174,7 @@ trait PropsGettersSetters {
 	}
 
 	/**
-	 * @inheritDocs
+	 * @inheritDoc
 	 * @return int
 	 */
 	public function GetType () {

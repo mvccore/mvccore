@@ -19,7 +19,7 @@ namespace MvcCore\Controller;
 trait GettersSetters {
 
 	/**
-	 * @inheritDocs
+	 * @inheritDoc
 	 * @param  string            $name                    Parameter string name.
 	 * @param  string|array|bool $pregReplaceAllowedChars If String - list of regular expression characters to only keep, if array - `preg_replace()` pattern and reverse, if `FALSE`, raw value is returned.
 	 * @param  mixed             $ifNullValue             Default value returned if given param name is null.
@@ -38,7 +38,7 @@ trait GettersSetters {
 	}
 
 	/**
-	 * @inheritDocs
+	 * @inheritDoc
 	 * @return \MvcCore\Application
 	 */
 	public function GetApplication () {
@@ -46,7 +46,7 @@ trait GettersSetters {
 	}
 
 	/**
-	 * @inheritDocs
+	 * @inheritDoc
 	 * @param  \MvcCore\Application $application
 	 * @return \MvcCore\Controller
 	 */
@@ -57,7 +57,7 @@ trait GettersSetters {
 	}
 
 	/**
-	 * @inheritDocs
+	 * @inheritDoc
 	 * @return \MvcCore\Environment
 	 */
 	public function GetEnvironment() {
@@ -65,7 +65,7 @@ trait GettersSetters {
 	}
 
 	/**
-	 * @inheritDocs
+	 * @inheritDoc
 	 * @param  \MvcCore\Environment $environment
 	 * @return \MvcCore\Controller
 	 */
@@ -76,7 +76,7 @@ trait GettersSetters {
 	}
 
 	/**
-	 * @inheritDocs
+	 * @inheritDoc
 	 * @return \MvcCore\Request
 	 */
 	public function GetRequest () {
@@ -84,7 +84,7 @@ trait GettersSetters {
 	}
 
 	/**
-	 * @inheritDocs
+	 * @inheritDoc
 	 * @param  \MvcCore\Request $request
 	 * @return \MvcCore\Controller
 	 */
@@ -98,7 +98,7 @@ trait GettersSetters {
 	}
 
 	/**
-	 * @inheritDocs
+	 * @inheritDoc
 	 * @return string
 	 */
 	public function GetControllerName () {
@@ -106,7 +106,7 @@ trait GettersSetters {
 	}
 
 	/**
-	 * @inheritDocs
+	 * @inheritDoc
 	 * @param  string $controllerName 
 	 * @return \MvcCore\Controller
 	 */
@@ -116,7 +116,7 @@ trait GettersSetters {
 	}
 
 	/**
-	 * @inheritDocs
+	 * @inheritDoc
 	 * @return string
 	 */
 	public function GetActionName () {
@@ -124,7 +124,7 @@ trait GettersSetters {
 	}
 
 	/**
-	 * @inheritDocs
+	 * @inheritDoc
 	 * @param  string $actionName
 	 * @return \MvcCore\Controller
 	 */
@@ -134,7 +134,7 @@ trait GettersSetters {
 	}
 
 	/**
-	 * @inheritDocs
+	 * @inheritDoc
 	 * @return \MvcCore\Response
 	 */
 	public function GetResponse () {
@@ -142,7 +142,7 @@ trait GettersSetters {
 	}
 
 	/**
-	 * @inheritDocs
+	 * @inheritDoc
 	 * @param \MvcCore\Response $response
 	 * @return \MvcCore\Controller
 	 */
@@ -153,7 +153,7 @@ trait GettersSetters {
 	}
 
 	/**
-	 * @inheritDocs
+	 * @inheritDoc
 	 * @return \MvcCore\Router
 	 */
 	public function GetRouter () {
@@ -161,7 +161,7 @@ trait GettersSetters {
 	}
 
 	/**
-	 * @inheritDocs
+	 * @inheritDoc
 	 * @param  \MvcCore\Router $router
 	 * @return \MvcCore\Controller
 	 */
@@ -172,7 +172,7 @@ trait GettersSetters {
 	}
 
 	/**
-	 * @inheritDocs
+	 * @inheritDoc
 	 * @return boolean
 	 */
 	public function IsAjax () {
@@ -180,7 +180,7 @@ trait GettersSetters {
 	}
 	
 	/**
-	 * @inheritDocs
+	 * @inheritDoc
 	 * @param  boolean $ajax 
 	 * @return \MvcCore\Controller
 	 */
@@ -190,7 +190,7 @@ trait GettersSetters {
 	}
 	
 	/**
-	 * @inheritDocs
+	 * @inheritDoc
 	 * @return int
 	 */
 	public function GetDispatchState () {
@@ -198,7 +198,7 @@ trait GettersSetters {
 	}
 
 	/**
-	 * @inheritDocs
+	 * @inheritDoc
 	 * @param  int $dispatchState
 	 * @return \MvcCore\Controller
 	 */
@@ -208,7 +208,7 @@ trait GettersSetters {
 	}
 
 	/**
-	 * @inheritDocs
+	 * @inheritDoc
 	 * @return \MvcCore\Model
 	 */
 	public function GetUser () {
@@ -216,7 +216,7 @@ trait GettersSetters {
 	}
 
 	/**
-	 * @inheritDocs
+	 * @inheritDoc
 	 * @param  \MvcCore\Model $user
 	 * @return \MvcCore\Controller
 	 */
@@ -226,7 +226,7 @@ trait GettersSetters {
 	}
 
 	/**
-	 * @inheritDocs
+	 * @inheritDoc
 	 * @return \MvcCore\View|NULL
 	 */
 	public function GetView () {
@@ -234,7 +234,7 @@ trait GettersSetters {
 	}
 
 	/**
-	 * @inheritDocs
+	 * @inheritDoc
 	 * @param  \MvcCore\View $view
 	 * @return \MvcCore\Controller
 	 */
@@ -245,7 +245,7 @@ trait GettersSetters {
 	}
 
 	/**
-	 * @inheritDocs
+	 * @inheritDoc
 	 * @return int
 	 */
 	public function GetRenderMode () {
@@ -253,7 +253,7 @@ trait GettersSetters {
 	}
 
 	/**
-	 * @inheritDocs
+	 * @inheritDoc
 	 * @param  int $renderMode
 	 * @return \MvcCore\Controller
 	 */
@@ -263,7 +263,7 @@ trait GettersSetters {
 	}
 
 	/**
-	 * @inheritDocs
+	 * @inheritDoc
 	 * @return string|NULL
 	 */
 	public function GetLayout () {
@@ -271,7 +271,7 @@ trait GettersSetters {
 	}
 
 	/**
-	 * @inheritDocs
+	 * @inheritDoc
 	 * @param  string|NULL $layout
 	 * @return \MvcCore\Controller
 	 */
@@ -281,7 +281,7 @@ trait GettersSetters {
 	}
 
 	/**
-	 * @inheritDocs
+	 * @inheritDoc
 	 * @return string|NULL
 	 */
 	public function GetViewScriptsPath () {
@@ -289,7 +289,7 @@ trait GettersSetters {
 	}
 
 	/**
-	 * @inheritDocs
+	 * @inheritDoc
 	 * @param  string|NULL $viewScriptsPath
 	 * @return \MvcCore\Controller
 	 */
@@ -299,7 +299,7 @@ trait GettersSetters {
 	}
 
 	/**
-	 * @inheritDocs
+	 * @inheritDoc
 	 * @return bool
 	 */
 	public function GetViewEnabled () {
@@ -307,7 +307,7 @@ trait GettersSetters {
 	}
 
 	/**
-	 * @inheritDocs
+	 * @inheritDoc
 	 * @param  bool $viewEnabled
 	 * @return \MvcCore\Controller
 	 */
@@ -317,7 +317,7 @@ trait GettersSetters {
 	}
 
 	/**
-	 * @inheritDocs
+	 * @inheritDoc
 	 * @return \MvcCore\Controller|NULL
 	 */
 	public function GetParentController () {
@@ -325,7 +325,7 @@ trait GettersSetters {
 	}
 
 	/**
-	 * @inheritDocs
+	 * @inheritDoc
 	 * @param  \MvcCore\Controller|NULL $parentController
 	 * @return \MvcCore\Controller
 	 */
@@ -336,7 +336,7 @@ trait GettersSetters {
 	}
 
 	/**
-	 * @inheritDocs
+	 * @inheritDoc
 	 * @return \MvcCore\Controller[]
 	 */
 	public function GetChildControllers () {
@@ -344,7 +344,7 @@ trait GettersSetters {
 	}
 
 	/**
-	 * @inheritDocs
+	 * @inheritDoc
 	 * @param  \MvcCore\Controller[] $childControllers
 	 * @return \MvcCore\Controller
 	 */
@@ -354,7 +354,7 @@ trait GettersSetters {
 	}
 
 	/**
-	 * @inheritDocs
+	 * @inheritDoc
 	 * @param  string|int $index
 	 * @return \MvcCore\Controller
 	 */
@@ -363,7 +363,7 @@ trait GettersSetters {
 	}
 
 	/**
-	 * @inheritDocs
+	 * @inheritDoc
 	 * @param  string $appRootRelativePath Any config relative path from application root dir like `'~/%appPath%/website.ini'`.
 	 * @return \MvcCore\Config|NULL
 	 */
@@ -373,7 +373,7 @@ trait GettersSetters {
 	}
 
 	/**
-	 * @inheritDocs
+	 * @inheritDoc
 	 * @return \MvcCore\Config|NULL
 	 */
 	public function GetConfigSystem () {
@@ -382,7 +382,7 @@ trait GettersSetters {
 	}
 
 	/**
-	 * @inheritDocs
+	 * @inheritDoc
 	 * @param  string $controllerActionOrRouteName Should be `"Controller:Action"` combination or just any route name as custom specific string.
 	 * @param  array  $params                      Optional, array with params, key is param name, value is param value.
 	 * @return string
@@ -392,7 +392,7 @@ trait GettersSetters {
 	}
 
 	/**
-	 * @inheritDocs
+	 * @inheritDoc
 	 * @param  string $path
 	 * @return string
 	 */

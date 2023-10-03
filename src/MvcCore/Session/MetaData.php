@@ -19,7 +19,7 @@ namespace MvcCore\Session;
 trait MetaData {
 	
 	/**
-	 * @inheritDocs
+	 * @inheritDoc
 	 * @return \stdClass
 	 */
 	public static function GetSessionMetadata () {
@@ -35,8 +35,12 @@ trait MetaData {
 	protected static function setUpMeta () {
 		$metaKey = static::SESSION_METADATA_KEY;
 		$meta = [];
-		if (isset($_SESSION[$metaKey]))
-			$meta = @unserialize($_SESSION[$metaKey]);
+		if (isset($_SESSION[$metaKey])) {
+			$unserializeFn = function_exists('igbinary_unserialize') ? 'igbinary_unserialize' : 'unserialize';
+			$metaLocal = @call_user_func($unserializeFn, $_SESSION[$metaKey]);
+			if ($metaLocal !== FALSE)
+				$meta = $metaLocal;
+		}
 		if (!$meta)
 			$meta = [
 				'names'			=> [],

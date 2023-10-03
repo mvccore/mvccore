@@ -19,7 +19,7 @@ namespace MvcCore\Model;
 trait MagicMethods {
 	
 	/**
-	 * @inheritDocs
+	 * @inheritDoc
 	 * @param  string $rawName
 	 * @param  array  $arguments
 	 * @throws \InvalidArgumentException If `strtolower($rawName)` doesn't begin with `"get"` or with `"set"`.
@@ -49,7 +49,7 @@ trait MagicMethods {
 	}
 
 	/**
-	 * @inheritDocs
+	 * @inheritDoc
 	 * @param  string $name
 	 * @param  mixed  $value
 	 * @throws \InvalidArgumentException If name is `initialValues` or any custom name in extended class.
@@ -66,7 +66,7 @@ trait MagicMethods {
 	}
 
 	/**
-	 * @inheritDocs
+	 * @inheritDoc
 	 * @param  string $name
 	 * @throws \InvalidArgumentException If name is `initialValues` or any custom name in extended class.
 	 * @return mixed
@@ -84,7 +84,7 @@ trait MagicMethods {
 	}
 
 	/**
-	 * @inheritDocs
+	 * @inheritDoc
 	 * @return \string[]
 	 */
 	public function __sleep () {
@@ -147,7 +147,7 @@ trait MagicMethods {
 	}
 
 	/**
-	 * @inheritDocs
+	 * @inheritDoc
 	 * @param  int $propsFlags
 	 * @return array|mixed
 	 */

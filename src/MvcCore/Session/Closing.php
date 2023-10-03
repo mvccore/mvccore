@@ -19,7 +19,7 @@ namespace MvcCore\Session;
 trait Closing {
 
 	/**
-	 * @inheritDocs
+	 * @inheritDoc
 	 * @return void
 	 */
 	public static function Close () {
@@ -47,13 +47,17 @@ trait Closing {
 					$hoops[$name] = [$hoopsCount, $ignoredReqsFlags];
 				}
 			}
-			$_SESSION[$metaKey] = serialize(static::$meta);
-			@session_write_close();
+			$serializeFn = function_exists('igbinary_serialize') ? 'igbinary_serialize' : 'serialize';
+			$metaStr = @call_user_func($serializeFn, static::$meta);
+			if ($metaStr !== FALSE) {
+				$_SESSION[$metaKey] = $metaStr;
+				@session_write_close();
+			}
 		});
 	}
 
 	/**
-	 * @inheritDocs
+	 * @inheritDoc
 	 * @return void
 	 */
 	public static function SendSessionIdCookie () {
@@ -90,7 +94,7 @@ trait Closing {
 	}
 
 	/**
-	 * @inheritDocs
+	 * @inheritDoc
 	 * @return int
 	 */
 	public static function GetSessionMaxTime () {
@@ -105,7 +109,7 @@ trait Closing {
 	}
 	
 	/**
-	 * @inheritDocs
+	 * @inheritDoc
 	 * @return void
 	 */
 	public static function SendRefreshedCsrfCookie () {
@@ -135,7 +139,7 @@ trait Closing {
 	}
 	
 	/**
-	 * @inheritDocs
+	 * @inheritDoc
 	 * @return int
 	 */
 	public static function GetSessionCsrfMaxTime () {

@@ -19,7 +19,7 @@ namespace MvcCore\View;
 trait Rendering {
 
 	/**
-	 * @inheritDocs
+	 * @inheritDoc
 	 * @param  string $relativePath Relative path from current view script.
 	 * @param  array  $variables    Associative array with variables to pass it 
 	 *                              into view script inside view store or as local variables.
@@ -35,7 +35,7 @@ trait Rendering {
 	}
 
 	/**
-	 * @inheritDocs
+	 * @inheritDoc
 	 * @param  string $relativePath Relative path from current view script.
 	 * @param  array  $variables    Associative array with variables to pass it 
 	 *                              into view script inside view store or as local variables.
@@ -51,7 +51,7 @@ trait Rendering {
 	}
 
 	/**
-	 * @inheritDocs
+	 * @inheritDoc
 	 * @internal
 	 * @param  string      $relativePath
 	 * @param  string|NULL $content
@@ -64,7 +64,7 @@ trait Rendering {
 	}
 
 	/**
-	 * @inheritDocs
+	 * @inheritDoc
 	 * @param  int $renderMode
 	 * @return \MvcCore\View
 	 */
@@ -98,7 +98,7 @@ trait Rendering {
 	}
 
 	/**
-	 * @inheritDocs
+	 * @inheritDoc
 	 * @param  string      $typePath     By default: `"Layouts" | "Scripts"`. It could be `"Forms" | "Forms/Fields"` etc...
 	 * @param  string      $relativePath
 	 * @throws \InvalidArgumentException Template not found in path: `$viewScriptFullPath`.
@@ -130,7 +130,7 @@ trait Rendering {
 	}
 
 	/**
-	 * @inheritDocs
+	 * @inheritDoc
 	 * @internal
 	 * @param  string $viewScriptFullPath 
 	 * @return string
@@ -164,7 +164,7 @@ trait Rendering {
 	}
 	
 	/**
-	 * @inheritDocs
+	 * @inheritDoc
 	 * @param  \MvcCore\Application $app 
 	 * @return string
 	 */
@@ -179,7 +179,7 @@ trait Rendering {
 	}
 
 	/**
-	 * @inheritDocs
+	 * @inheritDoc
 	 * @param  \MvcCore\Application $app 
 	 * @param  string               $controllerClassFullName
 	 * @param  bool                 $detectByReflection
@@ -207,7 +207,7 @@ trait Rendering {
 	}
 
 	/**
-	 * @inheritDocs
+	 * @inheritDoc
 	 * @param  string $typedViewsDirFullPath Example: `/abs/doc/root/App/Views/{Layouts,Forms,Scripts}`.
 	 * @param  string $corectedRelativePath  Example: `ctrl-name/action-name`.
 	 * @return string
@@ -271,7 +271,7 @@ trait Rendering {
 	}
 
 	/**
-	 * @inheritDocs
+	 * @inheritDoc
 	 * @param  \MvcCore\View $view
 	 * @param  bool          $overwriteExistingKeys If any property name already exist in view store, overwrite it by given value by default.
 	 * @return \MvcCore\View
@@ -290,7 +290,7 @@ trait Rendering {
 	}
 
 	/**
-	 * @inheritDocs
+	 * @inheritDoc
 	 * @return string
 	 */
 	public function GetContent () {
@@ -321,7 +321,7 @@ trait Rendering {
 	}
 
 	/**
-	 * @inheritDocs
+	 * @inheritDoc
 	 * @param  string $content
 	 * @return string
 	 */

@@ -13,7 +13,7 @@
 
 namespace MvcCore {
 	/**
-	 * @inheritDocs
+	 * @inheritDoc
 	 */
 	class Debug implements IDebug {
 		use \MvcCore\Debug\Props;

@@ -19,7 +19,7 @@ namespace MvcCore\Session;
 trait NamespaceMethods {
 
 	/**
-	 * @inheritDocs
+	 * @inheritDoc
 	 * @param  string $name Session namespace unique name.
 	 * @return \MvcCore\Session
 	 */
@@ -41,7 +41,7 @@ trait NamespaceMethods {
 	}
 
 	/**
-	 * @inheritDocs
+	 * @inheritDoc
 	 * @param  int $hoopsCount           Requests count.
 	 * @param  int $ignoredRequestsFlags Ignored requests flags, 1022 by default.
 	 * @return \MvcCore\Session
@@ -52,7 +52,7 @@ trait NamespaceMethods {
 	}
 
 	/**
-	 * @inheritDocs
+	 * @inheritDoc
 	 * @param  int $seconds
 	 * @return \MvcCore\Session
 	 */
@@ -63,7 +63,7 @@ trait NamespaceMethods {
 	}
 
 	/**
-	 * @inheritDocs
+	 * @inheritDoc
 	 * @return void
 	 */
 	public function Destroy () {
@@ -80,7 +80,7 @@ trait NamespaceMethods {
 	}
 
 	/**
-	 * @inheritDocs
+	 * @inheritDoc
 	 * @return void
 	 */
 	public static function DestroyAll () {
@@ -100,7 +100,7 @@ trait NamespaceMethods {
 	}
 
 	/**
-	 * @inheritDocs
+	 * @inheritDoc
 	 * @return \MvcCore\Session
 	 */
 	public static function GetCsrfNamespace () {

@@ -25,7 +25,7 @@ trait Helpers {
 	protected static $tmpDir = NULL;
 
 	/**
-	 * @inheritDocs
+	 * @inheritDoc
 	 * @return string
 	 */
 	public static function GetSystemTmpDir () {
@@ -66,7 +66,7 @@ trait Helpers {
 	}
 	
 	/**
-	 * @inheritDocs
+	 * @inheritDoc
 	 * @param  string $queryStr
 	 * @return bool
 	 */
@@ -83,7 +83,7 @@ trait Helpers {
 	}
 
 	/**
-	 * @inheritDocs
+	 * @inheritDoc
 	 * @param  int $hashCharLen 
 	 * @return string
 	 */
@@ -107,7 +107,7 @@ trait Helpers {
 	}
 
 	/**
-	 * @inheritDocs
+	 * @inheritDoc
 	 * @param  string|callable $internalFnOrHandler
 	 * @param  array           $args
 	 * @param  callable        $onError
@@ -151,7 +151,7 @@ trait Helpers {
 	}
 
 	/**
-	 * @inheritDocs
+	 * @inheritDoc
 	 * @see http://php.net/manual/en/function.flock.php
 	 * @see http://php.net/manual/en/function.set-error-handler.php
 	 * @see http://php.net/manual/en/function.clearstatcache.php
@@ -274,7 +274,7 @@ trait Helpers {
 	}
 
 	/**
-	 * @inheritDocs
+	 * @inheritDoc
 	 * @see https://www.php.net/manual/en/function.realpath.php
 	 * @param  string $path
 	 * @return string

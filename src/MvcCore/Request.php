@@ -14,7 +14,7 @@
 namespace MvcCore;
 
 /**
- * @inheritDocs
+ * @inheritDoc
  */
 #[\AllowDynamicProperties]
 class Request implements IRequest {

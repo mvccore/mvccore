@@ -14,7 +14,7 @@
 namespace MvcCore;
 
 /**
- * @inheritDocs
+ * @inheritDoc
  */
 class Controller implements \MvcCore\IController {
 	use \MvcCore\Controller\Props;

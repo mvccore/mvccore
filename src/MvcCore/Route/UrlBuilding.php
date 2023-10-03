@@ -19,7 +19,7 @@ namespace MvcCore\Route;
 trait UrlBuilding {
 
 	/**
-	 * @inheritDocs
+	 * @inheritDoc
 	 * @param  array  $params
 	 * @param  array  $defaultParams
 	 * @param  string $direction
@@ -47,7 +47,7 @@ trait UrlBuilding {
 	}
 
 	/**
-	 * @inheritDocs
+	 * @inheritDoc
 	 * @param  \MvcCore\Request $request 
 	 *                          Currently requested request object.
 	 * @param  array            $params

@@ -19,7 +19,7 @@ namespace MvcCore\Router;
 trait Instancing {
 
 	/**
-	 * @inheritDocs
+	 * @inheritDoc
 	 * @param  \MvcCore\Route[]|array $routes 
 	 *                                Keyed array with routes, keys are route names or route
 	 *                                `Controller::Action` definitions.

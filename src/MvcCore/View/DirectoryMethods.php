@@ -19,7 +19,7 @@ namespace MvcCore\View;
 trait DirectoryMethods {
 
 	/**
-	 * @inheritDocs
+	 * @inheritDoc
 	 * @return string|NULL
 	 */
 	public function GetCurrentViewFullPath () {
@@ -32,7 +32,7 @@ trait DirectoryMethods {
 	}
 
 	/**
-	 * @inheritDocs
+	 * @inheritDoc
 	 * @return string|NULL
 	 */
 	public function GetCurrentViewDirectory () {
@@ -45,7 +45,7 @@ trait DirectoryMethods {
 	}
 
 	/**
-	 * @inheritDocs
+	 * @inheritDoc
 	 * @return string|NULL
 	 */
 	public function GetParentViewFullPath () {
@@ -81,7 +81,7 @@ trait DirectoryMethods {
 	}
 
 	/**
-	 * @inheritDocs
+	 * @inheritDoc
 	 * @return string|NULL
 	 */
 	public function GetParentViewDirectory () {

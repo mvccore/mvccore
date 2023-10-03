@@ -31,7 +31,7 @@ trait Environment {
 	protected static $commonEnvironmentDataKey = '';
 
 	/**
-	 * @inheritDocs
+	 * @inheritDoc
 	 * @param  \MvcCore\Config $config
 	 * @return array|\stdClass
 	 */
@@ -70,7 +70,7 @@ trait Environment {
 	}
 
 	/**
-	 * @inheritDocs
+	 * @inheritDoc
 	 * @param  \MvcCore\Config $config
 	 * @param  string          $environmentName
 	 * @return void
@@ -93,7 +93,7 @@ trait Environment {
 	}
 
 	/**
-	 * @inheritDocs
+	 * @inheritDoc
 	 * @param  string|NULL $environmentName Return configuration data only for specific
 	 *                                      environment name. If `NULL`, there are
 	 *                                      returned data for current environment.
@@ -123,7 +123,7 @@ trait Environment {
 	}
 
 	/**
-	 * @inheritDocs
+	 * @inheritDoc
 	 * @param  array $data Data to set into configuration store(s). If second
 	 *                     param is `NULL`, there are set data for current envirnment.
 	 * @param  string|NULL $environmentName Set configuration data for specific
@@ -184,7 +184,9 @@ trait Environment {
 	 * @return \stdClass|array The merged object
 	 */
 	protected static function mergeRecursive ($commonEnvData, $specificEnvData) {
-		$commonEnvDataClone = unserialize(serialize($commonEnvData));
+		$commonEnvDataClone = function_exists('igbinary_serialize') // clone
+			? igbinary_unserialize(igbinary_serialize($commonEnvData))
+			: unserialize(serialize($commonEnvData));
 		static::_mergeArraysOrObjectsRecursive($commonEnvDataClone, $specificEnvData);
 		return $commonEnvDataClone;
 	}

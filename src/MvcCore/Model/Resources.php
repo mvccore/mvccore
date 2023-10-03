@@ -19,7 +19,7 @@ namespace MvcCore\Model;
 trait Resources {
 	
 	/**
-	 * @inheritDocs
+	 * @inheritDoc
 	 * @param  array|NULL $args      Values array with variables to pass into resource `__construct()` method.
 	 *                               If `NULL`, recource class will be created without `__construct()` method call.
 	 * @param  string     $classPath Relative namespace path to resource class. It could contains `.` or `..`
@@ -31,14 +31,15 @@ trait Resources {
 	public static function GetCommonResource ($args = NULL, $classPath = '{self}s\CommonResource') {
 		static $__commonResources = [];
 		$staticClassPath = get_called_class();
-		$cacheKey = implode('|', [$staticClassPath, serialize($args)]);
+		$serializeFn = function_exists('igbinary_serialize') ? 'igbinary_serialize' : 'serialize';
+		$cacheKey = implode('|', [$staticClassPath, call_user_func($serializeFn, $args)]);
 		if (isset($__commonResources[$cacheKey])) 
 			return $__commonResources[$cacheKey];
 		return $__commonResources[$cacheKey] = static::findAndCreateResource($args, $classPath);
 	}
 	
 	/**
-	 * @inheritDocs
+	 * @inheritDoc
 	 * @param  array|NULL $args      Values array with variables to pass into resource `__construct()` method.
 	 *                               If `NULL`, recource class will be created without `__construct()` method call.
 	 * @param  string     $classPath Relative namespace path to resource class. It could contains `.` or `..`

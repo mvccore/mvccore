@@ -19,7 +19,7 @@ namespace MvcCore\Response;
 trait Content {
 
 	/**
-	 * @inheritDocs
+	 * @inheritDoc
 	 * @param  string $body
 	 * @return \MvcCore\Response
 	 */
@@ -29,7 +29,7 @@ trait Content {
 	}
 
 	/**
-	 * @inheritDocs
+	 * @inheritDoc
 	 * @param  string $body
 	 * @return \MvcCore\Response
 	 */
@@ -39,7 +39,7 @@ trait Content {
 	}
 
 	/**
-	 * @inheritDocs
+	 * @inheritDoc
 	 * @param  string $body
 	 * @return \MvcCore\Response
 	 */
@@ -49,7 +49,7 @@ trait Content {
 	}
 
 	/**
-	 * @inheritDocs
+	 * @inheritDoc
 	 * @return string|NULL
 	 */
 	public function & GetBody () {
@@ -57,7 +57,7 @@ trait Content {
 	}
 
 	/**
-	 * @inheritDocs
+	 * @inheritDoc
 	 * @return bool
 	 */
 	public function IsHtmlOutput () {
@@ -69,7 +69,7 @@ trait Content {
 	}
 
 	/**
-	 * @inheritDocs
+	 * @inheritDoc
 	 * @return bool
 	 */
 	public function IsXmlOutput () {
@@ -81,7 +81,7 @@ trait Content {
 	}
 
 	/**
-	 * @inheritDocs
+	 * @inheritDoc
 	 * @return bool
 	 */
 	public function IsSentBody () {
@@ -89,7 +89,7 @@ trait Content {
 	}
 
 	/**
-	 * @inheritDocs
+	 * @inheritDoc
 	 * @return \MvcCore\Response
 	 */
 	public function Send () {
@@ -99,7 +99,7 @@ trait Content {
 	}
 
 	/**
-	 * @inheritDocs
+	 * @inheritDoc
 	 * @return \MvcCore\Response
 	 */
 	public function SendHeaders () {
@@ -160,7 +160,7 @@ trait Content {
 	}
 
 	/**
-	 * @inheritDocs
+	 * @inheritDoc
 	 * @return \MvcCore\Response
 	 */
 	public function SendBody () {

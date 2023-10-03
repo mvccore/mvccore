@@ -19,7 +19,7 @@ namespace MvcCore\Config;
 trait IniRead {
 
 	/**
-	 * @inheritDocs
+	 * @inheritDoc
 	 * @return bool
 	 */
 	public function Read () {

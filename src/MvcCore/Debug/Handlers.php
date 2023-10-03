@@ -19,7 +19,7 @@ namespace MvcCore\Debug;
 trait Handlers {
 
 	/**
-	 * @inheritDocs
+	 * @inheritDoc
 	 * @param  string $name Time pointer name.
 	 * @return float        Elapsed seconds.
 	 */
@@ -32,7 +32,7 @@ trait Handlers {
 	}
 
 	/**
-	 * @inheritDocs
+	 * @inheritDoc
 	 * @param  mixed  $value  Variable to dump.
 	 * @param  bool   $return Let's return output instead of printing it.
 	 * @param  bool   $exit   `TRUE` for last dump call by `xxx();` method
@@ -57,7 +57,7 @@ trait Handlers {
 	}
 
 	/**
-	 * @inheritDocs
+	 * @inheritDoc
 	 * @param  mixed  $value   Variable to dump.
 	 * @param  string $title   Optional title.
 	 * @param  array  $options Dumper options.
@@ -77,7 +77,7 @@ trait Handlers {
 	}
 
 	/**
-	 * @inheritDocs
+	 * @inheritDoc
 	 * @param  mixed|\Exception|\Throwable $value
 	 * @param  string                      $priority
 	 * @return string                      Logging filename full path.
@@ -94,7 +94,7 @@ trait Handlers {
 	}
 
 	/**
-	 * @inheritDocs
+	 * @inheritDoc
 	 * @param  \Exception|\Error|\Throwable|array $exception
 	 * @param  bool $exit
 	 * @return void
@@ -116,7 +116,7 @@ trait Handlers {
 	}
 
 	/**
-	 * @inheritDocs
+	 * @inheritDoc
 	 * @return void
 	 */
 	public static function ShutdownHandler () {

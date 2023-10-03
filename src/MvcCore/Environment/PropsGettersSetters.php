@@ -48,7 +48,7 @@ trait PropsGettersSetters {
 
 
 	/**
-	 * @inheritDocs
+	 * @inheritDoc
 	 * @return \string[]
 	 */
 	public static function GetAllNames () {
@@ -61,7 +61,7 @@ trait PropsGettersSetters {
 	}
 
 	/**
-	 * @inheritDocs
+	 * @inheritDoc
 	 * @param  boolean $detectionBySystemConfig `TRUE` by default.
 	 * @return boolean
 	 */
@@ -70,7 +70,7 @@ trait PropsGettersSetters {
 	}
 
 	/**
-	 * @inheritDocs
+	 * @inheritDoc
 	 * @return boolean
 	 */
 	public static function GetDetectionBySystemConfig () {
@@ -78,7 +78,7 @@ trait PropsGettersSetters {
 	}
 
 	/**
-	 * @inheritDocs
+	 * @inheritDoc
 	 * @return bool
 	 */
 	public function IsDevelopment () {
@@ -87,7 +87,7 @@ trait PropsGettersSetters {
 	}
 
 	/**
-	 * @inheritDocs
+	 * @inheritDoc
 	 * @return bool
 	 */
 	public function IsBeta () {
@@ -96,7 +96,7 @@ trait PropsGettersSetters {
 	}
 
 	/**
-	 * @inheritDocs
+	 * @inheritDoc
 	 * @return bool
 	 */
 	public function IsAlpha () {
@@ -105,7 +105,7 @@ trait PropsGettersSetters {
 	}
 
 	/**
-	 * @inheritDocs
+	 * @inheritDoc
 	 * @return bool
 	 */
 	public function IsProduction () {
@@ -114,7 +114,7 @@ trait PropsGettersSetters {
 	}
 
 	/**
-	 * @inheritDocs
+	 * @inheritDoc
 	 * @return bool
 	 */
 	public function IsDetected () {
@@ -122,7 +122,7 @@ trait PropsGettersSetters {
 	}
 
 	/**
-	 * @inheritDocs
+	 * @inheritDoc
 	 * @param  string $name
 	 * @return string
 	 */
@@ -135,7 +135,7 @@ trait PropsGettersSetters {
 	}
 
 	/**
-	 * @inheritDocs
+	 * @inheritDoc
 	 * @return string
 	 */
 	public function GetName () {

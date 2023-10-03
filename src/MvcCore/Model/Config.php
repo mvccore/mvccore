@@ -19,7 +19,7 @@ namespace MvcCore\Model;
 trait Config {
 
 	/**
-	 * @inheritDocs
+	 * @inheritDoc
 	 * @return \stdClass
 	 */
 	public static function GetSysConfigProperties () {
@@ -27,7 +27,7 @@ trait Config {
 	}
 
 	/**
-	 * @inheritDocs
+	 * @inheritDoc
 	 * @return \stdClass[]
 	 */
 	public static function & GetConfigs () {
@@ -36,7 +36,7 @@ trait Config {
 	}
 
 	/**
-	 * @inheritDocs
+	 * @inheritDoc
 	 * @param  \stdClass[]|array[] $configs               Configuration array with `\stdClass` objects or arrays with configuration data.
 	 * @param  string|int|NULL     $defaultConnectionName
 	 * @return bool
@@ -56,7 +56,7 @@ trait Config {
 	}
 
 	/**
-	 * @inheritDocs
+	 * @inheritDoc
 	 * @param  int|string|NULL $connectionName
 	 * @return \stdClass|NULL
 	 */
@@ -79,7 +79,7 @@ trait Config {
 	}
 
 	/**
-	 * @inheritDocs
+	 * @inheritDoc
 	 * @param  \stdClass[]|array[] $config
 	 * @param  string|int|NULL     $connectionName
 	 * @return string|int

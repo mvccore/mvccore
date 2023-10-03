@@ -19,7 +19,7 @@ namespace MvcCore\View;
 trait ViewHelpers {
 
 	/**
-	 * @inheritDocs
+	 * @inheritDoc
 	 * @return string
 	 */
 	public static function GetHelpersDir () {
@@ -27,7 +27,7 @@ trait ViewHelpers {
 	}
 
 	/**
-	 * @inheritDocs
+	 * @inheritDoc
 	 * @param  string $helpersDir
 	 * @return string
 	 */
@@ -36,7 +36,7 @@ trait ViewHelpers {
 	}
 
 	/**
-	 * @inheritDocs
+	 * @inheritDoc
 	 * @param  string $helperNamespaces,... View helper classes namespace(s).
 	 * @return void
 	 */
@@ -49,7 +49,7 @@ trait ViewHelpers {
 	}
 	
 	/**
-	 * @inheritDocs
+	 * @inheritDoc
 	 * @param  string $helperNamespaces,... View helper classes namespace(s).
 	 * @return void
 	 */
@@ -62,7 +62,7 @@ trait ViewHelpers {
 	}
 
 	/**
-	 * @inheritDocs
+	 * @inheritDoc
 	 * @param  string $helperNamespaces,... View helper classes namespace(s).
 	 * @return void
 	 */
@@ -75,7 +75,7 @@ trait ViewHelpers {
 	}
 
 	/**
-	 * @inheritDocs
+	 * @inheritDoc
 	 * @param  string $method            View helper method name in pascal case.
 	 * @param  mixed  $arguments         View helper method arguments.
 	 * @throws \InvalidArgumentException If view doesn't exist in configured namespaces.
@@ -100,7 +100,7 @@ trait ViewHelpers {
 	}
 
 	/**
-	 * @inheritDocs
+	 * @inheritDoc
 	 * @param  string $helperNameCamelCase View helper method name in camel case.
 	 * @param  bool   $asClosure           Get View helper prepared as closure function, `FALSE` by default.
 	 * @throws \InvalidArgumentException   If view doesn't exist in configured namespaces.
@@ -169,7 +169,7 @@ trait ViewHelpers {
 	}
 
 	/**
-	 * @inheritDocs
+	 * @inheritDoc
 	 * @param  string                                                                                      $helperNameCamelCase
 	 *                                                                                                     View helper method name in camel case.
 	 * @param  \MvcCore\Ext\Views\Helpers\AbstractHelper|\MvcCore\Ext\Views\Helpers\IHelper|\Closure|mixed $instance

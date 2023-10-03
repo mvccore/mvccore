@@ -931,7 +931,7 @@ interface IApplication extends \MvcCore\Application\IConstants {
 	 * If CSRF protection is not enabled in cookie mode, return `NULL`.
 	 * If protection validation is enabled and validated successfully,
 	 * return `TRUE`, if validation fails, return `FALSE`.
-	 * @inheritDocs
+	 * @inheritDoc
 	 * @return bool|NULL
 	 */
 	public function ValidateCsrfProtection ();

@@ -19,7 +19,7 @@ namespace MvcCore\Model;
 trait MetaData {
 	
 	/**
-	 * @inheritDocs
+	 * @inheritDoc
 	 * @param  int    $propsFlags
 	 * @param  \int[] $additionalMaps Compatible format for extension `mvccore/ext-model-db`.
 	 * @return array

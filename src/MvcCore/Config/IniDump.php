@@ -19,7 +19,7 @@ namespace MvcCore\Config;
 trait IniDump {
 
 	/**
-	 * @inheritDocs
+	 * @inheritDoc
 	 * @return string
 	 */
 	public function Dump () {

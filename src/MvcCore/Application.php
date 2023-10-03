@@ -14,7 +14,7 @@
 namespace MvcCore;
 
 /**
- * @inheritDocs
+ * @inheritDoc
  */
 class Application implements \MvcCore\IApplication {
 
@@ -44,7 +44,7 @@ class Application implements \MvcCore\IApplication {
 	 ***********************************************************************************/
 
 	/**
-	 * @inheritDocs
+	 * @inheritDoc
 	 * @return \MvcCore\Application
 	 */
 	public static function GetInstance () {

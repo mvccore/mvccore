@@ -19,7 +19,7 @@ namespace MvcCore\Environment;
 trait Detection {
 
 	/**
-	 * @inheritDocs
+	 * @inheritDoc
 	 * @return string Detected environment string.
 	 */
 	public static function DetectByIps () {
@@ -35,7 +35,7 @@ trait Detection {
 	}
 
 	/**
-	 * @inheritDocs
+	 * @inheritDoc
 	 * @param  array  $environmentsSectionData System config environment section data part.
 	 * @return string Detected environment string.
 	 */

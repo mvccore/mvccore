@@ -19,7 +19,7 @@ namespace MvcCore\Response;
 trait Cookies {
 
 	/**
-	 * @inheritDocs
+	 * @inheritDoc
 	 * @param  string $name      Cookie name. Assuming the name is `cookiename`, this value is retrieved through `$_COOKIE['cookiename']`.
 	 * @param  string $value     The value of the cookie. This value is stored on the clients computer; do not store sensitive information.
 	 * @param  int    $lifetime  Life time in seconds to expire. 0 means "until the browser is closed".
@@ -68,7 +68,7 @@ trait Cookies {
 	}
 
 	/**
-	 * @inheritDocs
+	 * @inheritDoc
 	 * @param  string $name      Cookie name. Assuming the name is `cookiename`, this value is retrieved through `$_COOKIE['cookiename']`.
 	 * @param  string $path      The path on the server in which the cookie will be available on. If set to '/', the cookie will be available within the entire domain.
 	 * @param  string $domain    If not set, value is completed by `\MvcCore\Application::GetInstance()->GetRequest()->GetHostName();` .

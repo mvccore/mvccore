@@ -19,7 +19,7 @@ namespace MvcCore\Router;
 trait RouteMethods {
 
 	/**
-	 * @inheritDocs
+	 * @inheritDoc
 	 * @param  \MvcCore\Route[]|array $routes
 	 *                                Keyed array with routes, keys are route names or route
 	 *                                `Controller::Action` definitions.
@@ -79,7 +79,7 @@ trait RouteMethods {
 	}
 
 	/**
-	 * @inheritDocs
+	 * @inheritDoc
 	 * @param  \MvcCore\Route[]|array $routes
 	 *                                Keyed array with routes, keys are route names or route
 	 *                                `Controller::Action` definitions.
@@ -149,7 +149,7 @@ trait RouteMethods {
 	}
 
 	/**
-	 * @inheritDocs
+	 * @inheritDoc
 	 * @param  \MvcCore\Route|array $routeCfgOrRoute
 	 *                              Route instance or route config array.
 	 * @param  string|NULL          $groupName
@@ -234,7 +234,7 @@ trait RouteMethods {
 	}
 
 	/**
-	 * @inheritDocs
+	 * @inheritDoc
 	 * @param  string|\MvcCore\Route $routeOrRouteName
 	 * @return bool
 	 */
@@ -251,7 +251,7 @@ trait RouteMethods {
 	}
 
 	/**
-	 * @inheritDocs
+	 * @inheritDoc
 	 * @param  string $routeName
 	 * @return \MvcCore\Route|NULL
 	 */
@@ -292,7 +292,7 @@ trait RouteMethods {
 	}
 
 	/**
-	 * @inheritDocs
+	 * @inheritDoc
 	 * @param  string|NULL $groupName
 	 *                     Group name is first matched/parsed word in requested path to
 	 *                     group routes by to try to match only routes you really need,
@@ -307,7 +307,7 @@ trait RouteMethods {
 	}
 
 	/**
-	 * @inheritDocs
+	 * @inheritDoc
 	 * @param  string $routeName
 	 * @return \MvcCore\Route|NULL
 	 */
@@ -318,7 +318,7 @@ trait RouteMethods {
 	}
 
 	/**
-	 * @inheritDocs
+	 * @inheritDoc
 	 * @param  \MvcCore\Route $currentRoute
 	 * @return \MvcCore\Router
 	 */
@@ -329,7 +329,7 @@ trait RouteMethods {
 	}
 
 	/**
-	 * @inheritDocs
+	 * @inheritDoc
 	 * @return \MvcCore\Route
 	 */
 	public function GetCurrentRoute () {

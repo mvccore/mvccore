@@ -19,7 +19,7 @@ namespace MvcCore\Router;
 trait Routing {
 
 	/**
-	 * @inheritDocs
+	 * @inheritDoc
 	 * @throws \LogicException Route configuration property is missing.
 	 * @throws \InvalidArgumentException Wrong route pattern format.
 	 * @return bool
@@ -41,7 +41,7 @@ trait Routing {
 	}
 	
 	/**
-	 * @inheritDocs
+	 * @inheritDoc
 	 * @param  string $controllerNamePc Pascal case classic controller name definition.
 	 * @param  string $actionNamePc     Pascal case action name without `Action` suffix.
 	 * @param  bool   $changeSelfRoute  `FALSE` by default to change self route to generate self URLs.
@@ -104,7 +104,7 @@ trait Routing {
 	}
 
 	/**
-	 * @inheritDocs
+	 * @inheritDoc
 	 * @param  string $routeName    Always as `default`, `error` or `not_found`, by constants:
 	 *                              - `\MvcCore\IRouter::DEFAULT_ROUTE_NAME`
 	 *                              - `\MvcCore\IRouter::DEFAULT_ROUTE_NAME_ERROR`

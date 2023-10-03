@@ -26,7 +26,7 @@ trait Helpers {
 	 ***********************************************************************************/
 
 	/**
-	 * @inheritDocs
+	 * @inheritDoc
 	 * @param  string $actionName
 	 * @return string
 	 */
@@ -42,7 +42,7 @@ trait Helpers {
 	}
 
 	/**
-	 * @inheritDocs
+	 * @inheritDoc
 	 * @param  string $controllerNamePascalCase
 	 * @return string
 	 */
@@ -57,7 +57,7 @@ trait Helpers {
 	}
 
 	/**
-	 * @inheritDocs
+	 * @inheritDoc
 	 * @return bool
 	 */
 	public function IsErrorDispatched () {
@@ -69,7 +69,7 @@ trait Helpers {
 	}
 
 	/**
-	 * @inheritDocs
+	 * @inheritDoc
 	 * @return bool
 	 */
 	public function IsNotFoundDispatched () {
@@ -81,7 +81,7 @@ trait Helpers {
 	}
 
 	/**
-	 * @inheritDocs
+	 * @inheritDoc
 	 * @throws \Exception
 	 * @return bool
 	 */
@@ -93,7 +93,7 @@ trait Helpers {
 	}
 
 	/**
-	 * @inheritDocs
+	 * @inheritDoc
 	 * @throws \Exception
 	 * @return string|NULL
 	 */
@@ -105,7 +105,7 @@ trait Helpers {
 	}
 
 	/**
-	 * @inheritDocs
+	 * @inheritDoc
 	 * @return bool|NULL
 	 */
 	public function ValidateCsrfProtection () {

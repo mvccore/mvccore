@@ -19,7 +19,7 @@ namespace MvcCore\Router;
 trait GettersSetters {
 
 	/**
-	 * @inheritDocs
+	 * @inheritDoc
 	 * @return \MvcCore\Request
 	 */
 	public function GetRequest () {
@@ -27,7 +27,7 @@ trait GettersSetters {
 	}
 
 	/**
-	 * @inheritDocs
+	 * @inheritDoc
 	 * @param  \MvcCore\Request $request
 	 * @return \MvcCore\Router
 	 */
@@ -38,7 +38,7 @@ trait GettersSetters {
 	}
 
 	/**
-	 * @inheritDocs
+	 * @inheritDoc
 	 * @param  bool|NULL $routeByQueryString 
 	 * @return \MvcCore\Router
 	 */
@@ -48,7 +48,7 @@ trait GettersSetters {
 	}
 
 	/**
-	 * @inheritDocs
+	 * @inheritDoc
 	 * @return bool|NULL
 	 */
 	public function GetRouteByQueryString () {
@@ -56,7 +56,7 @@ trait GettersSetters {
 	}
 
 	/**
-	 * @inheritDocs
+	 * @inheritDoc
 	 * @return bool
 	 */
 	public function GetRouteToDefaultIfNotMatch () {
@@ -64,7 +64,7 @@ trait GettersSetters {
 	}
 
 	/**
-	 * @inheritDocs
+	 * @inheritDoc
 	 * @param  bool $enable
 	 * @return \MvcCore\Router
 	 */
@@ -74,7 +74,7 @@ trait GettersSetters {
 	}
 
 	/**
-	 * @inheritDocs
+	 * @inheritDoc
 	 * @return array
 	 */
 	public function & GetDefaultParams () {
@@ -82,7 +82,7 @@ trait GettersSetters {
 	}
 
 	/**
-	 * @inheritDocs
+	 * @inheritDoc
 	 * @return array
 	 */
 	public function & GetRequestedParams () {
@@ -90,7 +90,7 @@ trait GettersSetters {
 	}
 
 	/**
-	 * @inheritDocs
+	 * @inheritDoc
 	 * @return int
 	 */
 	public function GetTrailingSlashBehaviour () {
@@ -98,7 +98,7 @@ trait GettersSetters {
 	}
 
 	/**
-	 * @inheritDocs
+	 * @inheritDoc
 	 * @param  int $trailingSlashBehaviour
 	 * @return \MvcCore\Router
 	 */
@@ -108,7 +108,7 @@ trait GettersSetters {
 	}
 
 	/**
-	 * @inheritDocs
+	 * @inheritDoc
 	 * @return bool
 	 */
 	public function GetAutoCanonizeRequests () {
@@ -116,7 +116,7 @@ trait GettersSetters {
 	}
 
 	/**
-	 * @inheritDocs
+	 * @inheritDoc
 	 * @param  bool $autoCanonizeRequests 
 	 * @return \MvcCore\Router
 	 */
@@ -126,7 +126,7 @@ trait GettersSetters {
 	}
 
 	/**
-	 * @inheritDocs
+	 * @inheritDoc
 	 * @param  callable $preRouteMatchingHandler 
 	 * @return \MvcCore\Router
 	 */
@@ -141,7 +141,7 @@ trait GettersSetters {
 	}
 
 	/**
-	 * @inheritDocs
+	 * @inheritDoc
 	 * @return callable|NULL
 	 */
 	public function GetPreRouteMatchingHandler () {
@@ -149,7 +149,7 @@ trait GettersSetters {
 	}
 
 	/**
-	 * @inheritDocs
+	 * @inheritDoc
 	 * @param  callable $preRouteUrlBuildingHandler 
 	 * @return \MvcCore\Router
 	 */
@@ -159,7 +159,7 @@ trait GettersSetters {
 	}
 
 	/**
-	 * @inheritDocs
+	 * @inheritDoc
 	 * @return callable|NULL
 	 */
 	public function GetPreRouteUrlBuildingHandler () {

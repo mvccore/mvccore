@@ -14,7 +14,7 @@
 namespace MvcCore;
 
 /**
- * @inheritDocs
+ * @inheritDoc
  */
 class Response implements IResponse {
 	use \MvcCore\Response\PropsGettersSetters;

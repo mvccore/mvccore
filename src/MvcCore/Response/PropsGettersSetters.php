@@ -115,7 +115,7 @@ trait PropsGettersSetters {
 
 	
 	/**
-	 * @inheritDocs
+	 * @inheritDoc
 	 * @return string
 	 */
 	public static function GetCsrfProtectionCookieName () {
@@ -123,7 +123,7 @@ trait PropsGettersSetters {
 	}
 	
 	/**
-	 * @inheritDocs
+	 * @inheritDoc
 	 * @param  string $csrfProtectionCookieName 
 	 * @return string
 	 */
@@ -132,7 +132,7 @@ trait PropsGettersSetters {
 	}
 	
 	/**
-	 * @inheritDocs
+	 * @inheritDoc
 	 * @return \string[]
 	 */
 	public static function GetMultiplyHeaders () {
@@ -140,7 +140,7 @@ trait PropsGettersSetters {
 	}
 	
 	/**
-	 * @inheritDocs
+	 * @inheritDoc
 	 * @param  \string[] $multiplyHeaders 
 	 * @return \string[]
 	 */
@@ -153,7 +153,7 @@ trait PropsGettersSetters {
 	}
 
 	/**
-	 * @inheritDocs
+	 * @inheritDoc
 	 * @return string
 	 */
 	public function GetHttpVersion () {
@@ -167,7 +167,7 @@ trait PropsGettersSetters {
 	}
 
 	/**
-	 * @inheritDocs
+	 * @inheritDoc
 	 * @param  string $httpVersion
 	 * @return \MvcCore\Response
 	 */
@@ -177,7 +177,7 @@ trait PropsGettersSetters {
 	}
 
 	/**
-	 * @inheritDocs
+	 * @inheritDoc
 	 * @param  int         $code
 	 * @param  string|NULL $codeMessage
 	 * @return \MvcCore\Response
@@ -190,7 +190,7 @@ trait PropsGettersSetters {
 	}
 
 	/**
-	 * @inheritDocs
+	 * @inheritDoc
 	 * @return int
 	 */
 	public function GetCode () {
@@ -202,7 +202,7 @@ trait PropsGettersSetters {
 	}
 
 	/**
-	 * @inheritDocs
+	 * @inheritDoc
 	 * @param  string $encoding
 	 * @return \MvcCore\Response
 	 */
@@ -217,7 +217,7 @@ trait PropsGettersSetters {
 	}
 
 	/**
-	 * @inheritDocs
+	 * @inheritDoc
 	 * @return string|NULL
 	 */
 	public function GetEncoding () {
@@ -240,7 +240,7 @@ trait PropsGettersSetters {
 	}
 
 	/**
-	 * @inheritDocs
+	 * @inheritDoc
 	 * @return bool
 	 */
 	public function IsRedirect () {
@@ -248,7 +248,7 @@ trait PropsGettersSetters {
 	}
 
 	/**
-	 * @inheritDocs
+	 * @inheritDoc
 	 * @return bool
 	 */
 	public function IsSent () {

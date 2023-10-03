@@ -19,7 +19,7 @@ namespace MvcCore\Controller;
 trait FlashMessages {
 
 	/**
-	 * @inheritDocs
+	 * @inheritDoc
 	 * @param  string    $msg          Flash message text to display in next request(s).
 	 * @param  int|array $options      Could be defined as integer or as array with integer 
 	 *                                 keys and values. Use flags like 
@@ -31,7 +31,8 @@ trait FlashMessages {
 	public function FlashMessageAdd ($msg, $options = \MvcCore\IController::FLASH_MESSAGE_TYPE_DEFAULT, array $replacements = []) {
 		$ctrl = \MvcCore\Application::GetInstance()->GetController();
 		static::flashMessagesAddHandler($ctrl);
-		$messageImprint = md5(serialize(func_get_args()));
+		$serializeFn = function_exists('igbinary_serialize') ? 'igbinary_serialize' : 'serialize';
+		$messageImprint = md5(call_user_func($serializeFn, func_get_args()));
 		
 		// To extend this method (with translator for example), translate the message here:
 		if (count($replacements) > 0) 
@@ -43,7 +44,7 @@ trait FlashMessages {
 	}
 	
 	/**
-	 * @inheritDocs
+	 * @inheritDoc
 	 * @return array
 	 */
 	public function FlashMessagesGetClean () {

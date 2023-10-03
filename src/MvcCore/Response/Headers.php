@@ -19,7 +19,7 @@ namespace MvcCore\Response;
 trait Headers {
 
 	/**
-	 * @inheritDocs
+	 * @inheritDoc
 	 * @return bool
 	 */
 	public function IsSentHeaders () {
@@ -27,7 +27,7 @@ trait Headers {
 	}
 
 	/**
-	 * @inheritDocs
+	 * @inheritDoc
 	 * @param  array $headers
 	 * @return \MvcCore\Response
 	 */
@@ -41,7 +41,7 @@ trait Headers {
 	}
 	
 	/**
-	 * @inheritDocs
+	 * @inheritDoc
 	 * @param  array $headers
 	 * @param  bool  $cleanAllPrevious `FALSE` by default. If `TRUE`, all previous headers
 	 *                                 set by PHP `header()` or by this object will be removed.
@@ -54,7 +54,7 @@ trait Headers {
 	}
 
 	/**
-	 * @inheritDocs
+	 * @inheritDoc
 	 * @param  string $name
 	 * @param  string|\string[] $value
 	 * @return \MvcCore\Response
@@ -84,7 +84,7 @@ trait Headers {
 	}
 	
 	/**
-	 * @inheritDocs
+	 * @inheritDoc
 	 * @param  string $name
 	 * @param  string|\string[] $value
 	 * @return \MvcCore\Response
@@ -120,7 +120,7 @@ trait Headers {
 	}
 
 	/**
-	 * @inheritDocs
+	 * @inheritDoc
 	 * @param  string $name
 	 * @return string|\string[]|NULL
 	 */
@@ -132,7 +132,7 @@ trait Headers {
 	}
 
 	/**
-	 * @inheritDocs
+	 * @inheritDoc
 	 * @param  string $name
 	 * @return bool
 	 */
@@ -142,7 +142,7 @@ trait Headers {
 	}
 
 	/**
-	 * @inheritDocs
+	 * @inheritDoc
 	 * @param  string $name
 	 * @return bool
 	 */
@@ -157,7 +157,7 @@ trait Headers {
 	}
 
 	/**
-	 * @inheritDocs
+	 * @inheritDoc
 	 * @return \MvcCore\Response
 	 */
 	public function UpdateHeaders () {
@@ -189,7 +189,7 @@ trait Headers {
 	}
 
 	/**
-	 * @inheritDocs
+	 * @inheritDoc
 	 * @param  \string[] $disabledHeaders,...
 	 * @return \MvcCore\Response
 	 */
@@ -203,7 +203,7 @@ trait Headers {
 	}
 
 	/**
-	 * @inheritDocs
+	 * @inheritDoc
 	 * @return \string[]
 	 */
 	public function GetDisabledHeaders () {

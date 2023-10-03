@@ -30,7 +30,7 @@ trait Dispatching {
 	 **************************************************************************/
 
 	/**
-	 * @inheritDocs
+	 * @inheritDoc
 	 * @return \MvcCore\Application
 	 */
 	public function Dispatch () {
@@ -55,7 +55,7 @@ trait Dispatching {
 	}
 
 	/**
-	 * @inheritDocs
+	 * @inheritDoc
 	 * @throws \Throwable
 	 * @return void
 	 */
@@ -69,7 +69,7 @@ trait Dispatching {
 	}
 	
 	/**
-	 * @inheritDocs
+	 * @inheritDoc
 	 * @throws \Throwable
 	 * @return bool|NULL
 	 */
@@ -91,7 +91,7 @@ trait Dispatching {
 	}
 
 	/**
-	 * @inheritDocs
+	 * @inheritDoc
 	 * @throws \LogicException|\InvalidArgumentException
 	 * @return bool
 	 */
@@ -106,7 +106,7 @@ trait Dispatching {
 	}
 
 	/**
-	 * @inheritDocs
+	 * @inheritDoc
 	 * @param  \callable[] $handlers
 	 * @return bool
 	 */
@@ -134,7 +134,7 @@ trait Dispatching {
 	}
 
 	/**
-	 * @inheritDocs
+	 * @inheritDoc
 	 * @throws \Exception
 	 * @return bool
 	 */
@@ -186,7 +186,7 @@ trait Dispatching {
 	}
 
 	/**
-	 * @inheritDocs
+	 * @inheritDoc
 	 * @param  string   $ctrlClassFullName
 	 * @param  string   $actionNamePc
 	 * @param  string   $viewScriptFullPath
@@ -232,7 +232,7 @@ trait Dispatching {
 	}
 	
 	/**
-	 * @inheritDocs
+	 * @inheritDoc
 	 * @return void
 	 */
 	public function SessionStart () {
@@ -242,7 +242,7 @@ trait Dispatching {
 	}
 	
 	/**
-	 * @inheritDocs
+	 * @inheritDoc
 	 * @param  string $controllerActionOrRouteName Should be `"Controller:Action"` combination or just any route name as custom specific string.
 	 * @param  array  $params                      Optional, array with params, key is param name, value is param value.
 	 * @return string
@@ -252,7 +252,7 @@ trait Dispatching {
 	}
 
 	/**
-	 * @inheritDocs
+	 * @inheritDoc
 	 * @return \MvcCore\Application
 	 */
 	public function Terminate () {
@@ -293,7 +293,7 @@ trait Dispatching {
 	 **************************************************************************/
 
 	/**
-	 * @inheritDocs
+	 * @inheritDoc
 	 * @param  \Throwable|string $exceptionOrMessage
 	 * @param  int|NULL          $code
 	 * @return bool
@@ -353,7 +353,7 @@ trait Dispatching {
 	}
 
 	/**
-	 * @inheritDocs
+	 * @inheritDoc
 	 * @param  \Throwable $e
 	 * @return bool
 	 */
@@ -404,7 +404,7 @@ trait Dispatching {
 	}
 
 	/**
-	 * @inheritDocs
+	 * @inheritDoc
 	 * @param  string $exceptionMessage
 	 * @return bool
 	 */
@@ -453,7 +453,7 @@ trait Dispatching {
 	}
 
 	/**
-	 * @inheritDocs
+	 * @inheritDoc
 	 * @param  string $text
 	 * @return bool
 	 */
@@ -481,7 +481,7 @@ trait Dispatching {
 	}
 
 	/**
-	 * @inheritDocs
+	 * @inheritDoc
 	 * @param  string $text
 	 * @return bool
 	 */

@@ -19,7 +19,7 @@ namespace MvcCore\Router;
 trait UrlBuilding {
 
 	/**
-	 * @inheritDocs
+	 * @inheritDoc
 	 * @param  string $controllerActionOrRouteName Should be `"Controller:Action"` combination 
 	 *                                             or just any route name as custom specific string.
 	 * @param  array  $params                      Optional, array with params, key is 
@@ -106,7 +106,7 @@ trait UrlBuilding {
 	}
 	
 	/**
-	 * @inheritDocs
+	 * @inheritDoc
 	 * @param  string $url 
 	 * @return string
 	 */

@@ -19,7 +19,7 @@ namespace MvcCore\Session;
 trait Starting {
 
 	/**
-	 * @inheritDocs
+	 * @inheritDoc
 	 * @return void
 	 */
 	public static function Start () {
@@ -43,7 +43,7 @@ trait Starting {
 	}
 
 	/**
-	 * @inheritDocs
+	 * @inheritDoc
 	 * @return int
 	 */
 	public static function GetSessionStartTime () {
@@ -51,7 +51,7 @@ trait Starting {
 	}
 
 	/**
-	 * @inheritDocs
+	 * @inheritDoc
 	 * @return bool
 	 */
 	public static function GetStarted () {

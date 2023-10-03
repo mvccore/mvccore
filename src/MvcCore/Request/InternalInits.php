@@ -19,7 +19,7 @@ namespace MvcCore\Request;
 trait InternalInits {
 
 	/**
-	 * @inheritDocs
+	 * @inheritDoc
 	 * @param  \string[] $languagesList
 	 * @return array
 	 */

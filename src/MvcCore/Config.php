@@ -14,7 +14,7 @@
 namespace MvcCore;
 
 /**
- * @inheritDocs
+ * @inheritDoc
  */
 class Config implements \Iterator, \ArrayAccess, \Countable, IConfig {
 	use \MvcCore\Config\PropsGettersSetters;

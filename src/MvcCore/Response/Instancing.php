@@ -19,7 +19,7 @@ namespace MvcCore\Response;
 trait Instancing {
 
 	/**
-	 * @inheritDocs
+	 * @inheritDoc
 	 * @param  int|NULL $code
 	 * @param  array    $headers
 	 * @param  string   $body

@@ -19,7 +19,7 @@ namespace MvcCore\Model;
 trait Comparers {
 
 	/**
-	 * @inheritDocs
+	 * @inheritDoc
 	 * @param  mixed $value1 
 	 * @param  mixed $value2 
 	 * @return bool

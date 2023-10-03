@@ -19,7 +19,7 @@ namespace MvcCore\Route;
 trait Instancing {
 
 	/**
-	 * @inheritDocs
+	 * @inheritDoc
 	 * @param string|array $patternOrConfig
 	 *                     Required, configuration array or route pattern value
 	 *                     to parse into match and reverse patterns.

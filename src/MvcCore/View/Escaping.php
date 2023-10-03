@@ -19,7 +19,7 @@ namespace MvcCore\View;
 trait Escaping {
 
 	/**
-	 * @inheritDocs
+	 * @inheritDoc
 	 * @param  string      $str 
 	 * @param  int         $flags
 	 * @param  string|NULL $encoding 
@@ -40,7 +40,7 @@ trait Escaping {
 	}
 
 	/**
-	 * @inheritDocs
+	 * @inheritDoc
 	 * @param  string      $str 
 	 * @param  string|NULL $encoding 
 	 * @param  bool        $double 
@@ -56,7 +56,7 @@ trait Escaping {
 	}
 	
 	/**
-	 * @inheritDocs
+	 * @inheritDoc
 	 * @param  string      $str 
 	 * @param  int         $flags
 	 * @param  string|NULL $encoding 
@@ -77,7 +77,7 @@ trait Escaping {
 	}
 	
 	/**
-	 * @inheritDocs
+	 * @inheritDoc
 	 * @param  string      $str 
 	 * @param  string|NULL $encoding 
 	 * @return string
@@ -93,7 +93,7 @@ trait Escaping {
 	}
 
 	/**
-	 * @inheritDocs
+	 * @inheritDoc
 	 * @param  mixed  $obj 
 	 * @param  int    $flags 
 	 * @param  int    $depth 
@@ -106,7 +106,7 @@ trait Escaping {
 	}
 
 	/**
-	 * @inheritDocs
+	 * @inheritDoc
 	 * @param  mixed  $obj 
 	 * @param  int    $flags 
 	 * @param  int    $depth 
@@ -119,7 +119,7 @@ trait Escaping {
 	}
 	
 	/**
-	 * @inheritDocs
+	 * @inheritDoc
 	 * @see    http://www.w3.org/TR/2006/WD-CSS21-20060411/syndata.html#q6
 	 * @param  string $str 
 	 * @return string
@@ -129,7 +129,7 @@ trait Escaping {
 	}
 	
 	/**
-	 * @inheritDocs
+	 * @inheritDoc
 	 * @see    https://www.ietf.org/rfc/rfc5545.txt
 	 * @param  string $str 
 	 * @return string

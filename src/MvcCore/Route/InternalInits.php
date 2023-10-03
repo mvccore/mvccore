@@ -19,7 +19,7 @@ namespace MvcCore\Route;
 trait InternalInits {
 
 	/**
-	 * @inheritDocs
+	 * @inheritDoc
 	 * @return \MvcCore\Route
 	 */
 	public function InitAll () {
@@ -32,7 +32,7 @@ trait InternalInits {
 	}
 
 	/**
-	 * @inheritDocs
+	 * @inheritDoc
 	 * @return \string[]
 	 */
 	public function __sleep () {
@@ -41,7 +41,7 @@ trait InternalInits {
 	}
 
 	/**
-	 * @inheritDocs
+	 * @inheritDoc
 	 * @return void
 	 */
 	public function __wakeup () {

@@ -19,7 +19,7 @@ namespace MvcCore\Tool;
 trait Json {
 
 	/**
-	 * @inheritDocs
+	 * @inheritDoc
 	 * @param  mixed $data
 	 * @param  int   $flags
 	 * @param  int   $depth                     Set the maximum depth. 
@@ -55,7 +55,7 @@ trait Json {
 	}
 
 	/**
-	 * @inheritDocs
+	 * @inheritDoc
 	 * @param  string $jsonStr
 	 * @param  int    $flags
 	 * @param  int    $depth                    User specified recursion depth, default: 512.
@@ -75,7 +75,7 @@ trait Json {
 	}
 	
 	/**
-	 * @inheritDocs
+	 * @inheritDoc
 	 * @see https://www.ietf.org/rfc/rfc4627.txt
 	 * @param  string $jsonStr
 	 * @return bool

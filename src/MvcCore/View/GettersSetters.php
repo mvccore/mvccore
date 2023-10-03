@@ -19,7 +19,7 @@ namespace MvcCore\View;
 trait GettersSetters {
 
 	/**
-	 * @inheritDocs
+	 * @inheritDoc
 	 * @return \MvcCore\View
 	 */
 	public static function CreateInstance () {
@@ -29,7 +29,7 @@ trait GettersSetters {
 	}
 
 	/**
-	 * @inheritDocs
+	 * @inheritDoc
 	 * @return string
 	 */
 	public static function GetExtension () {
@@ -37,7 +37,7 @@ trait GettersSetters {
 	}
 
 	/**
-	 * @inheritDocs
+	 * @inheritDoc
 	 * @param  string $extension An extension with or without leading dot char.
 	 * @return string
 	 */
@@ -46,7 +46,7 @@ trait GettersSetters {
 	}
 
 	/**
-	 * @inheritDocs
+	 * @inheritDoc
 	 * @return string
 	 */
 	public static function GetDoctype () {
@@ -54,7 +54,7 @@ trait GettersSetters {
 	}
 
 	/**
-	 * @inheritDocs
+	 * @inheritDoc
 	 * @param  string $doctype
 	 * @return string
 	 */
@@ -63,7 +63,7 @@ trait GettersSetters {
 	}
 
 	/**
-	 * @inheritDocs
+	 * @inheritDoc
 	 * @return string
 	 */
 	public static function GetLayoutsDir () {
@@ -71,7 +71,7 @@ trait GettersSetters {
 	}
 
 	/**
-	 * @inheritDocs
+	 * @inheritDoc
 	 * @param  string $layoutsDir
 	 * @return string
 	 */
@@ -80,7 +80,7 @@ trait GettersSetters {
 	}
 
 	/**
-	 * @inheritDocs
+	 * @inheritDoc
 	 * @return string
 	 */
 	public static function GetScriptsDir () {
@@ -88,7 +88,7 @@ trait GettersSetters {
 	}
 
 	/**
-	 * @inheritDocs
+	 * @inheritDoc
 	 * @param  string $scriptsDir
 	 * @return string
 	 */
@@ -97,7 +97,7 @@ trait GettersSetters {
 	}
 
 	/**
-	 * @inheritDocs
+	 * @inheritDoc
 	 * @param  \MvcCore\Controller $controller
 	 * @return \MvcCore\View
 	 */
@@ -107,7 +107,7 @@ trait GettersSetters {
 	}
 
 	/**
-	 * @inheritDocs
+	 * @inheritDoc
 	 * @return \MvcCore\Controller
 	 */
 	public function GetController () {
@@ -115,7 +115,7 @@ trait GettersSetters {
 	}
 
 	/**
-	 * @inheritDocs
+	 * @inheritDoc
 	 * @param  string $controller
 	 * @return \MvcCore\View
 	 */
@@ -125,7 +125,7 @@ trait GettersSetters {
 	}
 
 	/**
-	 * @inheritDocs
+	 * @inheritDoc
 	 * @return string
 	 */
 	public function GetEncoding () {

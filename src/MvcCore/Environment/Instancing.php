@@ -19,7 +19,7 @@ namespace MvcCore\Environment;
 trait Instancing {
 
 	/**
-	 * @inheritDocs
+	 * @inheritDoc
 	 * @return \MvcCore\Environment
 	 */
 	public static function CreateInstance () {

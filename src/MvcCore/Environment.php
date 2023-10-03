@@ -14,7 +14,7 @@
 namespace MvcCore;
 
 /**
- * @inheritDocs
+ * @inheritDoc
  */
 class Environment implements IEnvironment {
 	use \MvcCore\Environment\Instancing;
