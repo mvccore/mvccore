@@ -162,7 +162,7 @@ trait Closing {
 		if ($auth !== NULL) {
 			$sessionCsrfMaxSeconds = $auth->GetExpirationAuthorization();
 			if (is_int($sessionCsrfMaxSeconds) && $sessionCsrfMaxSeconds > 0)
-				static::$sessionCsrfMaxTime = time() + $sessionCsrfMaxSeconds;
+				static::$sessionCsrfMaxTime = $sessionCsrfMaxSeconds;
 		}
 		// If there is nothing like that, set expiration until browser close:
 		if (static::$sessionCsrfMaxTime === NULL)
