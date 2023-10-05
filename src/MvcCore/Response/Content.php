@@ -112,11 +112,16 @@ trait Content {
 				? ' '.static::$codeMessages[$code]
 				: '');
 		$this->UpdateHeaders();
-		if (!isset($this->headers['Content-Encoding']))
-			$this->headers['Content-Encoding'] = $this->GetEncoding();
 		$outputCompression = $this->getOutputCompression();
-		if ($outputCompression)
+		if ($outputCompression) {
 			$this->headers['Content-Encoding'] = 'gzip';
+		} else if (
+			!isset($this->headers['Content-Encoding']) &&
+			isset($this->headers['Content-Type']) &&
+			strpos($this->headers['Content-Type'], 'text/') === 0
+		) {
+			$this->headers['Content-Encoding'] = $this->GetEncoding();
+		}
 		if (!$this->request->IsCli()) {
 			$app = \MvcCore\Application::GetInstance();
 			$preSentHeadersHandlers = $app->__get('preSentHeadersHandlers');
@@ -126,7 +131,7 @@ trait Content {
 		header($httpVersion . ' ' . $code . $status);
 		header('Host: ' . $this->request->GetHost());
 		foreach ($this->headers as $name => $value) {
-			if ($name == 'Content-Type') {
+			if ($name == 'Content-Type' && strpos($value, 'text/') === 0) {
 				$charsetMatched = FALSE;
 				$charsetPos = strpos($value, 'charset');
 				if ($charsetPos !== FALSE) {

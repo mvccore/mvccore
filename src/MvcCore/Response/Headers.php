@@ -223,12 +223,14 @@ trait Headers {
 			$this->removeMisMatchHeaders(['content-type', 'Content-type', 'content-Type']);
 			$this->headers['Content-Type'] = $value;
 			header('Content-Type: ' . $value);
-			$charsetPos = strpos($value, 'charset');
-			if ($charsetPos !== FALSE) {
-				$equalPos = strpos($value, '=', $charsetPos);
-				if ($equalPos !== FALSE) $this->SetEncoding(
-					trim(substr($value, $equalPos + 1))
-				);
+			if (strpos($value, 'text/') === 0) {
+				$charsetPos = strpos($value, 'charset');
+				if ($charsetPos !== FALSE) {
+					$equalPos = strpos($value, '=', $charsetPos);
+					if ($equalPos !== FALSE) $this->SetEncoding(
+						trim(substr($value, $equalPos + 1))
+					);
+				}
 			}
 		}
 		if ($nameLower === 'content-encoding')

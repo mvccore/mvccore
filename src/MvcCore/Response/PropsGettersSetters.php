@@ -211,8 +211,11 @@ trait PropsGettersSetters {
 		$this->removeMisMatchHeaders(['content-encoding', 'Content-encoding', 'content-Encoding']);
 		$this->headers['Content-Encoding'] = $encoding;
 		header('Content-Encoding: ' . $encoding);
-		if (isset($this->headers['Content-Type'])) 
-			header('Content-Type: ' . $this->headers['Content-Type'] . '; charset=' . $encoding);
+		if (isset($this->headers['Content-Type'])) {
+			$contentType = $this->headers['Content-Type'];
+			if (strpos($contentType, 'text/') === 0)
+				header("Content-Type: {$contentType}; charset={$encoding}");
+		}	
 		return $this;
 	}
 
