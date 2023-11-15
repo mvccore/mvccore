@@ -243,6 +243,19 @@ interface ITool {
 	 */
 	public static function ParseUrl ($uri, $component = -1);
 
+	/**
+	 * Return `TRUE` if `$a` and `$b` are equal, `FALSE` otherwise.
+	 * `$a` and `$b` are queal if both are `NULL` or if both are
+	 * floats and absolute difference is lower than `PHP_FLOAT_EPSILON`.
+	 * Third param `$fractionLength` could be used optionally to 
+	 * compare both numbers only by limited number of fraction digits.
+	 * @param  float|int|string|null $n1 
+	 * @param  float|int|string|null $n2 
+	 * @param  int|NULL              $fractionLength
+	 * @return bool
+	 */
+	public static function CompareFloats ($n1, $n2, $fractionLength = NULL) ;
+
 	
 	/**
 	 * Check if given class implements given interface, else throw an exception.

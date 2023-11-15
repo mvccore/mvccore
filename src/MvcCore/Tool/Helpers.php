@@ -302,7 +302,7 @@ trait Helpers {
 	}
 
 	/**
-	 * Parse a URL and return it's components.
+	 * @inheritDoc
 	 * @see https://www.php.net/manual/en/function.parse-url.php
 	 * @see https://bugs.php.net/bug.php?id=73192
 	 * @see https://en.wikipedia.org/wiki/Uniform_Resource_Identifier
@@ -478,5 +478,34 @@ trait Helpers {
 		} else {
 			return $result;
 		}
+	}
+
+	/**
+	 * @inheritDoc
+	 * @param  float|int|string|NULL $n1 
+	 * @param  float|int|string|NULL $n2 
+	 * @param  int|NULL              $fractionLength
+	 * @return bool
+	 */
+	public static function CompareFloats ($n1, $n2, $fractionLength = NULL) {
+		$n1Null = $n1 === NULL;
+		$n2Null = $n2 === NULL;
+		if ($n1Null && $n2Null) return TRUE;
+		if ($n1Null || $n2Null) return FALSE;
+		if (!is_numeric($n1) || !is_numeric($n2)) return FALSE;
+		$f1 = is_float($n1)
+			? $n1
+			: floatval($n1);
+		$f2 = is_float($n2)
+			? $n2
+			: floatval($n2);
+		if ($fractionLength !== NULL) {
+			$f1 = round($f1, $fractionLength);
+			$f2 = round($f2, $fractionLength);
+		}
+		$floatEpsilon = defined('PHP_FLOAT_EPSILON')
+			? PHP_FLOAT_EPSILON
+			: floatval('2.220446049250313E-16');
+		return abs($f1 - $f2) < $floatEpsilon;
 	}
 }
