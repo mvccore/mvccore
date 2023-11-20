@@ -125,23 +125,41 @@ trait ViewHelpers {
 			$helpersInterface = self::HELPERS_INTERFACE_CLASS_NAME;
 			if (!static::$helpersNamespaces)
 				self::initHelpersNamespaces();
-			foreach (static::$helpersNamespaces as $helperClassBase) {
-				$className = $helperClassBase . $helperNamePascalCase . 'Helper';
-				if (!class_exists($className))
-					continue;
+			if (method_exists($this, $helperNamePascalCase)) {
 				$helperFound = TRUE;
-				if ($toolClass::CheckClassInterface($className, $helpersInterface, TRUE, FALSE)) {
-					$setUpView = TRUE;
-					$instance = $className::GetInstance();
-				} else {
-					$instance = new $className();
-				}
-				$needsClosureFn = (
-					!($instance instanceof \Closure) &&
-					!method_exists($className, '__invoke')
-				);
+				$instance = function () use ($helperNamePascalCase) {
+					return call_user_func_array([$this, $helperNamePascalCase], func_get_args());
+				};
+				$setUpView = FALSE;
+				$needsClosureFn = FALSE;
 				self::$globalHelpers[$helperNamePascalCase] = [& $instance, $setUpView, $needsClosureFn];
-				break;
+			} else if (method_exists($this->controller, $helperNamePascalCase)) {
+				$helperFound = TRUE;
+				$instance = function () use ($helperNamePascalCase) {
+					return call_user_func_array([$this->controller, $helperNamePascalCase], func_get_args());
+				};
+				$setUpView = FALSE;
+				$needsClosureFn = FALSE;
+				self::$globalHelpers[$helperNamePascalCase] = [& $instance, $setUpView, $needsClosureFn];
+			} else {
+				foreach (static::$helpersNamespaces as $helperClassBase) {
+					$className = $helperClassBase . $helperNamePascalCase . 'Helper';
+					if (!class_exists($className))
+						continue;
+					$helperFound = TRUE;
+					if ($toolClass::CheckClassInterface($className, $helpersInterface, TRUE, FALSE)) {
+						$setUpView = TRUE;
+						$instance = $className::GetInstance();
+					} else {
+						$instance = new $className();
+					}
+					$needsClosureFn = (
+						!($instance instanceof \Closure) &&
+						!method_exists($className, '__invoke')
+					);
+					self::$globalHelpers[$helperNamePascalCase] = [& $instance, $setUpView, $needsClosureFn];
+					break;
+				}
 			}
 			if (!$helperFound)
 				throw new \InvalidArgumentException(
