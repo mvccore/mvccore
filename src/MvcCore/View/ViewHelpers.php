@@ -114,59 +114,13 @@ trait ViewHelpers {
 		$helperNamePascalCase = ucfirst($helperNameCamelCase);
 		if (isset($helpers[$helperNameCamelCase]) && $asClosure) {
 			$instance = & $helpers[$helperNameCamelCase];
-		} else if (isset(self::$globalHelpers[$helperNamePascalCase])) {
+		} else {
+			if (!isset(self::$globalHelpers[$helperNamePascalCase])) 
+				$this->setUpHelper($helperNamePascalCase);
 			$globalHelpersRecord = & self::$globalHelpers[$helperNamePascalCase];
 			$instance = & $globalHelpersRecord[0];
 			$setUpView = $globalHelpersRecord[1];
 			$needsClosureFn = $globalHelpersRecord[2];
-		} else {
-			$helperFound = FALSE;
-			$toolClass = self::$toolClass ?: self::$toolClass = \MvcCore\Application::GetInstance()->GetToolClass();
-			$helpersInterface = self::HELPERS_INTERFACE_CLASS_NAME;
-			if (!static::$helpersNamespaces)
-				self::initHelpersNamespaces();
-			if (method_exists($this, $helperNamePascalCase)) {
-				$helperFound = TRUE;
-				$instance = function () use ($helperNamePascalCase) {
-					return call_user_func_array([$this, $helperNamePascalCase], func_get_args());
-				};
-				$setUpView = FALSE;
-				$needsClosureFn = FALSE;
-				self::$globalHelpers[$helperNamePascalCase] = [& $instance, $setUpView, $needsClosureFn];
-			} else if (method_exists($this->controller, $helperNamePascalCase)) {
-				$helperFound = TRUE;
-				$instance = function () use ($helperNamePascalCase) {
-					return call_user_func_array([$this->controller, $helperNamePascalCase], func_get_args());
-				};
-				$setUpView = FALSE;
-				$needsClosureFn = FALSE;
-				self::$globalHelpers[$helperNamePascalCase] = [& $instance, $setUpView, $needsClosureFn];
-			} else {
-				foreach (static::$helpersNamespaces as $helperClassBase) {
-					$className = $helperClassBase . $helperNamePascalCase . 'Helper';
-					if (!class_exists($className))
-						continue;
-					$helperFound = TRUE;
-					if ($toolClass::CheckClassInterface($className, $helpersInterface, TRUE, FALSE)) {
-						$setUpView = TRUE;
-						$instance = $className::GetInstance();
-					} else {
-						$instance = new $className();
-					}
-					$needsClosureFn = (
-						!($instance instanceof \Closure) &&
-						!method_exists($className, '__invoke')
-					);
-					self::$globalHelpers[$helperNamePascalCase] = [& $instance, $setUpView, $needsClosureFn];
-					break;
-				}
-			}
-			if (!$helperFound)
-				throw new \InvalidArgumentException(
-					"[".get_class()."] View helper method '{$helperNamePascalCase}' is not"
-					." possible to handle by any configured view helper (View"
-					." helper namespaces: '".implode("', '", static::$helpersNamespaces)."')."
-				);
 		}
 		if ($setUpView)
 			$instance->SetView($this);
@@ -220,5 +174,62 @@ trait ViewHelpers {
 			$helpers[$helperNameCamelCase] = & $instance;
 		}
 		return $this;
+	}
+
+	/**
+	 * Set up view hwlper in global static helpers array.
+	 * @param  string $helperNamePascalCase 
+	 * @throws \InvalidArgumentException 
+	 * @return void
+	 */
+	protected function setUpHelper ($helperNamePascalCase) {
+		$helperFound = FALSE;
+		$toolClass = self::$toolClass ?: self::$toolClass = \MvcCore\Application::GetInstance()->GetToolClass();
+		$helpersInterface = self::HELPERS_INTERFACE_CLASS_NAME;
+		if (!static::$helpersNamespaces)
+			self::initHelpersNamespaces();
+		foreach (static::$helpersNamespaces as $helperClassBase) {
+			$className = $helperClassBase . $helperNamePascalCase . 'Helper';
+			if (!class_exists($className))
+				continue;
+			$helperFound = TRUE;
+			if ($toolClass::CheckClassInterface($className, $helpersInterface, TRUE, FALSE)) {
+				$setUpView = TRUE;
+				$instance = $className::GetInstance();
+			} else {
+				$instance = new $className();
+			}
+			$needsClosureFn = (
+				!($instance instanceof \Closure) &&
+				!method_exists($className, '__invoke')
+			);
+			self::$globalHelpers[$helperNamePascalCase] = [& $instance, $setUpView, $needsClosureFn];
+			break;
+		}
+		if (!$helperFound) {
+			if (method_exists($this, $helperNamePascalCase)) {
+				$helperFound = TRUE;
+				$instance = function () use ($helperNamePascalCase) {
+					return call_user_func_array([$this, $helperNamePascalCase], func_get_args());
+				};
+				$setUpView = FALSE;
+				$needsClosureFn = FALSE;
+				self::$globalHelpers[$helperNamePascalCase] = [& $instance, $setUpView, $needsClosureFn];
+			} else if (method_exists($this->controller, $helperNamePascalCase)) {
+				$helperFound = TRUE;
+				$instance = function () use ($helperNamePascalCase) {
+					return call_user_func_array([$this->controller, $helperNamePascalCase], func_get_args());
+				};
+				$setUpView = FALSE;
+				$needsClosureFn = FALSE;
+				self::$globalHelpers[$helperNamePascalCase] = [& $instance, $setUpView, $needsClosureFn];
+			}
+		}
+		if (!$helperFound)
+			throw new \InvalidArgumentException(
+				"[".get_class()."] View helper method '{$helperNamePascalCase}' is not"
+				." possible to handle by any configured view helper (View"
+				." helper namespaces: '".implode("', '", static::$helpersNamespaces)."')."
+			);
 	}
 }
