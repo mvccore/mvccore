@@ -183,6 +183,7 @@ trait ViewHelpers {
 	 * @return void
 	 */
 	protected function setUpHelper ($helperNamePascalCase) {
+		$setUpView = FALSE;
 		$helperFound = FALSE;
 		$toolClass = self::$toolClass ?: self::$toolClass = \MvcCore\Application::GetInstance()->GetToolClass();
 		$helpersInterface = self::HELPERS_INTERFACE_CLASS_NAME;
