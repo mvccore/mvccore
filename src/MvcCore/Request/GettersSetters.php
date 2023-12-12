@@ -241,7 +241,7 @@ trait GettersSetters {
 			}
 			return $this;
 		} else {
-			throw new \InvalidArgumentException("[".get_class()."] No method `{$rawName}()` defined.");
+			throw new \InvalidArgumentException("[".get_class($this)."] No method `{$rawName}()` defined.");
 		}
 	}
 

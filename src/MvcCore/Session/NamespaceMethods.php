@@ -105,7 +105,7 @@ trait NamespaceMethods {
 	 */
 	public static function GetCsrfNamespace () {
 		$csrfExpiration = static::GetSessionCsrfMaxTime();
-		$namespaceName = "\\" . get_class() . "\\Csrf";
+		$namespaceName = "\\" . get_called_class() . "\\Csrf";
 		$sessionNamespace = static::GetNamespace($namespaceName);
 		$sessionNamespace->SetExpirationSeconds($csrfExpiration);
 		return $sessionNamespace;

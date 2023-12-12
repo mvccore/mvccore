@@ -49,7 +49,7 @@ trait Initializations {
 		// do not initialize log directory here every time, initialize log
 		// directory only if there is necessary to log something - later.
 
-		static::$originalDebugClass = ltrim($app->GetDebugClass(), '\\') == get_class();
+		static::$originalDebugClass = ltrim($app->GetDebugClass(), '\\') === __CLASS__;
 		static::initHandlers();
 		$initGlobalShortHandsHandler = static::$InitGlobalShortHands;
 		$initGlobalShortHandsHandler(static::$debugging);
@@ -208,16 +208,16 @@ trait Initializations {
 			if (!is_dir($logDirAbsPath)) {
 				if (!mkdir($logDirAbsPath, 0777, TRUE))
 					throw new \RuntimeException(
-						'['.get_class()."] It was not possible to create log directory: `".$logDirAbsPath."`."
+						'['.get_called_class()."] It was not possible to create log directory: `".$logDirAbsPath."`."
 					);
 				if (!is_writable($logDirAbsPath))
 					if (!chmod($logDirAbsPath, 0777))
 						throw new \RuntimeException(
-							'['.get_class()."] It was not possible to setup privileges to log directory: `".$logDirAbsPath."` to writeable mode 0777."
+							'['.get_called_class()."] It was not possible to setup privileges to log directory: `".$logDirAbsPath."` to writeable mode 0777."
 						);
 			}
 		} catch (\Exception $e) {
-			die('['.get_class().'] ' . $e->getMessage());
+			die('['.get_called_class().'] ' . $e->getMessage());
 		}
 		static::$logDirectoryInitialized = TRUE;
 		return $logDirAbsPath;

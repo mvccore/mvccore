@@ -122,7 +122,7 @@ trait Rendering {
 				$viewScriptFullPath = $viewScriptFullPathDefault;
 			} else {
 				throw new \InvalidArgumentException(
-					"[".get_class()."] Template not found in path: `{$viewScriptFullPath}`."
+					"[".get_class($this)."] Template not found in path: `{$viewScriptFullPath}`."
 				);
 			}
 		}

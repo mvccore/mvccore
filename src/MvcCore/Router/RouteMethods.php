@@ -139,7 +139,7 @@ trait RouteMethods {
 				);
 			} else {
 				throw new \InvalidArgumentException (
-					"[".get_class()."] Route is not possible to assign"
+					"[".get_class($this)."] Route is not possible to assign"
 					." (key: `{$routeName}`, value: `" . serialize($route) . "`)."
 				);
 			}
@@ -185,9 +185,9 @@ trait RouteMethods {
 					$file = str_replace('\\', '/', $debBackSemiFinalRec['file']);
 					$bootstrapFilePath = '/App/Bootstrap.php';
 					if (mb_strpos($file, $bootstrapFilePath) === mb_strlen($file) - mb_strlen($bootstrapFilePath)) 
-						die('['.get_class().'] '.implode(' ',$errorMsgs));
+						die('['.get_class($this).'] '.implode(' ',$errorMsgs));
 				}
-				throw new \InvalidArgumentException('['.get_class().'] '.implode(' ',$errorMsgs));
+				throw new \InvalidArgumentException('['.get_class($this).'] '.implode(' ',$errorMsgs));
 			}
 		}
 		$this->urlRoutes[$routeName] = $instance;

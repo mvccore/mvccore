@@ -536,7 +536,7 @@ trait GettersSetters {
 	public function AddPreRouteHandler (callable $handler, $priorityIndex = NULL) {
 		if (!is_callable($handler))
 			throw new \InvalidArgumentException(
-				"[".get_class()."] Pre route handler is not callable (handler: {$handler}, priorityIndex: {$priorityIndex})."
+				"[".get_class($this)."] Pre route handler is not callable (handler: {$handler}, priorityIndex: {$priorityIndex})."
 			);
 		return $this->setHandler($this->preRouteHandlers, $handler, $priorityIndex);
 	}
@@ -550,7 +550,7 @@ trait GettersSetters {
 	public function AddPostRouteHandler (callable $handler, $priorityIndex = NULL) {
 		if (!is_callable($handler))
 			throw new \InvalidArgumentException(
-				"[".get_class()."] Post route handler is not callable (handler: {$handler}, priorityIndex: {$priorityIndex})."
+				"[".get_class($this)."] Post route handler is not callable (handler: {$handler}, priorityIndex: {$priorityIndex})."
 			);
 		return $this->setHandler($this->postRouteHandlers, $handler, $priorityIndex);
 	}
@@ -564,7 +564,7 @@ trait GettersSetters {
 	public function AddPreSentHeadersHandler (callable $handler, $priorityIndex = NULL) {
 		if (!is_callable($handler))
 			throw new \InvalidArgumentException(
-				"[".get_class()."] Pre sent headers handler is not callable (handler: {$handler}, priorityIndex: {$priorityIndex})."
+				"[".get_class($this)."] Pre sent headers handler is not callable (handler: {$handler}, priorityIndex: {$priorityIndex})."
 			);
 		return $this->setHandler($this->preSentHeadersHandlers, $handler, $priorityIndex);
 	}
@@ -578,7 +578,7 @@ trait GettersSetters {
 	public function AddPreSentBodyHandler (callable $handler, $priorityIndex = NULL) {
 		if (!is_callable($handler))
 			throw new \InvalidArgumentException(
-				"[".get_class()."] Pre sent body handler is not callable (handler: {$handler}, priorityIndex: {$priorityIndex})."
+				"[".get_class($this)."] Pre sent body handler is not callable (handler: {$handler}, priorityIndex: {$priorityIndex})."
 			);
 		return $this->setHandler($this->preSentBodyHandlers, $handler, $priorityIndex);
 	}
@@ -592,7 +592,7 @@ trait GettersSetters {
 	public function AddPreDispatchHandler (callable $handler, $priorityIndex = NULL) {
 		if (!is_callable($handler))
 			throw new \InvalidArgumentException(
-				"[".get_class()."] Pre dispatch handler is not callable (handler: {$handler}, priorityIndex: {$priorityIndex})."
+				"[".get_class($this)."] Pre dispatch handler is not callable (handler: {$handler}, priorityIndex: {$priorityIndex})."
 			);
 		return $this->setHandler($this->preDispatchHandlers, $handler, $priorityIndex);
 	}
@@ -606,7 +606,7 @@ trait GettersSetters {
 	public function AddPostDispatchHandler (callable $handler, $priorityIndex = NULL) {
 		if (!is_callable($handler))
 			throw new \InvalidArgumentException(
-				"[".get_class()."] Post dispatch handler is not callable (handler: {$handler}, priorityIndex: {$priorityIndex})."
+				"[".get_class($this)."] Post dispatch handler is not callable (handler: {$handler}, priorityIndex: {$priorityIndex})."
 			);
 		return $this->setHandler($this->postDispatchHandlers, $handler, $priorityIndex);
 	}
@@ -620,7 +620,7 @@ trait GettersSetters {
 	public function AddPostTerminateHandler (callable $handler, $priorityIndex = NULL) {
 		if (!is_callable($handler))
 			throw new \InvalidArgumentException(
-				"[".get_class()."] Post terminate handler is not callable (handler: {$handler}, priorityIndex: {$priorityIndex})."
+				"[".get_class($this)."] Post terminate handler is not callable (handler: {$handler}, priorityIndex: {$priorityIndex})."
 			);
 		return $this->setHandler($this->postTerminateHandlers, $handler, $priorityIndex);
 	}
@@ -634,7 +634,7 @@ trait GettersSetters {
 	public function AddCsrfErrorHandler (callable $handler, $priorityIndex = NULL) {
 		if (!is_callable($handler))
 			throw new \InvalidArgumentException(
-				"[".get_class()."] CSRF error handler is not callable (handler: {$handler}, priorityIndex: {$priorityIndex})."
+				"[".get_class($this)."] CSRF error handler is not callable (handler: {$handler}, priorityIndex: {$priorityIndex})."
 			);
 		return $this->setHandler($this->csrfErrorHandlers, $handler, $priorityIndex);
 	}

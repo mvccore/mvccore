@@ -33,7 +33,7 @@ trait MagicMethods {
 			if (property_exists($this, $lcName)) return $this->{$lcName};
 			if (property_exists($this, $name)) return $this->$name;
 			throw new \InvalidArgumentException(
-				"[".get_class()."] No property `{$lcName}` or `{$name}` defined."
+				"[".get_class($this)."] No property `{$lcName}` or `{$name}` defined."
 			);
 		} else if ($nameBegin == 'set') {
 			if (property_exists($this, lcfirst($name)))
@@ -43,7 +43,7 @@ trait MagicMethods {
 			return $this;
 		} else {
 			throw new \InvalidArgumentException(
-				"[".get_class()."] No method `{$rawName}()` defined."
+				"[".get_class($this)."] No method `{$rawName}()` defined."
 			);
 		}
 	}
@@ -58,7 +58,7 @@ trait MagicMethods {
 	public function __set ($name, $value) {
 		if (isset(static::$protectedProperties[$name]))
 			throw new \InvalidArgumentException(
-				"[".get_class()."] It's not possible to change strongly property: `{$name}`."
+				"[".get_class($this)."] It's not possible to change strongly property: `{$name}`."
 			);
 		if (property_exists($this, lcfirst($name)))
 			return $this->{lcfirst($name)} = $value;
@@ -74,7 +74,7 @@ trait MagicMethods {
 	public function __get ($name) {
 		if (isset(static::$protectedProperties[$name]))
 			throw new \InvalidArgumentException(
-				"[".get_class()."] It's not possible to get strongly protected property: `{$name}`."
+				"[".get_class($this)."] It's not possible to get strongly protected property: `{$name}`."
 			);
 		if (isset($this->{lcfirst($name)}))
 			return $this->{lcfirst($name)};

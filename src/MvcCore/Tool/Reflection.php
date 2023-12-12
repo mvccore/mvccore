@@ -79,7 +79,7 @@ trait Reflection {
 		// return result or thrown an exception
 		if ($result) return TRUE;
 		if (!$throwException) return FALSE;
-		throw new \InvalidArgumentException("[".get_class()."] " . $errorMsg);
+		throw new \InvalidArgumentException("[".get_called_class()."] " . $errorMsg);
 	}
 
 	/**
@@ -117,7 +117,7 @@ trait Reflection {
 		// return result or thrown an exception
 		if ($result) return TRUE;
 		if (!$throwException) return FALSE;
-		throw new \InvalidArgumentException("[".get_class()."] " . $errorMsg);
+		throw new \InvalidArgumentException("[".get_called_class()."] " . $errorMsg);
 	}
 
 

@@ -126,7 +126,7 @@ trait Config {
 		if ($systemCfg === NULL) {
 			if ($throwExceptionIfNoSysConfig) 
 				throw new \Exception(
-					"[".get_class()."] System config not found in `"
+					"[".get_called_class()."] System config not found in `"
 					. $configClass::GetConfigSystemPath() . "`."
 				);
 			return;
@@ -135,7 +135,7 @@ trait Config {
 		$dbSectionName = $sysCfgProps->sectionName;
 		if (!isset($systemCfg->{$dbSectionName}) && $throwExceptionIfNoSysConfig)
 			throw new \Exception(
-				"[".get_class()."] No [" . $dbSectionName . "] section and no records matched "
+				"[".get_called_class()."] No [" . $dbSectionName . "] section and no records matched "
 				."`" . $dbSectionName . ".*` found in system config in: `" . $configClass::GetConfigSystemPath() . "`."
 			);
 		$systemCfgDb = (object) $systemCfg->{$dbSectionName};
@@ -177,7 +177,7 @@ trait Config {
 		}
 		if ($defaultConnectionName !== NULL && !isset($configs[$defaultConnectionName]))
 			throw new \Exception(
-				"[".get_class()."] No default connection name '{$defaultConnectionName}'"
+				"[".get_called_class()."] No default connection name '{$defaultConnectionName}'"
 				." found in 'db.*' section in system config.ini."
 			);
 		if ($defaultConnectionName !== NULL)

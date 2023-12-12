@@ -92,7 +92,7 @@ trait ViewHelpers {
 			$result = call_user_func_array([$instance, $method], $arguments);
 		} else {
 			throw new \InvalidArgumentException(
-				"[".get_class()."] View class instance has no method '{$method}', no view helper found."
+				"[".get_class($this)."] View class instance has no method '{$method}', no view helper found."
 			);
 		}
 		$this->__protected['helpers'][$methodCamelCase] = & $instance;
@@ -228,7 +228,7 @@ trait ViewHelpers {
 		}
 		if (!$helperFound)
 			throw new \InvalidArgumentException(
-				"[".get_class()."] View helper method '{$helperNamePascalCase}' is not"
+				"[".get_class($this)."] View helper method '{$helperNamePascalCase}' is not"
 				." possible to handle by any configured view helper (View"
 				." helper namespaces: '".implode("', '", static::$helpersNamespaces)."')."
 			);

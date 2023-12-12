@@ -39,7 +39,7 @@ trait Cookies {
 	) {
 		if ($this->IsSentHeaders())
 			throw new \RuntimeException(
-				"[".get_class()."] Cannot set cookie after HTTP headers have been sent."
+				"[".get_class($this)."] Cannot set cookie after HTTP headers have been sent."
 			);
 		$request = \MvcCore\Application::GetInstance()->GetRequest();
 		$expires = $lifetime === 0 ? 0 : time() + $lifetime;

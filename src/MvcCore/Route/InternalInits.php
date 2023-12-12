@@ -380,7 +380,7 @@ trait InternalInits {
 		if ($greedyFlag) {
 			if ($greedyFlag && $greedyCaught) 
 				throw new \InvalidArgumentException(
-					"[".get_class()."] Route pattern definition can have only one greedy `<param_name*>` "
+					"[".get_class($this)."] Route pattern definition can have only one greedy `<param_name*>` "
 					." with star (to include everything - all characters and slashes . `.*`) ({$this})."
 				);
 			$reverseSectionsCount = count($reverseSectionsInfo);
@@ -397,7 +397,7 @@ trait InternalInits {
 				));
 				if ($greedyReal) 
 					throw new \InvalidArgumentException(
-						"[".get_class()."] Route pattern definition can not have greedy `<param_name*>` with star "
+						"[".get_class($this)."] Route pattern definition can not have greedy `<param_name*>` with star "
 						."(to include everything - all characters and slashes . `.*`) immediately before optional "
 						."section ({$this})."
 					);
@@ -581,7 +581,7 @@ trait InternalInits {
 	protected function throwExceptionIfKeyPropertyIsMissing ($propsNames) {
 		$propsNames = func_get_args();
 		throw new \LogicException(
-			"[".get_class()."] Route configuration property/properties is/are"
+			"[".get_class($this)."] Route configuration property/properties is/are"
 			." missing: `" . implode("`, `", $propsNames) . "`, to parse and"
 			." complete key properties `match` and/or `reverse` to route"
 			." or build URL correctly ({$this})."

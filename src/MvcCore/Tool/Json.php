@@ -50,7 +50,7 @@ trait Json {
 			return $result;
 		}
 		throw new \RuntimeException(
-			"[".get_class()."] ".static::getJsonLastErrorMessage($errorCode), $errorCode
+			"[".get_called_class()."] ".static::getJsonLastErrorMessage($errorCode), $errorCode
 		);
 	}
 
@@ -70,7 +70,7 @@ trait Json {
 		if ($errorCode == JSON_ERROR_NONE)
 			return $result;
 		throw new \RuntimeException(
-			"[".get_class()."] ".static::getJsonLastErrorMessage($errorCode), $errorCode
+			"[".get_called_class()."] ".static::getJsonLastErrorMessage($errorCode), $errorCode
 		);
 	}
 	
