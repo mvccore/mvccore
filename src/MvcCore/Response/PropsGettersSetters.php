@@ -34,6 +34,15 @@ trait PropsGettersSetters {
 		'Set-Cookie'				=> TRUE,
 		'Content-Security-Policy'	=> TRUE,
 	];
+
+	/**
+	 * Cookie names for session id for secure and non-secure connection.
+	 * @var \string[]
+	 */
+	protected static $sessionIdCookieNames = [
+		\MvcCore\IResponse::COOKIE_SESSION_ID_SECURE_DEFAULT_NAME,
+		\MvcCore\IResponse::COOKIE_SESSION_ID_NONSECURE_DEFAULT_NAME
+	];
 	
 	/**
 	 * CSRF protection cookie name. `__MCP` by default.
@@ -116,6 +125,20 @@ trait PropsGettersSetters {
 	
 	/**
 	 * @inheritDoc
+	 * @param  string|NULL $secureConnCookieName 
+	 * @param  string|NULL $nonSecureConnCookieName
+	 * @return array
+	 */
+	public static function SetSessionIdCookieNames ($secureConnCookieName = NULL, $nonSecureConnCookieName = NULL) {
+		if ($secureConnCookieName !== NULL)
+			static::$sessionIdCookieNames[0] = $secureConnCookieName;
+		if ($nonSecureConnCookieName !== NULL)
+			static::$sessionIdCookieNames[1] = $nonSecureConnCookieName;
+		return static::$sessionIdCookieNames;
+	}
+
+	/**
+	 * @inheritDoc
 	 * @return string
 	 */
 	public static function GetCsrfProtectionCookieName () {
@@ -129,6 +152,16 @@ trait PropsGettersSetters {
 	 */
 	public static function SetCsrfProtectionCookieName ($csrfProtectionCookieName) {
 		return static::$csrfProtectionCookieName = $csrfProtectionCookieName;
+	}
+
+	/**
+	 * @inheritDoc
+	 * @return string
+	 */
+	public function GetSessionIdCookieName () {
+		return $this->request->IsSecure()
+			? static::$sessionIdCookieNames[1]
+			: static::$sessionIdCookieNames[0];
 	}
 	
 	/**

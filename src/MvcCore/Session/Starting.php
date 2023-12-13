@@ -24,9 +24,11 @@ trait Starting {
 	 */
 	public static function Start () {
 		if (static::GetStarted()) return;
-		$req = self::$req ?: (self::$req = \MvcCore\Application::GetInstance()->GetRequest());
+		$app = self::$app ?: (self::$app = \MvcCore\Application::GetInstance());
+		$req = self::$req ?: (self::$req = $app->GetRequest());
 		if ($req->IsInternalRequest() === TRUE) return;
-		static::setUpSessionId($req);
+		$res = self::$res ?: (self::$res = $app->GetResponse());
+		static::setUpSessionId($req, $res);
 		$sessionStartOptions = [
 			// $sentSessionId
 			'cookie_secure'		=> $req->IsSecure(),
@@ -75,12 +77,15 @@ trait Starting {
 	/**
 	 * Get session if from request header. If there is no session id
 	 * or if there are more session ids, generate new session id.
-	 * @param  \MvcCore\Request $req
+	 * @param  \MvcCore\Request  $req
+	 * @param  \MvcCore\Response $res
 	 * @return void
 	 */
-	protected static function setUpSessionId (\MvcCore\IRequest $req) {
-		$sessionCookieName = session_name();
-		$rawCookieHeader = ';' . trim($req->GetHeader('Cookie', '-,=;a-zA-Z0-9') ?: '', ';') . ';';
+	protected static function setUpSessionId (\MvcCore\IRequest $req, \MvcCore\IResponse $res) {
+		$mcSessionCookieName = $res->GetSessionIdCookieName();
+		@ini_set('session.name', $mcSessionCookieName);
+		$sessionCookieName = session_name($mcSessionCookieName);
+		$rawCookieHeader = ';' . trim($req->GetHeader('Cookie', '-_,=;a-zA-Z0-9') ?: '', ';') . ';';
 		$sessionId = NULL;
 		if (preg_match_all("#;\s?{$sessionCookieName}\s?\=([^;]+)#", $rawCookieHeader, $matches)) {
 			$rawSessionIds = isset($matches[1]) ? $matches[1] : [];

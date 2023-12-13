@@ -37,6 +37,14 @@ interface IResponse extends \MvcCore\Response\IConstants {
 	);
 
 	/**
+	 * Set cookie name(s) for session id for secure or/and for non-secure connection.
+	 * @param  string|NULL $secureConnCookieName 
+	 * @param  string|NULL $nonSecureConnCookieName
+	 * @return array
+	 */
+	public static function SetSessionIdCookieNames ($secureConnCookieName, $nonSecureConnCookieName);
+
+	/**
 	 * Get CSRF protection cookie name. `__MCP` by default.
 	 * @return string
 	 */
@@ -60,6 +68,12 @@ interface IResponse extends \MvcCore\Response\IConstants {
 	 * @return \string[]
 	 */
 	public static function SetMultiplyHeaders ($multiplyHeaders);
+
+	/**
+	 * Get cookie name for session id by secured or by non secured request.
+	 * @return string
+	 */
+	public function GetSessionIdCookieName ();
 
 	/**
 	 * Get response protocol HTTP version by `$_SERVER['SERVER_PROTOCOL']`,

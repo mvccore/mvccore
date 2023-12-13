@@ -47,6 +47,18 @@ interface IConstants {
 
 	
 	/**
+	 * Default cookie name for session id in secure https connections: `__MCIDS`.
+	 * @var string
+	 */
+	const COOKIE_SESSION_ID_SECURE_DEFAULT_NAME = '__MCIDS';
+
+	/**
+	 * Default cookie name for session id in non-secure http connections: `__MCID`.
+	 * @var string
+	 */
+	const COOKIE_SESSION_ID_NONSECURE_DEFAULT_NAME = '__MCID';
+
+	/**
 	 * Default CSRF cookie name: `__MCP`.
 	 * @var string
 	 */
