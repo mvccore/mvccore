@@ -153,7 +153,8 @@ trait CollectionsMethods {
 
 		if ($pregReplaceAllowedChars === FALSE || $pregReplaceAllowedChars === '' || $pregReplaceAllowedChars === '.*') {
 			if ($onlyKeys) {
-				$result = array_intersect_key($this->params, array_flip($onlyKeys));
+				$onlyKeysToSelect = array_filter($onlyKeys, function ($v) { return is_string($v) || is_numeric($v); });
+				$result = array_intersect_key($this->params, array_flip($onlyKeysToSelect));
 			} else {
 				$result = & $this->params;
 			}
