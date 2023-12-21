@@ -56,13 +56,14 @@ trait Json {
 
 	/**
 	 * @inheritDoc
-	 * @param  string $jsonStr
-	 * @param  int    $flags
-	 * @param  int    $depth                    User specified recursion depth, default: 512.
+	 * @param  string|NULL $jsonStr
+	 * @param  int         $flags
+	 * @param  int         $depth               User specified recursion depth, default: 512.
 	 * @throws \RuntimeException|\JsonException JSON decoding error.
-	 * @return object
+	 * @return mixed
 	 */
 	public static function JsonDecode ($jsonStr, $flags = 0, $depth = 512) {
+		if ($jsonStr === NULL) return NULL;
 		$assoc = ($flags & JSON_OBJECT_AS_ARRAY) != 0;
 		//var_dump(decbin($flags));
 		$result = @json_decode($jsonStr, $assoc, $depth, $flags);
