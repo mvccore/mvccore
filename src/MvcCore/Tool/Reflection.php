@@ -498,6 +498,7 @@ trait Reflection {
 			);
 			self::$sleepProps[$calledClass] = [];
 			$sleepPropsLocal = & self::$sleepProps[$calledClass];
+			$props2LoadByObjVars = [];
 			foreach ($extendedPropNames as $extendedPropName) {
 				$origClass = $calledClass;
 				$propName = $extendedPropName;
@@ -511,26 +512,35 @@ trait Reflection {
 					isset($propNamesNotToSerialize[$propName]) &&
 					!$propNamesNotToSerialize[$propName]
 				) continue;
-				try {
-					$reflectionProp = new \ReflectionProperty(
-						$origClass, $propName
-					);
-					if ($reflectionProp->isStatic())
-						continue;
-					if (!$reflectionProp->isPublic()) 
-						$reflectionProp->setAccessible(TRUE);
-					$propVal = $reflectionProp->getValue($instance);
-				} catch (\Throwable $re){
-					$objectVars = get_object_vars($instance);
-					$propVal = isset($objectVars[$propName])
-						? $objectVars[$propName]
-						: NULL;
+				$origClassType = new \ReflectionClass($origClass);
+				if (!$origClassType->hasProperty($propName)) {
+					$props2LoadByObjVars[$propName] = $extendedPropName;
+					continue;
 				}
+				$reflectionProp = $origClassType->getProperty($propName);
+				if ($reflectionProp->isStatic())
+					continue;
+				if (!$reflectionProp->isPublic()) 
+					$reflectionProp->setAccessible(TRUE);
+				$propVal = $reflectionProp->getValue($instance);
 				if (
 					is_resource($propVal) ||
 					$propVal instanceof \Closure
 				) continue;
 				$sleepPropsLocal[] = $extendedPropName;
+			}
+			if (count($props2LoadByObjVars) > 0) {
+				$objectVars = get_object_vars($instance);
+				foreach ($props2LoadByObjVars as $propName => $extendedPropName) {
+					$propVal = isset($objectVars[$propName])
+						? $objectVars[$propName]
+						: NULL;
+					if (
+						is_resource($propVal) ||
+						$propVal instanceof \Closure
+					) continue;
+					$sleepPropsLocal[] = $extendedPropName;
+				}
 			}
 		}
 		return self::$sleepProps[$calledClass];
