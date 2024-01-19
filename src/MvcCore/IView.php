@@ -445,7 +445,7 @@ interface IView extends \MvcCore\View\IConstants {
 	 * @param  bool        $jsTemplate
 	 * @return string
 	 */
-	public function Escape ($str, $flags = ENT_QUOTES, $encoding = NULL, $double = TRUE, $jsTemplate = FALSE);
+	public function Escape ($str, $flags = ENT_QUOTES, $encoding = NULL, $double = FALSE, $jsTemplate = FALSE);
 
 	/**
 	 * Escape string for use inside HTML/XHTML/HTML5 node in HTML content.
@@ -455,7 +455,7 @@ interface IView extends \MvcCore\View\IConstants {
 	 * @param  bool        $double 
 	 * @return string
 	 */
-	public function EscapeHtml ($str, $encoding = NULL, $double = TRUE);
+	public function EscapeHtml ($str, $encoding = NULL, $double = FALSE);
 	
 	/**
 	 * Escape string to use it inside HTML/XHTML/HTML5 attribute in HTML context.
@@ -465,7 +465,7 @@ interface IView extends \MvcCore\View\IConstants {
 	 * @param  bool        $double 
 	 * @return string
 	 */
-	public function EscapeAttr ($str, $flags = ENT_QUOTES, $encoding = NULL, $double = TRUE);
+	public function EscapeAttr ($str, $flags = ENT_QUOTES, $encoding = NULL, $double = FALSE);
 	
 	/**
 	 * Escape string to use it inside XML template.
@@ -477,7 +477,7 @@ interface IView extends \MvcCore\View\IConstants {
 	 * @param  bool        $double 
 	 * @return string
 	 */
-	public function EscapeXml ($str, $encoding = NULL, $double = TRUE);
+	public function EscapeXml ($str, $encoding = NULL, $double = FALSE);
 	
 	/**
 	 * Escape any object to use it inside JS context.

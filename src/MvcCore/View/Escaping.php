@@ -27,7 +27,7 @@ trait Escaping {
 	 * @param  bool        $jsTemplate
 	 * @return string
 	 */
-	public function Escape ($str, $flags = ENT_QUOTES, $encoding = NULL, $double = TRUE, $jsTemplate = FALSE) {
+	public function Escape ($str, $flags = ENT_QUOTES, $encoding = NULL, $double = FALSE, $jsTemplate = FALSE) {
 		$str = htmlspecialchars(
 			(string) $str, 
 			$this->escapeGetFlags($flags), 
@@ -46,7 +46,7 @@ trait Escaping {
 	 * @param  bool        $double 
 	 * @return string
 	 */
-	public function EscapeHtml ($str, $encoding = NULL, $double = TRUE) {
+	public function EscapeHtml ($str, $encoding = NULL, $double = FALSE) {
 		return htmlspecialchars(
 			(string) $str, 
 			$this->escapeGetFlags(ENT_QUOTES), 
@@ -63,7 +63,7 @@ trait Escaping {
 	 * @param  bool        $double 
 	 * @return string
 	 */
-	public function EscapeAttr ($str, $flags = ENT_QUOTES, $encoding = NULL, $double = TRUE) {
+	public function EscapeAttr ($str, $flags = ENT_QUOTES, $encoding = NULL, $double = FALSE) {
 		$str = (string) $str;
 		if (mb_strpos($str, '`') !== FALSE && strpbrk($str, ' <>"\'') === FALSE) 
 			$str .= ' '; // protection against innerHTML mXSS vulnerability
@@ -82,7 +82,7 @@ trait Escaping {
 	 * @param  string|NULL $encoding 
 	 * @return string
 	 */
-	public function EscapeXml ($str, $encoding = NULL, $double = TRUE) {
+	public function EscapeXml ($str, $encoding = NULL, $double = FALSE) {
 		$str = preg_replace('#[\x00-\x08\x0B\x0C\x0E-\x1F]#', "\u{FFFD}", (string) $str);
 		return htmlspecialchars(
 			$str, 
