@@ -198,6 +198,12 @@ trait Props {
 	protected static $configs = NULL;
 
 	/**
+	 * Cached value from `ini_get('precision');`, `14` by default.
+	 * @var int|NULL
+	 */
+	protected static $floatPrecision = NULL;
+
+	/**
 	 * Originally declared internal model properties to protect their
 	 * possible overwriting by `__set()` or `__get()` magic methods.
 	 * Keys are properties names, values are bools, if to serialize their values

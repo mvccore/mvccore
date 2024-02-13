@@ -25,7 +25,7 @@ trait Converters {
 	 * @param  string                                                                                                                             $propName
 	 * @param  bool|int|float|string|\DateTimeInterface|\DateInterval|\bool[]|\int[]|\float[]|\string[]|\DateTimeInterface[]|\DateInterval[]|NULL $value 
 	 * @param  array                                                                                                                              $parserArgs 
-	 * @return int|float|string|NULL
+	 * @return int|string|NULL
 	 */
 	protected static function convertToScalar ($propName, $value, $parserArgs = []) {
 		if (is_int($value)) {
@@ -63,12 +63,19 @@ trait Converters {
 	 * @param  string $propName
 	 * @param  float  $value 
 	 * @param  array  $parserArgs 
-	 * @return float
+	 * @return string
 	 */
 	protected static function convertToScalarFloat ($propName, $value, $parserArgs = []) {
 		if (is_array($parserArgs) && count($parserArgs) > 0) 
-			return call_user_func_array('round', array_merge([$value], $parserArgs));
-		return $value;
+			$value = call_user_func_array('round', array_merge([$value], $parserArgs));
+		$valueStr = strtolower((string) $value);
+		if (strpos($valueStr, 'e') === FALSE) 
+			return $valueStr;
+		$floatPrecision = self::$floatPrecision ?: (
+			self::$floatPrecision = (@ini_get('precision') ? intval(ini_get('precision')) : 14)
+		);
+		list(, $fractStr) = explode('.', number_format($value, $floatPrecision, '.', ''));
+		return number_format($value, strlen(rtrim($fractStr, '0')), '.', '');
 	}
 	
 	/**
@@ -103,13 +110,14 @@ trait Converters {
 	protected static function convertToScalarArray ($propName, $value, $parserArgs = []) {
 		$items = [];
 		foreach ($value as $key => $item) {
-			if ($item !== NULL) {
-				$propSubName = implode('.', [$propName, $key]);
-				$items[] = static::convertToScalar($propSubName, $item, $parserArgs);
-			}
+			$propSubName = implode('.', [$propName, $key]);
+			$items[$key] = $item !== NULL
+				? static::convertToScalar($propSubName, $item, $parserArgs)
+				: NULL;
 		}
-		if (count($items) === 0) return NULL;
-		return implode(',', $items);
+		if (count($items) === 0) return '[]';
+		$toolClass = \MvcCore\Application::GetInstance()->GetToolClass();
+		return $toolClass::JsonEncode($items);
 	}
 	
 	/**
