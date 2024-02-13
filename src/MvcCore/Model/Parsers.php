@@ -27,6 +27,7 @@ trait Parsers {
 	public static function ParseToTypes ($rawValue, $typesString) {
 		$targetTypeValue = NULL;
 		$value = $rawValue;
+		/** @var string $typeString */
 		foreach ($typesString as $typeString) {
 			if (substr($typeString, -2, 2) === '[]') {
 				if (!is_array($value)) {
@@ -75,8 +76,7 @@ trait Parsers {
 			$conversionResult = TRUE;
 		} else if (static::parseIsTypeNumeric($typeStr)) {
 			// int or float:
-			if (settype($rawValue, $typeStr)) 
-				$conversionResult = TRUE;
+			$conversionResult = settype($rawValue, $typeStr);
 		} else if (static::parseIsTypeBoolean($typeStr)) {
 			// bool:
 			$rawValue = static::parseToBool($rawValue);
@@ -202,9 +202,10 @@ trait Parsers {
 			$value = $rawValue;
 		} else {
 			$toolClass = \MvcCore\Application::GetInstance()->GetToolClass();
-			if ($toolClass::IsJsonString($rawValue)) {
+			if (!$toolClass::IsJsonString($rawValue)) {
 				$value = $rawValue;
 			} else {
+				$value = NULL;
 				$flags = isset($parserArgs[0]) && is_int($parserArgs[0]) 
 					? $parserArgs[0] 
 					: 0;
@@ -213,12 +214,16 @@ trait Parsers {
 					: 512;
 				try {
 					$value = $toolClass::JsonDecode($rawValue, $flags, $depth);
+					if ($typeStr === 'array' || $typeStr === 'object') {
+						settype($value, $typeStr);	
+					} else {
+						$value = new $typeStr($value);
+					}
 				} catch (\Throwable $e) {
 					\MvcCore\Debug::Log($e);
 				}
 			}
 		}
-		settype($value, $typeStr);
 		return $value;
 	}
 }
