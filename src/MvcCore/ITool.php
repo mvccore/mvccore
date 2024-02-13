@@ -293,6 +293,7 @@ interface ITool {
 	 *                       try to get PhpDocs tag(s) only and `NULL` (default) 
 	 *                       means try to get PHP8+ attribute(s) first and if 
 	 *                       there is nothing, try to get PhpDocs tag(s).
+	 * @throws \InvalidArgumentException
 	 * @return array         Keys are attributes full class names (or PhpDocs tags names) and values
 	 *                       are attributes constructor arguments (or PhpDocs tags arguments).
 	 */
@@ -315,6 +316,7 @@ interface ITool {
 	 *                       try to get PhpDocs tag(s) only and `NULL` (default) 
 	 *                       means try to get PHP8+ attribute(s) first and if 
 	 *                       there is nothing, try to get PhpDocs tag(s).
+	 * @throws \InvalidArgumentException
 	 * @return array         Keys are attributes full class names (or PhpDocs tags names) and values
 	 *                       are attributes constructor arguments (or PhpDocs tags arguments).
 	 */
@@ -337,6 +339,7 @@ interface ITool {
 	 *                       try to get PhpDocs tag(s) only and `NULL` (default) 
 	 *                       means try to get PHP8+ attribute(s) first and if 
 	 *                       there is nothing, try to get PhpDocs tag(s).
+	 * @throws \InvalidArgumentException
 	 * @return array         Keys are attributes full class names (or PhpDocs tags names) and values
 	 *                       are attributes constructor arguments (or PhpDocs tags arguments).
 	 */
@@ -376,6 +379,7 @@ interface ITool {
 	 * @param  \ReflectionClass|\ReflectionMethod|\ReflectionProperty $reflectionObject 
 	 * @param  string                                                 $phpDocsTagName
 	 * @param  bool|NULL                                              $traversing
+	 * @throws \InvalidArgumentException
 	 * @return array|NULL
 	 */
 	public static function GetPhpDocsTagArgs ($reflectionObject, $phpDocsTagName, $traversing = NULL);

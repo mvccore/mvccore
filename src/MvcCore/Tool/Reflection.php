@@ -134,6 +134,7 @@ trait Reflection {
 	 *                      try to get PhpDocs tag(s) only and `NULL` (default) 
 	 *                      means try to get PHP8+ attribute(s) first and if 
 	 *                      there is nothing, try to get PhpDocs tag(s).
+	 * @throws \InvalidArgumentException
 	 * @return array        Keys are attributes full class names (or PhpDocs tags names) and values
 	 *                      are attributes constructor arguments (or PhpDocs tags arguments).
 	 */
@@ -165,6 +166,7 @@ trait Reflection {
 	 *                       try to get PhpDocs tag(s) only and `NULL` (default) 
 	 *                       means try to get PHP8+ attribute(s) first and if 
 	 *                       there is nothing, try to get PhpDocs tag(s).
+	 * @throws \InvalidArgumentException
 	 * @return array         Keys are attributes full class names (or PhpDocs tags names) and values
 	 *                       are attributes constructor arguments (or PhpDocs tags arguments).
 	 */
@@ -200,6 +202,7 @@ trait Reflection {
 	 *                       try to get PhpDocs tag(s) only and `NULL` (default) 
 	 *                       means try to get PHP8+ attribute(s) first and if 
 	 *                       there is nothing, try to get PhpDocs tag(s).
+	 * @throws \InvalidArgumentException
 	 * @return array         Keys are attributes full class names (or PhpDocs tags names) and values
 	 *                       are attributes constructor arguments (or PhpDocs tags arguments).
 	 */
@@ -235,6 +238,7 @@ trait Reflection {
 	 *                                                                `TRUE` to get PHP8+ attributes only, do not fall back to PhpDocs tags.
 	 * @param  bool                                                   $docsTagsOnly
 	 *                                                                `TRUE` to get PhpDocs tags only, do not try PHP8+ attributes.
+	 * @throws \InvalidArgumentException
 	 * @return array                                                  Keys are attributes full class names (or PhpDocs tags names) and values
 	 *                                                                are attributes constructor arguments (or PhpDocs tags arguments).
 	 */
@@ -276,11 +280,24 @@ trait Reflection {
 		$traversing = $traversing !== NULL
 			? $traversing
 			: $reflectionObject instanceof \ReflectionClass;
+		$matchByInstanceOf = strpos($attributeClassFullName, '*') === FALSE;
+		$attributeClassMatch = '#^' . str_replace(['*', '\\'], ['(.*)', '\\\\'], $attributeClassFullName) . '$#';
 		while (TRUE) {
-			$attrs = $reflectionObject->getAttributes($attributeClassFullName);
-			if (count($attrs) > 0) {
-				$result = $attrs[0]->getArguments();
-				break;
+			if ($matchByInstanceOf) {
+				$attrs = $reflectionObject->getAttributes($attributeClassFullName);
+				if (count($attrs) > 0) {
+					$result = $attrs[0]->getArguments();
+					break;
+				}
+			} else {
+				/** @var \ReflectionAttribute[] $allAttrs */
+				$allAttrs = $reflectionObject->getAttributes();
+				foreach ($allAttrs as $allAttr) {
+					if (preg_match($attributeClassMatch, $allAttr->getName())) {
+						$result = $allAttr->getArguments();
+						break;
+					}
+				}
 			}
 			if ($traversing) {
 				$reflectionObject = static::getParentReflectionObject($reflectionObject);
@@ -297,6 +314,7 @@ trait Reflection {
 	 * @param  \ReflectionClass|\ReflectionMethod|\ReflectionProperty $reflectionObject 
 	 * @param  string                                                 $phpDocsTagName
 	 * @param  bool|NULL                                              $traversing
+	 * @throws \InvalidArgumentException
 	 * @return array|NULL
 	 */
 	public static function GetPhpDocsTagArgs ($reflectionObject, $phpDocsTagName, $traversing = NULL) {
@@ -310,7 +328,7 @@ trait Reflection {
 				$tagPos = mb_strpos($docComment, $phpDocsTagName);
 				if ($tagPos !== FALSE) {
 					$tagLines = static::getPhpDocsTagArgsParseDocComment($docComment, $phpDocsTagName);
-					$result = static::getPhpDocsTagArgsEncodeTags($tagLines, $phpDocsTagName);
+					$result = static::getPhpDocsTagArgsEncodeTags($tagLines, $phpDocsTagName, $reflectionObject);
 					break;
 				}
 			}
@@ -419,11 +437,13 @@ trait Reflection {
 	 *       (object) ["key", "value", ...]
 	 *   ]
 	 * ````
-	 * @param  \string[] $tagLines 
-	 * @param  string $phpDocsTagName
+	 * @param  \string[]                                              $tagLines 
+	 * @param  string                                                 $phpDocsTagName
+	 * @param  \ReflectionClass|\ReflectionMethod|\ReflectionProperty $reflectionObject 
+	 * @throws \InvalidArgumentException
 	 * @return array
 	 */
-	protected static function getPhpDocsTagArgsEncodeTags ($tagLines, $phpDocsTagName) {
+	protected static function getPhpDocsTagArgsEncodeTags ($tagLines, $phpDocsTagName, $reflectionObject) {
 		$result = [];
 		if (count($tagLines) > 0) {
 			$tagContent = mb_substr(implode("\n", $tagLines), mb_strlen($phpDocsTagName));
@@ -435,16 +455,27 @@ trait Reflection {
 			foreach ($tagsContents as $tagContent) {
 				$classCtorParsed = FALSE;
 				$localResult = [];
-				if (preg_match_all("#^(\s*)([A-Z][\\\\A-Za-z0-9]*)?\((.*)\)(\s*)$#s", $tagContent, $matches)) {
+				if (preg_match_all("#^(\s*)([\\\\A-Za-z0-9]*)?\((.*)\)(\s*);?(\s*)$#s", $tagContent, $matches)) {
 					$className = $matches[2][0];
 					if ($className !== '') 
 						$localResult[] = $className;
 					try {
-						$jsonStr = str_replace(["\n"], "", $matches[3][0]);
+						$jsonStr = str_replace(["\n", "\r", "\t"], "", $matches[3][0]);
 						$parsedData = static::JsonDecode($jsonStr);
 						$localResult[] = $parsedData;
 						$classCtorParsed = TRUE;
 					} catch (\Exception $e) {
+						if ($reflectionObject instanceof \ReflectionClass) {
+							$declaredClassFullName = $reflectionObject->getName();
+							$declaredMember = NULL;
+						} else {
+							$declaredClassFullName = $reflectionObject->getDeclaringClass()->getName();
+							$declaredMember = $reflectionObject->getName();
+						}
+						$errorMessage = "Syntax error in PHP Docs tag `{$phpDocsTagName}` in class `{$declaredClassFullName}`";
+						if ($declaredMember !== NULL)
+							$errorMessage .= " at member `{$declaredMember}`.";
+						throw new \InvalidArgumentException($errorMessage, 500, $e);
 						$localResult = [];
 					}
 				}
