@@ -305,7 +305,7 @@ trait Dispatching {
 		}
 		if ($instance instanceof \MvcCore\IController)
 			$this->AddChildController($instance, $prop->name);
-		if ($prop->isPrivate()) $prop->setAccessible(TRUE);
+		if (!$prop->isPublic()) $prop->setAccessible(TRUE);
 		$prop->setValue($this, $instance);
 		return TRUE;
 	}
