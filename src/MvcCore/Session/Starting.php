@@ -29,15 +29,7 @@ trait Starting {
 		if ($req->IsInternalRequest() === TRUE) return;
 		$res = self::$res ?: (self::$res = $app->GetResponse());
 		static::setUpSessionId($req, $res);
-		$sessionStartOptions = [
-			// $sentSessionId
-			'cookie_secure'		=> $req->IsSecure(),
-			'cookie_httponly'	=> TRUE,
-		];
-		if (PHP_VERSION_ID >= 70300)
-			$sessionStartOptions['cookie_samesite'] = TRUE;
-
-		static::$started = session_start($sessionStartOptions);
+		static::$started = session_start(static::getOptions($req, TRUE));
 		static::$sessionStartTime = time();
 		static::$sessionMaxTime = static::$sessionStartTime;
 		static::setUpMeta();
@@ -98,6 +90,39 @@ trait Starting {
 			$sessionId = static::createId();
 		$_COOKIE[$sessionCookieName] = $sessionId;
 		session_id($sessionId);
+	}
+
+	/**
+	 * Complete `session_start()` options and session id cookie for response.
+	 * @param  \MvcCore\Request $req
+	 * @param  bool             $starting Get options for session start, otherwise get options for session id cookie.
+	 * @return array
+	 */
+	protected static function getOptions (\MvcCore\IRequest $req, $starting = TRUE) {
+		$sessionCookieParamsDefault = (object) session_get_cookie_params();
+		$cookieLifeTime = isset($sessionCookieParamsDefault->lifetime) 
+			? $sessionCookieParamsDefault->lifetime 
+			: 0;
+		if (!$starting) {
+			$sessionMaxTime = static::GetSessionMaxTime();
+			if ($sessionMaxTime > static::$sessionStartTime)
+				$cookieLifeTime = $sessionMaxTime - static::$sessionStartTime;
+		}
+		$sessionStartOptions = [
+			// $sentSessionId
+			'cookie_lifetime'	=> $cookieLifeTime,
+			'cookie_secure'		=> $req->IsSecure(),
+			'cookie_httponly'	=> TRUE,
+			'cookie_domain'		=> $sessionCookieParamsDefault->domain,
+			'cookie_path'		=> $sessionCookieParamsDefault->path,
+		];
+		if (PHP_VERSION_ID >= 70300) {
+			$sameSite = $sessionCookieParamsDefault->samesite;
+			if ($sameSite === NULL || $sameSite === '')
+				$sameSite = \MvcCore\IResponse::COOKIE_SAMESITE_LAX;
+			$sessionStartOptions['cookie_samesite'] = $sameSite;
+		}
+		return $sessionStartOptions;
 	}
 
 	/**

@@ -79,16 +79,12 @@ trait Closing {
 				$res->SetHeader($setCookieHeaderName, $setCookiesNew);
 			}
 			// set up new session id cookie:
-			$sessionMaxTime = static::GetSessionMaxTime();
-			$params = (object) session_get_cookie_params();
-			if ($sessionMaxTime > static::$sessionStartTime) {
-				$cookieLifeTime = $sessionMaxTime - static::$sessionStartTime;
-			} else {
-				$cookieLifeTime = isset($params->lifetime) ? $params->lifetime : 0;
-			}
+			$options = static::getOptions($app->GetRequest(), FALSE);
 			$res->SetCookie(
-				$sessionIdName, $sessionIdValue, $cookieLifeTime, $params->path,
-				NULL, NULL, TRUE, \MvcCore\IResponse::COOKIE_SAMESITE_LAX
+				$sessionIdName, $sessionIdValue, 
+				$options['cookie_lifetime'],	$options['cookie_path'], 
+				$options['cookie_domain'],		$options['cookie_secure'], 
+				$options['cookie_httponly'],	$options['cookie_samesite']
 			);
 		}
 	}
