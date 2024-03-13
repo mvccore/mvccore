@@ -20,8 +20,8 @@ trait InternalInits {
 
 	/**
 	 * @inheritDoc
-	 * @param  \string[] $languagesList
-	 * @return array
+	 * @param  string $languagesList
+	 * @return array<int,array<array{0:string,1:?string}>>
 	 */
 	public static function ParseHttpAcceptLang ($languagesList) {
 		$languages = [];
@@ -220,7 +220,7 @@ trait InternalInits {
 			// path, query and no hash
 			$this->path = mb_substr($uri, 0, $questionMarkPos);
 			$this->query = trim(mb_substr($uri, $questionMarkPos + 1), '&');
-		} else if (!$questionMarkContained && $hashContained) {
+		} else if (!$questionMarkContained && $hashContained) { // @phpstan-ignore-line
 			// path, no query and hash
 			$this->path = mb_substr($uri, 0, $hashPos);
 			$this->fragment = mb_substr($uri, $hashPos + 1);
@@ -307,7 +307,7 @@ trait InternalInits {
 	/**
 	 * Parse direct PHP input (`php://input`) by Content-Type header.
 	 * @param  string $contentType
-	 * @return array
+	 * @return array<int,string|mixed>
 	 */
 	protected function parseBodyParams ($contentType) {
 		$result = [];
@@ -317,7 +317,7 @@ trait InternalInits {
 		$urlEncType = mb_strpos($contentType, 'application/x-www-form-urlencoded') !== FALSE;
 		if ($urlEncType) {
 			parse_str(trim($this->body, '&='), $result);
-			if ($result === NULL)
+			if (!is_array($result))
 				$result = [];
 		} else {
 			$jsonType = (
@@ -347,7 +347,7 @@ trait InternalInits {
 				}
 				if (!$probablyAJsonType) {
 					parse_str(trim($this->body, '&='), $result);
-					if ($result === NULL)
+					if (!is_array($result))
 						$result = [];
 				}
 			}
@@ -356,16 +356,27 @@ trait InternalInits {
 	}
 
 	/**
-	 * Get param value from given collection (`$_GET`, `$_POST`, `php://input` or http headers),
-	 * filtered by characters defined in second argument through `preg_replace()`.
+	 * Get param value from given collection (`$_GET`, `$_POST`, 
+	 * `php://input` or http headers), filtered by characters 
+	 * defined in second argument through `preg_replace()`.
 	 * Place into second argument only char groups you want to keep.
-	 * @param  array             $paramsCollection        Array with request params or array with request headers.
-	 * @param  string            $name                    Parameter string name.
-	 * @param  string|array|bool $pregReplaceAllowedChars If String - list of regular expression characters to only keep, if array - `preg_replace()` pattern and reverse, if `FALSE`, raw value is returned.
-	 * @param  mixed             $ifNullValue             Default value returned if given param name is null.
-	 * @param  string            $targetType              Target type to retype param value or default if-null value. If param is an array, every param item will be retyped into given target type.
-	 * @throws \InvalidArgumentException                  `$name` must be a `$targetType`, not an `array`.
-	 * @return string|\string[]|int|\int[]|bool|\bool[]|array|mixed
+	 * @param  array<string,mixed>              $paramsCollection
+	 * Array with request params or array with request headers.
+	 * @param  string                           $name
+	 * Parameter string name.
+	 * @param  string|array<string,string>|bool $pregReplaceAllowedChars
+	 * If String - list of regular expression characters to only keep, 
+	 * if array - `preg_replace()` pattern and reverse, if `FALSE`, 
+	 * raw value is returned.
+	 * @param  mixed                            $ifNullValue
+	 * Default value returned if given param name is null.
+	 * @param  string                           $targetType
+	 * Target type to retype param value or default if-null value. 
+	 * If param is an array, every param item will be retyped 
+	 * into given target type.
+	 * @throws \InvalidArgumentException
+	 * `$name` must be a `$targetType`, not an `array`.
+	 * @return string|int|float|bool|NULL|array<string|int|float|bool|NULL>
 	 */
 	protected function getParamFromCollection (
 		& $paramsCollection = [],
@@ -438,7 +449,7 @@ trait InternalInits {
 			}
 			$redirectUrlLength = mb_strlen($redirectUrl);
 			
-			if ($redirectUrlLength === 0 || ($redirectUrlLength > 0 && $redirectUrl === $requestUri)) {
+			if ($redirectUrlLength === 0 || ($redirectUrlLength > 0 && $redirectUrl === $requestUri)) { // @phpstan-ignore-line
 				$this->basePath = mb_substr($this->scriptName, 0, $lastSlashPos);
 				$this->scriptName = '/' . mb_substr($this->scriptName, $lastSlashPos + 1);
 			} else {
@@ -466,19 +477,28 @@ trait InternalInits {
 			return;
 		}
 		$rawUaLanguages = $this->globalServer['HTTP_ACCEPT_LANGUAGE'];
+		$langAndLocaleParsed = FALSE;
+		$langAndLocaleArr = [NULL, NULL];
 		if (extension_loaded('Intl')) {
 			$langAndLocaleStr = \locale_accept_from_http($rawUaLanguages);
-			$langAndLocaleArr = $langAndLocaleStr !== NULL
-				? explode('_', $langAndLocaleStr)
-				: [NULL, NULL];
-		} else {
-			$languagesAndLocales = static::ParseHttpAcceptLang($rawUaLanguages);
-			$langAndLocaleArr = current($languagesAndLocales);
-			if (is_array($langAndLocaleArr))
-				$langAndLocaleArr = current($langAndLocaleArr);
+			if ($langAndLocaleStr !== FALSE) {
+				$langAndLocaleArr = explode('_', $langAndLocaleStr);
+				$langAndLocaleParsed = TRUE;
+			}
 		}
-		if ($langAndLocaleArr[0] === NULL) $langAndLocaleArr[0] = '';
-		if (!isset($langAndLocaleArr[1])) $langAndLocaleArr[1] = '';
+		if (!$langAndLocaleParsed) {
+			$languagesAndLocales = static::ParseHttpAcceptLang($rawUaLanguages);
+			if (count($languagesAndLocales) > 0) {
+				$langAndLocaleArr = current($languagesAndLocales);
+				$langAndLocaleParsed = TRUE;
+				if (is_array($langAndLocaleArr))
+					$langAndLocaleArr = current($langAndLocaleArr);
+			}
+		}
+		if ($langAndLocaleArr[0] === NULL)
+			$langAndLocaleArr[0] = '';
+		if (!isset($langAndLocaleArr[1]))
+			$langAndLocaleArr[1] = '';
 		list($this->lang, $this->locale) = $langAndLocaleArr;
 	}
 
