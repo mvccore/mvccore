@@ -33,7 +33,7 @@ trait Environment {
 	/**
 	 * @inheritDoc
 	 * @param  \MvcCore\Config $config
-	 * @return array|\stdClass
+	 * @return array<mixed,mixed>|\stdClass
 	 */
 	public static function & GetEnvironmentDetectionData (\MvcCore\IConfig $config) {
 		$envConfData = [];
@@ -94,10 +94,11 @@ trait Environment {
 
 	/**
 	 * @inheritDoc
-	 * @param  string|NULL $environmentName Return configuration data only for specific
-	 *                                      environment name. If `NULL`, there are
-	 *                                      returned data for current environment.
-	 * @return array
+	 * @param  string|NULL $environmentName
+	 * Return configuration data only for specific
+	 * environment name. If `NULL`, there are
+	 * returned data for current environment.
+	 * @return array<mixed,mixed>
 	 */
 	public function & GetData ($environmentName = NULL) {
 		$result = [];
@@ -106,7 +107,7 @@ trait Environment {
 				// most often usage:
 				$result = & $this->currentData;
 			} else {
-				$app = self::$app ?: (self::$app = \MvcCore\Application::GetInstance());
+				$app = self::$app ?: (self::$app = \MvcCore\Application::GetInstance()); // @phpstan-ignore-line
 				$currentEnvName = $app->GetEnvironment()->GetName();
 				if ($currentEnvName && array_key_exists($currentEnvName, $this->mergedData))
 					$result = & $this->mergedData[$currentEnvName];
@@ -124,15 +125,17 @@ trait Environment {
 
 	/**
 	 * @inheritDoc
-	 * @param  array $data Data to set into configuration store(s). If second
-	 *                     param is `NULL`, there are set data for current envirnment.
-	 * @param  string|NULL $environmentName Set configuration data for specific
-	 *                                      environment name. If `NULL`, there are
-	 *                                      set data for current environment.
+	 * @param  array<mixed,mixed> $data
+	 * Data to set into configuration store(s). If second
+	 * param is `NULL`, there are set data for current envirnment.
+	 * @param  string|NULL        $environmentName
+	 * Set configuration data for specific
+	 * environment name. If `NULL`, there are
+	 * set data for current environment.
 	 * @return \MvcCore\Config
 	 */
 	public function SetData (array $data = [], $environmentName = NULL) {
-		$app = self::$app ?: self::$app = \MvcCore\Application::GetInstance();
+		$app = self::$app ?: (self::$app = \MvcCore\Application::GetInstance()); // @phpstan-ignore-line
 		$currentEnvName = $app->GetEnvironment()->GetName();
 		if ($environmentName === NULL) {
 			$this->currentData = & $data;
@@ -148,8 +151,9 @@ trait Environment {
 	/**
 	 * Merge data from `$config->envData` array (-> common end env. specific records)
 	 * into given result collection.
-	 * @param  array  $resultCollection
-	 * @param  string $environmentName
+	 * @param  \MvcCore\IConfig   $config
+	 * @param  array<mixed,mixed> $resultCollection
+	 * @param  string             $environmentName
 	 * @return void
 	 */
 	protected static function mergeEnvironmentData (\MvcCore\IConfig $config, & $resultCollection, $environmentName) {
@@ -179,23 +183,23 @@ trait Environment {
 
 	/**
 	 * Recursively merge two `\stdClass|array` objects and returns a resulting object.
-	 * @param  \stdClass|array $commonEnvData   The base object.
-	 * @param  \stdClass|array $specificEnvData The merge object.
-	 * @return \stdClass|array The merged object
+	 * @param  \stdClass|array<mixed,mixed> $commonEnvData   The base object.
+	 * @param  \stdClass|array<mixed,mixed> $specificEnvData The merge object.
+	 * @return \stdClass|array<mixed,mixed> The merged object
 	 */
 	protected static function mergeRecursive ($commonEnvData, $specificEnvData) {
 		$commonEnvDataClone = function_exists('igbinary_serialize') // clone
 			? igbinary_unserialize(igbinary_serialize($commonEnvData))
 			: unserialize(serialize($commonEnvData));
-		static::_mergeArraysOrObjectsRecursive($commonEnvDataClone, $specificEnvData);
+		self::_mergeArraysOrObjectsRecursive($commonEnvDataClone, $specificEnvData);
 		return $commonEnvDataClone;
 	}
 
 	/**
 	 * Recursively merge two `\stdClass|array` objects and returns a resulting object.
 	 * First object will be changed.
-	 * @param  \stdClass|array $commonEnvData   The base object.
-	 * @param  \stdClass|array $specificEnvData The merge object.
+	 * @param  \stdClass|array<mixed,mixed> $commonEnvData   The base object.
+	 * @param  \stdClass|array<mixed,mixed> $specificEnvData The merge object.
 	 * @return void
 	 */
 	private static function _mergeArraysOrObjectsRecursive (& $commonEnvData, & $specificEnvData) {
@@ -208,7 +212,7 @@ trait Environment {
 					if (!isset($commonEnvData->{$key})) {
 						$commonEnvData->{$key} = $specificEnvValue;
 					} else {
-						static::_mergeArraysOrObjectsRecursive(
+						self::_mergeArraysOrObjectsRecursive(
 							$commonEnvValue, $specificEnvValue
 						);
 					}
@@ -225,7 +229,7 @@ trait Environment {
 					if ($commonEnvValue === NULL) {
 						$commonEnvData[$key] = $specificEnvValue;
 					} else {
-						static::_mergeArraysOrObjectsRecursive(
+						self::_mergeArraysOrObjectsRecursive(
 							$commonEnvValue, $specificEnvValue
 						);
 					}
