@@ -26,30 +26,36 @@ interface IConstants {
 	 * @var int
 	 */
 	const DISPATCH_STATE_INITIALIZED		= 1;
+
+	/**
+	 * Value after executing the `Init()` method.
+	 * @var int
+	 */
+	const DISPATCH_STATE_ACTION_INITIALIZED	= 2;
 	
 	/**
 	 * Value after executing the `PreDispatch()` method.
 	 * @var int
 	 */
-	const DISPATCH_STATE_PRE_DISPATCHED		= 2;
+	const DISPATCH_STATE_PRE_DISPATCHED		= 3;
 	
 	/**
 	 * Value after executing the action method.
 	 * @var int
 	 */
-	const DISPATCH_STATE_ACTION_EXECUTED	= 3;
+	const DISPATCH_STATE_ACTION_EXECUTED	= 4;
 	
 	/**
 	 * Value after executing the `Render ()` method.
 	 * @var int
 	 */
-	const DISPATCH_STATE_RENDERED			= 4;
+	const DISPATCH_STATE_RENDERED			= 5;
 	
 	/**
 	 * Value after executing the `Terminate()` or `Redirect()` method.
 	 * @var int
 	 */
-	const DISPATCH_STATE_TERMINATED			= 5;
+	const DISPATCH_STATE_TERMINATED			= 100;
 
 
 

@@ -38,7 +38,7 @@ trait Props {
 
 	/**
 	 * Flash messages static definition for type flags and type strings.
-	 * @var array
+	 * @var array<int,string>
 	 */
 	protected static $flashMessagesTypes = [
 		self::FLASH_MESSAGE_TYPE_SUCCESS	=> 'success',
@@ -52,7 +52,7 @@ trait Props {
 	/**
 	 * Flash messages reading speed configuration to automatically
 	 * calculate messages autohide timeout.
-	 * @var array
+	 * @var array<string,int>
 	 */
 	protected static $flashMessagesReadingSpeedCfg = [
 		'averageWordsPerMinute'	=> 100,		// 100 words per minute
@@ -106,7 +106,7 @@ trait Props {
 	 * Boolean about AJAX request.
 	 * `TRUE` if request is requested from browser by `XmlHttpRequest` object
 	 * with http header: `X-Requested-With: AnyJavascriptFrameworkName`, `FALSE` otherwise.
-	 * @var boolean
+	 * @var bool
 	 */
 	protected $ajax = FALSE;
 
@@ -114,7 +114,7 @@ trait Props {
 	 * Class store object for view properties.
 	 * Before `\MvcCore\Controller::PreDispatch();` is called
 	 * in controller lifecycle, this property will be still `NULL`.
-	 * @var \MvcCore\View
+	 * @var \MvcCore\View|NULL
 	 */
 	protected $view = NULL;
 
@@ -164,7 +164,7 @@ trait Props {
 
 	/**
 	 * User model instance. Template property.
-	 * @var \MvcCore\Model
+	 * @var \MvcCore\Model|NULL
 	 */
 	protected $user = NULL;
 
@@ -191,7 +191,14 @@ trait Props {
 	 * - 5 => Controller has been redirected.
 	 * @var int
 	 */
-	protected $dispatchState = \MvcCore\IController::DISPATCH_STATE_CREATED;
+	protected $dispatchState = self::DISPATCH_STATE_CREATED;
+
+	/**
+	 * Dispatching state checking recursive semaphore.
+	 * @internal
+	 * @var bool
+	 */
+	protected $dispatchStateSemaphore = FALSE;
 
 	/**
 	 * Parent controller instance if any.
@@ -216,7 +223,7 @@ trait Props {
 
 	/**
 	 * All asset mime types possibly called through `\MvcCore\Controller::AssetAction();`.
-	 * @var string
+	 * @var array<string, string>
 	 */
 	private static $_assetsMimeTypes = [
 		'js'	=> 'text/javascript',

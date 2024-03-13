@@ -22,6 +22,8 @@ use MvcCore\Ext\Models\Db\Exception;
  *   - Controller/action dispatching.
  *   - Error handling and error responses.
  * @mixin \MvcCore\Application
+ * @phpstan-type CustomHandlerCallable callable(\MvcCore\IRequest, \MvcCore\IResponse): (false|void)
+ * @phpstan-type CustomHandlerRecord array{0: bool, 1: CustomHandlerCallable}
  */
 trait Dispatching {
 
@@ -38,7 +40,7 @@ trait Dispatching {
 			// PHP >= 7.0 compatible code
 			try {
 				$this->DispatchInit();
-				if ($this->DispatchExec() !== NULL)
+				if ($this->DispatchExec() !== FALSE)
 					$this->Terminate();
 			} catch (\Throwable $e1) {
 				$this->DispatchException($e1);
@@ -75,19 +77,19 @@ trait Dispatching {
 	 */
 	public function DispatchExec () {
 		if (!$this->ProcessCustomHandlers($this->preRouteHandlers))	
-			return FALSE; // stopped, go to termination
+			return TRUE; // stopped, go to termination
 		if (!$this->RouteRequest())	
-			return FALSE; // stopped, go to termination
+			return TRUE; // stopped, go to termination
 		if (!$this->ProcessCustomHandlers($this->postRouteHandlers))
-			return FALSE; // stopped, go to termination
+			return TRUE; // stopped, go to termination
 		$this->SetUpController();
 		if (!$this->ProcessCustomHandlers($this->preDispatchHandlers)) 
-			return FALSE; // stopped, go to termination
+			return TRUE; // stopped, go to termination
 		if (!$this->controller->Dispatch())
-			return NULL; // stopped and already terminated
+			return FALSE; // stopped and already terminated
 		if (!$this->processCustomHandlers($this->postDispatchHandlers))	
-			return FALSE; // stopped, go to termination
-		return TRUE; // everything processed, go to termination
+			return TRUE; // stopped, go to termination
+		return NULL; // everything processed, nothing stopped, go to termination
 	}
 
 	/**
@@ -107,7 +109,8 @@ trait Dispatching {
 
 	/**
 	 * @inheritDoc
-	 * @param  \callable[] $handlers
+	 * @param  CustomHandlerRecord[] $handlers
+	 * @throws \Throwable
 	 * @return bool
 	 */
 	public function ProcessCustomHandlers (& $handlers = []) {
@@ -117,6 +120,7 @@ trait Dispatching {
 		ksort($handlers, SORT_NUMERIC);
 		foreach ($handlers as $handlerRecords) {
 			foreach ($handlerRecords as $closureCallingAndHandler) {
+				/** @var CustomHandlerRecord $closureCallingAndHandler */
 				list($closureCalling, $handler) = $closureCallingAndHandler;
 				$subResult = NULL;
 				if ($closureCalling) {
@@ -139,7 +143,7 @@ trait Dispatching {
 	 * @return bool
 	 */
 	public function SetUpController () {
-		/** @var \MvcCore\Route $route */
+		/** @var \MvcCore\Route|NULL $route */
 		$route = $this->router->GetCurrentRoute();
 		if ($route === NULL) 
 			throw new \Exception('No route for request', 404);
@@ -243,8 +247,10 @@ trait Dispatching {
 	
 	/**
 	 * @inheritDoc
-	 * @param  string $controllerActionOrRouteName Should be `"Controller:Action"` combination or just any route name as custom specific string.
-	 * @param  array  $params                      Optional, array with params, key is param name, value is param value.
+	 * @param  string               $controllerActionOrRouteName
+	 * Should be `"Controller:Action"` combination or just any route name as custom specific string.
+	 * @param  array<string, mixed> $params
+	 * Optional, array with params, key is param name, value is param value.
 	 * @return string
 	 */
 	public function Url ($controllerActionOrRouteName = 'Index:Index', $params = []) {
@@ -294,8 +300,8 @@ trait Dispatching {
 
 	/**
 	 * @inheritDoc
-	 * @param  \Throwable|string $exceptionOrMessage
-	 * @param  int|NULL          $code
+	 * @param  \Throwable|\Exception|string $exceptionOrMessage
+	 * @param  int|NULL                     $code
 	 * @return bool
 	 */
 	public function DispatchException ($exceptionOrMessage, $code = NULL) {
@@ -303,7 +309,7 @@ trait Dispatching {
 		$exception = NULL;
 		if ($exceptionOrMessage instanceof \Throwable) {
 			$exception = $exceptionOrMessage;
-		} else if ($exceptionOrMessage instanceof \Exception) {
+		} else if ($exceptionOrMessage instanceof \Exception) { /** @phpstan-ignore-line */
 			$exception = $exceptionOrMessage;
 		} else {
 			try {
@@ -314,7 +320,7 @@ trait Dispatching {
 				} catch (\Throwable $e1) {
 					$exception = $e1;
 				}
-			} catch (\Exception $e2) {
+			} catch (\Exception $e2) { // @phpstan-ignore-line
 				// PHP < 7.0 compatible code
 				$exception = $e2;
 			}
@@ -387,7 +393,7 @@ trait Dispatching {
 						$this->request->GetControllerName() . '/' . $this->request->GetActionName()
 					)
 				);
-				$this->controller->Dispatch();
+				$this->controller->Dispatch(); // @phpstan-ignore-line
 			} catch (\Throwable $e2) {
 				$this->router->RemoveRoute(\MvcCore\IRouter::DEFAULT_ROUTE_NAME_NOT_FOUND);
 				if ($this->environment->IsDevelopment()) {
@@ -423,7 +429,7 @@ trait Dispatching {
 				TRUE
 			);
 			$this->request
-				->SetParam('code', 404, \MvcCore\IRequest::PARAM_TYPE_URL_REWRITE)
+				->SetParam('code', '404', \MvcCore\IRequest::PARAM_TYPE_URL_REWRITE)
 				->SetParam('message', $exceptionMessage, \MvcCore\IRequest::PARAM_TYPE_URL_REWRITE);
 			$this->response->SetCode(404);
 			$this->controller = NULL;
@@ -436,7 +442,7 @@ trait Dispatching {
 						$this->request->GetControllerName() . '/' . $this->request->GetActionName()
 					)
 				);
-				$this->controller->Dispatch();
+				$this->controller->Dispatch(); // @phpstan-ignore-line
 			} catch (\Throwable $e) {
 				$this->router->RemoveRoute(\MvcCore\IRouter::DEFAULT_ROUTE_NAME_NOT_FOUND);
 				if ($this->environment->IsDevelopment()) {

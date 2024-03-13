@@ -24,14 +24,14 @@ trait Dispatching {
 	 */
 	public static function CreateInstance () {
 		/** @var \MvcCore\Controller $instance */
-		$instance = new static();
+		$instance = new static(); /** @phpstan-ignore-line */
 		self::$allControllers[spl_object_hash($instance)] = $instance;
 		return $instance;
 	}
 
 	/**
 	 * @inheritDoc
-	 * @return \MvcCore\Controller|NULL
+	 * @return \MvcCore\IController|NULL
 	 */
 	public static function GetCallerControllerInstance () {
 		$result = NULL;
@@ -39,7 +39,7 @@ trait Dispatching {
 		if (count($backtraceItems) < 3) return $result;
 		$calledClass = get_called_class();
 		foreach ($backtraceItems as $backtraceItem) {
-			if (!isset($backtraceItem['object']) || !$backtraceItem['object']) continue;
+			if (!isset($backtraceItem['object'])) continue;
 			$object = $backtraceItem['object'];
 			$class = $backtraceItem['class'];
 			if (
@@ -55,70 +55,36 @@ trait Dispatching {
 
 	/**
 	 * @inheritDoc
-	 * @param  string|NULL $actionName PHP code action name has to be in PascalCase + 'Action'.
-	 *                                 This value is used to call your desired function
-	 *                                 in controller without any change.
-	 * @return bool                    Return `FALSE` if application has been already terminated.
+	 * @internal
+	 * @param  string|NULL $actionName
+	 * Optional, PHP code action name, it has to be in PascalCase 
+	 * without any suffix (`Init` or `Action'). This value is used 
+	 * later to call your desired functions in controller with this changes:
+	 * - `$controller->{$actionName . 'Init'}()`,
+	 * - `$controller->{$actionName . 'Action'}()`.
+	 * @return bool
+	 * Return `FALSE` if application has been already terminated.
 	 */
 	public function Dispatch ($actionName = NULL) {
 		/** @var \MvcCore\Controller $this */
 		$result = TRUE;
 		try {
-			// \MvcCore\Debug::Timer('dispatch');
-
-			list ($actionName, $actionNameStart) = $this->dispatchSetUpAction($actionName);
-
-			// Call `Init()` method only if dispatch state is not initialized yet:
-			if ($this->dispatchState < \MvcCore\IController::DISPATCH_STATE_INITIALIZED)
-				$this->Init();
-			
-			// For cases somebody forget to call parent `Init()`:
-			if ($this->dispatchState < \MvcCore\IController::DISPATCH_STATE_INITIALIZED) 
-				$this->dispatchState = \MvcCore\IController::DISPATCH_STATE_INITIALIZED;
-			
-			// \MvcCore\Debug::Timer('dispatch');
-
-			// Call `PreDispatch()` method only if dispatch state is not pre-dispatched yet:
-			if ($this->dispatchState < \MvcCore\IController::DISPATCH_STATE_PRE_DISPATCHED)
-				$this->PreDispatch();
-			
-			// For cases somebody forget to call parent `PreDispatch()`:
-			if ($this->dispatchState < \MvcCore\IController::DISPATCH_STATE_PRE_DISPATCHED) 
-				$this->dispatchState = \MvcCore\IController::DISPATCH_STATE_PRE_DISPATCHED;
-			
-			// \MvcCore\Debug::Timer('dispatch');
-
-			// Call action method only if dispatch state is not action-executed yet:
-			if ($this->actionName !== $actionNameStart) {
-				$toolClass = $this->application->GetToolClass();
-				$actionName = $toolClass::GetPascalCaseFromDashed($this->actionName) . 'Action';
-			}
-
-			if (
-				$this->dispatchState < \MvcCore\IController::DISPATCH_STATE_ACTION_EXECUTED && 
-				method_exists($this, $actionName) // case insensitive check
-			) {
-				$reflectionMethod = new \ReflectionMethod($this, $actionName); // case insensitive initialization
-				if ($reflectionMethod->isPublic() && $reflectionMethod->name === $actionName) // && case sensitive check
-					$this->{$actionName}();
-			}
-				
-			
-			// For cases somebody forget to call parent action method:
-			if ($this->dispatchState < \MvcCore\IController::DISPATCH_STATE_ACTION_EXECUTED) 
-				$this->dispatchState = \MvcCore\IController::DISPATCH_STATE_ACTION_EXECUTED;
-			
-			// \MvcCore\Debug::Timer('dispatch');
-		
-			// Call `Render()` method only if dispatch state is not rendered yet:
-			if ($this->viewEnabled && $this->dispatchState < \MvcCore\IController::DISPATCH_STATE_RENDERED)
-				$this->Render(
-					$this->controllerName,	// dashed ctrl name
-					$this->actionName		// dashed action name
-				);
-
-			// \MvcCore\Debug::Timer('dispatch');
-
+			$dispatchActionParams = $this->dispatchGetActionParams($actionName);
+			$this->dispatchTemplateMethod(
+				'Init', static::DISPATCH_STATE_INITIALIZED
+			);
+			$this->dispatchActionMethod(
+				'Init', static::DISPATCH_STATE_ACTION_INITIALIZED,
+				$dispatchActionParams
+			);
+			$this->dispatchTemplateMethod(
+				'PreDispatch', static::DISPATCH_STATE_PRE_DISPATCHED
+			);
+			$this->dispatchActionMethod(
+				'Action', static::DISPATCH_STATE_ACTION_EXECUTED,
+				$dispatchActionParams
+			);
+			$this->dispatchRender();
 		} catch (\MvcCore\Controller\TerminateException $e) {
 			$result = FALSE;
 			if (!$this->application->GetTerminated()) {
@@ -128,13 +94,176 @@ trait Dispatching {
 		}
 		return $result;
 	}
+	
+	/**
+	 * Prepare controller dispatching variables collection.
+	 * Return array with those dispatching variables:
+	 * `[string $toolClass, \ReflectionClass $ctrlType, string $this->actionName, string $actionName]`.
+	 * If given first argument `$actionName` param is `NULL`, return in last 2 items 
+	 * a pascal case and dashed case action by `$this->actionName`. If first argument 
+	 * `$actionName` param has any value, set up `$this->actionName` by first argument.
+	 * and return in last two items a pascal and dashed case by that.
+	 * @internal
+	 * @param  string|NULL $actionName
+	 * Optional, PHP code action name, it has to be in PascalCase 
+	 * without any suffix (`Init` or `Action'). This value is used 
+	 * later to call your desired functions in controller with this changes:
+	 * - `$controller->{$actionName . 'Init'}()`,
+	 * - `$controller->{$actionName . 'Action'}()`,
+	 * @return array{0: class-string, 1: \ReflectionClass, 2: string, 3: string}
+	 */
+	protected function dispatchGetActionParams ($actionName = NULL) {
+		$toolClass = $this->application->GetToolClass();
+		$ctrlType = new \ReflectionClass($this);
+		if ($actionName === NULL) {
+			$actionName = $toolClass::GetPascalCaseFromDashed($this->actionName);
+		} else {
+			$this->actionName = $toolClass::GetDashedFromPascalCase($actionName);
+		}
+		return [$toolClass, $ctrlType, $this->actionName, $actionName];
+	}
+
+	/**
+	 * Dispatch controller action based method.
+	 * This is usually used to call controller methods like 
+	 * `$controller->IndexInit()` or `$controller->IndexAction()`
+	 * if requested action is `index`.
+	 * @internal
+	 * @param  string                                                        $actionSuffix 
+	 * Called method name suffix, base values are `Init` or `Action`.
+	 * @param  int                                                           $targetDispatchState 
+	 * Dispatch state, that is required to be completed. Base values are:
+	 * - `\MvcCore\IController::DISPATCH_STATE_ACTION_INITIALIZED`,
+	 * - `\MvcCore\IController::DISPATCH_STATE_ACTION_EXECUTED`.
+	 * @param  array{0:class-string, 1:\ReflectionClass, 2:string, 3:string} $dispatchActionParams 
+	 * `[string $toolClass, \ReflectionClass $ctrlType, string $this->actionName, string $actionName]`
+	 * @return void
+	 */
+	protected function dispatchActionMethod ($actionSuffix, $targetDispatchState, $dispatchActionParams) {
+		list($toolClass, $ctrlType, $actionNameDcStart, $actionNamePc) = $dispatchActionParams;
+		if ($this->actionName !== $actionNameDcStart) 
+			$actionNamePc = $toolClass::GetPascalCaseFromDashed($this->actionName);
+		$actionMethodName = $actionNamePc . $actionSuffix;
+		if (
+			$this->dispatchState < $targetDispatchState && 
+			$ctrlType->hasMethod($actionMethodName) && 
+			$ctrlType->getMethod($actionMethodName)->isPublic()
+		) {
+			if ($targetDispatchState === static::DISPATCH_STATE_ACTION_EXECUTED) {
+				// For cases somebody forget to call parent action method:
+				$this->dispatchMoveState($targetDispatchState);
+			}
+			// execute method `<Index>Init()` or `<Index>Action()`:
+			$this->{$actionMethodName}();
+			if ($targetDispatchState !== static::DISPATCH_STATE_ACTION_EXECUTED) {
+				// For cases somebody forget to call parent action method:
+				$this->dispatchMoveState($targetDispatchState);
+			}
+		}
+	}
+
+	/**
+	 * Dispatch controller template based method.
+	 * This is usually used to call controller methods like 
+	 * `$controller->Init()` or `$controller->PreDispatch()`.
+	 * @internal
+	 * @param mixed $methodName 
+	 * Called method full name, base values are `Init` or `PreDispatch`.
+	 * @param mixed $targetDispatchState 
+	 * Dispatch state, that is required to be completed. Base values are:
+	 * - `\MvcCore\IController::DISPATCH_STATE_INITIALIZED`,
+	 * - `\MvcCore\IController::DISPATCH_STATE_PRE_DISPATCHED`.
+	 * @return void
+	 */
+	protected function dispatchTemplateMethod ($methodName, $targetDispatchState) {
+		// Call `PreDispatch()` method only if dispatch state is not pre-dispatched yet:
+		if ($this->dispatchState < $targetDispatchState) {
+			// execute template method `Init()` or `PreDispatch()`:
+			$this->{$methodName}();
+			// For cases somebody forget to call parent template method:
+			$this->dispatchMoveState($targetDispatchState);
+		}
+	}
+	
+	/**
+	 * Dispatch controller render method if view is enabled.
+	 * This is usually used to call controller method
+	 * `$controller->Render($this->controllerName, $this->actionName)`.
+	 * @internal
+	 * @return void
+	 */
+	protected function dispatchRender () {
+		if ($this->viewEnabled && $this->dispatchState < static::DISPATCH_STATE_RENDERED)
+			$this->Render(
+				$this->controllerName,	// dashed ctrl name
+				$this->actionName		// dashed action name
+			);
+	}
+
+	/**
+	 * Move dispatching state to given point if 
+	 * `$this->dispatchState` is lower than given point.
+	 * @internal
+	 * @param  int $targetDispatchState 
+	 * @return \MvcCore\Controller
+	 */
+	protected function dispatchMoveState ($targetDispatchState) {
+		if ($this->dispatchState < $targetDispatchState)
+			$this->dispatchState = $targetDispatchState;
+		return $this;
+	}
+	
+	/**
+	 * @inheritDoc
+	 * @param  int $state 
+	 * Dispatch state, that is required to be completed. Possible values are:
+	 * - `\MvcCore\IController::DISPATCH_STATE_CREATED`,
+	 * - `\MvcCore\IController::DISPATCH_STATE_INITIALIZED`,
+	 * - `\MvcCore\IController::DISPATCH_STATE_ACTION_INITIALIZED`,
+	 * - `\MvcCore\IController::DISPATCH_STATE_PRE_DISPATCHED`,
+	 * - `\MvcCore\IController::DISPATCH_STATE_ACTION_EXECUTED`,
+	 * - `\MvcCore\IController::DISPATCH_STATE_RENDERED`,
+	 * - `\MvcCore\IController::DISPATCH_STATE_TERMINATED`.
+	 * @return bool
+	 */
+	public function DispatchStateCheck ($state) {
+		if ($this->dispatchState >= $state) 
+			return FALSE;
+		// here is always `$this->dispatchState < $state`:
+		if ($this->dispatchStateSemaphore) 
+			return TRUE;
+		$this->dispatchStateSemaphore = TRUE;
+		$dispatchActionParams = $this->dispatchGetActionParams();
+		if ($state > static::DISPATCH_STATE_INITIALIZED)
+			$this->dispatchTemplateMethod(
+				'Init', static::DISPATCH_STATE_INITIALIZED
+			);
+		if ($state > static::DISPATCH_STATE_ACTION_INITIALIZED)
+			$this->dispatchActionMethod(
+				'Init', static::DISPATCH_STATE_ACTION_INITIALIZED,
+				$dispatchActionParams
+			);
+		if ($state > static::DISPATCH_STATE_PRE_DISPATCHED)
+			$this->dispatchTemplateMethod(
+				'PreDispatch', static::DISPATCH_STATE_PRE_DISPATCHED
+			);
+		if ($state > static::DISPATCH_STATE_ACTION_EXECUTED)
+			$this->dispatchActionMethod(
+				'Action', static::DISPATCH_STATE_ACTION_EXECUTED,
+				$dispatchActionParams
+			);
+		if ($state > static::DISPATCH_STATE_RENDERED)
+			$this->dispatchRender();
+		$this->dispatchStateSemaphore = FALSE;
+		return TRUE;
+	}
 
 	/**
 	 * @inheritDoc
 	 * @return void
 	 */
 	public function Init () {
-		if ($this->dispatchState > \MvcCore\IController::DISPATCH_STATE_CREATED) 
+		if (!$this->DispatchStateCheck(static::DISPATCH_STATE_INITIALIZED))
 			return;
 		self::$allControllers[spl_object_hash($this)] = $this;
 		if ($this->parentController === NULL && !$this->request->IsCli()) {
@@ -151,34 +280,10 @@ trait Dispatching {
 			$this->autoInitializeProperties();
 		foreach ($this->childControllers as $controller) {
 			$controller->Init();
-			if ($controller->dispatchState == \MvcCore\IController::DISPATCH_STATE_TERMINATED) 
+			if ($controller->dispatchState === static::DISPATCH_STATE_TERMINATED) 
 				break;
 		}
-		if ($this->dispatchState < \MvcCore\IController::DISPATCH_STATE_INITIALIZED)
-			$this->dispatchState = \MvcCore\IController::DISPATCH_STATE_INITIALIZED;
-	}
-
-	/**
-	 * If given first argument `$actionName` param is `NULL`, return pascal case and dashed 
-	 * case action by `$this->actionName`, if not, set up `$this->actionName` by first argument
-	 * and return pascal and dashed case by that.
-	 * @param  string|NULL $actionName PHP code action name has to be in PascalCase + 'Action'.
-	 *                                 This value is used to call your desired function
-	 *                                 in controller without any change.
-	 * @return array
-	 */
-	protected function dispatchSetUpAction ($actionName = NULL) {
-		$toolClass = $this->application->GetToolClass();
-		if ($actionName === NULL) {
-			$actionName = $toolClass::GetPascalCaseFromDashed($this->actionName) . 'Action';
-		} else {
-			$actionWordPos = mb_strrpos($actionName, 'Action');
-			$actionNameWithoutActionWord = $actionWordPos === mb_strlen($actionName) - 6
-				? mb_substr($actionName, 0, $actionWordPos)
-				: $actionName;
-			$this->actionName = $toolClass::GetDashedFromPascalCase($actionNameWithoutActionWord);
-		}
-		return [$actionName, $this->actionName];
+		$this->dispatchMoveState(static::DISPATCH_STATE_INITIALIZED);
 	}
 
 	/**
@@ -200,7 +305,7 @@ trait Dispatching {
 	protected function autoInitializeProperties () {
 		/** @var \ReflectionClass $ctrl */
 		$ctrl = new \ReflectionClass($this);
-		/** @var $props \ReflectionProperty[] */
+		/** @var \ReflectionProperty[] $props */
 		$props = $ctrl->getProperties(
 			\ReflectionProperty::IS_PUBLIC |
 			\ReflectionProperty::IS_PROTECTED |
@@ -281,6 +386,7 @@ trait Dispatching {
 		} else {
 			$className = NULL;
 			if ($phpWithTypes && $prop->hasType()) {
+				/** @var \ReflectionNamedType $refType */
 				$refType = $prop->getType();
 				if ($refType !== NULL)
 					$className = $refType->getName();
@@ -303,6 +409,7 @@ trait Dispatching {
 				$instance = new $className();
 			}
 		}
+		/** @var \MvcCore\Controller $instance */
 		if ($instance instanceof \MvcCore\IController)
 			$this->AddChildController($instance, $prop->name);
 		if (!$prop->isPublic()) $prop->setAccessible(TRUE);
@@ -315,20 +422,17 @@ trait Dispatching {
 	 * @return void
 	 */
 	public function PreDispatch () {
-		if ($this->dispatchState > \MvcCore\IController::DISPATCH_STATE_INITIALIZED) 
+		if (!$this->DispatchStateCheck(static::DISPATCH_STATE_PRE_DISPATCHED))
 			return;
-		if ($this->dispatchState == \MvcCore\IController::DISPATCH_STATE_CREATED) 
-			$this->Init();
 		// check if view is still `NULL`, because it could be created by some parent class
 		if ($this->viewEnabled && $this->view === NULL) 
 			$this->view = $this->createView(TRUE);
 		foreach ($this->childControllers as $controller) {
 			$controller->PreDispatch();
-			if ($controller->dispatchState == \MvcCore\IController::DISPATCH_STATE_TERMINATED) 
+			if ($controller->dispatchState === static::DISPATCH_STATE_TERMINATED) 
 				break;
 		}
-		if ($this->dispatchState < \MvcCore\IController::DISPATCH_STATE_PRE_DISPATCHED)
-			$this->dispatchState = \MvcCore\IController::DISPATCH_STATE_PRE_DISPATCHED;
+		$this->dispatchMoveState(static::DISPATCH_STATE_PRE_DISPATCHED);
 	}
 
 	/**
@@ -396,6 +500,7 @@ trait Dispatching {
 	 * @param  string      $location
 	 * @param  int         $code
 	 * @param  string|NULL $reason   Any optional text header for reason why.
+	 * @throws \MvcCore\Controller\TerminateException
 	 * @return void
 	 */
 	public static function Redirect ($location = '', $code = \MvcCore\IResponse::SEE_OTHER, $reason = NULL) {
@@ -406,9 +511,14 @@ trait Dispatching {
 			->SetHeader('Location', $location);
 		if ($reason !== NULL)
 			$response->SetHeader('X-Reason', $reason);
-		foreach (self::$allControllers as & $controller)
-			$controller->dispatchState = \MvcCore\IController::DISPATCH_STATE_TERMINATED;
+		$state = static::DISPATCH_STATE_TERMINATED;
+		$mainCtrl = $app->GetController();
+		$mainCtrl->dispatchState = $state;
+		foreach (self::$allControllers as $controller)
+			$controller->dispatchState = $state;
+		self::$allControllers = [];
 		$app->Terminate();
+		throw new \MvcCore\Controller\TerminateException(__FILE__.":".__LINE__);
 	}
 
 	/**
@@ -428,7 +538,7 @@ trait Dispatching {
 	 * @return void
 	 */
 	protected function terminateControllers () {
-		$state = \MvcCore\IController::DISPATCH_STATE_TERMINATED;
+		$state = static::DISPATCH_STATE_TERMINATED;
 		$this->dispatchState = $state;
 		$this->application->GetController()->dispatchState = $state;
 		foreach (self::$allControllers as $controller) 

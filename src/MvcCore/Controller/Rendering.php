@@ -33,7 +33,8 @@ trait Rendering {
 	 * @return string
 	 */
 	public function Render ($controllerOrActionNameDashed = NULL, $actionNameDashed = NULL) {
-		if (!$this->renderCheckDispatchState()) return '';
+		if (!$this->viewEnabled || !$this->DispatchStateCheck(static::DISPATCH_STATE_RENDERED)) 
+			return '';
 
 		$topMostParentCtrl = $this->parentController === NULL;
 		
@@ -74,7 +75,7 @@ trait Rendering {
 			);
 		}
 		
-		$this->dispatchState = \MvcCore\IController::DISPATCH_STATE_RENDERED;
+		$this->dispatchMoveState(static::DISPATCH_STATE_RENDERED);
 		return '';
 	}
 
@@ -280,24 +281,6 @@ trait Rendering {
 	}
 
 	/**
-	 * Check controller dispatch state before rendering.
-	 * Call `Init()` or `PreDispatch()` method if necessary 
-	 * and return `TRUE` if view could be rendered.
-	 * @return bool
-	 */
-	protected function renderCheckDispatchState () {
-		if ($this->dispatchState >= \MvcCore\IController::DISPATCH_STATE_RENDERED)
-			return FALSE;
-		if ($this->dispatchState < \MvcCore\IController::DISPATCH_STATE_INITIALIZED)
-			$this->Init();
-		if ($this->dispatchState < \MvcCore\IController::DISPATCH_STATE_PRE_DISPATCHED)
-			$this->PreDispatch();
-		if ($this->dispatchState >= \MvcCore\IController::DISPATCH_STATE_RENDERED || !$this->viewEnabled) 
-			return FALSE;
-		return TRUE;
-	}
-
-	/**
 	 * Default rendering mode.
 	 * Render action view first into output buffer, then render layout view
 	 * wrapped around rendered action view string also into output buffer.
@@ -318,7 +301,7 @@ trait Rendering {
 		$actionResult = $this->view->RenderScript($viewScriptPath);
 		if (!$topMostParentCtrl) {
 			unset($actionResult, $this->view);
-			$this->dispatchState = \MvcCore\IController::DISPATCH_STATE_RENDERED;
+			$this->dispatchMoveState(static::DISPATCH_STATE_RENDERED);
 			return;
 		}
 		// create top most parent layout view, set up and render to outputResult
@@ -333,7 +316,7 @@ trait Rendering {
 		// set up response only
 		$this->XmlResponse($outputResult, FALSE);
 		unset($outputResult);
-		$this->dispatchState = \MvcCore\IController::DISPATCH_STATE_RENDERED;
+		$this->dispatchMoveState(static::DISPATCH_STATE_RENDERED);
 	}
 
 	/**
@@ -368,6 +351,6 @@ trait Rendering {
 			$this->view->RenderScript($viewScriptPath);
 			unset($this->view);
 		}
-		$this->dispatchState = \MvcCore\IController::DISPATCH_STATE_RENDERED;
+		$this->dispatchMoveState(static::DISPATCH_STATE_RENDERED);
 	}
 }
