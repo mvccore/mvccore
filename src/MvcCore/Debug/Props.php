@@ -15,6 +15,7 @@ namespace MvcCore\Debug;
 
 /**
  * @mixin \MvcCore\Debug
+ * @phpstan-type GlobalShorthandCallable callable(bool):void
  */
 trait Props {
 
@@ -35,14 +36,14 @@ trait Props {
 
 	/**
 	 * Initialize global development shorthands.
-	 * @var callable
+	 * @var GlobalShorthandCallable|NULL
 	 */
-	public static $InitGlobalShortHands = [];
+	public static $InitGlobalShortHands = NULL;
 
 	/**
 	 * Semaphore to execute `\MvcCore\Debug::Init();` method only once.
 	 * `TRUE` on `dev` environment, `FALSE` if any other environment detected.
-	 * @var bool
+	 * @var bool|NULL
 	 */
 	protected static $debugging = NULL;
 
@@ -56,7 +57,7 @@ trait Props {
 
 	/**
 	 * Error levels to turn into exceptions by default.
-	 * @var \int[]
+	 * @var array<int>
 	 */
 	protected static $strictExceptionsModeDefaultLevels = [
 		E_ERROR, E_RECOVERABLE_ERROR,
@@ -73,7 +74,7 @@ trait Props {
 	/**
 	 * System config debug configuration root node name (`debug` by default)
 	 * and all it's properties names.
-	 * @var string
+	 * @var array<string,string>
 	 */
 	protected static $systemConfigDebugProps = [
 		'sectionName'		=> 'debug',				// debug section root node
@@ -85,13 +86,13 @@ trait Props {
 
 	/**
 	 * Loaded system config debug section values.
-	 * @var array|NULL
+	 * @var \stdClass|NULL
 	 */
 	protected static $systemConfigDebugValues = NULL;
 
 	/**
 	 * Debugging and logging handlers, this should be customized in extended class.
-	 * @var array
+	 * @var array<string,string>
 	 */
 	protected static $handlers = [
 		'timer'				=> 'timerHandler',
@@ -104,13 +105,13 @@ trait Props {
 
 	/**
 	 * Store for printed dumps by output buffering to send it at response end.
-	 * @var array
+	 * @var array<array{0:string,1:string,2:array<string,mixed>}>
 	 */
 	protected static $dumps = [];
 
 	/**
 	 * Store timers start points.
-	 * @var array
+	 * @var array<string,float>
 	 */
 	protected static $timers = [];
 
@@ -130,7 +131,7 @@ trait Props {
 
 	/**
 	 * Reference to singleton instance in `\MvcCore\Application::GetInstance();`.
-	 * @var \MvcCore\Application
+	 * @var \MvcCore\Application|NULL
 	 */
 	protected static $app = NULL;
 

@@ -58,10 +58,10 @@ trait Handlers {
 
 	/**
 	 * @inheritDoc
-	 * @param  mixed  $value   Variable to dump.
-	 * @param  string $title   Optional title.
-	 * @param  array  $options Dumper options.
-	 * @return mixed           Variable itself.
+	 * @param  mixed               $value   Variable to dump.
+	 * @param  string              $title   Optional title.
+	 * @param  array<string,mixed> $options Dumper options.
+	 * @return mixed               Variable itself.
 	 */
 	public static function BarDump ($value, $title = NULL, $options = []) {
 		if (static::$originalDebugClass) {
@@ -95,8 +95,8 @@ trait Handlers {
 
 	/**
 	 * @inheritDoc
-	 * @param  \Exception|\Error|\Throwable|array $exception
-	 * @param  bool $exit
+	 * @param  \Throwable|array{"type":int,"message":string,"file":string,"line":int} $exception
+	 * @param  bool                                                                   $exit
 	 * @return void
 	 */
 	public static function Exception ($exception, $exit = TRUE) {
@@ -150,9 +150,9 @@ trait Handlers {
 	 * dumped string in debug bar - store the dump record for HTML response later
 	 * rendering in shutdown handler or render dumped string directly in HTTP
 	 * header for AJAX response, before any output body.
-	 * @param  mixed  $value   Variable to dump.
-	 * @param  string $title   Optional title.
-	 * @param  array  $options Dumper options.
+	 * @param  mixed               $value   Variable to dump.
+	 * @param  string              $title   Optional title.
+	 * @param  array<string,mixed> $options Dumper options.
 	 * @return string
 	 */
 	protected static function dumpHandler ($value, $title = NULL, $options = []) {
@@ -196,45 +196,45 @@ trait Handlers {
 	/**
 	 * Format all dump records into single string with source PHP script file
 	 * link element and remove all useless new lines in PHP dumps.
-	 * @return array An array with formatted dumps string and boolean about last dump before script exit.
+	 * @return array{0:string,1:bool} An array with formatted dumps string and boolean about last dump before script exit.
 	 */
 	protected static function formatDebugDumps () {
-		$dumps = '';
+		$dumps = [];
 		$lastDump = FALSE;
 		$app = static::$app ?: (static::$app = \MvcCore\Application::GetInstance());
 		$appRoot = $app->GetRequest()->GetAppRoot();
 		foreach (self::$dumps as $values) {
 			list($dumpResult, $lastDumpLocal) = self::formatDebugDump($values, $appRoot);
-			$dumps .= $dumpResult;
+			$dumps[] = $dumpResult;
 			if ($lastDumpLocal) $lastDump = $lastDumpLocal;
 		}
-		return [$dumps, $lastDump];
+		return [implode('', $dumps), $lastDump];
 	}
 
 	/**
 	 * Format one dump record into single string with source PHP script file
 	 * link element and remove all useless new lines in PHP dumps.
-	 * @param  array       $dumpRecord Dump record from `self::$dumps` with items under indexes: `0` => dump string, `1` => title, `2` => options.
-	 * @param  string|NULL $appRoot
-	 * @return array       An array with formatted dump string and boolean about last dump before script exit.
+	 * @param  array{0:string,1:string,2:array<string,mixed>} $dumpRecord
+	 * Dump record from `self::$dumps` with items under indexes: `0` => dump string, `1` => title, `2` => options.
+	 * @param  string|NULL                                    $appRoot
+	 * @return array{0:string,1:bool} An array with formatted dump string and boolean about last dump before script exit.
 	 */
 	protected static function formatDebugDump ($dumpRecord, $appRoot = NULL) {
-		$result = '';
+		$result = [];
 		$lastDump = FALSE;
 		if ($appRoot === NULL) {
-			$app = static::$app ?: (static::$app = \MvcCore\Application::GetInstance());
+			$app = static::$app ?: (static::$app = \MvcCore\Application::GetInstance()); // @phpstan-ignore-line
 			$appRoot = $app->GetRequest()->GetAppRoot();
 		}
 		$options = $dumpRecord[2];
-		$result .= '<div class="item">';
+		$result[] = '<div class="item">';
 		if ($dumpRecord[1] !== NULL)
-			$result .= '<pre class="title">'.$dumpRecord[1].'</pre>';
+			$result[] = '<pre class="title">'.$dumpRecord[1].'</pre>';
 		$file = $options['file'];
 		$line = $options['line'];
 		$displayedFile = str_replace('\\', '/', $file);
-		if (strpos($displayedFile, $appRoot) === 0) {
+		if (strpos($displayedFile, $appRoot) === 0)
 			$displayedFile = substr($displayedFile, strlen($appRoot));
-		}
 		$link = '<a class="editor" href="editor://open/?file='
 			.rawurlencode($file).'&amp;line='.$line.'">'
 				.$displayedFile.':'.$line
@@ -247,21 +247,21 @@ trait Handlers {
 		// make object dumps shorter
 		$dump = preg_replace("#(\<font color='\#)([^']+)'\>\=&gt;\</font\>\s\n\s+([^\n]+)\n\s+\.\.\.#m", "<font color='#$2'>=&gt;</font> $3 ...", $dump);
 		$dump = preg_replace("#\n\s+(.*)\<b\>object\</b\>([^\n]+)\n#m", "$1<b>object</b> $2\n", $dump);
-		$result .= '<div class="value">'
+		$result[] = '<div class="value">'
 			.preg_replace("#\[([^\]]*)\]=>([^\n]*)\n(\s*)#", "[$1] => ",
 				str_replace("<required>","&lt;required&gt;",$link.$dump)
 			)
 			.'</div></div>';
 		if (isset($dumpRecord[2]['lastDump']) && $dumpRecord[2]['lastDump'])
 			$lastDump = TRUE;
-		return [$result, $lastDump];
+		return [implode('', $result), $lastDump];
 	}
 
 	/**
 	 * Sent given dump record into client in specific header for ajax response.
-	 * @param  mixed  $value   Variable to dump.
-	 * @param  string $title   Optional title.
-	 * @param  array  $options Dumper options.
+	 * @param  mixed               $value   Variable to dump.
+	 * @param  string              $title   Optional title.
+	 * @param  array<string,mixed> $options Dumper options.
 	 * @return void
 	 */
 	protected static function sendDumpInAjaxHeader ($value, $title, $options) {
@@ -292,6 +292,6 @@ trait Handlers {
 		if ($request->IsInternalRequest()) return FALSE;
 		$response = $app->GetResponse();
 		$hasContentType = $response->HasHeader('Content-Type');
-		return !$hasContentType || ($hasContentType && $response->IsHtmlOutput());
+		return (!$hasContentType) || ($hasContentType && $response->IsHtmlOutput()); // @phpstan-ignore-line
 	}
 }

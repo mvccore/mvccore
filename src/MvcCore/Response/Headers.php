@@ -28,7 +28,7 @@ trait Headers {
 
 	/**
 	 * @inheritDoc
-	 * @param  array $headers
+	 * @param  array<string,string|int|array<string|int>> $headers
 	 * @return \MvcCore\Response
 	 */
 	public function SetHeaders (array $headers = []) {
@@ -42,21 +42,25 @@ trait Headers {
 	
 	/**
 	 * @inheritDoc
-	 * @param  array $headers
-	 * @param  bool  $cleanAllPrevious `FALSE` by default. If `TRUE`, all previous headers
-	 *                                 set by PHP `header()` or by this object will be removed.
+	 * @param  array<string,string|int|array<string|int>> $headers
+	 * @param  bool                                       $cleanAllPrevious
+	 * `FALSE` by default. If `TRUE`, all previous headers
+	 * set by PHP `header()` or by this object will be removed.
 	 * @return \MvcCore\Response
 	 */
-	public function AddHeaders (array $headers = []) {
-		foreach ($headers as $name => $value)
+	public function AddHeaders (array $headers = [], $cleanAllPrevious = FALSE) {
+		foreach ($headers as $name => $value) {
+			if ($cleanAllPrevious)
+				$this->RemoveHeader($name);
 			$this->AddHeader($name, $value);
+		}
 		return $this;
 	}
 
 	/**
 	 * @inheritDoc
-	 * @param  string $name
-	 * @param  string|\string[] $value
+	 * @param  string                       $name
+	 * @param  string|int|array<string|int> $value
 	 * @return \MvcCore\Response
 	 */
 	public function SetHeader ($name, $value) {
@@ -85,8 +89,8 @@ trait Headers {
 	
 	/**
 	 * @inheritDoc
-	 * @param  string $name
-	 * @param  string|\string[] $value
+	 * @param  string               $name
+	 * @param  string|array<string> $value
 	 * @return \MvcCore\Response
 	 */
 	public function AddHeader ($name, $value) {
@@ -122,7 +126,7 @@ trait Headers {
 	/**
 	 * @inheritDoc
 	 * @param  string $name
-	 * @return string|\string[]|NULL
+	 * @return string|array<string>|NULL
 	 */
 	public function GetHeader ($name) {
 		$this->UpdateHeaders();
@@ -190,7 +194,7 @@ trait Headers {
 
 	/**
 	 * @inheritDoc
-	 * @param  \string[] $disabledHeaders,...
+	 * @param  array<string> $disabledHeaders,...
 	 * @return \MvcCore\Response
 	 */
 	public function SetDisabledHeaders ($disabledHeaders) {
@@ -204,7 +208,7 @@ trait Headers {
 
 	/**
 	 * @inheritDoc
-	 * @return \string[]
+	 * @return array<string>
 	 */
 	public function GetDisabledHeaders () {
 		return array_keys($this->disabledHeaders);
@@ -213,8 +217,8 @@ trait Headers {
 	/**
 	 * Detect ouput `Content-Type` and `Content-Encoding`
 	 * by newly added/set http response header.
-	 * @param  string $name
-	 * @param  string|\string[] $value
+	 * @param  string               $name
+	 * @param  string|array<string> $value
 	 * @return \MvcCore\Response
 	 */
 	protected function setUpContentEncAndTypeByNew ($name, $value) {
@@ -240,7 +244,7 @@ trait Headers {
 
 	/**
 	 * Remove HTTP headers with invalid names.
-	 * @param  array|\string[] $mismatchHeaderNames 
+	 * @param  array<string> $mismatchHeaderNames 
 	 * @return \MvcCore\Response
 	 */
 	protected function removeMisMatchHeaders (array $mismatchHeaderNames) {

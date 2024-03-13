@@ -24,7 +24,7 @@ trait GettersSetters {
 	 */
 	public static function CreateInstance () {
 		/** @var \MvcCore\View $result */
-		$result = new static();
+		$result = new static(); /** @phpstan-ignore-line */
 		return $result;
 	}
 
@@ -116,7 +116,7 @@ trait GettersSetters {
 
 	/**
 	 * @inheritDoc
-	 * @param  string $controller
+	 * @param  string $encoding
 	 * @return \MvcCore\View
 	 */
 	public function SetEncoding ($encoding) {

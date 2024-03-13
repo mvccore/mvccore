@@ -13,8 +13,12 @@
 
 namespace MvcCore\View;
 
+use MvcCore\Tool\Helpers;
+
 /**
  * @mixin \MvcCore\View
+ * @phpstan-type ViewHelper \MvcCore\Ext\Views\Helpers\AbstractHelper|\MvcCore\Ext\Views\Helpers\IHelper|\Closure|mixed
+ * @phpstan-type ViewHelperCacheRecord array{0:ViewHelper,1:bool,2:bool}
  */
 trait ViewHelpers {
 
@@ -104,7 +108,7 @@ trait ViewHelpers {
 	 * @param  string $helperNameCamelCase View helper method name in camel case.
 	 * @param  bool   $asClosure           Get View helper prepared as closure function, `FALSE` by default.
 	 * @throws \InvalidArgumentException   If view doesn't exist in configured namespaces.
-	 * @return \MvcCore\Ext\Views\Helpers\AbstractHelper|\MvcCore\Ext\Views\Helpers\IHelper|\Closure|mixed View helper instance.
+	 * @return ViewHelper View helper instance.
 	 */
 	public function & GetHelper ($helperNameCamelCase, $asClosure = FALSE) {
 		$setUpView = FALSE;
@@ -117,6 +121,7 @@ trait ViewHelpers {
 		} else {
 			if (!isset(self::$globalHelpers[$helperNamePascalCase])) 
 				$this->setUpHelper($helperNamePascalCase);
+			/** @var ViewHelperCacheRecord $globalHelpersRecord */
 			$globalHelpersRecord = & self::$globalHelpers[$helperNamePascalCase];
 			$instance = & $globalHelpersRecord[0];
 			$setUpView = $globalHelpersRecord[1];
@@ -142,12 +147,12 @@ trait ViewHelpers {
 
 	/**
 	 * @inheritDoc
-	 * @param  string                                                                                      $helperNameCamelCase
-	 *                                                                                                     View helper method name in camel case.
-	 * @param  \MvcCore\Ext\Views\Helpers\AbstractHelper|\MvcCore\Ext\Views\Helpers\IHelper|\Closure|mixed $instance
-	 *                                                                                                     View helper instance.
-	 * @param  bool                                                                                        $forAllTemplates
-	 *                                                                                                     Register this helper instance for all rendered views in the future.
+	 * @param  string     $helperNameCamelCase
+	 * View helper method name in camel case.
+	 * @param  ViewHelper $instance
+	 * View helper instance.
+	 * @param  bool       $forAllTemplates
+	 * Register this helper instance for all rendered views in the future.
 	 * @return \MvcCore\View
 	 */
 	public function SetHelper ($helperNameCamelCase, $instance, $forAllTemplates = TRUE) {

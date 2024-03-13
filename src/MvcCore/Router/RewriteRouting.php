@@ -49,7 +49,7 @@ trait RewriteRouting {
 		$requestMethod = $request->GetMethod();
 		foreach ($routes as & $route) {
 			/** @var \MvcCore\Route $route */
-			if ($this->rewriteRoutingCheckRoute($route, [$requestMethod])) continue;
+			if ($this->rewriteRoutingCheckRoute($route, [$requestMethod, NULL, NULL, NULL])) continue;
 			$allMatchedParams = $route->Matches($request);
 			if ($allMatchedParams !== NULL) {
 				$this->currentRoute = clone $route;
@@ -116,8 +116,8 @@ trait RewriteRouting {
 	 * to route request by given route as first argument. For example if route
 	 * object has defined http method and request has the same method or not 
 	 * or much more by additional info array records in extended classes.
-	 * @param  \MvcCore\IRoute $route 
-	 * @param  array           $additionalInfo 
+	 * @param  \MvcCore\IRoute                         $route 
+	 * @param  array{0:string,1:?bool,2:?bool,3:?bool} $additionalInfo 
 	 * @return bool
 	 */
 	protected function rewriteRoutingCheckRoute (\MvcCore\IRoute $route, array $additionalInfo) {
@@ -141,14 +141,17 @@ trait RewriteRouting {
 	 * This method also completes any missing `controller` or `action` param
 	 * values with default values. Request params can not contain those 
 	 * automatically completed values, only values really requested.
-	 * @param  array       $allMatchedParams  All matched params completed `\MvcCore\Route::Matches();`, 
-	 *                                        where could be controller and action if it is defined in 
-	 *                                        route object, default param values from route and all 
-	 *                                        rewrite params parsed by route.
-	 * @param  string|NULL $requestCtrlName   Possible controller name value or `NULL` assigned directly 
-	 *                                        from request object in `\MvcCore\router::routeDetectStrategy();`
-	 * @param  string|NULL $requestActionName Possible action name value or `NULL` assigned directly from 
-	 *                                        request object in `\MvcCore\router::routeDetectStrategy();`
+	 * @param  array<string,mixed> $allMatchedParams
+	 * All matched params completed `\MvcCore\Route::Matches();`, 
+	 * where could be controller and action if it is defined in 
+	 * route object, default param values from route and all 
+	 * rewrite params parsed by route.
+	 * @param  string|NULL         $requestCtrlName
+	 * Possible controller name value or `NULL` assigned directly 
+	 * from request object in `\MvcCore\router::routeDetectStrategy();`
+	 * @param  string|NULL         $requestActionName
+	 * Possible action name value or `NULL` assigned directly from 
+	 * request object in `\MvcCore\router::routeDetectStrategy();`
 	 * @return void
 	 */
 	protected function rewriteRoutingSetRequestedAndDefaultParams (array & $allMatchedParams, $requestCtrlName = NULL, $requestActionName = NULL) {
@@ -218,10 +221,11 @@ trait RewriteRouting {
 	 * continuing another route matching. If filtering is successful, set matched
 	 * controller and action into request object and return `TRUE` to finish routes
 	 * matching process.
-	 * @param  array $allMatchedParams All matched params completed `\MvcCore\Route::Matches();`, 
-	 *                                 where could be controller and action if it is defined in 
-	 *                                 route object, default param values from route and all 
-	 *                                 rewrite params parsed by route.
+	 * @param  array<string,mixed> $allMatchedParams
+	 * All matched params completed `\MvcCore\Route::Matches();`, 
+	 * where could be controller and action if it is defined in 
+	 * route object, default param values from route and all 
+	 * rewrite params parsed by route.
 	 * @return bool
 	 */
 	protected function rewriteRoutingSetRequestParams (array & $allMatchedParams) {

@@ -175,7 +175,7 @@ trait Routing {
 	 *   controller or action in query string.
 	 * Else then choose strategy to complete controller and action by rewrite routes.
 	 * Return array with possible query string controller name and action.
-	 * @return \string[]
+	 * @return array<string>
 	 */
 	protected function routeDetectStrategy () {
 		$request = $this->request;
@@ -185,12 +185,12 @@ trait Routing {
 			list($reqScriptName, $reqPath) = [$request->GetScriptName(), $request->GetPath(TRUE)];
 			$requestCtrlNameNotNull = $requestCtrlName !== NULL;
 			$requestActionNameNotNull = $requestActionName !== NULL;
-			$requestCtrlAndAlsoAction = $requestCtrlNameNotNull && $requestActionNameNotNull;
-			$requestCtrlOrAction = $requestCtrlNameNotNull || $requestActionNameNotNull;
+			$requestCtrlAndAlsoAction = $requestCtrlNameNotNull && $requestActionNameNotNull;	// @phpstan-ignore-line
+			$requestCtrlOrAction = $requestCtrlNameNotNull || $requestActionNameNotNull;		// @phpstan-ignore-line
 			$this->routeByQueryString = (
-				$this->anyRoutesConfigured !== TRUE ||
-				$requestCtrlAndAlsoAction ||
-				($requestCtrlOrAction && (
+				$this->anyRoutesConfigured !== TRUE ||	// @phpstan-ignore-line
+				$requestCtrlAndAlsoAction ||			// @phpstan-ignore-line
+				($requestCtrlOrAction && (				// @phpstan-ignore-line
 					$reqScriptName === $reqPath || 
 					trim($reqPath, '/') === ''
 				))

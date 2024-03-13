@@ -15,13 +15,14 @@ namespace MvcCore\Route;
 
 /**
  * @mixin \MvcCore\Route
+ * @phpstan-type FilterCallable callable(array<string,mixed>, array<string,mixed>, \MvcCore\IRequest): array<string,mixed>
  */
 trait GettersSetters {
 
 	/**
 	 *
 	 * @inheritDoc
-	 * @return string|array|NULL
+	 * @return string|array<string,string>|NULL
 	 */
 	public function GetPattern () {
 		return $this->pattern;
@@ -29,7 +30,7 @@ trait GettersSetters {
 
 	/**
 	 * @inheritDoc
-	 * @param  string|array $pattern
+	 * @param  string|array<string,string> $pattern
 	 * @return \MvcCore\Route
 	 */
 	public function SetPattern ($pattern) {
@@ -39,7 +40,7 @@ trait GettersSetters {
 
 	/**
 	 * @inheritDoc
-	 * @return string|array|NULL
+	 * @return string|array<string,string>|NULL
 	 */
 	public function GetMatch () {
 		return $this->match;
@@ -47,7 +48,7 @@ trait GettersSetters {
 
 	/**
 	 * @inheritDoc
-	 * @param  string|array $match
+	 * @param  string|array<string,string> $match
 	 * @return \MvcCore\Route
 	 */
 	public function SetMatch ($match) {
@@ -57,7 +58,7 @@ trait GettersSetters {
 
 	/**
 	 * @inheritDoc
-	 * @return string|array|NULL
+	 * @return string|array<string,string>|NULL
 	 */
 	public function GetReverse () {
 		return $this->reverse;
@@ -65,7 +66,7 @@ trait GettersSetters {
 
 	/**
 	 * @inheritDoc
-	 * @param  string|array $reverse
+	 * @param  string|array<string,string> $reverse
 	 * @return \MvcCore\Route
 	 */
 	public function SetReverse ($reverse) {
@@ -93,7 +94,7 @@ trait GettersSetters {
 
 	/**
 	 * @inheritDoc
-	 * @return string
+	 * @return string|NULL
 	 */
 	public function GetController () {
 		return $this->controller;
@@ -113,7 +114,7 @@ trait GettersSetters {
 
 	/**
 	 * @inheritDoc
-	 * @return string
+	 * @return string|NULL
 	 */
 	public function GetAction () {
 		return $this->action;
@@ -154,7 +155,7 @@ trait GettersSetters {
 
 	/**
 	 * @inheritDoc
-	 * @return array|\array[]
+	 * @return array<string,mixed>
 	 */
 	public function GetDefaults () {
 		return $this->defaults;
@@ -162,7 +163,7 @@ trait GettersSetters {
 
 	/**
 	 * @inheritDoc
-	 * @param  array|\array[] $defaults
+	 * @param  array<string,mixed> $defaults
 	 * @return \MvcCore\Route
 	 */
 	public function SetDefaults ($defaults = []) {
@@ -172,7 +173,7 @@ trait GettersSetters {
 
 	/**
 	 * @inheritDoc
-	 * @return array|\array[]
+	 * @return array<string,string>
 	 */
 	public function GetConstraints () {
 		return $this->constraints;
@@ -180,7 +181,7 @@ trait GettersSetters {
 
 	/**
 	 * @inheritDoc
-	 * @param  array|\array[] $constraints
+	 * @param  array<string,string> $constraints
 	 * @return \MvcCore\Route
 	 */
 	public function SetConstraints ($constraints = []) {
@@ -193,7 +194,7 @@ trait GettersSetters {
 
 	/**
 	 * @inheritDoc
-	 * @return array|\callable[]
+	 * @return array<string,FilterCallable>
 	 */
 	public function GetFilters () {
 		$filters = [];
@@ -204,11 +205,10 @@ trait GettersSetters {
 
 	/**
 	 * @inheritDoc
-	 * @param  array|\callable[] $filters 
+	 * @param  array<string,FilterCallable> $filters 
 	 * @return \MvcCore\Route
 	 */
 	public function SetFilters (array $filters = []) {
-		/** @var $filters array|\callable[] */
 		foreach ($filters as $direction => $handler) 
 			$this->SetFilter($handler, $direction);
 		return $this;
@@ -216,10 +216,11 @@ trait GettersSetters {
 
 	/**
 	 * @inheritDoc
-	 * @param  string $direction Strings `in` or `out`. You can use predefined constants:
-	 *                           - `\MvcCore\IRoute::CONFIG_FILTER_IN`
-	 *                           - `\MvcCore\IRoute::CONFIG_FILTER_OUT`
-	 * @return \callable|NULL
+	 * @param  string $direction
+	 * Strings `in` or `out`. You can use predefined constants:
+	 * - `\MvcCore\IRoute::CONFIG_FILTER_IN`
+	 * - `\MvcCore\IRoute::CONFIG_FILTER_OUT`
+	 * @return FilterCallable|NULL
 	 */
 	public function GetFilter ($direction = \MvcCore\IRoute::CONFIG_FILTER_IN) {
 		return isset($this->filters[$direction])
@@ -229,8 +230,11 @@ trait GettersSetters {
 
 	/**
 	 * @inheritDoc
-	 * @param  \callable $handler 
-	 * @param  string    $direction
+	 * @param  FilterCallable $handler 
+	 * @param  string         $direction
+	 * Strings `in` or `out`. You can use predefined constants:
+	 * - `\MvcCore\IRoute::CONFIG_FILTER_IN`
+	 * - `\MvcCore\IRoute::CONFIG_FILTER_OUT`
 	 * @return \MvcCore\Route
 	 */
 	public function SetFilter ($handler, $direction = \MvcCore\IRoute::CONFIG_FILTER_IN) {
@@ -319,7 +323,7 @@ trait GettersSetters {
 
 	/**
 	 * @inheritDoc
-	 * @return \string[]|NULL
+	 * @return array<string>|NULL
 	 */
 	public function GetReverseParams () {
 		return $this->reverseParams !== NULL 
@@ -329,7 +333,7 @@ trait GettersSetters {
 
 	/**
 	 * @inheritDoc
-	 * @param  array $matchedParams
+	 * @param  array<string,mixed> $matchedParams
 	 * @return \MvcCore\Route
 	 */
 	public function SetMatchedParams ($matchedParams = []) {
@@ -339,7 +343,7 @@ trait GettersSetters {
 
 	/**
 	 * @inheritDoc
-	 * @return array|NULL
+	 * @return array<string,mixed>
 	 */
 	public function GetMatchedParams () {
 		return $this->matchedParams;
@@ -347,7 +351,7 @@ trait GettersSetters {
 	
 	/**
 	 * @inheritDoc
-	 * @return \MvcCore\Router
+	 * @return \MvcCore\Router|NULL
 	 */
 	public function GetRouter () {
 		return $this->router;

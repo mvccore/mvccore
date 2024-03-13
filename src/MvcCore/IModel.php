@@ -22,6 +22,8 @@ namespace MvcCore;
  * - Data methods for manipulating properties based on active record pattern.
  * - Meta data about properties parsing and caching.
  * - Magic methods handling.
+ * @phpstan-type RawValue int|float|string|bool|\DateTime|\DateTimeImmutable|array<mixed,mixed>|object
+ * @phpstan-type ParserArgs array<int|string,mixed>|NULL
  */
 interface IModel extends \MvcCore\Model\IConstants {
 	
@@ -29,12 +31,14 @@ interface IModel extends \MvcCore\Model\IConstants {
 	 * Returns (or creates if necessary) model resource instance.
 	 * Common resource instance is stored all the time in static store
 	 * under key from resource full class name and constructor arguments.
-	 * @param  array|NULL $args      Values array with variables to pass into resource `__construct()` method.
-	 *                               If `NULL`, recource class will be created without `__construct()` method call.
-	 * @param  string     $classPath Relative namespace path to resource class. It could contains `.` or `..`
-	 *                               to traverse over namespaces (directories) and it could contains `{self}` 
-	 *                               keyword, which is automatically replaced with current class name.
-	 * @thrown \InvalidArgumentException Class `{$resourceClassName}` doesn't exist.
+	 * @param  array<int,mixed>|NULL $args
+	 * Values array with variables to pass into resource `__construct()` method.
+	 * If `NULL`, recource class will be created without `__construct()` method call.
+	 * @param  string                $classPath
+	 * Relative namespace path to resource class. It could contains `.` or `..`
+	 * to traverse over namespaces (directories) and it could contains `{self}` 
+	 * keyword, which is automatically replaced with current class name.
+	 * @throws \InvalidArgumentException Class `{$resourceClassName}` doesn't exist.
 	 * @return \MvcCore\IModel
 	 */
 	public static function GetCommonResource ($args = NULL, $classPath = '{self}s\CommonResource');
@@ -49,12 +53,12 @@ interface IModel extends \MvcCore\Model\IConstants {
 	 * Returns `\PDO` database connection by connection name/index,
 	 * usually by system config values (cached by local store)
 	 * or create new connection if no connection cached.
-	 * @param  string|int|array|\stdClass|NULL $connectionNameOrConfig
-	 * @param  bool                            $strict
-	 *                                         If `TRUE` and no connection under given name or given
-	 *                                         index found, exception is thrown. `TRUE` by default.
-	 *                                         If `FALSE`, there could be returned connection by
-	 *                                         first available configuration.
+	 * @param  string|int|array<string,mixed>|\stdClass|NULL $connectionNameOrConfig
+	 * @param  bool                                          $strict
+	 * If `TRUE` and no connection under given name or given
+	 * index found, exception is thrown. `TRUE` by default.
+	 * If `FALSE`, there could be returned connection by
+	 * first available configuration.
 	 * @throws \InvalidArgumentException|\PDOException|\Throwable
 	 * @return \PDO
 	 */
@@ -121,8 +125,9 @@ interface IModel extends \MvcCore\Model\IConstants {
 	 *       ]
 	 *   ]);
 	 * ````
-	 * @param  \stdClass[]|array[] $configs               Configuration array with `\stdClass` objects or arrays with configuration data.
-	 * @param  string|int|NULL     $defaultConnectionName
+	 * @param  array<int|string,int|string|array<string,mixed>> $configs
+	 * Configuration array with `\stdClass` objects or arrays with configuration data.
+	 * @param  string|int|NULL                                  $defaultConnectionName
 	 * @return bool
 	 */
 	public static function SetConfigs (array $configs = [], $defaultConnectionName = NULL);
@@ -169,7 +174,7 @@ interface IModel extends \MvcCore\Model\IConstants {
 	 *       'user'   => 'root',       'password'    => '1234',      'database' => 'cdcol',
 	 *   ], 0);
 	 * ````
-	 * @param  \stdClass[]|array[] $config
+	 * @param  array<string,mixed> $config
 	 * @param  string|int|NULL     $connectionName
 	 * @return string|int
 	 */
@@ -191,9 +196,9 @@ interface IModel extends \MvcCore\Model\IConstants {
 	 *  - `\MvcCore\IModel::PROPS_PRIVATE`
 	 *  - `\MvcCore\IModel::PROPS_PROTECTED`
 	 *  - `\MvcCore\IModel::PROPS_PUBLIC`
-	 * @param  int    $propsFlags
-	 * @param  \int[] $additionalMaps Compatible format for extension `mvccore/ext-model-db`.
-	 * @return array
+	 * @param  int        $propsFlags
+	 * @param  array<int> $additionalMaps Compatible format for extension `mvccore/ext-model-db`.
+	 * @return array<string,array{0:bool,1:bool,2:array<string>}>
 	 */
 	public static function GetMetaData ($propsFlags = 0, $additionalMaps = []);
 
@@ -214,22 +219,26 @@ interface IModel extends \MvcCore\Model\IConstants {
 
 	/**
 	 * Try to convert raw database value into first type in target types.
-	 * @param  mixed     $rawValue
-	 * @param  \string[] $typesString
-	 * @return mixed     Converted result.
+	 * @param  RawValue      $rawValue
+	 * @param  array<string> $typesString
+	 * @param  array<mixed>  $parserArgs
+	 * This argument is used in extended model only.
+	 * @return RawValue Converted result.
 	 */
-	public static function ParseToTypes ($rawValue, $typesString);
+	public static function ParseToTypes ($rawValue, $typesString, $parserArgs = []);
 	
 		
 	/**
 	 * Returns (or creates if doesn`t exist) model resource instance.
 	 * Resource instance is stored in protected instance property `resource`.
-	 * @param  array|NULL $args      Values array with variables to pass into resource `__construct()` method.
-	 *                               If `NULL`, recource class will be created without `__construct()` method call.
-	 * @param  string     $classPath Relative namespace path to resource class. It could contains `.` or `..`
-	 *                               to traverse over namespaces (directories) and it could contains `{self}` 
-	 *                               keyword, which is automatically replaced with current class name.
-	 * @thrown \InvalidArgumentException Class `{$resourceClassName}` doesn't exist.
+	 * @param  array<int,mixed>|NULL $args
+	 * Values array with variables to pass into resource `__construct()` method.
+	 * If `NULL`, recource class will be created without `__construct()` method call.
+	 * @param  string                $classPath
+	 * Relative namespace path to resource class. It could contains `.` or `..`
+	 * to traverse over namespaces (directories) and it could contains `{self}` 
+	 * keyword, which is automatically replaced with current class name.
+	 * @throws \InvalidArgumentException Class `{$resourceClassName}` doesn't exist.
 	 * @return \MvcCore\IModel
 	 */
 	public function GetResource ($args = NULL, $classPath = '{self}s\Resource');
@@ -244,7 +253,7 @@ interface IModel extends \MvcCore\Model\IConstants {
 	 * @param  bool $getNullValues If `TRUE`, include also values with `NULL`s, 
 	 *                             `FALSE` by default.
 	 * @throws \InvalidArgumentException
-	 * @return array
+	 * @return array<string,mixed>
 	 */
 	public function GetValues ($propsFlags = 0, $getNullValues = FALSE);
 
@@ -255,10 +264,12 @@ interface IModel extends \MvcCore\Model\IConstants {
 	 * by properties flags. Case sensitivelly by default.
 	 * Any `$data` items, which are not declared in `$this` context are 
 	 * initialized by  `__set()` method.
-	 * @param  array $data       Raw data from database (row) or from form fields.
-	 * @param  int   $propsFlags All properties flags are available.
+	 * @param  array<string,mixed> $data
+	 * Raw data from database (row) or from form fields.
+	 * @param  int                 $propsFlags
+	 * All properties flags are available.
 	 * @throws \InvalidArgumentException
-	 * @return \MvcCore\Model    Current `$this` context.
+	 * @return \MvcCore\Model Current `$this` context.
 	 */
 	public function SetValues ($data = [], $propsFlags = 0);
 
@@ -268,21 +279,23 @@ interface IModel extends \MvcCore\Model\IConstants {
 	 * property name key in `$this->initialValues` (initial array is optionally 
 	 * completed in `SetValues()` method). Result keys could be converted by any 
 	 * conversion flag.
-	 * @param  int $propsFlags All properties flags are available except flags: 
-	 *                         - `\MvcCore\IModel::PROPS_INITIAL_VALUES`,
-	 *                         - `\MvcCore\IModel::PROPS_CONVERT_CASE_INSENSITIVE`.
+	 * @param  int $propsFlags
+	 * All properties flags are available except flags: 
+	 * - `\MvcCore\IModel::PROPS_INITIAL_VALUES`,
+	 * - `\MvcCore\IModel::PROPS_CONVERT_CASE_INSENSITIVE`.
 	 * @throws \InvalidArgumentException
-	 * @return array 
+	 * @return array<string,mixed>
 	 */
 	public function GetTouched ($propsFlags = 0);
 
 	/**
 	 * Return original initial values completed in model creation.
-	 * @param  int $propsFlags All properties flags are available except flags: 
-	 *                         - `\MvcCore\IModel::PROPS_INITIAL_VALUES`,
-	 *                         - `\MvcCore\IModel::PROPS_CONVERT_CASE_INSENSITIVE`,
-	 *                         - `\MvcCore\IModel::PROPS_SET_DEFINED_ONLY`.
-	 * @return array
+	 * @param  int $propsFlags
+	 * All properties flags are available except flags: 
+	 * - `\MvcCore\IModel::PROPS_INITIAL_VALUES`,
+	 * - `\MvcCore\IModel::PROPS_CONVERT_CASE_INSENSITIVE`,
+	 * - `\MvcCore\IModel::PROPS_SET_DEFINED_ONLY`.
+	 * @return array<string,mixed>
 	 */
 	public function GetInitialValues ($propsFlags = 0);
 
@@ -293,8 +306,8 @@ interface IModel extends \MvcCore\Model\IConstants {
 	 * Throws exception if no property defined by get call
 	 * or if virtual call begins with anything different from `Set` or `Get`.
 	 * This method returns custom value for get and `\MvcCore\Model` instance for set.
-	 * @param  string $rawName
-	 * @param  array  $arguments
+	 * @param  string            $rawName
+	 * @param  array<int,mixed>  $arguments
 	 * @throws \InvalidArgumentException If `strtolower($rawName)` doesn't begin with `"get"` or with `"set"`.
 	 * @return mixed|\MvcCore\Model
 	 */
@@ -305,7 +318,7 @@ interface IModel extends \MvcCore\Model\IConstants {
 	 * @param  string $name
 	 * @param  mixed  $value
 	 * @throws \InvalidArgumentException If name is `initialValues` or any custom name in extended class.
-	 * @return bool
+	 * @return void
 	 */
 	public function __set ($name, $value);
 
@@ -324,7 +337,7 @@ interface IModel extends \MvcCore\Model\IConstants {
 	 * and if there is configured in `static::$protectedProperties` anything as
 	 * `TRUE` (under key by property name), also return those properties in
 	 * result array.
-	 * @return \string[]
+	 * @return array<string>
 	 */
 	public function __sleep ();
 

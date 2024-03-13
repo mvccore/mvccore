@@ -23,37 +23,41 @@ namespace MvcCore {
 }
 
 namespace {
+	/**
+	 * @param  bool $development
+	 * @return void
+	 */
 	\MvcCore\Debug::$InitGlobalShortHands = function ($development) {
 		/**
 		 * Dump any variable with output buffering in browser debug bar,
 		 * store result for printing later. Return printed variable as string.
-		 * @param  mixed  $value   Variable to dump.
-		 * @param  string $title   Optional title.
-		 * @param  array  $options Dumper options.
-		 * @return mixed           Variable itself.
+		 * @param  mixed               $value   Variable to dump.
+		 * @param  string              $title   Optional title.
+		 * @param  array<string,mixed> $options Dumper options.
+		 * @return mixed Variable itself.
 		 */
-		function x ($value, $title = NULL, $options = []) {
+		function x ($value, $title = NULL, $options = []) { // @phpstan-ignore-line
 			$options['backtraceIndex'] = 2;
 			return \MvcCore\Debug::BarDump($value, $title, $options);
 		}
 		/**
 		 * Dumps multiple variables with output buffering in browser debug bar.
 		 * store result for printing later.
-		 * @param  ...mixed  Variables to dump.
+		 * @param  mixed $args,... Variables to dump.
 		 * @return void
 		 */
-		function xx () {
+		function xx () { // @phpstan-ignore-line
 			$args = func_get_args();
 			foreach ($args as $arg) \MvcCore\Debug::BarDump($arg, NULL, ['backtraceIndex' => 2]);
 		}
 		if ($development) {
 			/**
 			 * Dump variables and die. If no variable, throw stop exception.
-			 * @param mixed $args,... Variables to dump.
+			 * @param  mixed $args,... Variables to dump.
 			 * @throws \Exception
 			 * @return void
 			 */
-			function xxx ($args = NULL) {
+			function xxx ($args = NULL) { // @phpstan-ignore-line
 				$args = func_get_args();
 				if (count($args) === 0) {
 					throw new \ErrorException('Stopped.', 500);
@@ -76,7 +80,7 @@ namespace {
 			 * @throws \Exception
 			 * @return void
 			 */
-			function xxx ($args = NULL) {
+			function xxx ($args = NULL) { // @phpstan-ignore-line
 				$args = func_get_args();
 				if (count($args) > 0)
 					foreach ($args as $arg)

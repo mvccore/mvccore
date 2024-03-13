@@ -27,7 +27,7 @@ trait DataMethods {
 	 * @param  bool $getNullValues If `TRUE`, include also values with `NULL`s, 
 	 *                             `FALSE` by default.
 	 * @throws \InvalidArgumentException
-	 * @return array
+	 * @return array<string,mixed>
 	 */
 	public function GetValues ($propsFlags = 0, $getNullValues = FALSE) {
 		$metaData = static::GetMetaData($propsFlags);
@@ -77,10 +77,12 @@ trait DataMethods {
 
 	/**
 	 * @inheritDoc
-	 * @param  array $data       Raw data from database (row) or from form fields.
-	 * @param  int   $propsFlags All properties flags are available.
+	 * @param  array<string,mixed> $data
+	 * Raw data from database (row) or from form fields.
+	 * @param  int                 $propsFlags
+	 * All properties flags are available.
 	 * @throws \InvalidArgumentException
-	 * @return \MvcCore\Model    Current `$this` context.
+	 * @return \MvcCore\Model Current `$this` context.
 	 */
 	public function SetValues ($data = [], $propsFlags = 0) {
 		$completeInitialValues = FALSE;
@@ -145,11 +147,12 @@ trait DataMethods {
 
 	/**
 	 * @inheritDoc
-	 * @param  int $propsFlags All properties flags are available except flags: 
-	 *                         - `\MvcCore\IModel::PROPS_INITIAL_VALUES`,
-	 *                         - `\MvcCore\IModel::PROPS_CONVERT_CASE_INSENSITIVE`.
+	 * @param  int $propsFlags
+	 * All properties flags are available except flags: 
+	 * - `\MvcCore\IModel::PROPS_INITIAL_VALUES`,
+	 * - `\MvcCore\IModel::PROPS_CONVERT_CASE_INSENSITIVE`.
 	 * @throws \InvalidArgumentException
-	 * @return array 
+	 * @return array<string,mixed>
 	 */
 	public function GetTouched ($propsFlags = 0) {
 		$metaData = static::GetMetaData($propsFlags);
@@ -202,11 +205,12 @@ trait DataMethods {
 
 	/**
 	 * @inheritDoc
-	 * @param  int $propsFlags All properties flags are available except flags: 
-	 *                         - `\MvcCore\IModel::PROPS_INITIAL_VALUES`,
-	 *                         - `\MvcCore\IModel::PROPS_CONVERT_CASE_INSENSITIVE`,
-	 *                         - `\MvcCore\IModel::PROPS_SET_DEFINED_ONLY`.
-	 * @return array
+	 * @param  int $propsFlags
+	 * All properties flags are available except flags: 
+	 * - `\MvcCore\IModel::PROPS_INITIAL_VALUES`,
+	 * - `\MvcCore\IModel::PROPS_CONVERT_CASE_INSENSITIVE`,
+	 * - `\MvcCore\IModel::PROPS_SET_DEFINED_ONLY`.
+	 * @return array<string,mixed>
 	 */
 	public function GetInitialValues ($propsFlags = 0) {
 		$metaData = static::GetMetaData($propsFlags);

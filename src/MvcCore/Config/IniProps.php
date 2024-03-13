@@ -35,7 +35,7 @@ trait IniProps {
 
 	/**
 	 * INI special values to type into `bool` or `NULL`.
-	 * @var array
+	 * @var array<string,bool|NULL>
 	 */
 	protected static $specialValues = [
 		'true'	=> TRUE,

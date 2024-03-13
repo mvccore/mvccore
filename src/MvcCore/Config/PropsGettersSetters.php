@@ -32,7 +32,7 @@ trait PropsGettersSetters {
 
 	/**
 	 * Loaded configurations array cache.
-	 * @var array
+	 * @var array<string,\MvcCore\Config>
 	 */
 	protected static $configsCache = [];
 
@@ -52,7 +52,7 @@ trait PropsGettersSetters {
 	 * All environments specfic data. Each key in this array is environment
 	 * name. Empty key is record with common data for all environments. This
 	 * collection is always used as reading semi-result content, not serialized.
-	 * @var array
+	 * @var array<mixed,mixed>
 	 */
 	protected $envData = [];
 
@@ -64,7 +64,7 @@ trait PropsGettersSetters {
 	 * where is necessary to have all configurations for all requested
 	 * environments. Because environment on the same machine could be
 	 * changed only by client specific ip. This collection is serialized.
-	 * @var array
+	 * @var array<string,array<mixed,mixed>>
 	 */
 	protected $mergedData = [];
 
@@ -72,7 +72,7 @@ trait PropsGettersSetters {
 	 * Current environment data merged with common environment data.
 	 * This collection is always used for current request dispatching
 	 * and this collection is not serialized.
-	 * @var array
+	 * @var array<mixed,mixed>
 	 */
 	protected $currentData = [];
 

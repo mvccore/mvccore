@@ -15,36 +15,41 @@ namespace MvcCore\Route;
 
 /**
  * @mixin \MvcCore\Route
+ * @phpstan-type FilterCallable callable(array<string,mixed>, array<string,mixed>, \MvcCore\IRequest): array<string,mixed>
+ * @phpstan-type RouteConfig object{"name":?string,"pattern":?string,"match":?string,"reverse":?string,"controller":?string,"action":?string,"controllerAction":?string,"defaults":array<string,mixed>|NULL,"constraints":array<string,string>|NULL,"filters":array<string,FilterCallable>|NULL}
  */
 trait Instancing {
 
 	/**
 	 * @inheritDoc
-	 * @param string|array $patternOrConfig
-	 *                     Required, configuration array or route pattern value
-	 *                     to parse into match and reverse patterns.
-	 * @param string       $controllerAction
-	 *                     Optional, controller and action name in pascal case
-	 *                     like: `"Products:List"`.
-	 * @param array        $defaults
-	 *                     Optional, default param values like:
-	 *                     `["name" => "default-name", "page" => 1]`.
-	 * @param array        $constraints
-	 *                     Optional, params regular expression constraints for
-	 *                     regular expression match function if no `"match"`
-	 *                     property in config array as first argument defined.
-	 * @param array        $advancedConfiguration
-	 *                     Optional, http method to only match requests by this
-	 *                     method. If `NULL` (by default), request with any http
-	 *                     method could be matched by this route. Given value is
-	 *                     automatically converted to upper case.
+	 * @param string|array<string,mixed> $patternOrConfig
+	 * Required, configuration array or route pattern value
+	 * to parse into match and reverse patterns.
+	 * @param string|NULL                $controllerAction
+	 * Optional, controller and action name in pascal case
+	 * like: `"Products:List"`.
+	 * @param array<string,mixed>|NULL   $defaults
+	 * Optional, default param values like:
+	 * `["name" => "default-name", "page" => 1]`.
+	 * @param array<string,string>|NULL  $constraints
+	 * Optional, params regular expression constraints for
+	 * regular expression match function if no `"match"`
+	 * property in config array as first argument defined.
+	 * @param array<string,mixed>        $advancedConfiguration
+	 *Optional, array with adwanced configuration.
+	 *There could be defined:
+	 *- string   `method`   HTTP method name.
+	 *- string   `redirect` Redirect route name.
+	 *- bool     `absolute` Absolutize URL.
+	 *- callable `in`       URL filter in.
+	 *- callable `out`      URL filter out.
 	 * @return \MvcCore\Route
 	 */
 	public static function CreateInstance (
 		$patternOrConfig = NULL,
 		$controllerAction = NULL,
-		$defaults = [],
-		$constraints = [],
+		$defaults = NULL,
+		$constraints = NULL,
 		$advancedConfiguration = []
 	) {
 		return (new \ReflectionClass(get_called_class()))
@@ -85,34 +90,34 @@ trait Instancing {
 	 *       "defaults"   => ["name" => "default-name", "color" => "red"],
 	 *   ]);
 	 * ````
-	 * @param string|array $patternOrConfig
-	 *                     Required, configuration array or route pattern value
-	 *                     to parse into match and reverse patterns.
-	 * @param string       $controllerAction
-	 *                     Optional, controller and action name in pascal case
-	 *                     like: `"Products:List"`.
-	 * @param array        $defaults
-	 *                     Optional, default param values like:
-	 *                     `["name" => "default-name", "page" => 1]`.
-	 * @param array        $constraints
-	 *                     Optional, params regular expression constraints for
-	 *                     regular expression match function no `"match"` record
-	 *                     in configuration array as first argument defined.
-	 * @param array        $advancedConfiguration
-	 *                     Optional, array with adwanced configuration.
-	 *                     There could be defined:
-	 *                     - string   `method`   HTTP method name.
-	 *                     - string   `redirect` Redirect route name.
-	 *                     - bool     `absolute` Absolutize URL.
-	 *                     - callable `in`       URL filter in.
-	 *                     - bool     `out`      URL filter out.
+	 * @param string|array<string,mixed> $patternOrConfig
+	 * Required, configuration array or route pattern value
+	 * to parse into match and reverse patterns.
+	 * @param string|NULL                $controllerAction
+	 * Optional, controller and action name in pascal case
+	 * like: `"Products:List"`.
+	 * @param array<string,mixed>|NULL   $defaults
+	 * Optional, default param values like:
+	 * `["name" => "default-name", "page" => 1]`.
+	 * @param array<string,string>|NULL  $constraints
+	 * Optional, params regular expression constraints for
+	 * regular expression match function no `"match"` record
+	 * in configuration array as first argument defined.
+	 * @param array<string,mixed>        $advancedConfiguration
+	 * Optional, array with adwanced configuration.
+	 * There could be defined:
+	 * - string   `method`   HTTP method name.
+	 * - string   `redirect` Redirect route name.
+	 * - bool     `absolute` Absolutize URL.
+	 * - callable `in`       URL filter in.
+	 * - callable `out`      URL filter out.
 	 * @return void
 	 */
 	public function __construct (
 		$patternOrConfig = NULL,
 		$controllerAction = NULL,
-		$defaults = [],
-		$constraints = [],
+		$defaults = NULL,
+		$constraints = NULL,
 		$advancedConfiguration = []
 	) {
 		if (count(func_get_args()) === 0) return;
@@ -138,8 +143,9 @@ trait Instancing {
 	 * initialize following properties if those exist in given object:
 	 * `pattern`, `match` and `reverse`. If properties `defaults`, `constraints`
 	 * and `filters` exist in given object, initialize them by setter methods.
-	 * @param  \stdClass $data Object containing properties `pattern`,
-	 *                         `match`, `reverse`, `filters` and `defaults`.
+	 * @param  RouteConfig $data
+	 * Object containing properties `pattern`,
+	 * `match`, `reverse`, `filters` and `defaults`.
 	 * @return void
 	 */
 	protected function constructDataPatternsDefaultsConstraintsFilters (& $data) {
@@ -153,7 +159,7 @@ trait Instancing {
 			$this->SetDefaults($data->defaults);
 		if (isset($data->constraints))
 			$this->SetConstraints($data->constraints);
-		if (isset($data->filters) && is_array($data->filters))
+		if (isset($data->filters) && is_array($data->filters)) // @phpstan-ignore-line
 			$this->SetFilters($data->filters);
 	}
 
@@ -161,8 +167,9 @@ trait Instancing {
 	 * If route is initialized by single array argument with all data,
 	 * initialize following properties if those exist in given object:
 	 * `controller`, `action` (or `controllerAction`) and `name`.
-	 * @param  \stdClass $data Object containing properties `controller`,
-	 *                         `action` (or `controllerAction`) and `name`.
+	 * @param  RouteConfig $data
+	 * Object containing properties `controller`,
+	 * `action` (or `controllerAction`) and `name`.
 	 * @return void
 	 */
 	protected function constructDataCtrlActionName (& $data) {
@@ -200,8 +207,9 @@ trait Instancing {
 	 * If route is initialized by single array argument with all data,
 	 * initialize following properties if those exist in given object:
 	 * `method`, `redirect` and `absolute`.
-	 * @param  \stdClass $data Object containing properties `method`,
-	 *                         `redirect` and `absolute`.
+	 * @param  RouteConfig $data
+	 * Object containing properties `method`,
+	 * `redirect` and `absolute`.
 	 * @return void
 	 */
 	protected function constructDataAdvConf (& $data) {
@@ -222,19 +230,24 @@ trait Instancing {
 	 * initialize constraints by setter if not `NULL` and initialize filter in
 	 * and filter out by filter setter from `$advCfg` array if there are those
 	 * filter keys found.
-	 * @param string|NULL $pattern     Route pattern string.
-	 * @param array|NULL  $defaults    Route defaults array, keys are param
-	 *                                 names, values are default values.
-	 * @param array|NULL  $constraints Route params regular expression
-	 *                                 constraints array, keys are param
-	 *                                 names, values are allowed regular
-	 *                                 expression rules.
-	 * @param array       $advCfg      An array with possible keys `in` and
-	 *                                 `out` to define route filter in and
-	 *                                 filter out callable.
+	 * @param string|NULL               $pattern
+	 * Route pattern string.
+	 * @param array<string,mixed>|NULL  $defaults
+	 * @Route defaults array, keys are param
+	 * names, values are default values.
+	 * @param array<string,string>|NULL $constraints
+	 * Route params regular expression
+	 * constraints array, keys are param
+	 * names, values are allowed regular
+	 * expression rules.
+	 * @param array<string,mixed>       $advancedConfiguration
+	 * Optional, array with adwanced configuration.
+	 * There could be defined:
+	 * - callable `in`       URL filter in.
+	 * - callable `out`      URL filter out.
 	 * @return void
 	 */
-	protected function constructVarsPatternDefaultsConstraintsFilters (& $pattern, & $defaults, & $constraints, & $advCfg) {
+	protected function constructVarsPatternDefaultsConstraintsFilters (& $pattern, & $defaults, & $constraints, & $advancedConfiguration) {
 		if ($pattern !== NULL)
 			$this->pattern = $pattern;
 		if ($defaults !== NULL)
@@ -242,11 +255,11 @@ trait Instancing {
 		if ($constraints !== NULL)
 			$this->SetConstraints($constraints);
 		$filterInParam = static::CONFIG_FILTER_IN;
-		if (isset($advCfg[$filterInParam]))
-			$this->SetFilter($advCfg[$filterInParam], $filterInParam);
+		if (isset($advancedConfiguration[$filterInParam]))
+			$this->SetFilter($advancedConfiguration[$filterInParam], $filterInParam);
 		$filterOutParam = static::CONFIG_FILTER_OUT;
-		if (isset($advCfg[$filterOutParam]))
-			$this->SetFilter($advCfg[$filterOutParam], $filterOutParam);
+		if (isset($advancedConfiguration[$filterOutParam]))
+			$this->SetFilter($advancedConfiguration[$filterOutParam], $filterOutParam);
 	}
 
 	/**
@@ -272,20 +285,24 @@ trait Instancing {
 	/**
 	 * If route is initialized by each constructor function arguments,
 	 * initialize `method`, `redirect` and `absolute`.
-	 * @param  array $advCfg An array with possible keys `method`,
-	 *                       `redirect` and `absolute`.
+	 * @param array<string,mixed> $advancedConfiguration
+	 * Optional, array with adwanced configuration.
+	 * There could be defined:
+	 * - string   `method`   HTTP method name.
+	 * - string   `redirect` Redirect route name.
+	 * - bool     `absolute` Absolutize URL.
 	 * @return void
 	 */
-	protected function constructVarAdvConf (& $advCfg) {
+	protected function constructVarAdvConf (& $advancedConfiguration) {
 		$methodParam = static::CONFIG_METHOD;
-		if (isset($advCfg[$methodParam]))
-			$this->method = strtoupper((string) $advCfg[$methodParam]);
+		if (isset($advancedConfiguration[$methodParam]))
+			$this->method = strtoupper((string) $advancedConfiguration[$methodParam]);
 		$redirectParam = static::CONFIG_REDIRECT;
-		if (isset($advCfg[$redirectParam]))
-			$this->redirect = (string) $advCfg[$redirectParam];
+		if (isset($advancedConfiguration[$redirectParam]))
+			$this->redirect = (string) $advancedConfiguration[$redirectParam];
 		$absoluteParam = static::CONFIG_ABSOLUTE;
-		if (isset($advCfg[$absoluteParam]))
-			$this->absolute = (bool) $advCfg[$absoluteParam];
+		if (isset($advancedConfiguration[$absoluteParam]))
+			$this->absolute = (bool) $advancedConfiguration[$absoluteParam];
 	}
 
 	/**

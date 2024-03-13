@@ -23,7 +23,7 @@ trait Instancing {
 	 * @return \MvcCore\Environment
 	 */
 	public static function CreateInstance () {
-		$app = self::$app ?: (self::$app = \MvcCore\Application::GetInstance());
+		$app = self::$app ?: (self::$app = \MvcCore\Application::GetInstance()); // @phpstan-ignore-line
 		$environmentClass = $app->GetEnvironmentClass();
 		return new $environmentClass();
 	}

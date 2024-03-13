@@ -15,6 +15,7 @@ namespace MvcCore\Session;
 
 /**
  * @mixin \MvcCore\Session
+ * @phpstan-type SessionOptions array{"cookie_lifetime":int,"cookie_secure":bool,"cookie_httponly":true,"cookie_domain":string,"cookie_path":string,"cookie_samesite":?string}
  */
 trait Starting {
 
@@ -24,7 +25,7 @@ trait Starting {
 	 */
 	public static function Start () {
 		if (static::GetStarted()) return;
-		$app = self::$app ?: (self::$app = \MvcCore\Application::GetInstance());
+		$app = self::$app ?: (self::$app = \MvcCore\Application::GetInstance()); // @phpstan-ignore-line
 		$req = self::$req ?: (self::$req = $app->GetRequest());
 		if ($req->IsInternalRequest() === TRUE) return;
 		$res = self::$res ?: (self::$res = $app->GetResponse());
@@ -96,7 +97,7 @@ trait Starting {
 	 * Complete `session_start()` options and session id cookie for response.
 	 * @param  \MvcCore\Request $req
 	 * @param  bool             $starting Get options for session start, otherwise get options for session id cookie.
-	 * @return array
+	 * @return SessionOptions
 	 */
 	protected static function getOptions (\MvcCore\IRequest $req, $starting = TRUE) {
 		$sessionCookieParamsDefault = (object) session_get_cookie_params();
@@ -117,8 +118,9 @@ trait Starting {
 			'cookie_path'		=> $sessionCookieParamsDefault->path,
 		];
 		if (PHP_VERSION_ID >= 70300) {
+			/** @var ?string $sameSite */
 			$sameSite = $sessionCookieParamsDefault->samesite;
-			if ($sameSite === NULL || $sameSite === '')
+			if ($sameSite === '' || $sameSite === NULL)
 				$sameSite = \MvcCore\IResponse::COOKIE_SAMESITE_LAX;
 			$sessionStartOptions['cookie_samesite'] = $sameSite;
 		}

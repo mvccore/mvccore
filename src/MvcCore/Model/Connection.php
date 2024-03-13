@@ -20,8 +20,8 @@ trait Connection {
 	
 	/**
 	 * @inheritDoc
-	 * @param  string|int|array|\stdClass|NULL $connectionNameOrConfig
-	 * @param  bool                            $strict
+	 * @param  string|int|array<string,mixed>|\stdClass|NULL $connectionNameOrConfig
+	 * @param  bool                                          $strict
 	 *         If `TRUE` and no connection under given name or given
 	 *         index found, exception is thrown. `TRUE` by default.
 	 *         If `FALSE`, there could be returned connection by
@@ -95,8 +95,8 @@ trait Connection {
 	 * Resolve connection name or connection index or connection 
 	 * configuration into single string or integer coresponding to 
 	 * database config record.
-	 * @param  string|int|array|\stdClass|NULL $connectionNameOrConfig 
-	 * @param  bool                            $strict 
+	 * @param  string|int|array<string,mixed>|\stdClass|NULL $connectionNameOrConfig 
+	 * @param  bool                                          $strict 
 	 * @throws \InvalidArgumentException 
 	 * @return string|int
 	 */
@@ -109,10 +109,8 @@ trait Connection {
 			// if no connection index specified, try to get from class or from base model
 			if (self::$configs === NULL) static::loadConfigs(TRUE, TRUE);
 			$connectionName = $connectionNameOrConfig;
-			if ($connectionName === NULL && isset(static::$connectionName)) 
+			if ($connectionName === NULL && isset(static::$connectionName)) // @phpstan-ignore-line
 				$connectionName = static::$connectionName;
-			if ($connectionName === NULL && isset(self::$connectionName)) 
-				$connectionName = self::$connectionName;
 			if ($connectionName === NULL) 
 				$connectionName = self::$defaultConnectionName;
 		}

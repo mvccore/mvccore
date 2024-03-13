@@ -25,9 +25,9 @@ interface IResponse extends \MvcCore\Response\IConstants {
 	/**
 	 * No singleton, get every time new instance of configured HTTP response
 	 * class in `\MvcCore\Application::GetInstance()->GetResponseClass();`.
-	 * @param  int|NULL $code
-	 * @param  array    $headers
-	 * @param  string   $body
+	 * @param  int|NULL                                   $code
+	 * @param  array<string,string|int|array<string|int>> $headers
+	 * @param  string                                     $body
 	 * @return \MvcCore\Response
 	 */
 	public static function CreateInstance (
@@ -40,7 +40,7 @@ interface IResponse extends \MvcCore\Response\IConstants {
 	 * Set cookie name(s) for session id for secure or/and for non-secure connection.
 	 * @param  string|NULL $secureConnCookieName 
 	 * @param  string|NULL $nonSecureConnCookieName
-	 * @return array
+	 * @return array{0:?string,1:?string}
 	 */
 	public static function SetSessionIdCookieNames ($secureConnCookieName, $nonSecureConnCookieName);
 
@@ -52,20 +52,21 @@ interface IResponse extends \MvcCore\Response\IConstants {
 	
 	/**
 	 * Set CSRF protection cookie name. `__MCP` by default.
+	 * @param  string $csrfProtectionCookieName 
 	 * @return string
 	 */
 	public static function SetCsrfProtectionCookieName ($csrfProtectionCookieName);
 
 	/**
 	 * Get HTTP response headers names, which are allowed to use multiple times.
-	 * @return \string[]
+	 * @return array<string>
 	 */
 	public static function GetMultiplyHeaders ();
 	
 	/**
 	 * Set HTTP response headers names, which are allowed to use multiple times.
-	 * @param  \string[] $multiplyHeaders 
-	 * @return \string[]
+	 * @param  array<string> $multiplyHeaders 
+	 * @return array<string>
 	 */
 	public static function SetMultiplyHeaders ($multiplyHeaders);
 
@@ -91,7 +92,7 @@ interface IResponse extends \MvcCore\Response\IConstants {
 
 	/**
 	 * Set HTTP response code.
-	 * @param  int         $code
+	 * @param  int|NULL    $code
 	 * @param  string|NULL $codeMessage
 	 * @return \MvcCore\Response
 	 */
@@ -99,7 +100,7 @@ interface IResponse extends \MvcCore\Response\IConstants {
 
 	/**
 	 * Get HTTP response code.
-	 * @return int `200 | 301 | 404`
+	 * @return int|NULL `200 | 301 | 404`
 	 */
 	public function GetCode ();
 
@@ -112,7 +113,7 @@ interface IResponse extends \MvcCore\Response\IConstants {
 	 * There is automatically set response encoding from value for
 	 * `Content-Encoding` header.
 	 * Example: `$request->SetHeader(array('Content-Type' => 'text/plain; charset=utf-8'));`
-	 * @param  array $headers
+	 * @param  array<string,string|int|array<string|int>> $headers
 	 * @return \MvcCore\Response
 	 */
 	public function SetHeaders (array $headers = []);
@@ -125,10 +126,11 @@ interface IResponse extends \MvcCore\Response\IConstants {
 	 * There is automatically set response encoding from value for
 	 * `Content-Encoding` header.
 	 * Example: `$request->SetHeader(array('Content-Type' => 'text/plain; charset=utf-8'));`
-	 * @param  array $headers
+	 * @param  array<string,string|int|array<string|int>> $headers
+	 * @param  bool                                       $cleanAllPrevious
 	 * @return \MvcCore\Response
 	 */
-	public function AddHeaders (array $headers = []);
+	public function AddHeaders (array $headers = [], $cleanAllPrevious = FALSE);
 
 	/**
 	 * Set HTTP response header, all previous header values will be overwritten.
@@ -137,8 +139,8 @@ interface IResponse extends \MvcCore\Response\IConstants {
 	 * There is automatically set response encoding from value for
 	 * `Content-Encoding` header.
 	 * Example: `$request->SetHeader('Content-Type', 'text/plain; charset=utf-8');`
-	 * @param  string $name
-	 * @param  string|\string[] $value
+	 * @param  string                       $name
+	 * @param  string|int|array<string|int> $value
 	 * @return \MvcCore\Response
 	 */
 	public function SetHeader ($name, $value);
@@ -152,8 +154,8 @@ interface IResponse extends \MvcCore\Response\IConstants {
 	 * There is automatically set response encoding from value for
 	 * `Content-Encoding` header.
 	 * Example: `$request->SetHeader('Content-Type', 'text/plain; charset=utf-8');`
-	 * @param  string $name
-	 * @param  string|\string[] $value
+	 * @param  string               $name
+	 * @param  string|array<string> $value
 	 * @return \MvcCore\Response
 	 */
 	public function AddHeader ($name, $value);
@@ -163,7 +165,7 @@ interface IResponse extends \MvcCore\Response\IConstants {
 	 * Example: `$response->GetHeader('Content-Type'); // returns 'text/plain; charset=utf-8'`
 	 * Example: `$response->GetHeader('Set-Cookie');   // returns ['PHPSESSID=...; path=/; secure; HttpOnly'`]
 	 * @param  string $name
-	 * @return string|\string[]|NULL
+	 * @return string|array<string>|NULL
 	 */
 	public function GetHeader ($name);
 
@@ -305,7 +307,7 @@ interface IResponse extends \MvcCore\Response\IConstants {
 	 * @param  string $domain    If not set, value is completed by `\MvcCore\Application::GetInstance()->GetRequest()->GetHostName();` .
 	 * @param  bool   $secure    If not set, value is completed by `\MvcCore\Application::GetInstance()->GetRequest()->IsSecure();`.
 	 * @param  bool   $httpOnly  HTTP only cookie, `TRUE` by default.
-	 * @param  string $sameSite  HTTP cookie `SameSite` attribute. Default value is `None`.
+	 * @param  string $sameSite  HTTP cookie `SameSite` attribute. Default value is `Lax`.
 	 * @throws \RuntimeException If HTTP headers have been sent.
 	 * @return bool              True if cookie has been set.
 	 */
@@ -313,7 +315,7 @@ interface IResponse extends \MvcCore\Response\IConstants {
 		$name, $value,
 		$lifetime = 0, $path = '/',
 		$domain = NULL, $secure = NULL, 
-		$httpOnly = TRUE, $sameSite = \MvcCore\Response::COOKIE_SAMESITE_NONE
+		$httpOnly = TRUE, $sameSite = \MvcCore\Response::COOKIE_SAMESITE_LAX
 	);
 
 	/**
@@ -330,7 +332,7 @@ interface IResponse extends \MvcCore\Response\IConstants {
 	/**
 	 * Set disabled headers, never sent except if there is
 	 * rendered exception in development environment.
-	 * @param  \string[] $disabledHeaders,...
+	 * @param  array<string> $disabledHeaders,...
 	 * @return \MvcCore\Response
 	 */
 	public function SetDisabledHeaders ($disabledHeaders);
@@ -338,7 +340,7 @@ interface IResponse extends \MvcCore\Response\IConstants {
 	/**
 	 * Get disabled headers, never sent except if there is
 	 * rendered exception in development environment.
-	 * @return \string[]
+	 * @return array<string>
 	 */
 	public function GetDisabledHeaders ();
 }

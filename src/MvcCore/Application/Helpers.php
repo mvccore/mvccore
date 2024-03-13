@@ -18,6 +18,8 @@ namespace MvcCore\Application;
  * - Helper methods for normal requests and error requests dispatching.
  * - Helper methods for core classes configuration.
  * @mixin \MvcCore\Application
+ * @phpstan-type CustomHandlerCallable callable(\MvcCore\IRequest, \MvcCore\IResponse): (false|void)
+ * @phpstan-type CustomHandlerRecord array{0: bool, 1: CustomHandlerCallable}
  */
 trait Helpers {
 
@@ -171,9 +173,9 @@ trait Helpers {
 
 	/**
 	 * Set pre-route, pre-dispatch or post-dispatch handler under specific priority index.
-	 * @param  array    $handlers      Application handlers collection reference.
-	 * @param  callable $handler
-	 * @param  int|NULL $priorityIndex
+	 * @param  CustomHandlerRecord[] $handlers Application handlers collection reference.
+	 * @param  CustomHandlerCallable $handler
+	 * @param  int|NULL              $priorityIndex
 	 * @return \MvcCore\Application
 	 */
 	protected function setHandler (array & $handlers, callable $handler, $priorityIndex = NULL) {

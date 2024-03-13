@@ -20,6 +20,8 @@ namespace MvcCore\Application;
  * - Global store for all main core class names, to use them as modules,
  *   to be changed any time (request class, response class, debug class, etc.).
  * @mixin \MvcCore\Application
+ * @phpstan-type CustomHandlerCallable callable(\MvcCore\IRequest, \MvcCore\IResponse): (false|void)
+ * @phpstan-type CustomHandlerRecord array{0: bool, 1: CustomHandlerCallable}
  */
 trait Props {
 
@@ -84,7 +86,7 @@ trait Props {
 	 * because of maximum compatibility.
 	 * @var bool
 	 */
-	protected $attributesAnotation = FALSE;
+	protected $attributesAnotations = FALSE;
 
 	/**
 	 * System config INI file as `stdClass` or `array`,
@@ -138,7 +140,7 @@ trait Props {
 	 *       $request->customVar = 'custom_value';
 	 *   });
 	 * ```
-	 * @var \array[]
+	 * @var array<int, array<int, CustomHandlerRecord>>
 	 */
 	protected $preRouteHandlers = [];
 
@@ -156,7 +158,7 @@ trait Props {
 	 *       $request->customVar = 'custom_value';
 	 *   });
 	 * ```
-	 * @var \array[]
+	 * @var array<int, array<int, CustomHandlerRecord>>
 	 */
 	protected $postRouteHandlers = [];
 
@@ -174,7 +176,7 @@ trait Props {
 	 *       $request->customVar = 'custom_value';
 	 *   });
 	 * ```
-	 * @var \array[]
+	 * @var array<int, array<int, CustomHandlerRecord>>
 	 */
 	protected $preDispatchHandlers = [];
 
@@ -192,7 +194,7 @@ trait Props {
 	 *       $request->customVar = 'custom_value';
 	 *   });
 	 * ```
-	 * @var \array[]
+	 * @var array<int, array<int, CustomHandlerRecord>>
 	 */
 	protected $preSentHeadersHandlers = [];
 
@@ -210,7 +212,7 @@ trait Props {
 	 *       $request->customVar = 'custom_value';
 	 *   });
 	 * ```
-	 * @var \array[]
+	 * @var array<int, array<int, CustomHandlerRecord>>
 	 */
 	protected $preSentBodyHandlers = [];
 
@@ -228,7 +230,7 @@ trait Props {
 	 *       $request->customVar = 'custom_value';
 	 *   });
 	 * ```
-	 * @var \array[]
+	 * @var array<int, array<int, CustomHandlerRecord>>
 	 */
 	protected $postDispatchHandlers = [];
 
@@ -246,7 +248,7 @@ trait Props {
 	 *       $request->customVar = 'custom_value';
 	 *   });
 	 * ```
-	 * @var \array[]
+	 * @var array<int, array<int, CustomHandlerRecord>>
 	 */
 	protected $postTerminateHandlers = [];
 	
@@ -264,7 +266,7 @@ trait Props {
 	 *       $request->customVar = 'custom_value';
 	 *   });
 	 * ```
-	 * @var \array[]
+	 * @var array<int, array<int, CustomHandlerRecord>>
 	 */
 	protected $csrfErrorHandlers = [];
 

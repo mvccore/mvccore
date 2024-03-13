@@ -50,7 +50,7 @@ trait DirectoryMethods {
 	 */
 	public function GetParentViewFullPath () {
 		$result = NULL;
-		/** @var \string[] $renderedFullPaths */
+		/** @var array<string> $renderedFullPaths */
 		$renderedFullPaths = & $this->__protected['renderedFullPaths'];
 		$count = count($renderedFullPaths);
 		if ($count > 1) {
@@ -62,7 +62,7 @@ trait DirectoryMethods {
 				while (TRUE) {
 					$parentCtrlView = $parentCtrl->GetView();
 					if ($parentCtrlView === NULL) {
-						$parentCtrl->GetParentController();
+						$parentCtrl = $parentCtrl->GetParentController();
 						if ($parentCtrl === NULL) break;
 					}
 					$result = $parentCtrlView->GetCurrentViewFullPath();

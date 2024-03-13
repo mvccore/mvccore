@@ -15,16 +15,20 @@ namespace MvcCore\Model;
 
 /**
  * @mixin \MvcCore\Model
+ * @phpstan-type RawValue int|float|string|bool|\DateTime|\DateTimeImmutable|array<mixed,mixed>|object
+ * @phpstan-type ParserArgs array<int|string,mixed>|NULL
  */
 trait Parsers {
 
 	/**
-	 * Try to convert raw database value into first type in target types.
-	 * @param  mixed     $rawValue
-	 * @param  \string[] $typesString
-	 * @return mixed     Converted result.
+	 * @inheritDoc
+	 * @param  RawValue      $rawValue
+	 * @param  array<string> $typesString
+	 * @param  array<mixed>  $parserArgs
+	 * This argument is used in extended model only.
+	 * @return RawValue Converted result.
 	 */
-	public static function ParseToTypes ($rawValue, $typesString) {
+	public static function ParseToTypes ($rawValue, $typesString, $parserArgs = []) {
 		$targetTypeValue = NULL;
 		$value = $rawValue;
 		/** @var string $typeString */
@@ -63,9 +67,10 @@ trait Parsers {
 
 	/**
 	 * Try to convert database value into target type.
-	 * @param  mixed  $rawValue
-	 * @param  string $typeStr
-	 * @return array First item is conversion boolean success, second item is converted result.
+	 * @param  RawValue $rawValue
+	 * @param  string   $typeStr
+	 * @return array{0:bool,1:RawValue}
+	 * First item is conversion boolean success, second item is converted result.
 	 */
 	protected static function parseToType ($rawValue, $typeStr) {
 		$conversionResult = FALSE;
@@ -144,7 +149,7 @@ trait Parsers {
 
 	/**
 	 * Convert int, float or string value into bool.
-	 * @param  int|float|string|NULL $rawValue 
+	 * @param  int|float|string|bool $rawValue 
 	 * @return bool
 	 */
 	protected static function parseToBool ($rawValue) {
@@ -165,9 +170,9 @@ trait Parsers {
 
 	/**
 	 * Convert int, float or string value into \DateTime.
-	 * @param  string                $typeStr
-	 * @param  int|float|string|NULL $rawValue 
-	 * @param  array                 $parserArgs 
+	 * @param  string           $typeStr
+	 * @param  int|float|string $rawValue 
+	 * @param  ParserArgs       $parserArgs 
 	 * @return \DateTime|\DateTimeImmutable|bool
 	 */
 	protected static function parseToDateTime ($typeStr, $rawValue, $parserArgs = []) {
@@ -192,10 +197,10 @@ trait Parsers {
 
 	/**
 	 * Convert raw value into `array` or `\stdClass`.
-	 * @param  string $typeStr
-	 * @param  mixed  $rawValue 
-	 * @param  array  $parserArgs 
-	 * @return array|object|NULL
+	 * @param  string                           $typeStr
+	 * @param  array<mixed,mixed>|object|string $rawValue 
+	 * @param  ParserArgs                       $parserArgs 
+	 * @return array<mixed,mixed>|object|NULL
 	 */
 	protected static function parseToArrayOrObject ($typeStr, $rawValue, $parserArgs = [0, 512]) {
 		if (!is_string($rawValue)) {

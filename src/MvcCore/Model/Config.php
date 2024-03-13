@@ -37,8 +37,9 @@ trait Config {
 
 	/**
 	 * @inheritDoc
-	 * @param  \stdClass[]|array[] $configs               Configuration array with `\stdClass` objects or arrays with configuration data.
-	 * @param  string|int|NULL     $defaultConnectionName
+	 * @param  array<int|string,int|string|array<string,mixed>> $configs
+	 * Configuration array with `\stdClass` objects or arrays with configuration data.
+	 * @param  string|int|NULL                                  $defaultConnectionName
 	 * @return bool
 	 */
 	public static function SetConfigs (array $configs = [], $defaultConnectionName = NULL) {
@@ -62,12 +63,10 @@ trait Config {
 	 */
 	public static function & GetConfig ($connectionName = NULL) {
 		if (self::$configs === NULL) static::loadConfigs(TRUE);
-		if ($connectionName === NULL && isset(static::$connectionName)) 
+		if ($connectionName === NULL && isset(static::$connectionName)) // @phpstan-ignore-line
 			$connectionName = static::$connectionName;
-		if ($connectionName === NULL && isset(self::$connectionName)) 
-			$connectionName = self::$connectionName;
 		if ($connectionName === NULL) 
-			$connectionName = self::$defaultConnectionName;
+			$connectionName = static::$defaultConnectionName;
 		if ($connectionName === NULL) {
 			$result = NULL;
 			return $result;
@@ -80,7 +79,7 @@ trait Config {
 
 	/**
 	 * @inheritDoc
-	 * @param  \stdClass[]|array[] $config
+	 * @param  array<string,mixed> $config
 	 * @param  string|int|NULL     $connectionName
 	 * @return string|int
 	 */
@@ -155,7 +154,7 @@ trait Config {
 			$configs[0] = $systemCfgDb;
 			$configsConnectionsNames[] = '0';
 		} else {
-			foreach ($systemCfgDb as $key => $value) {
+			foreach ((array) $systemCfgDb as $key => $value) {
 				if (is_scalar($value)) {
 					$configs[$key] = $value;
 				} else {

@@ -15,17 +15,20 @@ namespace MvcCore\View;
 
 /**
  * @mixin \MvcCore\View
+ * @phpstan-type ViewHelper \MvcCore\Ext\Views\Helpers\AbstractHelper|\MvcCore\Ext\Views\Helpers\IHelper|\Closure|mixed
  */
 trait Rendering {
 
 	/**
 	 * @inheritDoc
-	 * @param  string $relativePath Relative path from current view script.
-	 * @param  array  $variables    Associative array with variables to pass it 
-	 *                              into view script inside view store or as local variables.
+	 * @param  string              $relativePath
+	 * Relative path from current view script.
+	 * @param  array<string,mixed> $variables
+	 * Associative array with variables to pass it 
+	 * into view script inside view store or as local variables.
 	 * @return string
 	 */
-	public function RenderScript ($relativePath, $variables = []) {
+	public function RenderScript ($relativePath, array $variables = []) {
 		if (count($variables) > 0) {
 			$currentStore = & $this->__protected['store'];
 			// always overvrite existing keys:
@@ -36,12 +39,14 @@ trait Rendering {
 
 	/**
 	 * @inheritDoc
-	 * @param  string $relativePath Relative path from current view script.
-	 * @param  array  $variables    Associative array with variables to pass it 
-	 *                              into view script inside view store or as local variables.
+	 * @param  string              $relativePath
+	 * Relative path from current view script.
+	 * @param  array<string,mixed> $variables
+	 * Associative array with variables to pass it 
+	 * into view script inside view store or as local variables.
 	 * @return string
 	 */
-	public function RenderLayout ($relativePath, $variables = []) {
+	public function RenderLayout ($relativePath, array $variables = []) {
 		if (count($variables) > 0) {
 			$currentStore = & $this->__protected['store'];
 			// always overvrite existing keys:
@@ -53,7 +58,7 @@ trait Rendering {
 	/**
 	 * @inheritDoc
 	 * @internal
-	 * @param  string      $relativePath
+	 * @param  string|NULL $relativePath
 	 * @param  string|NULL $content
 	 * @return string
 	 */
@@ -145,7 +150,7 @@ trait Rendering {
 		if ($renderModeWithOb)
 			ob_start();
 		// render the template with local variables from the store
-		$result = call_user_func(function ($viewPath, $controller, $helpers) {
+		call_user_func(function ($viewPath, $controller, $helpers) {
 			extract($helpers, EXTR_SKIP);
 			unset($helpers);
 			extract($this->__protected['store'], EXTR_SKIP);
@@ -209,7 +214,7 @@ trait Rendering {
 	/**
 	 * @inheritDoc
 	 * @param  string $typedViewsDirFullPath Example: `/abs/doc/root/App/Views/{Layouts,Forms,Scripts}`.
-	 * @param  string $corectedRelativePath  Example: `ctrl-name/action-name`.
+	 * @param  string $scriptRelativePath    Example: `ctrl-name/action-name`.
 	 * @return string
 	 */
 	public static function GetViewScriptFullPath ($typedViewsDirFullPath, $scriptRelativePath) {
@@ -308,8 +313,8 @@ trait Rendering {
 				$controllerOrActionNameDashed, $actionNameDashed
 			);
 			// render action view into string
+			/** @var class-string|\MvcCore\View $viewClass */
 			$viewClass = $this->controller->GetApplication()->GetViewClass();
-			/** @var \MvcCore\View $layout */
 			$actionView = $viewClass::CreateInstance()
 				->SetController($this->controller)
 				->SetUpStore($this, TRUE)
@@ -322,7 +327,7 @@ trait Rendering {
 
 	/**
 	 * @inheritDoc
-	 * @param  string $content
+	 * @param  string|NULL $content
 	 * @return string
 	 */
 	public function Evaluate ($content) {
@@ -340,7 +345,7 @@ trait Rendering {
 
 	/**
 	 * Set up build in view instance helpers before rendering.
-	 * @param  array $helpers 
+	 * @param  array<string,ViewHelper> $helpers 
 	 * @return void
 	 */
 	protected function setUpRenderBuildInHelpers (& $helpers) {

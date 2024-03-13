@@ -15,12 +15,13 @@ namespace MvcCore\Session;
 
 /**
  * @mixin \MvcCore\Session
+ * @phpstan-type SessionMetaData array{"names":array<string,array<string,int>>,"hoops":array<string,array{0:int,1:int}>,"expirations":array<string,int>}|object{"names":array<string,array<string,int>>,"hoops":array<string,array{0:int,1:int}>,"expirations":array<string,int>}
  */
 trait MetaData {
 	
 	/**
 	 * @inheritDoc
-	 * @return \stdClass
+	 * @return SessionMetaData
 	 */
 	public static function GetSessionMetadata () {
 		return static::$meta;
@@ -72,7 +73,7 @@ trait MetaData {
 				$hoopsCount -= 1;
 			$hoops[$name] = [$hoopsCount, $ignoredReqsFlags];
 		}
-		foreach ($names as $name => $one) {
+		foreach (array_keys($names) as $name) {
 			$unset = [];
 			if (isset($hoops[$name])) {
 				list($hoopsCount) = $hoops[$name];

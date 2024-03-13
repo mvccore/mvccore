@@ -209,21 +209,21 @@ interface IRouter extends \MvcCore\Router\IConstants {
 	 *       )
 	 *   ]);
 	 * ````
-	 * @param  \MvcCore\Route[]|array $routes 
-	 *                                Keyed array with routes, keys are route names or route 
-	 *                                `Controller::Action` definitions.
-	 * @param  string|NULL            $groupName 
-	 *                                Group name is first matched/parsed word in requested path to 
-	 *                                group routes by to try to match only routes you really need, 
-	 *                                not all of them. If `NULL` by default, routes are inserted 
-	 *                                into default group.
-	 * @param  bool                   $prepend	
-	 *                                Optional, if `TRUE`, all given routes will be prepended from 
-	 *                                the last to the first in given list, not appended.
-	 * @param  bool                   $throwExceptionForDuplication 
-	 *                                `TRUE` by default. Throw an exception, if route `name` or 
-	 *                                route `Controller:Action` has been defined already. If 
-	 *                                `FALSE` old route is over-written by new one.
+	 * @param  array<int|string,\MvcCore\Route|array<string,mixed>|string> $routes
+	 * Keyed array with routes, keys are route names or route
+	 * `Controller::Action` definitions.
+	 * @param  string|NULL                                                 $groupName
+	 * Group name is first matched/parsed word in requested path to
+	 * group routes by to try to match only routes you really need,
+	 * not all of them. If `NULL` by default, routes are inserted
+	 * into default group.
+	 * @param  bool                                                        $prepend
+	 * Optional, if `TRUE`, all given routes will be prepended from
+	 * the last to the first in given list, not appended.
+	 * @param  bool                                                        $throwExceptionForDuplication
+	 * `TRUE` by default. Throw an exception, if route `name` or
+	 * route `Controller:Action` has been defined already. If
+	 * `FALSE` old route is over-written by new one.
 	 * @return \MvcCore\Router
 	 */
 	public function AddRoutes (array $routes = [], $groupName = NULL, $prepend = FALSE, $throwExceptionForDuplication = TRUE);
@@ -273,20 +273,20 @@ interface IRouter extends \MvcCore\Router\IConstants {
 	 *       "defaults"   => ["name" => "default-name", "color" => "red"],
 	 *   ));
 	 * ````
-	 * @param  \MvcCore\Route|array $routeCfgOrRoute 
-	 *                              Route instance or route config array.
-	 * @param  string|NULL          $groupName 
-	 *                              Group name is first matched/parsed word in requested path to 
-	 *                              group routes by to try to match only routes you really need, 
-	 *                              not all of them. If `NULL` by default, routes are inserted 
-	 *                              into default group.
-	 * @param  bool                 $prepend
-	 *                              Optional, if `TRUE`, given route will be prepended, 
-	 *                              not appended.
-	 * @param  bool                 $throwExceptionForDuplication 
-	 *                              `TRUE` by default. Throw an exception, if route `name` or 
-	 *                              route `Controller:Action` has been defined already. If 
-	 *                              `FALSE` old route is over-written by new one.
+	 * @param  \MvcCore\Route|array<string,mixed> $routeCfgOrRoute
+	 * Route instance or route config array.
+	 * @param  string|NULL                        $groupName
+	 * Group name is first matched/parsed word in requested path to
+	 * group routes by to try to match only routes you really need,
+	 * not all of them. If `NULL` by default, routes are inserted
+	 * into default group.
+	 * @param  bool                               $prepend
+	 * Optional, if `TRUE`, given route will be prepended,
+	 * not appended.
+	 * @param  bool                               $throwExceptionForDuplication
+	 * `TRUE` by default. Throw an exception, if route `name` or
+	 * route `Controller:Action` has been defined already. If
+	 * `FALSE` old route is over-written by new one.
 	 * @return \MvcCore\Router
 	 */
 	public function AddRoute ($routeCfgOrRoute, $groupName = NULL, $prepend = FALSE, $throwExceptionForDuplication = TRUE);
@@ -381,7 +381,7 @@ interface IRouter extends \MvcCore\Router\IConstants {
 	 * Get matched route instance reference for given request object
 	 * into `\MvcCore\Route::Route($request);` method. Currently
 	 * matched route is always assigned internally in that method.
-	 * @return \MvcCore\Route
+	 * @return \MvcCore\Route|NULL
 	 */
 	public function GetCurrentRoute ();
 
@@ -408,14 +408,14 @@ interface IRouter extends \MvcCore\Router\IConstants {
 	 * Get default request params - default params to build URL with possibility
 	 * to define custom records for filter functions.
 	 * Be careful, it could contain XSS chars. Use always `htmlspecialchars()`.
-	 * @return array
+	 * @return array<string,mixed>
 	 */
 	public function & GetDefaultParams ();
 
 	/**
 	 * Get all request params - params parsed by route and query string params.
 	 * Be careful, it could contain XSS chars. Use always `htmlspecialchars()`.
-	 * @return array
+	 * @return array<string,mixed>
 	 */
 	public function & GetRequestedParams ();
 
@@ -626,12 +626,12 @@ interface IRouter extends \MvcCore\Router\IConstants {
 	 * or any other place and then there is processed route search between 
 	 * routes again. If there is still no routes, result url is completed 
 	 * in query string form.
-	 * @param  string $controllerActionOrRouteName
-	 *                Should be `"Controller:Action"` combination or just any 
-	 *                route name as custom specific string.
-	 * @param  array  $params
-	 *                Optional, array with params, key is param name, value is 
-	 *                param value.
+	 * @param  string              $controllerActionOrRouteName
+	 * Should be `"Controller:Action"` combination 
+	 * or just any route name as custom specific string.
+	 * @param  array<string,mixed> $params
+	 * Optional, array with params, key is 
+	 * param name, value is param value.
 	 * @throws \InvalidArgumentException
 	 * @return string
 	 */
@@ -652,9 +652,9 @@ interface IRouter extends \MvcCore\Router\IConstants {
 	/**
 	 * Complete optionally absolute, non-localized URL with all params in query string.
 	 * Example: `"/application/base-bath/index.php?controller=ctrlName&amp;action=actionName&amp;name=cool-product-name&amp;color=blue"`
-	 * @param  string $controllerActionOrRouteName
-	 * @param  array  $params
-	 * @param  string $givenRouteName
+	 * @param  string              $controllerActionOrRouteName
+	 * @param  array<string,mixed> $params
+	 * @param  string              $givenRouteName
 	 * @return string
 	 */
 	public function UrlByQueryString ($controllerActionOrRouteName = 'Index:Index', array & $params = [], $givenRouteName = NULL);
@@ -677,9 +677,9 @@ interface IRouter extends \MvcCore\Router\IConstants {
 	 *   // Output:
 	 *       "/application/base-bath/products-list/cool-product-name/blue?variant[]=L&amp;variant[]=XL"
 	 * ````
-	 * @param  \MvcCore\Route $route
-	 * @param  array          $params
-	 * @param  string         $urlParamRouteName
+	 * @param  \MvcCore\Route      $route
+	 * @param  array<string,mixed> $params
+	 * @param  string              $urlParamRouteName
 	 * @return string
 	 */
 	public function UrlByRoute (\MvcCore\IRoute $route, array & $params = [], $urlParamRouteName = NULL);

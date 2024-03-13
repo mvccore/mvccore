@@ -57,8 +57,8 @@ trait IniRead {
 	 * Explode all possible sections into environment ini data collections,
 	 * keyed by environment name. Data, not targeted into any environment,
 	 * explode into default ini data collection keyed under empty string.
-	 * @param  array $rawIniData
-	 * @return array
+	 * @param  array<string,mixed> $rawIniData
+	 * @return array<string,array<string,mixed>>
 	 */
 	protected static function & readAllEnvironmentsSections (array & $rawIniData) {
 		$allEnvsIniData = [];
@@ -102,9 +102,9 @@ trait IniRead {
 	 * Process single level array with dotted keys into tree structure
 	 * and complete object type switches about tree records
 	 * to complete journal about final `\stdClass`es or `array`s types.
-	 * @param  array $iniData
-	 * @param  int   $iniScannerMode
-	 * @return array
+	 * @param  array<string,mixed> $iniData
+	 * @param  int                 $iniScannerMode
+	 * @return array{0:array<mixed,mixed>,1:array<string,array{0:int,1:mixed}>}
 	 */
 	protected static function readExpandLevelsAndReType (array & $iniData, $iniScannerMode) {
 		$result = [];
@@ -127,7 +127,7 @@ trait IniRead {
 			foreach ($rawKeys as $key) {
 				$prevAbsoluteKey = $absoluteKey;
 				$absoluteKey .= ($absoluteKey ? '.' : '') . $key;
-				if (!isset($current[$key])) {
+				if (!isset($current[$key])) { // @phpstan-ignore-line
 					$keyIsNumeric = is_numeric($key);
 					$current[$key] = [];
 					// object type switch -> array by default:
@@ -147,7 +147,7 @@ trait IniRead {
 			} else {
 				$typedValue = $rawValue;
 			}
-			if (isset($current[$lastRawKey])) {
+			if (isset($current[$lastRawKey])) { // @phpstan-ignore-line
 				$current[$lastRawKey][] = $typedValue;
 			} else {
 				if (!is_array($current)) 
@@ -163,11 +163,11 @@ trait IniRead {
 	/**
 	 * Retype raw INI value into `array` with retyped it's own values or
 	 * retype raw INI value into `float`, `int` or `string`.
-	 * @param  string|array $rawValue
-	 * @return array|float|int|string
+	 * @param  string|array<mixed,mixed> $rawValue
+	 * @return array<mixed,mixed>|float|int|string
 	 */
 	protected static function readTypedValue ($rawValue) {
-		if (gettype($rawValue) == "array") {
+		if (is_array($rawValue)) {
 			foreach ($rawValue as $key => $value) {
 				$rawValue[$key] = static::readTypedValue($value);
 			}

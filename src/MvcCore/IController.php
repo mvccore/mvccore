@@ -75,7 +75,7 @@ interface IController extends \MvcCore\Controller\IConstants {
 	 * Try to determinate `\MvcCore\Controller` instance from `debug_bactrace()`,
 	 * where was form created, if no form instance given into form constructor.
 	 * If no previous controller instance founded, `NULL` is returned.
-	 * @return \MvcCore\Controller|NULL
+	 * @return \MvcCore\IController|NULL
 	 */
 	public static function GetCallerControllerInstance ();
 
@@ -85,6 +85,7 @@ interface IController extends \MvcCore\Controller\IConstants {
 	 * @param  string      $location
 	 * @param  int         $code
 	 * @param  string|NULL $reason   Any optional text header for reason why.
+	 * @throws \MvcCore\Controller\TerminateException
 	 * @return void
 	 */
 	public static function Redirect ($location = '', $code = \MvcCore\IResponse::SEE_OTHER, $reason = NULL);
@@ -94,23 +95,49 @@ interface IController extends \MvcCore\Controller\IConstants {
 	 * This is INTERNAL, not TEMPLATE method, internally
 	 * called in `\MvcCore\Application::DispatchExec();`.
 	 * Call this immediately after calling controller methods:
-	 * - `\MvcCore\Controller::__construct()`
-	 * - `\MvcCore\Controller::SetApplication($application)`
-	 * - `\MvcCore\Controller::SetEnvironment($environment)`
-	 * - `\MvcCore\Controller::SetRequest($request)`
-	 * - `\MvcCore\Controller::SetResponse($response)`
-	 * - `\MvcCore\Controller::SetRouter($router)`
-	 * This function automatically complete (through controller lifecycle)
+	 * ```
+	 * (new \MvcCore\Controller)
+	 *    ->SetApplication($application)
+	 *    ->SetEnvironment($environment)
+	 *    ->SetRequest($request)
+	 *    ->SetResponse($response)
+	 *    ->SetRouter($router);
+	 * ```
+	 * This function automatically complete (through controller life cycle)
 	 * protected `\MvcCore\Response` object with response headers and content,
 	 * which you can send to client browser by method
-	 * `\MvcCore\Controller::Terminate()` or which you can store
+	 * `$controller->Terminate()` or which you can store
 	 * anywhere in cache to use it later etc.
-	 * @param  string|NULL $actionName PHP code action name has to be in PascalCase + 'Action'.
-	 *                                 This value is used to call your desired function
-	 *                                 in controller without any change.
-	 * @return bool                    Return `FALSE` if application has been already terminated.
+	 * @internal
+	 * @param  string|NULL $actionName
+	 * Optional, PHP code action name, it has to be in PascalCase 
+	 * without any suffix (`Init` or `Action'). This value is used 
+	 * later to call your desired functions in controller with this changes:
+	 * - `$controller->{$actionName . 'Init'}()`,
+	 * - `$controller->{$actionName . 'Action'}()`.
+	 * @return bool
+	 * Return `FALSE` if application has been already terminated.
 	 */
 	public function Dispatch ($actionName = NULL);
+
+	/**
+	 * Dispatch controller previous states before given target state if necessary.
+	 * If controller state is equal or above given point, `FALSE` is returned.
+	 * If controller state is under given point, controller is dispatched
+	 * to the point and `TRUE` is returned.
+	 * @internal
+	 * @param  int $state 
+	 * Dispatch state, that is required to be completed. Possible values are:
+	 * - `\MvcCore\IController::DISPATCH_STATE_CREATED`,
+	 * - `\MvcCore\IController::DISPATCH_STATE_INITIALIZED`,
+	 * - `\MvcCore\IController::DISPATCH_STATE_ACTION_INITIALIZED`,
+	 * - `\MvcCore\IController::DISPATCH_STATE_PRE_DISPATCHED`,
+	 * - `\MvcCore\IController::DISPATCH_STATE_ACTION_EXECUTED`,
+	 * - `\MvcCore\IController::DISPATCH_STATE_RENDERED`,
+	 * - `\MvcCore\IController::DISPATCH_STATE_TERMINATED`.
+	 * @return bool
+	 */
+	public function DispatchStateCheck ($state);
 
 	/**
 	 * TEMPLATE method. Call `parent::Init();` at the method very beginning.
@@ -140,11 +167,18 @@ interface IController extends \MvcCore\Controller\IConstants {
 	 * "rule to keep defined characters only", defined in second argument (by `preg_replace()`).
 	 * Place into second argument only char groups you want to keep.
 	 * Shortcut for: `\MvcCore\Request::GetParam();`
-	 * @param  string            $name                    Parameter string name.
-	 * @param  string|array|bool $pregReplaceAllowedChars If String - list of regular expression characters to only keep, if array - `preg_replace()` pattern and reverse, if `FALSE`, raw value is returned.
-	 * @param  mixed             $ifNullValue             Default value returned if given param name is null.
-	 * @param  string|NULL       $targetType              Target type to retype param value or default if-null value. If param is an array, every param item will be retyped into given target type.
-	 * @return string|\string[]|int|\int[]|bool|\bool[]|array|mixed
+	 * @param  string                               $name
+	 * Parameter string name.
+	 * @param  string|array{0:string,1:string}|bool $pregReplaceAllowedChars
+	 * If `string` - list of regular expression characters to only keep,
+	 * if `array` - `preg_replace()` pattern and reverse,
+	 * if `FALSE`, raw value is returned.
+	 * @param  mixed                                $ifNullValue
+	 * Default value returned if given param name is null.
+	 * @param  string|NULL                          $targetType
+	 * Target type to retype param value or default if-null value. 
+	 * If param is an array, every param item will be retyped into given target type.
+	 * @return string|array<string>|int|array<int>|bool|array<bool>|array|mixed
 	 */
 	public function GetParam (
 		$name = "",
@@ -534,21 +568,24 @@ interface IController extends \MvcCore\Controller\IConstants {
 	public function __toString ();
 
 	/**
-	 * Add flash message to show it in next request(s).
-	 * @param  string    $msg          Flash message text to display in next request(s).
-	 * @param  int|array $options      Could be defined as integer or as array with integer 
-	 *                                 keys and values. Use flags like 
-	 *                                 `\MvcCore\IController::FLASH_MESSAGE_*`.
-	 * @param  array     $replacements Array with integer (`{0},{1},{2}...`) or 
-	 *                                 named (`{two},{two},{three}...`) replacements.
-	 * @return \MvcCore\Controller     Returns current controller context.
+	 * @inheritDoc
+	 * @param  string            $msg
+	 * Flash message text to display in next request(s).
+	 * @param  int|list<int>     $options
+	 * Could be defined as integer or as array with integer 
+	 * keys and values. Use flags like 
+	 * `\MvcCore\IController::FLASH_MESSAGE_*`.
+	 * @param  array<int,string> $replacements
+	 * Array with integer (`{0},{1},{2}...`) or 
+	 * named (`{two},{two},{three}...`) replacements.
+	 * @return \MvcCore\Controller Returns current controller context.
 	 */
 	public function FlashMessageAdd ($msg, $options = \MvcCore\IController::FLASH_MESSAGE_TYPE_DEFAULT, array $replacements = []);
 
 	/**
 	 * Get flash messages from previous request 
 	 * to render it and clean flash messages records.
-	 * @return array
+	 * @return array<string,\stdClass>
 	 */
 	public function FlashMessagesGetClean ();
 
@@ -708,8 +745,10 @@ interface IController extends \MvcCore\Controller\IConstants {
 	 *   and when first param is key in routes configuration array).
 	 * - For all other cases is URL form like: `"index.php?controller=ctrlName&amp;action=actionName"`
 	 *   (when first param is not founded in routes configuration array).
-	 * @param  string $controllerActionOrRouteName	Should be `"Controller:Action"` combination or just any route name as custom specific string.
-	 * @param  array  $params						Optional, array with params, key is param name, value is param value.
+	 * @param  string              $controllerActionOrRouteName
+	 * Should be `"Controller:Action"` combination or just any route name as custom specific string.
+	 * @param  array<string,mixed> $params
+	 * Optional, array with params, key is param name, value is param value.
 	 * @return string
 	 */
 	public function Url ($controllerActionOrRouteName = 'Index:Index', array $params = []);

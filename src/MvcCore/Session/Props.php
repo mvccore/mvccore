@@ -15,6 +15,7 @@ namespace MvcCore\Session;
 
 /**
  * @mixin \MvcCore\Session
+ * @phpstan-type SessionMetaData array{"names":array<string,array<string,int>>,"hoops":array<string,array{0:int,1:int}>,"expirations":array<string,int>}|object{"names":array<string,array<string,int>>,"hoops":array<string,array{0:int,1:int}>,"expirations":array<string,int>}
  */
 trait Props {
 
@@ -36,12 +37,12 @@ trait Props {
 	 * - `"hoops"`			=> Array with all namespace records page requests count to expire.
 	 * - `"expirations"`	=> Array with all records expiration times.
 	 * This metadata arrays are decoded from `$_SESSION` storage only once at in session start.
-	 * @var array|\stdClass
+	 * @var SessionMetaData
 	 */
 	protected static $meta = [
 		/**
 		 * Array with all namespace records names.
-		 * @var \string[]
+		 * @var array<string,array<string,int>>
 		 */
 		'names'			=> [],
 		/**
@@ -49,12 +50,12 @@ trait Props {
 		 * Keys are namespace names, values are arrays with first item to be
 		 * hoops count and second item to be ignoring requests flags to ignore
 		 * specific request to be counted.
-		 * @var \int[][]
+		 * @var array<string,array{0:int,1:int}>
 		 */
 		'hoops'			=> [],
 		/**
 		 * Array with all records expiration times. Keyed by namespace names.
-		 * @var \int[]
+		 * @var array<string,int>
 		 */
 		'expirations'	=> [],
 	];
@@ -85,25 +86,25 @@ trait Props {
 	 * Zero value (`0`) means "until the browser is closed".
 	 * If there is found any autorization service,
 	 * value is set by authorization expiration time.
-	 * @var int
+	 * @var int|NULL
 	 */
 	protected static $sessionCsrfMaxTime = NULL;
 
 	/**
 	 * Application instance reference.
-	 * @var \MvcCore\Request
+	 * @var \MvcCore\Application|NULL
 	 */
 	protected static $app = NULL;
 
 	/**
 	 * Request instance reference.
-	 * @var \MvcCore\Request
+	 * @var \MvcCore\Request|NULL
 	 */
 	protected static $req = NULL;
 
 	/**
 	 * Response instance reference.
-	 * @var \MvcCore\Response
+	 * @var \MvcCore\Response|NULL
 	 */
 	protected static $res = NULL;
 }

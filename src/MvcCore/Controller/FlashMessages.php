@@ -20,13 +20,16 @@ trait FlashMessages {
 
 	/**
 	 * @inheritDoc
-	 * @param  string    $msg          Flash message text to display in next request(s).
-	 * @param  int|array $options      Could be defined as integer or as array with integer 
-	 *                                 keys and values. Use flags like 
-	 *                                 `\MvcCore\IController::FLASH_MESSAGE_*`.
-	 * @param  array     $replacements Array with integer (`{0},{1},{2}...`) or 
-	 *                                 named (`{two},{two},{three}...`) replacements.
-	 * @return \MvcCore\Controller     Returns current controller context.
+	 * @param  string            $msg
+	 * Flash message text to display in next request(s).
+	 * @param  int|list<int>     $options
+	 * Could be defined as integer or as array with integer 
+	 * keys and values. Use flags like 
+	 * `\MvcCore\IController::FLASH_MESSAGE_*`.
+	 * @param  array<int,string> $replacements
+	 * Array with integer (`{0},{1},{2}...`) or 
+	 * named (`{two},{two},{three}...`) replacements.
+	 * @return \MvcCore\Controller Returns current controller context.
 	 */
 	public function FlashMessageAdd ($msg, $options = \MvcCore\IController::FLASH_MESSAGE_TYPE_DEFAULT, array $replacements = []) {
 		$ctrl = \MvcCore\Application::GetInstance()->GetController();
@@ -45,18 +48,21 @@ trait FlashMessages {
 	
 	/**
 	 * @inheritDoc
-	 * @return array
+	 * @return array<string,\stdClass>
 	 */
 	public function FlashMessagesGetClean () {
 		$ctrl = $this->application->GetController();
 		$session = static::flashMessagesGetSession($ctrl);
 		$result = [];
-		$store = $session->store;
+		/** @var array<string,\stdClass> $store */
+		$store = isset($session->store) ? $session->store : [];
 		if (count($store) === 0) {
 			$session->Destroy();
 		} else {
 			$flashMessagesToKeep = [];
-			$reqStartDatetime = (new \DateTime)->setTimestamp(round($this->request->GetStartTime()));
+			$reqStartDatetime = (new \DateTime)->setTimestamp(
+				intval(round($this->request->GetStartTime()))
+			);
 			foreach ($store as $hash => $flashMessage) {
 				$hoops = $flashMessage->hoops - 1;
 				$expirationIsNull = $flashMessage->expiration === NULL;
@@ -76,7 +82,7 @@ trait FlashMessages {
 			$ctrl->flashMessages = $ctrl->flashMessages === NULL
 				? $flashMessagesToKeep
 				: array_merge($flashMessagesToKeep, $ctrl->flashMessages);
-			$session->store = $store;
+			$session->store = $store; /** @phpstan-ignore-line */
 		}
 		return $result;
 	}
@@ -94,8 +100,8 @@ trait FlashMessages {
 		$mainCtrl->flashMessages = [];
 		$mainCtrl->application->AddPostDispatchHandler(function () use ($mainCtrl) {
 			$session = static::flashMessagesGetSession($mainCtrl);
-			if (is_array($mainCtrl->flashMessages) && count($mainCtrl->flashMessages) > 0) {
-				$session->store = $mainCtrl->flashMessages;
+			if (is_array($mainCtrl->flashMessages) && count($mainCtrl->flashMessages) > 0) { /** @phpstan-ignore-line */
+				$session->store = $mainCtrl->flashMessages; /** @phpstan-ignore-line */
 				$mainCtrl->flashMessages = NULL;
 			} else {
 				$session->Destroy();
@@ -110,7 +116,7 @@ trait FlashMessages {
 	 * @param  \MvcCore\Controller $mainCtrl       Main MvcCore controller.
 	 * @param  string              $messageImprint Message, options and replacements MD5 imprint.
 	 * @param  string              $msg            Message string, optionally translated, processed with replacements.
-	 * @param  int|array           $options        Raw not processed options.
+	 * @param  int|list<int>       $options        Raw not processed options.
 	 * @return void
 	 */
 	protected static function flashMessageAddOptions (\MvcCore\IController $mainCtrl, $messageImprint, $msg, $options) {
@@ -167,8 +173,8 @@ trait FlashMessages {
 		$session = $mainCtrl->GetSessionNamespace($mainCtrl::FLASH_MESSAGES_SESSION_NAMESPACE)
 			->SetExpirationHoops(1, \MvcCore\ISession::EXPIRATION_HOOPS_IGNORE_DEFAULT)
 			->SetExpirationSeconds(0);
-		if ($session->store === NULL) 
-			$session->store = [];
+		if (!isset($session->store))
+			$session->store = []; /** @phpstan-ignore-line */
 		return $session;
 	}
 }

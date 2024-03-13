@@ -15,18 +15,32 @@ namespace MvcCore\View;
 
 /**
  * @mixin \MvcCore\View
+ * @phpstan-type ProtetedSpace array{
+ *    "content":string,
+ *    "store":array<string,mixed>,
+ *    "helpers":array<string,ViewHelper>,
+ *    "buildInHelpersInit":bool,
+ *    "renderArgs":array{0:int,1:?string,2:?string},
+ *    "renderedFullPaths":array<string>,
+ *    "reflectionTypes":array<string,\ReflectionClass>,
+ *    "reflectionName":string|NULL,
+ *    "encoding":string|NULL,
+ *    "viewsDirsFullPaths":array<string>|NULL
+ * }
+ * @phpstan-type ViewHelper \MvcCore\Ext\Views\Helpers\AbstractHelper|\MvcCore\Ext\Views\Helpers\IHelper|\Closure|mixed
+ * @phpstan-type ViewHelperCacheRecord array{0:ViewHelper,1:bool,2:bool}
  */
 trait Props {
 
 	/**
 	 * Currently dispatched controller instance.
-	 * @var \MvcCore\Controller
+	 * @var \MvcCore\Controller|NULL
 	 */
 	protected $controller = NULL;
 
 	/**
 	 * All other private properties.
-	 * @var array
+	 * @var ProtetedSpace
 	 */
 	protected $__protected = [
 		/**
@@ -37,7 +51,7 @@ trait Props {
 		/**
 		  * Variables store, setted (always from controller)
 		  * through `__set()` magic function.
-		  * @var array
+		  * @var array<string,mixed>
 		  */
 		'store'				=> [],
 		/**
@@ -45,12 +59,12 @@ trait Props {
 		  * Keys in array are helper method names.
 		  * Every view has it's own helpers storage to recognize
 		  * if helper has been already used inside current view or not.
-		  * @var array
+		  * @var array<string,ViewHelper>
 		  */
 		'helpers'			=> [],
 		/**
 		  * Boolean about if build in helpers are initialized.
-		  * @var boolean
+		  * @var bool
 		  */
 		'buildInHelpersInit'=> FALSE,
 		/**
@@ -65,21 +79,21 @@ trait Props {
 		  *         Render layout view and render action view together inside it without
 		  *         output buffering. There is not used reponse object body property for
 		  *         this rendering mode. Http headers are sent before view rendering.
-		  * `1` - `string` - controller name dashed (or action name dashed).
-		  * `2` - `string` - action name dashed.
-		  * @var int
+		  * `1` - `?string` - controller name dashed (or action name dashed).
+		  * `2` - `?string` - action name dashed.
+		  * @var array{0:int,1:?string,2:?string}
 		  */
 		'renderArgs'		=> [\MvcCore\IView::RENDER_WITH_OB_FROM_ACTION_TO_LAYOUT, NULL, NULL],
 		/**
 		  * Currently rendered php/phtml file path(s).
-		  * @var \string[]
+		  * @var array<string>
 		  */
 		'renderedFullPaths'	=> [],
 		/**
 		  * `\ReflectionClass` instances to get additional values
 		  * from controller or form or any other parent instance
 		  * by `__get()` method.
-		  * @var array
+		  * @var array<string,\ReflectionClass>
 		  */
 		'reflectionTypes'	=> [],
 		/**
@@ -100,7 +114,7 @@ trait Props {
 		 * `\MvcCore\View::correctRelativePath();`,
 		 * `\MvcCore\View::Render($typePath, $relativePath);`,
 		 * `\MvcCore\Ext\Controllers\DataGrids::Render($typePath, $relativePath, $internalTemplate = FALSE);`;
-		 * @var \string[]|NULL
+		 * @var array<string>|NULL
 		 */
 		'viewsDirsFullPaths'=> NULL,
 	];
@@ -157,7 +171,7 @@ trait Props {
 	/**
 	 * Helpers classes namespaces, where are all configured view helpers placed.
 	 * For read & write.
-	 * @var array
+	 * @var array<int,string>
 	 */
 	protected static $helpersNamespaces = [
 		/*'\App\Views\Helpers\',*/
@@ -168,7 +182,7 @@ trait Props {
 	 * Global helpers instances storage.
 	 * Keys in array are helper method names.
 	 * These helpers instances are used for all views.
-	 * @var array
+	 * @var array<string,ViewHelperCacheRecord>
 	 */
 	protected static $globalHelpers = [];
 

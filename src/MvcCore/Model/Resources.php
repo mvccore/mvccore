@@ -20,12 +20,14 @@ trait Resources {
 	
 	/**
 	 * @inheritDoc
-	 * @param  array|NULL $args      Values array with variables to pass into resource `__construct()` method.
-	 *                               If `NULL`, recource class will be created without `__construct()` method call.
-	 * @param  string     $classPath Relative namespace path to resource class. It could contains `.` or `..`
-	 *                               to traverse over namespaces (directories) and it could contains `{self}` 
-	 *                               keyword, which is automatically replaced with current class name.
-	 * @thrown \InvalidArgumentException Class `{$resourceClassName}` doesn't exist.
+	 * @param  array<int,mixed>|NULL $args
+	 * Values array with variables to pass into resource `__construct()` method.
+	 * If `NULL`, recource class will be created without `__construct()` method call.
+	 * @param  string                $classPath
+	 * Relative namespace path to resource class. It could contains `.` or `..`
+	 * to traverse over namespaces (directories) and it could contains `{self}` 
+	 * keyword, which is automatically replaced with current class name.
+	 * @throws \InvalidArgumentException Class `{$resourceClassName}` doesn't exist.
 	 * @return \MvcCore\Model
 	 */
 	public static function GetCommonResource ($args = NULL, $classPath = '{self}s\CommonResource') {
@@ -40,12 +42,14 @@ trait Resources {
 	
 	/**
 	 * @inheritDoc
-	 * @param  array|NULL $args      Values array with variables to pass into resource `__construct()` method.
-	 *                               If `NULL`, recource class will be created without `__construct()` method call.
-	 * @param  string     $classPath Relative namespace path to resource class. It could contains `.` or `..`
-	 *                               to traverse over namespaces (directories) and it could contains `{self}` 
-	 *                               keyword, which is automatically replaced with current class name.
-	 * @thrown \InvalidArgumentException Class `{$resourceClassName}` doesn't exist.
+	 * @param  array<int,mixed>|NULL $args
+	 * Values array with variables to pass into resource `__construct()` method.
+	 * If `NULL`, recource class will be created without `__construct()` method call.
+	 * @param  string                $classPath
+	 * Relative namespace path to resource class. It could contains `.` or `..`
+	 * to traverse over namespaces (directories) and it could contains `{self}` 
+	 * keyword, which is automatically replaced with current class name.
+	 * @throws \InvalidArgumentException Class `{$resourceClassName}` doesn't exist.
 	 * @return \MvcCore\Model
 	 */
 	public function GetResource ($args = NULL, $classPath = '{self}s\Resource') {
@@ -56,12 +60,14 @@ trait Resources {
 	
 	/**
 	 * Localize resource class, create and return it. If class is not localized, thrown an exception.
-	 * @param  array|NULL $args      Values array with variables to pass into resource `__construct()` method.
-	 *                               If `NULL`, recource class will be created without `__construct()` method call.
-	 * @param  string     $classPath Relative namespace path to resource class. It could contains `.` or `..`
-	 *                               to traverse over namespaces (directories) and it could contains `{self}` 
-	 *                               keyword, which is automatically replaced with current class name.
-	 * @thrown \InvalidArgumentException Class `{$resourceClassName}` doesn't exist.
+	 * @param  array<int,mixed>|NULL $args
+	 * Values array with variables to pass into resource `__construct()` method.
+	 * If `NULL`, recource class will be created without `__construct()` method call.
+	 * @param  string                $classPath
+	 * Relative namespace path to resource class. It could contains `.` or `..`
+	 * to traverse over namespaces (directories) and it could contains `{self}` 
+	 * keyword, which is automatically replaced with current class name.
+	 * @throws \InvalidArgumentException Class `{$resourceClassName}` doesn't exist.
 	 * @return \MvcCore\Model
 	 */
 	protected static function findAndCreateResource ($args = NULL, $classPath = '{self}s\Resource') {

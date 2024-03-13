@@ -20,11 +20,18 @@ trait GettersSetters {
 
 	/**
 	 * @inheritDoc
-	 * @param  string            $name                    Parameter string name.
-	 * @param  string|array|bool $pregReplaceAllowedChars If String - list of regular expression characters to only keep, if array - `preg_replace()` pattern and reverse, if `FALSE`, raw value is returned.
-	 * @param  mixed             $ifNullValue             Default value returned if given param name is null.
-	 * @param  string|NULL       $targetType              Target type to retype param value or default if-null value. If param is an array, every param item will be retyped into given target type.
-	 * @return string|\string[]|int|\int[]|bool|\bool[]|array|mixed
+	 * @param  string                               $name
+	 * Parameter string name.
+	 * @param  string|array{0:string,1:string}|bool $pregReplaceAllowedChars
+	 * If `string` - list of regular expression characters to only keep,
+	 * if `array` - `preg_replace()` pattern and reverse,
+	 * if `FALSE`, raw value is returned.
+	 * @param  mixed                                $ifNullValue
+	 * Default value returned if given param name is null.
+	 * @param  string|NULL                          $targetType
+	 * Target type to retype param value or default if-null value. 
+	 * If param is an array, every param item will be retyped into given target type.
+	 * @return string|array<string>|int|array<int>|bool|array<bool>|array|mixed
 	 */
 	public function GetParam (
 		$name = "",
@@ -383,8 +390,10 @@ trait GettersSetters {
 
 	/**
 	 * @inheritDoc
-	 * @param  string $controllerActionOrRouteName Should be `"Controller:Action"` combination or just any route name as custom specific string.
-	 * @param  array  $params                      Optional, array with params, key is param name, value is param value.
+	 * @param  string              $controllerActionOrRouteName
+	 * Should be `"Controller:Action"` combination or just any route name as custom specific string.
+	 * @param  array<string,mixed> $params
+	 * Optional, array with params, key is param name, value is param value.
 	 * @return string
 	 */
 	public function Url ($controllerActionOrRouteName = 'Index:Index', array $params = []) {

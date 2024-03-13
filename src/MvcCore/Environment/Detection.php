@@ -15,6 +15,7 @@ namespace MvcCore\Environment;
 
 /**
  * @mixin \MvcCore\Environment
+ * @phpstan-type ConfigEnvSection string|array{"clients":mixed,"paths":mixed,"servers":mixed,"variables":mixed}|object{"clients":mixed,"paths":mixed,"servers":mixed,"variables":mixed}
  */
 trait Detection {
 
@@ -36,12 +37,12 @@ trait Detection {
 
 	/**
 	 * @inheritDoc
-	 * @param  array  $environmentsSectionData System config environment section data part.
+	 * @param  array<string,ConfigEnvSection> $environmentsSectionData System config environment section data part.
 	 * @return string Detected environment string.
 	 */
 	public static function DetectBySystemConfig (array $environmentsSectionData = []) {
 		$name = NULL;
-		$app = self::$app ?: self::$app = \MvcCore\Application::GetInstance();
+		$app = self::$app ?: (self::$app = \MvcCore\Application::GetInstance()); // @phpstan-ignore-line
 		$request = $app->GetRequest();
 		$clientIp = $request->GetClientIp();
 		$appRoot = NULL;
@@ -65,8 +66,8 @@ trait Detection {
 	/**
 	 * Parse system config environment section data from various declarations
 	 * into specific detection structure.
-	 * @param  mixed       $environmentSection
-	 * @param  string|NULL $clientIp
+	 * @param  ConfigEnvSection $environmentSection
+	 * @param  string|NULL      $clientIp
 	 * @return \stdClass
 	 */
 	protected static function detectByConfigSectionData ($environmentSection, $clientIp) {
@@ -98,7 +99,7 @@ trait Detection {
 			// about the most and simple way - to describe client IPS:
 			if ($clientIp !== NULL)
 				static::detectByConfigClientIps($data, $environmentSection);
-		} else if (is_array($environmentSection) || $environmentSection instanceof \stdClass) {
+		} else if (is_array($environmentSection) || $environmentSection instanceof \stdClass) { // @phpstan-ignore-line
 			foreach ((array) $environmentSection as $key => $value) {
 				if (is_numeric($key) || $key == 'clients') {
 					// if key is only numeric key provided, value is probably
@@ -265,13 +266,13 @@ trait Detection {
 	 *   - by regular expression (if defined)
 	 * Method returns `TRUE` to stop environment detection or `FALSE`, if
 	 * environment was not detected by given data.
-	 * @param  \stdClass        $data
-	 * @param  \MvcCore\Request $req
-	 * @param  string|NULL      $clientIp
-	 * @param  string|NULL      $appRoot
-	 * @param  string|NULL      $serverHostName
-	 * @param  array|NULL       $serverGlobals
-	 * @return bool             If `TRUE`, environment has been detected and detection procedure could stop.
+	 * @param  \stdClass                $data
+	 * @param  \MvcCore\Request         $req
+	 * @param  string|NULL              $clientIp
+	 * @param  string|NULL              $appRoot
+	 * @param  string|NULL              $serverHostName
+	 * @param  array<string,mixed>|NULL $serverGlobals
+	 * @return bool If `TRUE`, environment has been detected and detection procedure could stop.
 	 */
 	protected static function detectByConfigSection (& $data, $req, & $clientIp, & $appRoot, & $serverHostName, & $serverGlobals) {
 		if ($data->clientIps->check) {

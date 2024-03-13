@@ -15,6 +15,10 @@ namespace MvcCore\Route;
 
 /**
  * @mixin \MvcCore\Route
+ * @phpstan-type FilterCallable callable(array<string,mixed>, array<string,mixed>, \MvcCore\IRequest): array<string,mixed>
+ * @phpstan-type FiltersRecord array{0:bool,1:FilterCallable}
+ * @phpstan-type ReverseParams array<string,object{"name":string,"greedy":bool,"sectionIndex":int,"reverseStart":int,"reverseEnd":int,"matchStart":int,"matchEnd":int}>
+ * @phpstan-type SectionsInfo array<object{"fixed":bool,"start":int,"end":int,"length":int}>
  */
 trait Props {
 
@@ -40,7 +44,7 @@ trait Props {
 	 * Properties names with request specific values to not serialize in cache.
 	 * Keys are properties names, values are bools, if to serialize their values
 	 * or not to.
-	 * @var array
+	 * @var array<string,bool>
 	 */
 	protected static $protectedProperties = [
 		'router'		=> FALSE, 
@@ -66,7 +70,7 @@ trait Props {
 	 *   matching all to the end of the URL address. It has to be the last one.
 	 *
 	 * Example: `"/products-list/<name>[/<color*>]"`.
-	 * @var string|\string[]|NULL
+	 * @var string|NULL
 	 */
 	protected $pattern		= NULL;
 
@@ -88,7 +92,7 @@ trait Props {
 	 * and `pattern` parsing into `match` and `reverse` properties.
 	 *
 	 * Example: `"#^/products\-list/(?<name>[^/]+)(/(?<id>\d+))?/?$#"`
-	 * @var string|\string[]|NULL
+	 * @var string|NULL
 	 */
 	protected $match		= NULL;
 
@@ -111,7 +115,7 @@ trait Props {
 	 * and `pattern` parsing into `match` and `reverse` properties.
 	 *
 	 * Example: `"/products-list/<name>[/<color>]"`
-	 * @var string|\string[]|NULL
+	 * @var string|NULL
 	 */
 	protected $reverse		= NULL;
 
@@ -177,7 +181,7 @@ trait Props {
 	 * param from those application inputs - `$_GET`, `$_POST` or `php://input`.
 	 *
 	 * Example: `["name" => "default-name", "color" => "red",]`.
-	 * @var array|\array[]
+	 * @var array<string,mixed>
 	 */
 	protected $defaults		= [];
 
@@ -189,7 +193,7 @@ trait Props {
 	 * is `"[^.]+"` for domain part and `"[^/]+"` for path part.
 	 *
 	 * Example: `["name"	=> "[^/]+", "color"	=> "[a-z]+",]`
-	 * @var array|\array[]
+	 * @var array<string,string>
 	 */
 	protected $constraints		= [];
 
@@ -212,7 +216,7 @@ trait Props {
 	 * There is possible to call any `callable` as closure function in variable
 	 * except forms like `'ClassName::methodName'` and `['childClassName', 
 	 * 'parent::methodName']` and `[$childInstance, 'parent::methodName']`.
-	 * @var array
+	 * @var array<string,FiltersRecord>
 	 */
 	protected $filters			= [];
 
@@ -283,7 +287,7 @@ trait Props {
 	 *       ]
 	 *   ];
 	 * ````
-	 * @var array|NULL
+	 * @var ReverseParams|NULL
 	 */
 	protected $reverseParams	= NULL;
 
@@ -291,7 +295,7 @@ trait Props {
 	 * This associative array is used only in cloned matched route object and 
 	 * there is stored all only matched rewrite params and route controller and 
 	 * route action if any. All params are in raw form. Not filtered.
-	 * @var array
+	 * @var array<string,mixed>
 	 */
 	protected $matchedParams	= [];
 
@@ -318,7 +322,7 @@ trait Props {
 	 *       ]
 	 *   ];
 	 * ````
-	 * @var \stdClass[]
+	 * @var SectionsInfo|NULL
 	 */
 	protected $reverseSections	= NULL;
 	
@@ -328,7 +332,7 @@ trait Props {
 	 * it's value, there could be only trailing slash or nothing (pattern end). 
 	 * This trailing slash param definition is used to automatically trim last 
 	 * param value from right site when route is matched and rewrite params parsed.
-	 * @var \string|NULL
+	 * @var string|NULL
 	 */
 	protected $lastPatternParam	= NULL;
 
@@ -340,7 +344,7 @@ trait Props {
 
 	/**
 	 * Router instance reference used mostly in route URL building process.
-	 * @var \MvcCore\Router
+	 * @var \MvcCore\Router|NULL
 	 */
 	protected $router			= NULL;
 
@@ -352,7 +356,7 @@ trait Props {
 	 * single array argument. Data in this array are without no change against 
 	 * initialization moment. This could be used for any advanced property to 
 	 * define in extended class.
-	 * @var array
+	 * @var array<string,mixed>
 	 */
 	protected $config			= [];
 

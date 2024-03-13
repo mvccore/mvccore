@@ -20,9 +20,9 @@ trait UrlByRoutes {
 
 	/**
 	 * @inheritDoc
-	 * @param  \MvcCore\Route $route
-	 * @param  array          $params
-	 * @param  string         $urlParamRouteName
+	 * @param  \MvcCore\Route      $route
+	 * @param  array<string,mixed> $params
+	 * @param  string              $urlParamRouteName
 	 * @return string
 	 */
 	public function UrlByRoute (\MvcCore\IRoute $route, array & $params = [], $urlParamRouteName = NULL) {

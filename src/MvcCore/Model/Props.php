@@ -39,7 +39,7 @@ trait Props {
 	 * - `auth`     - if required to use database credentials for connecting or not.
 	 * - `fileDb`   - if database if file database or not.
 	 * - `options`  - any additional arguments array or empty array.
-	 * @var array
+	 * @var array<string,array<string,mixed>>
 	 */
 	protected static $connectionArguments = [
 		'cubrid'			=> [
@@ -138,7 +138,7 @@ trait Props {
 	/**
 	 * System configuration file database section properties names.
 	 * For properties used in extensions, you need to install extension `mvccore/ext-model-db-*`.
-	 * @var array
+	 * @var array<string,string>
 	 */
 	protected static $sysConfigProperties = [
 		'sectionName'		=> 'db',				// Db section root node.
@@ -163,7 +163,7 @@ trait Props {
 
 	/**
 	 * Parsing types base definitions.
-	 * @var array|array<string, array<string, int>>
+	 * @var array<string,non-empty-array<string|int,int|string>>
 	 */
 	protected static $parserTypes = [
 		'string'	=> ['string' => 1],
@@ -193,7 +193,7 @@ trait Props {
 
 	/**
 	 * System config sections array with `\stdClass` objects, keyed by connection indexes.
-	 * @var \stdClass[]
+	 * @var array<int|string,int|string|\stdClass>|NULL
 	 */
 	protected static $configs = NULL;
 
@@ -208,7 +208,7 @@ trait Props {
 	 * possible overwriting by `__set()` or `__get()` magic methods.
 	 * Keys are properties names, values are bools, if to serialize their values
 	 * or not to.
-	 * @var array
+	 * @var array<string,bool>
 	 */
 	protected static $protectedProperties = [
 		'initialValues'	=> FALSE,
@@ -220,14 +220,15 @@ trait Props {
 	/**
 	 * Array with values initialized by `SetValues()` method.
 	 * Usefull to recognize changed values bafore `Save()`.
-	 * @var array
+	 * @var array<string,mixed>
 	 */
 	protected $initialValues = [];
 
 	/**
 	 * Model resource instance - second model layer 
 	 * with SQL queries for more complex applications.
-	 * @var \MvcCore\Model|\MvcCore\Ext\Models\Db\Resource
+	 * @phpstan-ignore-next-line
+	 * @var \MvcCore\Model|\MvcCore\Ext\Models\Db\Resource|NULL
 	 */
 	protected $resource = NULL;
 }

@@ -20,13 +20,15 @@ trait ReadWrite {
 
 	/**
 	 * @inheritDoc
-	 * @param  array  $mergedData     Configuration data for all environments.
-	 * @param  string $configFullPath Config absolute path.
+	 * @param  array<string,array<mixed,mixed>> $mergedData
+	 * Configuration data for all environments.
+	 * @param  string|NULL                      $configFullPath
+	 * Config absolute path.
 	 * @return \MvcCore\Config
 	 */
 	public static function CreateInstance (array $mergedData = [], $configFullPath = NULL) {
 		/** @var \MvcCore\Config $config */
-		$config = new static();
+		$config = new static(); // @phpstan-ignore-line
 		if ($mergedData)
 			$config->mergedData = & $mergedData;
 		if ($configFullPath)
@@ -40,13 +42,13 @@ trait ReadWrite {
 	 * @return \MvcCore\Config|NULL
 	 */
 	public static function GetConfigSystem () {
-		/** @var \MvcCore\Config $config */
-		$app = self::$app ?: self::$app = \MvcCore\Application::GetInstance();
+		$app = self::$app ?: (self::$app = \MvcCore\Application::GetInstance()); // @phpstan-ignore-line
 		$configClass = $app->GetConfigClass();
 		$configFullPath = $configClass::GetConfigFullPath(
 			$configClass::GetConfigSystemPath(), FALSE
 		);
 		if (!array_key_exists($configFullPath, self::$configsCache)) {
+			/** @var \MvcCore\Config|NULL $config */
 			$config = $configClass::LoadConfig(
 				$configFullPath, $configClass, $configClass::TYPE_SYSTEM
 			);
@@ -75,12 +77,13 @@ trait ReadWrite {
 	 */
 	public static function GetConfigEnvironment () {
 		/** @var \MvcCore\Config $config */
-		$app = self::$app ?: self::$app = \MvcCore\Application::GetInstance();
+		$app = self::$app ?: (self::$app = \MvcCore\Application::GetInstance()); // @phpstan-ignore-line
 		$configClass = $app->GetConfigClass();
 		$envConfigPath = $configClass::GetConfigEnvironmentPath();
 		if ($envConfigPath === NULL) return NULL;
 		$configFullPath = $configClass::GetConfigFullPath($envConfigPath, FALSE);
 		if (!array_key_exists($configFullPath, self::$configsCache)) {
+			/** @var \MvcCore\Config|NULL $config */
 			$config = $configClass::LoadConfig(
 				$configFullPath, $configClass, $configClass::TYPE_ENVIRONMENT
 			);
@@ -105,11 +108,9 @@ trait ReadWrite {
 	 * @return \MvcCore\Config|NULL
 	 */
 	public static function GetConfig ($appRootRelativePath) {
-		/** @var \MvcCore\Config $config */
-		$app = self::$app ?: self::$app = \MvcCore\Application::GetInstance();
+		$app = self::$app ?: (self::$app = \MvcCore\Application::GetInstance()); // @phpstan-ignore-line
 		$configClass = $app->GetConfigClass();
 		$configFullPath = $configClass::GetConfigFullPath($appRootRelativePath, FALSE);
-		$app = self::$app ?: self::$app = \MvcCore\Application::GetInstance();
 		$systemConfigClass = $app->GetConfigClass();
 		$configType = $configClass::TYPE_COMMON;
 		if ($appRootRelativePath === $systemConfigClass::GetConfigEnvironmentPath()) {
@@ -127,8 +128,7 @@ trait ReadWrite {
 	 * @return \MvcCore\Config|NULL
 	 */
 	public static function GetConfigVendor ($vendorAppRootRelativePath) {
-		/** @var \MvcCore\Config $config */
-		$app = self::$app ?: self::$app = \MvcCore\Application::GetInstance();
+		$app = self::$app ?: (self::$app = \MvcCore\Application::GetInstance()); // @phpstan-ignore-line
 		$configClass = $app->GetConfigClass();
 		$configFullPath = $configClass::GetConfigFullPath($vendorAppRootRelativePath, TRUE);
 		return $configClass::GetConfigByFullPath($configFullPath, $configClass::TYPE_VENDOR);
@@ -143,12 +143,13 @@ trait ReadWrite {
 	 */
 	public static function GetConfigByFullPath ($configFullPath, $configType = \MvcCore\IConfig::TYPE_COMMON) {
 		if (!array_key_exists($configFullPath, self::$configsCache)) {
-			$app = self::$app ?: self::$app = \MvcCore\Application::GetInstance();
+			$app = self::$app ?: (self::$app = \MvcCore\Application::GetInstance()); // @phpstan-ignore-line
 			$systemConfigClass = $app->GetConfigClass();
+			/** @var \MvcCore\Config|NULL $config */
 			$config = $systemConfigClass::LoadConfig(
 				$configFullPath, $systemConfigClass, $configType
 			);
-			if ($config) {
+			if ($config !== NULL) {
 				$environment = $app->GetEnvironment();
 				$doNotThrownError = func_num_args() > 2 ? func_get_arg(2) : FALSE;
 				if ($environment->IsDetected()) {
@@ -173,9 +174,9 @@ trait ReadWrite {
 	 */
 	public function Save () {
 		$rawContent = $this->Dump();
-		if ($rawContent === NULL)
+		if ($rawContent === NULL) // @phpstan-ignore-line
 			throw new \Exception('Configuration data was not possible to dump.');
-		$app = self::$app ?: self::$app = \MvcCore\Application::GetInstance();
+		$app = self::$app ?: (self::$app = \MvcCore\Application::GetInstance()); // @phpstan-ignore-line
 		$toolClass = $app->GetToolClass();
 		try {
 			$toolClass::AtomicWrite(
@@ -198,7 +199,7 @@ trait ReadWrite {
 	 * @param  string $configFullPath
 	 * @param  string $systemConfigClass
 	 * @param  int    $configType
-	 * @return \MvcCore\Config|bool
+	 * @return \MvcCore\Config|NULL
 	 */
 	public static function LoadConfig ($configFullPath, $systemConfigClass, $configType = \MvcCore\IConfig::TYPE_COMMON) {
 		/** @var \MvcCore\Config $config */
@@ -226,7 +227,7 @@ trait ReadWrite {
 	 * @return string
 	 */
 	public static function GetConfigFullPath ($configPath, $vendorConfig = FALSE) {
-		$app = self::$app ?: self::$app = \MvcCore\Application::GetInstance();
+		$app = self::$app ?: (self::$app = \MvcCore\Application::GetInstance()); // @phpstan-ignore-line
 		$configPath = str_replace('%appPath%', $app->GetAppDir(), $configPath);
 		if (mb_strpos($configPath, '~/') === 0) {
 			if ($vendorConfig) {

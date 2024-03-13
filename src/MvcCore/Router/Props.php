@@ -20,25 +20,25 @@ trait Props {
 
 	/**
 	 * Current `\MvcCore\Router` singleton instance storage.
-	 * @var \MvcCore\Router
+	 * @var \MvcCore\Router|NULL
 	 */
 	protected static $instance = NULL;
 
 	/**
 	 * Value from `\MvcCore\Application::GetInstance()->GetRouterClass();`.
-	 * @var string|NULL
+	 * @var class-string|NULL
 	 */
 	protected static $routerClass = NULL;
 
 	/**
 	 * Value from `\MvcCore\Application::GetInstance()->GetRouteClass();`.
-	 * @var string|NULL
+	 * @var class-string|NULL
 	 */
 	protected static $routeClass = NULL;
 
 	/**
 	 * Value from `\MvcCore\Application::GetInstance()->GetToolClass();`.
-	 * @var string|NULL
+	 * @var class-string|NULL
 	 */
 	protected static $toolClass = NULL;
 
@@ -60,7 +60,7 @@ trait Props {
 	/**
 	 * Global application route instances store to match request.
 	 * Keys are route(s) names, values are `\MvcCore\Route` instances.
-	 * @var \MvcCore\Route[]
+	 * @var array<string,\MvcCore\Route>
 	 */
 	protected $routes = [];
 
@@ -70,7 +70,7 @@ trait Props {
 	 * word in requested path. Values under every first path word is array.
 	 * Every array has keys as route(s) names and values as `\MvcCore\Route` 
 	 * instances.
-	 * @var array
+	 * @var array<string,array<string,\MvcCore\Route>>
 	 */
 	protected $routesGroups = [];
 
@@ -78,7 +78,7 @@ trait Props {
 	 * Global application route instances store to complete URL addresses.
 	 * Keys are route(s) names and `Controller:Action` combinations,
 	 * values are `\MvcCore\Route` instances.
-	 * @var \MvcCore\Route[]
+	 * @var array<string,\MvcCore\Route>
 	 */
 	protected $urlRoutes = [];
 
@@ -109,7 +109,7 @@ trait Props {
 	 * This route name record is not changed by any error rendering,
 	 * so in error pages, you could render 'self' links to desired page, but 
 	 * not to error page itself.
-	 * @var string
+	 * @var string|NULL
 	 */
 	protected $selfRouteName = NULL;
 
@@ -126,14 +126,14 @@ trait Props {
 	 * All request params - params parsed by route and query string params.
 	 * Be careful, it could contain XSS chars. Use always `htmlspecialchars()`.
 	 * Those params could contain additional user params from filter function.
-	 * @var array|NULL
+	 * @var array<string,mixed>|NULL
 	 */
 	protected $defaultParams = [];
 
 	/**
 	 * All request params - params parsed by route and query string params.
 	 * Be careful, it could contain XSS chars. Use always `htmlspecialchars()`.
-	 * @var array|NULL
+	 * @var array<string,mixed>|NULL
 	 */
 	protected $requestedParams = [];
 
@@ -237,7 +237,7 @@ trait Props {
 	 * Keys by `Url()` method first argument, when 
 	 * it was not possible to found any rewrite route
 	 * to build url.
-	 * @var array
+	 * @var array<string,bool>
 	 */
 	protected $noUrlRoutes = [];
 

@@ -15,6 +15,8 @@ namespace MvcCore\Route;
 
 /**
  * @mixin \MvcCore\Route
+ * @phpstan-type ReverseParams array<string,object{"name":string,"greedy":bool,"sectionIndex":int,"reverseStart":int,"reverseEnd":int,"matchStart":int,"matchEnd":int}>
+ * @phpstan-type SectionsInfo array<object{"fixed":bool,"start":int,"end":int,"length":int}>
  */
 trait InternalInits {
 
@@ -33,7 +35,7 @@ trait InternalInits {
 
 	/**
 	 * @inheritDoc
-	 * @return \string[]
+	 * @return array<string>
 	 */
 	public function __sleep () {
 		$toolsClass = \MvcCore\Application::GetInstance()->GetToolClass();
@@ -106,7 +108,8 @@ trait InternalInits {
 	 * @param  string $reverse A reverse string value, directly from `reverse`
 	 *                         property or from `pattern` property if `reverse`
 	 *                         property is empty.
-	 * @return \stdClass[][]   Two arrays with array with `\stdClass` objects.
+	 * @return array{0:SectionsInfo,1:SectionsInfo}
+	 * Two arrays with array with `\stdClass` objects.
 	 */
 	protected function initSectionsInfoForMatchAndReverse (& $match, & $reverse) {
 		$matchInfo = [];
@@ -195,12 +198,14 @@ trait InternalInits {
 		} else if ($this->pattern !== NULL) {
 			$reverse = $this->pattern;
 		} else/* if ($this->pattern === NULL)*/ {
-			if ($this->redirect !== NULL)
-				return $this->initFlagsByPatternOrReverse(
+			if ($this->redirect !== NULL) {
+				$this->initFlagsByPatternOrReverse(
 					$this->pattern !== NULL
 						? $this->pattern
 						: str_replace(['\\', '(?', ')?', '/?'], '', $this->match)
 				);
+				return;
+			}
 			$this->throwExceptionIfKeyPropertyIsMissing('reverse', 'pattern');
 		}
 
@@ -225,10 +230,12 @@ trait InternalInits {
 	 * or variable section defined with brackets `[]` info about it's type
 	 * (fixed or variable), about start position, end position and length. This
 	 * statistic is always used to build URL later.
-	 * @param  string        $pattern A reverse string value, directly from `reverse`
-	 *                                property or from `pattern` property if `reverse`
-	 *                                property is empty.
-	 * @return \stdClass[][]          An array with `\stdClass` objects.
+	 * @param  string $pattern
+	 * A reverse string value, directly from `reverse`
+	 * property or from `pattern` property if `reverse`
+	 * property is empty.
+	 * @return SectionsInfo
+	 * An array with `\stdClass` objects.
 	 */
 	protected function initSectionsInfo (& $pattern) {
 		$result = [];
@@ -277,14 +284,19 @@ trait InternalInits {
 	 * `reverse` properties together and also to complete `reverse` property
 	 * separately and only. Result array is always used as `reverseParams`
 	 * property to complete URL rewrite params inside result `reverse` string.
-	 * @param  string      $reverse             A reverse string with `<param>`s.
-	 * @param  \stdClass[] $reverseSectionsInfo Reverse sections statistics with
-	 *                                          fixed and variable sections.
-	 * @param  array       $constraints         Route constraints array.
-	 * @param  string|NULL $match               A match string, could be `NULL`.
-	 * @throws \InvalidArgumentException        Wrong route pattern format.
-	 * @return array       An array with keys as param names and values as
-	 *                     `\stdClass` objects with data about each reverse param.
+	 * @param  string               $reverse
+	 * A reverse string with `<param>`s.
+	 * @param  SectionsInfo         $reverseSectionsInfo
+	 * Reverse sections statistics with fixed and variable sections.
+	 * @param  array<string,string> $constraints
+	 * Route constraints array.
+	 * @param  string|NULL          $match
+	 * A match string, could be `NULL`.
+	 * @throws \InvalidArgumentException
+	 * Wrong route pattern format.
+	 * @return ReverseParams
+	 * An array with keys as param names and values as
+	 * `\stdClass` objects with data about each reverse param.
 	 */
 	protected function initReverseParams (& $reverse, & $reverseSectionsInfo, & $constraints, & $match = NULL) {
 		$result = [];
@@ -361,16 +373,21 @@ trait InternalInits {
 	 * is only one greedy param in whole pattern string and if it is the last
 	 * param between other params. Get also if given section index belongs to
 	 * the last section info in line.
-	 * @param  \stdClass[] $reverseSectionsInfo Whole sections info array ref.
-	 *                                          with `\stdClass` objects.
-	 * @param  array       $constraints         Route params constraints.
-	 * @param  string      $paramName           Route parsed params.
-	 * @param  int         $sectionIndex        Currently checked section index.
-	 * @param  bool        $greedyCaught        Boolean about if param is checked as greedy.
+	 * @param  \stdClass[]          $reverseSectionsInfo
+	 * Whole sections info array ref. with `\stdClass` objects.
+	 * @param  array<string,string> $constraints
+	 * Route params constraints.
+	 * @param  string               $paramName
+	 * Route parsed params.
+	 * @param  int                  $sectionIndex
+	 * Currently checked section index.
+	 * @param  bool                 $greedyCaught
+	 * Boolean about if param is checked as greedy.
 	 * @throws \InvalidArgumentException Wrong route pattern format.
-	 * @return \bool[]     Array with two boolean values. First is greedy flag
-	 *                     and second is about if section is last or not. The
-	 *                     second could be `NULL`
+	 * @return array{0:bool,1:bool}
+	 * Array with two boolean values. First is greedy flag
+	 * and second is about if section is last or not. The
+	 * second could be `NULL`
 	 */
 	protected function initReverseParamsGetGreedyInfo (& $reverseSectionsInfo, & $constraints, & $paramName, & $sectionIndex, & $greedyCaught) {
 		// complete greedy flag by star character inside param name
@@ -378,7 +395,7 @@ trait InternalInits {
 		$sectionIsLast = NULL;
 		// check greedy param specifics
 		if ($greedyFlag) {
-			if ($greedyFlag && $greedyCaught) 
+			if ($greedyFlag && $greedyCaught) // @phpstan-ignore-line
 				throw new \InvalidArgumentException(
 					"[".get_class($this)."] Route pattern definition can have only one greedy `<param_name*>` "
 					." with star (to include everything - all characters and slashes . `.*`) ({$this})."
@@ -392,7 +409,7 @@ trait InternalInits {
 				// check if param is really greedy or not
 				$constraintDefined = isset($constraints[$paramName]);
 				$constraint = $constraintDefined ? $constraints[$paramName] : NULL ;
-				$greedyReal = !$constraintDefined || ($constraintDefined && (
+				$greedyReal = !$constraintDefined || ($constraintDefined && ( // @phpstan-ignore-line
 					mb_strpos($constraint, '.*') !== FALSE || mb_strpos($constraint, '.+') !== FALSE
 				));
 				if ($greedyReal) 
@@ -457,16 +474,20 @@ trait InternalInits {
 	 * complete route `match` property from `pattern` property. The result
 	 * regular expression is always composed to match trailing slash or missing
 	 * trailing slash and any fixed and variable sections defined by `pattern`.
-	 * @param  string      $match             A pattern string with escaped all special regular
-	 *                                        expression special characters except `<>` chars.
-	 * @param  \stdClass[] $matchSectionsInfo Match sections info about fixed or variable
-	 *                                        section, param name, start, end and length.
-	 * @param  array       $reverseParams     An array with keys as param names and values as
-	 *                                        `\stdClass` objects with data about reverse params.
-	 * @param  array       $constraints       Route params regular expression constraints
-	 *                                        Defining which value each param could contain or not.
-	 *                                        If there is no constraint for param, there is used
-	 *                                        default constraint defined in route static property.
+	 * @param  string               $match
+	 * A pattern string with escaped all special regular
+	 * expression special characters except `<>` chars.
+	 * @param  SectionsInfo         $matchSectionsInfo
+	 * Match sections info about fixed or variable
+	 * section, param name, start, end and length.
+	 * @param  ReverseParams        $reverseParams
+	 * An array with keys as param names and values as
+	 * `\stdClass` objects with data about reverse params.
+	 * @param  array<string,string> $constraints
+	 * Route params regular expression constraints
+	 * Defining which value each param could contain or not.
+	 * If there is no constraint for param, there is used
+	 * default constraint defined in route static property.
 	 * @return string
 	 */
 	protected function initMatchComposeRegex (& $match, & $matchSectionsInfo, & $reverseParams, & $constraints) {
@@ -574,8 +595,8 @@ trait InternalInits {
 	 * parse `pattern` or `reverse`. Those properties are necessary to complete
 	 * correctly `match` property to route incoming request or to complete
 	 * correctly `reverse` property to build URL address.
-	 * @param  \string[] $propsNames,... Missing properties names.
-	 * @throws \LogicException           Route configuration property is missing.
+	 * @param  string $propsNames,... Missing properties names.
+	 * @throws \LogicException        Route configuration property is missing.
 	 * @return void
 	 */
 	protected function throwExceptionIfKeyPropertyIsMissing ($propsNames) {

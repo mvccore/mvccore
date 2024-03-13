@@ -22,13 +22,13 @@ trait Props {
 	 * List of exceptional two-segment top-level domain like
 	 * `'co.jp', 'co.uk', 'co.kr', 'co.nf' ...` to parse
 	 * domain string correctly.
-	 * @var array|array<string,int|bool>
+	 * @var array<string,int|bool>
 	 */
 	protected static $twoSegmentTlds = ['co.jp'=>1,'ac.uk'=>1,'co.uk'=>1,'co.kr'=>1,'co.nl'=>1,'in.ua'=>1,'co.nf'=>1,'ny.us'=>1,'co.us'=>1];
 
 	/**
 	 * List of default ports, not defined in server name by default.
-	 * @var array|array<string,int|bool>
+	 * @var array<string|int,int|bool>
 	 */
 	protected static $defaultPorts = ['80'=>1,'443'=>1];
 
@@ -123,7 +123,7 @@ trait Props {
 	/**
 	 * Parsed server name (domain without port) parts.
 	 * Example: `['any.content', 'example', 'co.uk'] | [NULL, NULL, 'localhost']`
-	 * @var \string[]|NULL
+	 * @var array<string>|NULL
 	 */
 	protected $domainParts		= NULL;
 
@@ -266,7 +266,7 @@ trait Props {
 
 	/**
 	 * Timestamp of the start of the request, with microsecond precision.
-	 * @var float
+	 * @var float|NULL
 	 */
 	protected $microtime		= NULL;
 
@@ -275,7 +275,7 @@ trait Props {
 	 * `getallheaders()` or from `$_SERVER['HTTP_...']`.
 	 * Headers are `key => value` array, headers keys are
 	 * in standard format like: `"Content-Type" | "Content-Length" | "X-Requested-With" ...`.
-	 * @var array|NULL
+	 * @var array<string,mixed>|NULL
 	 */
 	protected $headers			= NULL;
 
@@ -302,13 +302,13 @@ trait Props {
 	 *   \MvcCore\Request::GetParam("username", "a-zA-Z0-9_");
 	 *   // returns `OR` string without danger chars.
 	 * ````
-	 * @var array|NULL
+	 * @var array<string,mixed>|NULL
 	 */
 	protected $params			= NULL;
 
 	/**
 	 * Array with colections defining params collection sources.
-	 * @var \array[]
+	 * @var array<int,array<string,bool>>
 	 */
 	protected $paramsSources	= [];
 
@@ -322,43 +322,43 @@ trait Props {
 
 	/**
 	 * Cleaned input param `"controller"`, containing only chars: `"a-zA-Z0-9\-_/"`.
-	 * @var string
+	 * @var string|NULL
 	 */
 	protected $controllerName	= NULL;
 
 	/**
 	 * Cleaned input param `"action"`, containing only chars: `"a-zA-Z0-9\-_/"`.
-	 * @var string
+	 * @var string|NULL
 	 */
 	protected $actionName		= NULL;
 
 	/**
 	 * Content of referenced `$_SERVER` global variable.
-	 * @var array
+	 * @var array<string,mixed>
 	 */
 	protected $globalServer	= [];
 
 	/**
 	 * Content of referenced `$_GET` global variable.
-	 * @var array
+	 * @var array<string,mixed>
 	 */
 	protected $globalGet		= [];
 
 	/**
 	 * Content of referenced `$_POST` global variable.
-	 * @var array
+	 * @var array<int|string,mixed>
 	 */
 	protected $globalPost		= [];
 
 	/**
 	 * Content of referenced `$_COOKIE` global variable.
-	 * @var array
+	 * @var array<string,string>
 	 */
 	protected $globalCookies	= [];
 
 	/**
 	 * Content of referenced `$_FILES` global variable.
-	 * @var array
+	 * @var array<string,array<string,mixed>>
 	 */
 	protected $globalFiles		= [];
 }

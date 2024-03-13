@@ -38,6 +38,9 @@ namespace MvcCore;
  *
  * MvcCore view properties and helpers:
  * 
+ * @phpstan-type ViewHelper \MvcCore\Ext\Views\Helpers\AbstractHelper|\MvcCore\Ext\Views\Helpers\IHelper|\Closure|mixed
+ * @phpstan-type ViewHelperCacheRecord array{0:Helper,1:bool,3:bool}
+ * 
  * @property-read \MvcCore\Controller $controller Currently dispatched controller instance.
  * @method \MvcCore\Ext\Views\Helpers\CssHelper Css(string $groupName = self::GROUP_NAME_DEFAULT) Get css helper instance by group name. To use this method, you need to install extension `mvccore/ext-view-helper-assets`.
  * @method \MvcCore\Ext\Views\Helpers\JsHelper Js(string $groupName = self::GROUP_NAME_DEFAULT) Get js helper instance by group name. To use this method, you need to install extension `mvccore/ext-view-helper-assets`.
@@ -265,7 +268,7 @@ interface IView extends \MvcCore\View\IConstants {
 	 * Set default template encoding, used mostly as default 
 	 * encoding param in escaping methods, initialized
 	 * from controller response.
-	 * @param  string $controller
+	 * @param  string $encoding
 	 * @return \MvcCore\View
 	 */
 	public function SetEncoding ($encoding);
@@ -348,22 +351,26 @@ interface IView extends \MvcCore\View\IConstants {
 	/**
 	 * Render action template script or any include script and return it's result as reference.
 	 * Do not use this method in layout sub-templates, use method `RenderLayout()` instead.
-	 * @param  string $relativePath Relative path from current view script.
-	 * @param  array  $variables    Associative array with variables to pass it 
-	 *                              into view script inside view store or as local variables.
+	 * @param  string              $relativePath
+	 * Relative path from current view script.
+	 * @param  array<string,mixed> $variables
+	 * Associative array with variables to pass it 
+	 * into view script inside view store or as local variables.
 	 * @return string
 	 */
-	public function RenderScript ($relativePath, $variables = []);
+	public function RenderScript ($relativePath, array $variables = []);
 
 	/**
 	 * Render layout template script or any include script and return it's result as reference.
 	 * Do not use this method in action sub-templates, use method `RenderScript()` instead.
-	 * @param  string $relativePath Relative path from current view script.
-	 * @param  array  $variables    Associative array with variables to pass it 
-	 *                              into view script inside view store or as local variables.
+	 * @param  string              $relativePath
+	 * Relative path from current view script.
+	 * @param  array<string,mixed> $variables
+	 * Associative array with variables to pass it 
+	 * into view script inside view store or as local variables.
 	 * @return string
 	 */
-	public function RenderLayout ($relativePath, $variables = []);
+	public function RenderLayout ($relativePath, array $variables = []);
 
 	/**
 	 * This method is INTERNAL, always called from `\MvcCore\Controller::Render();`.
@@ -371,7 +378,7 @@ interface IView extends \MvcCore\View\IConstants {
 	 * Method renders whole configured layout template and return it's result
 	 * as string reference with inner rendered action template content.
 	 * @internal
-	 * @param  string      $relativePath
+	 * @param  string|NULL $relativePath
 	 * @param  string|NULL $content
 	 * @return string
 	 */
@@ -401,7 +408,7 @@ interface IView extends \MvcCore\View\IConstants {
 	 * context, any `$this` keyword will be used as current view context.
 	 * Returned result is content from output buffer as string reference.
 	 * Evaluated code is wrapped into `try/catch` automatically.
-	 * @param  string $content
+	 * @param  string|NULL $content
 	 * @return string
 	 */
 	public function Evaluate ($content);
@@ -420,8 +427,10 @@ interface IView extends \MvcCore\View\IConstants {
 	 *   and when first param is key in routes configuration array).
 	 * - For all other cases is URL form like: `"index.php?controller=ctrlName&amp;action=actionName"`
 	 *   (when first param is not founded in routes configuration array).
-	 * @param  string $controllerActionOrRouteName Should be `"Controller:Action"` combination or just any route name as custom specific string.
-	 * @param  array  $params                      Optional, array with params, key is param name, value is param value.
+	 * @param  string              $controllerActionOrRouteName
+	 * Should be `"Controller:Action"` combination or just any route name as custom specific string.
+	 * @param  array<string,mixed> $params
+	 * Optional, array with params, key is param name, value is param value.
 	 * @return string
 	 */
 	public function Url ($controllerActionOrRouteName = 'Index:Index', array $params = []);
@@ -530,12 +539,12 @@ interface IView extends \MvcCore\View\IConstants {
 	/**
 	 * Set view helper for current template or for all templates globally by default.
 	 * If view helper already exist in global helpers store - it's overwritten.
-	 * @param  string                                                                                      $helperNameCamelCase
-	 *                                                                                                     View helper method name in camel case.
-	 * @param  \MvcCore\Ext\Views\Helpers\AbstractHelper|\MvcCore\Ext\Views\Helpers\IHelper|\Closure|mixed $instance
-	 *                                                                                                     View helper instance.
-	 * @param  bool                                                                                        $forAllTemplates
-	 *                                                                                                     Register this helper instance for all rendered views in the future.
+	 * @param  string     $helperNameCamelCase
+	 * View helper method name in camel case.
+	 * @param  ViewHelper $instance
+	 * View helper instance.
+	 * @param  bool       $forAllTemplates
+	 * Register this helper instance for all rendered views in the future.
 	 * @return \MvcCore\View
 	 */
 	public function SetHelper ($helperNameCamelCase, $instance, $forAllTemplates = TRUE);
@@ -544,7 +553,7 @@ interface IView extends \MvcCore\View\IConstants {
 	 * Set any value into view context internal store.
 	 * @param  string $name
 	 * @param  mixed  $value
-	 * @return mixed
+	 * @return void
 	 */
 	public function __set ($name, $value);
 

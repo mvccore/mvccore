@@ -25,6 +25,8 @@ namespace MvcCore;
  *   - Calling pre/post handlers.
  *   - Controller/action dispatching.
  *   - Error handling and error responses.
+ * @phpstan-type CustomHandlerCallable callable(\MvcCore\IRequest, \MvcCore\IResponse): (false|void)
+ * @phpstan-type CustomHandlerRecord array{0: bool, 1: CustomHandlerCallable}
  */
 interface IApplication extends \MvcCore\Application\IConstants {
 
@@ -215,7 +217,7 @@ interface IApplication extends \MvcCore\Application\IConstants {
 	/**
 	 * Get CLI scripts directory name as `"Cli"` by default.
 	 * It should by reconfigured to custom value in the very application beginning.
-	 * @return \MvcCore\Application
+	 * @return string
 	 */
 	public function GetCliDir ();
 
@@ -239,7 +241,7 @@ interface IApplication extends \MvcCore\Application\IConstants {
 	 * Returns array with:
 	 * - `0 => "index"` - Default controller name, from protected `\MvcCore\Application::$defaultControllerName`.
 	 * - `1 => "index"` - Default action name, from protected `\MvcCore\Application::$defaultControllerDefaultActionName`.
-	 * @return \string[]
+	 * @return array<string>
 	 */
 	public function GetDefaultControllerAndActionNames ();
 
@@ -306,10 +308,10 @@ interface IApplication extends \MvcCore\Application\IConstants {
 	 * Set prefered PHP classes and properties anontation preference.
 	 * PHP8+ attributes anotation is default. Set value to `FALSE`
 	 * to prefer PhpDocs tags anotation instead.
-	 * @param  bool $attributesAnotation 
+	 * @param  bool $attributesAnotations
 	 * @return \MvcCore\Application
 	 */
-	public function SetAttributesAnotations ($attributesAnotation = TRUE);
+	public function SetAttributesAnotations ($attributesAnotations = TRUE);
 
 	/**
 	 * Set application environment class implementing `\MvcCore\IEnvironment`.
@@ -511,8 +513,8 @@ interface IApplication extends \MvcCore\Application\IConstants {
 	 *       $request->customVar = 'custom_value';
 	 *   });
 	 * ````
-	 * @param  callable $handler
-	 * @param  int|NULL $priorityIndex
+	 * @param  CustomHandlerCallable $handler
+	 * @param  int|NULL              $priorityIndex
 	 * @return \MvcCore\Application
 	 */
 	public function AddPreRouteHandler (callable $handler, $priorityIndex = NULL);
@@ -534,8 +536,8 @@ interface IApplication extends \MvcCore\Application\IConstants {
 	 *       $request->customVar = 'custom_value';
 	 *   });
 	 * ````
-	 * @param  callable $handler
-	 * @param  int|NULL $priorityIndex
+	 * @param  CustomHandlerCallable $handler
+	 * @param  int|NULL              $priorityIndex
 	 * @return \MvcCore\Application
 	 */
 	public function AddPostRouteHandler (callable $handler, $priorityIndex = NULL);
@@ -557,8 +559,8 @@ interface IApplication extends \MvcCore\Application\IConstants {
 	 *       $request->customVar = 'custom_value';
 	 *   });
 	 * ````
-	 * @param  callable $handler
-	 * @param  int|NULL $priorityIndex
+	 * @param  CustomHandlerCallable $handler
+	 * @param  int|NULL              $priorityIndex
 	 * @return \MvcCore\Application
 	 */
 	public function AddPreDispatchHandler (callable $handler, $priorityIndex = NULL);
@@ -579,8 +581,8 @@ interface IApplication extends \MvcCore\Application\IConstants {
 	 *       $request->customVar = 'custom_value';
 	 *   });
 	 * ````
-	 * @param  callable $handler
-	 * @param  int|NULL $priorityIndex
+	 * @param  CustomHandlerCallable $handler
+	 * @param  int|NULL              $priorityIndex
 	 * @return \MvcCore\Application
 	 */
 	public function AddPreSentHeadersHandler (callable $handler, $priorityIndex = NULL);
@@ -600,8 +602,8 @@ interface IApplication extends \MvcCore\Application\IConstants {
 	 *       $request->customVar = 'custom_value';
 	 *   });
 	 * ````
-	 * @param  callable $handler
-	 * @param  int|NULL $priorityIndex
+	 * @param  CustomHandlerCallable $handler
+	 * @param  int|NULL              $priorityIndex
 	 * @return \MvcCore\Application
 	 */
 	public function AddPreSentBodyHandler (callable $handler, $priorityIndex = NULL);
@@ -622,8 +624,8 @@ interface IApplication extends \MvcCore\Application\IConstants {
 	 *       $request->customVar = 'custom_value';
 	 *   });
 	 * ````
-	 * @param  callable $handler
-	 * @param  int|NULL $priorityIndex
+	 * @param  CustomHandlerCallable $handler
+	 * @param  int|NULL              $priorityIndex
 	 * @return \MvcCore\Application
 	 */
 	public function AddPostDispatchHandler (callable $handler, $priorityIndex = NULL);
@@ -645,8 +647,8 @@ interface IApplication extends \MvcCore\Application\IConstants {
 	 *       // and run background process now:
 	 *   });
 	 * ````
-	 * @param callable $handler
-	 * @param int|NULL $priorityIndex
+	 * @param  CustomHandlerCallable $handler
+	 * @param  int|NULL              $priorityIndex
 	 * @return \MvcCore\Application
 	 */
 	public function AddPostTerminateHandler (callable $handler, $priorityIndex = NULL);
@@ -666,8 +668,8 @@ interface IApplication extends \MvcCore\Application\IConstants {
 	 *       // redirect user to homepage or sign out authenticated user.
 	 *   });
 	 * ````
-	 * @param callable $handler
-	 * @param int|NULL $priorityIndex
+	 * @param  CustomHandlerCallable $handler
+	 * @param  int|NULL              $priorityIndex
 	 * @return \MvcCore\Application
 	 */
 	public function AddCsrfErrorHandler (callable $handler, $priorityIndex = NULL);
@@ -712,9 +714,9 @@ interface IApplication extends \MvcCore\Application\IConstants {
 	public function DispatchInit ();
 
 	/**
-	 * Return `TRUE` for successfully executed request from start to end.
-	 * Return `FALSE` for redirected or stopped request by any other way.
-	 * Return `NULL` if request is already terminated.
+	 * Return `NULL` for successfully executed request from start to end.
+	 * Return `TRUE` for redirected or stopped request by any other way.
+	 * Return `FALSE` if request is already terminated.
 	 * @throws \Throwable
 	 * @return bool|NULL
 	 */
@@ -736,7 +738,7 @@ interface IApplication extends \MvcCore\Application\IConstants {
 	 * handlers queue by queue index. Call every handler in queue
 	 * in try catch mode to catch any exceptions to call:
 	 * `\MvcCore\Application::DispatchException($e);`.
-	 * @param  \callable[] $handlers
+	 * @param  CustomHandlerRecord[] $handlers
 	 * @throws \Throwable
 	 * @return bool
 	 */
@@ -795,8 +797,10 @@ interface IApplication extends \MvcCore\Application\IConstants {
 	 *   and when first param is key in routes configuration array).
 	 * - For all other cases is URL form like: `"index.php?controller=ctrlName&amp;action=actionName"`
 	 *   (when first param is not founded in routes configuration array).
-	 * @param  string $controllerActionOrRouteName Should be `"Controller:Action"` combination or just any route name as custom specific string.
-	 * @param  array  $params                      Optional, array with params, key is param name, value is param value.
+	 * @param  string               $controllerActionOrRouteName
+	 * Should be `"Controller:Action"` combination or just any route name as custom specific string.
+	 * @param  array<string, mixed> $params
+	 * Optional, array with params, key is param name, value is param value.
 	 * @return string
 	 */
 	public function Url ($controllerActionOrRouteName = 'Index:Index', $params = []);

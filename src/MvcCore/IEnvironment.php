@@ -19,12 +19,13 @@ namespace MvcCore;
  *   - comparing server and client IP, by value or regular expression.
  *   - comparing server hostname or IP, by value or regular expression.
  *   - checking system environment variable existence, value or by regular exp.
+ * @phpstan-type ConfigEnvSection string|array{"clients":mixed,"paths":mixed,"servers":mixed,"variables":mixed}|object{"clients":mixed,"paths":mixed,"servers":mixed,"variables":mixed}
  */
 interface IEnvironment extends \MvcCore\Environment\IConstants {
 
 	/**
 	 * Get all available nevironment names.
-	 * @return \string[]
+	 * @return array<string>
 	 */
 	public static function GetAllNames ();
 
@@ -101,7 +102,7 @@ interface IEnvironment extends \MvcCore\Environment\IConstants {
 
 	/**
 	 * Second environment value setup - by system config data environment record.
-	 * @param  array $environmentsSectionData System config environment section data part.
+	 * @param  array<string,ConfigEnvSection> $environmentsSectionData System config environment section data part.
 	 * @return string Detected environment string.
 	 */
 	public static function DetectBySystemConfig (array $environmentsSectionData = []);

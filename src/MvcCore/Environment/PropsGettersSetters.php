@@ -42,14 +42,14 @@ trait PropsGettersSetters {
 
 	/**
 	 * Boolean values for all detected environments.
-	 * @var array
+	 * @var array<string,bool>
 	 */
 	protected $values = [];
 
 
 	/**
 	 * @inheritDoc
-	 * @return \string[]
+	 * @return array<string>
 	 */
 	public static function GetAllNames () {
 		return [
@@ -141,7 +141,7 @@ trait PropsGettersSetters {
 	public function GetName () {
 		if ($this->name === NULL) {
 			if (static::$detectionBySystemConfig) {
-				$app = self::$app ?: (self::$app = \MvcCore\Application::GetInstance());
+				$app = self::$app ?: (self::$app = \MvcCore\Application::GetInstance()); /** @phpstan-ignore-line */
 				$configClass = $app->GetConfigClass();
 				$envConfig = $configClass::GetConfigEnvironment(TRUE);
 				if ($envConfig) {

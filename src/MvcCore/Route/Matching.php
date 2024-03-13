@@ -23,7 +23,7 @@ trait Matching {
 	 * @param  \MvcCore\Request $request The request object instance.
 	 * @throws \LogicException           Route configuration property is missing.
 	 * @throws \InvalidArgumentException Wrong route pattern format.
-	 * @return array                     Matched and params array, keys are matched
+	 * @return array<string,mixed>       Matched and params array, keys are matched
 	 *                                   params or controller and action params.
 	 */
 	public function Matches (\MvcCore\IRequest $request) {
@@ -88,7 +88,7 @@ trait Matching {
 	 * after pattern if necessary.
 	 * @param  string $pattern 
 	 * @param  string $subject 
-	 * @return array
+	 * @return array<int|string,mixed>
 	 */
 	protected function match ($pattern, & $subject) {
 		// convert pattern to UTF-8 with UTF-8 regexp flag
@@ -179,8 +179,8 @@ trait Matching {
 				. '.' . static::PLACEHOLDER_SLD
 				. '.' . $request->GetTopLevelDomain();
 		} else if (
-			($this->flags & static::FLAG_HOST_TLD) != 0 &&
-			($this->flags & static::FLAG_HOST_SLD) != 0
+			($this->flags & static::FLAG_HOST_TLD) != 0 &&	// @phpstan-ignore-line
+			($this->flags & static::FLAG_HOST_SLD) != 0		// @phpstan-ignore-line
 		) {
 			$hostPart = $request->GetThirdLevelDomain() 
 				. '.' . static::PLACEHOLDER_SLD
@@ -196,9 +196,9 @@ trait Matching {
 	 * array first, converted into dashed case. If any rewrite param defines 
 	 * `controller` or `action` again, those values are overwritten in result 
 	 * array by values from regular expression `$matches` array.
-	 * @param  array $matchedValues 
-	 * @param  array $defaults 
-	 * @return array
+	 * @param  array<int|string,mixed> $matchedValues 
+	 * @param  array<string,mixed>     $defaults 
+	 * @return array<string,mixed>
 	 */
 	protected function matchesParseRewriteParams (& $matchedValues, & $defaults) {
 		/** @var \MvcCore\Tool $toolClass */

@@ -20,19 +20,17 @@ trait MetaData {
 	
 	/**
 	 * @inheritDoc
-	 * @param  int    $propsFlags
-	 * @param  \int[] $additionalMaps Compatible format for extension `mvccore/ext-model-db`.
-	 * @return array
+	 * @param  int        $propsFlags
+	 * @param  array<int> $additionalMaps Compatible format for extension `mvccore/ext-model-db`.
+	 * @return array<string,array{0:bool,1:bool,2:array<string>}>
 	 */
 	public static function GetMetaData ($propsFlags = 0, $additionalMaps = []) {
-		/** @var \MvcCore\Model $this */
-
 		/**
 		 * This is static hidden property, so it has different values 
 		 * for each static call. Keys in this array are integer flags, 
 		 * values are arrays with metadata. Metadata array has key 
 		 * by properties names.
-		 * @var array
+		 * @var array<int,array<string,array{0:bool,1:bool,2:array<string>}>>
 		 */
 		static $__metaData = [];
 
@@ -63,7 +61,7 @@ trait MetaData {
 	 * @param  int    $accessModFlags 
 	 * @param  bool   $inclInherit 
 	 * @throws \InvalidArgumentException 
-	 * @return array
+	 * @return array<string,array{0:bool,1:bool,2:array<string>}>
 	 */
 	protected static function parseMetaData ($classFullName, $accessModFlags, $inclInherit) {
 		$metaDataItem = [];
@@ -90,23 +88,23 @@ trait MetaData {
 	 * - `0`	`boolean`	`TRUE` for private property.
 	 * - `1'	`boolean`	`TRUE` to allow `NULL` values.
 	 * - `2`	`string[]`	Property types from code or from doc comments or empty array.
-	 * @param  \ReflectionProperty $prop 
-	 * @param  array               $params [bool $phpWithTypes, bool $phpWithUnionTypes]
-	 * @return array
+	 * @param  \ReflectionProperty  $prop 
+	 * @param  array{0:bool,1:bool} $params [bool $phpWithTypes, bool $phpWithUnionTypes]
+	 * @return array{0:bool,1:bool,2:array<string>}
 	 */
 	protected static function parseMetaDataProperty (\ReflectionProperty $prop, $params) {
 		list ($phpWithTypes, $phpWithUnionTypes) = $params;
 		$types = [];
 		$allowNull = FALSE;
 		if ($phpWithTypes && $prop->hasType()) {
-			/** @var $reflType \ReflectionUnionType|\ReflectionNamedType */
+			/** @var \ReflectionUnionType|\ReflectionNamedType $refType */
 			$refType = $prop->getType();
 			if ($refType !== NULL) {
 				if ($phpWithUnionTypes && $refType instanceof \ReflectionUnionType) {
 					$refTypes = $refType->getTypes();
-					/** @var \ReflectionNamedType $refTypesItem */
 					$strIndex = NULL;
 					foreach ($refTypes as $index => $refTypesItem) {
+						/** @var \ReflectionNamedType $refTypesItem */
 						$typeName = $refTypesItem->getName();
 						if ($strIndex === NULL && $typeName === 'string')
 							$strIndex = $index;
@@ -147,15 +145,15 @@ trait MetaData {
 		return [
 			$prop->isPrivate(),	// boolean
 			$allowNull,			// boolean
-			$types,				// \string[]
+			$types,				// array<string>
 		];
 	}
 	
 	/**
 	 * Complete meta data cache key flag, reflection properties getter flags
 	 * and boolean about to include inherit properties or not.
-	 * @param  int   $propsFlags 
-	 * @return array [int, int, bool]
+	 * @param  int $propsFlags 
+	 * @return array{0:int,1:int,2:bool}
 	 */
 	protected static function getMetaDataFlags ($propsFlags) {
 		$cacheFlags = 0;

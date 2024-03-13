@@ -32,6 +32,6 @@ class AutoInit {
 	 * @param string|NULL $factoryMethodName
 	 * @param int|NULL    $initOrder
 	 */
-	public function __construct ($factoryMethodName = NULL, $initOrder = NULL) {
+	public function __construct ($factoryMethodName = NULL, $initOrder = NULL) { // @phpstan-ignore-line
 	}
 }

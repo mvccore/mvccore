@@ -48,6 +48,7 @@ class Application implements \MvcCore\IApplication {
 	 * @return \MvcCore\Application
 	 */
 	public static function GetInstance () {
+		// @phpstan-ignore-next-line
 		if (self::$instance === NULL) self::$instance = new static();
 		return self::$instance;
 	}

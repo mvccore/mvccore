@@ -25,14 +25,16 @@ namespace MvcCore;
  * - Uploaded files by wrapped referenced `$_FILES` global array.
  * - Primitive values cleaning or array recursive cleaning by called
  *   developer rules from params array, headers array and cookies array.
+ * @phpstan-type CollectionItem string|int|float|bool|NULL|array<string|int|float|bool|NULL>|mixed
+ * @phpstan-type CollectionFilter string|array<string,string>|bool
  */
 interface IRequest extends \MvcCore\Request\IConstants {
 
 	/**
 	 * Parse list of comma separated language tags and sort it by the
 	 * quality value from `$this->globalServer['HTTP_ACCEPT_LANGUAGE']`.
-	 * @param  \string[] $languagesList
-	 * @return array
+	 * @param  string $languagesList
+	 * @return array<int,array<array{0:string,1:?string}>>
 	 */
 	public static function ParseHttpAcceptLang ($languagesList);
 
@@ -43,7 +45,8 @@ interface IRequest extends \MvcCore\Request\IConstants {
 	 * Example:
 	 * `\MvcCore\Request::SetTwoSegmentTlds('co.uk', 'co.jp');`
 	 * `\MvcCore\Request::SetTwoSegmentTlds(['co.uk', 'co.jp']);`
-	 * @param  \string[] $twoSegmentTlds,... List of two-segment top-level domains without leading dot.
+	 * @param  array<string> $twoSegmentTlds,...
+	 * List of two-segment top-level domains without leading dot.
 	 * @return void
 	 */
 	public static function SetTwoSegmentTlds ($twoSegmentTlds);
@@ -55,7 +58,8 @@ interface IRequest extends \MvcCore\Request\IConstants {
 	 * Example:
 	 * `\MvcCore\Request::AddTwoSegmentTlds('co.uk', 'co.jp');`
 	 * `\MvcCore\Request::AddTwoSegmentTlds(['co.uk', 'co.jp']);`
-	 * @param  \string[] $twoSegmentTlds,... List of two-segment top-level domains without leading dot.
+	 * @param  array<string> $twoSegmentTlds,...
+	 * List of two-segment top-level domains without leading dot.
 	 * @return void
 	 */
 	public static function AddTwoSegmentTlds ($twoSegmentTlds);
@@ -65,7 +69,8 @@ interface IRequest extends \MvcCore\Request\IConstants {
 	 * Example:
 	 * `\MvcCore\Request::SetDefaultPorts(80, '443');`
 	 * `\MvcCore\Request::SetDefaultPorts(['80', 443]);`
-	 * @param  \string[]|\int[] $defaultPorts,... List of default ports, not defined in server name by default.
+	 * @param  array<string>|array<int> $defaultPorts,...
+	 * List of default ports, not defined in server name by default.
 	 * @return void
 	 */
 	public static function SetDefaultPorts ($defaultPorts);
@@ -75,7 +80,8 @@ interface IRequest extends \MvcCore\Request\IConstants {
 	 * Example:
 	 * `\MvcCore\Request::SetDefaultPorts(80, '443');`
 	 * `\MvcCore\Request::SetDefaultPorts(['80', 443]);`
-	 * @param  \string[]|\int[] $defaultPorts,... List of default ports, not defined in server name by default.
+	 * @param  array<string>|array<int> $defaultPorts,...
+	 * List of default ports, not defined in server name by default.
 	 * @return void
 	 */
 	public static function AddDefaultPorts ($defaultPorts);
@@ -87,11 +93,12 @@ interface IRequest extends \MvcCore\Request\IConstants {
 	 * different request object then currently called real request object.
 	 * For example to create fake request object for testing purposes
 	 * or for non-real request rendering into request output cache.
-	 * @param  array $server
-	 * @param  array $get
-	 * @param  array $post
-	 * @param  array $cookie
-	 * @param  array $files
+	 * @param  array<string,mixed>               $server
+	 * @param  array<string,mixed>               $get
+	 * @param  array<int|string,mixed>           $post
+	 * @param  array<string,string>              $cookie
+	 * @param  array<string,array<string,mixed>> $files
+	 * @param  string|NULL                       $inputStream
 	 * @return \MvcCore\Request
 	 */
 	public static function CreateInstance (
@@ -99,17 +106,19 @@ interface IRequest extends \MvcCore\Request\IConstants {
 		array & $get = [],
 		array & $post = [],
 		array & $cookie = [],
-		array & $files = []
+		array & $files = [],
+		$inputStream = NULL
 	);
 
 
 	/**
-	 * Get one of the global data collections stored as protected properties inside request object.
+	 * Get one of the global data collections stored 
+	 * as protected properties inside request object.
 	 * Example:
 	 *  // to get global `$_GET` with raw values:
 	 *  `$globalGet = $request->GetGlobalCollection('get');`
 	 * @param  string $type
-	 * @return array
+	 * @return array<int|string,mixed>
 	 */
 	public function & GetGlobalCollection ($type);
 
@@ -117,7 +126,7 @@ interface IRequest extends \MvcCore\Request\IConstants {
 	 * Set directly all raw http headers without any conversion at once.
 	 * Header name(s) as array keys should be in standard format like:
 	 * `"Content-Type" | "Content-Length" | "X-Requested-With" ...`.
-	 * @param  array $headers
+	 * @param  array<string,mixed> $headers
 	 * @return \MvcCore\Request
 	 */
 	public function SetHeaders (array & $headers = []);
@@ -127,11 +136,15 @@ interface IRequest extends \MvcCore\Request\IConstants {
 	 * If headers are not initialized, initialize headers by
 	 * `getallheaders()` or from `$_SERVER['HTTP_...']`.
 	 * Headers are returned as `key => value` array, headers keys are
-	 * in standard format like: `"Content-Type" | "Content-Length" | "X-Requested-With" ...`.
-	 * @param  string|array|bool $pregReplaceAllowedChars If String - list of regular expression characters to only keep, if array - `preg_replace()` pattern and reverse, if `FALSE`, raw value is returned.
-	 * @return array
+	 * in standard format like: 
+	 * `"Content-Type" | "Content-Length" | "X-Requested-With" ...`.
+	 * @param  CollectionFilter $pregReplaceAllowedChars
+	 * If String - list of regular expression characters to only keep, 
+	 * if array - `preg_replace()` pattern and reverse, if `FALSE`, 
+	 * raw value is returned.
+	 * @return array<string,mixed>
 	 */
-	public function & GetHeaders ($pregReplaceAllowedChars = ['#[\<\>\'"]#', '']);
+	public function GetHeaders ($pregReplaceAllowedChars = ['#[\<\>\'"]#' => '']);
 
 	/**
 	 * Set directly raw http header value without any conversion.
@@ -148,12 +161,21 @@ interface IRequest extends \MvcCore\Request\IConstants {
 	 * defined in second argument (by `preg_replace()`). Place into second argument
 	 * only char groups you want to keep. Header has to be in format like:
 	 * `"Content-Type" | "Content-Length" | "X-Requested-With" ...`.
-	 * @param  string            $name                    Http header string name.
-	 * @param  string|array|bool $pregReplaceAllowedChars If String - list of regular expression characters to only keep, if array - `preg_replace()` pattern and reverse, if `FALSE`, raw value is returned.
-	 * @param  mixed             $ifNullValue             Default value returned if given param name is null.
-	 * @param  string            $targetType              Target type to retype param value or default if-null value. If param is an array, every param item will be retyped into given target type.
-	 * @throws \InvalidArgumentException                 `$name` must be a `$targetType`, not an `array`.
-	 * @return string|\string[]|int|\int[]|bool|\bool[]|array|mixed
+	 * @param  string           $name
+	 * Http header string name.
+	 * @param  CollectionFilter $pregReplaceAllowedChars
+	 * If String - list of regular expression characters to only keep, 
+	 * if array - `preg_replace()` pattern and reverse, if `FALSE`, 
+	 * raw value is returned.
+	 * @param  CollectionItem   $ifNullValue
+	 * Default value returned if given param name is null.
+	 * @param  string           $targetType
+	 * Target type to retype param value or default if-null value. 
+	 * If param is an array, every param item will be retyped 
+	 * into given target type.
+	 * @throws \InvalidArgumentException
+	 * `$name` must be a `$targetType`, not an `array`.
+	 * @return CollectionItem
 	 */
 	public function GetHeader (
 		$name = '',
@@ -172,12 +194,12 @@ interface IRequest extends \MvcCore\Request\IConstants {
 
 	/**
 	 * Set directly all raw parameters without any conversion at once.
-	 * @param  array $params
-	 *               Keys are param names, values are param values.
-	 * @param  int   $sourceType
-	 *               Param source collection flag(s). If param has defined 
-	 *               source type flag already, this given flag is used 
-	 *               to overwrite already defined flag.
+	 * @param  array<string,mixed> $params
+	 * Keys are param names, values are param values.
+	 * @param  int                 $sourceType
+	 * Param source collection flag(s). If param has defined 
+	 * source type flag already, this given flag is used 
+	 * to overwrite already defined flag.
 	 * @return \MvcCore\Request
 	 */
 	public function SetParams (
@@ -187,27 +209,37 @@ interface IRequest extends \MvcCore\Request\IConstants {
 
 	/**
 	 * Get directly all raw parameters at once (with/without conversion).
-	 * If any defined char groups in `$pregReplaceAllowedChars`, there will be returned
-	 * all params filtered by given rule in `preg_replace()`.
-	 * @param  string|array|bool $pregReplaceAllowedChars If String - list of regular expression characters to only keep, if array - `preg_replace()` pattern and reverse, if `FALSE`, raw value is returned.
-	 * @param  array             $onlyKeys                Array with keys to get only. If empty (by default), all possible params are returned.
-	 * @param  int               $sourceType              Param source collection flag(s). If defined, there are returned only params from given collection types.
-	 * @return array
+	 * If any defined char groups in `$pregReplaceAllowedChars`, 
+	 * there will be returned all params filtered by given rule 
+	 * in `preg_replace()`.
+	 * @param  CollectionFilter $pregReplaceAllowedChars
+	 * If String - list of regular expression characters to only keep, 
+	 * if array - `preg_replace()` pattern and reverse, if `FALSE`, 
+	 * raw value is returned.
+	 * @param  array<string>    $onlyKeys
+	 * Array with keys to get only. If empty (by default), 
+	 * all possible params are returned.
+	 * @param  int              $sourceType
+	 * Param source collection flag(s). If defined, there 
+	 * are returned only params from given collection types.
+	 * @return array<string,mixed>
 	 */
-	public function & GetParams (
-		$pregReplaceAllowedChars = ['#[\<\>\'"]#', ''], 
+	public function GetParams (
+		$pregReplaceAllowedChars = ['#[\<\>\'"]#' => ''], 
 		$onlyKeys = [], 
 		$sourceType = \MvcCore\IRequest::PARAM_TYPE_ANY
 	);
 
 	/**
 	 * Set directly raw parameter value without any conversion.
-	 * @param  string                $name       Param raw name.
-	 * @param  string|\string[]|NULL $value      Param raw value.
-	 * @param  int                   $sourceType
-	 *                               Param source collection flag(s). If param has defined 
-	 *                               source type flag already, this given flag is used 
-	 *                               to overwrite already defined flag.
+	 * @param  string                    $name
+	 * Param raw name.
+	 * @param  string|array<string>|NULL $value
+	 * Param raw value.
+	 * @param  int                       $sourceType
+	 * Param source collection flag(s). If param has defined 
+	 * source type flag already, this given flag is used 
+	 * to overwrite already defined flag.
 	 * @return \MvcCore\Request
 	 */
 	public function SetParam (
@@ -218,15 +250,27 @@ interface IRequest extends \MvcCore\Request\IConstants {
 
 	/**
 	 * Get param value from `$_GET`, `$_POST` or `php://input`, filtered by
-	 * "rule to keep defined characters only", defined in second argument (by `preg_replace()`).
-	 * Place into second argument only char groups you want to keep.
-	 * @param  string            $name                    Parameter string name.
-	 * @param  string|array|bool $pregReplaceAllowedChars If String - list of regular expression characters to only keep, if array - `preg_replace()` pattern and reverse, if `FALSE`, raw value is returned.
-	 * @param  mixed             $ifNullValue             Default value returned if given param name is null.
-	 * @param  string            $targetType              Target type to retype param value or default if-null value. If param is an array, every param item will be retyped into given target type.
-	 * @param  int               $sourceType              Param source collection flag(s). If defined, there is returned only param from given collection type(s).
-	 * @throws \InvalidArgumentException                  `$name` must be a `$targetType`, not an `array`.
-	 * @return string|\string[]|int|\int[]|bool|\bool[]|array|mixed
+	 * "rule to keep defined characters only", defined in second argument 
+	 * (by `preg_replace()`). Place into second argument only char 
+	 * groups you want to keep.
+	 * @param  string           $name
+	 * Parameter string name.
+	 * @param  CollectionFilter $pregReplaceAllowedChars
+	 * If String - list of regular expression characters to only keep, 
+	 * if array - `preg_replace()` pattern and reverse, if `FALSE`, 
+	 * raw value is returned.
+	 * @param  CollectionItem   $ifNullValue
+	 * Default value returned if given param name is null.
+	 * @param  string           $targetType
+	 * Target type to retype param value or default if-null value. 
+	 * If param is an array, every param item will be retyped 
+	 * into given target type.
+	 * @param  int              $sourceType
+	 * Param source collection flag(s). If defined, there is returned 
+	 * only param from given collection type(s).
+	 * @throws \InvalidArgumentException
+	 * `$name` must be a `$targetType`, not an `array`.
+	 * @return CollectionItem
 	 */
 	public function GetParam (
 		$name,
@@ -258,9 +302,13 @@ interface IRequest extends \MvcCore\Request\IConstants {
 	public function SetParamSourceType ($name, $sourceType = \MvcCore\IRequest::PARAM_TYPE_ANY);
 	
 	/**
-	 * Get `TRUE` if any non `NULL` param value exists in `$_GET`, `$_POST`, `php://input` or in any other source.
-	 * @param  string $name       Parameter string name.
-	 * @param  int    $sourceType Param source collection flag(s). If defined, there is returned `TRUE` only for param in given collection type(s).
+	 * Get `TRUE` if any non `NULL` param value exists 
+	 * in `$_GET`, `$_POST`, `php://input` or in any other source.
+	 * @param  string $name
+	 * Parameter string name.
+	 * @param  int    $sourceType
+	 * Param source collection flag(s). If defined, there is 
+	 * returned `TRUE` only for param in given collection type(s).
 	 * @return bool
 	 */
 	public function HasParam (
@@ -278,7 +326,7 @@ interface IRequest extends \MvcCore\Request\IConstants {
 
 	/**
 	 * Set directly whole raw global `$_FILES` without any conversion at once.
-	 * @param  array $files
+	 * @param  array<string,array<string,mixed>> $files
 	 * @return \MvcCore\Request
 	 */
 	public function SetFiles (array & $files = []);
@@ -286,14 +334,14 @@ interface IRequest extends \MvcCore\Request\IConstants {
 	/**
 	 * Return reference to configured global `$_FILES`
 	 * or reference to any other testing array representing it.
-	 * @return array
+	 * @return array<string,array<string,mixed>>
 	 */
-	public function & GetFiles ();
+	public function GetFiles ();
 
 	/**
 	 * Set file item into global `$_FILES` without any conversion at once.
-	 * @param  string $file Uploaded file string name.
-	 * @param  array  $data
+	 * @param  string              $file Uploaded file string name.
+	 * @param  array<string,mixed> $data
 	 * @return \MvcCore\Request
 	 */
 	public function SetFile ($file = '', $data = []);
@@ -302,7 +350,7 @@ interface IRequest extends \MvcCore\Request\IConstants {
 	 * Return item by file name from referenced global `$_FILES`
 	 * or reference to any other testing array item representing it.
 	 * @param  string $file Uploaded file string name.
-	 * @return array
+	 * @return array<string,mixed>
 	 */
 	public function GetFile ($file = '');
 
@@ -316,7 +364,7 @@ interface IRequest extends \MvcCore\Request\IConstants {
 
 	/**
 	 * Set directly whole raw global `$_COOKIE` without any conversion at once.
-	 * @param  array $cookies
+	 * @param  array<string,string> $cookies
 	 * @return \MvcCore\Request
 	 */
 	public function SetCookies (array & $cookies = []);
@@ -324,11 +372,16 @@ interface IRequest extends \MvcCore\Request\IConstants {
 	/**
 	 * Get directly all raw global `$_COOKIE`s at once (with/without conversion).
 	 * Cookies are returned as `key => value` array.
-	 * @param  string|array|bool $pregReplaceAllowedChars If String - list of regular expression characters to only keep, if array - `preg_replace()` pattern and reverse, if `FALSE`, raw value is returned.
-	 * @param  array             $onlyKeys                Array with keys to get only. If empty (by default), all possible cookies are returned.
-	 * @return array
+	 * @param  CollectionFilter $pregReplaceAllowedChars
+	 * If String - list of regular expression characters to only keep, 
+	 * if array - `preg_replace()` pattern and reverse, if `FALSE`, 
+	 * raw value is returned.
+	 * @param  array<string>    $onlyKeys
+	 * Array with keys to get only. If empty (by default), 
+	 * all possible cookies are returned.
+	 * @return array<string,string>
 	 */
-	public function & GetCookies ($pregReplaceAllowedChars = ['#[\<\>\'"]#', ''], $onlyKeys = []);
+	public function GetCookies ($pregReplaceAllowedChars = ['#[\<\>\'"]#' => ''], $onlyKeys = []);
 
 	/**
 	 * Set raw request cookie into referenced global `$_COOKIE` without any conversion.
@@ -342,12 +395,21 @@ interface IRequest extends \MvcCore\Request\IConstants {
 	 * Get request cookie value from referenced global `$_COOKIE` variable,
 	 * filtered by characters defined in second argument through `preg_replace()`.
 	 * Place into second argument only char groups you want to keep.
-	 * @param  string            $name                    Cookie string name.
-	 * @param  string|array|bool $pregReplaceAllowedChars If String - list of regular expression characters to only keep, if array - `preg_replace()` pattern and reverse, if `FALSE`, raw value is returned.
-	 * @param  mixed             $ifNullValue             Default value returned if given param name is null.
-	 * @param  string            $targetType              Target type to retype param value or default if-null value. If param is an array, every param item will be retyped into given target type.
-	 * @throws \InvalidArgumentException                  `$name` must be a `$targetType`, not an `array`.
-	 * @return string|\string[]|int|\int[]|bool|\bool[]|array|mixed
+	 * @param  string           $name
+	 * Cookie string name.
+	 * @param  CollectionFilter $pregReplaceAllowedChars
+	 * If String - list of regular expression characters to only keep, 
+	 * if array - `preg_replace()` pattern and reverse, if `FALSE`, 
+	 * raw value is returned.
+	 * @param  CollectionItem   $ifNullValue
+	 * Default value returned if given param name is null.
+	 * @param  string           $targetType
+	 * Target type to retype param value or default if-null value. 
+	 * If param is an array, every param item will be retyped 
+	 * into given target type.
+	 * @throws \InvalidArgumentException
+	 * `$name` must be a `$targetType`, not an `array`.
+	 * @return CollectionItem
 	 */
 	public function GetCookie (
 		$name = '',
@@ -476,8 +538,8 @@ interface IRequest extends \MvcCore\Request\IConstants {
 	 * Throws exception if no property defined by get call or if virtual call
 	 * begins with anything different from `Set` or `Get`.
 	 * This method returns custom value for get and `\MvcCore\Request` instance for set.
-	 * @param  string $rawName
-	 * @param  array  $arguments
+	 * @param  string           $rawName
+	 * @param  array<int,mixed> $arguments
 	 * @throws \InvalidArgumentException
 	 * @return mixed|\MvcCore\Request
 	 */
@@ -494,7 +556,7 @@ interface IRequest extends \MvcCore\Request\IConstants {
 	 * Universal setter, if property not defined, it's automatically declared.
 	 * @param  string $name
 	 * @param  mixed  $value
-	 * @return \MvcCore\Request
+	 * @return void
 	 */
 	public function __set ($name, $value);
 

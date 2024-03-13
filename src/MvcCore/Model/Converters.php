@@ -15,6 +15,9 @@ namespace MvcCore\Model;
 
 /**
  * @mixin \MvcCore\Model
+ * 
+ * @phpstan-type ModelPropValue string|int|float|bool|\DateTimeInterface|\DateInterval|NULL|array<string|int|float|bool|\DateTimeInterface|\DateInterval|NULL>
+ * @phpstan-type ParserArgs array<int|string,mixed>|NULL
  */
 trait Converters {
 
@@ -22,9 +25,9 @@ trait Converters {
 	 * Convert `int`(s), `float`(s), `bool`(s), `string`(s), `array`(s), 
 	 * `\DateTimeInterface`(s) or `\DateInterval`(s) or any other value(s)
 	 * into proper database (`scalar`) value if necessary.
-	 * @param  string                                                                                                                             $propName
-	 * @param  bool|int|float|string|\DateTimeInterface|\DateInterval|\bool[]|\int[]|\float[]|\string[]|\DateTimeInterface[]|\DateInterval[]|NULL $value 
-	 * @param  array                                                                                                                              $parserArgs 
+	 * @param  string         $propName
+	 * @param  ModelPropValue $value 
+	 * @param  ParserArgs     $parserArgs 
 	 * @return int|string|NULL
 	 */
 	protected static function convertToScalar ($propName, $value, $parserArgs = []) {
@@ -49,9 +52,9 @@ trait Converters {
 	
 	/**
 	 * Convert integer into database scalar value.
-	 * @param  string $propName
-	 * @param  int    $value 
-	 * @param  array  $parserArgs 
+	 * @param  string     $propName
+	 * @param  int        $value 
+	 * @param  ParserArgs $parserArgs 
 	 * @return int
 	 */
 	protected static function convertToScalarInt ($propName, $value, $parserArgs = []) {
@@ -60,9 +63,9 @@ trait Converters {
 	
 	/**
 	 * Convert float into database scalar value.
-	 * @param  string $propName
-	 * @param  float  $value 
-	 * @param  array  $parserArgs 
+	 * @param  string     $propName
+	 * @param  float      $value 
+	 * @param  ParserArgs $parserArgs 
 	 * @return string
 	 */
 	protected static function convertToScalarFloat ($propName, $value, $parserArgs = []) {
@@ -80,9 +83,9 @@ trait Converters {
 	
 	/**
 	 * Convert bool into database scalar value.
-	 * @param  string $propName
-	 * @param  bool   $value 
-	 * @param  array  $parserArgs 
+	 * @param  string     $propName
+	 * @param  bool       $value 
+	 * @param  ParserArgs $parserArgs 
 	 * @return int
 	 */
 	protected static function convertToScalarBool ($propName, $value, $parserArgs = []) {
@@ -91,9 +94,9 @@ trait Converters {
 	
 	/**
 	 * Convert string into database scalar value.
-	 * @param  string $propName
-	 * @param  string $value 
-	 * @param  array  $parserArgs 
+	 * @param  string     $propName
+	 * @param  string     $value 
+	 * @param  ParserArgs $parserArgs 
 	 * @return string
 	 */
 	protected static function convertToScalarString ($propName, $value, $parserArgs = []) {
@@ -102,9 +105,9 @@ trait Converters {
 	
 	/**
 	 * Convert array into database scalar value.
-	 * @param  string $propName
-	 * @param  array  $value 
-	 * @param  array  $parserArgs 
+	 * @param  string                  $propName
+	 * @param  array<int|string,mixed> $value 
+	 * @param  ParserArgs              $parserArgs 
 	 * @return string
 	 */
 	protected static function convertToScalarArray ($propName, $value, $parserArgs = []) {
@@ -124,7 +127,7 @@ trait Converters {
 	 * Convert `\DateTime` or `\DateTimeImmutable` into database scalar value.
 	 * @param  string                       $propName
 	 * @param  \DateTime|\DateTimeImmutable $value 
-	 * @param  array                        $parserArgs 
+	 * @param  ParserArgs                   $parserArgs 
 	 * @return string
 	 */
 	protected static function convertToScalarDateTime ($propName, $value, $parserArgs = []) {
@@ -138,7 +141,7 @@ trait Converters {
 	 * Convert `\DateInterval` into database scalar value.
 	 * @param  string        $propName
 	 * @param  \DateInterval $value 
-	 * @param  array         $parserArgs 
+	 * @param  ParserArgs    $parserArgs 
 	 * @return string|int|float
 	 */
 	protected static function convertToScalarDateInterval ($propName, $value, $parserArgs = []) {
@@ -162,9 +165,9 @@ trait Converters {
 	
 	/**
 	 * Convert any other value type into database scalar value.
-	 * @param  string $propName
-	 * @param  mixed  $value 
-	 * @param  array  $parserArgs 
+	 * @param  string     $propName
+	 * @param  mixed      $value 
+	 * @param  ParserArgs $parserArgs 
 	 * @return mixed
 	 */
 	protected static function convertToScalarOther ($propName, $value, $parserArgs = []) {
@@ -173,7 +176,7 @@ trait Converters {
 
 	/**
 	 * Convert `\DateInterval` into database float value.
-	 * @param  string        $propName
+	 * @param  string|NULL   $propName
 	 * @param  \DateInterval $interval 
 	 * @return float
 	 */

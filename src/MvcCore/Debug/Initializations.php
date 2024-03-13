@@ -51,14 +51,14 @@ trait Initializations {
 
 		static::$originalDebugClass = ltrim($app->GetDebugClass(), '\\') === __CLASS__;
 		static::initHandlers();
-		$initGlobalShortHandsHandler = static::$InitGlobalShortHands;
-		$initGlobalShortHandsHandler(static::$debugging);
+		if (static::$InitGlobalShortHands !== NULL)
+			call_user_func(static::$InitGlobalShortHands, [static::$debugging]);
 	}
 
 	/**
 	 * @inheritDoc
-	 * @param  bool   $strictExceptionsMode
-	 * @param  \int[] $errorLevelsToExceptions E_ERROR, E_RECOVERABLE_ERROR, E_CORE_ERROR, E_USER_ERROR, E_WARNING, E_CORE_WARNING, E_USER_WARNING
+	 * @param  bool       $strictExceptionsMode
+	 * @param  array<int> $errorLevelsToExceptions E_ERROR, E_RECOVERABLE_ERROR, E_CORE_ERROR, E_USER_ERROR, E_WARNING, E_CORE_WARNING, E_USER_WARNING
 	 * @return bool|NULL
 	 */
 	public static function SetStrictExceptionsMode ($strictExceptionsMode, array $errorLevelsToExceptions = []) {
@@ -131,6 +131,7 @@ trait Initializations {
 			foreach ($sysConfigProps as $prop)
 				if (!isset($result[$prop]))
 					$result[$prop] = NULL;
+			$result = (object) $result;
 		} else {
 			foreach ($sysConfigProps as $prop)
 				if (!isset($result->{$prop}))

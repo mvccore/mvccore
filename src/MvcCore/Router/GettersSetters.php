@@ -75,7 +75,7 @@ trait GettersSetters {
 
 	/**
 	 * @inheritDoc
-	 * @return array
+	 * @return array<string,mixed>
 	 */
 	public function & GetDefaultParams () {
 		return $this->defaultParams;
@@ -83,7 +83,7 @@ trait GettersSetters {
 
 	/**
 	 * @inheritDoc
-	 * @return array
+	 * @return array<string,mixed>
 	 */
 	public function & GetRequestedParams () {
 		return $this->requestedParams;

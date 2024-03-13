@@ -23,6 +23,8 @@ namespace MvcCore;
  * - Static functions to write into file by one process only.
  * - Static functions to check core classes inheritance.
  * - Static functions to cache and read attributes (or PhpDocs tags).
+ * @phpstan-type OnErrorHandler callable(int,string,string,int): bool
+ * @phpstan-type ParsedUrl array{"scheme":?string,"user":?string,"pass":?string,"host":?string,"port":?string,"path":?string,"query":?string,"fragment":?string}
  */
 interface ITool {
 
@@ -179,7 +181,7 @@ interface ITool {
 	 * - `mcrypt_create_iv()`
 	 * - `openssl_random_pseudo_bytes()`
 	 * - `mt_rand()`
-	 * @param  int $hashCharLen 
+	 * @param  int $charsLen 
 	 * @return string
 	 */
 	public static function GetRandomHash ($charsLen = 64);
@@ -194,9 +196,9 @@ interface ITool {
 	 * If the custom error handler returns `FALSE`, normal internal error handler continues.
 	 * This function is very PHP specific. It's proudly used from Nette Framework, optimized for PHP 5.4+ incl.:
 	 * https://github.com/nette/utils/blob/b623b2deec8729c8285d269ad991a97504f76bd4/src/Utils/Callback.php#L63-L84
-	 * @param  string|callable $internalFnOrHandler
-	 * @param  array           $args
-	 * @param  callable        $onError
+	 * @param  string|callable         $internalFnOrHandler
+	 * @param  array<int|string,mixed> $args
+	 * @param  OnErrorHandler          $onError
 	 * @return mixed
 	 */
 	public static function Invoke ($internalFnOrHandler, array $args, callable $onError);
@@ -237,9 +239,9 @@ interface ITool {
 	 * @see https://www.php.net/manual/en/function.parse-url.php
 	 * @see https://bugs.php.net/bug.php?id=73192
 	 * @see https://en.wikipedia.org/wiki/Uniform_Resource_Identifier
-	 * @param  string $uri 
-	 * @param  int    $component 
-	 * @return array|string|int|null|false
+	 * @param  string|NULL $uri 
+	 * @param  int         $component 
+	 * @return ParsedUrl|string|int|null|false
 	 */
 	public static function ParseUrl ($uri, $component = -1);
 
@@ -282,20 +284,21 @@ interface ITool {
 	 * Get (cached) class attribute(s) constructor arguments or 
 	 * get class PhpDocs tags and it's arguments for older PHP versions.
 	 * You can optionally set prefered way to get desired meta data.
-	 * @param  string|object $classFullNameOrInstance
-	 *                       Class instance or full class name.
-	 * @param  \string[]     $attrsClassesOrDocsTags
-	 *                       Array with attribute(s) full class names 
-	 *                       or array with PhpDocs tag(s) name(s).
-	 * @param  bool|NULL     $preferAttributes
-	 *                       Prefered way to get meta data. `TRUE` means try 
-	 *                       to get PHP8+ attribute(s) only, `FALSE` means 
-	 *                       try to get PhpDocs tag(s) only and `NULL` (default) 
-	 *                       means try to get PHP8+ attribute(s) first and if 
-	 *                       there is nothing, try to get PhpDocs tag(s).
+	 * @param string|object $classFullNameOrInstance
+	 * Class instance or full class name.
+	 * @param array<string> $attrsClassesOrDocsTags
+	 * Array with attribute(s) full class names 
+	 * or array with PhpDocs tag(s) name(s).
+	 * @param bool|NULL     $preferAttributes
+	 * Prefered way to get meta data. `TRUE` means try 
+	 * to get PHP8+ attribute(s) only, `FALSE` means 
+	 * try to get PhpDocs tag(s) only and `NULL` (default) 
+	 * means try to get PHP8+ attribute(s) first and if 
+	 * there is nothing, try to get PhpDocs tag(s).
 	 * @throws \InvalidArgumentException
-	 * @return array         Keys are attributes full class names (or PhpDocs tags names) and values
-	 *                       are attributes constructor arguments (or PhpDocs tags arguments).
+	 * @return array<string,array<int|string,mixed>>
+	 * Keys are attributes full class names (or PhpDocs tags names) and values
+	 * are attributes constructor arguments (or PhpDocs tags arguments).
 	 */
 	public static function GetClassAttrsArgs ($classFullNameOrInstance, $attrsClassesOrDocsTags, $preferAttributes = NULL);
 
@@ -304,21 +307,22 @@ interface ITool {
 	 * get class method PhpDocs tags and it's arguments for older PHP versions.
 	 * You can optionally set prefered way to get desired meta data.
 	 * @param  string|object $classFullNameOrInstance
-	 *                       Class instance or full class name.
+	 * Class instance or full class name.
 	 * @param  string        $methodName
-	 *                       Class method name.
-	 * @param  \string[]     $attrsClassesOrDocsTags
-	 *                       Array with attribute(s) full class names 
-	 *                       or array with PhpDocs tag(s) name(s).
+	 * Class method name.
+	 * @param  array<string> $attrsClassesOrDocsTags
+	 * Array with attribute(s) full class names 
+	 * or array with PhpDocs tag(s) name(s).
 	 * @param  bool|NULL     $preferAttributes
-	 *                       Prefered way to get meta data. `TRUE` means try 
-	 *                       to get PHP8+ attribute(s) only, `FALSE` means 
-	 *                       try to get PhpDocs tag(s) only and `NULL` (default) 
-	 *                       means try to get PHP8+ attribute(s) first and if 
-	 *                       there is nothing, try to get PhpDocs tag(s).
+	 * Prefered way to get meta data. `TRUE` means try 
+	 * to get PHP8+ attribute(s) only, `FALSE` means 
+	 * try to get PhpDocs tag(s) only and `NULL` (default) 
+	 * means try to get PHP8+ attribute(s) first and if 
+	 * there is nothing, try to get PhpDocs tag(s).
 	 * @throws \InvalidArgumentException
-	 * @return array         Keys are attributes full class names (or PhpDocs tags names) and values
-	 *                       are attributes constructor arguments (or PhpDocs tags arguments).
+	 * @return array<string,array<int|string,mixed>>
+	 * Keys are attributes full class names (or PhpDocs tags names) and values
+	 * are attributes constructor arguments (or PhpDocs tags arguments).
 	 */
 	public static function GetMethodAttrsArgs ($classFullNameOrInstance, $methodName, $attrsClassesOrDocsTags, $preferAttributes = NULL);
 
@@ -327,21 +331,22 @@ interface ITool {
 	 * get class property PhpDocs tags and it's arguments for older PHP versions.
 	 * You can optionally set prefered way to get desired meta data.
 	 * @param  string|object $classFullNameOrInstance
-	 *                       Class instance or full class name.
+	 * Class instance or full class name.
 	 * @param  string        $propertyName
-	 *                       Class property name.
-	 * @param  \string[]     $attrsClassesOrDocsTags
-	 *                       Array with attribute(s) full class names 
-	 *                       or array with PhpDocs tag(s) name(s).
+	 * Class property name.
+	 * @param  array<string> $attrsClassesOrDocsTags
+	 * Array with attribute(s) full class names 
+	 * or array with PhpDocs tag(s) name(s).
 	 * @param  bool|NULL     $preferAttributes
-	 *                       Prefered way to get meta data. `TRUE` means try 
-	 *                       to get PHP8+ attribute(s) only, `FALSE` means 
-	 *                       try to get PhpDocs tag(s) only and `NULL` (default) 
-	 *                       means try to get PHP8+ attribute(s) first and if 
-	 *                       there is nothing, try to get PhpDocs tag(s).
+	 * Prefered way to get meta data. `TRUE` means try 
+	 * to get PHP8+ attribute(s) only, `FALSE` means 
+	 * try to get PhpDocs tag(s) only and `NULL` (default) 
+	 * means try to get PHP8+ attribute(s) first and if 
+	 * there is nothing, try to get PhpDocs tag(s).
 	 * @throws \InvalidArgumentException
-	 * @return array         Keys are attributes full class names (or PhpDocs tags names) and values
-	 *                       are attributes constructor arguments (or PhpDocs tags arguments).
+	 * @return array<string,array<int|string,mixed>>
+	 * Keys are attributes full class names (or PhpDocs tags names) and values
+	 * are attributes constructor arguments (or PhpDocs tags arguments).
 	 */
 	public static function GetPropertyAttrsArgs ($classFullNameOrInstance, $propertyName, $attrsClassesOrDocsTags, $preferAttributes = NULL);
 
@@ -350,7 +355,7 @@ interface ITool {
 	 * @param  \ReflectionClass|\ReflectionMethod|\ReflectionProperty $reflectionObject 
 	 * @param  string                                                 $attributeClassFullName 
 	 * @param  bool|NULL                                              $traversing
-	 * @return array|NULL
+	 * @return array<int|string,mixed>|NULL
 	 */
 	public static function GetAttrCtorArgs ($reflectionObject, $attributeClassFullName, $traversing);
 
@@ -380,7 +385,7 @@ interface ITool {
 	 * @param  string                                                 $phpDocsTagName
 	 * @param  bool|NULL                                              $traversing
 	 * @throws \InvalidArgumentException
-	 * @return array|NULL
+	 * @return array<int|string,mixed>|NULL
 	 */
 	public static function GetPhpDocsTagArgs ($reflectionObject, $phpDocsTagName, $traversing = NULL);
 
@@ -390,9 +395,9 @@ interface ITool {
 	 * second argument is optional and it's array with keys as properties
 	 * names and values as booleans about not to serialize. If boolean value
 	 * is `FALSE`, property will not be used for serialization.
-	 * @param  mixed $instance 
-	 * @param  array $propNamesNotToSerialize 
-	 * @return \string[]
+	 * @param  mixed              $instance 
+	 * @param  array<string,bool> $propNamesNotToSerialize 
+	 * @return array<string>
 	 */
 	public static function GetSleepPropNames ($instance, $propNamesNotToSerialize = []);
 }

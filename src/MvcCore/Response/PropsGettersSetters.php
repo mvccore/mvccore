@@ -30,6 +30,10 @@ trait PropsGettersSetters {
 		\MvcCore\IResponse::INTERNAL_SERVER_ERROR	=> 'Internal Server Error',
 	];
 
+	/**
+	 * Headers names with multiple values.
+	 * @var array<string,bool>
+	 */
 	protected static $multiplyHeaders = [
 		'Set-Cookie'				=> TRUE,
 		'Content-Security-Policy'	=> TRUE,
@@ -37,7 +41,7 @@ trait PropsGettersSetters {
 
 	/**
 	 * Cookie names for session id for secure and non-secure connection.
-	 * @var \string[]
+	 * @var array{0:string|NULL,1:string|NULL}
 	 */
 	protected static $sessionIdCookieNames = [
 		\MvcCore\IResponse::COOKIE_SESSION_ID_SECURE_DEFAULT_NAME,
@@ -79,21 +83,21 @@ trait PropsGettersSetters {
 	 *       'Content-Encoding' => 'utf-8'
 	 *   ];
 	 * ````
-	 * @var \string[]
+	 * @var array<string,mixed>
 	 */
 	protected $headers = [];
 
 	/**
 	 * Response content encoding.
 	 * Example: `"utf-8" | "windows-1250" | "ISO-8859-2"`
-	 * @var \string|NULL
+	 * @var string|NULL
 	 */
 	protected $encoding = NULL;
 
 	/**
 	 * Response HTTP body.
 	 * Example: `"<!DOCTYPE html><html lang="en"><head><meta ..."`
-	 * @var \string|NULL
+	 * @var string|NULL
 	 */
 	protected $body = NULL;
 
@@ -112,13 +116,13 @@ trait PropsGettersSetters {
 	/**
 	 * Disabled headers, never sent except if there is
 	 * rendered exception in development environment.
-	 * @var array
+	 * @var array<string,bool>
 	 */
 	protected $disabledHeaders = [];
 
 	/**
 	 * Reference to current application request object.
-	 * @var \MvcCore\Request
+	 * @var \MvcCore\Request|NULL
 	 */
 	protected $request = NULL;
 
@@ -127,7 +131,7 @@ trait PropsGettersSetters {
 	 * @inheritDoc
 	 * @param  string|NULL $secureConnCookieName 
 	 * @param  string|NULL $nonSecureConnCookieName
-	 * @return array
+	 * @return array{0:?string,1:?string}
 	 */
 	public static function SetSessionIdCookieNames ($secureConnCookieName = NULL, $nonSecureConnCookieName = NULL) {
 		if ($secureConnCookieName !== NULL)
@@ -156,7 +160,7 @@ trait PropsGettersSetters {
 
 	/**
 	 * @inheritDoc
-	 * @return string
+	 * @return string|NULL
 	 */
 	public function GetSessionIdCookieName () {
 		return $this->request->IsSecure()
@@ -166,7 +170,7 @@ trait PropsGettersSetters {
 	
 	/**
 	 * @inheritDoc
-	 * @return \string[]
+	 * @return array<string>
 	 */
 	public static function GetMultiplyHeaders () {
 		return array_keys(static::$multiplyHeaders);
@@ -174,8 +178,8 @@ trait PropsGettersSetters {
 	
 	/**
 	 * @inheritDoc
-	 * @param  \string[] $multiplyHeaders 
-	 * @return \string[]
+	 * @param  array<string> $multiplyHeaders 
+	 * @return array<string>
 	 */
 	public static function SetMultiplyHeaders ($multiplyHeaders) {
 		static::$multiplyHeaders = [];
@@ -211,7 +215,7 @@ trait PropsGettersSetters {
 
 	/**
 	 * @inheritDoc
-	 * @param  int         $code
+	 * @param  int|NULL    $code
 	 * @param  string|NULL $codeMessage
 	 * @return \MvcCore\Response
 	 */
@@ -224,7 +228,7 @@ trait PropsGettersSetters {
 
 	/**
 	 * @inheritDoc
-	 * @return int
+	 * @return int|NULL
 	 */
 	public function GetCode () {
 		if ($this->code === NULL) {

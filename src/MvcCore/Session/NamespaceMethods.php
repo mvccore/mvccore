@@ -30,7 +30,7 @@ trait NamespaceMethods {
 			static::Start();
 		if (!isset(static::$instances[$name])) {
 			/** @var \MvcCore\Session $instance */
-			$instance = new static();
+			$instance = new static(); /** @phpstan-ignore-line */
 			$instance->__name = $name;
 			static::$meta->names[$name] = 1;
 			if (!isset($_SESSION[$name]))
