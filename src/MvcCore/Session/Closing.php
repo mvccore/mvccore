@@ -84,7 +84,10 @@ trait Closing {
 				$sessionIdName, $sessionIdValue, 
 				$options['cookie_lifetime'],	$options['cookie_path'], 
 				$options['cookie_domain'],		$options['cookie_secure'], 
-				$options['cookie_httponly'],	$options['cookie_samesite']
+				$options['cookie_httponly'],
+				isset($options['cookie_samesite']) 
+					? $options['cookie_samesite']
+					: \MvcCore\IResponse::COOKIE_SAMESITE_LAX
 			);
 		}
 	}
@@ -119,7 +122,7 @@ trait Closing {
 			$sessionNamespace = static::GetCsrfNamespace();
 			$toolClass = $app->GetToolClass();
 			$csrfSecret = $toolClass::GetRandomHash(64); // generate new value
-			$sessionNamespace->secret = $csrfSecret;
+			$sessionNamespace->secret = $csrfSecret; // @phpstan-ignore-line
 			$csrfExpiration = static::GetSessionCsrfMaxTime();
 			$params = (object) session_get_cookie_params();
 			if ($csrfExpiration > static::$sessionStartTime) {
@@ -145,7 +148,7 @@ trait Closing {
 			"\\MvcCore\\Ext\\Auth",
 			"\\MvcCore\\Ext\\Auths\\Basic"
 		];
-		/** @var \MvcCore\Ext\Auths\Basic $auth */
+		/** @var \MvcCore\Ext\Auths\Basic|NULL $auth @phpstan-ignore-next-line */
 		$auth = NULL;
 		foreach ($authClassesFullNames as $authClassFullName) {
 			if (class_exists($authClassFullName, TRUE)) {
