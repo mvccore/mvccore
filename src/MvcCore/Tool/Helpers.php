@@ -15,6 +15,8 @@ namespace MvcCore\Tool;
 
 /**
  * @mixin \MvcCore\Tool
+ * @phpstan-type OnErrorHandler callable(int,string,string,int): bool
+ * @phpstan-type ParsedUrl array{"scheme":?string,"user":?string,"pass":?string,"host":?string,"port":?string,"path":?string,"query":?string,"fragment":?string}
  */
 trait Helpers {
 
@@ -84,15 +86,15 @@ trait Helpers {
 
 	/**
 	 * @inheritDoc
-	 * @param  int $hashCharLen 
+	 * @param  int $charsLen 
 	 * @return string
 	 */
 	public static function GetRandomHash ($charsLen = 64) {
-		$randLen = ceil($charsLen / 2);
+		$randLen = intval(ceil($charsLen / 2));
 		if (function_exists('random_bytes')) {
 			return bin2hex(random_bytes($randLen));
 		} else if (function_exists('mcrypt_create_iv')) {
-			return bin2hex(mcrypt_create_iv($randLen, MCRYPT_DEV_URANDOM));
+			return bin2hex(mcrypt_create_iv($randLen, MCRYPT_DEV_URANDOM)); // @phpstan-ignore-line
 		} else if (function_exists('openssl_random_pseudo_bytes')) {
 			return bin2hex(openssl_random_pseudo_bytes($randLen));
 		} else {
@@ -108,9 +110,9 @@ trait Helpers {
 
 	/**
 	 * @inheritDoc
-	 * @param  string|callable $internalFnOrHandler
-	 * @param  array           $args
-	 * @param  callable        $onError
+	 * @param  string|callable         $internalFnOrHandler
+	 * @param  array<int|string,mixed> $args
+	 * @param  OnErrorHandler          $onError
 	 * @return mixed
 	 */
 	public static function Invoke ($internalFnOrHandler, array $args, callable $onError) {
@@ -131,7 +133,7 @@ trait Helpers {
 							: strval($internalFnOrHandler)
 						);
 					$errMessage = preg_replace("#^{$funcNameStr}\(.*?\): #", '', $errMessage);
-					if ($onError($errMessage, $errLevel, $errFile, $errLine) !== FALSE)
+					if ($onError($errLevel, $errMessage, $errFile, $errLine) !== FALSE)
 						return TRUE;
 				}
 				return $prevErrorHandler
@@ -173,6 +175,7 @@ trait Helpers {
 		$oldLockMillisecondsTolerance = 30000
 	) {
 		$waitUTime = $lockWaitMilliseconds * 1000;
+		/** @var resource|NULL $lockHandle */
 		$lockHandle = NULL;
 
 		$tmpDir = self::GetSystemTmpDir();
@@ -284,7 +287,7 @@ trait Helpers {
 		if ($insidePhar) $path = mb_substr($path, 7);
 		$path = str_replace('\\', '/', $path);
 		$rawParts = explode('/', $path);
-		$parts = array_filter($rawParts, 'strlen');
+		$parts = array_filter($rawParts, 'strlen'); // @phpstan-ignore-line
 		if ($rawParts[0] == '' && mb_substr($path, 0, 1) == '/')
 			array_unshift($parts, '');
 		$items = [];
@@ -306,9 +309,9 @@ trait Helpers {
 	 * @see https://www.php.net/manual/en/function.parse-url.php
 	 * @see https://bugs.php.net/bug.php?id=73192
 	 * @see https://en.wikipedia.org/wiki/Uniform_Resource_Identifier
-	 * @param  string $uri 
-	 * @param  int    $component 
-	 * @return array|string|int|null|false
+	 * @param  string|NULL $uri 
+	 * @param  int         $component 
+	 * @return ParsedUrl|string|int|null|false
 	 */
 	public static function ParseUrl ($uri, $component = -1) {
 		static $parseUriConstsToKeys = [
@@ -438,7 +441,7 @@ trait Helpers {
 					$path = mb_substr($uriWithoutAuthority, 0, $qmPos);
 					if ($path !== '') $result['path'] = $path;
 					$result['query'] = trim(mb_substr($uriWithoutAuthority, $qmPos + 1), '&');
-				} else if (!$qmContained && $hashContained) {
+				} else if (!$qmContained && $hashContained) { // @phpstan-ignore-line
 					// path, no query and hash
 					$path = mb_substr($uriWithoutAuthority, 0, $hashPos);
 					if ($path !== '') $result['path'] = $path;
