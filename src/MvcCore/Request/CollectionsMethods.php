@@ -15,13 +15,15 @@ namespace MvcCore\Request;
 
 /**
  * @mixin \MvcCore\Request
+ * @phpstan-type CollectionItem string|int|float|bool|NULL|array<string|int|float|bool|NULL>|mixed
+ * @phpstan-type CollectionFilter string|array<string,string>|bool
  */
 trait CollectionsMethods {
 
 	/**
 	 * @inheritDoc
 	 * @param  string $type
-	 * @return array
+	 * @return array<int|string,mixed>
 	 */
 	public function & GetGlobalCollection ($type) {
 		$collection = 'global'.ucfirst(strtolower($type));
@@ -30,7 +32,7 @@ trait CollectionsMethods {
 
 	/**
 	 * @inheritDoc
-	 * @param  array $headers
+	 * @param  array<string,mixed> $headers
 	 * @return \MvcCore\Request
 	 */
 	public function SetHeaders (array & $headers = []) {
@@ -40,10 +42,13 @@ trait CollectionsMethods {
 
 	/**
 	 * @inheritDoc
-	 * @param  string|array|bool $pregReplaceAllowedChars If String - list of regular expression characters to only keep, if array - `preg_replace()` pattern and reverse, if `FALSE`, raw value is returned.
-	 * @return array
+	 * @param  CollectionFilter $pregReplaceAllowedChars
+	 * If String - list of regular expression characters to only keep, 
+	 * if array - `preg_replace()` pattern and reverse, if `FALSE`, 
+	 * raw value is returned.
+	 * @return array<string,mixed>
 	 */
-	public function & GetHeaders ($pregReplaceAllowedChars = ['#[\<\>\'"]#' => '']) {
+	public function GetHeaders ($pregReplaceAllowedChars = ['#[\<\>\'"]#' => '']) {
 		if ($this->headers === NULL) $this->initHeaders();
 		if ($pregReplaceAllowedChars === FALSE || $pregReplaceAllowedChars === '' || $pregReplaceAllowedChars === '.*')
 			return $this->headers;
@@ -69,12 +74,21 @@ trait CollectionsMethods {
 
 	/**
 	 * @inheritDoc
-	 * @param  string            $name                    Http header string name.
-	 * @param  string|array|bool $pregReplaceAllowedChars If String - list of regular expression characters to only keep, if array - `preg_replace()` pattern and reverse, if `FALSE`, raw value is returned.
-	 * @param  mixed             $ifNullValue             Default value returned if given param name is null.
-	 * @param  string            $targetType              Target type to retype param value or default if-null value. If param is an array, every param item will be retyped into given target type.
-	 * @throws \InvalidArgumentException                  `$name` must be a `$targetType`, not an `array`.
-	 * @return string|\string[]|int|\int[]|bool|\bool[]|array|mixed
+	 * @param  string           $name
+	 * Http header string name.
+	 * @param  CollectionFilter $pregReplaceAllowedChars
+	 * If String - list of regular expression characters to only keep, 
+	 * if array - `preg_replace()` pattern and reverse, if `FALSE`, 
+	 * raw value is returned.
+	 * @param  CollectionItem   $ifNullValue
+	 * Default value returned if given param name is null.
+	 * @param  string           $targetType
+	 * Target type to retype param value or default if-null value. 
+	 * If param is an array, every param item will be retyped 
+	 * into given target type.
+	 * @throws \InvalidArgumentException
+	 * `$name` must be a `$targetType`, not an `array`.
+	 * @return CollectionItem
 	 */
 	public function GetHeader (
 		$name = '',
@@ -101,12 +115,12 @@ trait CollectionsMethods {
 
 	/**
 	 * @inheritDoc
-	 * @param  array $params
-	 *               Keys are param names, values are param values.
-	 * @param  int   $sourceType
-	 *               Param source collection flag(s). If param has defined 
-	 *               source type flag already, this given flag is used 
-	 *               to overwrite already defined flag.
+	 * @param  array<string,mixed> $params
+	 * Keys are param names, values are param values.
+	 * @param  int                 $sourceType
+	 * Param source collection flag(s). If param has defined 
+	 * source type flag already, this given flag is used 
+	 * to overwrite already defined flag.
 	 * @return \MvcCore\Request
 	 */
 	public function SetParams (
@@ -130,12 +144,19 @@ trait CollectionsMethods {
 
 	/**
 	 * @inheritDoc
-	 * @param  string|array|bool $pregReplaceAllowedChars If String - list of regular expression characters to only keep, if array - `preg_replace()` pattern and reverse, if `FALSE`, raw value is returned.
-	 * @param  array             $onlyKeys                Array with keys to get only. If empty (by default), all possible params are returned.
-	 * @param  int               $sourceType              Param source collection flag(s). If defined, there are returned only params from given collection types.
-	 * @return array
+	 * @param  CollectionFilter $pregReplaceAllowedChars
+	 * If String - list of regular expression characters to only keep, 
+	 * if array - `preg_replace()` pattern and reverse, if `FALSE`, 
+	 * raw value is returned.
+	 * @param  array<string>    $onlyKeys
+	 * Array with keys to get only. If empty (by default), 
+	 * all possible params are returned.
+	 * @param  int              $sourceType
+	 * Param source collection flag(s). If defined, there 
+	 * are returned only params from given collection types.
+	 * @return array<string,mixed>
 	 */
-	public function & GetParams (
+	public function GetParams (
 		$pregReplaceAllowedChars = ['#[\<\>\'"]#' => ''], 
 		$onlyKeys = [],
 		$sourceType = \MvcCore\IRequest::PARAM_TYPE_ANY
@@ -143,22 +164,20 @@ trait CollectionsMethods {
 		if ($this->params === NULL) $this->initParams();
 
 		if ($sourceType) {
-			$qsFlag = $sourceType && ($sourceType & \MvcCore\IRequest::PARAM_TYPE_QUERY_STRING) != 0;
-			$urFlag = $sourceType && ($sourceType & \MvcCore\IRequest::PARAM_TYPE_URL_REWRITE) != 0;
-			$inFlag = $sourceType && ($sourceType & \MvcCore\IRequest::PARAM_TYPE_INPUT) != 0;
+			$qsFlag = ($sourceType & \MvcCore\IRequest::PARAM_TYPE_QUERY_STRING) != 0;
+			$urFlag = ($sourceType & \MvcCore\IRequest::PARAM_TYPE_URL_REWRITE) != 0;
+			$inFlag = ($sourceType & \MvcCore\IRequest::PARAM_TYPE_INPUT) != 0;
 			$flagsCount = ($qsFlag ? 1 : 0) + ($urFlag ? 1 : 0) + ($inFlag ? 1 : 0);
 			$sourceTypeParamsQs = $this->paramsSources[\MvcCore\IRequest::PARAM_TYPE_QUERY_STRING];
 			$sourceTypeParamsUr = $this->paramsSources[\MvcCore\IRequest::PARAM_TYPE_URL_REWRITE];
 		}
 
 		if ($pregReplaceAllowedChars === FALSE || $pregReplaceAllowedChars === '' || $pregReplaceAllowedChars === '.*') {
-			if ($onlyKeys) {
-				$onlyKeysToSelect = array_filter($onlyKeys, function ($v) { return is_string($v) || is_numeric($v); });
-				$result = array_intersect_key($this->params, array_flip($onlyKeysToSelect));
-			} else {
-				$result = & $this->params;
-			}
-			if (!$sourceType) return $result;
+			$result = $onlyKeys
+				? array_intersect_key($this->params, array_flip($onlyKeys))
+				: $this->params;
+			if (!$sourceType) 
+				return $result;
 			$sourceTypesResult = [];
 			foreach ($result as $key => $value) {
 				$notFoundFlagsCount = 0;
@@ -200,13 +219,14 @@ trait CollectionsMethods {
 
 	/**
 	 * @inheritDoc
-	 * Set directly raw parameter value without any conversion.
-	 * @param  string                $name       Param raw name.
-	 * @param  string|\string[]|NULL $value      Param raw value.
-	 * @param  int                   $sourceType
-	 *                               Param source collection flag(s). If param has defined 
-	 *                               source type flag already, this given flag is used 
-	 *                               to overwrite already defined flag.
+	 * @param  string                    $name
+	 * Param raw name.
+	 * @param  string|array<string>|NULL $value
+	 * Param raw value.
+	 * @param  int                       $sourceType
+	 * Param source collection flag(s). If param has defined 
+	 * source type flag already, this given flag is used 
+	 * to overwrite already defined flag.
 	 * @return \MvcCore\Request
 	 */
 	public function SetParam (
@@ -231,13 +251,24 @@ trait CollectionsMethods {
 	
 	/**
 	 * @inheritDoc
-	 * @param  string            $name                    Parameter string name.
-	 * @param  string|array|bool $pregReplaceAllowedChars If String - list of regular expression characters to only keep, if array - `preg_replace()` pattern and reverse, if `FALSE`, raw value is returned.
-	 * @param  mixed             $ifNullValue             Default value returned if given param name is null.
-	 * @param  string            $targetType              Target type to retype param value or default if-null value. If param is an array, every param item will be retyped into given target type.
-	 * @param  int               $sourceType              Param source collection flag(s). If defined, there is returned only param from given collection type(s).
-	 * @throws \InvalidArgumentException                  `$name` must be a `$targetType`, not an `array`.
-	 * @return string|\string[]|int|\int[]|bool|\bool[]|array|mixed
+	 * @param  string           $name
+	 * Parameter string name.
+	 * @param  CollectionFilter $pregReplaceAllowedChars
+	 * If String - list of regular expression characters to only keep, 
+	 * if array - `preg_replace()` pattern and reverse, if `FALSE`, 
+	 * raw value is returned.
+	 * @param  CollectionItem   $ifNullValue
+	 * Default value returned if given param name is null.
+	 * @param  string           $targetType
+	 * Target type to retype param value or default if-null value. 
+	 * If param is an array, every param item will be retyped 
+	 * into given target type.
+	 * @param  int              $sourceType
+	 * Param source collection flag(s). If defined, there is returned 
+	 * only param from given collection type(s).
+	 * @throws \InvalidArgumentException
+	 * `$name` must be a `$targetType`, not an `array`.
+	 * @return CollectionItem
 	 */
 	public function GetParam (
 		$name,
@@ -271,7 +302,7 @@ trait CollectionsMethods {
 	/**
 	 * @inheritDoc
 	 * @param  string $name 
-	 * @return int
+	 * @return \MvcCore\Request
 	 */
 	public function SetParamSourceType ($name, $sourceType = \MvcCore\IRequest::PARAM_TYPE_ANY) {
 		if (!isset($this->params[$name])) return $this;
@@ -288,8 +319,11 @@ trait CollectionsMethods {
 	
 	/**
 	 * @inheritDoc
-	 * @param  string $name       Parameter string name.
-	 * @param  int    $sourceType Param source collection flag(s). If defined, there is returned `TRUE` only for param in given collection type(s).
+	 * @param  string $name
+	 * Parameter string name.
+	 * @param  int    $sourceType
+	 * Param source collection flag(s). If defined, there is 
+	 * returned `TRUE` only for param in given collection type(s).
 	 * @return bool
 	 */
 	public function HasParam (
@@ -339,7 +373,7 @@ trait CollectionsMethods {
 
 	/**
 	 * @inheritDoc
-	 * @param  array $files
+	 * @param  array<string,array<string,mixed>> $files
 	 * @return \MvcCore\Request
 	 */
 	public function SetFiles (array & $files = []) {
@@ -349,16 +383,16 @@ trait CollectionsMethods {
 
 	/**
 	 * @inheritDoc
-	 * @return array
+	 * @return array<string,array<string,mixed>>
 	 */
-	public function & GetFiles () {
+	public function GetFiles () {
 		return $this->globalFiles;
 	}
 
 	/**
 	 * @inheritDoc
-	 * @param  string $file Uploaded file string name.
-	 * @param  array  $data
+	 * @param  string              $file Uploaded file string name.
+	 * @param  array<string,mixed> $data
 	 * @return \MvcCore\Request
 	 */
 	public function SetFile ($file = '', $data = []) {
@@ -369,7 +403,7 @@ trait CollectionsMethods {
 	/**
 	 * @inheritDoc
 	 * @param  string $file Uploaded file string name.
-	 * @return array
+	 * @return array<string,mixed>
 	 */
 	public function GetFile ($file = '') {
 		if (isset($this->globalFiles[$file])) {
@@ -393,7 +427,7 @@ trait CollectionsMethods {
 
 	/**
 	 * @inheritDoc
-	 * @param  array $cookies
+	 * @param  array<string,string> $cookies
 	 * @return \MvcCore\Request
 	 */
 	public function SetCookies (array & $cookies = []) {
@@ -403,18 +437,20 @@ trait CollectionsMethods {
 
 	/**
 	 * @inheritDoc
-	 * @param  string|array|bool $pregReplaceAllowedChars If String - list of regular expression characters to only keep, if array - `preg_replace()` pattern and reverse, if `FALSE`, raw value is returned.
-	 * @param  array             $onlyKeys                Array with keys to get only. If empty (by default), all possible cookies are returned.
-	 * @return array
+	 * @param  CollectionFilter $pregReplaceAllowedChars
+	 * If String - list of regular expression characters to only keep, 
+	 * if array - `preg_replace()` pattern and reverse, if `FALSE`, 
+	 * raw value is returned.
+	 * @param  array<string>    $onlyKeys
+	 * Array with keys to get only. If empty (by default), 
+	 * all possible cookies are returned.
+	 * @return array<string,string>
 	 */
-	public function & GetCookies ($pregReplaceAllowedChars = ['#[\<\>\'"]#' => ''], $onlyKeys = []) {
+	public function GetCookies ($pregReplaceAllowedChars = ['#[\<\>\'"]#' => ''], $onlyKeys = []) {
 		if ($pregReplaceAllowedChars === FALSE || $pregReplaceAllowedChars === '' || $pregReplaceAllowedChars === '.*') {
-			if ($onlyKeys) {
-				$result = array_intersect_key($this->paglobalCookiesrams, array_flip($onlyKeys));
-			} else {
-				$result = $this->globalCookies;
-			}
-			return $result;
+			return $onlyKeys
+				? array_intersect_key($this->globalCookies, array_flip($onlyKeys))
+				: $this->globalCookies;
 		}
 		$cleanedCookies = [];
 		foreach ($this->globalCookies as $key => & $value) {
@@ -427,8 +463,8 @@ trait CollectionsMethods {
 
 	/**
 	 * @inheritDoc
-	 * @param  string           $name
-	 * @param  string|\string[] $value
+	 * @param  string               $name
+	 * @param  string|array<string> $value
 	 * @return \MvcCore\Request
 	 */
 	public function SetCookie ($name = "", $value = "") {
@@ -438,12 +474,21 @@ trait CollectionsMethods {
 
 	/**
 	 * @inheritDoc
-	 * @param  string            $name                    Cookie string name.
-	 * @param  string|array|bool $pregReplaceAllowedChars If String - list of regular expression characters to only keep, if array - `preg_replace()` pattern and reverse, if `FALSE`, raw value is returned.
-	 * @param  mixed             $ifNullValue             Default value returned if given param name is null.
-	 * @param  string            $targetType              Target type to retype param value or default if-null value. If param is an array, every param item will be retyped into given target type.
-	 * @throws \InvalidArgumentException                  `$name` must be a `$targetType`, not an `array`.
-	 * @return string|\string[]|int|\int[]|bool|\bool[]|array|mixed
+	 * @param  string           $name
+	 * Cookie string name.
+	 * @param  CollectionFilter $pregReplaceAllowedChars
+	 * If String - list of regular expression characters to only keep, 
+	 * if array - `preg_replace()` pattern and reverse, if `FALSE`, 
+	 * raw value is returned.
+	 * @param  CollectionItem   $ifNullValue
+	 * Default value returned if given param name is null.
+	 * @param  string           $targetType
+	 * Target type to retype param value or default if-null value. 
+	 * If param is an array, every param item will be retyped 
+	 * into given target type.
+	 * @throws \InvalidArgumentException
+	 * `$name` must be a `$targetType`, not an `array`.
+	 * @return CollectionItem
 	 */
 	public function GetCookie (
 		$name = '',
@@ -466,12 +511,20 @@ trait CollectionsMethods {
 	}
 
 	/**
-	 * Get filtered param or header value for characters defined as second argument to use them in `preg_replace()`.
-	 * @param  string|string[]|NULL $rawValue
-	 * @param  string|array|bool    $pregReplaceAllowedChars If String - list of regular expression characters to only keep, if array - `preg_replace()` pattern and reverse, if `FALSE`, raw value is returned.
-	 * @param  mixed                $ifNullValue             Default value returned if given param name is null.
-	 * @param  string               $targetType              Target type to retype param value or default if-null value. If param is an array, every param item will be retyped into given target type.
-	 * @return string|\string[]|int|\int[]|bool|\bool[]|array|mixed
+	 * Get filtered param or header value for characters defined 
+	 * as second argument to use them in `preg_replace()`.
+	 * @param  string|array<string>|NULL $rawValue
+	 * @param  CollectionFilter          $pregReplaceAllowedChars
+	 * If String - list of regular expression characters to only keep, 
+	 * if array - `preg_replace()` pattern and reverse, if `FALSE`, 
+	 * raw value is returned.
+	 * @param  CollectionItem            $ifNullValue
+	 * Default value returned if given param name is null.
+	 * @param  string                    $targetType
+	 * Target type to retype param value or default if-null value. 
+	 * If param is an array, every param item will be retyped into 
+	 * given target type.
+	 * @return CollectionItem
 	 */
 	protected function getParamItem (
 		& $rawValue = NULL,
@@ -526,9 +579,13 @@ trait CollectionsMethods {
 	}
 
 	/**
-	 * Clean param value by given list of allowed chars or by given `preg_replace()` pattern and reverse.
-	 * @param  string            $rawValue
-	 * @param  string|array|bool $pregReplaceAllowedChars If String - list of regular expression characters to only keep, if array - `preg_replace()` pattern and reverse, if `FALSE`, raw value is returned.
+	 * Clean param value by given list of allowed chars 
+	 * or by given `preg_replace()` pattern and reverse.
+	 * @param  string           $rawValue
+	 * @param  CollectionFilter $pregReplaceAllowedChars
+	 * If String - list of regular expression characters to only keep, 
+	 * if array - `preg_replace()` pattern and reverse, if `FALSE`, 
+	 * raw value is returned.
 	 * @return string
 	 */
 	protected function cleanParamValue ($rawValue, $pregReplaceAllowedChars = "a-zA-Z0-9_;, /\-\@\:") {
