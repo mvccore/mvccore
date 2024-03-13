@@ -20,6 +20,7 @@ namespace MvcCore\Application;
  * - Global store for all main core class names, to use them as modules,
  *   to be changed any time (request class, response class, debug class, etc.).
  * @mixin \MvcCore\Application
+ * @phpstan-type CustomHandlerCallable callable(\MvcCore\IRequest, \MvcCore\IResponse): (false|void)
  */
 trait GettersSetters {
 
@@ -69,7 +70,7 @@ trait GettersSetters {
 	 * @return bool
 	 */
 	public function GetAttributesAnotations () {
-		return $this->attributesAnotation;
+		return $this->attributesAnotations;
 	}
 
 	/**
@@ -162,7 +163,7 @@ trait GettersSetters {
 
 	/**
 	 * @inheritDoc
-	 * @var \MvcCore\Config|NULL
+	 * @return \MvcCore\Config|NULL
 	 */
 	public function GetConfig () {
 		if ($this->config === NULL) {
@@ -174,7 +175,7 @@ trait GettersSetters {
 
 	/**
 	 * @inheritDoc
-	 * @var \MvcCore\Environment
+	 * @return \MvcCore\Environment
 	 */
 	public function GetEnvironment () {
 		if ($this->environment === NULL) {
@@ -262,7 +263,7 @@ trait GettersSetters {
 
 	/**
 	 * @inheritDoc
-	 * @return \string[]
+	 * @return array<string>
 	 */
 	public function GetDefaultControllerAndActionNames () {
 		return [$this->defaultControllerName, $this->defaultControllerDefaultActionName];
@@ -328,11 +329,11 @@ trait GettersSetters {
 
 	/**
 	 * @inheritDoc
-	 * @param  bool $attributesAnotation
+	 * @param  bool $attributesAnotations
 	 * @return \MvcCore\Application
 	 */
-	public function SetAttributesAnotations ($attributesAnotation = TRUE) {
-		$this->attributesAnotation = $attributesAnotation;
+	public function SetAttributesAnotations ($attributesAnotations = TRUE) {
+		$this->attributesAnotations = $attributesAnotations;
 		return $this;
 	}
 	
@@ -529,113 +530,81 @@ trait GettersSetters {
 
 	/**
 	 * @inheritDoc`
-	 * @param  callable $handler
-	 * @param  int|NULL $priorityIndex
+	 * @param  CustomHandlerCallable $handler
+	 * @param  int|NULL              $priorityIndex
 	 * @return \MvcCore\Application
 	 */
 	public function AddPreRouteHandler (callable $handler, $priorityIndex = NULL) {
-		if (!is_callable($handler))
-			throw new \InvalidArgumentException(
-				"[".get_class($this)."] Pre route handler is not callable (handler: {$handler}, priorityIndex: {$priorityIndex})."
-			);
 		return $this->setHandler($this->preRouteHandlers, $handler, $priorityIndex);
 	}
 
 	/**
 	 * @inheritDoc
-	 * @param  callable $handler
-	 * @param  int|NULL $priorityIndex
+	 * @param  CustomHandlerCallable $handler
+	 * @param  int|NULL              $priorityIndex
 	 * @return \MvcCore\Application
 	 */
 	public function AddPostRouteHandler (callable $handler, $priorityIndex = NULL) {
-		if (!is_callable($handler))
-			throw new \InvalidArgumentException(
-				"[".get_class($this)."] Post route handler is not callable (handler: {$handler}, priorityIndex: {$priorityIndex})."
-			);
 		return $this->setHandler($this->postRouteHandlers, $handler, $priorityIndex);
 	}
 
 	/**
 	 * @inheritDoc
-	 * @param  callable $handler
-	 * @param  int|NULL $priorityIndex
+	 * @param  CustomHandlerCallable $handler
+	 * @param  int|NULL              $priorityIndex
 	 * @return \MvcCore\Application
 	 */
 	public function AddPreSentHeadersHandler (callable $handler, $priorityIndex = NULL) {
-		if (!is_callable($handler))
-			throw new \InvalidArgumentException(
-				"[".get_class($this)."] Pre sent headers handler is not callable (handler: {$handler}, priorityIndex: {$priorityIndex})."
-			);
 		return $this->setHandler($this->preSentHeadersHandlers, $handler, $priorityIndex);
 	}
 
 	/**
 	 * @inheritDoc
-	 * @param  callable $handler
-	 * @param  int|NULL $priorityIndex
+	 * @param  CustomHandlerCallable $handler
+	 * @param  int|NULL              $priorityIndex
 	 * @return \MvcCore\Application
 	 */
 	public function AddPreSentBodyHandler (callable $handler, $priorityIndex = NULL) {
-		if (!is_callable($handler))
-			throw new \InvalidArgumentException(
-				"[".get_class($this)."] Pre sent body handler is not callable (handler: {$handler}, priorityIndex: {$priorityIndex})."
-			);
 		return $this->setHandler($this->preSentBodyHandlers, $handler, $priorityIndex);
 	}
 
 	/**
 	 * @inheritDoc
-	 * @param  callable $handler
-	 * @param  int|NULL $priorityIndex
+	 * @param  CustomHandlerCallable $handler
+	 * @param  int|NULL              $priorityIndex
 	 * @return \MvcCore\Application
 	 */
 	public function AddPreDispatchHandler (callable $handler, $priorityIndex = NULL) {
-		if (!is_callable($handler))
-			throw new \InvalidArgumentException(
-				"[".get_class($this)."] Pre dispatch handler is not callable (handler: {$handler}, priorityIndex: {$priorityIndex})."
-			);
 		return $this->setHandler($this->preDispatchHandlers, $handler, $priorityIndex);
 	}
 
 	/**
 	 * @inheritDoc
-	 * @param  callable $handler
-	 * @param  int|NULL $priorityIndex
+	 * @param  CustomHandlerCallable $handler
+	 * @param  int|NULL              $priorityIndex
 	 * @return \MvcCore\Application
 	 */
 	public function AddPostDispatchHandler (callable $handler, $priorityIndex = NULL) {
-		if (!is_callable($handler))
-			throw new \InvalidArgumentException(
-				"[".get_class($this)."] Post dispatch handler is not callable (handler: {$handler}, priorityIndex: {$priorityIndex})."
-			);
 		return $this->setHandler($this->postDispatchHandlers, $handler, $priorityIndex);
 	}
 
 	/**
 	 * @inheritDoc
-	 * @param  callable $handler
-	 * @param  int|NULL $priorityIndex
+	 * @param  CustomHandlerCallable $handler
+	 * @param  int|NULL              $priorityIndex
 	 * @return \MvcCore\Application
 	 */
 	public function AddPostTerminateHandler (callable $handler, $priorityIndex = NULL) {
-		if (!is_callable($handler))
-			throw new \InvalidArgumentException(
-				"[".get_class($this)."] Post terminate handler is not callable (handler: {$handler}, priorityIndex: {$priorityIndex})."
-			);
 		return $this->setHandler($this->postTerminateHandlers, $handler, $priorityIndex);
 	}
 
 	/**
 	 * @inheritDoc
-	 * @param  callable $handler
-	 * @param  int|NULL $priorityIndex
+	 * @param  CustomHandlerCallable $handler
+	 * @param  int|NULL              $priorityIndex
 	 * @return \MvcCore\Application
 	 */
 	public function AddCsrfErrorHandler (callable $handler, $priorityIndex = NULL) {
-		if (!is_callable($handler))
-			throw new \InvalidArgumentException(
-				"[".get_class($this)."] CSRF error handler is not callable (handler: {$handler}, priorityIndex: {$priorityIndex})."
-			);
 		return $this->setHandler($this->csrfErrorHandlers, $handler, $priorityIndex);
 	}
 }
