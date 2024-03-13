@@ -20,10 +20,12 @@ trait UrlBuilding {
 
 	/**
 	 * @inheritDoc
-	 * @param  string $controllerActionOrRouteName Should be `"Controller:Action"` combination 
-	 *                                             or just any route name as custom specific string.
-	 * @param  array  $params                      Optional, array with params, key is 
-	 *                                             param name, value is param value.
+	 * @param  string              $controllerActionOrRouteName
+	 * Should be `"Controller:Action"` combination 
+	 * or just any route name as custom specific string.
+	 * @param  array<string,mixed> $params
+	 * Optional, array with params, key is 
+	 * param name, value is param value.
 	 * @throws \InvalidArgumentException
 	 * @return string
 	 */
@@ -63,7 +65,7 @@ trait UrlBuilding {
 				// to load more routes for example from database and than, try to
 				// find route under key `$ctrlActionOrRouteNameKey` again
 				$urlRouteFound = FALSE;
-				if (!isset($this->noUrlRoutes)) {
+				if (!isset($this->noUrlRoutes[$ctrlActionOrRouteNameKey])) {
 					if ($this->preRouteUrlBuildingHandler !== NULL) {
 						$newUrlRoutes = call_user_func(
 							$this->preRouteUrlBuildingHandler, 
@@ -79,7 +81,7 @@ trait UrlBuilding {
 						$this->noUrlRoutes[$ctrlActionOrRouteNameKey] = TRUE;
 					}
 				}
-				if ($urlRouteFound) {
+				if ($urlRouteFound) { // @phpstan-ignore-line
 					// if route under key `$ctrlActionOrRouteNameKey` has been loaded by calling
 					// configured handler `$this->preRouteUrlBuildingHandler`, complete URL by this route
 					$result = $this->UrlByRoute(
@@ -120,7 +122,7 @@ trait UrlBuilding {
 
 	/**
 	 * Returm first array item encoded by `rawurlencode()`.
-	 * @param  array $match
+	 * @param  array<int|string,mixed> $match
 	 * @return string
 	 */
 	protected static function encodeUrlCallback ($match) {
