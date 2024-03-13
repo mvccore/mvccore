@@ -209,10 +209,20 @@ interface IApplication extends \MvcCore\Application\IConstants {
 	 * - `/App/Controllers`
 	 * - `/App/Models`
 	 * - `/App/Views`
-	 * It should by reconfigured to custom value in the very application beginning.
+	 * It should by reconfigured to custom value in the very 
+	 * application beginning or by constant `MVCCORE_APP_ROOT_DIRNAME`.
 	 * @return string
 	 */
 	public function GetAppDir ();
+
+	/**
+	 * Get application web server document root directory name as `"www"` 
+	 * by default, where is placed `index.php` startup script.
+	 * It should by reconfigured to custom value in the very 
+	 * application beginning or by constant `MVCCORE_DOC_ROOT_DIRNAME`.
+	 * @return string
+	 */
+	public function GetDocRootDir ();
 
 	/**
 	 * Get CLI scripts directory name as `"Cli"` by default.
@@ -429,12 +439,23 @@ interface IApplication extends \MvcCore\Application\IConstants {
 	 * - `/App/Controllers`
 	 * - `/App/Models`
 	 * - `/App/Views`
-	 * It should by reconfigured to custom value in the very application beginning.
+	 * It should by reconfigured to custom value in the very 
+	 * application beginning or by constant `MVCCORE_APP_ROOT_DIRNAME`.
 	 * Core configuration method.
 	 * @param  string $appDir
 	 * @return \MvcCore\Application
 	 */
 	public function SetAppDir ($appDir);
+
+	/**
+	 * Set application web server document root directory name as `"www"` 
+	 * by default, where is placed `index.php` startup script.
+	 * It should by reconfigured to custom value in the very 
+	 * application beginning or by constant `MVCCORE_DOC_ROOT_DIRNAME`.
+	 * @param  string $docRootDir
+	 * @return \MvcCore\Application
+	 */
+	public function SetDocRootDir ($docRootDir);
 	
 	/**
 	 * Set CLI scripts directory name as `"Cli"` by default.

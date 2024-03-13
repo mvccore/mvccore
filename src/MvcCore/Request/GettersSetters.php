@@ -300,12 +300,22 @@ trait GettersSetters {
 	 */
 	public function GetAppRoot () {
 		if ($this->appRoot === NULL) {
-			$insidePhar = strlen(\Phar::running()) > 0;
-			$this->appRoot = defined('MVCCORE_APP_ROOT')
-				? constant('MVCCORE_APP_ROOT')
-				: $this->GetDocumentRoot();
-			if (!$insidePhar)
-				$this->appRoot = ucfirst($this->appRoot);
+			if (defined('MVCCORE_APP_ROOT')) {
+				$this->appRoot = constant('MVCCORE_APP_ROOT');
+				$insidePhar = strlen(\Phar::running()) > 0;
+				if (!$insidePhar)
+					$this->appRoot = ucfirst($this->appRoot);
+			} else {
+				$docRoot = $this->GetDocumentRoot();
+				$app = self::$app ?: (self::$app = \MvcCore\Application::GetInstance()); // @phpstan-ignore-line
+				$docRootDirName = $app->GetDocRootDir();
+				$docRootDirNamePos = mb_strrpos($docRoot, '/' . $docRootDirName);
+				$estimatedPos = mb_strlen($docRoot) - mb_strlen($docRootDirName) - 1;
+				$this->appRoot = $docRootDirNamePos !== FALSE && $docRootDirNamePos === $estimatedPos
+					? mb_substr($docRoot, 0, $estimatedPos)
+					: $docRoot;
+				define('MVCCORE_APP_ROOT', $this->appRoot);
+			}
 		}
 		return $this->appRoot;
 	}
@@ -328,18 +338,41 @@ trait GettersSetters {
 		if ($this->documentRoot === NULL) {
 			// `ucfirst()` - cause IIS has lower case drive name here - different from __DIR__ value
 			$insidePhar = strlen(\Phar::running()) > 0;
-			if (defined('MVCCORE_DOCUMENT_ROOT')) {
-				$this->documentRoot = constant('MVCCORE_DOCUMENT_ROOT');
+			if (defined('MVCCORE_DOC_ROOT')) {
+				$this->documentRoot = constant('MVCCORE_DOC_ROOT');
 				if (!$insidePhar)
 					$this->documentRoot = ucfirst($this->documentRoot);
 			} else {
-				$indexFilePath = ucfirst(str_replace(
-					['\\', '//'], '/', 
-					$this->globalServer['SCRIPT_FILENAME']
-				));
-				$this->documentRoot = $insidePhar
-					? 'phar://' . $indexFilePath
-					: dirname($indexFilePath);
+				if (\PHP_SAPI === 'cli') {
+					$backtraceItems = debug_backtrace(DEBUG_BACKTRACE_IGNORE_ARGS);
+					$scriptFilename = $backtraceItems[count($backtraceItems) - 1]['file'];
+					// If php is running by direct input like `php -r "/* php code */":
+					if (
+						mb_strpos($scriptFilename, DIRECTORY_SEPARATOR) === FALSE &&
+						empty($this->globalServer['SCRIPT_FILENAME'])
+					) {
+						// Try to define app root and document root 
+						// by possible Composer class location:
+						$composerFullClassName = 'Composer\\Autoload\\ClassLoader';
+						if (class_exists($composerFullClassName, TRUE)) {
+							$ccType = new \ReflectionClass($composerFullClassName);
+							$scriptFilename = dirname($ccType->getFileName(), 2);
+						} else {
+							// If there is no composer class, define 
+							// document root by called current working directory:
+							$scriptFilename = getcwd();
+						}
+					}
+				} else {
+					$scriptFilename = $this->globalServer['SCRIPT_FILENAME'];
+				}
+				$docRoot = $insidePhar
+					? $scriptFilename
+					: dirname($scriptFilename);
+				// `ucfirst()` - cause IIS has lower case drive name here - different from __DIR__ value
+				$docRoot = str_replace(['\\', '//'], '/', ucfirst($docRoot));
+				$this->documentRoot = $insidePhar ? 'phar://' . $docRoot : $docRoot;
+				define('MVCCORE_DOC_ROOT', $this->documentRoot);
 			}
 		}
 		return $this->documentRoot;

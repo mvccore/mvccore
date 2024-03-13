@@ -14,12 +14,14 @@
 call_user_func(function () {
 	static $includePaths = NULL;
 	static $currentDir = NULL;
+	// check PHP requirements
 	if (!defined('MVCCORE_REQUIREMENTS')) {
 		if (\PHP_VERSION_ID < 50400)
 			die("MvcCore requires at least PHP version 5.4.0, your PHP version is: " . PHP_VERSION . ".");
 		define('MVCCORE_REQUIREMENTS', TRUE);
 	}
-	if (!defined('MVCCORE_DOCUMENT_ROOT')) {
+	// Initialize document root if not defined
+	if (!defined('MVCCORE_DOC_ROOT')) {
 		if (\PHP_SAPI === 'cli') {
 			$backtraceItems = debug_backtrace(DEBUG_BACKTRACE_IGNORE_ARGS);
 			$scriptFilename = $backtraceItems[count($backtraceItems) - 1]['file'];
@@ -28,39 +30,55 @@ call_user_func(function () {
 				mb_strpos($scriptFilename, DIRECTORY_SEPARATOR) === FALSE &&
 				empty($_SERVER['SCRIPT_FILENAME'])
 			) {
-				// Try to define app root and document root by possible Composer class location:
+				// Try to define app root and document root 
+				// by possible Composer class location:
 				$composerFullClassName = 'Composer\\Autoload\\ClassLoader';
 				if (class_exists($composerFullClassName, TRUE)) {
 					$ccType = new \ReflectionClass($composerFullClassName);
 					$scriptFilename = dirname($ccType->getFileName(), 2);
 				} else {
-					// If there is no composer class, define app root and document root by called current working directory:
-					$scriptFilename = getcwd() . '/php';
+					// If there is no composer class, define 
+					// document root by called current working directory:
+					$scriptFilename = getcwd();
 				}
 			}
 		} else {
 			$scriptFilename = $_SERVER['SCRIPT_FILENAME'];
 		}
 		$insidePhar = strlen(\Phar::running()) > 0;
+		$docRoot = $insidePhar
+			? $scriptFilename
+			: dirname($scriptFilename);
 		// `ucfirst()` - cause IIS has lower case drive name here - different from __DIR__ value
-		$scriptFilename = str_replace(['\\', '//'], '/', $scriptFilename);
-		if (!$insidePhar)
-			$scriptFilename = ucfirst($scriptFilename);
-		define('MVCCORE_DOCUMENT_ROOT', $insidePhar
-			? 'phar://' . $scriptFilename
-			: dirname($scriptFilename)
-		);
+		$docRoot = str_replace(['\\', '//'], '/', ucfirst($docRoot));
+		define('MVCCORE_DOC_ROOT', $insidePhar ? 'phar://' . $docRoot : $docRoot);
 	}
-	if (!defined('MVCCORE_APP_ROOT')) 
-		define('MVCCORE_APP_ROOT', constant('MVCCORE_DOCUMENT_ROOT'));
+	// Initialize app root if not defined
+	if (!defined('MVCCORE_DOC_ROOT_DIRNAME')) 
+		define('MVCCORE_DOC_ROOT_DIRNAME', 'www');
+	if (!defined('MVCCORE_APP_ROOT')) {
+		$docRoot = constant('MVCCORE_DOC_ROOT');
+		$docRootDirName = constant('MVCCORE_DOC_ROOT_DIRNAME');
+		$docRootDirNamePos = mb_strrpos($docRoot, '/' . $docRootDirName);
+		$estimatedPos = mb_strlen($docRoot) - mb_strlen($docRootDirName) - 1;
+		$appRoot = $docRootDirNamePos !== FALSE && $docRootDirNamePos === $estimatedPos
+			? mb_substr($docRoot, 0, $estimatedPos)
+			: $docRoot;
+		define('MVCCORE_APP_ROOT', $appRoot);
+	}
+	// Initialize autoloading include paths
 	if ($includePaths === NULL) {
 		if (defined('MVCCORE_INCLUDE_PATHS')) {
 			$includePaths = explode(PATH_SEPARATOR, constant('MVCCORE_INCLUDE_PATHS'));
 		} else {
+			if (!defined('MVCCORE_APP_ROOT_DIRNAME')) 
+				define('MVCCORE_APP_ROOT_DIRNAME', 'App');
+			if (!defined('MVCCORE_LIBS_DIRNAME')) 
+				define('MVCCORE_LIBS_DIRNAME', 'Libs');
 			$includePaths = [
 				MVCCORE_APP_ROOT,
-				MVCCORE_APP_ROOT . '/App',
-				MVCCORE_APP_ROOT . '/Libs',
+				MVCCORE_APP_ROOT . '/' . MVCCORE_APP_ROOT_DIRNAME,
+				MVCCORE_APP_ROOT . '/' . MVCCORE_LIBS_DIRNAME,
 			];
 		}
 	}
@@ -68,6 +86,7 @@ call_user_func(function () {
 		$currentDir = str_replace('\\', '/', __DIR__);
 	if (!in_array($currentDir, $includePaths, TRUE)) 
 		array_unshift($includePaths, $currentDir);
+	// Initialize autoloading
 	$autoload = function ($className) use ($includePaths) {
 		$classSeparator = mb_strpos($className, '\\') === FALSE ? '_' : '\\';
 		$fileName = str_replace($classSeparator, '/', $className) . '.php';

@@ -113,14 +113,16 @@ trait InternalInits {
 		$indexFilePath = ucfirst(str_replace(['\\', '//'], '/', $indexFilePath));
 		$lastSlashPos = mb_strrpos($indexFilePath, '/');
 		
-		$this->documentRoot = defined('MVCCORE_DOCUMENT_ROOT')
-			? ucfirst(constant('MVCCORE_DOCUMENT_ROOT'))
+		$this->documentRoot = defined('MVCCORE_DOC_ROOT')
+			? ucfirst(constant('MVCCORE_DOC_ROOT'))
 			: (strlen(\Phar::running()) > 0 
 				? 'phar://' . $indexFilePath
 				: mb_substr($indexFilePath, 0, $lastSlashPos));
+
 		$this->appRoot = defined('MVCCORE_APP_ROOT')
 			? ucfirst(constant('MVCCORE_APP_ROOT'))
-			: $this->documentRoot;
+			: $this->documentRoot; // TODO: tady se musí ubrat www
+
 		$this->scriptName = mb_substr($indexFilePath, $lastSlashPos);
 
 		$args = isset($this->globalServer['argv']) 
@@ -311,7 +313,7 @@ trait InternalInits {
 	 */
 	protected function parseBodyParams ($contentType) {
 		$result = [];
-		$app = self::$app ?: (self::$app = \MvcCore\Application::GetInstance());
+		$app = self::$app ?: (self::$app = \MvcCore\Application::GetInstance()); // @phpstan-ignore-line
 		$toolClass = $app->GetToolClass();
 
 		$urlEncType = mb_strpos($contentType, 'application/x-www-form-urlencoded') !== FALSE;

@@ -234,7 +234,25 @@ trait GettersSetters {
 	 * @return string
 	 */
 	public function GetAppDir () {
+		if ($this->appDir === NULL) {
+			if (!defined('MVCCORE_APP_ROOT_DIRNAME')) 
+				define('MVCCORE_APP_ROOT_DIRNAME', 'App');
+			$this->appDir = constant('MVCCORE_APP_ROOT_DIRNAME');
+		}
 		return $this->appDir;
+	}
+	
+	/**
+	 * @inheritDoc
+	 * @return string
+	 */
+	public function GetDocRootDir () {
+		if ($this->docRootDir === NULL) {
+			if (!defined('MVCCORE_DOC_ROOT_DIRNAME')) 
+				define('MVCCORE_DOC_ROOT_DIRNAME', 'www');
+			$this->docRootDir = constant('MVCCORE_DOC_ROOT_DIRNAME');
+		}
+		return $this->docRootDir;
 	}
 	
 	/**
@@ -455,6 +473,16 @@ trait GettersSetters {
 	 */
 	public function SetAppDir ($appDir) {
 		$this->appDir = $appDir;
+		return $this;
+	}
+
+	/**
+	 * @inheritDoc
+	 * @param  string $docRootDir
+	 * @return \MvcCore\Application
+	 */
+	public function SetDocRootDir ($docRootDir) {
+		$this->docRootDir = $docRootDir;
 		return $this;
 	}
 	

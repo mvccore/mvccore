@@ -346,10 +346,20 @@ trait Props {
 	 * - `/App/Controllers`
 	 * - `/App/Models`
 	 * - `/App/Views`
-	 * It should by reconfigured to custom value in the very application beginning.
-	 * @var string
+	 * It should by reconfigured to custom value in the very 
+	 * application beginning or by constant `MVCCORE_APP_ROOT_DIRNAME`.
+	 * @var string|NULL
 	 */
-	protected $appDir = 'App';
+	protected $appDir = NULL;
+
+	/**
+	 * Application web server document root directory name as `"www"` 
+	 * by default, where is placed `index.php` startup script.
+	 * It should by reconfigured to custom value in the very 
+	 * application beginning or by constant `MVCCORE_DOC_ROOT_DIRNAME`.
+	 * @var string|NULL
+	 */
+	protected $docRootDir = NULL;
 	
 	/**
 	 * CLI scripts directory name as `"Cli"` by default.
