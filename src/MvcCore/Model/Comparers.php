@@ -52,8 +52,8 @@ trait Comparers {
 				
 			} else if ($value1 instanceof \DateInterval && $value2 instanceof \DateInterval) {
 				$valuasAreTheSame = abs(
-					static::convertIntervalToFloat($value1) - 
-					static::convertIntervalToFloat($value2)
+					static::convertIntervalToFloat(NULL, $value1) - 
+					static::convertIntervalToFloat(NULL, $value2)
 				) < $floatEpsilon;
 
 			} else if ($value1 instanceof \DateTimeZone && $value2 instanceof \DateTimeZone) {
@@ -65,8 +65,8 @@ trait Comparers {
 					$value1->getStartDate() == $value2->getStartDate() && 
 					$value1->getEndDate() == $value2->getEndDate() && 
 					abs(
-						static::convertIntervalToFloat($value1->getDateInterval()) - 
-						static::convertIntervalToFloat($value2->getDateInterval())
+						static::convertIntervalToFloat(NULL, $value1->getDateInterval()) - 
+						static::convertIntervalToFloat(NULL, $value2->getDateInterval())
 					) < $floatEpsilon
 				);
 
