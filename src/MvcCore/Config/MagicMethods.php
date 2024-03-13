@@ -20,14 +20,14 @@ trait MagicMethods {
 
 	/**
 	 * Serialize only given properties:
-	 * @return \string[]
+	 * @return array<string>
 	 */
 	public function __sleep () {
 		if (!$this->mergedData) {
-			$app = self::$app ?: self::$app = \MvcCore\Application::GetInstance();
+			$app = self::$app ?: (self::$app = \MvcCore\Application::GetInstance()); // @phpstan-ignore-line
 			$envName = $app->GetEnvironment()->GetName();
+			$cfgClass = $app->GetConfigClass();
 			if (!$envName) {
-				$cfgClass = $app->GetConfigClass();
 				$envDetectionData = & $cfgClass::GetEnvironmentDetectionData($this);
 				$envClass = $app->GetEnvironmentClass();
 				$envName = $envClass::DetectBySystemConfig((array) $envDetectionData);
@@ -60,10 +60,10 @@ trait MagicMethods {
 	 * Store not defined property inside `$this->currentData` array store.
 	 * @param  string $key
 	 * @param  mixed  $value
-	 * @return mixed
+	 * @return void
 	 */
 	public function __set ($key, $value) {
-		return $this->currentData[$key] = $value;
+		$this->currentData[$key] = $value;
 	}
 
 	/**
@@ -111,7 +111,7 @@ trait MagicMethods {
 	 */
 	#[\ReturnTypeWillChange]
 	public function next () {
-		return next($this->currentData);
+		next($this->currentData);
 	}
 
 	/**

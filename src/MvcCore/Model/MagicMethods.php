@@ -20,8 +20,8 @@ trait MagicMethods {
 	
 	/**
 	 * @inheritDoc
-	 * @param  string $rawName
-	 * @param  array  $arguments
+	 * @param  string           $rawName
+	 * @param  array<int,mixed> $arguments
 	 * @throws \InvalidArgumentException If `strtolower($rawName)` doesn't begin with `"get"` or with `"set"`.
 	 * @return mixed|\MvcCore\Model
 	 */
@@ -53,16 +53,18 @@ trait MagicMethods {
 	 * @param  string $name
 	 * @param  mixed  $value
 	 * @throws \InvalidArgumentException If name is `initialValues` or any custom name in extended class.
-	 * @return bool
+	 * @return void
 	 */
 	public function __set ($name, $value) {
 		if (isset(static::$protectedProperties[$name]))
 			throw new \InvalidArgumentException(
 				"[".get_class($this)."] It's not possible to change strongly property: `{$name}`."
 			);
-		if (property_exists($this, lcfirst($name)))
-			return $this->{lcfirst($name)} = $value;
-		return $this->{$name} = $value;
+		if (property_exists($this, lcfirst($name))) {
+			$this->{lcfirst($name)} = $value;
+		} else {
+			$this->{$name} = $value;
+		}
 	}
 
 	/**
@@ -85,7 +87,7 @@ trait MagicMethods {
 
 	/**
 	 * @inheritDoc
-	 * @return \string[]
+	 * @return array<string>
 	 */
 	public function __sleep () {
 		$toolsClass = \MvcCore\Application::GetInstance()->GetToolClass();

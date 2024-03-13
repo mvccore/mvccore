@@ -35,10 +35,10 @@ trait MagicMethods {
 	 * @inheritDoc
 	 * @param  string $key
 	 * @param  mixed  $value
-	 * @return mixed
+	 * @return void
 	 */
 	public function __set ($key, $value) {
-		return $_SESSION[$this->__name][$key] = $value;
+		$_SESSION[$this->__name][$key] = $value;
 	}
 
 	/**
@@ -63,7 +63,7 @@ trait MagicMethods {
 
 	/**
 	 * Print all about current session namespace instance for debug purposes.
-	 * @return array
+	 * @return array<string,mixed>
 	 */
 	public function __debugInfo () {
 		$hoops = isset(static::$meta->hoops[$this->__name])
@@ -74,7 +74,9 @@ trait MagicMethods {
 			: NULL;
 		return [
 			'name'					=> $this->__name,
-			'expirationSeconds'		=> date('D, d M Y H:i:s', $expiration),
+			'expirationSeconds'		=> $expiration !== NULL 
+				? date('D, d M Y H:i:s', $expiration)
+				: NULL,
 			'expirationHoops'		=> $hoops,
 			'values'				=> $_SESSION[$this->__name],
 		];
@@ -120,7 +122,7 @@ trait MagicMethods {
 	 */
 	#[\ReturnTypeWillChange]
 	public function next () {
-		return next($_SESSION[$this->__name]);
+		next($_SESSION[$this->__name]);
 	}
 
 	/**

@@ -20,7 +20,7 @@ trait GettersSetters {
 	
 	/**
 	 * @inheritDoc
-	 * @param  \string[] $twoSegmentTlds,... List of two-segment top-level domains without leading dot.
+	 * @param  array<string> $twoSegmentTlds,... List of two-segment top-level domains without leading dot.
 	 * @return void
 	 */
 	public static function SetTwoSegmentTlds ($twoSegmentTlds) {
@@ -34,7 +34,7 @@ trait GettersSetters {
 
 	/**
 	 * @inheritDoc
-	 * @param  \string[] $twoSegmentTlds,... List of two-segment top-level domains without leading dot.
+	 * @param  array<string> $twoSegmentTlds,... List of two-segment top-level domains without leading dot.
 	 * @return void
 	 */
 	public static function AddTwoSegmentTlds ($twoSegmentTlds) {
@@ -47,7 +47,7 @@ trait GettersSetters {
 	
 	/**
 	 * @inheritDoc
-	 * @param  \string[]|\int[] $defaultPorts,... List of default ports, not defined in server name by default.
+	 * @param  array<string>|array<int> $defaultPorts,... List of default ports, not defined in server name by default.
 	 * @return void
 	 */
 	public static function SetDefaultPorts ($defaultPorts) {
@@ -62,7 +62,7 @@ trait GettersSetters {
 
 	/**
 	 * @inheritDoc
-	 * @param  \string[]|\int[] $defaultPorts,... List of default ports, not defined in server name by default.
+	 * @param  array<string>|array<int> $defaultPorts,... List of default ports, not defined in server name by default.
 	 * @return void
 	 */
 	public static function AddDefaultPorts ($defaultPorts) {
@@ -217,8 +217,8 @@ trait GettersSetters {
 
 	/**
 	 * @inheritDoc
-	 * @param  string $rawName
-	 * @param  array  $arguments
+	 * @param  string           $rawName
+	 * @param  array<int,mixed> $arguments
 	 * @throws \InvalidArgumentException
 	 * @return mixed|\MvcCore\Request
 	 */
@@ -263,13 +263,15 @@ trait GettersSetters {
 	 * @inheritDoc
 	 * @param  string $name
 	 * @param  mixed  $value
-	 * @return \MvcCore\Request
+	 * @return void
 	 */
 	public function __set ($name, $value) {
 		$lcPropName = lcfirst($name);
-		if (property_exists($this, $lcPropName))
-			return $this->{$lcPropName} = $value;
-		return $this->{$name} = $value;
+		if (property_exists($this, $lcPropName)) {
+			$this->{$lcPropName} = $value;
+		} else {
+			$this->{$name} = $value;
+		}
 	}
 
 	

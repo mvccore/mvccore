@@ -21,11 +21,11 @@ trait MagicMethods {
 	/**
 	 * @inheritDoc
 	 * @param  string $name
-	 * @param  mixed $value
-	 * @return mixed
+	 * @param  mixed  $value
+	 * @return void
 	 */
 	public function __set ($name, $value) {
-		return $this->__protected['store'][$name] = & $value;
+		$this->__protected['store'][$name] = & $value;
 	}
 
 	/**
