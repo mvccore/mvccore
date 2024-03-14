@@ -31,8 +31,8 @@ trait Props {
 	protected static $tmpPath = '~/Var/Tmp';
 
 	/**
-	 * All registered controllers instances.
-	 * @var \MvcCore\Controller[]
+	 * All registered controllers instances and it's types.
+	 * @var array<string,array{0:\MvcCore\Controller,1:\ReflectionClass}>
 	 */
 	protected static $allControllers = [];
 
@@ -208,7 +208,7 @@ trait Props {
 
 	/**
 	 * Registered sub-controllers instances.
-	 * @var \MvcCore\Controller[]
+	 * @var array<string|int,\MvcCore\Controller>
 	 */
 	protected $childControllers = [];
 

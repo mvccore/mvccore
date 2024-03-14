@@ -72,6 +72,13 @@ interface IController extends \MvcCore\Controller\IConstants {
 	public static function CreateInstance ();
 
 	/**
+	 * Remove controller from dispatching process.
+	 * @param  \MvcCore\IController $controller
+	 * @return void
+	 */
+	public static function RemoveController (\MvcCore\IController $controller);
+
+	/**
 	 * Try to determinate `\MvcCore\Controller` instance from `debug_bactrace()`,
 	 * where was form created, if no form instance given into form constructor.
 	 * If no previous controller instance founded, `NULL` is returned.
