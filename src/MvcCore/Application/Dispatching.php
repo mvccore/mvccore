@@ -148,7 +148,6 @@ trait Dispatching {
 		if ($route === NULL) 
 			throw new \Exception('No route for request', 404);
 		list ($ctrlPc, $actionPc) = [$route->GetController(), $route->GetAction()];
-		$actionName = $actionPc . 'Action';
 		$viewClass = $this->viewClass;
 		
 		$checkViewIfNoCtrl = FALSE;
@@ -185,7 +184,7 @@ trait Dispatching {
 		}
 
 		return $this->CreateController(
-			$controllerName, $actionName, $viewScriptFullPath
+			$controllerName, $actionPc, $viewScriptFullPath
 		);
 	}
 
@@ -209,15 +208,20 @@ trait Dispatching {
 			}
 			$this->controller = $controller;
 		}
-		/** @var \MvcCore\Controller $ctrl */
-		$ctrl = $this->controller;
-		$ctrl
+		/** @var \MvcCore\Controller $controller */
+		$controller = $this->controller;
+		$controller
 			->SetApplication($this)
 			->SetEnvironment($this->environment)
 			->SetRequest($this->request)
 			->SetResponse($this->response)
 			->SetRouter($this->router);
-		if (!method_exists($this->controller, $actionNamePc) && $ctrlClassFullName !== $this->controllerClass) {
+		$type = new \ReflectionClass($controller);
+		$initName = $actionNamePc . 'Init';
+		$actionName = $actionNamePc . 'Action';
+		$initExists = $type->hasMethod($initName) && $type->getMethod($initName)->isPublic();
+		$actionExists = $type->hasMethod($actionName) && $type->getMethod($actionName)->isPublic();
+		if (!$initExists && !$actionExists && $ctrlClassFullName !== $this->controllerClass) {
 			if (!file_exists($viewScriptFullPath)) {
 				$appRoot = $this->request->GetAppRoot();
 				$viewScriptPath = mb_strpos($viewScriptFullPath, $appRoot) === FALSE
@@ -226,7 +230,7 @@ trait Dispatching {
 				$ctrlClassFullName = $this->request->GetControllerName();
 				throw new \Exception(
 					"Controller class `{$ctrlClassFullName}` "
-					."has not method `{$actionNamePc}` \n"
+					."has no methods `{$initName}` or `{$actionName}` \n"
 					."or view doesn't exist: `{$viewScriptPath}`.",
 					404
 				);
