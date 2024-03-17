@@ -124,6 +124,7 @@ trait Content {
 		}
 		if (!$this->request->IsCli()) {
 			$app = \MvcCore\Application::GetInstance();
+			// no magic in `__get()`, just get what we know it is there:
 			$preSentHeadersHandlers = $app->__get('preSentHeadersHandlers');
 			$app->ProcessCustomHandlers($preSentHeadersHandlers);
 		}
@@ -171,6 +172,7 @@ trait Content {
 	public function SendBody () {
 		if ($this->bodySent) return $this;
 		$app = \MvcCore\Application::GetInstance();
+		// no magic in `__get()`, just get what we know it is there:
 		$preSentBodyHandlers = $app->__get('preSentBodyHandlers');
 		$app->ProcessCustomHandlers($preSentBodyHandlers);
 		echo $this->body;
