@@ -3,28 +3,28 @@
 	"type": "library",
 	"description": "MvcCore is PHP MVC framework to develop and pack projects (partialy or completely) into super fast single file apps and tools.",
 	"keywords": [
-		"mvc", 
-		"mvccore", 
-		"framework",  
-		"plugins", 
-		"simple mvc", 
-		"super fast app", 
-		"easy mvc", 
-		"packed", 
-		"packing", 
+		"mvc",
+		"mvccore",
+		"framework",
+		"plugins",
+		"simple mvc",
+		"super fast app",
+		"easy mvc",
+		"packed",
+		"packing",
 		"packed app",
-		"core", 
-		"config", 
-		"controller", 
-		"debug", 
-		"model", 
-		"request", 
-		"response",  
-		"route",  
-		"router",  
-		"session",  
-		"tool", 
-		"view" 
+		"core",
+		"config",
+		"controller",
+		"debug",
+		"model",
+		"request",
+		"response",
+		"route",
+		"router",
+		"session",
+		"tool",
+		"view"
 	],
 	"license": ["BSD-3-Clause"],
 	"authors": [{
@@ -35,14 +35,14 @@
 		"php": ">=5.4.0"
 	},
 	"require-dev": {
-        "phpstan/phpstan": "^1.10"
+		"phpstan/phpstan": "^1.10"
 	},
 	"suggest": {
 		"mvccore/ext-debug-tracy": "MvcCore Extension - Debug - Tracy (tracy/tracy) - adapter for better development."
 	},
 	"autoload": {
-		"classmap": ["src/"],
-		"files": ["src/startup.php"]
+		"classmap": [ "src/" ],
+		"files": [ "src/startup.php" ]
 	},
 	"minimum-stability": "dev"
 }
