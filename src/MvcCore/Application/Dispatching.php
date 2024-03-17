@@ -87,8 +87,6 @@ trait Dispatching {
 			return TRUE; // stopped, go to termination
 		if (!$this->controller->Dispatch())
 			return FALSE; // stopped and already terminated
-		if (!$this->processCustomHandlers($this->postDispatchHandlers))	
-			return TRUE; // stopped, go to termination
 		return NULL; // everything processed, nothing stopped, go to termination
 	}
 
