@@ -253,6 +253,45 @@ trait Props {
 	protected $postTerminateHandlers = [];
 	
 	/**
+	 * Handler executed before session has been started (before PHP 
+	 * `session_start()` call, when session id is resolved.
+	 * Callable should be void and it's params should be two with following types:
+	 * - `\MvcCore\Request`
+	 * - `\MvcCore\Response`
+	 * Example:
+	 * ```
+	 *   \MvcCore\Application::GetInstance()->AddPreSessionStartHandler(function(
+	 *       \MvcCore\Request $request,
+	 *       \MvcCore\Response $response
+	 *   ) {
+	 *       $sessionId = session_id();
+	 *       // do anything special with session...
+	 *   });
+	 * ```
+	 * @var array<int, array<int, CustomHandlerRecord>>
+	 */
+	protected $preSessionStartHandlers = [];
+	
+	/**
+	 * Handler executed after session has been started and after 
+	 * session has been fully initialized by session metadata. 
+	 * Callable should be void and it's params should be two with following types:
+	 * - `\MvcCore\Request`
+	 * - `\MvcCore\Response`
+	 * Example:
+	 * ```
+	 *   \MvcCore\Application::GetInstance()->AddPostSessionStartHandler(function(
+	 *       \MvcCore\Request $request,
+	 *       \MvcCore\Response $response
+	 *   ) {
+	 *       $_SESSION['special_value'] = TRUE;
+	 *   });
+	 * ```
+	 * @var array<int, array<int, CustomHandlerRecord>>
+	 */
+	protected $postSessionStartHandlers = [];
+	
+	/**
 	 * CSRF protection error custom calls storage.
 	 * Params in `callable` should be two with following types:
 	 * - `\MvcCore\Request`

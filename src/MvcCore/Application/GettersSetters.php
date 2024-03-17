@@ -575,6 +575,26 @@ trait GettersSetters {
 	public function AddPostRouteHandler (callable $handler, $priorityIndex = NULL) {
 		return $this->setHandler($this->postRouteHandlers, $handler, $priorityIndex);
 	}
+	
+	/**
+	 * @inheritDoc
+	 * @param  CustomHandlerCallable $handler
+	 * @param  int|NULL              $priorityIndex
+	 * @return \MvcCore\Application
+	 */
+	public function AddPreDispatchHandler (callable $handler, $priorityIndex = NULL) {
+		return $this->setHandler($this->preDispatchHandlers, $handler, $priorityIndex);
+	}
+	
+	/**
+	 * @inheritDoc
+	 * @param  CustomHandlerCallable $handler
+	 * @param  int|NULL              $priorityIndex
+	 * @return \MvcCore\Application
+	 */
+	public function AddPostDispatchHandler (callable $handler, $priorityIndex = NULL) {
+		return $this->setHandler($this->postDispatchHandlers, $handler, $priorityIndex);
+	}
 
 	/**
 	 * @inheritDoc
@@ -602,28 +622,28 @@ trait GettersSetters {
 	 * @param  int|NULL              $priorityIndex
 	 * @return \MvcCore\Application
 	 */
-	public function AddPreDispatchHandler (callable $handler, $priorityIndex = NULL) {
-		return $this->setHandler($this->preDispatchHandlers, $handler, $priorityIndex);
-	}
-
-	/**
-	 * @inheritDoc
-	 * @param  CustomHandlerCallable $handler
-	 * @param  int|NULL              $priorityIndex
-	 * @return \MvcCore\Application
-	 */
-	public function AddPostDispatchHandler (callable $handler, $priorityIndex = NULL) {
-		return $this->setHandler($this->postDispatchHandlers, $handler, $priorityIndex);
-	}
-
-	/**
-	 * @inheritDoc
-	 * @param  CustomHandlerCallable $handler
-	 * @param  int|NULL              $priorityIndex
-	 * @return \MvcCore\Application
-	 */
 	public function AddPostTerminateHandler (callable $handler, $priorityIndex = NULL) {
 		return $this->setHandler($this->postTerminateHandlers, $handler, $priorityIndex);
+	}
+	
+	/**
+	 * @inheritDoc
+	 * @param  CustomHandlerCallable $handler
+	 * @param  int|NULL              $priorityIndex
+	 * @return \MvcCore\Application
+	 */
+	public function AddPreSessionStartHandler (callable $handler, $priorityIndex = NULL) {
+		return $this->setHandler($this->preSessionStartHandlers, $handler, $priorityIndex);
+	}
+	
+	/**
+	 * @inheritDoc
+	 * @param  CustomHandlerCallable $handler
+	 * @param  int|NULL              $priorityIndex
+	 * @return \MvcCore\Application
+	 */
+	public function AddPostSessionStartHandler (callable $handler, $priorityIndex = NULL) {
+		return $this->setHandler($this->postSessionStartHandlers, $handler, $priorityIndex);
 	}
 
 	/**

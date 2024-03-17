@@ -30,11 +30,21 @@ trait Starting {
 		if ($req->IsInternalRequest() === TRUE) return;
 		$res = self::$res ?: (self::$res = $app->GetResponse());
 		static::setUpSessionId($req, $res);
+		// no magic in `__get()`, just get what we know it is there:
+		$preSessionStartHandlers = $app->__get('preSessionStartHandlers');
+		if (count($preSessionStartHandlers) > 0 && !$app->ProcessCustomHandlers($preSessionStartHandlers)) {
+			$app->Terminate();
+			return;
+		}
 		static::$started = session_start(static::getOptions($req, TRUE));
 		static::$sessionStartTime = time();
 		static::$sessionMaxTime = static::$sessionStartTime;
 		static::setUpMeta();
 		static::setUpData($req);
+		// no magic in `__get()`, just get what we know it is there:
+		$postSessionStartHandlers = $app->__get('postSessionStartHandlers');
+		if (count($postSessionStartHandlers) > 0 && !$app->ProcessCustomHandlers($postSessionStartHandlers))
+			$app->Terminate();
 	}
 
 	/**

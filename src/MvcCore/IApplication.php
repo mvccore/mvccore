@@ -526,14 +526,14 @@ interface IApplication extends \MvcCore\Application\IConstants {
 	 * - `\MvcCore\Request`
 	 * - `\MvcCore\Response`
 	 * Example:
-	 * ````
+	 * ```
 	 *   \MvcCore\Application::GetInstance()->AddPreRouteHandler(function(
 	 *       \MvcCore\Request $request,
 	 *       \MvcCore\Response $response
 	 *   ) {
 	 *       $request->customVar = 'custom_value';
 	 *   });
-	 * ````
+	 * ```
 	 * @param  CustomHandlerCallable $handler
 	 * @param  int|NULL              $priorityIndex
 	 * @return \MvcCore\Application
@@ -549,14 +549,14 @@ interface IApplication extends \MvcCore\Application\IConstants {
 	 * - `\MvcCore\Request`
 	 * - `\MvcCore\Response`
 	 * Example:
-	 * ````
+	 * ```
 	 *   \MvcCore\Application::GetInstance()->AddPostRouteHandler(function(
 	 *       \MvcCore\Request $request,
 	 *       \MvcCore\Response $response
 	 *   ) {
 	 *       $request->customVar = 'custom_value';
 	 *   });
-	 * ````
+	 * ```
 	 * @param  CustomHandlerCallable $handler
 	 * @param  int|NULL              $priorityIndex
 	 * @return \MvcCore\Application
@@ -572,14 +572,14 @@ interface IApplication extends \MvcCore\Application\IConstants {
 	 * - `\MvcCore\Request`
 	 * - `\MvcCore\Response`
 	 * Example:
-	 * ````
+	 * ```
 	 * \MvcCore\Application::GetInstance()->AddPreDispatchHandler(function(
 	 *       \MvcCore\Request $request,
 	 *       \MvcCore\Response $response
 	 *   ) {
 	 *       $request->customVar = 'custom_value';
 	 *   });
-	 * ````
+	 * ```
 	 * @param  CustomHandlerCallable $handler
 	 * @param  int|NULL              $priorityIndex
 	 * @return \MvcCore\Application
@@ -594,14 +594,14 @@ interface IApplication extends \MvcCore\Application\IConstants {
 	 * - `\MvcCore\Request`
 	 * - `\MvcCore\Response`
 	 * Example:
-	 * ````
+	 * ```
 	 *   \MvcCore\Application::GetInstance()->AddPreSentHeadersHandler(function(
 	 *       \MvcCore\Request $request,
 	 *       \MvcCore\Response $response
 	 *   ) {
 	 *       $request->customVar = 'custom_value';
 	 *   });
-	 * ````
+	 * ```
 	 * @param  CustomHandlerCallable $handler
 	 * @param  int|NULL              $priorityIndex
 	 * @return \MvcCore\Application
@@ -615,14 +615,14 @@ interface IApplication extends \MvcCore\Application\IConstants {
 	 * - `\MvcCore\Request`
 	 * - `\MvcCore\Response`
 	 * Example:
-	 * ````
+	 * ```
 	 *   \MvcCore\Application::GetInstance()->AddPreSentBodyHandler(function(
 	 *       \MvcCore\Request $request,
 	 *       \MvcCore\Response $response
 	 *   ) {
 	 *       $request->customVar = 'custom_value';
 	 *   });
-	 * ````
+	 * ```
 	 * @param  CustomHandlerCallable $handler
 	 * @param  int|NULL              $priorityIndex
 	 * @return \MvcCore\Application
@@ -637,14 +637,14 @@ interface IApplication extends \MvcCore\Application\IConstants {
 	 * - `\MvcCore\Request`
 	 * - `\MvcCore\Response`
 	 * Example:
-	 * ````
+	 * ```
 	 *   \MvcCore\Application::GetInstance()->AddPostDispatchHandler(function(
 	 *       \MvcCore\Request $request,
 	 *       \MvcCore\Response $response
 	 *   ) {
 	 *       $request->customVar = 'custom_value';
 	 *   });
-	 * ````
+	 * ```
 	 * @param  CustomHandlerCallable $handler
 	 * @param  int|NULL              $priorityIndex
 	 * @return \MvcCore\Application
@@ -658,7 +658,7 @@ interface IApplication extends \MvcCore\Application\IConstants {
 	 * - `\MvcCore\Request`
 	 * - `\MvcCore\Response`
 	 * Example:
-	 * ````
+	 * ```
 	 *   \MvcCore\Application::GetInstance()->AddPostTerminateHandler(function(
 	 *       \MvcCore\Request $request,
 	 *       \MvcCore\Response $response
@@ -667,12 +667,55 @@ interface IApplication extends \MvcCore\Application\IConstants {
 	 *       // header: header('Connection: close');
 	 *       // and run background process now:
 	 *   });
-	 * ````
+	 * ```
 	 * @param  CustomHandlerCallable $handler
 	 * @param  int|NULL              $priorityIndex
 	 * @return \MvcCore\Application
 	 */
 	public function AddPostTerminateHandler (callable $handler, $priorityIndex = NULL);
+	
+	/**
+	 * Add handler before session has been started (before PHP `session_start()` call, 
+	 * when session id is resolved.
+	 * Callable should be void and it's params should be two with following types:
+	 * - `\MvcCore\Request`
+	 * - `\MvcCore\Response`
+	 * Example:
+	 * ```
+	 *   \MvcCore\Application::GetInstance()->AddPreSessionStartHandler(function(
+	 *       \MvcCore\Request $request,
+	 *       \MvcCore\Response $response
+	 *   ) {
+	 *       $sessionId = session_id();
+	 *       // do anything special with session...
+	 *   });
+	 * ```
+	 * @param  CustomHandlerCallable $handler
+	 * @param  int|NULL              $priorityIndex
+	 * @return \MvcCore\Application
+	 */
+	public function AddPreSessionStartHandler (callable $handler, $priorityIndex = NULL);
+	
+	/**
+	 * Add handler after session has been started and after session has been 
+	 * fully initialized by session metadata. 
+	 * Callable should be void and it's params should be two with following types:
+	 * - `\MvcCore\Request`
+	 * - `\MvcCore\Response`
+	 * Example:
+	 * ```
+	 *   \MvcCore\Application::GetInstance()->AddPostSessionStartHandler(function(
+	 *       \MvcCore\Request $request,
+	 *       \MvcCore\Response $response
+	 *   ) {
+	 *       $_SESSION['special_value'] = TRUE;
+	 *   });
+	 * ```
+	 * @param  CustomHandlerCallable $handler
+	 * @param  int|NULL              $priorityIndex
+	 * @return \MvcCore\Application
+	 */
+	public function AddPostSessionStartHandler (callable $handler, $priorityIndex = NULL);
 
 	/**
 	 * Add CSRF protection error handler into handlers queue 
@@ -681,14 +724,14 @@ interface IApplication extends \MvcCore\Application\IConstants {
 	 * - `\MvcCore\Request`
 	 * - `\MvcCore\Response`
 	 * Example:
-	 * ````
+	 * ```
 	 *   \MvcCore\Application::GetInstance()->AddCsrfErrorHandler(function(
 	 *       \MvcCore\Request $request,
 	 *       \MvcCore\Response $response
 	 *   ) {
 	 *       // redirect user to homepage or sign out authenticated user.
 	 *   });
-	 * ````
+	 * ```
 	 * @param  CustomHandlerCallable $handler
 	 * @param  int|NULL              $priorityIndex
 	 * @return \MvcCore\Application
