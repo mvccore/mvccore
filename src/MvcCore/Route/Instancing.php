@@ -22,7 +22,7 @@ trait Instancing {
 
 	/**
 	 * @inheritDoc
-	 * @param string|array<string,mixed> $patternOrConfig
+	 * @param string|array<string,mixed> $pattern
 	 * Required, configuration array or route pattern value
 	 * to parse into match and reverse patterns.
 	 * @param string|NULL                $controllerAction
@@ -35,22 +35,27 @@ trait Instancing {
 	 * Optional, params regular expression constraints for
 	 * regular expression match function if no `"match"`
 	 * property in config array as first argument defined.
-	 * @param array<string,mixed>        $advancedConfiguration
-	 *Optional, array with adwanced configuration.
-	 *There could be defined:
-	 *- string   `method`   HTTP method name.
-	 *- string   `redirect` Redirect route name.
-	 *- bool     `absolute` Absolutize URL.
-	 *- callable `in`       URL filter in.
-	 *- callable `out`      URL filter out.
+	 * @param array<string,mixed>        $config
+	 * Optional, array with adwanced configuration.
+	 * There could be defined:
+	 * - string   `method`   HTTP method name. If `NULL` (by default), 
+	 *                       request with any http method could be matched 
+	 *                       by this route. Given value is automatically 
+	 *                       converted to upper case.
+	 * - string   `redirect` Redirect route name.
+	 * - bool     `absolute` Absolutize URL.
+	 * - callable `in`       URL filter in, callable accepting arguments:
+	 *                       `array $params, array $defaultParams, \MvcCore\Request $request`.
+	 * - callable `out`      URL filter out, callable accepting arguments:
+	 *                       `array $params, array $defaultParams, \MvcCore\Request $request`.
 	 * @return \MvcCore\Route
 	 */
 	public static function CreateInstance (
-		$patternOrConfig = NULL,
+		$pattern = NULL,
 		$controllerAction = NULL,
 		$defaults = NULL,
 		$constraints = NULL,
-		$advancedConfiguration = []
+		$config = []
 	) {
 		return (new \ReflectionClass(get_called_class()))
 			->newInstanceArgs(func_get_args());
@@ -90,7 +95,7 @@ trait Instancing {
 	 *       "defaults"   => ["name" => "default-name", "color" => "red"],
 	 *   ]);
 	 * ````
-	 * @param string|array<string,mixed> $patternOrConfig
+	 * @param string|array<string,mixed> $pattern
 	 * Required, configuration array or route pattern value
 	 * to parse into match and reverse patterns.
 	 * @param string|NULL                $controllerAction
@@ -103,24 +108,31 @@ trait Instancing {
 	 * Optional, params regular expression constraints for
 	 * regular expression match function no `"match"` record
 	 * in configuration array as first argument defined.
-	 * @param array<string,mixed>        $advancedConfiguration
+	 * @param array<string,mixed>        $config
 	 * Optional, array with adwanced configuration.
 	 * There could be defined:
-	 * - string   `method`   HTTP method name.
+	 * - string   `method`   HTTP method name. If `NULL` (by default), 
+	 *                       request with any http method could be matched 
+	 *                       by this route. Given value is automatically 
+	 *                       converted to upper case.
 	 * - string   `redirect` Redirect route name.
 	 * - bool     `absolute` Absolutize URL.
-	 * - callable `in`       URL filter in.
-	 * - callable `out`      URL filter out.
+	 * - callable `in`       URL filter in, callable accepting arguments:
+	 *                       `array $params, array $defaultParams, \MvcCore\Request $request`.
+	 * - callable `out`      URL filter out, callable accepting arguments:
+	 *                       `array $params, array $defaultParams, \MvcCore\Request $request`.
 	 * @return void
 	 */
 	public function __construct (
-		$patternOrConfig = NULL,
+		$pattern = NULL,
 		$controllerAction = NULL,
 		$defaults = NULL,
 		$constraints = NULL,
-		$advancedConfiguration = []
+		$config = []
 	) {
 		if (count(func_get_args()) === 0) return;
+		$patternOrConfig = $pattern;
+		$advancedConfiguration = $config;
 		if (is_array($patternOrConfig)) {
 			$data = (object) $patternOrConfig;
 			$this->constructDataPatternsDefaultsConstraintsFilters($data);
