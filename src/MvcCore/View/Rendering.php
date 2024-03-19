@@ -154,6 +154,12 @@ trait Rendering {
 			extract($helpers, EXTR_SKIP);
 			unset($helpers);
 			extract($this->__protected['store'], EXTR_SKIP);
+			extract([
+				'application'	=> $controller->GetApplication(),
+				'request'		=> $controller->GetRequest(),
+				'response'		=> $controller->GetResponse(),
+				'environment'	=> $controller->GetRouter(),
+			], EXTR_SKIP);
 			include($viewPath);
 		}, $viewScriptFullPath, $this->controller, $this->__protected['helpers']);
 		// if render mode is default - get result from output buffer and return the result,
