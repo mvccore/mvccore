@@ -169,10 +169,10 @@ trait Props {
 	protected $user = NULL;
 
 	/**
-	 * If `TRUE`, start session automatically in `Init()` method.
+	 * If `TRUE`, start session automatically in `Init()` method. `FALSE` by default.
 	 * @var bool
 	 */
-	protected $autoStartSession = TRUE;
+	protected $autoStartSession = FALSE;
 
 	/**
 	 * If `TRUE`, automatically initialize properties with PHP docs tag
