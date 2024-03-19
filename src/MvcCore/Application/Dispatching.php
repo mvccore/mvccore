@@ -278,7 +278,7 @@ trait Dispatching {
 		}
 		if (
 			!$this->response->IsSentBody() &&
-			!$this->request->GetMethod() !== \MvcCore\IRequest::METHOD_HEAD
+			$this->request->GetMethod() !== \MvcCore\IRequest::METHOD_HEAD
 		)
 			$this->response->SendBody();
 		// exit; // Why to force exit? What if we want to do something more?
