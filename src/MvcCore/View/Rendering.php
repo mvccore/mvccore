@@ -326,8 +326,7 @@ trait Rendering {
 				->SetUpStore($this, TRUE)
 				->SetUpRender($renderMode, $controllerOrActionNameDashed, $actionNameDashed);
 			$actionView->RenderScript($viewScriptPath);
-			$result = '';
-			return $result;
+			return '';
 		}
 	}
 
