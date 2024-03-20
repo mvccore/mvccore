@@ -389,7 +389,7 @@ trait Dispatching {
 			try {
 				$this->CreateController(
 					$defaultCtrlFullName,
-					$this->defaultControllerErrorActionName . "Action",
+					$this->defaultControllerErrorActionName,
 					$viewClass::GetViewScriptFullPath(
 						$viewClass::GetDefaultViewsDirFullPath($this) . '/' . $viewClass::GetScriptsDir(),
 						$this->request->GetControllerName() . '/' . $this->request->GetActionName()
@@ -438,7 +438,7 @@ trait Dispatching {
 			try {
 				$this->CreateController(
 					$defaultCtrlFullName,
-					$this->defaultControllerNotFoundActionName . "Action",
+					$this->defaultControllerNotFoundActionName,
 					$viewClass::GetViewScriptFullPath(
 						$viewClass::GetDefaultViewsDirFullPath($this) . '/' . $viewClass::GetScriptsDir(),
 						$this->request->GetControllerName() . '/' . $this->request->GetActionName()
