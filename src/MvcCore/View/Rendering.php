@@ -283,19 +283,38 @@ trait Rendering {
 
 	/**
 	 * @inheritDoc
-	 * @param  \MvcCore\View $view
+	 * @param  \MvcCore\View $view                  View object to get store from, to set up all it's variables to current view store.
 	 * @param  bool          $overwriteExistingKeys If any property name already exist in view store, overwrite it by given value by default.
 	 * @return \MvcCore\View
 	 */
 	public function SetUpStore (\MvcCore\IView $view, $overwriteExistingKeys = TRUE) {
 		$currentStore = & $this->__protected['store'];
 		$viewStore = & $view->__protected['store'];
+		$currentStore['view'] = $view;
 		if ($overwriteExistingKeys) {
 			$this->__protected['store'] = array_merge($currentStore, $viewStore);
 		} else {
-			foreach ($viewStore as $key => & $value)
+			foreach ($viewStore as $key => $value)
 				if (!array_key_exists($key, $currentStore))
-					$currentStore[$key] = & $value;
+					$currentStore[$key] = $value;
+		}
+		return $this;
+	}
+	
+	/**
+	 * @inheritDoc
+	 * @param  array<string, mixed> $data                  View data store to add into view store.
+	 * @param  bool                 $overwriteExistingKeys If any property name already exist in view store, overwrite it by given value by default.
+	 * @return \MvcCore\View
+	 */
+	public function AddData (array $data, $overwriteExistingKeys = TRUE) {
+		$currentStore = & $this->__protected['store'];
+		if ($overwriteExistingKeys) {
+			$this->__protected['store'] = array_merge($currentStore, $data);
+		} else {
+			foreach ($data as $key => $value)
+				if (!array_key_exists($key, $currentStore))
+					$currentStore[$key] = $value;
 		}
 		return $this;
 	}
@@ -326,6 +345,7 @@ trait Rendering {
 				->SetUpStore($this, TRUE)
 				->SetUpRender($renderMode, $controllerOrActionNameDashed, $actionNameDashed);
 			$actionView->RenderScript($viewScriptPath);
+			$this->SetUpStore($actionView, TRUE);
 			return '';
 		}
 	}

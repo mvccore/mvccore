@@ -290,14 +290,23 @@ interface IView extends \MvcCore\View\IConstants {
 	 * @return \MvcCore\View
 	 */
 	public function SetUpRender ($renderMode = \MvcCore\IView::RENDER_WITH_OB_FROM_ACTION_TO_LAYOUT, $controllerOrActionNameDashed = NULL, $actionNameDashed = NULL);
+	
+	/**
+	 * Add variables from given array store into current store,
+	 * if there exists any key already - overwrite it by default.
+	 * @param  array<string, mixed> $data                  View data store to add into view store.
+	 * @param  bool                 $overwriteExistingKeys If any property name already exist in view store, overwrite it by given value by default.
+	 * @return \MvcCore\View
+	 */
+	public function AddData (array $data, $overwriteExistingKeys = TRUE);
 
 	/**
 	 * This is INTERNAL method, do not use it in templates.
 	 * Method is always called in the most parent controller
 	 * `\MvcCore\Controller:Render()` moment when view is rendered.
 	 * Set up all from given view object variables store into current store,
-	 * if there is any already existing key - overwrite it.
-	 * @param  \MvcCore\View $view
+	 * if there exists any key already - overwrite it by default.
+	 * @param  \MvcCore\View $view                  View object to get store from, to set up all it's variables to current view store.
 	 * @param  bool          $overwriteExistingKeys If any property name already exist in view store, overwrite it by given value by default.
 	 * @return \MvcCore\View
 	 */

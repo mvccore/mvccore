@@ -50,7 +50,7 @@ trait Rendering {
 		
 		// Render this view or view with layout by render mode:
 		if (($this->renderMode & \MvcCore\IView::RENDER_WITH_OB_FROM_ACTION_TO_LAYOUT) != 0) {
-			$this->renderWithObFromActionToLayout(
+			return $this->renderWithObFromActionToLayout(
 				$controllerOrActionNameDashed, $actionNameDashed, $topMostParentCtrl
 			);
 
@@ -64,6 +64,7 @@ trait Rendering {
 				}
 				$this->response->SendHeaders();
 				if ($this->request->GetMethod() === \MvcCore\IRequest::METHOD_HEAD) {
+					$this->dispatchMoveState(static::DISPATCH_STATE_RENDERED);
 					$this->Terminate();
 					return '';
 				}
@@ -73,10 +74,8 @@ trait Rendering {
 			$this->renderWithoutObContinuously(
 				$controllerOrActionNameDashed,$actionNameDashed, $topMostParentCtrl
 			);
+			return '';
 		}
-		
-		$this->dispatchMoveState(static::DISPATCH_STATE_RENDERED);
-		return '';
 	}
 
 	/**
@@ -289,7 +288,7 @@ trait Rendering {
 	 * @param  string $controllerOrActionNameDashed
 	 * @param  string $actionNameDashed
 	 * @param  bool   $topMostParentCtrl
-	 * @return void
+	 * @return string
 	 */
 	protected function renderWithObFromActionToLayout ($controllerOrActionNameDashed, $actionNameDashed, $topMostParentCtrl) {
 		// complete paths
@@ -300,9 +299,9 @@ trait Rendering {
 		);
 		$actionResult = $this->view->RenderScript($viewScriptPath);
 		if (!$topMostParentCtrl) {
-			unset($actionResult, $this->view);
+			unset($this->view);
 			$this->dispatchMoveState(static::DISPATCH_STATE_RENDERED);
-			return;
+			return $actionResult;
 		}
 		// create top most parent layout view, set up and render to outputResult
 		/** @var \MvcCore\View $layout */
@@ -315,8 +314,8 @@ trait Rendering {
 		unset($layout, $actionResult, $this->view);
 		// set up response only
 		$this->XmlResponse($outputResult, FALSE);
-		unset($outputResult);
 		$this->dispatchMoveState(static::DISPATCH_STATE_RENDERED);
+		return $outputResult;
 	}
 
 	/**
