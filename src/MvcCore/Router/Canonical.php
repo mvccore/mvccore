@@ -51,7 +51,7 @@ trait Canonical {
 	 */
 	protected function canonicalRedirectQueryStringStrategy () {
 		$request = $this->request;
-		$redirectToCanonicalUrl = FALSE;
+		$redirectToCanonicalUrl = 0;
 		$requestGlobalGet = & $request->GetGlobalCollection('get');
 		$requestedCtrlDc = isset($requestGlobalGet[static::URL_PARAM_CONTROLLER]) ? $requestGlobalGet[static::URL_PARAM_CONTROLLER] : NULL;
 		$requestedActionDc = isset($requestGlobalGet[static::URL_PARAM_ACTION]) ? $requestGlobalGet[static::URL_PARAM_ACTION] : NULL;
@@ -60,17 +60,31 @@ trait Canonical {
 		$dfltCtrlDc = $toolClass::GetDashedFromPascalCase($dfltCtrlPc);
 		$dftlActionDc = $toolClass::GetDashedFromPascalCase($dftlActionPc);
 		$requestedParamsClone = array_merge([], $this->requestedParams);
-		if ($requestedCtrlDc !== NULL && $requestedCtrlDc === $dfltCtrlDc) {
+		if ($requestedCtrlDc === NULL) {
 			unset($requestedParamsClone[static::URL_PARAM_CONTROLLER]);
-			$redirectToCanonicalUrl = TRUE;
+		} else if ($requestedCtrlDc === $dfltCtrlDc) {
+			unset($requestedParamsClone[static::URL_PARAM_CONTROLLER]);
+			$redirectToCanonicalUrl = 1;
 		}
-		if ($requestedActionDc !== NULL && $requestedActionDc === $dftlActionDc) {
+		if ($requestedActionDc === NULL) {
 			unset($requestedParamsClone[static::URL_PARAM_ACTION]);
-			$redirectToCanonicalUrl = TRUE;
+		} else if ($requestedActionDc === $dftlActionDc) {
+			unset($requestedParamsClone[static::URL_PARAM_ACTION]);
+			$redirectToCanonicalUrl = 2;
+		}
+		if (isset($requestedParamsClone[static::URL_PARAM_PATH])) {
+			$pathParam = $requestedParamsClone[static::URL_PARAM_PATH];
+			if ($pathParam === '/')
+				unset($requestedParamsClone[static::URL_PARAM_PATH]);
 		}
 		if ($redirectToCanonicalUrl) {
+			if (isset($requestedParamsClone[static::URL_PARAM_PATH])) {
+				$pathParam = $requestedParamsClone[static::URL_PARAM_PATH];
+				if ($pathParam === $request->GetScriptName())
+					unset($requestedParamsClone[static::URL_PARAM_PATH]);
+			}
 			$selfCanonicalUrl = $this->UrlByQueryString($this->selfRouteName, $requestedParamsClone);
-			$this->redirect($selfCanonicalUrl, \MvcCore\IResponse::MOVED_PERMANENTLY, 'Canonical URL');
+			$this->redirect($selfCanonicalUrl, \MvcCore\IResponse::MOVED_PERMANENTLY, "Canonical URL (state: {$redirectToCanonicalUrl})");
 			return FALSE;
 		}
 		return TRUE;
@@ -97,7 +111,7 @@ trait Canonical {
 			mb_strlen($selfUrlDomainAndBasePart) > 0 && 
 			$selfUrlDomainAndBasePart !== $request->GetBaseUrl()
 		) {
-			$redirectToCanonicalUrl = 1;
+			$redirectToCanonicalUrl = 3;
 		} else if (mb_strlen($selfUrlPathAndQueryPart) > 0) {
 			$path = $request->GetPath(TRUE);
 			$requestedUrl = $path === '' ? '/' : $path ;
@@ -105,11 +119,11 @@ trait Canonical {
 			if (mb_strpos($selfUrlPathAndQueryPart, '?') !== FALSE) 
 				$requestedUrl .= $request->GetQuery(TRUE, TRUE);
 			if ($selfUrlPathAndQueryPart !== $requestedUrl) 
-				$redirectToCanonicalUrl = 2;
+				$redirectToCanonicalUrl = 4;
 		}
 		if ($redirectToCanonicalUrl > 0) {
 			$selfCanonicalUrl = $this->Url($this->selfRouteName, $this->requestedParams);
-			$this->redirect($selfCanonicalUrl, \MvcCore\IResponse::MOVED_PERMANENTLY, "Canonical url (state: {$redirectToCanonicalUrl})");
+			$this->redirect($selfCanonicalUrl, \MvcCore\IResponse::MOVED_PERMANENTLY, "Canonical URL (state: {$redirectToCanonicalUrl})");
 			return FALSE;
 		}
 		return TRUE;

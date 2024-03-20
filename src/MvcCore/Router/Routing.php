@@ -255,7 +255,7 @@ trait Routing {
 				$this->redirect(
 					$redirectUrl, 
 					\MvcCore\IResponse::MOVED_PERMANENTLY,
-					'Redirection route '
+					"Redirection route ({$this->currentRoute->GetName()})"
 				);
 				return FALSE;
 			}
