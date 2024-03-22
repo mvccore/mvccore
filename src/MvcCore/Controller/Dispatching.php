@@ -635,7 +635,7 @@ trait Dispatching {
 	 * @throws \MvcCore\Controller\TerminateException
 	 * @return void
 	 */
-	public static function Redirect ($location = '', $code = \MvcCore\IResponse::SEE_OTHER, $reason = NULL) {
+	public static function Redirect ($location, $code = \MvcCore\IResponse::SEE_OTHER, $reason = NULL) {
 		$app = \MvcCore\Application::GetInstance();
 		$response = $app->GetResponse();
 		$response

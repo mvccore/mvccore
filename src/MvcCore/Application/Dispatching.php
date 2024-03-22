@@ -413,11 +413,11 @@ trait Dispatching {
 
 	/**
 	 * @inheritDoc
-	 * @param  string $exceptionMessage
+	 * @param  string|NULL $exceptionMessage
 	 * @return bool
 	 */
-	public function RenderNotFound ($exceptionMessage = '') {
-		if (!$exceptionMessage) $exceptionMessage = 'Page not found.';
+	public function RenderNotFound ($exceptionMessage) {
+		if (!$exceptionMessage) $exceptionMessage = 'Not found.';
 		$defaultCtrlFullName = $this->GetDefaultControllerIfHasAction(
 			$this->defaultControllerNotFoundActionName
 		);
@@ -465,11 +465,11 @@ trait Dispatching {
 	 * @param  string $text
 	 * @return bool
 	 */
-	public function RenderError500PlainText ($text = '') {
+	public function RenderError500PlainText ($text) {
 		$htmlResponse = FALSE;
 		$responseClass = $this->responseClass;
 		if (!$this->environment->IsDevelopment()) {
-			$text = 'Error 500: Internal Server Error.'.PHP_EOL;
+			$text = 'Error 500: Server Error.'.PHP_EOL;
 		} else {
 			$obContent = ob_get_clean();
 			if (mb_strlen($obContent) > 0)
@@ -493,11 +493,11 @@ trait Dispatching {
 	 * @param  string $text
 	 * @return bool
 	 */
-	public function RenderError404PlainText ($text = '') {
+	public function RenderError404PlainText ($text) {
 		$htmlResponse = FALSE;
 		$responseClass = $this->responseClass;
 		if (!$this->environment->IsDevelopment()) {
-			$text = 'Error 404: Page not found.'.PHP_EOL;
+			$text = 'Error 404: Not found.'.PHP_EOL;
 		} else {
 			$obContent = ob_get_clean();
 			if (mb_strlen($obContent) > 0)

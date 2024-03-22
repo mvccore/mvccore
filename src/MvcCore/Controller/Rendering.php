@@ -175,27 +175,30 @@ trait Rendering {
 
 	/**
 	 * @inheritDoc
-	 * @param  string $exceptionMessage
+	 * @param  string $errorMessage
 	 * @return void
 	 */
-	public function RenderError ($exceptionMessage) {
+	public function RenderError ($errorMessage) {
 		if ($this->application->IsErrorDispatched()) return;
 		throw new \ErrorException(
-			$exceptionMessage 
-				? $exceptionMessage :
-				"Server error: `" . htmlspecialchars($this->request->GetFullUrl()) . "`.",
+			is_string($errorMessage) 
+				? $errorMessage :
+				"Server Error",
 			500
 		);
 	}
 
 	/**
 	 * @inheritDoc
+	 * @param  string $errorMessage
 	 * @return void
 	 */
-	public function RenderNotFound () {
+	public function RenderNotFound ($errorMessage) {
 		if ($this->application->IsNotFoundDispatched()) return;
 		throw new \ErrorException(
-			"Page not found: `" . htmlspecialchars($this->request->GetFullUrl()) . "`.", 
+			is_string($errorMessage) 
+				? $errorMessage :
+				"Not Found", 
 			404
 		);
 	}

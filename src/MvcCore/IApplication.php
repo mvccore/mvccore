@@ -918,10 +918,10 @@ interface IApplication extends \MvcCore\Application\IConstants {
 	 * `\App\Controllers\Index::NotFound();` by default.
 	 * If there is no controller/action like that or any other exception happens,
 	 * it's processed very simple plain text response with 404 http code.
-	 * @param  string $exceptionMessage
+	 * @param  string|NULL $exceptionMessage
 	 * @return bool
 	 */
-	public function RenderNotFound ($exceptionMessage = '');
+	public function RenderNotFound ($exceptionMessage);
 
 	/**
 	 * Prepare very simple response with internal server error (500)
@@ -929,7 +929,7 @@ interface IApplication extends \MvcCore\Application\IConstants {
 	 * @param  string $text
 	 * @return bool
 	 */
-	public function RenderError500PlainText ($text = '');
+	public function RenderError500PlainText ($text);
 
 	/**
 	 * Prepare very simple response with not found error (404)
@@ -937,7 +937,7 @@ interface IApplication extends \MvcCore\Application\IConstants {
 	 * @param  string $text
 	 * @return bool
 	 */
-	public function RenderError404PlainText ($text = '');
+	public function RenderError404PlainText ($text);
 
 
 	/***********************************************************************************

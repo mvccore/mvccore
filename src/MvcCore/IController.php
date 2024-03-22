@@ -95,7 +95,7 @@ interface IController extends \MvcCore\Controller\IConstants {
 	 * @throws \MvcCore\Controller\TerminateException
 	 * @return void
 	 */
-	public static function Redirect ($location = '', $code = \MvcCore\IResponse::SEE_OTHER, $reason = NULL);
+	public static function Redirect ($location, $code = \MvcCore\IResponse::SEE_OTHER, $reason = NULL);
 
 	/**
 	 * Dispatching controller life cycle by given action.
@@ -776,22 +776,23 @@ interface IController extends \MvcCore\Controller\IConstants {
 	 */
 	public function GetSessionNamespace ($name = \MvcCore\ISession::DEFAULT_NAMESPACE_NAME);
 
-		/**
+	/**
 	 * Render error controller and error action
 	 * for any dispatch exception or error as
 	 * rendered html response or as plain text response.
-	 * @param  string $exceptionMessage
+	 * @param  string $errorMessage
 	 * @return void
 	 */
-	public function RenderError ($exceptionMessage);
+	public function RenderError ($errorMessage);
 
 	/**
 	 * Render not found controller and not found action
 	 * for any dispatch exception with code 404 as
 	 * rendered html response or as plain text response.
+	 * @param  string $errorMessage
 	 * @return void
 	 */
-	public function RenderNotFound ();
+	public function RenderNotFound ($errorMessage);
 
 	/**
 	 * Complete view script path by given controller and action or only by given action rendering arguments.
