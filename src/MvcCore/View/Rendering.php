@@ -380,24 +380,27 @@ trait Rendering {
 				/** @var \MvcCore\Router $router */
 				return $router->Url($controllerActionOrRouteName, $params);
 			},
-			'assetUrl' => function ($path = '') use (& $router) {
+			'assetUrl' => function ($path) use (& $router) {
 				/** @var \MvcCore\Router $router */
 				return $router->Url('Controller:Asset', ['path' => $path]);
 			},
-			'escape' => function ($str, $encoding = NULL) {
-				return $this->Escape($str, $encoding);
+			'escape' => function ($str, $flags = ENT_QUOTES, $encoding = NULL, $double = FALSE, $jsTemplate = FALSE) {
+				return $this->Escape($str, $flags, $encoding, $double, $jsTemplate);
 			},
-			'escapeHtml' => function ($str, $encoding = NULL) {
-				return $this->EscapeHtml($str, $encoding);
+			'escapeHtml' => function ($str, $encoding = NULL, $double = FALSE) {
+				return $this->EscapeHtml($str, $encoding, $double);
 			},
-			'escapeAttr' => function ($str, $double = TRUE, $encoding = NULL) {
-				return $this->EscapeAttr($str, $double, $encoding);
+			'escapeAttr' => function ($str, $flags = ENT_QUOTES, $encoding = NULL, $double = FALSE) {
+				return $this->EscapeAttr($str, $flags, $encoding, $double);
 			},
-			'escapeXml' => function ($str, $encoding = NULL) {
-				return $this->EscapeXml($str, $encoding);
+			'escapeXml' => function ($str, $encoding = NULL, $double = FALSE) {
+				return $this->EscapeXml($str, $encoding, $double);
 			},
-			'escapeJs' => function ($str, $flags = 0, $depth = 512) {
-				return $this->EscapeJs($str, $flags, $depth);
+			'escapeJs' => function ($obj, $flags = 0, $depth = 512) {
+				return $this->EscapeJs($obj, $flags, $depth);
+			},
+			'escapeAttrJs' => function ($obj, $flags = 0, $depth = 512) {
+				return $this->EscapeJs($obj, $flags, $depth);
 			},
 			'escapeCss' => function ($str) {
 				return $this->EscapeCss($str);
