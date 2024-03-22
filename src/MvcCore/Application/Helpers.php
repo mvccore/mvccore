@@ -34,11 +34,15 @@ trait Helpers {
 	 */
 	public function GetDefaultControllerIfHasAction ($actionName) {
 		$defaultControllerName = $this->CompleteControllerName($this->defaultControllerName);
-		if (
-			class_exists($defaultControllerName) && 
-			method_exists($defaultControllerName, $actionName . 'Action')
-		) {
-			return $defaultControllerName;
+		if (class_exists($defaultControllerName)) {
+			$classType = new \ReflectionClass($defaultControllerName);
+			$errorAction = $actionName . 'Action';
+			if (
+				$classType->hasMethod($errorAction) &&
+				$classType->getMethod($errorAction)->isPublic()
+			) {
+				return $defaultControllerName;
+			}
 		}
 		return '';
 	}
