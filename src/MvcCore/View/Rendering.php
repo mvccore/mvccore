@@ -338,10 +338,9 @@ trait Rendering {
 				$controllerOrActionNameDashed, $actionNameDashed
 			);
 			// render action view into string
-			/** @var class-string|\MvcCore\View $viewClass */
-			$viewClass = $this->controller->GetApplication()->GetViewClass();
-			$actionView = $viewClass::CreateInstance()
-				->SetController($this->controller)
+			/** @var \MvcCore\View $actionView */
+			$actionView = $this->view;
+			$actionView
 				->SetUpStore($this, TRUE)
 				->SetUpRender($renderMode, $controllerOrActionNameDashed, $actionNameDashed);
 			$actionView->RenderScript($viewScriptPath);

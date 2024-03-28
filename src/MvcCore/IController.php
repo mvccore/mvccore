@@ -613,6 +613,7 @@ interface IController extends \MvcCore\Controller\IConstants {
 	/**
 	 * Store rendered HTML output inside `\MvcCore\Controller::$response`
 	 * to send into client browser later in `\MvcCore\Application::GetInstance()->Terminate();`.
+	 * Set up `Content-Type` header to `text/html` or to `application/xhtml+xml` only if not set.
 	 * @param  string $output
 	 * @param  bool   $terminate
 	 * @return void
@@ -622,6 +623,7 @@ interface IController extends \MvcCore\Controller\IConstants {
 	/**
 	 * Store rendered XML output inside `\MvcCore\Controller::$response`
 	 * to send into client browser later in `\MvcCore\Application::GetInstance()->Terminate();`.
+	 * Set up `Content-Type` header to `application/xml` only if not set.
 	 * @param  string $output
 	 * @param  bool   $terminate
 	 * @return void
@@ -631,6 +633,7 @@ interface IController extends \MvcCore\Controller\IConstants {
 	/**
 	 * Store rendered text output inside `\MvcCore\Controller::$response`
 	 * to send into client browser later in `\MvcCore\Application::GetInstance()->Terminate();`.
+	 * Set up `Content-Type` header to `text/plain`.
 	 * @param  string $output
 	 * @param  bool   $terminate
 	 * @return void
@@ -641,6 +644,7 @@ interface IController extends \MvcCore\Controller\IConstants {
 	 * Serialize any PHP value into `JSON string` and store
 	 * it inside `\MvcCore\Controller::$response` to send it
 	 * into client browser later in `\MvcCore\Application::GetInstance()->Terminate();`.
+	 * Set up `Content-Type` header to `application/json`.
 	 * 
 	 * JSON encoding flags used by default:
 	 *  - `JSON_HEX_TAG`:
@@ -692,6 +696,7 @@ interface IController extends \MvcCore\Controller\IConstants {
 	 * variable `$callbackParamName` (allowed chars: `a-zA-Z0-9\.\-_\$`) and
 	 * store it inside `\MvcCore\Controller::$response` to send it
 	 * into client browser later in `\MvcCore\Application::GetInstance()->Terminate();`.
+	 * Set up `Content-Type` header to `application/javascript`.
 	 * 
 	 * JSON encoding flags used by default:
 	 *  - `JSON_HEX_TAG`:

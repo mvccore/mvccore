@@ -85,14 +85,16 @@ trait Rendering {
 	 * @return void
 	 */
 	public function HtmlResponse ($output, $terminate = TRUE) {
-		$viewClass = $this->application->GetViewClass();
-		$contentTypeHeaderValue = strpos(
-			$viewClass::GetDoctype(), \MvcCore\IView::DOCTYPE_XHTML
-		) !== FALSE ? 'application/xhtml+xml' : 'text/html' ;
-		$this->response
-			->SetHeader('Content-Type', $contentTypeHeaderValue)
-			->SetCode(\MvcCore\IResponse::OK)
-			->SetBody($output);
+		if (!$this->response->HasHeader('Content-Type')) {
+			$viewClass = $this->application->GetViewClass();
+			$contentTypeHeaderValue = strpos(
+				$viewClass::GetDoctype(), \MvcCore\IView::DOCTYPE_XHTML
+			) !== FALSE ? 'application/xhtml+xml' : 'text/html' ;
+			$this->response->SetHeader('Content-Type', $contentTypeHeaderValue);
+		}
+		$this->response->SetBody($output);
+		if ($this->response->GetCode() === NULL)
+			$this->response->SetCode(\MvcCore\IResponse::OK);
 		if ($terminate) $this->Terminate();
 	}
 
@@ -306,15 +308,21 @@ trait Rendering {
 			$this->dispatchMoveState(static::DISPATCH_STATE_RENDERED);
 			return $actionResult;
 		}
-		// create top most parent layout view, set up and render to outputResult
-		/** @var \MvcCore\View $layout */
-		$layout = $this->createView(FALSE)
-			->SetUpStore($this->view, TRUE)
-			->SetUpRender(
-				$this->renderMode, $controllerOrActionNameDashed, $actionNameDashed
-			);
-		$outputResult = $layout->RenderLayoutAndContent($this->layout, $actionResult);
-		unset($layout, $actionResult, $this->view);
+		if ($this->layout === NULL) {
+			// set up to response only action result, no layout rendering
+			$outputResult = $actionResult;
+			unset($actionResult);
+		} else {
+			// create top most parent layout view, set up and render to outputResult
+			/** @var \MvcCore\View $layout */
+			$layout = $this->createView(FALSE)
+				->SetUpStore($this->view, TRUE)
+				->SetUpRender(
+					$this->renderMode, $controllerOrActionNameDashed, $actionNameDashed
+				);
+			$outputResult = $layout->RenderLayoutAndContent($this->layout, $actionResult);
+			unset($layout, $actionResult, $this->view);
+		}
 		// set up response only
 		$this->XmlResponse($outputResult, FALSE);
 		$this->dispatchMoveState(static::DISPATCH_STATE_RENDERED);
@@ -333,16 +341,28 @@ trait Rendering {
 	 */
 	protected function renderWithoutObContinuously ($controllerOrActionNameDashed, $actionNameDashed, $topMostParentCtrl) {
 		if ($topMostParentCtrl) {
-			// render layout view and action view inside it:
-			/** @var \MvcCore\View $layout */
-			$layout = $this->createView(FALSE)
-				->SetUpStore($this->view, TRUE)
-				->SetUpRender(
-					$this->renderMode, $controllerOrActionNameDashed, $actionNameDashed
-				);
-			// render layout continuously with action view inside
-			$layout->RenderLayout($this->layout);
-			unset($layout, $this->view);
+			if ($this->layout !== NULL) {
+				// render layout view and action view inside it:
+				/** @var \MvcCore\View $layout */
+				$layout = $this->createView(FALSE)
+					->SetUpStore($this->view, TRUE)
+					->SetUpRender(
+						$this->renderMode, $controllerOrActionNameDashed, $actionNameDashed
+					);
+				// render layout continuously with action view inside
+				$layout->RenderLayout($this->layout);
+				unset($layout, $this->view);
+			} else {
+				// complete paths
+				$viewScriptPath = $this->GetViewScriptPath($controllerOrActionNameDashed, $actionNameDashed);
+				// render action view only
+				$this->view
+					->SetUpRender(
+						$this->renderMode, $controllerOrActionNameDashed, $actionNameDashed
+					);
+				$this->view->RenderScript($viewScriptPath);
+				unset($this->view);
+			}
 		} else {
 			// complete paths
 			$viewScriptPath = $this->GetViewScriptPath($controllerOrActionNameDashed, $actionNameDashed);
