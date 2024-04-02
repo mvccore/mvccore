@@ -1,2 +1,3 @@
 /tests export-ignore
 /phpstan.neon export-ignore
+* text=auto eol=lf
