@@ -66,21 +66,23 @@ trait Initializations {
 			$errorLevels = array_fill_keys($errorLevelsToExceptions, TRUE);
 			$allLevelsToExceptions = isset($errorLevels[E_ALL]);
 			$prevErrorHandler = NULL;
-			$prevErrorHandler = set_error_handler(
-				function(
-					$errLevel, $errMessage, $errFile, $errLine
-				) use (
-					& $prevErrorHandler, $errorLevels, $allLevelsToExceptions
-				) {
-					if ($errFile === '' && defined('HHVM_VERSION'))  // https://github.com/facebook/hhvm/issues/4625
-						$errFile = func_get_arg(5)[1]['file'];
-					if ($allLevelsToExceptions || isset($errorLevels[$errLevel]))
-						throw new \ErrorException($errMessage, $errLevel, $errLevel, $errFile, $errLine);
-					return $prevErrorHandler
-						? call_user_func_array($prevErrorHandler, func_get_args())
-						: FALSE;
-				}
-			);
+			$newErrorHandler = function(
+				$errLevel, $errMessage, $errFile, $errLine
+			) use (
+				& $prevErrorHandler, $errorLevels, $allLevelsToExceptions
+			) {
+				if ($errFile === '' && defined('HHVM_VERSION'))  // https://github.com/facebook/hhvm/issues/4625
+					$errFile = func_get_arg(5)[1]['file'];
+				if ($allLevelsToExceptions || isset($errorLevels[$errLevel]))
+					throw new \ErrorException($errMessage, $errLevel, $errLevel, $errFile, $errLine);
+				return $prevErrorHandler
+					? call_user_func_array($prevErrorHandler, func_get_args())
+					: FALSE;
+			};
+			$prevErrorHandler = set_error_handler($newErrorHandler);
+			$error = error_get_last();
+			if ($error !== NULL) // some error before this initialization
+				$newErrorHandler($error['type'], $error['message'], $error['file'], $error['line']);
 			self::$prevErrorHandler = & $prevErrorHandler;
 		} else if (!$strictExceptionsMode && static::$strictExceptionsMode) {
 			if (self::$prevErrorHandler !== NULL) {
