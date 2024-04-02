@@ -401,7 +401,7 @@ trait Dispatching {
 				$this->controllerName == 'controller' &&
 				$this->actionName == 'asset'
 			)) $this->viewEnabled = FALSE;
-			$responseContentType = $this->ajax ? 'text/javascript' : 'text/html';
+			$responseContentType = $this->ajax ? 'application/json' : 'text/html';
 			$this->response->SetHeader('Content-Type', $responseContentType);
 		}
 		if ($this->autoInitProperties)
