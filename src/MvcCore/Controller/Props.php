@@ -238,6 +238,7 @@ trait Props {
 		'eot'	=> 'application/vnd.ms-fontobject',
 		'ttf'	=> 'font/truetype',
 		'otf'	=> 'font/opentype',
-		'woff'	=> 'application/x-font-woff',
+		'woff'	=> 'font/woff',
+		'woff2'	=> 'font/woff2',
 	];
 }

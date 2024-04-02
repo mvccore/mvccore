@@ -691,14 +691,14 @@ trait Dispatching {
 		$ext = '';
 		$path = $this->GetParam('path', 'a-zA-Z0-9_\-\/\.');
 		$path = '/' . ltrim(str_replace('..', '', $path), '/');
-		$homePath = '~'.$path;
+		$homePath = '~' . $path;
 		if (
 			strpos($homePath, static::$staticPath) !== 0 &&
 			strpos($homePath, static::$tmpPath) !== 0
 		)
 			throw new \ErrorException("[".get_class($this)."] File path: '{$path}' is not allowed.", 500);
-		$path = $this->request->GetDocumentRoot() . $path;
-		if (!file_exists($path))
+		$fullPath = $this->request->GetDocumentRoot() . $path;
+		if (!file_exists($fullPath) || !is_file($fullPath))
 			throw new \ErrorException("[".get_class($this)."] File not found: '{$path}'.", 404);
 		$lastDotPos = strrpos($path, '.');
 		if ($lastDotPos !== FALSE)
@@ -707,10 +707,14 @@ trait Dispatching {
 			header('Content-Type: ' . self::$_assetsMimeTypes[$ext]);
 		header_remove('X-Powered-By');
 		header('Vary: Accept-Encoding');
-		$assetMTime = @filemtime($path);
-		if ($assetMTime)
-			header('Last-Modified: ' . gmdate('D, d M Y H:i:s T', $assetMTime));
-		readfile($path);
+		$assetMTime = @filemtime($fullPath);
+		if ($assetMTime !== FALSE) {
+			$dateHeader = gmdate('D, d M Y H:i:s T', $assetMTime);
+			header('Date: ' . $dateHeader);
+			header('Last-Modified: ' . $dateHeader);
+		}
+		if ($this->request->GetMethod() === \MvcCore\IRequest::METHOD_GET)
+			readfile($fullPath);
 		exit;
 	}
 }

@@ -22,7 +22,7 @@ call_user_func(function () {
 	}
 	// Initialize document root if not defined
 	if (!defined('MVCCORE_DOC_ROOT')) {
-		if (\PHP_SAPI === 'cli') {
+		if (mb_strpos(\PHP_SAPI, 'cli') === 0) {
 			$backtraceItems = debug_backtrace(DEBUG_BACKTRACE_IGNORE_ARGS);
 			$scriptFilename = $backtraceItems[count($backtraceItems) - 1]['file'];
 			// If php is running by direct input like `php -r "/* php code */":

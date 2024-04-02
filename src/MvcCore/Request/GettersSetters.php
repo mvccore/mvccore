@@ -92,6 +92,28 @@ trait GettersSetters {
 				if ($ctrl === 'controller' && $action === 'asset')
 					$this->appRequest = TRUE;
 			}
+			if ($this->appRequest === NULL && \PHP_SAPI === 'cli-server') {
+				$server = & $this->globalServer;
+				if (isset($server['SCRIPT_FILENAME'])) {
+					$requestedFullPath = str_replace('\\', '/', $server['SCRIPT_FILENAME']);
+					$reqDocRoot = $this->GetDocumentRoot();
+					$scriptFullPath = $reqDocRoot . $this->GetScriptName();
+					if (
+						mb_strpos($requestedFullPath, $reqDocRoot) === 0 && 
+						$requestedFullPath !== $scriptFullPath &&
+						file_exists($requestedFullPath) && 
+						is_file($requestedFullPath)
+					) {
+						$reqUri = mb_substr($requestedFullPath, mb_strlen($reqDocRoot));
+						$this->controllerName = 'controller';
+						$this->actionName = 'asset';
+						$this->SetParam('path', $reqUri, \MvcCore\IRequest::PARAM_TYPE_QUERY_STRING);
+						$this->appRequest = TRUE;
+					}
+				}
+			}
+			if ($this->appRequest === NULL)
+				$this->appRequest = FALSE;
 		}
 		return $this->appRequest;
 	}
@@ -343,7 +365,7 @@ trait GettersSetters {
 				if (!$insidePhar)
 					$this->documentRoot = ucfirst($this->documentRoot);
 			} else {
-				if (\PHP_SAPI === 'cli') {
+				if (mb_strpos(\PHP_SAPI, 'cli') === 0) {
 					$backtraceItems = debug_backtrace(DEBUG_BACKTRACE_IGNORE_ARGS);
 					$scriptFilename = $backtraceItems[count($backtraceItems) - 1]['file'];
 					// If php is running by direct input like `php -r "/* php code */":
