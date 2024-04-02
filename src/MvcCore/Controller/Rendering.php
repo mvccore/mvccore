@@ -72,7 +72,7 @@ trait Rendering {
 			//if (ob_get_length() !== FALSE) // flush out any previous content
 			//	while (ob_get_level() > 0) ob_end_flush();
 			$this->renderWithoutObContinuously(
-				$controllerOrActionNameDashed,$actionNameDashed, $topMostParentCtrl
+				$controllerOrActionNameDashed, $actionNameDashed, $topMostParentCtrl
 			);
 			return '';
 		}
@@ -85,14 +85,13 @@ trait Rendering {
 	 * @return void
 	 */
 	public function HtmlResponse ($output, $terminate = TRUE) {
-		if (!$this->response->HasHeader('Content-Type')) {
-			$viewClass = $this->application->GetViewClass();
-			$contentTypeHeaderValue = strpos(
-				$viewClass::GetDoctype(), \MvcCore\IView::DOCTYPE_XHTML
-			) !== FALSE ? 'application/xhtml+xml' : 'text/html' ;
-			$this->response->SetHeader('Content-Type', $contentTypeHeaderValue);
-		}
-		$this->response->SetBody($output);
+		$viewClass = $this->application->GetViewClass();
+		$contentTypeHeaderValue = strpos(
+			$viewClass::GetDoctype(), \MvcCore\IView::DOCTYPE_XHTML
+		) !== FALSE ? 'application/xhtml+xml' : 'text/html' ;
+		$this->response
+			->SetHeader('Content-Type', $contentTypeHeaderValue)
+			->SetBody($output);
 		if ($this->response->GetCode() === NULL)
 			$this->response->SetCode(\MvcCore\IResponse::OK);
 		if ($terminate) $this->Terminate();
@@ -105,9 +104,9 @@ trait Rendering {
 	 * @return void
 	 */
 	public function XmlResponse ($output, $terminate = TRUE) {
-		if (!$this->response->HasHeader('Content-Type'))
-			$this->response->SetHeader('Content-Type', 'application/xml');
-		$this->response->SetBody($output);
+		$this->response
+			->SetHeader('Content-Type', 'application/xml')
+			->SetBody($output);
 		if ($this->response->GetCode() === NULL)
 			$this->response->SetCode(\MvcCore\IResponse::OK);
 		if ($terminate) $this->Terminate();
@@ -324,7 +323,9 @@ trait Rendering {
 			unset($layout, $actionResult, $this->view);
 		}
 		// set up response only
-		$this->XmlResponse($outputResult, FALSE);
+		$this->response->SetBody($outputResult);
+		if ($this->response->GetCode() === NULL)
+			$this->response->SetCode(\MvcCore\IResponse::OK);
 		$this->dispatchMoveState(static::DISPATCH_STATE_RENDERED);
 		return $outputResult;
 	}
