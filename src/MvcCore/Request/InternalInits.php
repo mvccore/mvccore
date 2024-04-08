@@ -115,7 +115,7 @@ trait InternalInits {
 		
 		$this->documentRoot = defined('MVCCORE_DOC_ROOT')
 			? ucfirst(constant('MVCCORE_DOC_ROOT'))
-			: (strlen(\Phar::running()) > 0 
+			: (class_exists('\Phar') && strlen(\Phar::running()) > 0 
 				? 'phar://' . $indexFilePath
 				: mb_substr($indexFilePath, 0, $lastSlashPos));
 

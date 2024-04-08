@@ -139,7 +139,7 @@ trait Connection {
 		// relative path in $cfg->database to absolute path
 		if ($conArgs->fileDb) {
 			$appRoot = \MvcCore\Application::GetInstance()->GetRequest()->GetAppRoot();
-			if (strlen(\Phar::running()) > 0) {
+			if (class_exists('\Phar') && strlen(\Phar::running()) > 0) {
 				$lastSlashPos = strrpos($appRoot, '/');
 				$appRoot = substr($appRoot, 7, $lastSlashPos - 7);
 			}

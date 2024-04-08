@@ -283,7 +283,7 @@ trait Helpers {
 	 * @return string
 	 */
 	public static function RealPathVirtual ($path) {
-		$insidePhar = strlen(\Phar::running()) > 0;
+		$insidePhar = class_exists('\Phar') && strlen(\Phar::running()) > 0;
 		if ($insidePhar) $path = mb_substr($path, 7);
 		$path = str_replace('\\', '/', $path);
 		$rawParts = explode('/', $path);

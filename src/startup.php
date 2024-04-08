@@ -45,7 +45,7 @@ call_user_func(function () {
 		} else {
 			$scriptFilename = $_SERVER['SCRIPT_FILENAME'];
 		}
-		$insidePhar = strlen(\Phar::running()) > 0;
+		$insidePhar = class_exists('\Phar') && strlen(\Phar::running()) > 0;
 		$docRoot = $insidePhar
 			? $scriptFilename
 			: dirname($scriptFilename);

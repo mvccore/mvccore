@@ -46,7 +46,7 @@ trait GettersSetters {
 	public function GetCompiled () {
 		if ($this->compiled === NULL) {
 			$compiled = static::NOT_COMPILED;
-			if (strlen(\Phar::running()) > 0) {
+			if (class_exists('\Phar') && strlen(\Phar::running()) > 0) {
 				$compiled = static::COMPILED_PHAR;
 			} else if (class_exists('\Packager_Php_Wrapper')) {
 				$compiled = constant('\Packager_Php_Wrapper::FS_MODE');
