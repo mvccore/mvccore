@@ -17,6 +17,12 @@ namespace MvcCore\Tool;
  * @mixin \MvcCore\Tool
  */
 trait Json {
+	
+	/**
+	 * JSON detection regular expression.
+	 * @var string|NULL
+	 */
+	protected static $jsonRegExp = NULL;
 
 	/**
 	 * @inheritDoc
@@ -78,18 +84,23 @@ trait Json {
 	/**
 	 * @inheritDoc
 	 * @see https://www.ietf.org/rfc/rfc4627.txt
+	 * @see https://stackoverflow.com/a/6249375/7032987
 	 * @param  string $jsonStr
 	 * @return bool
 	 */
 	public static function IsJsonString ($jsonStr) {
-		return !preg_match(
-			'#[^,:{}\[\]0-9.\\-+Eaeflnr-u \n\r\t]#',
-			preg_replace(
-				'#"(\.|[^\\"])*"#',
-				'',
-				(string) $jsonStr
-			)
-		);
+		if (self::$jsonRegExp === NULL) {
+			$regexString = '"([^"\\\\]*|\\\\["\\\\bfnrt\/]|\\\\u[0-9a-f]{4})*"';
+			$regexNumber = "-?(?=[1-9]|0(?!\d))\d+(\.\d+)?([eE][+-]?\d+)?";
+			$regexBoolean = "true|false|null";
+			self::$jsonRegExp = implode('', [
+				"#\A({$regexString}|{$regexNumber}|{$regexBoolean}|",					// string, number, boolean
+				"\[(?:(?1)(?:,(?1))*)?\s*\]|",											// arrays
+				"\{(?:\s*{$regexString}\s*:(?1)(?:,\s*{$regexString}\s*:(?1))*)?\s*\}",	// objects
+				")\Z#is",
+			]);
+		}
+		return (bool) preg_match(self::$jsonRegExp, (string) $jsonStr);
 	}
 
 	/**

@@ -146,6 +146,7 @@ interface ITool {
 	/**
 	 * Recognize if given string is JSON or not without JSON parsing.
 	 * @see https://www.ietf.org/rfc/rfc4627.txt
+	 * @see https://stackoverflow.com/a/6249375/7032987
 	 * @param  string $jsonStr
 	 * @return bool
 	 */
