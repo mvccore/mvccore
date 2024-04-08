@@ -208,7 +208,24 @@ trait Parsers {
 		} else {
 			$toolClass = \MvcCore\Application::GetInstance()->GetToolClass();
 			if (!$toolClass::IsJsonString($rawValue)) {
-				$value = $rawValue;
+				if (is_array($rawValue) || is_object($rawValue)) {
+					$value = $rawValue;
+				} else if (is_string($rawValue)) {
+					$separator = ',';
+					$callable = NULL;
+					if (is_array($parserArgs)) {
+						$parserArgsCount = count($parserArgs);
+						if ($parserArgsCount > 0 && is_string($parserArgs[0]))
+							$separator = $parserArgs[0];
+						if ($parserArgsCount > 1 && is_callable($parserArgs[1]))
+							$callable = $parserArgs[1];
+					}
+					$value = explode($separator, $rawValue);
+					if ($callable !== NULL)
+						$value = array_map($callable, $value);
+				} else {
+					$value = [$rawValue];
+				}
 			} else {
 				$value = NULL;
 				$flags = isset($parserArgs[0]) && is_int($parserArgs[0]) 
@@ -220,7 +237,7 @@ trait Parsers {
 				try {
 					$value = $toolClass::JsonDecode($rawValue, $flags, $depth);
 					if ($typeStr === 'array' || $typeStr === 'object') {
-						settype($value, $typeStr);	
+						settype($value, $typeStr);
 					} else {
 						$value = new $typeStr($value);
 					}
