@@ -151,8 +151,8 @@ trait Connection {
 			$dbConfig->{$sysCfgProps->database} = str_replace('\\', '/', realpath($dbFileFullPath));
 		}
 		// Process connection string (dsn) with config replacements
-		$dsn = $conArgs->dsn;
 		$cfgArr = array_merge($conArgs->defaults, (array) $dbConfig);
+		$dsn = isset($cfgArr['dsn']) ? $cfgArr['dsn'] : $conArgs->dsn;
 		$credentialsInDsn = (
 			mb_strpos($dsn, '{user}') !== FALSE &&
 			mb_strpos($dsn, '{password}') !== FALSE
