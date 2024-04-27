@@ -285,7 +285,7 @@ trait Helpers {
 	public static function RealPathVirtual ($path) {
 		$insidePhar = class_exists('\Phar') && strlen(\Phar::running()) > 0;
 		if ($insidePhar) $path = mb_substr($path, 7);
-		$path = str_replace('\\', '/', $path);
+		$path = rtrim(str_replace(['\\', '//'], '/', $path), '/');
 		$rawParts = explode('/', $path);
 		$parts = array_filter($rawParts, 'strlen'); // @phpstan-ignore-line
 		if ($rawParts[0] == '' && mb_substr($path, 0, 1) == '/')
