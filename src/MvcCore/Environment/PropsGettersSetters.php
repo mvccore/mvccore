@@ -33,8 +33,9 @@ trait PropsGettersSetters {
 	/**
 	 * Environment name. Usual values:
 	 * - `"dev"`			- Development environment.
-	 * - `"beta"`			- Common team testing environment.
-	 * - `"alpha"`			- Release testing environment.
+	 * - `"alpha"`			- Pre-release testing environment.
+	 * - `"beta"`			- Release testing environment.
+	 * - `"gamma"`			- Release environment in debug mode or in any other special mode.
 	 * - `"production"`		- Release environment.
 	 * @var string|NULL
 	 */
@@ -56,6 +57,7 @@ trait PropsGettersSetters {
 			\MvcCore\IEnvironment::DEVELOPMENT,
 			\MvcCore\IEnvironment::ALPHA,
 			\MvcCore\IEnvironment::BETA,
+			\MvcCore\IEnvironment::GAMMA,
 			\MvcCore\IEnvironment::PRODUCTION
 		];
 	}
@@ -90,6 +92,15 @@ trait PropsGettersSetters {
 	 * @inheritDoc
 	 * @return bool
 	 */
+	public function IsAlpha () {
+		if ($this->name === NULL) $this->GetName();
+		return $this->values[\MvcCore\IEnvironment::ALPHA];
+	}
+
+	/**
+	 * @inheritDoc
+	 * @return bool
+	 */
 	public function IsBeta () {
 		if ($this->name === NULL) $this->GetName();
 		return $this->values[\MvcCore\IEnvironment::BETA];
@@ -99,9 +110,9 @@ trait PropsGettersSetters {
 	 * @inheritDoc
 	 * @return bool
 	 */
-	public function IsAlpha () {
+	public function IsGamma () {
 		if ($this->name === NULL) $this->GetName();
-		return $this->values[\MvcCore\IEnvironment::ALPHA];
+		return $this->values[\MvcCore\IEnvironment::GAMMA];
 	}
 
 	/**

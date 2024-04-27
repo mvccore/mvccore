@@ -16,22 +16,27 @@ namespace MvcCore\Environment;
 interface IConstants {
 
 	/**
-	 * Release environment.
+	 * Development environment.
 	 */
-	const PRODUCTION = 'production';
-
+	const DEVELOPMENT	= 'dev';
+	
 	/**
-	 * Common team testing environment.
+	 * Pre-release testing environment.
 	 */
-	const ALPHA = 'alpha';
+	const ALPHA			= 'alpha';
 
 	/**
 	 * Release testing environment.
 	 */
-	const BETA = 'beta';
+	const BETA			= 'beta';
 
 	/**
-	 * Development environment.
+	 * Release environment in debug mode or in any other special mode.
 	 */
-	const DEVELOPMENT = 'dev';
+	const GAMMA			= 'gamma';
+
+	/**
+	 * Release environment.
+	 */
+	const PRODUCTION	= 'production';
 }

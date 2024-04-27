@@ -56,16 +56,22 @@ interface IEnvironment extends \MvcCore\Environment\IConstants {
 	public function IsDevelopment ();
 
 	/**
+	 * Return `TRUE` if environment is `"alpha"`.
+	 * @return bool
+	 */
+	public function IsAlpha ();
+
+	/**
 	 * Return `TRUE` if environment is `"beta"`.
 	 * @return bool
 	 */
 	public function IsBeta ();
 
 	/**
-	 * Return `TRUE` if environment is `"alpha"`.
+	 * Return `TRUE` if environment is `"gamma"`.
 	 * @return bool
 	 */
-	public function IsAlpha ();
+	public function IsGamma ();
 
 	/**
 	 * Return `TRUE` if environment is `"production"`.
