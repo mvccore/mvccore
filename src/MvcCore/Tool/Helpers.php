@@ -288,13 +288,18 @@ trait Helpers {
 		$path = rtrim(str_replace(['\\', '//'], '/', $path), '/');
 		$rawParts = explode('/', $path);
 		$parts = array_filter($rawParts, 'strlen'); // @phpstan-ignore-line
-		if ($rawParts[0] == '' && mb_substr($path, 0, 1) == '/')
+		if ($rawParts[0] == '' && mb_substr($path, 0, 1) === '/')
 			array_unshift($parts, '');
 		$items = [];
 		foreach ($parts as $part) {
 			if ('.' == $part) continue;
 			if ('..' == $part) {
-				array_pop($items);
+				$itemsCnt = count($items);
+				if ($itemsCnt > 0 && !in_array($items[$itemsCnt - 1], ['..', '~'], TRUE)) {
+					array_pop($items);
+				} else {
+					$items[] = '..';
+				}
 			} else {
 				$items[] = $part;
 			}
