@@ -492,10 +492,11 @@ interface IRouter extends \MvcCore\Router\IConstants {
 	 *       }
 	 *   );
 	 * ````
-	 * @param  callable $preRouteMatchingHandler 
+	 * @param  callable|NULL $preRouteMatchingHandler 
+	 * @throws \Exception Pre-route matching handler is not callable.
 	 * @return \MvcCore\Router
 	 */
-	public function SetPreRouteMatchingHandler (callable $preRouteMatchingHandler = NULL);
+	public function SetPreRouteMatchingHandler ($preRouteMatchingHandler = NULL);
 
 	/**
 	 * Get pre-route matching handler. This handler is always executed every 
@@ -538,10 +539,11 @@ interface IRouter extends \MvcCore\Router\IConstants {
 	 *       }
 	 *   );
 	 * ````
-	 * @param  callable $preRouteUrlBuildingHandler 
+	 * @param  callable|NULL $preRouteUrlBuildingHandler 
+	 * @throws \Exception Pre-url building handler is not callable.
 	 * @return \MvcCore\Router
 	 */
-	public function SetPreRouteUrlBuildingHandler (callable $preRouteUrlBuildingHandler);
+	public function SetPreRouteUrlBuildingHandler ($preRouteUrlBuildingHandler = NULL);
 
 	/**
 	 * Get handler executed before building URL by rewrite routes. This 

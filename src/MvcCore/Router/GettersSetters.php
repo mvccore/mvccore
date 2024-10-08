@@ -127,10 +127,13 @@ trait GettersSetters {
 
 	/**
 	 * @inheritDoc
-	 * @param  callable $preRouteMatchingHandler 
+	 * @param  callable|NULL $preRouteMatchingHandler 
+	 * @throws \Exception Pre-route matching handler is not callable.
 	 * @return \MvcCore\Router
 	 */
-	public function SetPreRouteMatchingHandler (callable $preRouteMatchingHandler = NULL) {
+	public function SetPreRouteMatchingHandler ($preRouteMatchingHandler = NULL) {
+		if ($preRouteMatchingHandler !== NULL && !is_callable($preRouteMatchingHandler))
+			throw new \Exception("[".get_class($this)."] Pre-route matching handler is not callable.");
 		$this->preRouteMatchingHandler = $preRouteMatchingHandler;
 		if ($preRouteMatchingHandler !== NULL) {
 			$this->anyRoutesConfigured = TRUE;
@@ -150,10 +153,13 @@ trait GettersSetters {
 
 	/**
 	 * @inheritDoc
-	 * @param  callable $preRouteUrlBuildingHandler 
+	 * @param  callable|NULL $preRouteUrlBuildingHandler 
+	 * @throws \Exception Pre-url building handler is not callable.
 	 * @return \MvcCore\Router
 	 */
-	public function SetPreRouteUrlBuildingHandler (callable $preRouteUrlBuildingHandler) {
+	public function SetPreRouteUrlBuildingHandler ($preRouteUrlBuildingHandler = NULL) {
+		if ($preRouteUrlBuildingHandler !== NULL && !is_callable($preRouteUrlBuildingHandler))
+			throw new \Exception("[".get_class($this)."] Pre-url building handler is not callable.");
 		$this->preRouteUrlBuildingHandler = $preRouteUrlBuildingHandler;
 		return $this;
 	}
