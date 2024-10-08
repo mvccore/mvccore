@@ -115,7 +115,7 @@ trait Escaping {
 	public function EscapeAttrJs ($obj, $flags = 0, $depth = 512) {
 		$toolClass = self::$toolClass;
 		$json = $toolClass::JsonEncode($obj, $flags | JSON_HEX_AMP | JSON_HEX_QUOT | JSON_HEX_APOS, $depth);
-		return strtr($json, ["'" => "\\'", '"' => "'"]);
+		return strtr($json, ["'" => "&apos;", '"' => "&quot;"]);
 	}
 	
 	/**
