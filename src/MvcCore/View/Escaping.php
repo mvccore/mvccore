@@ -100,7 +100,7 @@ trait Escaping {
 	 * @return string
 	 */
 	public function EscapeJs ($obj, $flags = 0, $depth = 512) {
-		$toolClass = self::$toolClass;
+		$toolClass = self::$toolClass ?: self::$toolClass = \MvcCore\Application::GetInstance()->GetToolClass();
 		$json = $toolClass::JsonEncode($obj, $flags | JSON_HEX_QUOT | JSON_HEX_APOS, $depth);
 		return strtr($json, [']]>' => ']]\x3E', '<!' => '\x3C!', '</script' => '<\/script']);
 	}
@@ -113,7 +113,7 @@ trait Escaping {
 	 * @return string
 	 */
 	public function EscapeAttrJs ($obj, $flags = 0, $depth = 512) {
-		$toolClass = self::$toolClass;
+		$toolClass = self::$toolClass ?: self::$toolClass = \MvcCore\Application::GetInstance()->GetToolClass();
 		$json = $toolClass::JsonEncode($obj, $flags | JSON_HEX_AMP | JSON_HEX_QUOT | JSON_HEX_APOS, $depth);
 		return strtr($json, ["'" => "&apos;", '"' => "&quot;"]);
 	}
