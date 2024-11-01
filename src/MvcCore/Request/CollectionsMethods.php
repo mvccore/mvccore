@@ -571,9 +571,15 @@ trait CollectionsMethods {
 			} else {
 				// if there is something in target collection and it's not an array
 				$result = $this->cleanParamValue($rawValue, $pregReplaceAllowedChars);
-				if ($targetType === NULL) return $result;
-				settype($result, $targetType);
-				return $result;
+				if ($result === '') {
+					return $ifNullValue != NULL
+						? $ifNullValue
+						: NULL;
+				} else {
+					if ($targetType !== NULL)
+						settype($result, $targetType);
+					return $result;
+				}
 			}
 		}
 	}
