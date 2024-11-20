@@ -70,9 +70,9 @@ trait DirectoryMethods {
 				}
 			}
 			if ($result === NULL) {
-				$relativePath = $this->correctRelativePath(static::$layoutsDir, $controller->GetLayout());
+				$relativePath = $this->correctRelativePath(static::VIEW_TYPE_LAYOUT, $controller->GetLayout());
 				return static::GetViewScriptFullPath(
-					$this->GetTypedViewsDirFullPath(static::$layoutsDir), 
+					$controller->GetApplication()->GetPathViewLayouts(TRUE), 
 					$relativePath
 				);
 			}

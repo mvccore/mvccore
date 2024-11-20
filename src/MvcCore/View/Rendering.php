@@ -34,7 +34,7 @@ trait Rendering {
 			// always overvrite existing keys:
 			$this->__protected['store'] = array_merge($currentStore, $variables);
 		}
-		return $this->Render(static::$scriptsDir, $relativePath);
+		return $this->Render(static::VIEW_TYPE_SCRIPT, $relativePath);
 	}
 
 	/**
@@ -52,7 +52,7 @@ trait Rendering {
 			// always overvrite existing keys:
 			$this->__protected['store'] = array_merge($currentStore, $variables);
 		}
-		return $this->Render(static::$layoutsDir, $relativePath);
+		return $this->Render(static::VIEW_TYPE_LAYOUT, $relativePath);
 	}
 
 	/**
@@ -62,10 +62,10 @@ trait Rendering {
 	 * @param  string|NULL $content
 	 * @return string
 	 */
-	public function RenderLayoutAndContent ($relativePath, & $content = NULL) {
+	public function RenderLayoutAndContent ($relativePath, $content = NULL) {
 		if ($relativePath === NULL) return $content; // no layout defined
-		$this->__protected['content'] = & $content;
-		return $this->Render(static::$layoutsDir, $relativePath);
+		$this->__protected['content'] = $content;
+		return $this->Render(static::VIEW_TYPE_LAYOUT, $relativePath);
 	}
 
 	/**
@@ -104,24 +104,25 @@ trait Rendering {
 
 	/**
 	 * @inheritDoc
-	 * @param  string      $typePath     By default: `"Layouts" | "Scripts"`. It could be `"Forms" | "Forms/Fields"` etc...
-	 * @param  string      $relativePath
+	 * @param  int    $viewType
+	 * @param  string $relativePath
 	 * @throws \InvalidArgumentException Template not found in path: `$viewScriptFullPath`.
 	 * @return string
 	 */
-	public function Render ($typePath, $relativePath) {
-		if (!$typePath)
-			$typePath = static::$scriptsDir;
+	public function Render ($viewType, $relativePath) {
 		$relativePath = $this->correctRelativePath(
-			$typePath, $relativePath
+			$viewType, $relativePath
 		);
+		// 1. try to find template in vendor package view dir (if vendor dispatching) or in default view dir
 		$viewScriptFullPath = static::GetViewScriptFullPath(
-			$this->GetTypedViewsDirFullPath($typePath), $relativePath
+			$this->GetTypedViewsDirFullPath($viewType, FALSE), 
+			$relativePath
 		);
 		if (!file_exists($viewScriptFullPath)) {
-			// fallback - try to found template in default view dir:
+			// 2. try to find template always in default view dir:
 			$viewScriptFullPathDefault = static::GetViewScriptFullPath(
-				$this->GetTypedViewsDirFullPathDefault($typePath), $relativePath
+				$this->GetTypedViewsDirFullPath($viewType, TRUE), 
+				$relativePath
 			);
 			if (file_exists($viewScriptFullPathDefault)) {
 				$viewScriptFullPath = $viewScriptFullPathDefault;
@@ -141,6 +142,7 @@ trait Rendering {
 	 * @return string
 	 */
 	public function RenderByFullPath ($viewScriptFullPath) {
+		// add currently rendered full path
 		$renderedFullPaths = & $this->__protected['renderedFullPaths'];
 		$renderedFullPaths[] = $viewScriptFullPath;
 		// get render mode
@@ -176,49 +178,6 @@ trait Rendering {
 	
 	/**
 	 * @inheritDoc
-	 * @param  \MvcCore\Application $app 
-	 * @return string
-	 */
-	public static function GetDefaultViewsDirFullPath (\MvcCore\IApplication $app) {
-		return static::$defaultViewsDirFullPath ?: (
-			static::$defaultViewsDirFullPath = implode('/', [
-				$app->GetRequest()->GetAppRoot(),
-				$app->GetAppDir(),
-				$app->GetViewsDir()
-			])
-		);
-	}
-
-	/**
-	 * @inheritDoc
-	 * @param  \MvcCore\Application $app 
-	 * @param  string               $controllerClassFullName
-	 * @param  bool                 $detectByReflection
-	 * @return string
-	 */
-	public static function GetExtViewsDirFullPath (\MvcCore\IApplication $app, $controllerClassFullName, $detectByReflection = TRUE) {
-		$extensionRoot = NULL;
-		// compilled applications doesn't support dispatching in vendor directories
-		if ($detectByReflection) {
-			// child controller rendering
-			$ctrlType = new \ReflectionClass($controllerClassFullName);
-			$ctrlFileFullPath = str_replace('\\', '/', $ctrlType->getFileName());
-			$extensionRoot = mb_substr(
-				$ctrlFileFullPath, 0, mb_strlen($ctrlFileFullPath) - (mb_strlen($controllerClassFullName) + 5)
-			);
-		} else {
-			// main controller rendering
-			$extensionRoot = $app->GetVendorAppRoot();
-		}
-		return implode('/', [
-			$extensionRoot,
-			$app->GetAppDir(),
-			$app->GetViewsDir()
-		]);
-	}
-
-	/**
-	 * @inheritDoc
 	 * @param  string $typedViewsDirFullPath Example: `/abs/doc/root/App/Views/{Layouts,Forms,Scripts}`.
 	 * @param  string $scriptRelativePath    Example: `ctrl-name/action-name`.
 	 * @return string
@@ -232,53 +191,83 @@ trait Rendering {
 	
 	/**
 	 * @inhertDocs
-	 * @param  string $typePath
+	 * @param  int  $viewType
+	 * @param  bool $default
 	 * @return string
 	 */
-	public function GetTypedViewsDirFullPath ($typePath) {
+	public function GetTypedViewsDirFullPath ($viewType, $default = FALSE) {
+		$resultType = $default 
+			? static::VIEW_TYPE_DEFAULT 
+			: $viewType;
+
 		$viewsDirsFullPaths = [];
-		if ($this->__protected['viewsDirsFullPaths'] !== NULL) {
+		if (isset($this->__protected['viewsDirsFullPaths'])) {
 			$viewsDirsFullPaths = & $this->__protected['viewsDirsFullPaths'];
-			if (isset($viewsDirsFullPaths[$typePath]))
-				return $viewsDirsFullPaths[$typePath] . '/' . $typePath;
+			if (isset($viewsDirsFullPaths[$resultType]))
+				return $viewsDirsFullPaths[$resultType];
 		}
 		$app = $this->controller->GetApplication();
-		$defaultViewsDirFullPath = static::GetDefaultViewsDirFullPath($app);
+		
+		$defaultViewsDirFullPath = static::getViewPathByType($app, $viewType, TRUE);
+
 		if ($this->controller->GetParentController() !== NULL) {
 			// child controller dispatching
 			$typedFullPath = static::GetExtViewsDirFullPath(
-				$app, get_class($this->controller), TRUE
+				$app, get_class($this->controller), $viewType, TRUE
 			);
 		} else {
 			// main controller dispatching
 			$typedFullPath = $app->GetVendorAppDispatch()
-				? static::GetExtViewsDirFullPath($app, get_class($this->controller), FALSE)
-				: $defaultViewsDirFullPath;
+				? static::GetExtViewsDirFullPath(
+					$app, get_class($this->controller), $viewType, FALSE
+				)
+				: $defaultViewsDirFullPath; // tady by se zavolalo nove ziskavani podle typu jako komplet cesta
 		}
-		$viewsDirsFullPaths[$typePath] = $typedFullPath;
-		$viewsDirsFullPaths[static::$layoutsDir] = $defaultViewsDirFullPath;
+
+		$viewsDirsFullPaths[$viewType] = $typedFullPath;
+		$viewsDirsFullPaths[static::VIEW_TYPE_DEFAULT] = $defaultViewsDirFullPath;
 		$this->__protected['viewsDirsFullPaths'] = $viewsDirsFullPaths;
-		return $viewsDirsFullPaths[$typePath] . '/' . $typePath;
+
+		return $viewsDirsFullPaths[$resultType];
 	}
 
 	/**
-	 * @inhertDocs
-	 * @param  string $typePath
+	 * @inheritDoc
+	 * @param  \MvcCore\Application $app 
+	 * @param  string               $ctrlClassFullName
+	 * @param  int                  $viewType
+	 * @param  bool                 $useReflection
 	 * @return string
 	 */
-	public function GetTypedViewsDirFullPathDefault ($typePath) {
-		$layoutsDir = static::$layoutsDir;
-		$viewsDirsFullPaths = [];
-		if ($this->__protected['viewsDirsFullPaths'] !== NULL) {
-			$viewsDirsFullPaths = & $this->__protected['viewsDirsFullPaths'];
-			if (isset($viewsDirsFullPaths[$layoutsDir]))
-				return $viewsDirsFullPaths[$layoutsDir] . '/' . $typePath;
+	public static function GetExtViewsDirFullPath (
+		\MvcCore\IApplication $app, $ctrlClassFullName, $viewType, $useReflection = TRUE
+	) {
+		// compilled applications doesn't support dispatching in vendor directories
+		$extensionRoot = NULL;
+		if ($useReflection) {
+			// child controller rendering
+			$ctrlType = new \ReflectionClass($ctrlClassFullName);
+			$ctrlFileFullPath = str_replace('\\', '/', $ctrlType->getFileName());
+			$extensionRoot = mb_substr(
+				$ctrlFileFullPath, 0, mb_strlen($ctrlFileFullPath) - (mb_strlen($ctrlClassFullName) + 5)
+			);
+		} else {
+			// main controller rendering
+			$extensionRoot = $app->GetPathAppRootVendor();
 		}
-		$app = $this->controller->GetApplication();
-		$defaultViewsDirFullPath = static::GetDefaultViewsDirFullPath($app);
-		$viewsDirsFullPaths[$layoutsDir] = $defaultViewsDirFullPath;
-		$this->__protected['viewsDirsFullPaths'] = $viewsDirsFullPaths;
-		return $viewsDirsFullPaths[$layoutsDir] . '/' . $typePath;
+
+		$pathViewsRel = static::getViewPathByType($app, $viewType, FALSE);
+
+		if (mb_strpos($pathViewsRel, '~/') === 0) {
+			$extViewsDirFullPath = $extensionRoot . mb_substr($pathViewsRel, 1);
+		} else {
+			$extViewsDirFullPath = $extensionRoot . '/' . ltrim($pathViewsRel, '/');
+		}
+		
+		$toolClass = $app->GetToolClass();
+		$extViewsDirFullPath = $toolClass::RealPathVirtual($extViewsDirFullPath);
+
+		return $extViewsDirFullPath;
 	}
 
 	/**
@@ -317,6 +306,14 @@ trait Rendering {
 					$currentStore[$key] = $value;
 		}
 		return $this;
+	}
+	
+	/**
+	 * @inheritDoc
+	 * @return array<string, mixed>
+	 */
+	public function & GetData () {
+		return $this->__protected['store'];
 	}
 
 	/**
