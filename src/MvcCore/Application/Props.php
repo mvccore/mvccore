@@ -378,6 +378,12 @@ trait Props {
 	 */
 	protected $viewClass = '\MvcCore\View';
 
+	/**
+	 * Application default controller namespace, usually completed as "`App\Controllers`".
+	 * This variable is completed in runtime by application paths configuration.
+	 * @var string|NULL
+	 */
+	protected $controllersBaseNamespace = NULL;
 
 	/**
 	 * Application scripts and views directory name as `"App"` by default,
@@ -387,9 +393,11 @@ trait Props {
 	 * - `/App/Views`
 	 * It should by reconfigured to custom value in the very 
 	 * application beginning or by constant `MVCCORE_APP_ROOT_DIRNAME`.
+	protected $pathAppRoot = NULL;
 	 * @var string|NULL
 	 */
 	protected $appDir = NULL;
+	protected $pathAppRootVendor = NULL;
 
 	/**
 	 * Application web server document root directory name as `"www"` 
@@ -399,30 +407,116 @@ trait Props {
 	 * @var string|NULL
 	 */
 	protected $docRootDir = NULL;
+	protected $pathDocRoot = NULL;
 	
 	/**
-	 * CLI scripts directory name as `"Cli"` by default.
-	 * It should by reconfigured to custom value in the very application beginning.
-	 * @var string
+	 * Store with application relative and absolute paths by path type.
+	 * Key is local property path name and value is array with two items.
+	 * first array item is relative path, second array items is absolute path.
+	 * This array is completed on-demand according to the needs of method 
+	 * calls like `$app->GetPath<name>();`.
+	 * @var array<string, array{"0":string,"1":string}>
 	 */
-	protected $cliDir = 'Cli';
+	protected $paths = [];
 
 	/**
-	 * Controllers directory name as `"Controllers"` by default, for all controller classes,
-	 * it's placed directly in application directory by default.
-	 * It should by reconfigured to custom value in the very application beginning.
-	 * @var string
+	 * Application PHP files path. This directory always contains 
+	 * `Controllers`, `Models`, `Views` and other application main directories.
+	 * 
+	 * This value is completed in runtime as relative value from aplication root. 
+	 * If there is already defined constant `MVCCORE_APP_ROOT_DIRNAME`, value 
+	 * is completed as application root and this constant. 
+	 * 
+	 * Example: `"~/App"`
+	 * @var string|NULL
 	 */
-	protected $controllersDir = 'Controllers';
+	protected $pathApp = NULL;
 
 	/**
-	 * Views directory name as `"views"` by default, for all view elements,
-	 * it's placed directly in application directory above by default.
-	 * It should by reconfigured to custom value in the very application beginning.
+	 * Relative path from app root to CLI scripts directory,
+	 * `"~/App/Cli"` by default.
 	 * @var string
 	 */
-	protected $viewsDir = 'Views';
+	protected $pathCli = '~/App/Cli';
 
+	/**
+	 * Relative path from app root to application controllers base dir,
+	 * `"~/Var/Controllers"` by default.
+	 * @var string
+	 */
+	protected $pathControllers = '~/App/Controllers';
+
+	/**
+	 * Relative path from app root to application view components base dir,
+	 * `"~/Var/Views"` by default.
+	 * @var string
+	 */
+	protected $pathViews = '~/App/Views';
+
+	/**
+	 * Relative path from app root to application view helpers base dir,
+	 * `"~/Var/Views/Helpers"` by default.
+	 * @var string
+	 */
+	protected $pathViewHelpers = '~/App/Views/Helpers';
+
+	/**
+	 * Relative path from app root to application view layouts base dir,
+	 * `"~/Var/Views/Layouts"` by default.
+	 * @var string
+	 */
+	protected $pathViewLayouts = '~/App/Views/Layouts';
+
+	/**
+	 * Relative path from app root to application view scripts base dir,
+	 * `"~/Var/Views/Scripts"` by default.
+	 * @var string
+	 */
+	protected $pathViewScripts = '~/App/Views/Scripts';
+
+	/**
+	 * Relative path from app root to form view scripts base dir,
+	 * `"~/Var/Views/Forms"` by default.
+	 * This property is used only in forms extensions.
+	 * @var string
+	 */
+	protected $pathViewForms = '~/App/Views/Forms';
+
+	/**
+	 * Relative path from app root to form field view scripts base dir,
+	 * `"~/Var/Views/Forms/Fields"` by default.
+	 * This property is used only in forms extensions.
+	 * @var string
+	 */
+	protected $pathViewFormsFields = '~/App/Views/Forms/Fields';
+
+	/**
+	 * Relative path from app root to variable data directory,
+	 * `"~/Var"` by default.
+	 * @var string
+	 */
+	protected $pathVar = '~/Var';
+
+	/**
+	 * Relative path from app root to temporary directory for application temporary files,
+	 * `"~/Var/Tmp"` by default.
+	 * @var string
+	 */
+	protected $pathTmp = '~/Var/Tmp';
+
+	/**
+	 * Relative path from app root to store any log information,
+	 * `"~/Var/Logs"` by default.
+	 * @var string
+	 */
+	protected $pathLogs = '~/Var/Logs';
+
+	/**
+	 * Relative path from public document root to all static files,
+	 * css, js, images and fonts, `"~/static"` by default.
+	 * @var string
+	 */
+	protected $pathStatic = '~/static';
 
 	/**
 	 * Default controller name, `"Index"` by default.
