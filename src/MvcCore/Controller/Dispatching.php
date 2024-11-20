@@ -73,6 +73,34 @@ trait Dispatching {
 		}
 		return $result;
 	}
+	
+	/**
+	 * @inheritDoc
+	 * @param  string      $location
+	 * @param  int         $code
+	 * @param  string|NULL $reason   Any optional text header for reason why.
+	 * @throws \MvcCore\Controller\TerminateException
+	 * @return void
+	 */
+	public static function Redirect ($location, $code = \MvcCore\IResponse::SEE_OTHER, $reason = NULL) {
+		$app = \MvcCore\Application::GetInstance();
+		$response = $app->GetResponse();
+		$response
+			->SetCode($code)
+			->SetHeader('Location', $location);
+		if ($reason !== NULL)
+			$response->SetHeader('X-Reason', $reason);
+		$state = static::DISPATCH_STATE_TERMINATED;
+		$mainCtrl = $app->GetController();
+		$mainCtrl->dispatchState = $state;
+		foreach (self::$allControllers as $controllerAndType) {
+			list($controller) = $controllerAndType;
+			$controller->dispatchState = $state;
+		}
+		self::$allControllers = [];
+		$app->Terminate();
+		throw new \MvcCore\Controller\TerminateException(__FILE__.":".__LINE__);
+	}
 
 	/**
 	 * @inheritDoc
@@ -625,34 +653,6 @@ trait Dispatching {
 	public function GetSessionNamespace ($name = \MvcCore\ISession::DEFAULT_NAMESPACE_NAME) {
 		$sessionClass = $this->application->GetSessionClass();
 		return $sessionClass::GetNamespace($name);
-	}
-
-	/**
-	 * @inheritDoc
-	 * @param  string      $location
-	 * @param  int         $code
-	 * @param  string|NULL $reason   Any optional text header for reason why.
-	 * @throws \MvcCore\Controller\TerminateException
-	 * @return void
-	 */
-	public static function Redirect ($location, $code = \MvcCore\IResponse::SEE_OTHER, $reason = NULL) {
-		$app = \MvcCore\Application::GetInstance();
-		$response = $app->GetResponse();
-		$response
-			->SetCode($code)
-			->SetHeader('Location', $location);
-		if ($reason !== NULL)
-			$response->SetHeader('X-Reason', $reason);
-		$state = static::DISPATCH_STATE_TERMINATED;
-		$mainCtrl = $app->GetController();
-		$mainCtrl->dispatchState = $state;
-		foreach (self::$allControllers as $controllerAndType) {
-			list($controller) = $controllerAndType;
-			$controller->dispatchState = $state;
-		}
-		self::$allControllers = [];
-		$app->Terminate();
-		throw new \MvcCore\Controller\TerminateException(__FILE__.":".__LINE__);
 	}
 
 	/**
