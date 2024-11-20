@@ -102,8 +102,13 @@ trait Canonical {
 		$request = $this->request;
 		$redirectToCanonicalUrl = 0;
 		$defaultParams =  $this->GetDefaultParams() ?: [];
-		list($selfUrlDomainAndBasePart, $selfUrlPathAndQueryPart) =  $this->currentRoute->Url(
-			$request, $this->requestedParams, $defaultParams, $this->getQueryStringParamsSepatator(), TRUE
+		list(
+			$selfUrlDomainAndBasePart, $selfUrlPathAndQueryPart
+		) = $this->currentRoute->Url(
+			$request, $this->requestedParams, 
+			$defaultParams, 
+			TRUE,
+			'&' // do not use '&amp;' here, because compared request url contains not encoded `&` char
 		);
 		if (mb_strpos($selfUrlDomainAndBasePart, '//') === FALSE)
 			$selfUrlDomainAndBasePart = $request->GetDomainUrl() . $selfUrlDomainAndBasePart;

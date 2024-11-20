@@ -91,7 +91,6 @@ trait UrlByQuery {
 	protected function urlByQueryStringCompleteResult ($ctrlPc, $actionPc, array & $params) {
 		$result = '';
 		$toolClass = self::$toolClass;
-		$amp = $this->getQueryStringParamsSepatator();
 		list($dfltCtrlPc, $dftlActionPc) = $this->application->GetDefaultControllerAndActionNames();
 		$ctrlIsNotDefault = $ctrlPc !== $dfltCtrlPc && $ctrlPc !== NULL;
 		$actionIsNotDefault = $actionPc !== $dftlActionPc && $actionPc !== NULL;
@@ -100,15 +99,15 @@ trait UrlByQuery {
 			$result .= $this->request->GetScriptName();
 		if ($ctrlIsNotDefault) {
 			$result .= $sep . 'controller=' . $toolClass::GetDashedFromPascalCase($ctrlPc);
-			$sep = $amp;
+			$sep = '&amp;';
 		}
 		if ($actionIsNotDefault) {
 			$result .= $sep . 'action=' . $toolClass::GetDashedFromPascalCase($actionPc);
-			$sep = $amp;
+			$sep = '&amp;';
 		}
 		if ($params) 
 			// `http_build_query()` automatically converts all XSS chars to entities (`< > " '`):
-			$result .= $sep . str_replace('%2F', '/', http_build_query($params, '', $amp, PHP_QUERY_RFC3986));
+			$result .= $sep . str_replace('%2F', '/', http_build_query($params, '', '&amp;', PHP_QUERY_RFC3986));
 		$result = rtrim($result, '?');
 		if ($result == '') 
 			$result = '/';

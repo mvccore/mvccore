@@ -31,33 +31,9 @@ trait UrlByRoutes {
 		$defaultParams = $this->GetDefaultParams() ?: [];
 		/** @var \MvcCore\Route $route */
 		list ($resultUrl) = $route->Url(
-			$this->request, $params, $defaultParams, $this->getQueryStringParamsSepatator(), FALSE
+			$this->request, $params, $defaultParams, FALSE
 		);
 		return $resultUrl;
 	}
 
-	/**
-	 * Return XML query string separator `&amp;`, if response has any
-	 * `Content-Type` header with `xml` substring inside or return XML query
-	 * string separator `&amp;` if `\MvcCore\View::GetDoctype()` is has any
-	 * `XML` or any `XHTML` substring inside. Otherwise return HTML query
-	 * string separator `&`.
-	 * @return string
-	 */
-	protected function getQueryStringParamsSepatator () {
-		if ($this->queryParamsSepatator === NULL) {
-			$response = \MvcCore\Application::GetInstance()->GetResponse();
-			if ($response->HasHeader('Content-Type')) {
-				$this->queryParamsSepatator = $response->IsXmlOutput() ? '&amp;' : '&';
-			} else {
-				$viewClass = $this->application->GetViewClass();
-				$viewDocType = $viewClass::GetDoctype();
-				$this->queryParamsSepatator = (
-					strpos($viewDocType, \MvcCore\IView::DOCTYPE_XML) !== FALSE ||
-					strpos($viewDocType, \MvcCore\IView::DOCTYPE_XHTML) !== FALSE
-				) ? '&amp;' : '&';
-			}
-		}
-		return $this->queryParamsSepatator;
-	}
 }
