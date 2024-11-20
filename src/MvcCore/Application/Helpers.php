@@ -99,18 +99,6 @@ trait Helpers {
 
 	/**
 	 * @inheritDoc
-	 * @throws \Exception
-	 * @return string|NULL
-	 */
-	public function GetVendorAppRoot () {
-		if ($this->vendorAppDispatch !== NULL)
-			return $this->vendorAppRoot;
-		$this->initVendorProps();
-		return $this->vendorAppRoot;
-	}
-
-	/**
-	 * @inheritDoc
 	 * @return bool|NULL
 	 */
 	public function ValidateCsrfProtection () {

@@ -155,33 +155,6 @@ trait Props {
 	protected static $doctype = self::DOCTYPE_HTML5;
 
 	/**
-	 * Layout templates directory placed by default
-	 * inside `"/App/Views"` directory. Default value
-	 * is `"Layouts"`, so layouts app path
-	 * is `"/App/Views/Layouts"`.
-	 * @var string
-	 */
-	protected static $layoutsDir = 'Layouts';
-
-	/**
-	 * Controller/action templates directory
-	 * placed by default inside `"/App/Views"` directory.
-	 * Default value is `"Scripts"`, so scripts app path
-	 * is `"/App/Views/Scripts"`.
-	 * @var string
-	 */
-	protected static $scriptsDir = 'Scripts';
-
-	/**
-	 * Views helpers directory placed by default
-	 * inside `"/App/Views"` directory.
-	 * Default value is `"Helpers"`, so scripts app path
-	 * is `"/App/Views/Helpers"`.
-	 * @var string
-	 */
-	protected static $helpersDir = 'Helpers';
-
-	/**
 	 * Helpers classes namespaces, where are all configured view helpers placed.
 	 * For read & write.
 	 * @var array<int,string>
@@ -198,12 +171,6 @@ trait Props {
 	 * @var array<string,ViewHelperCacheRecord>
 	 */
 	protected static $globalHelpers = [];
-
-	/**
-	 * Static cache for application views directory full path.
-	 * @var string|NULL
-	 */
-	protected static $defaultViewsDirFullPath = NULL;
 
 	/**
 	 * Reference to `\MvcCore\Application::GetInstance()->GetToolClass();`.

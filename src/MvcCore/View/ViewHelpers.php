@@ -24,23 +24,6 @@ trait ViewHelpers {
 
 	/**
 	 * @inheritDoc
-	 * @return string
-	 */
-	public static function GetHelpersDir () {
-		return static::$helpersDir;
-	}
-
-	/**
-	 * @inheritDoc
-	 * @param  string $helpersDir
-	 * @return string
-	 */
-	public static function SetHelpersDir ($helpersDir = 'Helpers') {
-		return static::$helpersDir = $helpersDir;
-	}
-
-	/**
-	 * @inheritDoc
 	 * @param  string $helperNamespaces,... View helper classes namespace(s).
 	 * @return void
 	 */

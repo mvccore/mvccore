@@ -64,40 +64,6 @@ trait GettersSetters {
 
 	/**
 	 * @inheritDoc
-	 * @return string
-	 */
-	public static function GetLayoutsDir () {
-		return static::$layoutsDir;
-	}
-
-	/**
-	 * @inheritDoc
-	 * @param  string $layoutsDir
-	 * @return string
-	 */
-	public static function SetLayoutsDir ($layoutsDir = 'Layouts') {
-		return static::$layoutsDir = $layoutsDir;
-	}
-
-	/**
-	 * @inheritDoc
-	 * @return string
-	 */
-	public static function GetScriptsDir () {
-		return static::$scriptsDir;
-	}
-
-	/**
-	 * @inheritDoc
-	 * @param  string $scriptsDir
-	 * @return string
-	 */
-	public static function SetScriptsDir ($scriptsDir = 'Scripts') {
-		return static::$scriptsDir = $scriptsDir;
-	}
-
-	/**
-	 * @inheritDoc
 	 * @param  \MvcCore\Controller $controller
 	 * @return \MvcCore\View
 	 */
