@@ -44,7 +44,7 @@ trait GettersSetters {
 	 * @return string
 	 */
 	public function GetCompiled () {
-		/** @var \MvcCore\Application $this */
+		/** @var \MvcCore\Application $this */ // @phpstan-ignore varTag.nativeType
 		if ($this->compiled === NULL) {
 			$compiled = static::NOT_COMPILED;
 			if (class_exists('\Phar') && strlen(\Phar::running()) > 0) {
@@ -148,7 +148,7 @@ trait GettersSetters {
 
 	/**
 	 * @inheritDoc
-	 * @return \MvcCore\Tool|string
+	 * @return \MvcCore\Tool<object>|string
 	 */
 	public function GetToolClass () {
 		return $this->toolClass;
@@ -698,7 +698,7 @@ trait GettersSetters {
 	/**
 	 * @inheritDoc
 	 * @param  string $controllersBaseNamespace
-	 * @return string
+	 * @return \MvcCore\Application
 	 */
 	public function SetControllersBaseNamespace ($controllersBaseNamespace) {
 		$this->controllersBaseNamespace = $controllersBaseNamespace;
@@ -744,7 +744,7 @@ trait GettersSetters {
 	public function SetPathAppRootVendor ($absPath) {
 		if ($this->vendorAppDispatch === NULL)
 			$this->initVendorProps();
-		if ($this->vendorAppRoot) {
+		if ($this->vendorAppDispatch) {
 			$this->pathAppRootVendor = $absPath;
 		}
 		return $this;

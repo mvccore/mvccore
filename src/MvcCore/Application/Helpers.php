@@ -171,9 +171,9 @@ trait Helpers {
 
 	/**
 	 * Set pre-route, pre-dispatch or post-dispatch handler under specific priority index.
-	 * @param  CustomHandlerRecord[] $handlers Application handlers collection reference.
-	 * @param  CustomHandlerCallable $handler
-	 * @param  int|NULL              $priorityIndex
+	 * @param  array<int, array<int, CustomHandlerRecord>> $handlers Application handlers collection reference.
+	 * @param  CustomHandlerCallable                       $handler
+	 * @param  int|NULL                                    $priorityIndex
 	 * @return \MvcCore\Application
 	 */
 	protected function setHandler (array & $handlers, callable $handler, $priorityIndex = NULL) {

@@ -35,7 +35,7 @@
 		"php": ">=5.4.0"
 	},
 	"require-dev": {
-		"phpstan/phpstan": "^1.10",
+		"phpstan/phpstan": "^1.12.11",
 		"nette/tester": "<=2.4",
 		"tomflidr/tracy": "^2.7.4"
 	},
@@ -46,5 +46,6 @@
 		"classmap": [ "src/" ],
 		"files": [ "src/startup.php" ]
 	},
-	"minimum-stability": "dev"
+	"minimum-stability": "dev",
+	"prefer-stable": true
 }

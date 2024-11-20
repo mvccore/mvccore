@@ -132,7 +132,7 @@ trait GettersSetters {
 	 * @return \MvcCore\Router
 	 */
 	public function SetPreRouteMatchingHandler ($preRouteMatchingHandler = NULL) {
-		if ($preRouteMatchingHandler !== NULL && !is_callable($preRouteMatchingHandler))
+		if ($preRouteMatchingHandler !== NULL && !is_callable($preRouteMatchingHandler)) // @phpstan-ignore-line
 			throw new \Exception("[".get_class($this)."] Pre-route matching handler is not callable.");
 		$this->preRouteMatchingHandler = $preRouteMatchingHandler;
 		if ($preRouteMatchingHandler !== NULL) {
@@ -158,7 +158,7 @@ trait GettersSetters {
 	 * @return \MvcCore\Router
 	 */
 	public function SetPreRouteUrlBuildingHandler ($preRouteUrlBuildingHandler = NULL) {
-		if ($preRouteUrlBuildingHandler !== NULL && !is_callable($preRouteUrlBuildingHandler))
+		if ($preRouteUrlBuildingHandler !== NULL && !is_callable($preRouteUrlBuildingHandler)) // @phpstan-ignore-line
 			throw new \Exception("[".get_class($this)."] Pre-url building handler is not callable.");
 		$this->preRouteUrlBuildingHandler = $preRouteUrlBuildingHandler;
 		return $this;

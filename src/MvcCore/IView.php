@@ -39,7 +39,7 @@ namespace MvcCore;
  * MvcCore view properties and helpers:
  * 
  * @phpstan-type ViewHelper \MvcCore\Ext\Views\Helpers\AbstractHelper|\MvcCore\Ext\Views\Helpers\IHelper|\Closure|mixed
- * @phpstan-type ViewHelperCacheRecord array{0:Helper,1:bool,3:bool}
+ * @phpstan-type ViewHelperCacheRecord array{0:ViewHelper,1:bool,3:bool}
  * 
  * @property-read \MvcCore\Controller $controller Currently dispatched controller instance.
  * @method \MvcCore\Ext\Views\Helpers\CssHelper Css(string $groupName = self::GROUP_NAME_DEFAULT) Get css helper instance by group name. To use this method, you need to install extension `mvccore/ext-view-helper-assets`.
@@ -338,7 +338,7 @@ interface IView extends \MvcCore\View\IConstants {
 	 * @throws \InvalidArgumentException Template not found in path: `$viewScriptFullPath`.
 	 * @return string
 	 */
-	public function Render ($typePath, $relativePath);
+	public function Render ($viewType, $relativePath);
 
 	/**
 	 * Render template by previously configured view object by given full path.

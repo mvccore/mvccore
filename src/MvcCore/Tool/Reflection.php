@@ -15,6 +15,7 @@ namespace MvcCore\Tool;
 
 /**
  * @mixin \MvcCore\Tool
+ * @template T of object
  */
 trait Reflection {
 
@@ -225,15 +226,15 @@ trait Reflection {
 	 * get reflection object PhpDocs tags and it's arguments for older PHP versions.
 	 * Set result into local memory cache. You can optionally set prefered way 
 	 * to get desired meta data by last two arguments.
-	 * @param  string                                                 $cacheKey
+	 * @param  string                                                    $cacheKey
 	 * Result cache key.
-	 * @param  \ReflectionClass|\ReflectionMethod|\ReflectionProperty $reflectionObject
+	 * @param  \ReflectionClass<T>|\ReflectionMethod|\ReflectionProperty $reflectionObject
 	 * Reflection object to get attributes/tags from.
-	 * @param  string                                                 $attrClassOrDocsTag
+	 * @param  string                                                    $attrClassOrDocsTag
 	 * Attributes class full names (or PhpDocs tags).
-	 * @param  bool                                                   $attrsOnly
+	 * @param  bool                                                      $attrsOnly
 	 * `TRUE` to get PHP8+ attributes only, do not fall back to PhpDocs tags.
-	 * @param  bool                                                   $docsTagsOnly
+	 * @param  bool                                                      $docsTagsOnly
 	 * `TRUE` to get PhpDocs tags only, do not try PHP8+ attributes.
 	 * @throws \InvalidArgumentException
 	 * @return array<int|string,mixed>
@@ -268,9 +269,9 @@ trait Reflection {
 
 	/**
 	 * @inheritDoc
-	 * @param  \ReflectionClass|\ReflectionMethod|\ReflectionProperty $reflectionObject 
-	 * @param  string                                                 $attributeClassFullName 
-	 * @param  bool|NULL                                              $traversing
+	 * @param  \ReflectionClass<T>|\ReflectionMethod|\ReflectionProperty $reflectionObject 
+	 * @param  string                                                    $attributeClassFullName 
+	 * @param  bool|NULL                                                 $traversing
 	 * @return array<int|string,mixed>|NULL
 	 */
 	public static function GetAttrCtorArgs ($reflectionObject, $attributeClassFullName, $traversing = NULL) {
@@ -288,7 +289,7 @@ trait Reflection {
 					break;
 				}
 			} else {
-				/** @var \ReflectionAttribute[] $allAttrs */
+				/** @var array<\ReflectionAttribute<T>> $allAttrs */
 				$allAttrs = $reflectionObject->getAttributes();
 				foreach ($allAttrs as $allAttr) {
 					if (preg_match($attributeClassMatch, $allAttr->getName())) {
@@ -309,9 +310,9 @@ trait Reflection {
 
 	/**
 	 * @inheritDoc
-	 * @param  \ReflectionClass|\ReflectionMethod|\ReflectionProperty $reflectionObject 
-	 * @param  string                                                 $phpDocsTagName
-	 * @param  bool|NULL                                              $traversing
+	 * @param  \ReflectionClass<T>|\ReflectionMethod|\ReflectionProperty $reflectionObject 
+	 * @param  string                                                    $phpDocsTagName
+	 * @param  bool|NULL                                                 $traversing
 	 * @throws \InvalidArgumentException
 	 * @return array<int|string,mixed>|NULL
 	 */
@@ -342,8 +343,8 @@ trait Reflection {
 
 	/**
 	 * 
-	 * @param  \ReflectionClass|\ReflectionMethod|\ReflectionProperty $reflectionObject 
-	 * @return \ReflectionClass|\ReflectionMethod|\ReflectionProperty|FALSE
+	 * @param  \ReflectionClass<T>|\ReflectionMethod|\ReflectionProperty $reflectionObject 
+	 * @return \ReflectionClass<T>|\ReflectionMethod|\ReflectionProperty|FALSE
 	 */
 	protected static function getParentReflectionObject ($reflectionObject) {
 		if ($reflectionObject instanceof \ReflectionClass) {
@@ -434,9 +435,9 @@ trait Reflection {
 	 *       (object) ["key", "value", ...]
 	 *   ]
 	 * ````
-	 * @param  array<string>                                          $tagLines 
-	 * @param  string                                                 $phpDocsTagName
-	 * @param  \ReflectionClass|\ReflectionMethod|\ReflectionProperty $reflectionObject 
+	 * @param  array<string>                                             $tagLines 
+	 * @param  string                                                    $phpDocsTagName
+	 * @param  \ReflectionClass<T>|\ReflectionMethod|\ReflectionProperty $reflectionObject 
 	 * @throws \InvalidArgumentException
 	 * @return array<int|string,mixed>
 	 */

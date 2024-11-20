@@ -336,7 +336,7 @@ trait Rendering {
 			);
 			// render action view into string
 			/** @var \MvcCore\View $actionView */
-			$actionView = $this->view;
+			$actionView = $this->__protected['store']['view'];
 			$actionView
 				->SetUpStore($this, TRUE)
 				->SetUpRender($renderMode, $controllerOrActionNameDashed, $actionNameDashed);

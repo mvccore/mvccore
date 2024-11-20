@@ -201,7 +201,7 @@ trait Matching {
 	 * @return array<string,mixed>
 	 */
 	protected function matchesParseRewriteParams (& $matchedValues, & $defaults) {
-		/** @var \MvcCore\Tool $toolClass */
+		/** @var \MvcCore\Tool<object> $toolClass */
 		$toolClass = \MvcCore\Application::GetInstance()->GetToolClass();
 		$matchedParams = [];
 		$router = $this->router;

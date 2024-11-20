@@ -15,6 +15,8 @@ namespace MvcCore;
 
 /**
  * @inheritDoc
+ * @implements \Iterator<int|string, mixed>
+ * @implements \ArrayAccess<int|string, mixed>
  */
 class Config
 implements	\Iterator,

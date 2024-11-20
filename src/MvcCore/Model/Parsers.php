@@ -208,7 +208,7 @@ trait Parsers {
 		} else {
 			$toolClass = \MvcCore\Application::GetInstance()->GetToolClass();
 			if (!$toolClass::IsJsonString($rawValue)) {
-				if (is_array($rawValue) || is_object($rawValue)) {
+				if (is_array($rawValue) || is_object($rawValue)) { // @phpstan-ignore-line
 					$value = $rawValue;
 				} else if (is_string($rawValue)) {
 					$separator = ',';
@@ -223,7 +223,7 @@ trait Parsers {
 					$value = explode($separator, $rawValue);
 					if ($callable !== NULL)
 						$value = array_map($callable, $value);
-				} else {
+				} else { // @phpstan-ignore-line
 					$value = [$rawValue];
 				}
 			} else {

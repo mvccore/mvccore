@@ -22,7 +22,7 @@ namespace MvcCore\View;
  *    "buildInHelpersInit":bool,
  *    "renderArgs":array{0:int,1:?string,2:?string},
  *    "renderedFullPaths":array<string>,
- *    "reflectionTypes":array<string,\ReflectionClass>,
+ *    "reflectionTypes":array<string,\ReflectionClass<\MvcCore\IController>>,
  *    "reflectionName":string|NULL,
  *    "encoding":string|NULL,
  *    "viewsDirsFullPaths":array<string>|NULL
@@ -93,7 +93,7 @@ trait Props {
 		  * `\ReflectionClass` instances to get additional values
 		  * from controller or form or any other parent instance
 		  * by `__get()` method.
-		  * @var array<string,\ReflectionClass>
+		  * @var array<string,\ReflectionClass<\MvcCore\IController>>
 		  */
 		'reflectionTypes'	=> [],
 		/**

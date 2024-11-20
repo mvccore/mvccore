@@ -132,7 +132,7 @@ interface IGettersSetters {
 	/**
 	 * Get application tool class implementing `\MvcCore\ITool`.
 	 * Class to handle helper calls from MvcCore core modules.
-	 * @return \MvcCore\Tool|string
+	 * @return \MvcCore\Tool<object>|string
 	 */
 	public function GetToolClass ();
 
@@ -257,6 +257,7 @@ interface IGettersSetters {
 	 * 
 	 * Absolute path variant is completed from app root.
 	 * Example: `"~/App"`
+	 * @param  bool $absolute
 	 * @return string
 	 */
 	public function GetPathApp ($absolute = FALSE);
@@ -264,6 +265,7 @@ interface IGettersSetters {
 	/**
 	 * Get path from app root to CLI scripts directory,
 	 * `"~/App/Cli"` by default. Absolute path is completed from app root.
+	 * @param  bool $absolute
 	 * @return string
 	 */
 	public function GetPathCli ($absolute = FALSE);
@@ -271,6 +273,7 @@ interface IGettersSetters {
 	/**
 	 * Get path from app root to application controllers base dir,
 	 * `"~/Var/Controllers"` by default. Absolute path is completed from app root.
+	 * @param  bool $absolute
 	 * @return string
 	 */
 	public function GetPathControllers ($absolute = FALSE);
@@ -278,6 +281,7 @@ interface IGettersSetters {
 	/**
 	 * Get path from app root to application view components base dir,
 	 * `"~/Var/Views"` by default. Absolute path is completed from app root.
+	 * @param  bool $absolute
 	 * @return string
 	 */
 	public function GetPathViews ($absolute = FALSE);
@@ -285,6 +289,7 @@ interface IGettersSetters {
 	/**
 	 * Get path from app root to application view helpers base dir,
 	 * `"~/Var/Views/Helpers"` by default. Absolute path is completed from app root.
+	 * @param  bool $absolute
 	 * @return string
 	 */
 	public function GetPathViewHelpers ($absolute = FALSE);
@@ -292,6 +297,7 @@ interface IGettersSetters {
 	/**
 	 * Get path from app root to application view layouts base dir,
 	 * `"~/Var/Views/Layouts"` by default. Absolute path is completed from app root.
+	 * @param  bool $absolute
 	 * @return string
 	 */
 	public function GetPathViewLayouts ($absolute = FALSE);
@@ -299,6 +305,7 @@ interface IGettersSetters {
 	/**
 	 * Get path from app root to application view scripts base dir,
 	 * `"~/Var/Views/Scripts"` by default. Absolute path is completed from app root.
+	 * @param  bool $absolute
 	 * @return string
 	 */
 	public function GetPathViewScripts ($absolute = FALSE);
@@ -307,6 +314,7 @@ interface IGettersSetters {
 	 * Get path from app root to form view scripts base dir,
 	 * `"~/Var/Views/Forms"` by default. Absolute path is completed from app root.
 	 * This property is used only in forms extensions.
+	 * @param  bool $absolute
 	 * @return string
 	 */
 	public function GetPathViewForms ($absolute = FALSE);
@@ -323,6 +331,7 @@ interface IGettersSetters {
 	/**
 	 * Get path from app root to variable data directory,
 	 * `"~/Var"` by default. Absolute path is completed from app root.
+	 * @param  bool $absolute
 	 * @return string
 	 */
 	public function GetPathVar ($absolute = FALSE);
@@ -330,6 +339,7 @@ interface IGettersSetters {
 	/**
 	 * Get path from app root to temporary directory for application temporary files,
 	 * `"~/Var/Tmp"` by default. Absolute path is completed from app root.
+	 * @param  bool $absolute
 	 * @return string
 	 */
 	public function GetPathTmp ($absolute = FALSE);
@@ -337,6 +347,7 @@ interface IGettersSetters {
 	/**
 	 * Get path from app root to store any log information,
 	 * `"~/Var/Logs"` by default. Absolute path is completed from app root.
+	 * @param  bool $absolute
 	 * @return string
 	 */
 	public function GetPathLogs ($absolute = FALSE);
@@ -345,6 +356,7 @@ interface IGettersSetters {
 	 * Get path from public document root to all static files,
 	 * css, js, images and fonts, `"~/static"` by default.
 	 * Absolute path is completed from public document root.
+	 * @param  bool $absolute
 	 * @return string
 	 */
 	public function GetPathStatic ($absolute = FALSE);
@@ -538,7 +550,7 @@ interface IGettersSetters {
 	 * Set application default controller namespace, usually completed as "`App\Controllers`".
 	 * This variable is completed in runtime by application paths configuration.
 	 * @param  string $controllersBaseNamespace
-	 * @return string
+	 * @return \MvcCore\Application
 	 */
 	public function SetControllersBaseNamespace ($controllersBaseNamespace);
 
@@ -631,7 +643,7 @@ interface IGettersSetters {
 	 * Set path from app root to application controllers base dir,
 	 * `"~/Var/Controllers"` by default. Absolute path is completed from app root.
 	 * @param  string $relPath
-	 * @return string
+	 * @return \MvcCore\Application
 	 */
 	public function SetPathControllers ($relPath);
 
@@ -639,7 +651,7 @@ interface IGettersSetters {
 	 * Set path from app root to application view components base dir,
 	 * `"~/Var/Views"` by default. Absolute path is completed from app root.
 	 * @param  string $relPath
-	 * @return string
+	 * @return \MvcCore\Application
 	 */
 	public function SetPathViews ($relPath);
 
@@ -647,7 +659,7 @@ interface IGettersSetters {
 	 * Set path from app root to application view helpers base dir,
 	 * `"~/Var/Views/Helpers"` by default. Absolute path is completed from app root.
 	 * @param  string $relPath
-	 * @return string
+	 * @return \MvcCore\Application
 	 */
 	public function SetPathViewHelpers ($relPath);
 
@@ -655,7 +667,7 @@ interface IGettersSetters {
 	 * Set path from app root to application view layouts base dir,
 	 * `"~/Var/Views/Layouts"` by default. Absolute path is completed from app root.
 	 * @param  string $relPath
-	 * @return string
+	 * @return \MvcCore\Application
 	 */
 	public function SetPathViewLayouts ($relPath);
 
@@ -663,7 +675,7 @@ interface IGettersSetters {
 	 * Set path from app root to application view scripts base dir,
 	 * `"~/Var/Views/Scripts"` by default. Absolute path is completed from app root.
 	 * @param  string $relPath
-	 * @return string
+	 * @return \MvcCore\Application
 	 */
 	public function SetPathViewScripts ($relPath);
 
@@ -689,7 +701,7 @@ interface IGettersSetters {
 	 * Set path from app root to variable data directory,
 	 * `"~/Var"` by default. Absolute path is completed from app root.
 	 * @param  string $relPath
-	 * @return string
+	 * @return \MvcCore\Application
 	 */
 	public function SetPathVar ($relPath);
 
@@ -697,7 +709,7 @@ interface IGettersSetters {
 	 * Set path from app root to temporary directory for application temporary files,
 	 * `"~/Var/Tmp"` by default. Absolute path is completed from app root.
 	 * @param  string $relPath
-	 * @return string
+	 * @return \MvcCore\Application
 	 */
 	public function SetPathTmp ($relPath);
 
@@ -705,7 +717,7 @@ interface IGettersSetters {
 	 * Set path from app root to store any log information,
 	 * `"~/Var/Logs"` by default. Absolute path is completed from app root.
 	 * @param  string $relPath
-	 * @return string
+	 * @return \MvcCore\Application
 	 */
 	public function SetPathLogs ($relPath);
 
@@ -714,7 +726,7 @@ interface IGettersSetters {
 	 * css, js, images and fonts, `"~/static"` by default.
 	 * Absolute path is completed from public document root.
 	 * @param  string $relPath
-	 * @return string
+	 * @return \MvcCore\Application
 	 */
 	public function SetPathStatic ($relPath);
 

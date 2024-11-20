@@ -15,10 +15,13 @@ namespace MvcCore;
 
 /**
  * @inheritDoc
+ * @template T of object
+ * @implements ITool<T>
  */
 class Tool implements ITool {
 	use \MvcCore\Tool\Json;
 	use \MvcCore\Tool\Helpers;
-	use \MvcCore\Tool\Reflection;
 	use \MvcCore\Tool\StringConversions;
+	/** @use \MvcCore\Tool\Reflection<object> */
+	use \MvcCore\Tool\Reflection;
 }

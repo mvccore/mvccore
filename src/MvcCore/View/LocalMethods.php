@@ -21,7 +21,7 @@ trait LocalMethods {
 	/**
 	 * If relative path declared in view starts with `"./anything/else.phtml"`,
 	 * then change relative path to correct `"./"` context and return full path.
-	 * @param  string $typePath
+	 * @param  int    $typePath
 	 * @param  string $relativePath
 	 * @return string full path
 	 */
@@ -92,6 +92,7 @@ trait LocalMethods {
 	 * Get application relative or absolute path by view type.
 	 * @param  \MvcCore\Application $app
 	 * @param  int                  $viewType 
+	 * @param  bool                 $absolute
 	 * @return string
 	 */
 	protected static function getViewPathByType (

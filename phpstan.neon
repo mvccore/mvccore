@@ -2,7 +2,6 @@ parameters:
 	level: 6
 	paths:
 		- src
-	checkGenericClassInNonGenericObjectType: false
 	parallel:
 		maximumNumberOfProcesses: 4
 	ignoreErrors:

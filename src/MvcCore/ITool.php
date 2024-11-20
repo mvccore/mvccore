@@ -23,6 +23,7 @@ namespace MvcCore;
  * - Static functions to write into file by one process only.
  * - Static functions to check core classes inheritance.
  * - Static functions to cache and read attributes (or PhpDocs tags).
+ * @template T of object
  * @phpstan-type OnErrorHandler callable(int,string,string,int): bool
  * @phpstan-type ParsedUrl array{"scheme":?string,"user":?string,"pass":?string,"host":?string,"port":?string,"path":?string,"query":?string,"fragment":?string}
  */
@@ -353,9 +354,9 @@ interface ITool {
 
 	/**
 	 * Return reflection object attribute constructor arguments.
-	 * @param  \ReflectionClass|\ReflectionMethod|\ReflectionProperty $reflectionObject 
-	 * @param  string                                                 $attributeClassFullName 
-	 * @param  bool|NULL                                              $traversing
+	 * @param  \ReflectionClass<T>|\ReflectionMethod|\ReflectionProperty $reflectionObject 
+	 * @param  string                                                    $attributeClassFullName 
+	 * @param  bool|NULL                                                 $traversing
 	 * @return array<int|string,mixed>|NULL
 	 */
 	public static function GetAttrCtorArgs ($reflectionObject, $attributeClassFullName, $traversing);
@@ -382,9 +383,9 @@ interface ITool {
 	 *       ...
 	 *   })
 	 * ````
-	 * @param  \ReflectionClass|\ReflectionMethod|\ReflectionProperty $reflectionObject 
-	 * @param  string                                                 $phpDocsTagName
-	 * @param  bool|NULL                                              $traversing
+	 * @param  \ReflectionClass<T>|\ReflectionMethod|\ReflectionProperty $reflectionObject 
+	 * @param  string                                                    $phpDocsTagName
+	 * @param  bool|NULL                                                 $traversing
 	 * @throws \InvalidArgumentException
 	 * @return array<int|string,mixed>|NULL
 	 */

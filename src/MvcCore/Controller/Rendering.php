@@ -144,7 +144,7 @@ trait Rendering {
 	 * @return void
 	 */
 	public function JsonResponse ($data, $terminate = TRUE, $jsonEncodeFlags = 0) {
-		/** @var \MvcCore\Tool|string $toolClass */ 
+		/** @var \MvcCore\Tool<object>|string $toolClass */ 
 		$toolClass = $this->application->GetToolClass();
 		$output = $toolClass::JsonEncode($data, $jsonEncodeFlags);
 		ob_clean(); // remove any possible warnings to break client's `JSON.parse();`
@@ -167,7 +167,7 @@ trait Rendering {
 	 * @return void
 	 */
 	public function JsonpResponse ($data, $callbackParamName = 'callback', $terminate = TRUE, $jsonEncodeFlags = 0) {
-		/** @var \MvcCore\Tool|string $toolClass */ 
+		/** @var \MvcCore\Tool<object>|string $toolClass */ 
 		$toolClass = $this->application->GetToolClass();
 		$output = $toolClass::JsonEncode($data, $jsonEncodeFlags);
 		ob_clean(); // remove any possible warnings to break client's `JSON.parse();`
@@ -184,30 +184,30 @@ trait Rendering {
 
 	/**
 	 * @inheritDoc
-	 * @param  string $errorMessage
+	 * @param  string|mixed $errorMessage
 	 * @return void
 	 */
 	public function RenderError ($errorMessage) {
 		if ($this->application->IsErrorDispatched()) return;
 		throw new \ErrorException(
 			is_string($errorMessage) 
-				? $errorMessage :
-				"Server Error",
+				? $errorMessage 
+				: "Server Error",
 			500
 		);
 	}
 
 	/**
 	 * @inheritDoc
-	 * @param  string $errorMessage
+	 * @param  string|mixed $errorMessage
 	 * @return void
 	 */
 	public function RenderNotFound ($errorMessage) {
 		if ($this->application->IsNotFoundDispatched()) return;
 		throw new \ErrorException(
 			is_string($errorMessage) 
-				? $errorMessage :
-				"Not Found", 
+				? $errorMessage 
+				: "Not Found", 
 			404
 		);
 	}

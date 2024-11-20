@@ -20,7 +20,7 @@ trait Props {
 
 	/**
 	 * All registered controllers instances and it's types.
-	 * @var array<string,array{0:\MvcCore\Controller,1:\ReflectionClass}>
+	 * @var array<string,array{0:\MvcCore\Controller,1:\ReflectionClass<\MvcCore\IController>}>
 	 */
 	protected static $allControllers = [];
 

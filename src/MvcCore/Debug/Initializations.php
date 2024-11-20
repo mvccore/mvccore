@@ -75,7 +75,7 @@ trait Initializations {
 					$errFile = func_get_arg(5)[1]['file'];
 				if ($allLevelsToExceptions || isset($errorLevels[$errLevel]))
 					throw new \ErrorException($errMessage, $errLevel, $errLevel, $errFile, $errLine);
-				return $prevErrorHandler
+				return $prevErrorHandler // @phpstan-ignore-line
 					? call_user_func_array($prevErrorHandler, func_get_args())
 					: FALSE;
 			};
@@ -197,9 +197,10 @@ trait Initializations {
 	 * @return string
 	 */
 	protected static function initLogDirectory () {
-		if (static::$logDirectoryInitialized) return;
-		$sysCfgDebug = static::GetSystemCfgDebugSection();
 		$app = static::$app ?: (static::$app = \MvcCore\Application::GetInstance());
+		if (static::$logDirectoryInitialized)
+			return $app->GetPathLogs(TRUE);
+		$sysCfgDebug = static::GetSystemCfgDebugSection();
 		if (isset($sysCfgDebug->logDirectory))
 			$app->SetPathLogs($sysCfgDebug->logDirectory);
 		$logDirAbsPath = $app->GetPathLogs(TRUE);

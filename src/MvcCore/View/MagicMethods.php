@@ -112,7 +112,7 @@ trait MagicMethods {
 	 * Get cached reflection class instance about given name from current `$this` context.
 	 * If given name doesn't exists in local context, return `NULL`.
 	 * @param  string $currentContextObjectName Local context property name to get reflection class about.
-	 * @return \ReflectionClass|NULL
+	 * @return \ReflectionClass<\MvcCore\IController>|NULL
 	 */
 	protected function getReflectionClass ($currentContextObjectName) {
 		$privates = & $this->__protected;

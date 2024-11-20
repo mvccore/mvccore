@@ -172,7 +172,7 @@ interface IRendering {
 	 * Render error controller and error action
 	 * for any dispatch exception or error as
 	 * rendered html response or as plain text response.
-	 * @param  string $errorMessage
+	 * @param  string|mixed $errorMessage
 	 * @return void
 	 */
 	public function RenderError ($errorMessage);
@@ -181,7 +181,7 @@ interface IRendering {
 	 * Render not found controller and not found action
 	 * for any dispatch exception with code 404 as
 	 * rendered html response or as plain text response.
-	 * @param  string $errorMessage
+	 * @param  string|mixed $errorMessage
 	 * @return void
 	 */
 	public function RenderNotFound ($errorMessage);

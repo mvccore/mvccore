@@ -107,7 +107,7 @@ trait Dispatching {
 
 	/**
 	 * @inheritDoc
-	 * @param  CustomHandlerRecord[] $handlers
+	 * @param  array<int, array<int, CustomHandlerRecord>> $handlers
 	 * @throws \Throwable
 	 * @return bool
 	 */

@@ -48,6 +48,7 @@ trait Closing {
 				}
 			}
 			$serializeFn = function_exists('igbinary_serialize') ? 'igbinary_serialize' : 'serialize';
+			/** @var string|FALSE $metaStr */
 			$metaStr = @call_user_func($serializeFn, static::$meta);
 			if ($metaStr !== FALSE) {
 				$_SESSION[$metaKey] = $metaStr;

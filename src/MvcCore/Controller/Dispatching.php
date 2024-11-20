@@ -15,7 +15,13 @@ namespace MvcCore\Controller;
 
 /**
  * @mixin \MvcCore\Controller
- * @phpstan-type DispatchParams object{"called":array<string,bool>,"count":int,"state":int,"method":string,"children":bool}
+ * @phpstan-type DispatchParams object{
+ *    "called":array<string,bool>,
+ *    "count":int,
+ *    "state":int,
+ *    "method":string,
+ *    "children":bool
+ * }
  */
 trait Dispatching {
 
@@ -63,7 +69,7 @@ trait Dispatching {
 			$object = $backtraceItem['object'];
 			$class = $backtraceItem['class'];
 			if (
-				$object instanceof \MvcCore\IController &&
+				($object instanceof \MvcCore\IController) && // @phpstan-ignore-line
 				$class !== $calledClass &&
 				!is_subclass_of($calledClass, $class)
 			) {
@@ -273,6 +279,7 @@ trait Dispatching {
 	 */
 	protected function dispatchMethods (\MvcCore\IController $controller, $methodName, $targetDispatchState, $dispatchOrphans = FALSE) {
 		$ctrlHash = spl_object_hash($controller);
+		/** @var \MvcCore\Controller $controller */
 		if ($controller->dispatchState < $targetDispatchState) {
 			list(, $levelCtrlType) = self::$allControllers[$ctrlHash];
 			if (
@@ -314,7 +321,7 @@ trait Dispatching {
 	/**
 	 * Execute method on controllers array to target dispatch state.
 	 * Execute only if controller is before target state and if given method exists as public.
-	 * @param  DispatchParams              $dispatchParams 
+	 * @param  DispatchParams             $dispatchParams 
 	 * Recursive variables store:
 	 * - `called`   - array with controller hashes and booleans,
 	 * - `count`    - called controllers count,
@@ -325,7 +332,7 @@ trait Dispatching {
 	 * Controllers in level or orphan controllers.
 	 * @return void
 	 */
-	protected function dispatchMethodsChildren (\stdClass & $dispatchParams, array $levelControllers) {
+	protected function dispatchMethodsChildren (& $dispatchParams, array $levelControllers) {
 		$calledCtrls = & $dispatchParams->called;
 		$targetDispatchState = $dispatchParams->state;
 		$methodName = $dispatchParams->method;
@@ -355,15 +362,15 @@ trait Dispatching {
 	/**
 	 * Execute given controller method and move dispatch state.
 	 * This method doesn't check if method exists on given controller context.
-	 * @param  \MvcCore\IController $controller 
+	 * @param  \MvcCore\Controller $controller 
 	 * Any level controller context.
-	 * @param  string               $methodName 
+	 * @param  string              $methodName 
 	 * Controller public method name, possible values are:
 	 * - `Init`,
 	 * - `<action>Init`,
 	 * - `PreDispatch`,
 	 * - `<action>Action`.
-	 * @param  int                  $targetDispatchState 
+	 * @param  int                 $targetDispatchState 
 	 * Dispatch state, that is required to be completed. Possible values are:
 	 * - `\MvcCore\IController::DISPATCH_STATE_INITIALIZED`,
 	 * - `\MvcCore\IController::DISPATCH_STATE_ACTION_INITIALIZED`,
@@ -460,7 +467,7 @@ trait Dispatching {
 	 * @return void
 	 */
 	protected function autoInitializeProperties () {
-		/** @var \ReflectionClass $ctrl */
+		/** @var \ReflectionClass<\MvcCore\IController> $ctrl */
 		$ctrl = new \ReflectionClass($this);
 		/** @var \ReflectionProperty[] $props */
 		$props = $ctrl->getProperties(
@@ -469,7 +476,7 @@ trait Dispatching {
 			\ReflectionProperty::IS_PRIVATE
 		);
 		$attrsAnotations = $this->application->GetAttributesAnotations();
-		/** @var \MvcCore\Tool $toolsClass */
+		/** @var \MvcCore\Tool<object> $toolsClass */
 		$toolsClass = $this->application->GetToolClass();
 		$attrClassName = '\\MvcCore\\Controller\\AutoInit';
 		$attrClassNameWithoutSlash = mb_substr($attrClassName, 1);
@@ -529,9 +536,9 @@ trait Dispatching {
 	 * If there is no such static method, create instance by property type 
 	 * constructor with no arguments. If property instance implements 
 	 * `\MvcCore\IController`, add instance into child controllers.
-	 * @param  \ReflectionClass    $ctrl 
-	 * @param  \ReflectionProperty $prop 
-	 * @param  string|NULL         $factoryMethodName 
+	 * @param  \ReflectionClass<\MvcCore\IController> $ctrl 
+	 * @param  \ReflectionProperty                    $prop 
+	 * @param  string|NULL                            $factoryMethodName 
 	 * @return bool
 	 */
 	protected function autoInitializeProperty (\ReflectionClass $ctrl, \ReflectionProperty $prop, $factoryMethodName) {

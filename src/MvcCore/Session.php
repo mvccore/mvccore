@@ -15,8 +15,14 @@ namespace MvcCore;
 
 /**
  * @inheritDoc
+ * @implements \Iterator<int|string, mixed>
+ * @implements \ArrayAccess<int|string, mixed>
  */
-class Session implements \Iterator, \ArrayAccess, \Countable, ISession {
+class		Session
+implements	\Iterator,
+			\ArrayAccess,
+			\Countable,
+			ISession {
 	use \MvcCore\Session\Props;
 	use \MvcCore\Session\Starting;
 	use \MvcCore\Session\MetaData;
