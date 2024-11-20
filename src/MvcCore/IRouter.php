@@ -643,8 +643,8 @@ interface IRouter extends \MvcCore\Router\IConstants {
 	 * Encode URL special chars to percent (%) sign followed by two hex digits:
 	 * - encode ASCII chars with lower index than 33, including space (\x00-\x20)
 	 * - encode ASCII special chars for HTML `" ' < > \` (\x22\x27\x3C\x3E\x5C)
-	 * - encode ASCII chars not used in HTML and URL `$ ( ) * + ´ ; ^ ` { }` (\x24\x28\x29\x2A\x2B\x2C\x3B\x5E\x60\x7B\x7D)
-	 * - keep ASCII special chars for URL `! # % & - . / : = ? @ [ ] _ ~` (\x21\x23\x25\x26\x2D\x2E\x2F\x3A\x3D\x3F\x40\x5B\x5D\x5F\x7E)
+	 * - encode ASCII chars not used in HTML and URL `$ ( ) * + ´ ^ ` { }` (\x24\x28\x29\x2A\x2B\x2C\x5E\x60\x7B\x7D)
+	 * - keep ASCII special chars for URL `! # % & - . / : ; = ? @ [ ] _ ~` (\x21\x23\x25\x26\x2D\x2E\x2F\x3A\x3B\x3D\x3F\x40\x5B\x5D\x5F\x7E)
 	 * - keep ASCII alphanumeric chars (\x30-\x39,\x41-\x5A)
 	 * @param  string $url 
 	 * @return string
