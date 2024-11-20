@@ -197,16 +197,12 @@ trait Initializations {
 	 * @return string
 	 */
 	protected static function initLogDirectory () {
-		//if (static::$logDirectoryInitialized) return;
+		if (static::$logDirectoryInitialized) return;
 		$sysCfgDebug = static::GetSystemCfgDebugSection();
-		$logDirConfiguredPath = $sysCfgDebug->logDirectory ?: static::$LogDirectory;
-		if (mb_substr($logDirConfiguredPath, 0, 1) === '~') {
-			$app = static::$app ?: (static::$app = \MvcCore\Application::GetInstance());
-			$logDirAbsPath = $app->GetRequest()->GetAppRoot() . '/' . ltrim(mb_substr($logDirConfiguredPath, 1), '/');
-		} else {
-			$logDirAbsPath = $logDirConfiguredPath;
-		}
-		static::$LogDirectory = $logDirAbsPath;
+		$app = static::$app ?: (static::$app = \MvcCore\Application::GetInstance());
+		if (isset($sysCfgDebug->logDirectory))
+			$app->SetPathLogs($sysCfgDebug->logDirectory);
+		$logDirAbsPath = $app->GetPathLogs(TRUE);
 		try {
 			if (!is_dir($logDirAbsPath)) {
 				if (!mkdir($logDirAbsPath, 0777, TRUE))

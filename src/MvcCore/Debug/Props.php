@@ -20,25 +20,18 @@ namespace MvcCore\Debug;
 trait Props {
 
 	/**
+	 * Initialize global development shorthands.
+	 * @var GlobalShorthandCallable|NULL
+	 */
+	public static $InitGlobalShortHands = NULL;
+
+	/**
 	 * Email recipient to send information about exceptions or errors,
 	 * `"admin@localhost"` by default. This property is not used in core debug
 	 * class, you need to instal extension `mvccore/ext-debug-tracy`.
 	 * @var string
 	 */
-	public static $EmailRecepient = 'admin@localhost';
-
-	/**
-	 * Relative path from app root to store any log information,
-	 * `"~/Var/Logs"` by default.
-	 * @var string
-	 */
-	public static $LogDirectory = '~/Var/Logs';
-
-	/**
-	 * Initialize global development shorthands.
-	 * @var GlobalShorthandCallable|NULL
-	 */
-	public static $InitGlobalShortHands = NULL;
+	protected static $emailRecepient = 'admin@localhost';
 
 	/**
 	 * Semaphore to execute `\MvcCore\Debug::Init();` method only once.

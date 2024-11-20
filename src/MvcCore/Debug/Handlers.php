@@ -188,7 +188,8 @@ trait Handlers {
 		$content = date('[Y-m-d H-i-s]') . "\n" . $value;
 		$content = preg_replace("#\n(\s)#", "\n\t$1", $content) . "\n";
 		if (!static::$logDirectoryInitialized) static::initLogDirectory();
-		$fullPath = static::$LogDirectory . '/' . $priority . '.log';
+		$app = static::$app ?: (static::$app = \MvcCore\Application::GetInstance());
+		$fullPath = $app->GetPathLogs(TRUE) . '/' . $priority . '.log';
 		file_put_contents($fullPath, $content, FILE_APPEND);
 		return $fullPath;
 	}
@@ -202,7 +203,7 @@ trait Handlers {
 		$dumps = [];
 		$lastDump = FALSE;
 		$app = static::$app ?: (static::$app = \MvcCore\Application::GetInstance());
-		$appRoot = $app->GetRequest()->GetAppRoot();
+		$appRoot = $app->GetPathAppRoot();
 		foreach (self::$dumps as $values) {
 			list($dumpResult, $lastDumpLocal) = self::formatDebugDump($values, $appRoot);
 			$dumps[] = $dumpResult;
@@ -224,7 +225,7 @@ trait Handlers {
 		$lastDump = FALSE;
 		if ($appRoot === NULL) {
 			$app = static::$app ?: (static::$app = \MvcCore\Application::GetInstance()); // @phpstan-ignore-line
-			$appRoot = $app->GetRequest()->GetAppRoot();
+			$appRoot = $app->GetPathAppRoot();
 		}
 		$options = $dumpRecord[2];
 		$result[] = '<div class="item">';
@@ -270,7 +271,7 @@ trait Handlers {
 		$response = $app->GetResponse();
 		list ($dumpStr,) = self::formatDebugDump(
 			[$value, $title, $options],
-			$app->GetRequest()->GetAppRoot()
+			$app->GetPathAppRoot()
 		);
 		$dumpStr64Arr = str_split(base64_encode($dumpStr), 5000);
 		foreach ($dumpStr64Arr as $key => $base64Item)
