@@ -85,13 +85,15 @@ trait Rendering {
 	 * @return void
 	 */
 	public function HtmlResponse ($output, $terminate = TRUE) {
-		$viewClass = $this->application->GetViewClass();
-		$contentTypeHeaderValue = strpos(
-			$viewClass::GetDoctype(), \MvcCore\IView::DOCTYPE_XHTML
-		) !== FALSE ? 'application/xhtml+xml' : 'text/html' ;
-		$this->response
-			->SetHeader('Content-Type', $contentTypeHeaderValue)
-			->SetBody($output);
+		if (!$this->response->IsHtmlOutput()) {
+			$this->response->SetHeader(
+				'Content-Type', 
+				$this->response->IsXmlOutput()
+					? 'application/xhtml+xml'
+					: 'text/html'
+			);
+		}
+		$this->response->SetBody($output);
 		if ($this->response->GetCode() === NULL)
 			$this->response->SetCode(\MvcCore\IResponse::OK);
 		if ($terminate) $this->Terminate();
@@ -104,9 +106,15 @@ trait Rendering {
 	 * @return void
 	 */
 	public function XmlResponse ($output, $terminate = TRUE) {
-		$this->response
-			->SetHeader('Content-Type', 'application/xml')
-			->SetBody($output);
+		if (!$this->response->IsXmlOutput()) {
+			$this->response->SetHeader(
+				'Content-Type', 
+				$this->response->IsHtmlOutput()
+					? 'application/xhtml+xml'
+					: 'application/xml'
+			);
+		}
+		$this->response->SetBody($output);
 		if ($this->response->GetCode() === NULL)
 			$this->response->SetCode(\MvcCore\IResponse::OK);
 		if ($terminate) $this->Terminate();
