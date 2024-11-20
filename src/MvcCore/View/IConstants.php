@@ -34,33 +34,79 @@ interface IConstants {
 	 */
 	const RENDER_WITHOUT_OB_CONTINUOUSLY		= 0b10;
 
+
+	/**
+	 * This index is used internally to get default views location by type.
+	 * @var int 
+	 */
+	const VIEW_TYPE_DEFAULT						= 0;
+	
+	/**
+	 * Layout view type and sub-layout view type.
+	 * This index is used to render any view in directory `~/App/Views/Layouts`.
+	 * @var int 
+	 */
+	const VIEW_TYPE_LAYOUT						= 1;
+	
+	/**
+	 * Controller action view type and sub-action view type.
+	 * This index is used to render any view in directory `~/App/Views/Scripts`.
+	 * @var int 
+	 */
+	const VIEW_TYPE_SCRIPT						= 2;
+	
+	/**
+	 * Form view type and sub-form view type.
+	 * This index is used to render any view in directory `~/App/Views/Forms`.
+	 * This index is used in form extensions only.
+	 * @var int 
+	 */
+	const VIEW_TYPE_FORM						= 4;
+	
+	/**
+	 * Form field view type and sub-view type for form field view.
+	 * This index is used to render any view in directory `~/App/Views/Forms/Fields`.
+	 * This index is used in form extensions only.
+	 * @var int 
+	 */
+	const VIEW_TYPE_FORM_FIELD					= 8;
+	
+	/**
+	 * Composer package view type amd sub-view type for package view.
+	 * This index is used to render any view inside composer package directory.
+	 * This index is used for example in datagrid extensions.
+	 * @var int 
+	 */
+	const VIEW_TYPE_PACKAGE						= 16;
+
+
 	/**
 	 * View output document type HTML4.
 	 * @var string
 	 */
-	const DOCTYPE_HTML4 = 'HTML4';
+	const DOCTYPE_HTML4							= 'HTML4';
 
 	/**
 	 * View output document type XHTML.
 	 * @var string
 	 */
-	const DOCTYPE_XHTML = 'XHTML';
+	const DOCTYPE_XHTML							= 'XHTML';
 
 	/**
 	 * View output document type HTML5.
 	 * @var string
 	 */
-	const DOCTYPE_HTML5 = 'HTML5';
+	const DOCTYPE_HTML5							= 'HTML5';
 
 	/**
 	 * View output document type for any XML file.
 	 * @var string
 	 */
-	const DOCTYPE_XML = 'XML';
+	const DOCTYPE_XML							= 'XML';
 
 	/**
 	 * MvcCore extension class name for view helpers.
 	 * Helpers view implementing this interface could have better setup.
 	 */
-	const HELPERS_INTERFACE_CLASS_NAME = 'MvcCore\\Ext\\Views\\Helpers\\IHelper';
+	const HELPERS_INTERFACE_CLASS_NAME			= 'MvcCore\\Ext\\Views\\Helpers\\IHelper';
 }
