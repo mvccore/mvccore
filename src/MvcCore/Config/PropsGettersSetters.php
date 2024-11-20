@@ -43,12 +43,6 @@ trait PropsGettersSetters {
 	protected static $app;
 
 	/**
-	 * Reference to `\MvcCore\Application::GetInstance()->GetRequest()->GetAppRoot();`.
-	 * @var string
-	 */
-	protected static $appRoot;
-
-	/**
 	 * All environments specfic data. Each key in this array is environment
 	 * name. Empty key is record with common data for all environments. This
 	 * collection is always used as reading semi-result content, not serialized.

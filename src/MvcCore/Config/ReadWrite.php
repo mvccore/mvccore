@@ -235,11 +235,10 @@ trait ReadWrite {
 					"The vendor configuration file cannot be loaded, ".
 					"because dispatched main controller is not from any vendor package."
 				);
-				$vendorPackageRoot = $app->GetVendorAppRoot();
+				$vendorPackageRoot = $app->GetPathAppRootVendor();
 				$configPath = $vendorPackageRoot . mb_substr($configPath, 1);
 			} else {
-				$appRoot = self::$appRoot ?: self::$appRoot = $app->GetRequest()->GetAppRoot();	
-				$configPath = $appRoot . mb_substr($configPath, 1);
+				$configPath = $app->GetPathAppRoot() . mb_substr($configPath, 1);
 			}
 		}
 		$toolClass = $app->GetToolClass();
