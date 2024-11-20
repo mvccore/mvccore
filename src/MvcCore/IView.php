@@ -111,63 +111,6 @@ interface IView extends \MvcCore\View\IConstants {
 	public static function SetDoctype ($doctype = \MvcCore\IView::DOCTYPE_HTML5);
 
 	/**
-	 * Get layout templates directory placed by default
-	 * inside `"/App/Views"` directory. Default value
-	 * is `"Layouts"`, so layouts app path
-	 * is `"/App/Views/Layouts"`.
-	 * @return string
-	 */
-	public static function GetLayoutsDir ();
-
-	/**
-	 * Set layout templates directory placed by default
-	 * inside `"/App/Views"` directory. Default value
-	 * is `"Layouts"`, so layouts app path
-	 * is `"/App/Views/Layouts"`.
-	 * @param  string $layoutsDir
-	 * @return string
-	 */
-	public static function SetLayoutsDir ($layoutsDir = 'Layouts');
-
-	/**
-	 * Get controller/action templates directory
-	 * placed by default inside `"/App/Views"` directory.
-	 * Default value is `"Scripts"`, so scripts app path
-	 * is `"/App/Views/Scripts"`.
-	 * @return string
-	 */
-	public static function GetScriptsDir ();
-
-	/**
-	 * Get controller/action templates directory
-	 * placed by default inside `"/App/Views"` directory.
-	 * Default value is `"Scripts"`, so scripts app path
-	 * is `"/App/Views/Scripts"`.
-	 * @param  string $scriptsDir
-	 * @return string
-	 */
-	public static function SetScriptsDir ($scriptsDir = 'Scripts');
-
-	/**
-	 * Get views helpers directory placed by default
-	 * inside `"/App/Views"` directory.
-	 * Default value is `"Helpers"`, so scripts app path
-	 * is `"/App/Views/Helpers"`.
-	 * @return string
-	 */
-	public static function GetHelpersDir ();
-
-	/**
-	 * Set views helpers directory placed by default
-	 * inside `"/App/Views"` directory.
-	 * Default value is `"Helpers"`, so scripts app path
-	 * is `"/App/Views/Helpers"`.
-	 * @param  string $helpersDir
-	 * @return string
-	 */
-	public static function SetHelpersDir ($helpersDir = 'Helpers');
-	
-	/**
 	 * Prepend view helpers classes namespace(s),
 	 * Example: `\MvcCore\View::PrependHelpersNamespaces('Any\Other\ViewHelpers\Place', '...');`.
 	 * @param  string $helperNamespaces,... View helper classes namespace(s).
@@ -193,14 +136,6 @@ interface IView extends \MvcCore\View\IConstants {
 	public static function SetHelpersNamespaces ($helperNamespaces);
 	
 	/**
-	 * Get default application views directory full path.
-	 * Example: `/abs/doc/root/App/Views`.
-	 * @param  \MvcCore\IApplication $app 
-	 * @return string
-	 */
-	public static function GetDefaultViewsDirFullPath (\MvcCore\IApplication $app);
-
-	/**
 	 * Get application views directory full path by controller name used inside view instance.
 	 * Controller class file could be placed inside application or in any vendor package:
 	 *  - in application:    `/abs/doc/root/App/Controllers/MyModule/MyCtrl.php`
@@ -208,11 +143,13 @@ interface IView extends \MvcCore\View\IConstants {
 	 * The result views directory absolute path could be:
 	 *  - for controller in application:    `/abs/doc/root/App/Views`
 	 *  - for controller in vendor package: `/abs/doc/root/vendor/package/extension/src/App/Views`.
-	 * @param  \MvcCore\IApplication $app 
-	 * @param  string                $controllerClassFullName
+	 * @param  \MvcCore\Application $app 
+	 * @param  string               $ctrlClassFullName
+	 * @param  int                  $viewType
+	 * @param  bool                 $useReflection
 	 * @return string
 	 */
-	public static function GetExtViewsDirFullPath (\MvcCore\IApplication $app, $controllerClassFullName);
+	public static function GetExtViewsDirFullPath (\MvcCore\IApplication $app, $ctrlClassFullName, $viewType, $useReflection = TRUE);
 
 	/**
 	 * Get view script full path including view file extension 
@@ -234,19 +171,11 @@ interface IView extends \MvcCore\View\IConstants {
 	/**
 	 * Get typed views directory full path, cached in current view instance.
 	 * Layouts directory could be only inside application, not in vendor packages.
-	 * @param  string $typePath
+	 * @param  int  $viewType
+	 * @param  bool $default
 	 * @return string
 	 */
-	public function GetTypedViewsDirFullPath ($typePath);
-	
-	/**
-	 * Get typed views directory full path, cached in current view instance.
-	 * This method always returns project main views directory, 
-	 * where is placed main Layouts directory. Methods serves for fallback cases.
-	 * @param  string $typePath
-	 * @return string
-	 */
-	public function GetTypedViewsDirFullPathDefault ($typePath);
+	public function GetTypedViewsDirFullPath ($viewType, $default = FALSE);
 
 	/**
 	 * This is INTERNAL method, do not use it in templates.
@@ -299,6 +228,12 @@ interface IView extends \MvcCore\View\IConstants {
 	 * @return \MvcCore\View
 	 */
 	public function AddData (array $data, $overwriteExistingKeys = TRUE);
+
+	/**
+	 * Get view store data (as array reference).
+	 * @return array<string, mixed>
+	 */
+	public function & GetData ();
 
 	/**
 	 * This is INTERNAL method, do not use it in templates.
@@ -391,13 +326,14 @@ interface IView extends \MvcCore\View\IConstants {
 	 * @param  string|NULL $content
 	 * @return string
 	 */
-	public function RenderLayoutAndContent ($relativePath, & $content = NULL);
+	public function RenderLayoutAndContent ($relativePath, $content = NULL);
 
 	/**
-	 * Render controller template and all necessary layout
-	 * templates and return rendered result as string reference
-	 * or render it into output buffer.
-	 * @param  string $typePath     By default: `"Layouts" | "Scripts"`. It could be `"Forms" | "Forms/Fields"` etc...
+	 * Render controller template and return rendered 
+	 * result as string or render it into output buffer.
+	 * Try to find template by dispatched controller in 
+	 * app composer package or in main app module.
+	 * @param  int    $viewType
 	 * @param  string $relativePath
 	 * @throws \InvalidArgumentException Template not found in path: `$viewScriptFullPath`.
 	 * @return string
