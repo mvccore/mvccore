@@ -80,5 +80,16 @@ trait LocalMethods {
 			]) . '\\',
 			'\\MvcCore\\Ext\\Views\Helpers\\',
 		];
+	/**
+	 * Get application relative or absolute path by view type.
+	 * @param  \MvcCore\Application $app
+	 * @param  int                  $viewType 
+	 * @return string
+	 */
+	protected static function getViewPathByType (
+		\MvcCore\IApplication $app, $viewType, $absolute
+	) {
+		return $app->GetPath(self::$viewTypes2AppPaths[$viewType], $absolute, FALSE);
 	}
+	
 }
