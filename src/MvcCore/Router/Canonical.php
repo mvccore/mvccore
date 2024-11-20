@@ -27,6 +27,7 @@ trait Canonical {
 	 * @return bool
 	 */
 	protected function canonicalRedirectIfAny () {
+		/** @var \MvcCore\Router $this */
 		if (
 			$this->request->IsCli() ||
 			$this->internalRequest || 
@@ -50,13 +51,20 @@ trait Canonical {
 	 * @return bool
 	 */
 	protected function canonicalRedirectQueryStringStrategy () {
+		/** @var \MvcCore\Router $this */
 		$request = $this->request;
 		$redirectToCanonicalUrl = 0;
 		$requestGlobalGet = & $request->GetGlobalCollection('get');
-		$requestedCtrlDc = isset($requestGlobalGet[static::URL_PARAM_CONTROLLER]) ? $requestGlobalGet[static::URL_PARAM_CONTROLLER] : NULL;
-		$requestedActionDc = isset($requestGlobalGet[static::URL_PARAM_ACTION]) ? $requestGlobalGet[static::URL_PARAM_ACTION] : NULL;
-		$toolClass = self::$toolClass;
-		list($dfltCtrlPc, $dftlActionPc) = $this->application->GetDefaultControllerAndActionNames();
+		$requestedCtrlDc = isset($requestGlobalGet[static::URL_PARAM_CONTROLLER]) 
+			? $requestGlobalGet[static::URL_PARAM_CONTROLLER] 
+			: NULL;
+		$requestedActionDc = isset($requestGlobalGet[static::URL_PARAM_ACTION]) 
+			? $requestGlobalGet[static::URL_PARAM_ACTION] 
+			: NULL;
+		$toolClass = static::$toolClass;
+		list(
+			$dfltCtrlPc, $dftlActionPc
+		) = $this->application->GetDefaultControllerAndActionNames();
 		$dfltCtrlDc = $toolClass::GetDashedFromPascalCase($dfltCtrlPc);
 		$dftlActionDc = $toolClass::GetDashedFromPascalCase($dftlActionPc);
 		$requestedParamsClone = array_merge([], $this->requestedParams);
@@ -83,8 +91,14 @@ trait Canonical {
 				if ($pathParam === $request->GetScriptName())
 					unset($requestedParamsClone[static::URL_PARAM_PATH]);
 			}
-			$selfCanonicalUrl = $this->UrlByQueryString($this->selfRouteName, $requestedParamsClone);
-			$this->redirect($selfCanonicalUrl, \MvcCore\IResponse::MOVED_PERMANENTLY, "Canonical URL (state: {$redirectToCanonicalUrl})");
+			$selfCanonicalUrl = $this->UrlByQueryString(
+				$this->selfRouteName, $requestedParamsClone
+			);
+			$this->redirect(
+				$selfCanonicalUrl, 
+				\MvcCore\IResponse::MOVED_PERMANENTLY, 
+				"Canonical URL (state: {$redirectToCanonicalUrl})"
+			);
 			return FALSE;
 		}
 		return TRUE;
@@ -98,7 +112,7 @@ trait Canonical {
 	 * @return bool
 	 */
 	protected function canonicalRedirectRewriteRoutesStrategy () {
-		/** @var \MvcCore\Request $request */
+		/** @var \MvcCore\Router $this */
 		$request = $this->request;
 		$redirectToCanonicalUrl = 0;
 		$defaultParams =  $this->GetDefaultParams() ?: [];
@@ -116,19 +130,27 @@ trait Canonical {
 			mb_strlen($selfUrlDomainAndBasePart) > 0 && 
 			$selfUrlDomainAndBasePart !== $request->GetBaseUrl()
 		) {
+			// if domain and base url is not the same - redirect
 			$redirectToCanonicalUrl = 3;
 		} else if (mb_strlen($selfUrlPathAndQueryPart) > 0) {
+			// check if self url has path and query string part
 			$path = $request->GetPath(TRUE);
 			$requestedUrl = $path === '' ? '/' : $path ;
 			$selfUrlPathAndQueryPart = rawurldecode($selfUrlPathAndQueryPart);
 			if (mb_strpos($selfUrlPathAndQueryPart, '?') !== FALSE) 
 				$requestedUrl .= $request->GetQuery(TRUE, TRUE);
-			if ($selfUrlPathAndQueryPart !== $requestedUrl) 
+			if ($selfUrlPathAndQueryPart !== $requestedUrl) {
+				// if 
 				$redirectToCanonicalUrl = 4;
+			}
 		}
 		if ($redirectToCanonicalUrl > 0) {
 			$selfCanonicalUrl = $this->Url($this->selfRouteName, $this->requestedParams);
-			$this->redirect($selfCanonicalUrl, \MvcCore\IResponse::MOVED_PERMANENTLY, "Canonical URL (state: {$redirectToCanonicalUrl})");
+			$this->redirect(
+				$selfCanonicalUrl, 
+				\MvcCore\IResponse::MOVED_PERMANENTLY, 
+				"Canonical URL (state: {$redirectToCanonicalUrl})"
+			);
 			return FALSE;
 		}
 		return TRUE;
