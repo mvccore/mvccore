@@ -103,7 +103,7 @@ trait ReadWrite {
 
 	/**
 	 * @inheritDoc
-	 * @param  string $appRootRelativePath Any config relative path from application root dir like `'~/%appPath%/website.ini'`.
+	 * @param  string $appRootRelativePath Any config relative path from application root dir like `'~/App/website.ini'`.
 	 * @throws \RuntimeException
 	 * @return \MvcCore\Config|NULL
 	 */
@@ -123,7 +123,7 @@ trait ReadWrite {
 	
 	/**
 	 * @inheritDoc
-	 * @param  string $vendorAppRootRelativePath Any config relative path from application root dir like `'~/%appPath%/website.ini'`.
+	 * @param  string $vendorAppRootRelativePath Any config relative path from application root dir like `'~/App/website.ini'`.
 	 * @throws \RuntimeException
 	 * @return \MvcCore\Config|NULL
 	 */
@@ -228,7 +228,6 @@ trait ReadWrite {
 	 */
 	public static function GetConfigFullPath ($configPath, $vendorConfig = FALSE) {
 		$app = self::$app ?: (self::$app = \MvcCore\Application::GetInstance()); // @phpstan-ignore-line
-		$configPath = str_replace('%appPath%', $app->GetAppDir(), $configPath);
 		if (mb_strpos($configPath, '~/') === 0) {
 			if ($vendorConfig) {
 				if (!$app->GetVendorAppDispatch()) throw new \RuntimeException(

@@ -35,7 +35,7 @@ interface IConfig extends \MvcCore\Config\IConstants {
 	/**
 	 * Set system config relative path from app root.
 	 * This value could be changed to any value at the very application start.
-	 * Example: `\MvcCore\Config::SetConfigSystemPath('~/%appPath%/config.ini');`
+	 * Example: `\MvcCore\Config::SetConfigSystemPath('~/App/config.ini');`
 	 * @param  string $configSystemPath
 	 * @return string
 	 */
@@ -50,7 +50,7 @@ interface IConfig extends \MvcCore\Config\IConstants {
 	/**
 	 * Set environment config relative path from app root.
 	 * This value could be changed to any value at the very application start.
-	 * Example: `\MvcCore\Config::SetConfigEnvironmentPath('~/%appPath%/env.ini');`
+	 * Example: `\MvcCore\Config::SetConfigEnvironmentPath('~/App/env.ini');`
 	 * @param  string|NULL $configEnvironmentPath
 	 * @return string|NULL
 	 */
@@ -116,7 +116,7 @@ interface IConfig extends \MvcCore\Config\IConstants {
 	 * Get (optionally cached) environment config INI file 
 	 * as `stdClass` or `array`, placed by default in: `"/App/env.ini"`.
 	 * To use separated environment config, you need to fill it's path first by: 
-	 * `\MvcCore\Config::SetConfigEnvironmentPath('~/%appPath%/env.ini');`
+	 * `\MvcCore\Config::SetConfigEnvironmentPath('~/App/env.ini');`
 	 * @throws \RuntimeException
 	 * @return \MvcCore\Config|NULL
 	 */
@@ -125,7 +125,7 @@ interface IConfig extends \MvcCore\Config\IConstants {
 	/**
 	 * Get (optionally cached) config INI file as `stdClass` or `array`,
 	 * placed relatively from application document root.
-	 * @param  string $appRootRelativePath Any config relative path from application root dir like `'~/%appPath%/website.ini'`.
+	 * @param  string $appRootRelativePath Any config relative path from application root dir like `'~/App/website.ini'`.
 	 * @throws \RuntimeException
 	 * @return \MvcCore\Config|NULL
 	 */
@@ -134,7 +134,7 @@ interface IConfig extends \MvcCore\Config\IConstants {
 	/**
 	 * Get (optionally cached) config INI file as `stdClass` or `array`,
 	 * placed relatively from current vendor package root directory.
-	 * Example: `'~/%appPath%/website.ini'`
+	 * Example: `'~/App/website.ini'`
 	 * @param  string $vendorAppRootRelativePath
 	 * @throws \RuntimeException
 	 * @return \MvcCore\Config|NULL
@@ -172,7 +172,7 @@ interface IConfig extends \MvcCore\Config\IConstants {
 	/**
 	 * Get absolute path for config path definition.
 	 * This method is always called by config class internally.
-	 * Example: `\MvcCore\Config::GetAbsoluteConfigPath('~/%appPath%/myConfig.ini');
+	 * Example: `\MvcCore\Config::GetAbsoluteConfigPath('~/App/myConfig.ini');
 	 * @internal
 	 * @param  string $configPath   Relative from app root.
 	 * @param  bool   $vendorConfig `FALSE` by default.

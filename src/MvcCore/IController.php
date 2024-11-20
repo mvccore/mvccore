@@ -548,7 +548,7 @@ interface IController extends \MvcCore\Controller\IConstants {
 	/**
 	 * Get (optionally cached) config INI file as `stdClass` or `array`,
 	 * placed relatively from application document root.
-	 * @param  string $appRootRelativePath Any config relative path from application root dir like `'~/%appPath%/website.ini'`.
+	 * @param  string $appRootRelativePath Any config relative path from application root dir like `'~/App/website.ini'`.
 	 * @return \MvcCore\Config|NULL
 	 */
 	public function GetConfig ($appRootRelativePath);

@@ -371,7 +371,7 @@ trait GettersSetters {
 
 	/**
 	 * @inheritDoc
-	 * @param  string $appRootRelativePath Any config relative path from application root dir like `'~/%appPath%/website.ini'`.
+	 * @param  string $appRootRelativePath Any config relative path from application root dir like `'~/App/website.ini'`.
 	 * @return \MvcCore\Config|NULL
 	 */
 	public function GetConfig ($appRootRelativePath) {

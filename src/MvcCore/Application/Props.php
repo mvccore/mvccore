@@ -90,7 +90,7 @@ trait Props {
 
 	/**
 	 * System config INI file as `stdClass` or `array`,
-	 * placed by default in: `"~/%appPath%/config.ini"`.
+	 * placed by default in: `"~/App/config.ini"`.
 	 * @var \MvcCore\Config|NULL
 	 */
 	protected $config = NULL;
