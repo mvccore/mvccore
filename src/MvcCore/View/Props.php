@@ -120,6 +120,19 @@ trait Props {
 	];
 
 	/**
+	 * Definition of view types to application paths, where to find them.
+	 * This internal definition is used in method `\MvcCore\View::getViewPathByType();`.
+	 * @var array<int,string>
+	 */
+	protected static $viewTypes2AppPaths = [
+		self::VIEW_TYPE_DEFAULT		=> 'pathView',
+		self::VIEW_TYPE_LAYOUT		=> 'pathViewLayouts',
+		self::VIEW_TYPE_SCRIPT		=> 'pathViewScripts',
+		self::VIEW_TYPE_FORM		=> 'pathViewForms',
+		self::VIEW_TYPE_FORM_FIELD	=> 'pathViewFormsFields',
+	];
+	
+	/**
 	 * View scripts files extension with leading dot char.
 	 * Default value: `".phtml"`.
 	 * @var string
