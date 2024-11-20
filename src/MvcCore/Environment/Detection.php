@@ -295,7 +295,10 @@ trait Detection {
 		}
 		if ($data->paths->check) {
 			// try to recognize environment by any configured application document root path match
-			$appRoot = $appRoot ?: $req->GetAppRoot();
+			if ($appRoot === NULL) {
+				$app = self::$app ?: (self::$app = \MvcCore\Application::GetInstance()); // @phpstan-ignore-line
+				$appRoot = $app->GetPathAppRoot();
+			}
 			if ($data->paths->values)
 				foreach ($data->paths->values as $pathToMatch)
 					if (mb_strpos($appRoot, $pathToMatch) !== FALSE)
