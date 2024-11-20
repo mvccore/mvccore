@@ -58,15 +58,6 @@ trait Props {
 	protected $vendorAppDispatch = NULL;
 
 	/**
-	 * Application root in composer vendor project, 
-	 * determinated by dispatched main controller.
-	 * Compilled applications doesn't support 
-	 * dispatching in vendor directories.
-	 * @var string|NULL
-	 */
-	protected $vendorAppRoot = NULL;
-
-	/**
 	 * CSRF protection mode. Only one mode could be used.
 	 * Default protection is by hidden form input for older browsers
 	 * because of maximum compatibility.
@@ -386,27 +377,51 @@ trait Props {
 	protected $controllersBaseNamespace = NULL;
 
 	/**
-	 * Application scripts and views directory name as `"App"` by default,
-	 * where are following subdirectories by default:
-	 * - `/App/Controllers`
-	 * - `/App/Models`
-	 * - `/App/Views`
-	 * It should by reconfigured to custom value in the very 
-	 * application beginning or by constant `MVCCORE_APP_ROOT_DIRNAME`.
-	protected $pathAppRoot = NULL;
+	 * Application root directory full path. All other application 
+	 * non-public paths are always completed from this value.
+	 * 
+	 * This value is completed in runtime. If there is already 
+	 * defined constant `MVCCORE_APP_ROOT`, value is completed 
+	 * by this constant. 
+	 * 
+	 * There is the same value with webserver document root 
+	 * path for single file projects.
+	 * 
+	 * Example: `"/var/www/html/my-project"`
 	 * @var string|NULL
 	 */
-	protected $appDir = NULL;
+	protected $pathAppRoot = NULL;
+
+	/**
+	 * Path into composer package root directory, where is dispatched 
+	 * main controller from composer package. 
+	 * 
+	 * This value is completed in runtime. `NULL` by default.
+	 * 
+	 * Composer package has to have simillar structure as main application module.
+	 * 
+	 * Example: `"/var/www/html/my-project/vendor/org-name/module-name/src"`
+	 * @var string|NULL
+	 */
 	protected $pathAppRootVendor = NULL;
 
 	/**
-	 * Application web server document root directory name as `"www"` 
-	 * by default, where is placed `index.php` startup script.
-	 * It should by reconfigured to custom value in the very 
-	 * application beginning or by constant `MVCCORE_DOC_ROOT_DIRNAME`.
+	 * Application document root directory full path. All other 
+	 * application public paths are always completed from this value.
+	 * 
+	 * Application document root is location configured in webserver
+	 * containing `index.php` (not in single file projects).
+	 * 
+	 * This value is completed in runtime. If there is already 
+	 * defined constant `MVCCORE_DOC_ROOT`, value is completed 
+	 * by this constant. 
+	 * 
+	 * There is the same value with application root
+	 * path for single file projects.
+	 * 
+	 * Example: `"/var/www/html/my-project/www"`
 	 * @var string|NULL
 	 */
-	protected $docRootDir = NULL;
 	protected $pathDocRoot = NULL;
 	
 	/**
