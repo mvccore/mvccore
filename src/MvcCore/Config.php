@@ -16,7 +16,11 @@ namespace MvcCore;
 /**
  * @inheritDoc
  */
-class Config implements \Iterator, \ArrayAccess, \Countable, IConfig {
+class Config
+implements	\Iterator,
+			\ArrayAccess,
+			\Countable,
+			\MvcCore\IConfig {
 	use \MvcCore\Config\PropsGettersSetters;
 	use \MvcCore\Config\ReadWrite;
 	use \MvcCore\Config\MagicMethods;

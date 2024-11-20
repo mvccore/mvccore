@@ -166,31 +166,32 @@ trait ReadWrite {
 		}
 		return self::$configsCache[$configFullPath];
 	}
-
+	
 	/**
 	 * @inheritDoc
-	 * @throws \Exception Configuration data was not possible to dump or write.
-	 * @return bool
+	 * @internal
+	 * @param  string $configPath   Relative from app root.
+	 * @param  bool   $vendorConfig `FALSE` by default.
+	 * @throws \RuntimeException
+	 * @return string
 	 */
-	public function Save () {
-		$rawContent = $this->Dump();
-		if ($rawContent === NULL) // @phpstan-ignore-line
-			throw new \Exception('Configuration data was not possible to dump.');
+	public static function GetConfigFullPath ($configPath, $vendorConfig = FALSE) {
 		$app = self::$app ?: (self::$app = \MvcCore\Application::GetInstance()); // @phpstan-ignore-line
-		$toolClass = $app->GetToolClass();
-		try {
-			$toolClass::AtomicWrite(
-				$this->fullPath,
-				$rawContent,
-				'w',	// Open for writing only; place pointer at the beginning and truncate to zero length. If file doesn't exist, create it.
-				10,		// Milliseconds to wait before next lock file existence is checked in `while()` cycle.
-				5000,	// Maximum milliseconds time to wait before thrown an exception about not possible write.
-				15000	// Maximum milliseconds time to consider lock file as operative or as old after some died process.
-			);
-		} catch (\Throwable $e) {
-			throw $e;
+		if (mb_strpos($configPath, '~/') === 0) {
+			if ($vendorConfig) {
+				if (!$app->GetVendorAppDispatch()) throw new \RuntimeException(
+					"The vendor configuration file cannot be loaded, ".
+					"because dispatched main controller is not from any vendor package."
+				);
+				$vendorPackageRoot = $app->GetPathAppRootVendor();
+				$configPath = $vendorPackageRoot . mb_substr($configPath, 1);
+			} else {
+				$configPath = $app->GetPathAppRoot() . mb_substr($configPath, 1);
+			}
 		}
-		return TRUE;
+		$toolClass = $app->GetToolClass();
+		$configFullPath = $toolClass::RealPathVirtual($configPath);
+		return $configFullPath;
 	}
 
 	/**
@@ -220,28 +221,28 @@ trait ReadWrite {
 
 	/**
 	 * @inheritDoc
-	 * @internal
-	 * @param  string $configPath   Relative from app root.
-	 * @param  bool   $vendorConfig `FALSE` by default.
-	 * @throws \RuntimeException
-	 * @return string
+	 * @throws \Exception Configuration data was not possible to dump or write.
+	 * @return bool
 	 */
-	public static function GetConfigFullPath ($configPath, $vendorConfig = FALSE) {
+	public function Save () {
+		$rawContent = $this->Dump();
+		if ($rawContent === NULL) // @phpstan-ignore-line
+			throw new \Exception('Configuration data was not possible to dump.');
 		$app = self::$app ?: (self::$app = \MvcCore\Application::GetInstance()); // @phpstan-ignore-line
-		if (mb_strpos($configPath, '~/') === 0) {
-			if ($vendorConfig) {
-				if (!$app->GetVendorAppDispatch()) throw new \RuntimeException(
-					"The vendor configuration file cannot be loaded, ".
-					"because dispatched main controller is not from any vendor package."
-				);
-				$vendorPackageRoot = $app->GetPathAppRootVendor();
-				$configPath = $vendorPackageRoot . mb_substr($configPath, 1);
-			} else {
-				$configPath = $app->GetPathAppRoot() . mb_substr($configPath, 1);
-			}
-		}
 		$toolClass = $app->GetToolClass();
-		$configFullPath = $toolClass::RealPathVirtual($configPath);
-		return $configFullPath;
+		try {
+			$toolClass::AtomicWrite(
+				$this->fullPath,
+				$rawContent,
+				'w',	// Open for writing only; place pointer at the beginning and truncate to zero length. If file doesn't exist, create it.
+				10,		// Milliseconds to wait before next lock file existence is checked in `while()` cycle.
+				5000,	// Maximum milliseconds time to wait before thrown an exception about not possible write.
+				15000	// Maximum milliseconds time to consider lock file as operative or as old after some died process.
+			);
+		} catch (\Throwable $e) {
+			throw $e;
+		}
+		return TRUE;
 	}
+
 }
