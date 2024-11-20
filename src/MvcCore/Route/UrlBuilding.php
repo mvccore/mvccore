@@ -66,15 +66,15 @@ trait UrlBuilding {
 	 * Requested URL route params and query string 
 	 * params without escaped HTML special chars: 
 	 * `< > & " ' &`.
-	 * @param  string              $queryStringParamsSepatator 
-	 * Query params separator, `&` by default. Always 
-	 * automatically completed by router instance.
 	 * @param  bool                $splitUrl
 	 * Boolean value about to split completed result URL
 	 * into two parts or not. Default is FALSE to return 
 	 * a string array with only one record - the result 
 	 * URL. If `TRUE`, result url is split into two 
 	 * parts and function return array with two items.
+	 * @param  string              $queryStringParamsSepatator 
+	 * Query params separator, `&amp;` by default. Always 
+	 * automatically completed by router instance.
 	 * @return array<string>
 	 * Result URL address in array. If last argument is 
 	 * `FALSE` by default, this function returns only 
@@ -83,7 +83,7 @@ trait UrlBuilding {
 	 * in two parts - domain part with base path and 
 	 * path part with query string.
 	 */
-	public function Url (\MvcCore\IRequest $request, array $params = [], array $defaultUrlParams = [], $queryStringParamsSepatator = '&', $splitUrl = FALSE) {
+	public function Url (\MvcCore\IRequest $request, array $params = [], array $defaultUrlParams = [], $splitUrl = FALSE, $queryStringParamsSepatator = '&amp;') {
 		// check reverse initialization
 		if ($this->reverseParams === NULL) $this->initReverse();
 		// unset all params with the same values as route defaults configuration
