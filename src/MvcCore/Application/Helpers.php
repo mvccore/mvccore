@@ -55,10 +55,9 @@ trait Helpers {
 	public function CompleteControllerName ($controllerNamePascalCase) {
 		if (mb_strpos($controllerNamePascalCase, '//') === 0) 
 			return '\\' . ltrim($controllerNamePascalCase, '/');
-		return '\\' . implode('\\', [
-			$this->appDir,
-			$this->controllersDir,
-			ltrim($controllerNamePascalCase, '\\')
+		return implode("\\", [
+			$this->GetControllersBaseNamespace(),
+			ltrim($controllerNamePascalCase, "\\")
 		]);
 	}
 
@@ -132,7 +131,12 @@ trait Helpers {
 	}
 
 	/**
-	 * 
+	 * Initialize vendor properties by dispatched main controller.
+	 * If dispatched main controller is located in composer package,
+	 * property `$app->vendorAppDispatch` is set to `TRUE` and there 
+	 * is also completed property `$app->pathAppRootVendor` with 
+	 * composer package root dir path.
+	 * Single file applications doesn't support vendor dispatching.
 	 * @throws \Exception
 	 * @return void
 	 */
@@ -148,13 +152,15 @@ trait Helpers {
 		$ctrlClassFullName = get_class($this->controller);
 		$ctrlType = new \ReflectionClass($ctrlClassFullName);
 		$ctrlFileFullPath = str_replace('\\', '/', $ctrlType->getFileName());
-		$this->vendorAppRoot = mb_substr(
+
+		$pathAppRootVendorAbs = mb_substr(
 			$ctrlFileFullPath, 0, mb_strlen($ctrlFileFullPath) - (mb_strlen($ctrlClassFullName) + 5)
 		);
-		$appRoot = $this->GetRequest()->GetAppRoot();
-		$this->vendorAppDispatch = $appRoot !== $this->vendorAppRoot;
-		if (!$this->vendorAppDispatch) 
-			$this->vendorAppRoot = NULL;
+		$pathAppRootAbs = $this->GetPathAppRoot();
+
+		$this->vendorAppDispatch = $pathAppRootAbs !== $pathAppRootVendorAbs;
+		if ($this->vendorAppDispatch)
+			$this->pathAppRootVendor = $pathAppRootVendorAbs;
 	}
 
 
@@ -218,4 +224,5 @@ trait Helpers {
 		}
 		return $this;
 	}
+
 }

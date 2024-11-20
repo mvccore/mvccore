@@ -158,14 +158,18 @@ trait Dispatching {
 			$controllerName = $this->CompleteControllerName($ctrlPc);
 			$checkViewIfNoCtrl = TRUE;
 		}
-
+		
 		/** @var \MvcCore\View $viewClass */
-		$viewsDirFullPath = $route->GetControllerHasAbsoluteNamespace()
-			? $viewClass::GetExtViewsDirFullPath($this, ltrim($controllerName, '\\'), TRUE)
-			: $viewClass::GetDefaultViewsDirFullPath($this);
+		if ($route->GetControllerHasAbsoluteNamespace()) {
+			$viewsDirFullPath = $viewClass::GetExtViewsDirFullPath(
+				$this, ltrim($controllerName, '\\'), $viewClass::VIEW_TYPE_SCRIPT, TRUE
+			);
+		} else {
+			$viewsDirFullPath = $this->GetPathViewScripts(TRUE);
+		}
 
 		$viewScriptFullPath = $viewClass::GetViewScriptFullPath(
-			$viewsDirFullPath . '/' . $viewClass::GetScriptsDir(),
+			$viewsDirFullPath,
 			$this->request->GetControllerName() . '/' . $this->request->GetActionName()
 		);
 		
@@ -221,7 +225,7 @@ trait Dispatching {
 		$actionExists = $type->hasMethod($actionName) && $type->getMethod($actionName)->isPublic();
 		if (!$initExists && !$actionExists && $ctrlClassFullName !== $this->controllerClass) {
 			if (!file_exists($viewScriptFullPath)) {
-				$appRoot = $this->request->GetAppRoot();
+				$appRoot = $this->GetPathAppRoot();
 				$viewScriptPath = mb_strpos($viewScriptFullPath, $appRoot) === FALSE
 					? $viewScriptFullPath
 					: mb_substr($viewScriptFullPath, mb_strlen($appRoot));
@@ -391,7 +395,7 @@ trait Dispatching {
 					$defaultCtrlFullName,
 					$this->defaultControllerErrorActionName,
 					$viewClass::GetViewScriptFullPath(
-						$viewClass::GetDefaultViewsDirFullPath($this) . '/' . $viewClass::GetScriptsDir(),
+						$this->GetPathViewScripts(TRUE),
 						$this->request->GetControllerName() . '/' . $this->request->GetActionName()
 					)
 				);
@@ -440,7 +444,7 @@ trait Dispatching {
 					$defaultCtrlFullName,
 					$this->defaultControllerNotFoundActionName,
 					$viewClass::GetViewScriptFullPath(
-						$viewClass::GetDefaultViewsDirFullPath($this) . '/' . $viewClass::GetScriptsDir(),
+						$this->GetPathViewScripts(TRUE),
 						$this->request->GetControllerName() . '/' . $this->request->GetActionName()
 					)
 				);
