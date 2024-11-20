@@ -689,20 +689,30 @@ trait Dispatching {
 	 */
 	public function AssetAction () {
 		$ext = '';
-		$path = $this->GetParam('path', 'a-zA-Z0-9_\-\/\.');
-		$path = '/' . ltrim(str_replace('..', '', $path), '/');
-		$homePath = '~' . $path;
-		if (
-			strpos($homePath, static::$staticPath) !== 0 &&
-			strpos($homePath, static::$tmpPath) !== 0
-		)
-			throw new \ErrorException("[".get_class($this)."] File path: '{$path}' is not allowed.", 500);
-		$fullPath = $this->request->GetDocumentRoot() . $path;
+		$pathReq = $this->GetParam('path', 'a-zA-Z0-9_\-\/\.');
+		$pathReq = '/' . ltrim(str_replace(['../', './'], '/', $pathReq), '/');
+		$pathReqFromDocRootRel = '~' . $pathReq;
+		$pathStaticRel = $this->application->GetPathStatic(FALSE);
+		$pathStaticAbs = $this->application->GetPathStatic(TRUE);
+		$pathVarRel = $this->application->GetPathVar(FALSE);
+		$pathVarAbs = $this->application->GetPathVar(TRUE);
+		$pathDocRootAbs = $this->application->GetPathDocRoot();
+		$req2Static = (
+			mb_strpos($pathStaticAbs, $pathDocRootAbs) === 0 && 
+			mb_strpos($pathReqFromDocRootRel, $pathStaticRel . '/') === 0
+		);
+		$req2Var = (
+			mb_strpos($pathVarAbs, $pathDocRootAbs) === 0 && 
+			mb_strpos($pathReqFromDocRootRel, $pathVarRel . '/') === 0
+		);
+		if (!$req2Static && !$req2Var)
+			throw new \ErrorException("[".get_class($this)."] File path: '{$pathReq}' is not allowed.", 500);
+		$fullPath = $pathDocRootAbs . $pathReq;
 		if (!file_exists($fullPath) || !is_file($fullPath))
-			throw new \ErrorException("[".get_class($this)."] File not found: '{$path}'.", 404);
-		$lastDotPos = strrpos($path, '.');
+			throw new \ErrorException("[".get_class($this)."] File not found: '{$pathReq}'.", 404);
+		$lastDotPos = strrpos($pathReq, '.');
 		if ($lastDotPos !== FALSE)
-			$ext = substr($path, $lastDotPos + 1);
+			$ext = substr($pathReq, $lastDotPos + 1);
 		if (isset(self::$_assetsMimeTypes[$ext]))
 			header('Content-Type: ' . self::$_assetsMimeTypes[$ext]);
 		header_remove('X-Powered-By');

@@ -236,9 +236,7 @@ trait Rendering {
 			} else {
 				// if controller is child controller - translate class name
 				// without default controllers directory into dashed name
-				$ctrlsDefaultNamespace = (
-					$this->application->GetAppDir() . '\\' . $this->application->GetControllersDir()
-				);
+				$ctrlsDefaultNamespace = $this->application->GetControllersBaseNamespace();
 				$currentCtrlClassName = get_class($this);
 				if (mb_strpos($currentCtrlClassName, $ctrlsDefaultNamespace) === 0)
 					$currentCtrlClassName = mb_substr($currentCtrlClassName, mb_strlen($ctrlsDefaultNamespace) + 1);
