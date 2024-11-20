@@ -32,5 +32,4 @@ extends		\MvcCore\Config\IConstants,
 			\MvcCore\Config\IMagicMethods,
 			\MvcCore\Config\ITypeRead,
 			\MvcCore\Config\ITypeDump {
-
 }

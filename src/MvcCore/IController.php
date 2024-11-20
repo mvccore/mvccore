@@ -65,5 +65,4 @@ extends		\MvcCore\Controller\IConstants,
 			\MvcCore\Controller\IDispatching,
 			\MvcCore\Controller\IRendering,
 			\MvcCore\Controller\IFlashMessages {
-
 }
