@@ -96,7 +96,8 @@ trait GettersSetters {
 				$server = & $this->globalServer;
 				if (isset($server['SCRIPT_FILENAME'])) {
 					$requestedFullPath = str_replace('\\', '/', $server['SCRIPT_FILENAME']);
-					$reqDocRoot = $this->GetDocumentRoot();
+					$app = self::$app ?: (self::$app = \MvcCore\Application::GetInstance()); // @phpstan-ignore-line
+					$reqDocRoot = $app->GetPathDocRoot();
 					$scriptFullPath = $reqDocRoot . $this->GetScriptName();
 					if (
 						mb_strpos($requestedFullPath, $reqDocRoot) === 0 && 

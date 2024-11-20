@@ -73,7 +73,7 @@ trait Instancing {
 		$this->globalPost = & $post;
 		$this->globalCookies = & $cookie;
 		$this->globalFiles = & $files;
-		$this->cli = php_sapi_name() == 'cli';
+		$this->cli = php_sapi_name() === 'cli';
 		$inputStreamDefault = $this->cli
 			? 'php://stdin'
 			: 'php://input';
@@ -90,7 +90,6 @@ trait Instancing {
 	 */
 	public function InitAll () {
 		$this->GetScriptName();
-		$this->GetAppRoot();
 		$this->GetMethod();
 		$this->GetBasePath();
 		$this->GetScheme();

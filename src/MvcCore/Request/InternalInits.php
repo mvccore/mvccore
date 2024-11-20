@@ -113,16 +113,6 @@ trait InternalInits {
 		$indexFilePath = ucfirst(str_replace(['\\', '//'], '/', $indexFilePath));
 		$lastSlashPos = mb_strrpos($indexFilePath, '/');
 		
-		$this->documentRoot = defined('MVCCORE_DOC_ROOT')
-			? ucfirst(constant('MVCCORE_DOC_ROOT'))
-			: (class_exists('\Phar') && strlen(\Phar::running()) > 0 
-				? 'phar://' . $indexFilePath
-				: mb_substr($indexFilePath, 0, $lastSlashPos));
-
-		$this->appRoot = defined('MVCCORE_APP_ROOT')
-			? ucfirst(constant('MVCCORE_APP_ROOT'))
-			: $this->documentRoot; // TODO: tady se musí ubrat www
-
 		$this->scriptName = mb_substr($indexFilePath, $lastSlashPos);
 
 		$args = isset($this->globalServer['argv']) 
