@@ -25,8 +25,6 @@ namespace MvcCore;
  *   - Calling pre/post handlers.
  *   - Controller/action dispatching.
  *   - Error handling and error responses.
- * @phpstan-type CustomHandlerCallable callable(\MvcCore\IRequest, \MvcCore\IResponse): (false|void)
- * @phpstan-type CustomHandlerRecord array{0: bool, 1: CustomHandlerCallable}
  */
 interface	IApplication
 extends		\MvcCore\Application\IConstants,

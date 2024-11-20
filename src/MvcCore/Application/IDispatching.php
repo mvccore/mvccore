@@ -13,6 +13,10 @@
 
 namespace MvcCore\Application;
 
+/**
+ * @phpstan-type CustomHandlerCallable callable(\MvcCore\IRequest, \MvcCore\IResponse): (false|void)
+ * @phpstan-type CustomHandlerRecord array{0: bool, 1: CustomHandlerCallable}
+ */
 interface IDispatching {
 
 	/***********************************************************************************

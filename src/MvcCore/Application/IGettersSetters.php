@@ -13,6 +13,9 @@
 
 namespace MvcCore\Application;
 
+/**
+ * @phpstan-type CustomHandlerCallable callable(\MvcCore\IRequest, \MvcCore\IResponse): (false|void)
+ */
 interface IGettersSetters {
 	
 	/***********************************************************************************
