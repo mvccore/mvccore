@@ -13,8 +13,6 @@
 
 namespace MvcCore\View;
 
-use MvcCore\Tool\Helpers;
-
 /**
  * @mixin \MvcCore\View
  * @phpstan-type ViewHelper \MvcCore\Ext\Views\Helpers\AbstractHelper|\MvcCore\Ext\Views\Helpers\IHelper|\Closure|mixed
@@ -59,31 +57,6 @@ trait ViewHelpers {
 		if (count($args) === 1 && is_array($args[0])) $args = $args[0];
 		foreach ($args as $arg)
 			static::$helpersNamespaces[] = '\\' . trim($arg, '\\') . '\\';
-	}
-
-	/**
-	 * @inheritDoc
-	 * @param  string $method            View helper method name in pascal case.
-	 * @param  mixed  $arguments         View helper method arguments.
-	 * @throws \InvalidArgumentException If view doesn't exist in configured namespaces.
-	 * @return string|mixed              View helper string result or any other view helper result type or view helper instance, always as `\MvcCore\Ext\Views\Helpers\AbstractHelper|\MvcCore\Ext\Views\Helpers\IHelper` instance.
-	 */
-	public function __call ($method, $arguments) {
-		$result = '';
-		$methodCamelCase = lcfirst($method);
-		$instance = & $this->GetHelper($methodCamelCase, TRUE);
-		$isObject = is_object($instance);
-		if ($instance instanceof \Closure || ($isObject && method_exists($instance, '__invoke'))) {
-			$result = call_user_func_array($instance, $arguments);
-		} else if ($isObject && method_exists($instance, $method)) {
-			$result = call_user_func_array([$instance, $method], $arguments);
-		} else {
-			throw new \InvalidArgumentException(
-				"[".get_class($this)."] View class instance has no method '{$method}', no view helper found."
-			);
-		}
-		$this->__protected['helpers'][$methodCamelCase] = & $instance;
-		return $result;
 	}
 
 	/**

@@ -348,6 +348,7 @@ trait Rendering {
 
 	/**
 	 * @inheritDoc
+	 * @deprecated
 	 * @param  string|NULL $content
 	 * @return string
 	 */
