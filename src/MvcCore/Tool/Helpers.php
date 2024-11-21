@@ -33,7 +33,7 @@ trait Helpers {
 	public static function GetSystemTmpDir () {
 		if (self::$tmpDir === NULL) {
 			$tmpDir = sys_get_temp_dir();
-			if (strtolower(substr(PHP_OS, 0, 3)) == 'win') {
+			if (defined('PHP_WINDOWS_VERSION_BUILD')) {
 				// Windows:
 				$sysRoot = getenv('SystemRoot');
 				// do not store anything directly in C:\Windows, use C:\windows\Temp instead
