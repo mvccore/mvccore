@@ -157,16 +157,6 @@ trait PropsGettersSetters {
 	public static function SetCsrfProtectionCookieName ($csrfProtectionCookieName) {
 		return static::$csrfProtectionCookieName = $csrfProtectionCookieName;
 	}
-
-	/**
-	 * @inheritDoc
-	 * @return string|NULL
-	 */
-	public function GetSessionIdCookieName () {
-		return $this->request->IsSecure()
-			? static::$sessionIdCookieNames[1]
-			: static::$sessionIdCookieNames[0];
-	}
 	
 	/**
 	 * @inheritDoc
@@ -187,6 +177,16 @@ trait PropsGettersSetters {
 			static::$multiplyHeaders[$multiplyHeader] = TRUE;
 		return $multiplyHeaders;
 		
+	}
+
+	/**
+	 * @inheritDoc
+	 * @return string|NULL
+	 */
+	public function GetSessionIdCookieName () {
+		return $this->request->IsSecure()
+			? static::$sessionIdCookieNames[1]
+			: static::$sessionIdCookieNames[0];
 	}
 
 	/**
