@@ -132,7 +132,7 @@ interface IGettersSetters {
 	/**
 	 * Get application tool class implementing `\MvcCore\ITool`.
 	 * Class to handle helper calls from MvcCore core modules.
-	 * @return \MvcCore\Tool<object>|string
+	 * @return \MvcCore\Tool|string
 	 */
 	public function GetToolClass ();
 

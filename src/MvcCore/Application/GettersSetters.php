@@ -148,7 +148,7 @@ trait GettersSetters {
 
 	/**
 	 * @inheritDoc
-	 * @return \MvcCore\Tool<object>|string
+	 * @return \MvcCore\Tool|string
 	 */
 	public function GetToolClass () {
 		return $this->toolClass;

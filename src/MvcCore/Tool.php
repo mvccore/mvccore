@@ -15,8 +15,6 @@ namespace MvcCore;
 
 /**
  * @inheritDoc
- * @template T of object
- * @implements ITool<T>
  */
 class Tool implements ITool {
 	use \MvcCore\Tool\Json;

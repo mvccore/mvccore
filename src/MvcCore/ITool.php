@@ -23,6 +23,7 @@ namespace MvcCore;
  * - Static functions to write into file by one process only.
  * - Static functions to check core classes inheritance.
  * - Static functions to cache and read attributes (or PhpDocs tags).
+ * @extends \MvcCore\Tool\IReflection<object>
  */
 interface	ITool
 extends		\MvcCore\Tool\IStringConversions,

@@ -32,6 +32,6 @@ extends		\MvcCore\Session\IConstants,
 			\MvcCore\Session\IStarting,
 			\MvcCore\Session\IMetaData,
 			\MvcCore\Session\INamespaceMethods,
-			\MvcCore\Session\IMetaData,
+			\MvcCore\Session\IMagicMethods,
 			\MvcCore\Session\IClosing {
 }

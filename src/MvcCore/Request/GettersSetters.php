@@ -845,6 +845,6 @@ trait GettersSetters {
 	 * @return string
 	 */
 	protected static function htmlSpecialCharsCallback ($match) {
-		return '&#' . str_pad(ord($match[0]), 2, '0', STR_PAD_RIGHT) . ';';
+		return '&#' . str_pad((string) ord($match[0]), 2, '0', STR_PAD_RIGHT) . ';';
 	}
 }

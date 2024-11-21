@@ -476,7 +476,7 @@ trait Dispatching {
 			\ReflectionProperty::IS_PRIVATE
 		);
 		$attrsAnotations = $this->application->GetAttributesAnotations();
-		/** @var \MvcCore\Tool<object> $toolsClass */
+		/** @var \MvcCore\Tool $toolsClass */
 		$toolsClass = $this->application->GetToolClass();
 		$attrClassName = '\\MvcCore\\Controller\\AutoInit';
 		$attrClassNameWithoutSlash = mb_substr($attrClassName, 1);

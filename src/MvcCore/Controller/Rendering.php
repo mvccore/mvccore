@@ -146,7 +146,7 @@ trait Rendering {
 	 * @return void
 	 */
 	public function JsonResponse ($data, $terminate = TRUE, $jsonEncodeFlags = 0) {
-		/** @var \MvcCore\Tool<object>|string $toolClass */ 
+		/** @var \MvcCore\Tool|string $toolClass */ 
 		$toolClass = $this->application->GetToolClass();
 		$output = $toolClass::JsonEncode($data, $jsonEncodeFlags);
 		ob_clean(); // remove any possible warnings to break client's `JSON.parse();`
@@ -169,7 +169,7 @@ trait Rendering {
 	 * @return void
 	 */
 	public function JsonpResponse ($data, $callbackParamName = 'callback', $terminate = TRUE, $jsonEncodeFlags = 0) {
-		/** @var \MvcCore\Tool<object>|string $toolClass */ 
+		/** @var \MvcCore\Tool|string $toolClass */ 
 		$toolClass = $this->application->GetToolClass();
 		$output = $toolClass::JsonEncode($data, $jsonEncodeFlags);
 		ob_clean(); // remove any possible warnings to break client's `JSON.parse();`
