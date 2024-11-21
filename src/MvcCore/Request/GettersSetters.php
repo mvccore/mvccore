@@ -827,27 +827,24 @@ trait GettersSetters {
 	/**
 	 * @inheritDoc
 	 * @see http://php.net/manual/en/function.htmlspecialchars.php
+	 * @see https://www.ascii-code.com/
 	 * @param  string $str
 	 * @return string
 	 */
 	public static function HtmlSpecialChars ($str) {
-		static $chars = [
-			// Base ASCII chars from 0 to 31:
-			"\x00"	=> '',	"\x08"	=> '',			"\x10"	=> '',	"\x18"	=> '',
-			"\x01"	=> '',	/*"\x09"	=> "\t",*/	"\x11"	=> '',	"\x19"	=> '',
-			"\x02"	=> '',	/*"\x0A"	=> "\n",*/	"\x12"	=> '',	"\x1A"	=> '',
-			"\x03"	=> '',	"\x0B"	=> '',			"\x13"	=> '',	"\x1B"	=> '',
-			"\x04"	=> '',	"\x0C"	=> '',			"\x14"	=> '',	"\x1C"	=> '',
-			"\x05"	=> '',	/*"\x0D"	=> "\r",*/	"\x15"	=> '',	"\x1D"	=> '',
-			"\x06"	=> '',	"\x0E"	=> '',			"\x16"	=> '',	"\x1E"	=> '',
-			"\x07"	=> '',	"\x0F"	=> '',			"\x17"	=> '',	"\x1F"	=> '',
-			// HTML special chars except `&`:
-			'"'=>'&quot;',
-			"'"=>'&apos;',
-			'<'=>'&lt;',
-			'>'=>'&gt;',
-			/*'&' => '&amp;',*/
-		];
-		return strtr($str, $chars);
+		return preg_replace_callback(
+			'/[\x00-\x20\x22\x27\x3C\x3E\x5C]/',
+			[get_called_class(), 'htmlSpecialCharsCallback'], 
+			$str
+		);
+	}
+
+	/**
+	 * Returm first array item encoded by `rawurlencode()`.
+	 * @param  array<int|string,mixed> $match
+	 * @return string
+	 */
+	protected static function htmlSpecialCharsCallback ($match) {
+		return '&#' . str_pad(ord($match[0]), 2, '0', STR_PAD_RIGHT) . ';';
 	}
 }
