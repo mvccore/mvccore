@@ -90,6 +90,16 @@ trait Content {
 
 	/**
 	 * @inheritDoc
+	 * @param  bool $bodySent 
+	 * @return \MvcCore\Response
+	 */
+	public function SetBodySent ($bodySent = TRUE) {
+		$this->bodySent = $bodySent;
+		return $this;
+	}
+
+	/**
+	 * @inheritDoc
 	 * @return \MvcCore\Response
 	 */
 	public function Send () {

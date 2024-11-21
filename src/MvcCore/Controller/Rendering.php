@@ -62,7 +62,9 @@ trait Rendering {
 					$sessionClass::SendRefreshedCsrfCookie();
 					$sessionClass::Close();
 				}
-				$this->response->SendHeaders();
+				$this->response
+					->SendHeaders()
+					->SetBodySent();
 				if ($this->request->GetMethod() === \MvcCore\IRequest::METHOD_HEAD) {
 					$this->dispatchMoveState(static::DISPATCH_STATE_RENDERED);
 					$this->Terminate();
