@@ -54,6 +54,16 @@ trait Dispatching {
 				unset($parentController->childControllers[$index]);
 		}
 	}
+	
+	/**
+	 * @inheritDoc
+	 * @return void
+	 */
+	public static function RemoveAllControllers () {
+		foreach (self::$allControllers as $controllerAndType)
+			static::RemoveController($controllerAndType[0]);
+		self::$allControllers = [];
+	}
 
 	/**
 	 * @inheritDoc

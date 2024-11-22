@@ -33,6 +33,12 @@ interface IDispatching {
 	public static function RemoveController (\MvcCore\IController $controller);
 
 	/**
+	 * Remove all controllers from dispatching process.
+	 * @return void
+	 */
+	public static function RemoveAllControllers ();
+
+	/**
 	 * Try to determinate `\MvcCore\Controller` instance from `debug_bactrace()`,
 	 * where was form created, if no form instance given into form constructor.
 	 * If no previous controller instance founded, `NULL` is returned.
