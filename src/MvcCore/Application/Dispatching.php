@@ -390,6 +390,7 @@ trait Dispatching {
 				->SetParam('message', $exceptionMessage, \MvcCore\IRequest::PARAM_TYPE_URL_REWRITE);
 			$this->response->SetCode($exceptionCode);
 			$this->controller = NULL;
+			\MvcCore\Controller::RemoveAllControllers();
 			try {
 				$this->CreateController(
 					$defaultCtrlFullName,
@@ -399,7 +400,7 @@ trait Dispatching {
 						$this->request->GetControllerName() . '/' . $this->request->GetActionName()
 					)
 				);
-				$this->controller->Dispatch(); // @phpstan-ignore-line
+				$this->controller->Dispatch($this->defaultControllerErrorActionName); // @phpstan-ignore-line
 			} catch (\Throwable $e2) {
 				$this->router->RemoveRoute(\MvcCore\IRouter::DEFAULT_ROUTE_NAME_NOT_FOUND);
 				if ($this->environment->IsDevelopment()) {
@@ -439,6 +440,7 @@ trait Dispatching {
 				->SetParam('message', $exceptionMessage, \MvcCore\IRequest::PARAM_TYPE_URL_REWRITE);
 			$this->response->SetCode(404);
 			$this->controller = NULL;
+			\MvcCore\Controller::RemoveAllControllers();
 			try {
 				$this->CreateController(
 					$defaultCtrlFullName,
@@ -448,7 +450,7 @@ trait Dispatching {
 						$this->request->GetControllerName() . '/' . $this->request->GetActionName()
 					)
 				);
-				$this->controller->Dispatch(); // @phpstan-ignore-line
+				$this->controller->Dispatch($this->defaultControllerNotFoundActionName); // @phpstan-ignore-line
 			} catch (\Throwable $e) {
 				$this->router->RemoveRoute(\MvcCore\IRouter::DEFAULT_ROUTE_NAME_NOT_FOUND);
 				if ($this->environment->IsDevelopment()) {
