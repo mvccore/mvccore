@@ -713,7 +713,7 @@ trait GettersSetters {
 	 */
 	public function GetRequestUrl ($rawInput = FALSE) {
 		if ($this->requestUrl === NULL)
-			$this->requestUrl = $this->GetBaseUrl() . $this->GetPath(TRUE);
+			$this->requestUrl = $this->GetBaseUrl() . $this->originalPath;
 		return $rawInput ? $this->requestUrl : static::HtmlSpecialChars($this->requestUrl);
 	}
 
