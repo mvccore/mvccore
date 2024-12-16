@@ -336,7 +336,12 @@ trait GettersSetters {
 	 * @param  \MvcCore\Controller|NULL $parentController
 	 * @return \MvcCore\Controller
 	 */
-	public function SetParentController (\MvcCore\IController $parentController = NULL) {
+	public function SetParentController (/*\MvcCore\IController*/ $parentController = NULL) {
+		if (
+			$parentController !== NULL && 
+			!($parentController instanceof \MvcCore\IController) // @phpstan-ignore-line
+		)
+			throw new \RuntimeException("Parent controller doesn't implement interface `\MvcCore\IController`.");
 		/** @var \MvcCore\Controller $parentController */
 		$this->parentController = $parentController;
 		return $this;
