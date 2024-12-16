@@ -377,6 +377,7 @@ trait Dispatching {
 		if (!$this->GetRequest()->IsCli() && $defaultCtrlFullName && $this->router !== NULL) {
 			$debugClass = $this->debugClass;
 			$viewClass = $this->viewClass;
+			$this->router->SetRequest($this->GetRequest());
 			$this->router->SetOrCreateDefaultRouteAsCurrent(
 				\MvcCore\IRouter::DEFAULT_ROUTE_NAME_ERROR,
 				$this->defaultControllerName,
