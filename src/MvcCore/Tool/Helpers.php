@@ -445,7 +445,7 @@ trait Helpers {
 					// path, query and no hash
 					$path = mb_substr($uriWithoutAuthority, 0, $qmPos);
 					if ($path !== '') $result['path'] = $path;
-					$result['query'] = trim(mb_substr($uriWithoutAuthority, $qmPos + 1), '&');
+					$result['query'] = mb_substr($uriWithoutAuthority, $qmPos + 1);
 				} else if (!$qmContained && $hashContained) { // @phpstan-ignore-line
 					// path, no query and hash
 					$path = mb_substr($uriWithoutAuthority, 0, $hashPos);
@@ -455,13 +455,21 @@ trait Helpers {
 					// path or no path, query and hash
 					$path = mb_substr($uriWithoutAuthority, 0, $qmPos);
 					if ($path !== '') $result['path'] = $path;
-					$result['query'] = trim(mb_substr($uriWithoutAuthority, $qmPos + 1, $hashPos - $qmPos - 1), '&');
+					$result['query'] = mb_substr($uriWithoutAuthority, $qmPos + 1, $hashPos - $qmPos - 1);
 					$result['fragment'] = mb_substr($uriWithoutAuthority, $hashPos + 1);
 				} else {
 					// path, no query and hash containing question mark
 					$path = mb_substr($uriWithoutAuthority, 0, $qmPos);
 					if ($path !== '') $result['path'] = $path;
 					$result['fragment'] = mb_substr($uriWithoutAuthority, $hashPos + 1);
+				}
+				if (isset($result['query'])) {
+					// convert `a=1&amp;b=2&amp;c=3` to `a=1&b=2&c=3`
+					$query = $result['query'];
+					$ampOrigCnt = mb_substr_count($query, '&');
+					$ampEscCnt = mb_substr_count($query, '&amp;');
+					if ($ampOrigCnt > 0 && $ampOrigCnt === $ampEscCnt)
+						$result['query'] = trim(str_replace('&amp;', '&', $query), '&');
 				}
 			}
 
