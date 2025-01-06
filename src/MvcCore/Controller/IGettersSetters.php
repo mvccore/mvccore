@@ -342,7 +342,7 @@ interface IGettersSetters {
 	 * @param  \MvcCore\Controller|NULL $parentController
 	 * @return \MvcCore\Controller
 	 */
-	public function SetParentController (\MvcCore\IController $parentController = NULL);
+	public function SetParentController (/*\MvcCore\IController*/ $parentController = NULL);
 
 	/**
 	 * Get all child controllers array, indexed by
