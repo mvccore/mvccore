@@ -36,8 +36,7 @@
 	},
 	"require-dev": {
 		"phpstan/phpstan": "^1.12.11",
-		"nette/tester": "<=2.4",
-		"tomflidr/tracy": "^2.7.4"
+		"nette/tester": "<=2.4"
 	},
 	"suggest": {
 		"mvccore/ext-debug-tracy": "MvcCore Extension - Debug - Tracy (tracy/tracy) - adapter for better development."
