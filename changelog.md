@@ -1,3 +1,2 @@
 ### Fixed
-- PHP 8.4 compatibility.
-- Removed dev dependency tomflidr/tracy.
+- Fixed PHP Attributes anotations default value in `\MvcCore\Tool` class.

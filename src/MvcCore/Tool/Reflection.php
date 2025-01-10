@@ -142,6 +142,8 @@ trait Reflection {
 	 */
 	public static function GetClassAttrsArgs ($classFullNameOrInstance, $attrsClassesOrDocsTags, $preferAttributes = NULL) {
 		$result = [];
+		if ($preferAttributes === NULL)
+			$preferAttributes = \MvcCore\Application::GetInstance()->GetAttributesAnotations();
 		$attrsOnly = $preferAttributes === TRUE;
 		$docsTagsOnly = $preferAttributes === FALSE;
 		$reflectionObject = new \ReflectionClass($classFullNameOrInstance);
@@ -175,6 +177,8 @@ trait Reflection {
 	 */
 	public static function GetMethodAttrsArgs ($classFullNameOrInstance, $methodName, $attrsClassesOrDocsTags, $preferAttributes = NULL) {
 		$result = [];
+		if ($preferAttributes === NULL)
+			$preferAttributes = \MvcCore\Application::GetInstance()->GetAttributesAnotations();
 		$attrsOnly = $preferAttributes === TRUE;
 		$docsTagsOnly = $preferAttributes === FALSE;
 		$reflectionObject = new \ReflectionMethod($classFullNameOrInstance, $methodName);
@@ -209,6 +213,8 @@ trait Reflection {
 	 */
 	public static function GetPropertyAttrsArgs ($classFullNameOrInstance, $propertyName, $attrsClassesOrDocsTags, $preferAttributes = NULL) {
 		$result = [];
+		if ($preferAttributes === NULL)
+			$preferAttributes = \MvcCore\Application::GetInstance()->GetAttributesAnotations();
 		$attrsOnly = $preferAttributes === TRUE;
 		$docsTagsOnly = $preferAttributes === FALSE;
 		$reflectionObject = new \ReflectionProperty($classFullNameOrInstance, $propertyName);
