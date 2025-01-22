@@ -459,15 +459,21 @@ trait Reflection {
 			foreach ($tagsContents as $tagContent) {
 				$classCtorParsed = FALSE;
 				$localResult = [];
-				if (preg_match_all("#^(\s*)([\\\\A-Za-z0-9]*)?\((.*)\)(\s*);?(\s*)$#s", $tagContent, $matches)) {
+				if (preg_match_all("#^(\s*)([\\\\_A-Za-z0-9]*)?\((.*)\)(\s*);?(\s*)$#s", $tagContent, $matches)) {
 					$className = $matches[2][0];
 					if ($className !== '') 
 						$localResult[] = $className;
 					$jsonStr = NULL;
 					try {
 						$jsonStr = str_replace(["\n", "\r", "\t"], "", $matches[3][0]);
-						$parsedData = static::JsonDecode($jsonStr);
-						$localResult[] = $parsedData;
+						$parsedData = static::JsonDecode($jsonStr, JSON_OBJECT_AS_ARRAY);
+						if (count($localResult) > 0) {
+							// if there is special class defined - there is possible to recognize param names
+							$localResult[] = $parsedData;
+						} else {
+							// if there is only PHP Docs tag with JSON object - return directly this as array
+							$localResult = $parsedData;
+						}
 						$classCtorParsed = TRUE;
 					} catch (\Exception $e) {
 						if ($reflectionObject instanceof \ReflectionClass) {

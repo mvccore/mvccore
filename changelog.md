@@ -1,2 +1,2 @@
 ### Fixed
-- Fixed PHP Attributes anotations default value in `\MvcCore\Tool` class.
+- Fixed older PHP Docs parsing, when used complex value described by JSON.
