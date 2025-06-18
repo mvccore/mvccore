@@ -1,2 +1,2 @@
 ### Fixed
-- Fixed older PHP Docs parsing, when used complex value described by JSON.
+- PHP 8.4 compatibility.
