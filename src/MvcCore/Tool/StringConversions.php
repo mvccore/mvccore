@@ -58,7 +58,7 @@ trait StringConversions {
 	 */
 	public static function GetPascalCaseFromDashed ($dashed) {
 		$a = explode('/', $dashed);
-		if (PHP_VERSION_ID < 50432) {
+		if (PHP_VERSION_ID < 50600) {
 			foreach ($a as & $b) $b = ucfirst(str_replace('-', '', static::upperCaseWords($b, '-')));
 		} else {
 			foreach ($a as & $b) $b = ucfirst(str_replace('-', '', ucwords($b, '-')));

@@ -1,2 +1,2 @@
 ### Fixed
-- PHP 8.4 compatibility.
+- `\MvcCore\Tool::GetPascalCaseFromDashed()` in PHP<=5.6,
