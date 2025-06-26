@@ -67,6 +67,31 @@ trait Dispatching {
 
 	/**
 	 * @inheritDoc
+	 * @return string|NULL
+	 */
+	public static function GetCallerControllerClass () {
+		$result = NULL;
+		$backtraceItems = debug_backtrace(DEBUG_BACKTRACE_PROVIDE_OBJECT | DEBUG_BACKTRACE_IGNORE_ARGS);
+		if (count($backtraceItems) < 3) return $result;
+		$calledClass = get_called_class();
+		foreach ($backtraceItems as $backtraceItem) {
+			if (!isset($backtraceItem['class'])) continue;
+			$class = $backtraceItem['class'];
+			$function = $backtraceItem['function'];
+			if (
+				$class !== $calledClass && 
+				$function !== __FUNCTION__ &&
+				!is_subclass_of($calledClass, $class)
+			) {
+				$result = $class;
+				break;
+			}
+		}
+		return $result;
+	}
+
+	/**
+	 * @inheritDoc
 	 * @return \MvcCore\IController|NULL
 	 */
 	public static function GetCallerControllerInstance () {

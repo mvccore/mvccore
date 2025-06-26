@@ -39,8 +39,18 @@ interface IDispatching {
 	public static function RemoveAllControllers ();
 
 	/**
+	 * Try to determinate `\MvcCore\Controller` class name from `debug_bactrace()`,
+	 * where was controller subclass created, if no controller instance given 
+	 * into subclass constructor.
+	 * If no previous controller instance found, `NULL` is returned.
+	 * @return string|NULL
+	 */
+	public static function GetCallerControllerClass ();
+
+	/**
 	 * Try to determinate `\MvcCore\Controller` instance from `debug_bactrace()`,
-	 * where was form created, if no form instance given into form constructor.
+	 * where was controller subclass created, if no controller instance given 
+	 * into subclass constructor.
 	 * If no previous controller instance founded, `NULL` is returned.
 	 * @return \MvcCore\IController|NULL
 	 */
