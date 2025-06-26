@@ -424,12 +424,19 @@ trait InternalInits {
 				$requestUri = mb_substr($requestUri, 0, $questionMarkPos);
 
 			// try to complete redirected url if any:
+			$path = isset($this->globalServer['PATH']) // advanced $PATH info defined in server config
+				? $this->globalServer['PATH']
+				: NULL;
 			$redirectPath = isset($this->globalServer['REDIRECT_REDIRECT_PATH']) 
 				? $this->globalServer['REDIRECT_REDIRECT_PATH'] 
 				: (isset($this->globalServer['REDIRECT_PATH']) 
 					? $this->globalServer['REDIRECT_PATH'] 
 					: NULL
 				);
+			// sometimes REDIRECT_PATH could contain the value as PATH defined 
+			// from server configuration to pass advanced $PATH info, but that's not what we want:
+			if ($redirectPath === $path && $redirectPath !== NULL) 
+				$redirectPath = NULL;
 			if ($redirectPath !== NULL) {
 				// usually cases with script requests paths like `/index.php?action=submit`
 				$redirectPath = rawurldecode($redirectPath);
