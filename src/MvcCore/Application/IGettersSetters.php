@@ -272,7 +272,7 @@ interface IGettersSetters {
 
 	/**
 	 * Get path from app root to application controllers base dir,
-	 * `"~/Var/Controllers"` by default. Absolute path is completed from app root.
+	 * `"~/App/Controllers"` by default. Absolute path is completed from app root.
 	 * @param  bool $absolute
 	 * @return string
 	 */
@@ -280,7 +280,7 @@ interface IGettersSetters {
 
 	/**
 	 * Get path from app root to application view components base dir,
-	 * `"~/Var/Views"` by default. Absolute path is completed from app root.
+	 * `"~/App/Views"` by default. Absolute path is completed from app root.
 	 * @param  bool $absolute
 	 * @return string
 	 */
@@ -288,7 +288,7 @@ interface IGettersSetters {
 
 	/**
 	 * Get path from app root to application view helpers base dir,
-	 * `"~/Var/Views/Helpers"` by default. Absolute path is completed from app root.
+	 * `"~/App/Views/Helpers"` by default. Absolute path is completed from app root.
 	 * @param  bool $absolute
 	 * @return string
 	 */
@@ -296,7 +296,7 @@ interface IGettersSetters {
 
 	/**
 	 * Get path from app root to application view layouts base dir,
-	 * `"~/Var/Views/Layouts"` by default. Absolute path is completed from app root.
+	 * `"~/App/Views/Layouts"` by default. Absolute path is completed from app root.
 	 * @param  bool $absolute
 	 * @return string
 	 */
@@ -304,7 +304,7 @@ interface IGettersSetters {
 
 	/**
 	 * Get path from app root to application view scripts base dir,
-	 * `"~/Var/Views/Scripts"` by default. Absolute path is completed from app root.
+	 * `"~/App/Views/Scripts"` by default. Absolute path is completed from app root.
 	 * @param  bool $absolute
 	 * @return string
 	 */
@@ -312,7 +312,7 @@ interface IGettersSetters {
 
 	/**
 	 * Get path from app root to form view scripts base dir,
-	 * `"~/Var/Views/Forms"` by default. Absolute path is completed from app root.
+	 * `"~/App/Views/Forms"` by default. Absolute path is completed from app root.
 	 * This property is used only in forms extensions.
 	 * @param  bool $absolute
 	 * @return string
@@ -321,7 +321,7 @@ interface IGettersSetters {
 
 	/**
 	 * Get path from app root to form field view scripts base dir,
-	 * `"~/Var/Views/Forms/Fields"` by default. Absolute path is completed from app root.
+	 * `"~/App/Views/Forms/Fields"` by default. Absolute path is completed from app root.
 	 * This property is used only in forms extensions.
 	 * @param  bool $absolute
 	 * @return string

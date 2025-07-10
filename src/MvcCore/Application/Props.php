@@ -456,42 +456,42 @@ trait Props {
 
 	/**
 	 * Relative path from app root to application controllers base dir,
-	 * `"~/Var/Controllers"` by default.
+	 * `"~/App/Controllers"` by default.
 	 * @var string
 	 */
 	protected $pathControllers = '~/App/Controllers';
 
 	/**
 	 * Relative path from app root to application view components base dir,
-	 * `"~/Var/Views"` by default.
+	 * `"~/App/Views"` by default.
 	 * @var string
 	 */
 	protected $pathViews = '~/App/Views';
 
 	/**
 	 * Relative path from app root to application view helpers base dir,
-	 * `"~/Var/Views/Helpers"` by default.
+	 * `"~/App/Views/Helpers"` by default.
 	 * @var string
 	 */
 	protected $pathViewHelpers = '~/App/Views/Helpers';
 
 	/**
 	 * Relative path from app root to application view layouts base dir,
-	 * `"~/Var/Views/Layouts"` by default.
+	 * `"~/App/Views/Layouts"` by default.
 	 * @var string
 	 */
 	protected $pathViewLayouts = '~/App/Views/Layouts';
 
 	/**
 	 * Relative path from app root to application view scripts base dir,
-	 * `"~/Var/Views/Scripts"` by default.
+	 * `"~/App/Views/Scripts"` by default.
 	 * @var string
 	 */
 	protected $pathViewScripts = '~/App/Views/Scripts';
 
 	/**
 	 * Relative path from app root to form view scripts base dir,
-	 * `"~/Var/Views/Forms"` by default.
+	 * `"~/App/Views/Forms"` by default.
 	 * This property is used only in forms extensions.
 	 * @var string
 	 */
@@ -499,7 +499,7 @@ trait Props {
 
 	/**
 	 * Relative path from app root to form field view scripts base dir,
-	 * `"~/Var/Views/Forms/Fields"` by default.
+	 * `"~/App/Views/Forms/Fields"` by default.
 	 * This property is used only in forms extensions.
 	 * @var string
 	 */
