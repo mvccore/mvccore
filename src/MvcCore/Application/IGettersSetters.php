@@ -248,6 +248,19 @@ interface IGettersSetters {
 	public function GetPathDocRoot ();
 
 	/**
+	 * Get path into `www` sub-directory in composer package root directory (composer package, 
+	 * where is dispatched main controller) and where are placed static files for this package. 
+	 * 
+	 * This value is completed in runtime. `NULL` by default.
+	 * 
+	 * Composer package has to have simillar structure as main application module.
+	 * 
+	 * Example: `"/var/www/html/my-project/vendor/org-name/module-name/src/www"`
+	 * @return string
+	 */
+	public function GetPathDocRootVendor ();
+
+	/**
 	 * Get application PHP files path. This directory always contains 
 	 * `Controllers`, `Models`, `Views` and other application main directories.
 	 * 

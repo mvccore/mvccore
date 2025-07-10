@@ -351,6 +351,19 @@ trait GettersSetters {
 		}
 		return $this->pathDocRoot;
 	}
+	
+	/**
+	 * @inheritDoc
+	 * @return string
+	 */
+	public function GetPathDocRootVendor () {
+		if ($this->pathDocRootVendor === NULL) {
+			if ($this->vendorAppDispatch === NULL)
+				$this->initVendorProps();
+			$this->pathDocRootVendor = $this->pathAppRootVendor . '/' . static::getPathDocRootDirName();
+		}
+		return $this->pathDocRootVendor;
+	}
 
 	/**
 	 * @inheritDoc

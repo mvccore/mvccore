@@ -423,6 +423,19 @@ trait Props {
 	 * @var string|NULL
 	 */
 	protected $pathDocRoot = NULL;
+
+	/**
+	 * Path into `www` sub-directory in composer package root directory (composer package, 
+	 * where is dispatched main controller) and where are placed static files for this package. 
+	 * 
+	 * This value is completed in runtime. `NULL` by default.
+	 * 
+	 * Composer package has to have simillar structure as main application module.
+	 * 
+	 * Example: `"/var/www/html/my-project/vendor/org-name/module-name/src/www"`
+	 * @var string|NULL
+	 */
+	protected $pathDocRootVendor = NULL;
 	
 	/**
 	 * Store with application relative and absolute paths by path type.
