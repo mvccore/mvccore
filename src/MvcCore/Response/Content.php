@@ -186,9 +186,7 @@ trait Content {
 		$preSentBodyHandlers = $app->__get('preSentBodyHandlers');
 		$app->ProcessCustomHandlers($preSentBodyHandlers);
 		echo $this->body;
-		if (!$this->getOutputCompression())
-			while (ob_get_level() && @ob_end_flush());
-		flush();
+		while (@ob_end_flush());
 		$this->bodySent = TRUE;
 		return $this;
 	}
