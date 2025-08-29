@@ -98,27 +98,6 @@ trait Helpers {
 	}
 
 	/**
-	 * @inheritDoc
-	 * @return bool|NULL
-	 */
-	public function ValidateCsrfProtection () {
-		if (($this->csrfProtection & \MvcCore\IApplication::CSRF_PROTECTION_COOKIE) == 0) {
-			return NULL;
-		} else {
-			$sessionClass = $this->sessionClass;
-			$sessionNamespace = $sessionClass::GetCsrfNamespace();
-			$res = $this->GetResponse();
-			$csrfCookie = $this->GetRequest()->GetCookie($res::GetCsrfProtectionCookieName());
-			if ($sessionNamespace->secret === $csrfCookie) {
-				return TRUE;
-			} else {
-				$this->ProcessCustomHandlers($this->csrfErrorHandlers);
-				return FALSE;
-			}
-		}
-	}
-
-	/**
 	 * Initialize vendor properties by dispatched main controller.
 	 * If dispatched main controller is located in composer package,
 	 * property `$app->vendorAppDispatch` is set to `TRUE` and there 

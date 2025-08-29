@@ -59,10 +59,10 @@ interface IConstants {
 	const COOKIE_SESSION_ID_NONSECURE_DEFAULT_NAME = '__MCID';
 
 	/**
-	 * Default CSRF cookie name: `__MCP`.
+	 * Default security token cookie name: `__MCP`.
 	 * @var string
 	 */
-	const COOKIE_CSRF_DEFAULT_NAME = '__MCP';
+	const COOKIE_SECURITY_DEFAULT_NAME = '__MCS';
 
 
 	/**

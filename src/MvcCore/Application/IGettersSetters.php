@@ -15,6 +15,7 @@ namespace MvcCore\Application;
 
 /**
  * @phpstan-type CustomHandlerCallable callable(\MvcCore\IRequest, \MvcCore\IResponse): (false|void)
+ * @phpstan-type CustomSecurityHandlerCallable callable(\MvcCore\IRequest, \MvcCore\IResponse, ?\MvcCore\Ext\IForm): (false|void)
  */
 interface IGettersSetters {
 	
@@ -43,18 +44,21 @@ interface IGettersSetters {
 	
 	
 	/**
-	 * Get CSRF protection mode. Only one mode could be used.
-	 * Default protection is by hidden form input for older browsers
-	 * because of maximum compatibility.
+	 * Get security protection mode. Both modes could be used together.
+	 * Default protection is to generate hidden form input with token 
+	 * for older browsers because of maximum compatibility.
 	 * Modes:
-	 * - `\MvcCore\IApplication::CSRF_DISABLED`              - both modes disabled.
-	 * - `\MvcCore\IApplication::CSRF_PROTECTION_FORM_INPUT` - enabled mode for older 
-	 *                                                         browser by form hidden input.
-	 * - `\MvcCore\IApplication::CSRF_PROTECTION_COOKIE`     - enabled mode for newer
-	 *                                                         browsers by http cookie.
+	 * - `\MvcCore\IApplication::SECURITY_PROTECTION_DISABLED`
+	 *   - Both modes disabled.
+	 * - `\MvcCore\IApplication::SECURITY_PROTECTION_FORM_TOKEN`
+	 *   - Enabled mode for older browsers to generate form hidden 
+	 *     input with CSRF token. Default value.
+	 * - `\MvcCore\IApplication::SECURITY_PROTECTION_COOKIE`
+	 *   - Enabled mode for modern browsers to send 
+	 *     httpOnly SameSite cookie.
 	 * @return int
 	 */
-	public function GetCsrfProtection ();
+	public function GetSecurityProtection ();
 
 	/**
 	 * Get prefered PHP classes and properties anontation preference.
@@ -427,19 +431,22 @@ interface IGettersSetters {
 
 	
 	/**
-	 * Set CSRF protection mode. Only one mode could be used.
-	 * Default protection is by hidden form input for older browsers
-	 * because of maximum compatibility.
+	 * Set security protection mode. Both modes could be used together.
+	 * Default protection is to generate hidden form input with token 
+	 * for older browsers because of maximum compatibility.
 	 * Modes:
-	 * - `\MvcCore\IApplication::CSRF_DISABLED`              - both modes disabled.
-	 * - `\MvcCore\IApplication::CSRF_PROTECTION_FORM_INPUT` - enabled mode for older 
-	 *                                                         browser by form hidden input.
-	 * - `\MvcCore\IApplication::CSRF_PROTECTION_COOKIE`     - enabled mode for newer
-	 *                                                         browsers by http cookie.
-	 * @param  int $csrfProtection
+	 * - `\MvcCore\IApplication::SECURITY_PROTECTION_DISABLED`
+	 *   - Both modes disabled.
+	 * - `\MvcCore\IApplication::SECURITY_PROTECTION_FORM_TOKEN`
+	 *   - Enabled mode for older browsers to generate form hidden 
+	 *     input with CSRF token.
+	 * - `\MvcCore\IApplication::SECURITY_PROTECTION_COOKIE`
+	 *   - Enabled mode for modern browsers to send 
+	 *     httpOnly SameSite cookie.
+	 * @param  int $securityProtection
 	 * @return \MvcCore\Application
 	 */
-	public function SetCsrfProtection ($csrfProtection = \MvcCore\IApplication::CSRF_PROTECTION_COOKIE);
+	public function SetSecurityProtection ($securityProtection = \MvcCore\IApplication::SECURITY_PROTECTION_COOKIE);
 
 	/**
 	 * Set prefered PHP classes and properties anontation preference.
@@ -975,24 +982,26 @@ interface IGettersSetters {
 	public function AddPostSessionStartHandler (callable $handler, $priorityIndex = NULL);
 
 	/**
-	 * Add CSRF protection error handler into handlers queue 
-	 * to process them when any CSRF calidation error happends.
-	 * Callable should be void and it's params should be two with following types:
+	 * Add security error handler into handlers queue to process them 
+	 * when any CSRF attack or SESSION fixation atack detected.
+	 * Callable should be void and it's params should be 2 or 3 with following types:
 	 * - `\MvcCore\Request`
 	 * - `\MvcCore\Response`
+	 * - `?\MvcCore\Ext\Form`
 	 * Example:
 	 * ```
-	 *   \MvcCore\Application::GetInstance()->AddCsrfErrorHandler(function(
+	 *   \MvcCore\Application::GetInstance()->AddSecurityErrorHandler(function(
 	 *       \MvcCore\Request $request,
-	 *       \MvcCore\Response $response
+	 *       \MvcCore\Response $response,
+	 *       ?\MvcCore\Ext\IForm $form = NULL
 	 *   ) {
-	 *       // redirect user to homepage or sign out authenticated user.
+	 *       // redirect user or sign out authenticated user.
 	 *   });
 	 * ```
-	 * @param  CustomHandlerCallable $handler
-	 * @param  int|NULL              $priorityIndex
+	 * @param  CustomSecurityHandlerCallable $handler
+	 * @param  ?int                          $priorityIndex
 	 * @return \MvcCore\Application
 	 */
-	public function AddCsrfErrorHandler (callable $handler, $priorityIndex = NULL);
+	public function AddSecurityErrorHandler (callable $handler, $priorityIndex = NULL);
 
 }

@@ -21,6 +21,7 @@ namespace MvcCore\Application;
  *   to be changed any time (request class, response class, debug class, etc.).
  * @mixin \MvcCore\Application
  * @phpstan-type CustomHandlerCallable callable(\MvcCore\IRequest, \MvcCore\IResponse): (false|void)
+ * @phpstan-type CustomSecurityHandlerCallable callable(\MvcCore\IRequest, \MvcCore\IResponse, ?\MvcCore\Ext\IForm): (false|void)
  */
 trait GettersSetters {
 
@@ -62,8 +63,8 @@ trait GettersSetters {
 	 * @inheritDoc
 	 * @return int
 	 */
-	public function GetCsrfProtection () {
-		return $this->csrfProtection;
+	public function GetSecurityProtection () {
+		return $this->securityProtection;
 	}
 
 	/**
@@ -291,7 +292,7 @@ trait GettersSetters {
 
 	/**
 	 * @inheritDoc
-	 * @return string|NULL
+	 * @return ?string
 	 */
 	public function GetPathAppRootVendor () {
 		if ($this->vendorAppDispatch === NULL)
@@ -580,11 +581,11 @@ trait GettersSetters {
 	
 	/**
 	 * @inheritDoc
-	 * @param  int $csrfProtection
+	 * @param  int $securityProtection
 	 * @return \MvcCore\Application
 	 */
-	public function SetCsrfProtection ($csrfProtection = \MvcCore\IApplication::CSRF_PROTECTION_COOKIE) {
-		$this->csrfProtection = $csrfProtection;
+	public function SetSecurityProtection ($securityProtection = \MvcCore\IApplication::SECURITY_PROTECTION_COOKIE) {
+		$this->securityProtection = $securityProtection;
 		return $this;
 	}
 
@@ -1036,11 +1037,11 @@ trait GettersSetters {
 
 	/**
 	 * @inheritDoc
-	 * @param  CustomHandlerCallable $handler
-	 * @param  int|NULL              $priorityIndex
+	 * @param  CustomSecurityHandlerCallable $handler
+	 * @param  ?int                          $priorityIndex
 	 * @return \MvcCore\Application
 	 */
-	public function AddCsrfErrorHandler (callable $handler, $priorityIndex = NULL) {
-		return $this->setHandler($this->csrfErrorHandlers, $handler, $priorityIndex);
+	public function AddSecurityErrorHandler (callable $handler, $priorityIndex = NULL) {
+		return $this->setHandler($this->securityErrorHandlers, $handler, $priorityIndex);
 	}
 }

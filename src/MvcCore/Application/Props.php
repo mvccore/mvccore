@@ -21,6 +21,7 @@ namespace MvcCore\Application;
  *   to be changed any time (request class, response class, debug class, etc.).
  * @mixin \MvcCore\Application
  * @phpstan-type CustomHandlerCallable callable(\MvcCore\IRequest, \MvcCore\IResponse): (false|void)
+ * @phpstan-type CustomSecurityHandlerCallable callable(\MvcCore\IRequest, \MvcCore\IResponse, ?\MvcCore\Ext\IForm): (false|void)
  * @phpstan-type CustomHandlerRecord array{0: bool, 1: CustomHandlerCallable}
  */
 trait Props {
@@ -58,18 +59,21 @@ trait Props {
 	protected $vendorAppDispatch = NULL;
 
 	/**
-	 * CSRF protection mode. Only one mode could be used.
-	 * Default protection is by hidden form input for older browsers
-	 * because of maximum compatibility.
+	 * Security protection mode. Both modes could be used together.
+	 * Default protection is to generate hidden form input with token 
+	 * for older browsers because of maximum compatibility.
 	 * Modes:
-	 * - `\MvcCore\IApplication::CSRF_DISABLED`              - both modes disabled.
-	 * - `\MvcCore\IApplication::CSRF_PROTECTION_FORM_INPUT` - enabled mode for older 
-	 *                                                         browser by form hidden input.
-	 * - `\MvcCore\IApplication::CSRF_PROTECTION_COOKIE`     - enabled mode for newer
-	 *                                                         browsers by http cookie.
+	 * - `\MvcCore\IApplication::SECURITY_PROTECTION_DISABLED`
+	 *   - Both modes disabled.
+	 * - `\MvcCore\IApplication::SECURITY_PROTECTION_FORM_TOKEN`
+	 *   - Enabled mode for older browsers to generate form hidden 
+	 *     input with CSRF token. Default value.
+	 * - `\MvcCore\IApplication::SECURITY_PROTECTION_COOKIE`
+	 *   - Enabled mode for modern browsers to send 
+	 *     httpOnly SameSite cookie.
 	 * @var int
 	 */
-	protected $csrfProtection = \MvcCore\IApplication::CSRF_PROTECTION_FORM_INPUT;
+	protected $securityProtection = \MvcCore\IApplication::SECURITY_PROTECTION_FORM_TOKEN;
 
 	/**
 	 * Prefered PHP classes and properties anontation.
@@ -283,22 +287,24 @@ trait Props {
 	protected $postSessionStartHandlers = [];
 	
 	/**
-	 * CSRF protection error custom calls storage.
-	 * Params in `callable` should be two with following types:
+	 * Security error custom calls storage.
+	 * Params in `callable` should be 2 or 3 with following types:
 	 * - `\MvcCore\Request`
 	 * - `\MvcCore\Response`
+	 * - `\MvcCore\Ext\Form`
 	 * Example:
 	 * ```
-	 * \MvcCore\Application::GetInstance()->AddCsrfErrorHandlers(function(
+	 * \MvcCore\Application::GetInstance()->AddSecurityErrorHandlers(function(
 	 *       \MvcCore\Request $request,
-	 *       \MvcCore\Response $response
+	 *       \MvcCore\Response $response,
+	 *       ?\MvcCore\Ext\IForm $form = NULL
 	 *   ) {
 	 *       $request->customVar = 'custom_value';
 	 *   });
 	 * ```
-	 * @var array<int, array<int, CustomHandlerRecord>>
+	 * @var array<int, array<int, CustomSecurityHandlerCallable>>
 	 */
-	protected $csrfErrorHandlers = [];
+	protected $securityErrorHandlers = [];
 
 
 	/**

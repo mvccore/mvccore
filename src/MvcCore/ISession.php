@@ -18,7 +18,8 @@ namespace MvcCore;
  * - Safe start (only once)
  *   - By `\MvcCore\Session::Start()`
  *     - Called by `\MvcCore\Application::GetInstance()->SessionStart();`
- *       - Called by `\MvcCore\Controller::Init();`.
+ *       - Called by `\MvcCore\Controller::Init();`
+ *     - Or called by user authentication over method `\MvcCore\Session::GetNamespace()`.
  * - Session writing and closing at request end:
  *   - In `\MvcCore\Session::Close()`
  *   - Called over `register_shutdown_function()`
@@ -31,6 +32,7 @@ interface	ISession
 extends		\MvcCore\Session\IConstants,
 			\MvcCore\Session\IStarting,
 			\MvcCore\Session\IMetaData,
+			\MvcCore\Session\ISecurity,
 			\MvcCore\Session\INamespaceMethods,
 			\MvcCore\Session\IMagicMethods,
 			\MvcCore\Session\IClosing {

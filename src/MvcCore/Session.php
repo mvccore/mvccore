@@ -26,6 +26,7 @@ implements	\Iterator,
 	use \MvcCore\Session\Props;
 	use \MvcCore\Session\Starting;
 	use \MvcCore\Session\MetaData;
+	use \MvcCore\Session\Security;
 	use \MvcCore\Session\Closing;
 	use \MvcCore\Session\NamespaceMethods;
 	use \MvcCore\Session\MagicMethods;

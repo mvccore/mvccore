@@ -38,18 +38,19 @@ interface IClosing {
 	public static function GetSessionMaxTime ();
 
 	/**
-	 * Send `__MCP` http(s) cookie with CSRF protection secret before response body is sent.
-	 * This function is always called by `\MvcCore\Application::Terminate();` at the request end.
+	 * Send `__MCS` http(s) cookie as security protection againts session fixation
+	 * and CSRF atacks before response body is sent. This function is always 
+	 * called by `\MvcCore\Application::Terminate();` at the request end.
 	 * @return void
 	 */
-	public static function SendRefreshedCsrfCookie ();
+	public static function SendSecurityCookie ();
 
 	/**
-	 * Get CSRF protection cookie expiration in seconds, `0` by default,
+	 * Get security protection cookie expiration in seconds, `0` by default,
 	 * means "until the browser is closed". If there is found any Authentication 
 	 * class installed, result is returned by authorization expiration.
 	 * @return int
 	 */
-	public static function GetSessionCsrfMaxTime ();
+	public static function GetSessionSecurityMaxTime ();
 
 }

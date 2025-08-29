@@ -49,10 +49,10 @@ trait PropsGettersSetters {
 	];
 	
 	/**
-	 * CSRF protection cookie name. `__MCP` by default.
+	 * Security cookie name. `__MCS` by default.
 	 * @var string
 	 */
-	protected static $csrfProtectionCookieName = \MvcCore\IResponse::COOKIE_CSRF_DEFAULT_NAME;
+	protected static $securityCookieName = \MvcCore\IResponse::COOKIE_SECURITY_DEFAULT_NAME;
 
 	/**
 	 * Response HTTP protocol version by `$_SERVER['SERVER_PROTOCOL']`.
@@ -145,17 +145,17 @@ trait PropsGettersSetters {
 	 * @inheritDoc
 	 * @return string
 	 */
-	public static function GetCsrfProtectionCookieName () {
-		return static::$csrfProtectionCookieName;
+	public static function GetSecurityCookieName () {
+		return static::$securityCookieName;
 	}
 	
 	/**
 	 * @inheritDoc
-	 * @param  string $csrfProtectionCookieName 
+	 * @param  string $securityCookieName 
 	 * @return string
 	 */
-	public static function SetCsrfProtectionCookieName ($csrfProtectionCookieName) {
-		return static::$csrfProtectionCookieName = $csrfProtectionCookieName;
+	public static function SetSecurityCookieName ($securityCookieName) {
+		return static::$securityCookieName = $securityCookieName;
 	}
 	
 	/**
@@ -233,7 +233,7 @@ trait PropsGettersSetters {
 	public function GetCode () {
 		if ($this->code === NULL) {
 			$phpCode = http_response_code();
-			$this->code = $phpCode === FALSE ? \MvcCore\IResponse::OK : $phpCode;
+			$this->code = $phpCode === FALSE ? \MvcCore\Response\IConstants::OK : $phpCode;
 		}
 		return $this->code;
 	}

@@ -24,17 +24,17 @@ interface IGettersSetters {
 	public static function SetSessionIdCookieNames ($secureConnCookieName, $nonSecureConnCookieName);
 
 	/**
-	 * Get CSRF protection cookie name. `__MCP` by default.
+	 * Get security protection cookie name. `__MCS` by default.
 	 * @return string
 	 */
-	public static function GetCsrfProtectionCookieName ();
+	public static function GetSecurityCookieName ();
 	
 	/**
-	 * Set CSRF protection cookie name. `__MCP` by default.
-	 * @param  string $csrfProtectionCookieName 
+	 * Set security protection cookie name. `__MCS` by default.
+	 * @param  string $securityCookieName 
 	 * @return string
 	 */
-	public static function SetCsrfProtectionCookieName ($csrfProtectionCookieName);
+	public static function SetSecurityCookieName ($securityCookieName);
 
 	/**
 	 * Get HTTP response headers names, which are allowed to use multiple times.

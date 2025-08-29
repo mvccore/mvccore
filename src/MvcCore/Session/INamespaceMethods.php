@@ -58,6 +58,6 @@ interface INamespaceMethods {
 	 * Return CSRF protection session namespace with secret hash.
 	 * @return \MvcCore\Session
 	 */
-	public static function GetCsrfNamespace ();
+	public static function GetSecurityNamespace ();
 
 }

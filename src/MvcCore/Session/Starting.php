@@ -13,9 +13,12 @@
 
 namespace MvcCore\Session;
 
+use \MvcCore\Response\IConstants as ResConsts;
+
 /**
  * @mixin \MvcCore\Session
  * @phpstan-type SessionOptions array{"cookie_lifetime":int,"cookie_secure":bool,"cookie_httponly":true,"cookie_domain":string,"cookie_path":string,"cookie_samesite":?string}
+ * @phpstan-type SessionSecret array{"0":string,"1":int}
  */
 trait Starting {
 
@@ -41,6 +44,7 @@ trait Starting {
 		static::$sessionMaxTime = static::$sessionStartTime;
 		static::setUpMeta();
 		static::setUpData($req);
+		static::setUpSecurity();
 		// no magic in `__get()`, just get what we know it is there:
 		$postSessionStartHandlers = $app->__get('postSessionStartHandlers');
 		if (count($postSessionStartHandlers) > 0 && !$app->ProcessCustomHandlers($postSessionStartHandlers))
@@ -55,6 +59,24 @@ trait Starting {
 		return static::$sessionStartTime;
 	}
 
+	/**
+	 * Call PHP `session_regenerate_id(TRUE)` to move session data into new session.
+	 * Drop all data from previous session. Start session if necessary.
+	 * Called in user login, user logout, sometimes by form submit, when it's 
+	 * minimum time, sometimes by any request, when maximum time hs been spent.
+	 * @inheritDoc
+	 * @return bool
+	 */
+	public static function RegenerateSessionId () {
+		if (static::$regenerated)
+			return TRUE;
+		if (!static::GetStarted()) {
+			$app = self::$app ?: (self::$app = \MvcCore\Application::GetInstance()); // @phpstan-ignore-line
+			$app->SessionStart();
+		}
+		return static::$regenerated = session_regenerate_id(TRUE);
+	}
+	
 	/**
 	 * @inheritDoc
 	 * @return bool
@@ -131,7 +153,7 @@ trait Starting {
 			/** @var ?string $sameSite */
 			$sameSite = $sessionCookieParamsDefault->samesite;
 			if ($sameSite === '' || $sameSite === NULL)
-				$sameSite = \MvcCore\IResponse::COOKIE_SAMESITE_LAX;
+				$sameSite = ResConsts::COOKIE_SAMESITE_LAX;
 			$sessionStartOptions['cookie_samesite'] = $sameSite;
 		}
 		return $sessionStartOptions;

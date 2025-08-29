@@ -26,8 +26,10 @@ trait NamespaceMethods {
 	public static function GetNamespace (
 		$name = \MvcCore\ISession::DEFAULT_NAMESPACE_NAME
 	) {
-		if (!static::GetStarted())
-			static::Start();
+		if (!static::GetStarted()) {
+			$app = self::$app ?: (self::$app = \MvcCore\Application::GetInstance()); // @phpstan-ignore-line
+			$app->SessionStart();
+		}
 		if (!isset(static::$instances[$name])) {
 			/** @var \MvcCore\Session $instance */
 			$instance = new static(); /** @phpstan-ignore-line */
@@ -103,11 +105,11 @@ trait NamespaceMethods {
 	 * @inheritDoc
 	 * @return \MvcCore\Session
 	 */
-	public static function GetCsrfNamespace () {
-		$csrfExpiration = static::GetSessionCsrfMaxTime();
-		$namespaceName = "\\" . get_called_class() . "\\Csrf";
+	public static function GetSecurityNamespace () {
+		$securityExpiration = static::GetSessionSecurityMaxTime();
+		$namespaceName = "\\" . get_called_class() . "\\Security";
 		$sessionNamespace = static::GetNamespace($namespaceName);
-		$sessionNamespace->SetExpirationSeconds($csrfExpiration);
+		$sessionNamespace->SetExpirationSeconds($securityExpiration);
 		return $sessionNamespace;
 	}
 }

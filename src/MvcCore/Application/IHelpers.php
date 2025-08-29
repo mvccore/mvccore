@@ -53,13 +53,4 @@ interface IHelpers {
 	 */
 	public function GetVendorAppDispatch ();
 
-	/**
-	 * Validate CSRF protection by http(s) cookie and session secret value.
-	 * If CSRF protection is not enabled in cookie mode, return `NULL`.
-	 * If protection validation is enabled and validated successfully,
-	 * return `TRUE`, if validation fails, return `FALSE`.
-	 * @inheritDoc
-	 * @return bool|NULL
-	 */
-	public function ValidateCsrfProtection ();
 }

@@ -73,20 +73,24 @@ interface IConstants {
 
 
 	/**
-	 * CSRF protection - disabled by form input and disabled by http cookie.
+	 * Security protection - disabled to generate form hidden 
+	 * input with token and disabled to send http cookie.
 	 * @var int
 	 */
-	const CSRF_PROTECTION_DISABLED		= 0;
+	const SECURITY_PROTECTION_DISABLED		= 0;
 	
 	/**
-	 * CSRF protection - enabled by form input and disabled by http cookie.
+	 * Security protection - enabled to generate form hidden 
+	 * input with token in all forms by default.
+	 * This protection mode is default application value.
 	 * @var int
 	 */
-	const CSRF_PROTECTION_FORM_INPUT	= 1;
+	const SECURITY_PROTECTION_FORM_TOKEN	= 1;
 	
 	/**
-	 * CSRF protection - disabled by form input and enabled by http cookie.
+	 * Security protection - enabled to send http cookie.
 	 * @var int
 	 */
-	const CSRF_PROTECTION_COOKIE		= 2;
+	const SECURITY_PROTECTION_COOKIE		= 2;
+
 }

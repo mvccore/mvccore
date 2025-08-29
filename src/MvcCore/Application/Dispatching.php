@@ -12,7 +12,12 @@
  */
 
 namespace MvcCore\Application;
-use MvcCore\Ext\Models\Db\Exception;
+
+use \MvcCore\Request\IConstants as ReqConsts,
+	\MvcCore\response\IConstants as ResConsts,
+	\MvcCore\Router\IConstants as RouterConsts,
+	\MvcCore\Debug\IConstants as DebugConsts,
+	\MvcCore\Controller\IConstants as CtrlConsts;
 
 /**
  * Trait as partial class for `\MvcCore\Application`:
@@ -110,23 +115,27 @@ trait Dispatching {
 	/**
 	 * @inheritDoc
 	 * @param  array<int, array<int, CustomHandlerRecord>> $handlers
+	 * @param  ?array<mixed>                               $customArgs
 	 * @throws \Throwable
 	 * @return bool
 	 */
-	public function ProcessCustomHandlers (& $handlers = []) {
+	public function ProcessCustomHandlers (array & $handlers = [], $customArgs = NULL) {
 		if (!$handlers || $this->request->IsInternalRequest() === TRUE) return TRUE;
 		$result = TRUE;
 		reset($handlers);
 		ksort($handlers, SORT_NUMERIC);
+		$noCustomArgs = $customArgs === NULL;
 		foreach ($handlers as $handlerRecords) {
 			foreach ($handlerRecords as $closureCallingAndHandler) {
 				/** @var CustomHandlerRecord $closureCallingAndHandler */
 				list($closureCalling, $handler) = $closureCallingAndHandler;
 				$subResult = NULL;
-				if ($closureCalling) {
+				if ($closureCalling && $noCustomArgs) {
 					$subResult = $handler($this->request, $this->response);
-				} else {
+				} else if ($noCustomArgs) {
 					$subResult = call_user_func($handler, $this->request, $this->response);
+				} else {
+					$subResult = call_user_func_array($handler, $customArgs);
 				}
 				if ($subResult === FALSE) {
 					$result = FALSE;
@@ -251,6 +260,14 @@ trait Dispatching {
 		/** @var \MvcCore\Session $sessionClass */
 		$sessionClass = $this->sessionClass;
 		$sessionClass::Start();
+		$securityCookieMode = ($this->securityProtection & \MvcCore\Application\IConstants::SECURITY_PROTECTION_COOKIE) != 0;
+		if ($securityCookieMode) {
+			if (!$sessionClass::ValidateSecurityToken()) {
+				// there is not possible to continue, break dispatching, this protection is very strict
+				$this->ProcessCustomHandlers($this->securityErrorHandlers);
+				throw new \MvcCore\Application\TerminateException(__FILE__, __LINE__);
+			}
+		}
 	}
 	
 	/**
@@ -277,14 +294,14 @@ trait Dispatching {
 			$sessionClass = $this->sessionClass;
 			if ($sessionClass::GetStarted()) {
 				$sessionClass::SendSessionIdCookie();
-				$sessionClass::SendRefreshedCsrfCookie();
+				$sessionClass::SendSecurityCookie();
 				$sessionClass::Close();
 			}
 			$this->response->SendHeaders();
 		}
 		if (
 			!$this->response->IsSentBody() &&
-			$this->request->GetMethod() !== \MvcCore\IRequest::METHOD_HEAD
+			$this->request->GetMethod() !== ReqConsts::METHOD_HEAD
 		)
 			$this->response->SendBody();
 		// exit; // Why to force exit? What if we want to do something more?
@@ -294,7 +311,7 @@ trait Dispatching {
 			$dispatchStateProperty = $ctrlType->getProperty('dispatchState');
 			$dispatchStateProperty->setAccessible(TRUE);
 			$dispatchStateProperty->setValue(
-				$this->controller, \MvcCore\IController::DISPATCH_STATE_TERMINATED
+				$this->controller, CtrlConsts::DISPATCH_STATE_TERMINATED
 			);
 		}
 		$this->ProcessCustomHandlers($this->postTerminateHandlers);
@@ -344,7 +361,7 @@ trait Dispatching {
 		/** @var \MvcCore\Debug $debugClass */
 		$debugClass = $this->debugClass;
 		if ($exception->getCode() == 404) {
-			$debugClass::Log($exception->getMessage().": ".$this->request->GetFullUrl(), \MvcCore\IDebug::INFO);
+			$debugClass::Log($exception->getMessage().": ".$this->request->GetFullUrl(), DebugConsts::INFO);
 			return $this->RenderNotFound($exception->getMessage());
 		} else if ($this->environment->IsDevelopment() && $debugClass::GetDebugging()) {
 			$this->ProcessCustomHandlers($this->postDispatchHandlers);
@@ -353,7 +370,7 @@ trait Dispatching {
 				$sessionClass = $this->sessionClass;
 				if ($sessionClass::GetStarted()) {
 					$sessionClass::SendSessionIdCookie();
-					$sessionClass::SendRefreshedCsrfCookie();
+					$sessionClass::SendSecurityCookie();
 					$sessionClass::Close();
 				}
 				$this->response->SendHeaders();
@@ -361,7 +378,7 @@ trait Dispatching {
 			$debugClass::Exception($exception);
 			return FALSE;
 		} else {
-			$debugClass::Log($exception, \MvcCore\IDebug::EXCEPTION);
+			$debugClass::Log($exception, DebugConsts::EXCEPTION);
 			return $this->RenderError($exception);
 		}
 	}
@@ -381,7 +398,7 @@ trait Dispatching {
 			$viewClass = $this->viewClass;
 			$this->router->SetRequest($this->GetRequest());
 			$this->router->SetOrCreateDefaultRouteAsCurrent(
-				\MvcCore\IRouter::DEFAULT_ROUTE_NAME_ERROR,
+				RouterConsts::DEFAULT_ROUTE_NAME_ERROR,
 				$this->defaultControllerName,
 				$this->defaultControllerErrorActionName,
 				TRUE
@@ -389,8 +406,8 @@ trait Dispatching {
 			$exceptionCode = $e->getCode();
 			$exceptionCode = $exceptionCode > 0 ? $exceptionCode : 500;
 			$this->request
-				->SetParam('code', $exceptionCode, \MvcCore\IRequest::PARAM_TYPE_URL_REWRITE)
-				->SetParam('message', $exceptionMessage, \MvcCore\IRequest::PARAM_TYPE_URL_REWRITE);
+				->SetParam('code', $exceptionCode, ReqConsts::PARAM_TYPE_URL_REWRITE)
+				->SetParam('message', $exceptionMessage, ReqConsts::PARAM_TYPE_URL_REWRITE);
 			$this->response->SetCode($exceptionCode);
 			$this->controller = NULL;
 			\MvcCore\Controller::RemoveAllControllers();
@@ -405,11 +422,11 @@ trait Dispatching {
 				);
 				$this->controller->Dispatch($this->defaultControllerErrorActionName); // @phpstan-ignore-line
 			} catch (\Throwable $e2) {
-				$this->router->RemoveRoute(\MvcCore\IRouter::DEFAULT_ROUTE_NAME_NOT_FOUND);
+				$this->router->RemoveRoute(RouterConsts::DEFAULT_ROUTE_NAME_NOT_FOUND);
 				if ($this->environment->IsDevelopment()) {
 					$debugClass::Exception($e2);
 				} else {
-					$debugClass::Log($e2, \MvcCore\IDebug::EXCEPTION);
+					$debugClass::Log($e2, DebugConsts::EXCEPTION);
 					$this->RenderError500PlainText($exceptionMessage . PHP_EOL . PHP_EOL . $e2->getMessage());
 				}
 			}
@@ -433,14 +450,14 @@ trait Dispatching {
 			$debugClass = $this->debugClass;
 			$viewClass = $this->viewClass;
 			$this->router->SetOrCreateDefaultRouteAsCurrent(
-				\MvcCore\IRouter::DEFAULT_ROUTE_NAME_NOT_FOUND,
+				RouterConsts::DEFAULT_ROUTE_NAME_NOT_FOUND,
 				$this->defaultControllerName,
 				$this->defaultControllerNotFoundActionName,
 				TRUE
 			);
 			$this->request
-				->SetParam('code', '404', \MvcCore\IRequest::PARAM_TYPE_URL_REWRITE)
-				->SetParam('message', $exceptionMessage, \MvcCore\IRequest::PARAM_TYPE_URL_REWRITE);
+				->SetParam('code', '404', ReqConsts::PARAM_TYPE_URL_REWRITE)
+				->SetParam('message', $exceptionMessage, ReqConsts::PARAM_TYPE_URL_REWRITE);
 			$this->response->SetCode(404);
 			$this->controller = NULL;
 			\MvcCore\Controller::RemoveAllControllers();
@@ -455,11 +472,11 @@ trait Dispatching {
 				);
 				$this->controller->Dispatch($this->defaultControllerNotFoundActionName); // @phpstan-ignore-line
 			} catch (\Throwable $e) {
-				$this->router->RemoveRoute(\MvcCore\IRouter::DEFAULT_ROUTE_NAME_NOT_FOUND);
+				$this->router->RemoveRoute(RouterConsts::DEFAULT_ROUTE_NAME_NOT_FOUND);
 				if ($this->environment->IsDevelopment()) {
 					$debugClass::Exception($e);
 				} else {
-					$debugClass::Log($e, \MvcCore\IDebug::EXCEPTION);
+					$debugClass::Log($e, DebugConsts::EXCEPTION);
 					$this->RenderError404PlainText($exceptionMessage);
 				}
 			}
@@ -490,7 +507,7 @@ trait Dispatching {
 			}
 		}
 		$this->response = $responseClass::CreateInstance(
-			\MvcCore\IResponse::INTERNAL_SERVER_ERROR,
+			ResConsts::INTERNAL_SERVER_ERROR,
 			['Content-Type' => $htmlResponse ? 'text/html' : 'text/plain'],
 			$text
 		);
@@ -518,7 +535,7 @@ trait Dispatching {
 			}
 		}
 		$this->response = $responseClass::CreateInstance(
-			\MvcCore\IResponse::NOT_FOUND,
+			ResConsts::NOT_FOUND,
 			['Content-Type' => $htmlResponse ? 'text/html' : 'text/plain'],
 			$text
 		);

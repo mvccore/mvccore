@@ -42,13 +42,13 @@ trait Closing {
 					list($hoopsCount, $ignoredReqsFlags) = $hoopsItem;
 					if(static::isRequestIgnoredForHoops($ignoredReqsFlags, $reqMethod, $reqIsAjax)) 
 						continue;
-					if (($ignoredReqsFlags & \MvcCore\ISession::EXPIRATION_HOOPS_IGNORE_REDIRECTS) != 0)
+					if (($ignoredReqsFlags & \MvcCore\Session\IConstants::EXPIRATION_HOOPS_IGNORE_REDIRECTS) != 0)
 						$hoopsCount += 1;
 					$hoops[$name] = [$hoopsCount, $ignoredReqsFlags];
 				}
 			}
 			$serializeFn = function_exists('igbinary_serialize') ? 'igbinary_serialize' : 'serialize';
-			/** @var string|FALSE $metaStr */
+			/** @var string|false $metaStr */
 			$metaStr = @call_user_func($serializeFn, static::$meta);
 			if ($metaStr !== FALSE) {
 				$_SESSION[$metaKey] = $metaStr;
@@ -88,7 +88,7 @@ trait Closing {
 				$options['cookie_httponly'],
 				isset($options['cookie_samesite']) 
 					? $options['cookie_samesite']
-					: \MvcCore\IResponse::COOKIE_SAMESITE_LAX
+					: \MvcCore\Response\IConstants::COOKIE_SAMESITE_LAX
 			);
 		}
 	}
@@ -112,28 +112,27 @@ trait Closing {
 	 * @inheritDoc
 	 * @return void
 	 */
-	public static function SendRefreshedCsrfCookie () {
+	public static function SendSecurityCookie () {
 		if (!static::GetStarted()) return;
 		$app = self::$app ?: (self::$app = \MvcCore\Application::GetInstance());
 		$res = self::$res ?: self::$res = $app->GetResponse();
 		if (
 			!$res->IsSent() &&
-			($app->GetCsrfProtection() & \MvcCore\IApplication::CSRF_PROTECTION_COOKIE) != 0
+			($app->GetSecurityProtection() & \MvcCore\Application\IConstants::SECURITY_PROTECTION_COOKIE) != 0
 		) {
-			$sessionNamespace = static::GetCsrfNamespace();
-			$toolClass = $app->GetToolClass();
-			$csrfSecret = $toolClass::GetRandomHash(64); // generate new value
-			$sessionNamespace->secret = $csrfSecret; // @phpstan-ignore-line
-			$csrfExpiration = static::GetSessionCsrfMaxTime();
+			$securityNamespace = static::GetSecurityNamespace();
+			$secrets = $securityNamespace->secrets;
+			list($secretCurrent) = reset($secrets);
+			$securityExpiration = static::GetSessionSecurityMaxTime();
 			$params = (object) session_get_cookie_params();
-			if ($csrfExpiration > static::$sessionStartTime) {
-				$cookieLifeTime = $csrfExpiration - static::$sessionStartTime;
+			if ($securityExpiration > static::$sessionStartTime) {
+				$cookieLifeTime = $securityExpiration - static::$sessionStartTime;
 			} else {
 				$cookieLifeTime = isset($params->lifetime) ? $params->lifetime : 0;
 			}
 			$res->SetCookie(
-				$res::GetCsrfProtectionCookieName(), $csrfSecret, $cookieLifeTime, $params->path,
-				NULL, NULL, TRUE, \MvcCore\IResponse::COOKIE_SAMESITE_STRICT
+				$res::GetSecurityCookieName(), $secretCurrent, $cookieLifeTime, $params->path,
+				NULL, NULL, TRUE, \MvcCore\Response\IConstants::COOKIE_SAMESITE_STRICT
 			);
 		}
 	}
@@ -142,9 +141,9 @@ trait Closing {
 	 * @inheritDoc
 	 * @return int
 	 */
-	public static function GetSessionCsrfMaxTime () {
-		if (static::$sessionCsrfMaxTime !== NULL)
-			return static::$sessionCsrfMaxTime;
+	public static function GetSessionSecurityMaxTime () {
+		if (static::$sessionSecurityMaxTime !== NULL)
+			return static::$sessionSecurityMaxTime;
 		static $authClassesFullNames = [
 			"\\MvcCore\\Ext\\Auth",
 			"\\MvcCore\\Ext\\Auths\\Basic"
@@ -160,13 +159,13 @@ trait Closing {
 		// If there is any authentication class, 
 		// try to get expiration seconds value:
 		if ($auth !== NULL) {
-			$sessionCsrfMaxSeconds = $auth->GetExpirationAuthorization();
-			if (is_int($sessionCsrfMaxSeconds) && $sessionCsrfMaxSeconds > 0)
-				static::$sessionCsrfMaxTime = $sessionCsrfMaxSeconds;
+			$sessionSecurityMaxSeconds = $auth->GetExpirationAuthorization();
+			if (is_int($sessionSecurityMaxSeconds) && $sessionSecurityMaxSeconds > 0)
+				static::$sessionSecurityMaxTime = $sessionSecurityMaxSeconds;
 		}
 		// If there is nothing like that, set expiration until browser close:
-		if (static::$sessionCsrfMaxTime === NULL)
-			static::$sessionCsrfMaxTime = 0;
-		return static::$sessionCsrfMaxTime;
+		if (static::$sessionSecurityMaxTime === NULL)
+			static::$sessionSecurityMaxTime = 0;
+		return static::$sessionSecurityMaxTime;
 	}
 }
