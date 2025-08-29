@@ -61,9 +61,8 @@ interface IDispatching {
 	 * header and call `\MvcCore\Application::GetInstance()->Terminate();`.
 	 * @param  string      $location
 	 * @param  int         $code
-	 * @param  string|NULL $reason   Any optional text header for reason why.
-	 * @throws \MvcCore\Controller\TerminateException
 	 * @param  ?string     $reason   Any optional text header for reason why.
+	 * @throws \MvcCore\Application\TerminateException
 	 * @return void
 	 */
 	public static function Redirect ($location, $code = \MvcCore\IResponse::SEE_OTHER, $reason = NULL);
@@ -173,7 +172,7 @@ interface IDispatching {
 	 * This method is always called INTERNALLY after controller
 	 * lifecycle has been dispatched. But you can use it any
 	 * time sooner for custom purposes.
-	 * @throws \MvcCore\Controller\TerminateException
+	 * @throws \MvcCore\Application\TerminateException
 	 * @return void
 	 */
 	public function Terminate ();

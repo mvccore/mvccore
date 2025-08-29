@@ -42,8 +42,10 @@ trait Dispatching {
 				$this->DispatchInit();
 				if ($this->DispatchExec() !== FALSE)
 					$this->Terminate();
+			} catch (\MvcCore\Application\TerminateException $te) {
+				$this->Terminate();
 			} catch (\Throwable $e1) {
-				$this->DispatchException($e1);
+				$this->DispatchException($e1, $e1->getCode());
 				$this->Terminate();
 			}
 		} catch (\Exception $e2) {

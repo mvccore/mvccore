@@ -117,10 +117,10 @@ trait Dispatching {
 	
 	/**
 	 * @inheritDoc
-	 * @param  string      $location
-	 * @param  int         $code
-	 * @param  string|NULL $reason   Any optional text header for reason why.
-	 * @throws \MvcCore\Controller\TerminateException
+	 * @param  string  $location
+	 * @param  int     $code
+	 * @param  ?string $reason   Any optional text header for reason why.
+	 * @throws \MvcCore\Application\TerminateException
 	 * @return void
 	 */
 	public static function Redirect ($location, $code = \MvcCore\IResponse::SEE_OTHER, $reason = NULL) {
@@ -131,16 +131,7 @@ trait Dispatching {
 			->SetHeader('Location', $location);
 		if ($reason !== NULL)
 			$response->SetHeader('X-Reason', $reason);
-		$state = static::DISPATCH_STATE_TERMINATED;
-		$mainCtrl = $app->GetController();
-		$mainCtrl->dispatchState = $state;
-		foreach (self::$allControllers as $controllerAndType) {
-			list($controller) = $controllerAndType;
-			$controller->dispatchState = $state;
-		}
-		self::$allControllers = [];
-		$app->Terminate();
-		throw new \MvcCore\Controller\TerminateException(__FILE__.":".__LINE__);
+		throw new \MvcCore\Application\TerminateException(__FILE__, __LINE__);
 	}
 
 	/**
@@ -189,12 +180,9 @@ trait Dispatching {
 
 			$this->dispatchRender();
 
-		} catch (\MvcCore\Controller\TerminateException $e) {
+		} catch (\MvcCore\Application\TerminateException $e) {
 			$result = FALSE;
-			if (!$this->application->GetTerminated()) {
-				$this->terminateControllers();
-				$this->application->Terminate();
-			}
+			$this->terminateControllers();
 		}
 		return $result;
 	}
@@ -699,13 +687,11 @@ trait Dispatching {
 
 	/**
 	 * @inheritDoc
-	 * @throws \MvcCore\Controller\TerminateException
+	 * @throws \MvcCore\Application\TerminateException
 	 * @return void
 	 */
 	public function Terminate () {
-		$this->terminateControllers();
-		$this->application->Terminate();
-		throw new \MvcCore\Controller\TerminateException(__FILE__.":".__LINE__);
+		throw new \MvcCore\Application\TerminateException(__FILE__, __LINE__);
 	}
 
 	/**
