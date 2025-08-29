@@ -66,7 +66,7 @@ interface IRouteMethods {
 	 * @param  \MvcCore\Route[]|array $routes
 	 *                                Keyed array with routes, keys are route names or route
 	 *                                `Controller::Action` definitions.
-	 * @param  string|NULL            $groupName 
+	 * @param  ?string                $groupName 
 	 *                                Group name is first matched/parsed word in requested path to 
 	 *                                group routes by to try to match only routes you really need, 
 	 *                                not all of them. If `NULL` by default, routes are inserted 
@@ -133,7 +133,7 @@ interface IRouteMethods {
 	 * @param  array<int|string,\MvcCore\Route|array<string,mixed>|string> $routes
 	 * Keyed array with routes, keys are route names or route
 	 * `Controller::Action` definitions.
-	 * @param  string|NULL                                                 $groupName
+	 * @param  ?string                                                     $groupName
 	 * Group name is first matched/parsed word in requested path to
 	 * group routes by to try to match only routes you really need,
 	 * not all of them. If `NULL` by default, routes are inserted
@@ -196,7 +196,7 @@ interface IRouteMethods {
 	 * ````
 	 * @param  \MvcCore\Route|array<string,mixed> $routeCfgOrRoute
 	 * Route instance or route config array.
-	 * @param  string|NULL                        $groupName
+	 * @param  ?string                            $groupName
 	 * Group name is first matched/parsed word in requested path to
 	 * group routes by to try to match only routes you really need,
 	 * not all of them. If `NULL` by default, routes are inserted
@@ -223,14 +223,14 @@ interface IRouteMethods {
 	 * Remove route from router by given name and return removed route instance.
 	 * If router has no route by given name, `NULL` is returned.
 	 * @param  string $routeName
-	 * @return \MvcCore\Route|NULL
+	 * @return ?\MvcCore\Route
 	 */
 	public function RemoveRoute ($routeName);
 	
 	/**
 	 * Get all configured route(s) as `\MvcCore\Route` instances.
 	 * Keys in returned array are route names, values are route objects.
-	 * @param  string|NULL $groupName
+	 * @param  ?string     $groupName
 	 *                     Group name is first matched/parsed word in requested path to
 	 *                     group routes by to try to match only routes you really need,
 	 *                     not all of them. If `NULL` by default, there are returned
@@ -243,7 +243,7 @@ interface IRouteMethods {
 	 * Get configured `\MvcCore\Route` route instances by route name, 
 	 * `NULL` if no route presented.
 	 * @param  string $routeName
-	 * @return \MvcCore\Route|NULL
+	 * @return ?\MvcCore\Route
 	 */
 	public function GetRoute ($routeName);
 	
@@ -260,7 +260,7 @@ interface IRouteMethods {
 	 * Get matched route instance reference for given request object
 	 * into `\MvcCore\Route::Route($request);` method. Currently
 	 * matched route is always assigned internally in that method.
-	 * @return \MvcCore\Route|NULL
+	 * @return ?\MvcCore\Route
 	 */
 	public function GetCurrentRoute ();
 

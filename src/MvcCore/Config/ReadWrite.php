@@ -22,7 +22,7 @@ trait ReadWrite {
 	 * @inheritDoc
 	 * @param  array<string,array<mixed,mixed>> $mergedData
 	 * Configuration data for all environments.
-	 * @param  string|NULL                      $configFullPath
+	 * @param  ?string                          $configFullPath
 	 * Config absolute path.
 	 * @return \MvcCore\Config
 	 */
@@ -39,7 +39,7 @@ trait ReadWrite {
 	/**
 	 * @inheritDoc
 	 * @throws \RuntimeException
-	 * @return \MvcCore\Config|NULL
+	 * @return ?\MvcCore\Config
 	 */
 	public static function GetConfigSystem () {
 		$app = self::$app ?: (self::$app = \MvcCore\Application::GetInstance()); // @phpstan-ignore-line
@@ -48,7 +48,7 @@ trait ReadWrite {
 			$configClass::GetConfigSystemPath(), FALSE
 		);
 		if (!array_key_exists($configFullPath, self::$configsCache)) {
-			/** @var \MvcCore\Config|NULL $config */
+			/** @var ?\MvcCore\Config     $config */
 			$config = $configClass::LoadConfig(
 				$configFullPath, $configClass, $configClass::TYPE_SYSTEM
 			);
@@ -73,7 +73,7 @@ trait ReadWrite {
 	/**
 	 * @inheritDoc
 	 * @throws \RuntimeException
-	 * @return \MvcCore\Config|NULL
+	 * @return ?\MvcCore\Config
 	 */
 	public static function GetConfigEnvironment () {
 		/** @var \MvcCore\Config $config */
@@ -83,7 +83,7 @@ trait ReadWrite {
 		if ($envConfigPath === NULL) return NULL;
 		$configFullPath = $configClass::GetConfigFullPath($envConfigPath, FALSE);
 		if (!array_key_exists($configFullPath, self::$configsCache)) {
-			/** @var \MvcCore\Config|NULL $config */
+			/** @var ?\MvcCore\Config     $config */
 			$config = $configClass::LoadConfig(
 				$configFullPath, $configClass, $configClass::TYPE_ENVIRONMENT
 			);
@@ -105,7 +105,7 @@ trait ReadWrite {
 	 * @inheritDoc
 	 * @param  string $appRootRelativePath Any config relative path from application root dir like `'~/App/website.ini'`.
 	 * @throws \RuntimeException
-	 * @return \MvcCore\Config|NULL
+	 * @return ?\MvcCore\Config
 	 */
 	public static function GetConfig ($appRootRelativePath) {
 		$app = self::$app ?: (self::$app = \MvcCore\Application::GetInstance()); // @phpstan-ignore-line
@@ -125,7 +125,7 @@ trait ReadWrite {
 	 * @inheritDoc
 	 * @param  string $vendorAppRootRelativePath Any config relative path from application root dir like `'~/App/website.ini'`.
 	 * @throws \RuntimeException
-	 * @return \MvcCore\Config|NULL
+	 * @return ?\MvcCore\Config
 	 */
 	public static function GetConfigVendor ($vendorAppRootRelativePath) {
 		$app = self::$app ?: (self::$app = \MvcCore\Application::GetInstance()); // @phpstan-ignore-line
@@ -139,13 +139,13 @@ trait ReadWrite {
 	 * @param  string $configFullPath Full path to config file.
 	 * @param  int    $configType
 	 * @throws \RuntimeException
-	 * @return \MvcCore\Config|NULL
+	 * @return ?\MvcCore\Config
 	 */
 	public static function GetConfigByFullPath ($configFullPath, $configType = \MvcCore\IConfig::TYPE_COMMON) {
 		if (!array_key_exists($configFullPath, self::$configsCache)) {
 			$app = self::$app ?: (self::$app = \MvcCore\Application::GetInstance()); // @phpstan-ignore-line
 			$systemConfigClass = $app->GetConfigClass();
-			/** @var \MvcCore\Config|NULL $config */
+			/** @var ?\MvcCore\Config     $config */
 			$config = $systemConfigClass::LoadConfig(
 				$configFullPath, $systemConfigClass, $configType
 			);
@@ -200,7 +200,7 @@ trait ReadWrite {
 	 * @param  string $configFullPath
 	 * @param  string $systemConfigClass
 	 * @param  int    $configType
-	 * @return \MvcCore\Config|NULL
+	 * @return ?\MvcCore\Config
 	 */
 	public static function LoadConfig ($configFullPath, $systemConfigClass, $configType = \MvcCore\IConfig::TYPE_COMMON) {
 		/** @var \MvcCore\Config $config */

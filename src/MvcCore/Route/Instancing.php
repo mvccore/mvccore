@@ -16,7 +16,7 @@ namespace MvcCore\Route;
 /**
  * @mixin \MvcCore\Route
  * @phpstan-type FilterCallable callable(array<string,mixed>, array<string,mixed>, \MvcCore\IRequest): array<string,mixed>
- * @phpstan-type RouteConfig object{"name":?string,"pattern":?string,"match":?string,"reverse":?string,"controller":?string,"action":?string,"controllerAction":?string,"defaults":array<string,mixed>|NULL,"constraints":array<string,string>|NULL,"filters":array<string,FilterCallable>|NULL}
+ * @phpstan-type RouteConfig object{"name":?string,"pattern":?string,"match":?string,"reverse":?string,"controller":?string,"action":?string,"controllerAction":?string,"defaults":array<string,mixed>|null,"constraints":array<string,string>|null,"filters":array<string,FilterCallable>|null}
  */
 trait Instancing {
 
@@ -25,13 +25,13 @@ trait Instancing {
 	 * @param string|array<string,mixed> $pattern
 	 * Required, configuration array or route pattern value
 	 * to parse into match and reverse patterns.
-	 * @param string|NULL                $controllerAction
+	 * @param ?string                    $controllerAction
 	 * Optional, controller and action name in pascal case
 	 * like: `"Products:List"`.
-	 * @param array<string,mixed>|NULL   $defaults
+	 * @? array<string,mixed>   $defaults
 	 * Optional, default param values like:
 	 * `["name" => "default-name", "page" => 1]`.
-	 * @param array<string,string>|NULL  $constraints
+	 * @param ?array<string,string>      $constraints
 	 * Optional, params regular expression constraints for
 	 * regular expression match function if no `"match"`
 	 * property in config array as first argument defined.
@@ -98,13 +98,13 @@ trait Instancing {
 	 * @param string|array<string,mixed> $pattern
 	 * Required, configuration array or route pattern value
 	 * to parse into match and reverse patterns.
-	 * @param string|NULL                $controllerAction
+	 * @param ?string                    $controllerAction
 	 * Optional, controller and action name in pascal case
 	 * like: `"Products:List"`.
-	 * @param array<string,mixed>|NULL   $defaults
+	 * @param ?array<string,mixed>       $defaults
 	 * Optional, default param values like:
 	 * `["name" => "default-name", "page" => 1]`.
-	 * @param array<string,string>|NULL  $constraints
+	 * @param ?array<string,string>      $constraints
 	 * Optional, params regular expression constraints for
 	 * regular expression match function no `"match"` record
 	 * in configuration array as first argument defined.
@@ -242,12 +242,12 @@ trait Instancing {
 	 * initialize constraints by setter if not `NULL` and initialize filter in
 	 * and filter out by filter setter from `$advCfg` array if there are those
 	 * filter keys found.
-	 * @param string|NULL               $pattern
+	 * @param ?string                   $pattern
 	 * Route pattern string.
-	 * @param array<string,mixed>|NULL  $defaults
+	 * @param ?array<string,mixed>      $defaults
 	 * @Route defaults array, keys are param
 	 * names, values are default values.
-	 * @param array<string,string>|NULL $constraints
+	 * @param ?array<string,string>     $constraints
 	 * Route params regular expression
 	 * constraints array, keys are param
 	 * names, values are allowed regular
@@ -278,7 +278,7 @@ trait Instancing {
 	 * If route is initialized by each constructor function arguments,
 	 * initialize `controller` and `action`, if any of them is defined in given
 	 * argument `$ctrlAction`.
-	 * @param  string|NULL $ctrlAction Controller and action combination
+	 * @param  ?string     $ctrlAction Controller and action combination
 	 *                                 definition, it could be `"Products:List"`
 	 *                                 or only `"Products:"` etc.
 	 * @return void

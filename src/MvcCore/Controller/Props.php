@@ -102,7 +102,7 @@ trait Props {
 	 * Class store object for view properties.
 	 * Before `\MvcCore\Controller::PreDispatch();` is called
 	 * in controller lifecycle, this property will be still `NULL`.
-	 * @var \MvcCore\View|NULL
+	 * @var ?\MvcCore\View
 	 */
 	protected $view = NULL;
 
@@ -137,7 +137,7 @@ trait Props {
 	 * up this property to value `something/completely` and then there is
 	 * necessary to render your template only by calling controller rendering by:
 	 * `$subcontrollerInstance->Render('custom');`
-	 * @var string|NULL
+	 * @var ?string    
 	 */
 	protected $viewScriptsPath = NULL;
 
@@ -152,7 +152,7 @@ trait Props {
 
 	/**
 	 * User model instance. Template property.
-	 * @var \MvcCore\Model|NULL
+	 * @var ?\MvcCore\Model
 	 */
 	protected $user = NULL;
 
@@ -190,7 +190,7 @@ trait Props {
 
 	/**
 	 * Parent controller instance if any.
-	 * @var \MvcCore\Controller|NULL
+	 * @var ?\MvcCore\Controller
 	 */
 	protected $parentController = NULL;
 
@@ -204,7 +204,7 @@ trait Props {
 	 * Flash messages store to complete messages for next request.
 	 * This store is always saved before application terminates
 	 * and it's used only the most parent application controller.
-	 * @var \stdClass[]|NULL
+	 * @var \stdClass[]|null
 	 */
 	protected $flashMessages = NULL;
 

@@ -16,7 +16,7 @@ namespace MvcCore\Model;
 /**
  * @mixin \MvcCore\Model
  * @phpstan-type RawValue int|float|string|bool|\DateTime|\DateTimeImmutable|array<mixed,mixed>|object
- * @phpstan-type ParserArgs array<int|string,mixed>|NULL
+ * @phpstan-type ParserArgs ?array<int|string,mixed>
  */
 trait Parsers {
 
@@ -200,7 +200,7 @@ trait Parsers {
 	 * @param  string                           $typeStr
 	 * @param  array<mixed,mixed>|object|string $rawValue 
 	 * @param  ParserArgs                       $parserArgs 
-	 * @return array<mixed,mixed>|object|NULL
+	 * @return array<mixed,mixed>|object|null
 	 */
 	protected static function parseToArrayOrObject ($typeStr, $rawValue, $parserArgs = [0, 512]) {
 		if (!is_string($rawValue)) {

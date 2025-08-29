@@ -212,9 +212,9 @@ trait Routing {
 	 * complete URL by any other route name for case, when some required param 
 	 * is not presented in second `$params` argument in Url() method (then the
 	 * param is assigned from default params).
-	 * @param string|NULL $requestCtrlName		Possible controller name value or `NULL` assigned directly 
+	 * @param ?string     $requestCtrlName		Possible controller name value or `NULL` assigned directly 
 	 *											from request object in `\MvcCore\router::routeDetectStrategy();`
-	 * @param string|NULL $requestActionName	Possible action name value or `NULL` assigned directly 
+	 * @param ?string     $requestActionName	Possible action name value or `NULL` assigned directly 
 	 *											from request object in `\MvcCore\router::routeDetectStrategy();`
 	 * @return void
 	 */

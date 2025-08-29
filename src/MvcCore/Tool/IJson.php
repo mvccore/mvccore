@@ -78,7 +78,7 @@ interface IJson {
 	 *    error state that is retrieved with json_last_error() and
 	 *    json_last_error_msg(). JSON_PARTIAL_OUTPUT_ON_ERROR takes precedence
 	 *    over JSON_THROW_ON_ERROR. Available as of PHP 7.3.0.
-	 * @param  string|NULL $jsonStr
+	 * @param  ?string     $jsonStr
 	 * @param  int         $flags
 	 * @param  int         $depth   User specified recursion depth, default: 512.
 	 * @throws \RuntimeException|\JsonException JSON decoding error.

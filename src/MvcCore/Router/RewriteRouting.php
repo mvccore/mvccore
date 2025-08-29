@@ -31,10 +31,10 @@ trait RewriteRouting {
 	 * route object. If route matches the request, set up default and request 
 	 * params and try to process route filtering in. If it is successful, set 
 	 * up current route object and end route matching process.
-	 * @param  string|NULL $requestCtrlName
+	 * @param  ?string     $requestCtrlName
 	 *                                   Possible controller name value or `NULL` assigned directly 
 	 *                                   from request object in `\MvcCore\router::routeDetectStrategy();`
-	 * @param  string|NULL $requestActionName
+	 * @param  ?string     $requestActionName
 	 *                                   Possible action name value or `NULL` assigned directly 
 	 *                                   from request object in `\MvcCore\router::routeDetectStrategy();`
 	 * @throws \LogicException           Route configuration property is missing.
@@ -146,10 +146,10 @@ trait RewriteRouting {
 	 * where could be controller and action if it is defined in 
 	 * route object, default param values from route and all 
 	 * rewrite params parsed by route.
-	 * @param  string|NULL         $requestCtrlName
+	 * @param  ?string             $requestCtrlName
 	 * Possible controller name value or `NULL` assigned directly 
 	 * from request object in `\MvcCore\router::routeDetectStrategy();`
-	 * @param  string|NULL         $requestActionName
+	 * @param  ?string             $requestActionName
 	 * Possible action name value or `NULL` assigned directly from 
 	 * request object in `\MvcCore\router::routeDetectStrategy();`
 	 * @return void

@@ -73,7 +73,7 @@ trait Redirecting {
 	 * Redirect request to given URL with optional code and terminate application.
 	 * @param  string      $url    New location url.
 	 * @param  int         $code   Http status code, 301 by default.
-	 * @param  string|NULL $reason Any optional text header for reason why.
+	 * @param  ?string     $reason Any optional text header for reason why.
 	 * @return void
 	 */
 	protected function redirect ($url, $code = 301, $reason = NULL) {

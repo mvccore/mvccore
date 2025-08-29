@@ -28,8 +28,8 @@ trait Rendering {
 
 	/**
 	 * @inheritDoc
-	 * @param  string|NULL $controllerOrActionNameDashed
-	 * @param  string|NULL $actionNameDashed
+	 * @param  ?string     $controllerOrActionNameDashed
+	 * @param  ?string     $actionNameDashed
 	 * @return string
 	 */
 	public function Render ($controllerOrActionNameDashed = NULL, $actionNameDashed = NULL) {
@@ -59,7 +59,7 @@ trait Rendering {
 				$sessionClass = $this->GetApplication()->GetSessionClass();
 				if ($sessionClass::GetStarted() && !$this->response->IsSentHeaders()) {
 					$sessionClass::SendSessionIdCookie();
-					$sessionClass::SendRefreshedCsrfCookie();
+					$sessionClass::SendSecurityCookie();
 					$sessionClass::Close();
 				}
 				$this->response

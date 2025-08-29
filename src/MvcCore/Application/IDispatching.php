@@ -62,7 +62,7 @@ interface IDispatching {
 	 * Return `TRUE` for redirected or stopped request by any other way.
 	 * Return `FALSE` if request is already terminated.
 	 * @throws \Throwable
-	 * @return bool|NULL
+	 * @return ?bool
 	 */
 	public function DispatchExec ();
 
@@ -82,11 +82,12 @@ interface IDispatching {
 	 * handlers queue by queue index. Call every handler in queue
 	 * in try catch mode to catch any exceptions to call:
 	 * `\MvcCore\Application::DispatchException($e);`.
-	 * @param  CustomHandlerRecord[] $handlers
+	 * @param  array<int, array<int, CustomHandlerRecord>> $handlers
+	 * @param  ?array<mixed>                               $customArgs
 	 * @throws \Throwable
 	 * @return bool
 	 */
-	public function ProcessCustomHandlers (& $handlers = []);
+	public function ProcessCustomHandlers (array & $handlers = [], $customArgs = NULL);
 
 	/**
 	 * Resolve controller class name and create controller instance.
@@ -178,7 +179,7 @@ interface IDispatching {
 	 *   - Log error and try to render error page by configured controller and error action:,
 	 *     `\App\Controllers\Index::Error();` by default.
 	 * @param  \Exception|string $exceptionOrMessage
-	 * @param  int|NULL          $code
+	 * @param  ?int              $code
 	 * @return bool
 	 */
 	public function DispatchException ($exceptionOrMessage, $code = NULL);
@@ -198,7 +199,7 @@ interface IDispatching {
 	 * `\App\Controllers\Index::NotFound();` by default.
 	 * If there is no controller/action like that or any other exception happens,
 	 * it's processed very simple plain text response with 404 http code.
-	 * @param  string|NULL $exceptionMessage
+	 * @param  ?string $exceptionMessage
 	 * @return bool
 	 */
 	public function RenderNotFound ($exceptionMessage);

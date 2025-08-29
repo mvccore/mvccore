@@ -23,9 +23,9 @@ namespace MvcCore\View;
  *    "renderArgs":array{0:int,1:?string,2:?string},
  *    "renderedFullPaths":array<string>,
  *    "reflectionTypes":array<string,\ReflectionClass<\MvcCore\IController>>,
- *    "reflectionName":string|NULL,
- *    "encoding":string|NULL,
- *    "viewsDirsFullPaths":array<string>|NULL
+ *    "reflectionName":?string,
+ *    "encoding":?string,
+ *    "viewsDirsFullPaths":?array<string>
  * }
  * @phpstan-type ViewHelper \MvcCore\Ext\Views\Helpers\AbstractHelper|\MvcCore\Ext\Views\Helpers\IHelper|\Closure|mixed
  * @phpstan-type ViewHelperCacheRecord array{0:ViewHelper,1:bool,2:bool}
@@ -34,7 +34,7 @@ trait Props {
 
 	/**
 	 * Currently dispatched controller instance.
-	 * @var \MvcCore\Controller|NULL
+	 * @var ?\MvcCore\Controller
 	 */
 	protected $controller = NULL;
 
@@ -98,14 +98,14 @@ trait Props {
 		'reflectionTypes'	=> [],
 		/**
 		  * Currently searched reflection class property name.
-		  * @var string|NULL
+		  * @var ?string    
 		  */
 		'reflectionName'	=> NULL,
 		/**
 		  * Default template encoding, used mostly as default 
 		  * encoding param in escaping methods, initialized
 		  * from controller response.
-		  * @var string|NULL
+		  * @var ?string    
 		  */
 		'encoding'			=> 'UTF-8',
 		/**
@@ -114,7 +114,7 @@ trait Props {
 		 * `\MvcCore\View::correctRelativePath();`,
 		 * `\MvcCore\View::Render($typePath, $relativePath);`,
 		 * `\MvcCore\Ext\Controllers\DataGrids::Render($typePath, $relativePath, $internalTemplate = FALSE);`;
-		 * @var array<string>|NULL
+		 * @var ?array<string>
 		 */
 		'viewsDirsFullPaths'=> NULL,
 	];
@@ -174,7 +174,7 @@ trait Props {
 
 	/**
 	 * Reference to `\MvcCore\Application::GetInstance()->GetToolClass();`.
-	 * @var string|NULL
+	 * @var ?string    
 	 */
 	protected static $toolClass = NULL;
 }

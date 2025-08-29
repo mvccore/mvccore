@@ -23,7 +23,7 @@ interface IReadWrite {
 	 * before it's created by MvcCore framework.
 	 * @param  array<string,array<mixed,mixed>> $mergedData
 	 * Configuration data for all environments.
-	 * @param  string|NULL                      $configFullPath
+	 * @param  ?string                          $configFullPath
 	 * Config absolute path.
 	 * @return \MvcCore\Config
 	 */
@@ -33,7 +33,7 @@ interface IReadWrite {
 	 * Get (optionally cached) system config INI file as `stdClass` or `array`,
 	 * placed by default in: `"/App/config.ini"`.
 	 * @throws \RuntimeException
-	 * @return \MvcCore\Config|NULL
+	 * @return ?\MvcCore\Config
 	 */
 	public static function GetConfigSystem ();
 
@@ -43,7 +43,7 @@ interface IReadWrite {
 	 * To use separated environment config, you need to fill it's path first by: 
 	 * `\MvcCore\Config::SetConfigEnvironmentPath('~/App/env.ini');`
 	 * @throws \RuntimeException
-	 * @return \MvcCore\Config|NULL
+	 * @return ?\MvcCore\Config
 	 */
 	public static function GetConfigEnvironment ();
 
@@ -52,7 +52,7 @@ interface IReadWrite {
 	 * placed relatively from application document root.
 	 * @param  string $appRootRelativePath Any config relative path from application root dir like `'~/App/website.ini'`.
 	 * @throws \RuntimeException
-	 * @return \MvcCore\Config|NULL
+	 * @return ?\MvcCore\Config
 	 */
 	public static function GetConfig ($appRootRelativePath);
 
@@ -62,7 +62,7 @@ interface IReadWrite {
 	 * Example: `'~/App/website.ini'`
 	 * @param  string $vendorAppRootRelativePath
 	 * @throws \RuntimeException
-	 * @return \MvcCore\Config|NULL
+	 * @return ?\MvcCore\Config
 	 */
 	public static function GetConfigVendor ($vendorAppRootRelativePath);
 
@@ -76,7 +76,7 @@ interface IReadWrite {
 	 * @param  string $configFullPath Full path to config file.
 	 * @param  int    $configType
 	 * @throws \RuntimeException
-	 * @return \MvcCore\Config|NULL
+	 * @return ?\MvcCore\Config
 	 */
 	public static function GetConfigByFullPath ($configFullPath, $configType = \MvcCore\IConfig::TYPE_COMMON);
 	
@@ -102,7 +102,7 @@ interface IReadWrite {
 	 * @param  string $configFullPath
 	 * @param  string $systemConfigClass
 	 * @param  int    $configType
-	 * @return \MvcCore\Config|NULL
+	 * @return ?\MvcCore\Config
 	 */
 	public static function LoadConfig ($configFullPath, $systemConfigClass, $configType = \MvcCore\IConfig::TYPE_COMMON);
 	

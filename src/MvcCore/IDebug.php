@@ -40,7 +40,7 @@ interface IDebug extends \MvcCore\Debug\IConstants {
 	 * `restore_error_handler()` to restore system error handler.
 	 * @param  bool       $strictExceptionsMode
 	 * @param  array<int> $errorLevelsToExceptions E_ERROR, E_RECOVERABLE_ERROR, E_CORE_ERROR, E_USER_ERROR, E_WARNING, E_CORE_WARNING, E_USER_WARNING
-	 * @return bool|NULL
+	 * @return ?bool    
 	 */
 	public static function SetStrictExceptionsMode ($strictExceptionsMode, array $errorLevelsToExceptions = []);
 
@@ -74,7 +74,7 @@ interface IDebug extends \MvcCore\Debug\IConstants {
 
 	/**
 	 * Starts/stops stopwatch.
-	 * @param  string|NULL $name Time pointer name.
+	 * @param  ?string     $name Time pointer name.
 	 * @return float             Elapsed seconds.
 	 */
 	public static function Timer ($name = NULL);

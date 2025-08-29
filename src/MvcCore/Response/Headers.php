@@ -126,7 +126,7 @@ trait Headers {
 	/**
 	 * @inheritDoc
 	 * @param  string $name
-	 * @return string|array<string>|NULL
+	 * @return string|array<string>|null
 	 */
 	public function GetHeader ($name) {
 		$this->UpdateHeaders();

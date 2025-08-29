@@ -290,7 +290,7 @@ trait InternalInits {
 	 * Reverse sections statistics with fixed and variable sections.
 	 * @param  array<string,string> $constraints
 	 * Route constraints array.
-	 * @param  string|NULL          $match
+	 * @param  ?string              $match
 	 * A match string, could be `NULL`.
 	 * @throws \InvalidArgumentException
 	 * Wrong route pattern format.

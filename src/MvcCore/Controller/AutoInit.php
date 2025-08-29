@@ -29,8 +29,8 @@ class AutoInit {
 	 * instance is created by property type static method 
 	 * `CreateInstance()` or by property type `__construct()` method 
 	 * with no arguments.
-	 * @param string|NULL $factoryMethodName
-	 * @param int|NULL    $initOrder
+	 * @param ?string     $factoryMethodName
+	 * @param ?int        $initOrder
 	 */
 	public function __construct ($factoryMethodName = NULL, $initOrder = NULL) { // @phpstan-ignore-line
 	}

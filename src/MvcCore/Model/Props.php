@@ -175,7 +175,7 @@ trait Props {
 	/**
 	 * Default database connection name/index, in system config defined in section `db.default = name`.
 	 * In extended classes - use this for connection name/index of current model if different.
-	 * @var string|int|NULL
+	 * @var string|int|null
 	 */
 	protected static $defaultConnectionName = NULL;
 
@@ -193,13 +193,13 @@ trait Props {
 
 	/**
 	 * System config sections array with `\stdClass` objects, keyed by connection indexes.
-	 * @var array<int|string,int|string|\stdClass>|NULL
+	 * @var ?array<int|string,int|string|\stdClass>
 	 */
 	protected static $configs = NULL;
 
 	/**
 	 * Cached value from `ini_get('precision');`, `14` by default.
-	 * @var int|NULL
+	 * @var ?int    
 	 */
 	protected static $floatPrecision = NULL;
 
@@ -228,7 +228,7 @@ trait Props {
 	 * Model resource instance - second model layer 
 	 * with SQL queries for more complex applications.
 	 * @phpstan-ignore-next-line
-	 * @var \MvcCore\Model|\MvcCore\Ext\Models\Db\Resource|NULL
+	 * @var \MvcCore\Model|\MvcCore\Ext\Models\Db\Resource|null
 	 */
 	protected $resource = NULL;
 }

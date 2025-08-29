@@ -15,7 +15,7 @@ namespace MvcCore\Request;
 
 /**
  * @mixin \MvcCore\Request
- * @phpstan-type CollectionItem string|int|float|bool|NULL|array<string|int|float|bool|NULL>|mixed
+ * @phpstan-type CollectionItem string|int|float|bool|null|array<string|int|float|bool|null>|mixed
  * @phpstan-type CollectionFilter string|array<string,string>|bool
  */
 trait CollectionsMethods {
@@ -221,7 +221,7 @@ trait CollectionsMethods {
 	 * @inheritDoc
 	 * @param  string                    $name
 	 * Param raw name.
-	 * @param  string|array<string>|NULL $value
+	 * @param  string|array<string>|null $value
 	 * Param raw value.
 	 * @param  int                       $sourceType
 	 * Param source collection flag(s). If param has defined 
@@ -513,7 +513,7 @@ trait CollectionsMethods {
 	/**
 	 * Get filtered param or header value for characters defined 
 	 * as second argument to use them in `preg_replace()`.
-	 * @param  string|array<string>|NULL $rawValue
+	 * @param  string|array<string>|null $rawValue
 	 * @param  CollectionFilter          $pregReplaceAllowedChars
 	 * If String - list of regular expression characters to only keep, 
 	 * if array - `preg_replace()` pattern and reverse, if `FALSE`, 

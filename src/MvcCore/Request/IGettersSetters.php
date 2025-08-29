@@ -14,7 +14,7 @@
 namespace MvcCore\Request;
 
 /**
- * @phpstan-type CollectionItem string|int|float|bool|NULL|array<string|int|float|bool|NULL>|mixed
+ * @phpstan-type CollectionItem string|int|float|bool|null|array<string|int|float|bool|null>|mixed
  * @phpstan-type CollectionFilter string|array<string,string>|bool
  */
 interface IGettersSetters {
@@ -142,7 +142,7 @@ interface IGettersSetters {
 	 * Set directly raw parameter value without any conversion.
 	 * @param  string                    $name
 	 * Param raw name.
-	 * @param  string|array<string>|NULL $value
+	 * @param  string|array<string>|null $value
 	 * Param raw value.
 	 * @param  int                       $sourceType
 	 * Param source collection flag(s). If param has defined 

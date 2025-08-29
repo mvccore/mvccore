@@ -67,7 +67,7 @@ trait Dispatching {
 
 	/**
 	 * @inheritDoc
-	 * @return string|NULL
+	 * @return ?string
 	 */
 	public static function GetCallerControllerClass () {
 		$result = NULL;
@@ -92,7 +92,7 @@ trait Dispatching {
 
 	/**
 	 * @inheritDoc
-	 * @return \MvcCore\IController|NULL
+	 * @return ?\MvcCore\IController
 	 */
 	public static function GetCallerControllerInstance () {
 		$result = NULL;
@@ -146,7 +146,7 @@ trait Dispatching {
 	/**
 	 * @inheritDoc
 	 * @internal
-	 * @param  string|NULL $actionName
+	 * @param  ?string     $actionName
 	 * Optional, PHP code action name, it has to be in PascalCase 
 	 * without any suffix (`Init` or `Action'). This value is used 
 	 * later to call your desired functions in controller with this changes:
@@ -270,7 +270,7 @@ trait Dispatching {
 	 * `$actionName` param has any value, set up `$this->actionName` by first argument.
 	 * and return in last two items a pascal and dashed case by that.
 	 * @internal
-	 * @param  string|NULL $actionName
+	 * @param  ?string     $actionName
 	 * Optional, PHP code action name, it has to be in PascalCase 
 	 * without any suffix (`Init` or `Action'). This value is used 
 	 * later to call your desired functions in controller with this changes:
@@ -573,7 +573,7 @@ trait Dispatching {
 	 * `\MvcCore\IController`, add instance into child controllers.
 	 * @param  \ReflectionClass<\MvcCore\IController> $ctrl 
 	 * @param  \ReflectionProperty                    $prop 
-	 * @param  string|NULL                            $factoryMethodName 
+	 * @param  ?string                                $factoryMethodName 
 	 * @return bool
 	 */
 	protected function autoInitializeProperty (\ReflectionClass $ctrl, \ReflectionProperty $prop, $factoryMethodName) {
@@ -650,7 +650,7 @@ trait Dispatching {
 	/**
 	 * @inheritDoc
 	 * @param  \MvcCore\Controller $controller
-	 * @param  string|int|NULL     $index
+	 * @param  string|int|null     $index
 	 * @return \MvcCore\Controller
 	 */
 	public function AddChildController (\MvcCore\IController $controller, $index = NULL) {

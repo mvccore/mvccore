@@ -94,7 +94,7 @@ trait Environment {
 
 	/**
 	 * @inheritDoc
-	 * @param  string|NULL $environmentName
+	 * @param  ?string     $environmentName
 	 * Return configuration data only for specific
 	 * environment name. If `NULL`, there are
 	 * returned data for current environment.
@@ -128,7 +128,7 @@ trait Environment {
 	 * @param  array<mixed,mixed> $data
 	 * Data to set into configuration store(s). If second
 	 * param is `NULL`, there are set data for current envirnment.
-	 * @param  string|NULL        $environmentName
+	 * @param  ?string            $environmentName
 	 * Set configuration data for specific
 	 * environment name. If `NULL`, there are
 	 * set data for current environment.

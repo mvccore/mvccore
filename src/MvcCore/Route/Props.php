@@ -70,7 +70,7 @@ trait Props {
 	 *   matching all to the end of the URL address. It has to be the last one.
 	 *
 	 * Example: `"/products-list/<name>[/<color*>]"`.
-	 * @var string|NULL
+	 * @var ?string    
 	 */
 	protected $pattern		= NULL;
 
@@ -92,7 +92,7 @@ trait Props {
 	 * and `pattern` parsing into `match` and `reverse` properties.
 	 *
 	 * Example: `"#^/products\-list/(?<name>[^/]+)(/(?<id>\d+))?/?$#"`
-	 * @var string|NULL
+	 * @var ?string    
 	 */
 	protected $match		= NULL;
 
@@ -115,7 +115,7 @@ trait Props {
 	 * and `pattern` parsing into `match` and `reverse` properties.
 	 *
 	 * Example: `"/products-list/<name>[/<color>]"`
-	 * @var string|NULL
+	 * @var ?string    
 	 */
 	protected $reverse		= NULL;
 
@@ -128,7 +128,7 @@ trait Props {
 	 * by given params in router method: `\MvcCore\Router:Url($name, $params);`.
 	 *
 	 * Example: `"products_list" | "Products:Gallery"`
-	 * @var string|NULL
+	 * @var ?string    
 	 */
 	protected $name			= NULL;
 
@@ -155,7 +155,7 @@ trait Props {
 	 *   - placed in `/App/Controllers/Front/Business/Products.php`
 	 * - `"//Anywhere\Else\Controllers\Products"
 	 *   - placed in `/Anywhere/Else/Controllers/Products.php`
-	 * @var string|NULL
+	 * @var ?string    
 	 */
 	protected $controller	= NULL;
 
@@ -171,7 +171,7 @@ trait Props {
 	 * controller has to be named as: `public function ListAction () {...}`.
 	 *
 	 * Example: `"List"`
-	 * @var string|NULL
+	 * @var ?string    
 	 */
 	protected $action		= NULL;
 
@@ -225,7 +225,7 @@ trait Props {
 	 * request with any http method could be matched by this route. Value has to 
 	 * be in upper case.
 	 * Example: `"POST" | \MvcCore\IRequest::METHOD_POST`
-	 * @var string|NULL
+	 * @var ?string    
 	 */
 	protected $method			= NULL;
 
@@ -235,7 +235,7 @@ trait Props {
 	 * routes handling old pages or old request forms, redirecting those request
 	 * to new form.
 	 * Example: `"new_route_name"`
-	 * @var string|NULL
+	 * @var ?string    
 	 */
 	protected $redirect			= NULL;
 
@@ -253,7 +253,7 @@ trait Props {
 	 * from request path. First word is content between two first slashes in 
 	 * request path. If group name is `NULL`, route belongs to default group 
 	 * and that group is used when no other group matching the request path.
-	 * @var string|NULL
+	 * @var ?string    
 	 */
 	protected $groupName		= NULL;
 
@@ -287,7 +287,7 @@ trait Props {
 	 *       ]
 	 *   ];
 	 * ````
-	 * @var ReverseParams|NULL
+	 * @var ?ReverseParams
 	 */
 	protected $reverseParams	= NULL;
 
@@ -322,7 +322,7 @@ trait Props {
 	 *       ]
 	 *   ];
 	 * ````
-	 * @var SectionsInfo|NULL
+	 * @var ?SectionsInfo
 	 */
 	protected $reverseSections	= NULL;
 	
@@ -332,7 +332,7 @@ trait Props {
 	 * it's value, there could be only trailing slash or nothing (pattern end). 
 	 * This trailing slash param definition is used to automatically trim last 
 	 * param value from right site when route is matched and rewrite params parsed.
-	 * @var string|NULL
+	 * @var ?string    
 	 */
 	protected $lastPatternParam	= NULL;
 
@@ -344,7 +344,7 @@ trait Props {
 
 	/**
 	 * Router instance reference used mostly in route URL building process.
-	 * @var \MvcCore\Router|NULL
+	 * @var ?MvcCore\Router
 	 */
 	protected $router			= NULL;
 
@@ -363,7 +363,7 @@ trait Props {
 	/**
 	 * Copied and cached value from router configuration property:
 	 * `\MvcCore\Router::$trailingSlashBehaviour`.
-	 * @var int|NULL
+	 * @var ?int    
 	 */
 	private $_trailingSlashBehaviour = NULL;
 }

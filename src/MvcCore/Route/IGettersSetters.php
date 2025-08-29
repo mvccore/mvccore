@@ -37,7 +37,7 @@ interface IGettersSetters {
 	 *   matching all to the end of the URL address. It has to be the last one.
 	 *
 	 * Example: `"/products-list/<name>[/<color*>]"`.
-	 * @return string|array<string,string>|NULL
+	 * @return string|array<string,string>|null
 	 */
 	public function GetPattern ();
 
@@ -83,7 +83,7 @@ interface IGettersSetters {
 	 * and `pattern` parsing into `match` and `reverse` properties.
 	 *
 	 * Example: `"#^/products\-list/(?<name>[^/]+)(/(?<id>\d+))?/?$#"`
-	 * @return string|array<string,string>|NULL
+	 * @return string|array<string,string>|null
 	 */
 	public function GetMatch ();
 
@@ -129,7 +129,7 @@ interface IGettersSetters {
 	 * and `pattern` parsing into `match` and `reverse` properties.
 	 *
 	 * Example: `"/products-list/<name>[/<color>]"`
-	 * @return string|array<string,string>|NULL
+	 * @return string|array<string,string>|null
 	 */
 	public function GetReverse ();
 
@@ -166,7 +166,7 @@ interface IGettersSetters {
 	 * by given params in router method: `\MvcCore\Router:Url($name, $params);`.
 	 *
 	 * Example: `"products_list" | "Products:Gallery"`
-	 * @return string|NULL
+	 * @return ?string    
 	 */
 	public function GetName ();
 
@@ -179,7 +179,7 @@ interface IGettersSetters {
 	 * by given params in router method: `\MvcCore\Router:Url($name, $params);`.
 	 *
 	 * Example: `"products_list" | "Products:Gallery"`
-	 * @param  string|NULL $name
+	 * @param  ?string     $name
 	 * @return \MvcCore\Route
 	 */
 	public function SetName ($name);
@@ -207,7 +207,7 @@ interface IGettersSetters {
 	 *   - placed in `/App/Controllers/Front/Business/Products.php`
 	 * - `"//Anywhere\Else\Controllers\Products"
 	 *   - placed in `/Anywhere/Else/Controllers/Products.php`
-	 * @return string|NULL
+	 * @return ?string    
 	 */
 	public function GetController ();
 
@@ -234,7 +234,7 @@ interface IGettersSetters {
 	 *   - placed in `/App/Controllers/Front/Business/Products.php`
 	 * - `"//Anywhere\Else\Controllers\Products"
 	 *   - placed in `/Anywhere/Else/Controllers/Products.php`
-	 * @param  string|NULL $controller
+	 * @param  ?string     $controller
 	 * @return \MvcCore\Route
 	 */
 	public function SetController ($controller);
@@ -251,7 +251,7 @@ interface IGettersSetters {
 	 * controller has to be named as: `public function ListAction () {...}`.
 	 *
 	 * Example: `"List"`
-	 * @return string|NULL
+	 * @return ?string    
 	 */
 	public function GetAction ();
 
@@ -267,7 +267,7 @@ interface IGettersSetters {
 	 * controller has to be named as: `public function ListAction () {...}`.
 	 *
 	 * Example: `"List"`
-	 * @param  string|NULL $action
+	 * @param  ?string     $action
 	 * @return \MvcCore\Route
 	 */
 	public function SetAction ($action);
@@ -410,7 +410,7 @@ interface IGettersSetters {
 	 * Strings `in` or `out`. You can use predefined constants:
 	 * - `\MvcCore\IRoute::CONFIG_FILTER_IN`
 	 * - `\MvcCore\IRoute::CONFIG_FILTER_OUT`
-	 * @return FilterCallable|NULL
+	 * @return ?FilterCallable
 	 */
 	public function GetFilter ($direction = \MvcCore\IRoute::CONFIG_FILTER_IN);
 
@@ -446,7 +446,7 @@ interface IGettersSetters {
 	 * request with any http method could be matched by this route. Value has to 
 	 * be in upper case.
 	 * Example: `"POST" | \MvcCore\IRequest::METHOD_POST`
-	 * @return string|NULL
+	 * @return ?string    
 	 */
 	public function GetMethod ();
 
@@ -455,7 +455,7 @@ interface IGettersSetters {
 	 * request with any http method could be matched by this route. Value has to 
 	 * be in upper case.
 	 * Example: `"POST" | \MvcCore\IRequest::METHOD_POST`
-	 * @param  string|NULL $method
+	 * @param  ?string     $method
 	 * @return \MvcCore\Route
 	 */
 	public function SetMethod ($method = NULL);
@@ -466,7 +466,7 @@ interface IGettersSetters {
 	 * routes handling old pages or old request forms, redirecting those request
 	 * to new form.
 	 * Example: `"new_route_name"`
-	 * @return string|NULL
+	 * @return ?string    
 	 */
 	public function GetRedirect ();
 
@@ -476,7 +476,7 @@ interface IGettersSetters {
 	 * routes handling old pages or old request forms, redirecting those request
 	 * to new form.
 	 * Example: `"new_route_name"`
-	 * @param string|NULL $redirectRouteName 
+	 * @param ?string     $redirectRouteName 
 	 * @return \MvcCore\Route
 	 */
 	public function SetRedirect ($redirectRouteName = NULL);
@@ -504,7 +504,7 @@ interface IGettersSetters {
 	 * from request path. First word is content between two first slashes in 
 	 * request path. If group name is `NULL`, route belongs to default group 
 	 * and that group is used when no other group matching the request path.
-	 * @return string|NULL
+	 * @return ?string    
 	 */
 	public function GetGroupName ();
 
@@ -513,7 +513,7 @@ interface IGettersSetters {
 	 * from request path. First word is content between two first slashes in 
 	 * request path. If group name is `NULL`, route belongs to default group 
 	 * and that group is used when no other group matching the request path.
-	 * @param  string|NULL $groupName 
+	 * @param  ?string     $groupName 
 	 * @return \MvcCore\Route
 	 */
 	public function SetGroupName ($groupName);
@@ -522,7 +522,7 @@ interface IGettersSetters {
 	 * Return only reverse params names as `string`s array. Reverse params array
 	 * is array with all rewrite params founded in `patter` (or `reverse`) string.
 	 * Example: `["name", "color"];`
-	 * @return array<string>|NULL
+	 * @return ?array<string>
 	 */
 	public function GetReverseParams ();
 
@@ -549,7 +549,7 @@ interface IGettersSetters {
 	
 	/**
 	 * Get router instance reference, used mostly in route URL building process.
-	 * @return \MvcCore\Router|NULL
+	 * @return ?\MvcCore\Router
 	 */
 	public function GetRouter ();
 	

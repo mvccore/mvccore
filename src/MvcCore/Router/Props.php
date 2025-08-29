@@ -20,32 +20,32 @@ trait Props {
 
 	/**
 	 * Current `\MvcCore\Router` singleton instance storage.
-	 * @var \MvcCore\Router|NULL
+	 * @var ?\MvcCore\Router
 	 */
 	protected static $instance = NULL;
 
 	/**
 	 * Value from `\MvcCore\Application::GetInstance()->GetRouterClass();`.
-	 * @var class-string|NULL
+	 * @var class-string|null
 	 */
 	protected static $routerClass = NULL;
 
 	/**
 	 * Value from `\MvcCore\Application::GetInstance()->GetRouteClass();`.
-	 * @var class-string|NULL
+	 * @var class-string|null
 	 */
 	protected static $routeClass = NULL;
 
 	/**
 	 * Value from `\MvcCore\Application::GetInstance()->GetToolClass();`.
-	 * @var class-string|NULL
+	 * @var class-string|null
 	 */
 	protected static $toolClass = NULL;
 
 	/**
 	 * Reference to `\MvcCore\Application::GetInstance();` 
 	 * to not call this very time we need app instance.
-	 * @var \MvcCore\Application|NULL
+	 * @var ?\MvcCore\Application
 	 */
 	protected $application = NULL;
 
@@ -53,7 +53,7 @@ trait Props {
 	 * Internally used `\MvcCore\Request` request object reference for:
 	 * - Routing process in `\MvcCore\Router::Route();` and it's protected sub-methods.
 	 * - URL addresses completing in `\MvcCore\Router::Url()` and it's protected sub-methods.
-	 * @var \MvcCore\Request|NULL
+	 * @var ?\MvcCore\Request
 	 */
 	protected $request = NULL;
 
@@ -91,14 +91,14 @@ trait Props {
 	 * is processed routing by rewrite routes. This property is possible to set 
 	 * manually into any boolean value you want and it will not be automatically 
 	 * detected anymore.
-	 * @var bool|NULL
+	 * @var ?bool    
 	 */
 	protected $routeByQueryString = NULL;
 
 	/**
 	 * Matched route by `\MvcCore\Router::Match();` processing or NULL if no match.
 	 * By this route, there is created and dispatched controller lifecycle by core.
-	 * @var \MvcCore\Route|NULL
+	 * @var ?\MvcCore\Route
 	 */
 	protected $currentRoute = NULL;
 
@@ -109,7 +109,7 @@ trait Props {
 	 * This route name record is not changed by any error rendering,
 	 * so in error pages, you could render 'self' links to desired page, but 
 	 * not to error page itself.
-	 * @var string|NULL
+	 * @var ?string    
 	 */
 	protected $selfRouteName = NULL;
 
@@ -126,14 +126,14 @@ trait Props {
 	 * All request params - params parsed by route and query string params.
 	 * Be careful, it could contain XSS chars. Use always `htmlspecialchars()`.
 	 * Those params could contain additional user params from filter function.
-	 * @var array<string,mixed>|NULL
+	 * @var ?array<string,mixed>
 	 */
 	protected $defaultParams = [];
 
 	/**
 	 * All request params - params parsed by route and query string params.
 	 * Be careful, it could contain XSS chars. Use always `htmlspecialchars()`.
-	 * @var array<string,mixed>|NULL
+	 * @var ?array<string,mixed>
 	 */
 	protected $requestedParams = [];
 
@@ -168,14 +168,14 @@ trait Props {
 	 * If response has no `Content-Type` header yet, query string separator is automatically
 	 * configured to `&`. That's why is very important to define response content type
 	 * as the very first command in controller `Init()` method, if you want to send XML content.
-	 * @var string|NULL
+	 * @var ?string    
 	 */
 	protected $queryParamsSepatator = NULL;
 
 	/**
 	 * If router has any routes configured in `Route()` function call, this property is `TRUE`.
 	 * If there are no routes configured in `Route()` function call moment, it's `FALSE`.
-	 * @var bool|NULL
+	 * @var ?bool    
 	 */
 	protected $anyRoutesConfigured = NULL;
 
@@ -199,7 +199,7 @@ trait Props {
 	 *         $router->AddRoutes($routes, $firstPathWord);
 	 *     };
 	 * ````
-	 * @var callable|NULL
+	 * @var ?callable
 	 */
 	protected $preRouteMatchingHandler = NULL;
 	
@@ -229,7 +229,7 @@ trait Props {
 	 *         return $routes;
 	 *     };
 	 * ````
-	 * @var callable|NULL
+	 * @var ?callable
 	 */
 	protected $preRouteUrlBuildingHandler = NULL;
 

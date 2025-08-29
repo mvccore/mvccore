@@ -23,7 +23,7 @@ trait RouteMethods {
 	 * @param  \MvcCore\Route[]|array $routes
 	 *                                Keyed array with routes, keys are route names or route
 	 *                                `Controller::Action` definitions.
-	 * @param  string|NULL            $groupName
+	 * @param  ?string                $groupName
 	 *                                Group name is first matched/parsed word in requested path to
 	 *                                group routes by to try to match only routes you really need,
 	 *                                not all of them. If `NULL` by default, routes are inserted
@@ -83,7 +83,7 @@ trait RouteMethods {
 	 * @param  array<int|string,\MvcCore\Route|array<string,mixed>|string> $routes
 	 * Keyed array with routes, keys are route names or route
 	 * `Controller::Action` definitions.
-	 * @param  string|NULL                                                 $groupName
+	 * @param  ?string                                                     $groupName
 	 * Group name is first matched/parsed word in requested path to
 	 * group routes by to try to match only routes you really need,
 	 * not all of them. If `NULL` by default, routes are inserted
@@ -152,7 +152,7 @@ trait RouteMethods {
 	 * @inheritDoc
 	 * @param  \MvcCore\Route|array<string,mixed> $routeCfgOrRoute
 	 * Route instance or route config array.
-	 * @param  string|NULL                        $groupName
+	 * @param  ?string                            $groupName
 	 * Group name is first matched/parsed word in requested path to
 	 * group routes by to try to match only routes you really need,
 	 * not all of them. If `NULL` by default, routes are inserted
@@ -208,7 +208,7 @@ trait RouteMethods {
 	 * in routing moment by first parsed word from requested URL.
 	 * @param  \MvcCore\Route $route     A route instance reference.
 	 * @param  string         $routeName Route name.
-	 * @param  string|NULL    $groupName Group name, first parsed word from requested URL.
+	 * @param  ?string        $groupName Group name, first parsed word from requested URL.
 	 * @param  bool           $prepend   IF `TRUE`, prepend route instance, `FALSE` otherwise.
 	 * @return void
 	 */
@@ -253,7 +253,7 @@ trait RouteMethods {
 	/**
 	 * @inheritDoc
 	 * @param  string $routeName
-	 * @return \MvcCore\Route|NULL
+	 * @return ?\MvcCore\Route
 	 */
 	public function RemoveRoute ($routeName) {
 		$result = NULL;
@@ -293,7 +293,7 @@ trait RouteMethods {
 
 	/**
 	 * @inheritDoc
-	 * @param  string|NULL $groupName
+	 * @param  ?string     $groupName
 	 *                     Group name is first matched/parsed word in requested path to
 	 *                     group routes by to try to match only routes you really need,
 	 *                     not all of them. If `NULL` by default, there are returned
@@ -309,7 +309,7 @@ trait RouteMethods {
 	/**
 	 * @inheritDoc
 	 * @param  string $routeName
-	 * @return \MvcCore\Route|NULL
+	 * @return ?\MvcCore\Route
 	 */
 	public function GetRoute ($routeName) {
 		if (isset($this->routes[$routeName]))
@@ -330,7 +330,7 @@ trait RouteMethods {
 
 	/**
 	 * @inheritDoc
-	 * @return \MvcCore\Route|NULL
+	 * @return ?\MvcCore\Route
 	 */
 	public function GetCurrentRoute () {
 		return $this->currentRoute;

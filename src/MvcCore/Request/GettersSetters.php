@@ -183,7 +183,7 @@ trait GettersSetters {
 
 	/**
 	 * @inheritDoc
-	 * @param  string|NULL $lang
+	 * @param  ?string     $lang
 	 * @return \MvcCore\Request
 	 */
 	public function SetLang ($lang) {
@@ -193,7 +193,7 @@ trait GettersSetters {
 
 	/**
 	 * @inheritDoc
-	 * @return string|NULL
+	 * @return ?string    
 	 */
 	public function GetLang () {
 		if ($this->lang === NULL) $this->initLangAndLocale();
@@ -202,7 +202,7 @@ trait GettersSetters {
 
 	/**
 	 * @inheritDoc
-	 * @param  string|NULL $locale
+	 * @param  ?string     $locale
 	 * @return \MvcCore\Request
 	 */
 	public function SetLocale ($locale) {
@@ -212,7 +212,7 @@ trait GettersSetters {
 
 	/**
 	 * @inheritDoc
-	 * @return string|NULL
+	 * @return ?string    
 	 */
 	public function GetLocale () {
 		if ($this->locale === NULL) $this->initLangAndLocale();
@@ -221,7 +221,7 @@ trait GettersSetters {
 
 	/**
 	 * @inheritDoc
-	 * @param  string|NULL $mediaSiteVersion
+	 * @param  ?string     $mediaSiteVersion
 	 * @return \MvcCore\Request
 	 */
 	public function SetMediaSiteVersion ($mediaSiteVersion) {
@@ -231,7 +231,7 @@ trait GettersSetters {
 
 	/**
 	 * @inheritDoc
-	 * @return string|NULL
+	 * @return ?string    
 	 */
 	public function GetMediaSiteVersion () {
 		return $this->mediaSiteVersion;
@@ -440,7 +440,7 @@ trait GettersSetters {
 
 	/**
 	 * @inheritDoc
-	 * @param  string|NULL $topLevelDomain
+	 * @param  ?string     $topLevelDomain
 	 * @return \MvcCore\Request
 	 */
 	public function SetTopLevelDomain ($topLevelDomain) {
@@ -458,7 +458,7 @@ trait GettersSetters {
 
 	/**
 	 * @inheritDoc
-	 * @return string|NULL
+	 * @return ?string    
 	 */
 	public function GetTopLevelDomain () {
 		if ($this->domainParts === NULL) $this->initDomainSegments();
@@ -467,7 +467,7 @@ trait GettersSetters {
 
 	/**
 	 * @inheritDoc
-	 * @param  string|NULL $secondLevelDomain
+	 * @param  ?string     $secondLevelDomain
 	 * @return \MvcCore\Request
 	 */
 	public function SetSecondLevelDomain ($secondLevelDomain) {
@@ -485,7 +485,7 @@ trait GettersSetters {
 
 	/**
 	 * @inheritDoc
-	 * @return string|NULL
+	 * @return ?string    
 	 */
 	public function GetSecondLevelDomain () {
 		if ($this->domainParts === NULL) $this->initDomainSegments();
@@ -494,7 +494,7 @@ trait GettersSetters {
 
 	/**
 	 * @inheritDoc
-	 * @param  string|NULL $thirdLevelDomain
+	 * @param  ?string     $thirdLevelDomain
 	 * @return \MvcCore\Request
 	 */
 	public function SetThirdLevelDomain ($thirdLevelDomain) {
@@ -512,7 +512,7 @@ trait GettersSetters {
 
 	/**
 	 * @inheritDoc
-	 * @return string|NULL
+	 * @return ?string    
 	 */
 	public function GetThirdLevelDomain () {
 		if ($this->domainParts === NULL) $this->initDomainSegments();
@@ -797,7 +797,7 @@ trait GettersSetters {
 
 	/**
 	 * @inheritDoc
-	 * @return int|NULL
+	 * @return ?int    
 	 */
 	public function GetContentLength () {
 		if ($this->contentLength === NULL) {

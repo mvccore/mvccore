@@ -28,7 +28,7 @@ interface IGettersSetters {
 	 * if `FALSE`, raw value is returned.
 	 * @param  mixed                                $ifNullValue
 	 * Default value returned if given param name is null.
-	 * @param  string|NULL                          $targetType
+	 * @param  ?string                              $targetType
 	 * Target type to retype param value or default if-null value. 
 	 * If param is an array, every param item will be retyped into given target type.
 	 * @return string|array<string>|int|array<int>|bool|array<bool>|array|mixed
@@ -222,7 +222,7 @@ interface IGettersSetters {
 	 * Return current controller view object if any.
 	 * Before `\MvcCore\Controller::PreDispatch();` is called
 	 * in controller lifecycle, this property will be still `NULL`.
-	 * @return \MvcCore\View|NULL
+	 * @return ?\MvcCore\View
 	 */
 	public function GetView ();
 
@@ -269,14 +269,14 @@ interface IGettersSetters {
 	/**
 	 * Get layout name to render html wrapper around rendered action view.
 	 * Example: `"front" | "admin" | "account"...`.
-	 * @return string|NULL
+	 * @return ?string    
 	 */
 	public function GetLayout ();
 
 	/**
 	 * Set layout name to render html wrapper around rendered action view.
 	 * Example: `"front" | "admin" | "account"...`.
-	 * @param  string|NULL $layout
+	 * @param  ?string     $layout
 	 * @return \MvcCore\Controller
 	 */
 	public function SetLayout ($layout);
@@ -290,7 +290,7 @@ interface IGettersSetters {
 	 * up this property to value `something/completely` and then there is
 	 * necessary to render your template only by calling controller rendering by:
 	 * `$subcontrollerInstance->Render('custom');`
-	 * @return string|NULL
+	 * @return ?string    
 	 */
 	public function GetViewScriptsPath ();
 
@@ -303,7 +303,7 @@ interface IGettersSetters {
 	 * up this property to value `something/completely` and then there is
 	 * necessary to render your template only by calling controller rendering by:
 	 * `$subcontrollerInstance->Render('custom');`
-	 * @param  string|NULL $viewScriptsPath
+	 * @param  ?string     $viewScriptsPath
 	 * @return \MvcCore\Controller
 	 */
 	public function SetViewScriptsPath ($viewScriptsPath = NULL);
@@ -331,7 +331,7 @@ interface IGettersSetters {
 	 * Get parent controller instance if any.
 	 * Method for child controllers. This method returns
 	 * `NULL` for top most parent controller instance.
-	 * @return \MvcCore\Controller|NULL
+	 * @return ?\MvcCore\Controller    
 	 */
 	public function GetParentController ();
 
@@ -339,7 +339,7 @@ interface IGettersSetters {
 	 * Set parent controller instance
 	 * or `NULL` for "top most parent" controller.
 	 * Method for child controllers.
-	 * @param  \MvcCore\Controller|NULL $parentController
+	 * @param  ?\MvcCore\Controller     $parentController
 	 * @return \MvcCore\Controller
 	 */
 	public function SetParentController (/*\MvcCore\IController*/ $parentController = NULL);
@@ -378,14 +378,14 @@ interface IGettersSetters {
 	 * Get (optionally cached) config INI file as `stdClass` or `array`,
 	 * placed relatively from application document root.
 	 * @param  string $appRootRelativePath Any config relative path from application root dir like `'~/App/website.ini'`.
-	 * @return \MvcCore\Config|NULL
+	 * @return ?\MvcCore\Config
 	 */
 	public function GetConfig ($appRootRelativePath);
 
 	/**
 	 * Get (optionally cached) system config INI file as `stdClass` or `array`,
 	 * placed by default in: `"/App/config.ini"`.
-	 * @return \MvcCore\Config|NULL
+	 * @return ?\MvcCore\Config
 	 */
 	public function GetConfigSystem ();
 	

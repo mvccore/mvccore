@@ -107,7 +107,7 @@ interface IHelpers {
 	 * @see https://www.php.net/manual/en/function.parse-url.php
 	 * @see https://bugs.php.net/bug.php?id=73192
 	 * @see https://en.wikipedia.org/wiki/Uniform_Resource_Identifier
-	 * @param  string|NULL $uri 
+	 * @param  ?string     $uri 
 	 * @param  int         $component 
 	 * @return ParsedUrl|string|int|null|false
 	 */
@@ -121,7 +121,7 @@ interface IHelpers {
 	 * compare both numbers only by limited number of fraction digits.
 	 * @param  float|int|string|null $n1 
 	 * @param  float|int|string|null $n2 
-	 * @param  int|NULL              $fractionLength
+	 * @param  ?int                  $fractionLength
 	 * @return bool
 	 */
 	public static function CompareFloats ($n1, $n2, $fractionLength = NULL) ;

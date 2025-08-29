@@ -73,7 +73,7 @@ trait Dispatching {
 	/**
 	 * @inheritDoc
 	 * @throws \Throwable
-	 * @return bool|NULL
+	 * @return ?bool
 	 */
 	public function DispatchExec () {
 		if (!$this->ProcessCustomHandlers($this->preRouteHandlers))	
@@ -141,7 +141,7 @@ trait Dispatching {
 	 * @return bool
 	 */
 	public function SetUpController () {
-		/** @var \MvcCore\Route|NULL $route */
+		/** @var ?\MvcCore\Route $route */
 		$route = $this->router->GetCurrentRoute();
 		if ($route === NULL) 
 			throw new \Exception('No route for request', 404);
@@ -307,7 +307,7 @@ trait Dispatching {
 	/**
 	 * @inheritDoc
 	 * @param  \Throwable|\Exception|string $exceptionOrMessage
-	 * @param  int|NULL                     $code
+	 * @param  ?int                         $code
 	 * @return bool
 	 */
 	public function DispatchException ($exceptionOrMessage, $code = NULL) {
@@ -419,7 +419,7 @@ trait Dispatching {
 
 	/**
 	 * @inheritDoc
-	 * @param  string|NULL $exceptionMessage
+	 * @param  ?string $exceptionMessage
 	 * @return bool
 	 */
 	public function RenderNotFound ($exceptionMessage) {

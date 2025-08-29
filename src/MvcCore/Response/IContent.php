@@ -38,7 +38,7 @@ interface IContent {
 
 	/**
 	 * Get HTTP response body.
-	 * @return string|NULL
+	 * @return ?string    
 	 */
 	public function & GetBody ();
 

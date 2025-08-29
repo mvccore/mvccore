@@ -20,7 +20,7 @@ trait DirectoryMethods {
 
 	/**
 	 * @inheritDoc
-	 * @return string|NULL
+	 * @return ?string    
 	 */
 	public function GetCurrentViewFullPath () {
 		$result = NULL;
@@ -33,7 +33,7 @@ trait DirectoryMethods {
 
 	/**
 	 * @inheritDoc
-	 * @return string|NULL
+	 * @return ?string    
 	 */
 	public function GetCurrentViewDirectory () {
 		$result = $this->GetCurrentViewFullPath();
@@ -46,7 +46,7 @@ trait DirectoryMethods {
 
 	/**
 	 * @inheritDoc
-	 * @return string|NULL
+	 * @return ?string    
 	 */
 	public function GetParentViewFullPath () {
 		$result = NULL;
@@ -82,7 +82,7 @@ trait DirectoryMethods {
 
 	/**
 	 * @inheritDoc
-	 * @return string|NULL
+	 * @return ?string    
 	 */
 	public function GetParentViewDirectory () {
 		$result = $this->GetParentViewFullPath();

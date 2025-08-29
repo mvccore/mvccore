@@ -22,7 +22,7 @@ trait GettersSetters {
 	/**
 	 *
 	 * @inheritDoc
-	 * @return string|array<string,string>|NULL
+	 * @return string|array<string,string>|null
 	 */
 	public function GetPattern () {
 		return $this->pattern;
@@ -40,7 +40,7 @@ trait GettersSetters {
 
 	/**
 	 * @inheritDoc
-	 * @return string|array<string,string>|NULL
+	 * @return string|array<string,string>|null
 	 */
 	public function GetMatch () {
 		return $this->match;
@@ -58,7 +58,7 @@ trait GettersSetters {
 
 	/**
 	 * @inheritDoc
-	 * @return string|array<string,string>|NULL
+	 * @return string|array<string,string>|null
 	 */
 	public function GetReverse () {
 		return $this->reverse;
@@ -76,7 +76,7 @@ trait GettersSetters {
 
 	/**
 	 * @inheritDoc
-	 * @return string|NULL
+	 * @return ?string    
 	 */
 	public function GetName () {
 		return $this->name;
@@ -84,7 +84,7 @@ trait GettersSetters {
 
 	/**
 	 * @inheritDoc
-	 * @param  string|NULL $name
+	 * @param  ?string     $name
 	 * @return \MvcCore\Route
 	 */
 	public function SetName ($name) {
@@ -94,7 +94,7 @@ trait GettersSetters {
 
 	/**
 	 * @inheritDoc
-	 * @return string|NULL
+	 * @return ?string    
 	 */
 	public function GetController () {
 		return $this->controller;
@@ -102,7 +102,7 @@ trait GettersSetters {
 
 	/**
 	 * @inheritDoc
-	 * @param  string|NULL $controller
+	 * @param  ?string     $controller
 	 * @return \MvcCore\Route
 	 */
 	public function SetController ($controller) {
@@ -114,7 +114,7 @@ trait GettersSetters {
 
 	/**
 	 * @inheritDoc
-	 * @return string|NULL
+	 * @return ?string    
 	 */
 	public function GetAction () {
 		return $this->action;
@@ -122,7 +122,7 @@ trait GettersSetters {
 
 	/**
 	 * @inheritDoc
-	 * @param  string|NULL $action
+	 * @param  ?string     $action
 	 * @return \MvcCore\Route
 	 */
 	public function SetAction ($action) {
@@ -220,7 +220,7 @@ trait GettersSetters {
 	 * Strings `in` or `out`. You can use predefined constants:
 	 * - `\MvcCore\IRoute::CONFIG_FILTER_IN`
 	 * - `\MvcCore\IRoute::CONFIG_FILTER_OUT`
-	 * @return FilterCallable|NULL
+	 * @return ?FilterCallable
 	 */
 	public function GetFilter ($direction = \MvcCore\IRoute::CONFIG_FILTER_IN) {
 		return isset($this->filters[$direction])
@@ -251,7 +251,7 @@ trait GettersSetters {
 
 	/**
 	 * @inheritDoc
-	 * @return string|NULL
+	 * @return ?string    
 	 */
 	public function GetMethod () {
 		return $this->method;
@@ -259,7 +259,7 @@ trait GettersSetters {
 
 	/**
 	 * @inheritDoc
-	 * @param  string|NULL $method
+	 * @param  ?string     $method
 	 * @return \MvcCore\Route
 	 */
 	public function SetMethod ($method = NULL) {
@@ -269,7 +269,7 @@ trait GettersSetters {
 	
 	/**
 	 * @inheritDoc
-	 * @return string|NULL
+	 * @return ?string    
 	 */
 	public function GetRedirect () {
 		return $this->redirect;
@@ -277,7 +277,7 @@ trait GettersSetters {
 
 	/**
 	 * @inheritDoc
-	 * @param  string|NULL $redirectRouteName 
+	 * @param  ?string     $redirectRouteName 
 	 * @return \MvcCore\Route
 	 */
 	public function SetRedirect ($redirectRouteName = NULL) {
@@ -305,7 +305,7 @@ trait GettersSetters {
 
 	/**
 	 * @inheritDoc
-	 * @return string|NULL
+	 * @return ?string    
 	 */
 	public function GetGroupName () {
 		return $this->groupName;
@@ -313,7 +313,7 @@ trait GettersSetters {
 
 	/**
 	 * @inheritDoc
-	 * @param  string|NULL $groupName 
+	 * @param  ?string     $groupName 
 	 * @return \MvcCore\Route
 	 */
 	public function SetGroupName ($groupName) {
@@ -323,7 +323,7 @@ trait GettersSetters {
 
 	/**
 	 * @inheritDoc
-	 * @return array<string>|NULL
+	 * @return ?array<string>
 	 */
 	public function GetReverseParams () {
 		return $this->reverseParams !== NULL 
@@ -351,7 +351,7 @@ trait GettersSetters {
 	
 	/**
 	 * @inheritDoc
-	 * @return \MvcCore\Router|NULL
+	 * @return ?\MvcCore\Router
 	 */
 	public function GetRouter () {
 		return $this->router;

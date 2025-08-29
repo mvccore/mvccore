@@ -43,7 +43,7 @@ interface IDispatching {
 	 * where was controller subclass created, if no controller instance given 
 	 * into subclass constructor.
 	 * If no previous controller instance found, `NULL` is returned.
-	 * @return string|NULL
+	 * @return ?string    
 	 */
 	public static function GetCallerControllerClass ();
 
@@ -52,7 +52,7 @@ interface IDispatching {
 	 * where was controller subclass created, if no controller instance given 
 	 * into subclass constructor.
 	 * If no previous controller instance founded, `NULL` is returned.
-	 * @return \MvcCore\IController|NULL
+	 * @return ?\MvcCore\Controller
 	 */
 	public static function GetCallerControllerInstance ();
 	
@@ -63,6 +63,7 @@ interface IDispatching {
 	 * @param  int         $code
 	 * @param  string|NULL $reason   Any optional text header for reason why.
 	 * @throws \MvcCore\Controller\TerminateException
+	 * @param  ?string     $reason   Any optional text header for reason why.
 	 * @return void
 	 */
 	public static function Redirect ($location, $code = \MvcCore\IResponse::SEE_OTHER, $reason = NULL);
@@ -86,7 +87,7 @@ interface IDispatching {
 	 * `$controller->Terminate()` or which you can store
 	 * anywhere in cache to use it later etc.
 	 * @internal
-	 * @param  string|NULL $actionName
+	 * @param  ?string     $actionName
 	 * Optional, PHP code action name, it has to be in PascalCase 
 	 * without any suffix (`Init` or `Action'). This value is used 
 	 * later to call your desired functions in controller with this changes:

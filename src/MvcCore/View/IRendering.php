@@ -48,8 +48,8 @@ interface IRendering {
 	 * Method renders whole configured layout template and return it's result
 	 * as string reference with inner rendered action template content.
 	 * @internal
-	 * @param  string|NULL $relativePath
-	 * @param  string|NULL $content
+	 * @param  ?string     $relativePath
+	 * @param  ?string     $content
 	 * @return string
 	 */
 	public function RenderLayoutAndContent ($relativePath, $content = NULL);
@@ -169,7 +169,7 @@ interface IRendering {
 	 * Evaluated code is wrapped into `try/catch` automatically.
 	 * USE THIS METHOD ONLY IF YOU TRUST THE INPUT!
 	 * @deprecated
-	 * @param  string|NULL $content
+	 * @param  ?string     $content
 	 * @return string
 	 */
 	public function Evaluate ($content);

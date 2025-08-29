@@ -60,7 +60,7 @@ interface IConfig {
 	 * ````
 	 * @param  array<int|string,int|string|array<string,mixed>> $configs
 	 * Configuration array with `\stdClass` objects or arrays with configuration data.
-	 * @param  string|int|NULL                                  $defaultConnectionName
+	 * @param  string|int|null                                  $defaultConnectionName
 	 * @return bool
 	 */
 	public static function SetConfigs (array $configs = [], $defaultConnectionName = NULL);
@@ -68,8 +68,8 @@ interface IConfig {
 	/**
 	 * Returns database connection config by connection index (integer)
 	 * or by connection name (string) as `\stdClass` (cached by local store).
-	 * @param  int|string|NULL $connectionName
-	 * @return \stdClass|NULL
+	 * @param  int|string|null $connectionName
+	 * @return ?\stdClass
 	 */
 	public static function & GetConfig ($connectionName = NULL);
 
@@ -108,7 +108,7 @@ interface IConfig {
 	 *   ], 0);
 	 * ````
 	 * @param  array<string,mixed> $config
-	 * @param  string|int|NULL     $connectionName
+	 * @param  string|int|null     $connectionName
 	 * @return string|int
 	 */
 	public static function SetConfig (array $config = [], $connectionName = NULL);

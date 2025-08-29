@@ -20,7 +20,7 @@ trait Instancing {
 
 	/**
 	 * @inheritDoc
-	 * @param  int|NULL                                   $code
+	 * @param  ?int                                       $code
 	 * @param  array<string,string|int|array<string|int>> $headers
 	 * @param  string                                     $body
 	 * @return \MvcCore\Response

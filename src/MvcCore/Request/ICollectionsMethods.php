@@ -14,7 +14,7 @@
 namespace MvcCore\Request;
 
 /**
- * @phpstan-type CollectionItem string|int|float|bool|NULL|array<string|int|float|bool|NULL>|mixed
+ * @phpstan-type CollectionItem string|int|float|bool|null|array<string|int|float|bool|null>|mixed
  * @phpstan-type CollectionFilter string|array<string,string>|bool
  */
 interface ICollectionsMethods {
@@ -112,7 +112,7 @@ interface ICollectionsMethods {
 	 * Set language international code.
 	 * Use this lang storage by your own decision.
 	 * Example: `"en" | "de"`
-	 * @param  string|NULL $lang
+	 * @param  ?string     $lang
 	 * @return \MvcCore\Request
 	 */
 	public function SetLang ($lang);
@@ -122,7 +122,7 @@ interface ICollectionsMethods {
 	 * To use this variable - install  `\MvcCore\Router` extension `\MvcCore\Ext\Router\Lang`
 	 * Or use this variable by your own decision.
 	 * Example: `"en" | "de"`
-	 * @return string|NULL
+	 * @return ?string    
 	 */
 	public function GetLang ();
 
@@ -130,7 +130,7 @@ interface ICollectionsMethods {
 	 * Set country/locale code, upper case.
 	 * Use this locale storage by your own decision.
 	 * Example: `"US" | "UK"`
-	 * @param  string|NULL $locale
+	 * @param  ?string     $locale
 	 * @return \MvcCore\Request
 	 */
 	public function SetLocale ($locale);
@@ -140,7 +140,7 @@ interface ICollectionsMethods {
 	 * To use this variable - install `\MvcCore\Router` extension `\MvcCore\Ext\Router\Lang`
 	 * Or use this variable by your own decision.
 	 * Example: `"US" | "UK"`
-	 * @return string|NULL
+	 * @return ?string    
 	 */
 	public function GetLocale ();
 
@@ -148,7 +148,7 @@ interface ICollectionsMethods {
 	 * Set media site version - `"full" | "tablet" | "mobile"`.
 	 * Use this media site version storage by your own decision.
 	 * Example: `"full" | "tablet" | "mobile"`
-	 * @param  string|NULL $mediaSiteVersion
+	 * @param  ?string     $mediaSiteVersion
 	 * @return \MvcCore\Request
 	 */
 	public function SetMediaSiteVersion ($mediaSiteVersion);
@@ -158,7 +158,7 @@ interface ICollectionsMethods {
 	 * To use this variable - install `\MvcCore\Router` extension `\MvcCoreExt\Router\Media`
 	 * Or use this variable by your own decision.
 	 * Example: `"full" | "tablet" | "mobile"`
-	 * @return string|NULL
+	 * @return ?string    
 	 */
 	public function GetMediaSiteVersion ();
 	
@@ -282,7 +282,7 @@ interface ICollectionsMethods {
 	/**
 	 * Set TOP level domain like `com` or `co.uk`.
 	 * Method also change server name and host record automatically.
-	 * @param  string|NULL $topLevelDomain
+	 * @param  ?string     $topLevelDomain
 	 * @return \MvcCore\Request
 	 */
 	public function SetTopLevelDomain ($topLevelDomain);
@@ -292,14 +292,14 @@ interface ICollectionsMethods {
 	 * Be carefull on Apache web server, `$_SERVER['SERVER_NAME']`
 	 * could be spoofed without `UseCanonicalName On` configuration.
 	 * @see https://www.php.net/manual/en/reserved.variables.server.php#refsect1-reserved.variables.server-indices
-	 * @return string|NULL
+	 * @return ?string    
 	 */
 	public function GetTopLevelDomain ();
 
 	/**
 	 * Set second level domain like `example` in `www.example.com`.
 	 * Method also change server name and host record automatically.
-	 * @param  string|NULL $secondLevelDomain
+	 * @param  ?string     $secondLevelDomain
 	 * @return \MvcCore\Request
 	 */
 	public function SetSecondLevelDomain ($secondLevelDomain);
@@ -309,14 +309,14 @@ interface ICollectionsMethods {
 	 * Be carefull on Apache web server, `$_SERVER['SERVER_NAME']`
 	 * could be spoofed without `UseCanonicalName On` configuration.
 	 * @see https://www.php.net/manual/en/reserved.variables.server.php#refsect1-reserved.variables.server-indices
-	 * @return string|NULL
+	 * @return ?string    
 	 */
 	public function GetSecondLevelDomain ();
 
 	/**
 	 * Set second level domain like `example` from `www.example.com`.
 	 * Method also change server name and host record automatically.
-	 * @param  string|NULL $thirdLevelDomain
+	 * @param  ?string     $thirdLevelDomain
 	 * @return \MvcCore\Request
 	 */
 	public function SetThirdLevelDomain ($thirdLevelDomain);
@@ -326,7 +326,7 @@ interface ICollectionsMethods {
 	 * Be carefull on Apache web server, `$_SERVER['SERVER_NAME']`
 	 * could be spoofed without `UseCanonicalName On` configuration.
 	 * @see https://www.php.net/manual/en/reserved.variables.server.php#refsect1-reserved.variables.server-indices
-	 * @return string|NULL
+	 * @return ?string    
 	 */
 	public function GetThirdLevelDomain ();
 
@@ -518,7 +518,7 @@ interface ICollectionsMethods {
 	/**
 	 * Get integer value from global `$_SERVER['CONTENT_LENGTH']`
 	 * or from http header `Content-Length`, if no value, `NULL` is returned.
-	 * @return int|NULL
+	 * @return ?int    
 	 */
 	public function GetContentLength ();
 

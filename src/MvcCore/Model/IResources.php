@@ -19,7 +19,7 @@ interface IResources {
 	 * Returns (or creates if necessary) model resource instance.
 	 * Common resource instance is stored all the time in static store
 	 * under key from resource full class name and constructor arguments.
-	 * @param  array<int,mixed>|NULL $args
+	 * @param  array<int,mixed>|null $args
 	 * Values array with variables to pass into resource `__construct()` method.
 	 * If `NULL`, recource class will be created without `__construct()` method call.
 	 * @param  string                $classPath
@@ -34,7 +34,7 @@ interface IResources {
 	/**
 	 * Returns (or creates if doesn`t exist) model resource instance.
 	 * Resource instance is stored in protected instance property `resource`.
-	 * @param  array<int,mixed>|NULL $args
+	 * @param  array<int,mixed>|null $args
 	 * Values array with variables to pass into resource `__construct()` method.
 	 * If `NULL`, recource class will be created without `__construct()` method call.
 	 * @param  string                $classPath

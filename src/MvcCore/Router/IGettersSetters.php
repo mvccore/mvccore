@@ -44,7 +44,7 @@ interface IGettersSetters {
 	 * values with controller and action are used. If this method is configures 
 	 * with `FALSE` value, there are used only rewrite routes routing and no 
 	 * query string data. this method is highly advanced.
-	 * @param  bool|NULL $routeByQueryString 
+	 * @param  ?bool     $routeByQueryString 
 	 * @return \MvcCore\Router
 	 */
 	public function SetRouteByQueryString ($routeByQueryString = TRUE);
@@ -53,7 +53,7 @@ interface IGettersSetters {
 	 * Get routing strategy. `TRUE` means that there was automatically or 
 	 * manually chosen routing by query string values and `FALSE` means that
 	 * there was chosen routing by rewrite routes.
-	 * @return bool|NULL
+	 * @return ?bool    
 	 */
 	public function GetRouteByQueryString ();
 	
@@ -164,7 +164,7 @@ interface IGettersSetters {
 	 *       }
 	 *   );
 	 * ````
-	 * @param  callable|NULL $preRouteMatchingHandler 
+	 * @param  ?callable $preRouteMatchingHandler 
 	 * @throws \Exception Pre-route matching handler is not callable.
 	 * @return \MvcCore\Router
 	 */
@@ -180,7 +180,7 @@ interface IGettersSetters {
 	 * argument to be request object instance and third argument to be a string 
 	 * with possibly parsed first word from requested path or an empty string.
 	 * Handler returns value to be void or anything else, doesn't matter.
-	 * @return callable|NULL
+	 * @return ?callable
 	 */
 	public function GetPreRouteMatchingHandler ();
 
@@ -211,7 +211,7 @@ interface IGettersSetters {
 	 *       }
 	 *   );
 	 * ````
-	 * @param  callable|NULL $preRouteUrlBuildingHandler 
+	 * @param  ?callable $preRouteUrlBuildingHandler 
 	 * @throws \Exception Pre-url building handler is not callable.
 	 * @return \MvcCore\Router
 	 */
@@ -233,7 +233,7 @@ interface IGettersSetters {
 	 * or array with keys to be route names for each route to merge those new
 	 * routes with already defined routes in router instance in protected 
 	 * property `$router->urlRoutes`.
-	 * @return callable|NULL
+	 * @return ?callable
 	 */
 	public function GetPreRouteUrlBuildingHandler ();
 

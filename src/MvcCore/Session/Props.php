@@ -27,7 +27,7 @@ trait Props {
 
 	/**
 	 * Static boolean about if session has been already started or not.
-	 * @var bool|NULL
+	 * @var ?bool
 	 */
 	protected static $started = NULL;
 
@@ -86,25 +86,32 @@ trait Props {
 	 * Zero value (`0`) means "until the browser is closed".
 	 * If there is found any autorization service,
 	 * value is set by authorization expiration time.
-	 * @var int|NULL
+	 * @var ?int
 	 */
-	protected static $sessionCsrfMaxTime = NULL;
+	protected static $sessionSecurityMaxTime = NULL;
+
+	/**
+	 * `TRUE` if session has been regenerated in login/logout submit.
+	 * All session data are always transfered into new session.
+	 * @var mixed
+	 */
+	protected static $regenerated = FALSE;
 
 	/**
 	 * Application instance reference.
-	 * @var \MvcCore\Application|NULL
+	 * @var ?\MvcCore\Application
 	 */
 	protected static $app = NULL;
 
 	/**
 	 * Request instance reference.
-	 * @var \MvcCore\Request|NULL
+	 * @var ?\MvcCore\Request
 	 */
 	protected static $req = NULL;
 
 	/**
 	 * Response instance reference.
-	 * @var \MvcCore\Response|NULL
+	 * @var ?\MvcCore\Response
 	 */
 	protected static $res = NULL;
 }

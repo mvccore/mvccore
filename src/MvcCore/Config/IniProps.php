@@ -29,13 +29,13 @@ trait IniProps {
 	 * Environment config relative path from app root.
 	 * This value could be changed to any value at the very application start.
 	 * Example: `'~/App/env.ini'`
-	 * @var string|NULL
+	 * @var ?string    
 	 */
 	protected static $configEnvironmentPath = NULL;
 
 	/**
 	 * INI special values to type into `bool` or `NULL`.
-	 * @var array<string,bool|NULL>
+	 * @var array<string,bool|null>
 	 */
 	protected static $specialValues = [
 		'true'	=> TRUE,

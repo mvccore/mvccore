@@ -22,7 +22,7 @@ trait Escaping {
 	 * @inheritDoc
 	 * @param  string      $str 
 	 * @param  int         $flags
-	 * @param  string|NULL $encoding 
+	 * @param  ?string     $encoding 
 	 * @param  bool        $double 
 	 * @param  bool        $jsTemplate
 	 * @return string
@@ -42,7 +42,7 @@ trait Escaping {
 	/**
 	 * @inheritDoc
 	 * @param  string      $str 
-	 * @param  string|NULL $encoding 
+	 * @param  ?string     $encoding 
 	 * @param  bool        $double 
 	 * @return string
 	 */
@@ -59,7 +59,7 @@ trait Escaping {
 	 * @inheritDoc
 	 * @param  string      $str 
 	 * @param  int         $flags
-	 * @param  string|NULL $encoding 
+	 * @param  ?string     $encoding 
 	 * @param  bool        $double 
 	 * @return string
 	 */
@@ -79,7 +79,7 @@ trait Escaping {
 	/**
 	 * @inheritDoc
 	 * @param  string      $str 
-	 * @param  string|NULL $encoding 
+	 * @param  ?string     $encoding 
 	 * @return string
 	 */
 	public function EscapeXml ($str, $encoding = NULL, $double = FALSE) {

@@ -58,13 +58,13 @@ interface IInstancing {
 	 * @param string|array<string,mixed> $pattern
 	 * Required, configuration array or route pattern value
 	 * to parse into match and reverse patterns.
-	 * @param string|NULL                $controllerAction
+	 * @param ?string                    $controllerAction
 	 * Optional, controller and action name in pascal case
 	 * like: `"Products:List"`.
-	 * @param array<string,mixed>|NULL   $defaults
+	 * @param ?array<string,mixed>       $defaults
 	 * Optional, default param values like:
 	 * `["name" => "default-name", "page" => 1]`.
-	 * @param array<string,string>|NULL  $constraints
+	 * @param ?array<string,string>      $constraints
 	 * Optional, params regular expression constraints for
 	 * regular expression match function if no `"match"`
 	 * property in config array as first argument defined.

@@ -40,8 +40,8 @@ interface IGettersSetters {
 	 * Set environment config relative path from app root.
 	 * This value could be changed to any value at the very application start.
 	 * Example: `\MvcCore\Config::SetConfigEnvironmentPath('~/App/env.ini');`
-	 * @param  string|NULL $configEnvironmentPath
-	 * @return string|NULL
+	 * @param  ?string     $configEnvironmentPath
+	 * @return ?string    
 	 */
 	public static function SetConfigEnvironmentPath ($configEnvironmentPath);
 
@@ -56,7 +56,7 @@ interface IGettersSetters {
 	/**
 	 * Clear configs memory cache by relative path from app root 
 	 * or clear whole configs memory cache if `NULL` specified.
-	 * @param  string|NULL $appRootRelativePath
+	 * @param  ?string     $appRootRelativePath
 	 * @return bool
 	 */
 	public static function ClearConfigCache ($appRootRelativePath = NULL);

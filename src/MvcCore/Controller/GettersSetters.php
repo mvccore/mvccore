@@ -28,7 +28,7 @@ trait GettersSetters {
 	 * if `FALSE`, raw value is returned.
 	 * @param  mixed                                $ifNullValue
 	 * Default value returned if given param name is null.
-	 * @param  string|NULL                          $targetType
+	 * @param  ?string                              $targetType
 	 * Target type to retype param value or default if-null value. 
 	 * If param is an array, every param item will be retyped into given target type.
 	 * @return string|array<string>|int|array<int>|bool|array<bool>|array|mixed
@@ -234,7 +234,7 @@ trait GettersSetters {
 
 	/**
 	 * @inheritDoc
-	 * @return \MvcCore\View|NULL
+	 * @return ?\MvcCore\View
 	 */
 	public function GetView () {
 		return $this->view;
@@ -271,7 +271,7 @@ trait GettersSetters {
 
 	/**
 	 * @inheritDoc
-	 * @return string|NULL
+	 * @return ?string    
 	 */
 	public function GetLayout () {
 		return $this->layout;
@@ -279,7 +279,7 @@ trait GettersSetters {
 
 	/**
 	 * @inheritDoc
-	 * @param  string|NULL $layout
+	 * @param  ?string     $layout
 	 * @return \MvcCore\Controller
 	 */
 	public function SetLayout ($layout) {
@@ -289,7 +289,7 @@ trait GettersSetters {
 
 	/**
 	 * @inheritDoc
-	 * @return string|NULL
+	 * @return ?string    
 	 */
 	public function GetViewScriptsPath () {
 		return $this->viewScriptsPath;
@@ -297,7 +297,7 @@ trait GettersSetters {
 
 	/**
 	 * @inheritDoc
-	 * @param  string|NULL $viewScriptsPath
+	 * @param  ?string     $viewScriptsPath
 	 * @return \MvcCore\Controller
 	 */
 	public function SetViewScriptsPath ($viewScriptsPath = NULL) {
@@ -325,7 +325,7 @@ trait GettersSetters {
 
 	/**
 	 * @inheritDoc
-	 * @return \MvcCore\Controller|NULL
+	 * @return ?\MvcCore\Controller    
 	 */
 	public function GetParentController () {
 		return $this->parentController;
@@ -333,7 +333,7 @@ trait GettersSetters {
 
 	/**
 	 * @inheritDoc
-	 * @param  \MvcCore\Controller|NULL $parentController
+	 * @param  ?\MvcCore\Controller     $parentController
 	 * @return \MvcCore\Controller
 	 */
 	public function SetParentController (/*\MvcCore\IController*/ $parentController = NULL) {
@@ -377,7 +377,7 @@ trait GettersSetters {
 	/**
 	 * @inheritDoc
 	 * @param  string $appRootRelativePath Any config relative path from application root dir like `'~/App/website.ini'`.
-	 * @return \MvcCore\Config|NULL
+	 * @return ?\MvcCore\Config
 	 */
 	public function GetConfig ($appRootRelativePath) {
 		$configClass = $this->application->GetConfigClass();
@@ -386,7 +386,7 @@ trait GettersSetters {
 
 	/**
 	 * @inheritDoc
-	 * @return \MvcCore\Config|NULL
+	 * @return ?\MvcCore\Config
 	 */
 	public function GetConfigSystem () {
 		$configClass = $this->application->GetConfigClass();

@@ -29,8 +29,8 @@ interface IRendering {
 	 * - If controller has no other parent controller, render layout view around action view.
 	 * - For top most parent controller - store rendered action and layout view in response object and return empty string.
 	 * - For child controller - return rendered action view as string.
-	 * @param  string|NULL $controllerOrActionNameDashed
-	 * @param  string|NULL $actionNameDashed
+	 * @param  ?string     $controllerOrActionNameDashed
+	 * @param  ?string     $actionNameDashed
 	 * @return string
 	 */
 	public function Render ($controllerOrActionNameDashed = NULL, $actionNameDashed = NULL);

@@ -41,7 +41,7 @@ trait PropsGettersSetters {
 
 	/**
 	 * Cookie names for session id for secure and non-secure connection.
-	 * @var array{0:string|NULL,1:string|NULL}
+	 * @var array{0:?string,1:?string}
 	 */
 	protected static $sessionIdCookieNames = [
 		\MvcCore\IResponse::COOKIE_SESSION_ID_SECURE_DEFAULT_NAME,
@@ -57,20 +57,20 @@ trait PropsGettersSetters {
 	/**
 	 * Response HTTP protocol version by `$_SERVER['SERVER_PROTOCOL']`.
 	 * Example: `HTTP/1.0 | HTTP/1.1 | HTTP/2 | SPDY`
-	 * @var string|NULL
+	 * @var ?string
 	 */
 	protected $httpVersion = NULL;
 
 	/**
 	 * Response HTTP code.
 	 * Example: `200 | 301 | 404`
-	 * @var int|NULL
+	 * @var ?int
 	 */
 	protected $code = NULL;
 
 	/**
 	 * Optional response HTTP code message.
-	 * @var string|NULL
+	 * @var ?string
 	 */
 	protected $codeMessage = NULL;
 
@@ -90,14 +90,14 @@ trait PropsGettersSetters {
 	/**
 	 * Response content encoding.
 	 * Example: `"utf-8" | "windows-1250" | "ISO-8859-2"`
-	 * @var string|NULL
+	 * @var ?string
 	 */
 	protected $encoding = NULL;
 
 	/**
 	 * Response HTTP body.
 	 * Example: `"<!DOCTYPE html><html lang="en"><head><meta ..."`
-	 * @var string|NULL
+	 * @var ?string
 	 */
 	protected $body = NULL;
 
@@ -109,7 +109,7 @@ trait PropsGettersSetters {
 
 	/**
 	 * `TRUE` if `zlib.output_compression` is enabled.
-	 * @var bool|NULL
+	 * @var ?bool
 	 */
 	protected $outputCompression = NULL;
 
@@ -122,15 +122,15 @@ trait PropsGettersSetters {
 
 	/**
 	 * Reference to current application request object.
-	 * @var \MvcCore\Request|NULL
+	 * @var ?\MvcCore\Request
 	 */
 	protected $request = NULL;
 
 	
 	/**
 	 * @inheritDoc
-	 * @param  string|NULL $secureConnCookieName 
-	 * @param  string|NULL $nonSecureConnCookieName
+	 * @param  ?string $secureConnCookieName 
+	 * @param  ?string $nonSecureConnCookieName
 	 * @return array{0:?string,1:?string}
 	 */
 	public static function SetSessionIdCookieNames ($secureConnCookieName = NULL, $nonSecureConnCookieName = NULL) {
@@ -181,7 +181,7 @@ trait PropsGettersSetters {
 
 	/**
 	 * @inheritDoc
-	 * @return string|NULL
+	 * @return ?string
 	 */
 	public function GetSessionIdCookieName () {
 		return $this->request->IsSecure()
@@ -215,8 +215,8 @@ trait PropsGettersSetters {
 
 	/**
 	 * @inheritDoc
-	 * @param  int|NULL    $code
-	 * @param  string|NULL $codeMessage
+	 * @param  ?int    $code
+	 * @param  ?string $codeMessage
 	 * @return \MvcCore\Response
 	 */
 	public function SetCode ($code, $codeMessage = NULL) {
@@ -228,7 +228,7 @@ trait PropsGettersSetters {
 
 	/**
 	 * @inheritDoc
-	 * @return int|NULL
+	 * @return ?int
 	 */
 	public function GetCode () {
 		if ($this->code === NULL) {
@@ -258,7 +258,7 @@ trait PropsGettersSetters {
 
 	/**
 	 * @inheritDoc
-	 * @return string|NULL
+	 * @return ?string
 	 */
 	public function GetEncoding () {
 		if ($this->encoding === NULL) {

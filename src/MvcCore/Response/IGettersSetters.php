@@ -17,8 +17,8 @@ interface IGettersSetters {
 
 	/**
 	 * Set cookie name(s) for session id for secure or/and for non-secure connection.
-	 * @param  string|NULL $secureConnCookieName 
-	 * @param  string|NULL $nonSecureConnCookieName
+	 * @param  ?string $secureConnCookieName 
+	 * @param  ?string $nonSecureConnCookieName
 	 * @return array{0:?string,1:?string}
 	 */
 	public static function SetSessionIdCookieNames ($secureConnCookieName, $nonSecureConnCookieName);
@@ -71,15 +71,15 @@ interface IGettersSetters {
 
 	/**
 	 * Set HTTP response code.
-	 * @param  int|NULL    $code
-	 * @param  string|NULL $codeMessage
+	 * @param  ?int        $code
+	 * @param  ?string $codeMessage
 	 * @return \MvcCore\Response
 	 */
 	public function SetCode ($code, $codeMessage = NULL);
 
 	/**
 	 * Get HTTP response code.
-	 * @return int|NULL `200 | 301 | 404`
+	 * @return ?int     `200 | 301 | 404`
 	 */
 	public function GetCode ();
 	
@@ -94,7 +94,7 @@ interface IGettersSetters {
 	/**
 	 * Get HTTP response content encoding.
 	 * Example: `$response->GetEncoding(); // returns 'utf-8'`
-	 * @return string|NULL
+	 * @return ?string
 	 */
 	public function GetEncoding ();
 

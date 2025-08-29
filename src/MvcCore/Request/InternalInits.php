@@ -368,7 +368,7 @@ trait InternalInits {
 	 * into given target type.
 	 * @throws \InvalidArgumentException
 	 * `$name` must be a `$targetType`, not an `array`.
-	 * @return string|int|float|bool|NULL|array<string|int|float|bool|NULL>
+	 * @return string|int|float|bool|null|array<string|int|float|bool|null>
 	 */
 	protected function getParamFromCollection (
 		& $paramsCollection = [],

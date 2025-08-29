@@ -146,7 +146,7 @@ interface IGettersSetters {
 	/**
 	 * Get (optionally cached) system config INI file as `stdClass` or `array`,
 	 * placed by default in: `"/App/config.ini"`.
-	 * @return \MvcCore\Config|NULL
+	 * @return ?\MvcCore\Config
 	 */
 	public function GetConfig ();
 
@@ -792,7 +792,7 @@ interface IGettersSetters {
 	 *   });
 	 * ```
 	 * @param  CustomHandlerCallable $handler
-	 * @param  int|NULL              $priorityIndex
+	 * @param  ?int                  $priorityIndex
 	 * @return \MvcCore\Application
 	 */
 	public function AddPreRouteHandler (callable $handler, $priorityIndex = NULL);
@@ -815,7 +815,7 @@ interface IGettersSetters {
 	 *   });
 	 * ```
 	 * @param  CustomHandlerCallable $handler
-	 * @param  int|NULL              $priorityIndex
+	 * @param  ?int                  $priorityIndex
 	 * @return \MvcCore\Application
 	 */
 	public function AddPostRouteHandler (callable $handler, $priorityIndex = NULL);
@@ -838,7 +838,7 @@ interface IGettersSetters {
 	 *   });
 	 * ```
 	 * @param  CustomHandlerCallable $handler
-	 * @param  int|NULL              $priorityIndex
+	 * @param  ?int                  $priorityIndex
 	 * @return \MvcCore\Application
 	 */
 	public function AddPreDispatchHandler (callable $handler, $priorityIndex = NULL);
@@ -860,7 +860,7 @@ interface IGettersSetters {
 	 *   });
 	 * ```
 	 * @param  CustomHandlerCallable $handler
-	 * @param  int|NULL              $priorityIndex
+	 * @param  ?int                  $priorityIndex
 	 * @return \MvcCore\Application
 	 */
 	public function AddPreSentHeadersHandler (callable $handler, $priorityIndex = NULL);
@@ -881,7 +881,7 @@ interface IGettersSetters {
 	 *   });
 	 * ```
 	 * @param  CustomHandlerCallable $handler
-	 * @param  int|NULL              $priorityIndex
+	 * @param  ?int                  $priorityIndex
 	 * @return \MvcCore\Application
 	 */
 	public function AddPreSentBodyHandler (callable $handler, $priorityIndex = NULL);
@@ -903,7 +903,7 @@ interface IGettersSetters {
 	 *   });
 	 * ```
 	 * @param  CustomHandlerCallable $handler
-	 * @param  int|NULL              $priorityIndex
+	 * @param  ?int                  $priorityIndex
 	 * @return \MvcCore\Application
 	 */
 	public function AddPostDispatchHandler (callable $handler, $priorityIndex = NULL);
@@ -926,7 +926,7 @@ interface IGettersSetters {
 	 *   });
 	 * ```
 	 * @param  CustomHandlerCallable $handler
-	 * @param  int|NULL              $priorityIndex
+	 * @param  ?int                  $priorityIndex
 	 * @return \MvcCore\Application
 	 */
 	public function AddPostTerminateHandler (callable $handler, $priorityIndex = NULL);
@@ -948,7 +948,7 @@ interface IGettersSetters {
 	 *   });
 	 * ```
 	 * @param  CustomHandlerCallable $handler
-	 * @param  int|NULL              $priorityIndex
+	 * @param  ?int                  $priorityIndex
 	 * @return \MvcCore\Application
 	 */
 	public function AddPreSessionStartHandler (callable $handler, $priorityIndex = NULL);
@@ -969,7 +969,7 @@ interface IGettersSetters {
 	 *   });
 	 * ```
 	 * @param  CustomHandlerCallable $handler
-	 * @param  int|NULL              $priorityIndex
+	 * @param  ?int                  $priorityIndex
 	 * @return \MvcCore\Application
 	 */
 	public function AddPostSessionStartHandler (callable $handler, $priorityIndex = NULL);

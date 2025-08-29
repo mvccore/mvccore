@@ -203,7 +203,7 @@ trait IniRead {
 	/**
 	 * Retype raw INI value into `bool`, `NULL` or `string`.
 	 * @param  string $rawValue
-	 * @return bool|NULL|string
+	 * @return ?bool    |string
 	 */
 	protected static function readTypedSpecialValueOrString ($rawValue) {
 		$lowerRawValue = strtolower($rawValue);

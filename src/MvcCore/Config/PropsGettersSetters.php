@@ -72,13 +72,13 @@ trait PropsGettersSetters {
 
 	/**
 	 * Full path, where are configuration data stored.
-	 * @var string|NULL
+	 * @var ?string    
 	 */
 	protected $fullPath = NULL;
 
 	/**
 	 * Config file last changed UNIX timestamp.
-	 * @var int|NULL
+	 * @var ?int    
 	 */
 	protected $lastChanged = 0;
 
@@ -111,7 +111,7 @@ trait PropsGettersSetters {
 	
 	/**
 	 * @inheritDoc
-	 * @return string|NULL
+	 * @return ?string    
 	 */
 	public static function GetConfigEnvironmentPath () {
 		return static::$configEnvironmentPath;
@@ -119,8 +119,8 @@ trait PropsGettersSetters {
 
 	/**
 	 * @inheritDoc
-	 * @param  string|NULL $configEnvironmentPath
-	 * @return string|NULL
+	 * @param  ?string     $configEnvironmentPath
+	 * @return ?string    
 	 */
 	public static function SetConfigEnvironmentPath ($configEnvironmentPath) {
 		return static::$configEnvironmentPath = $configEnvironmentPath;
@@ -139,7 +139,7 @@ trait PropsGettersSetters {
 
 	/**
 	 * @inheritDoc
-	 * @param  string|NULL $appRootRelativePath
+	 * @param  ?string     $appRootRelativePath
 	 * @return bool
 	 */
 	public static function ClearConfigCache ($appRootRelativePath = NULL) {

@@ -39,7 +39,7 @@ trait GettersSetters {
 
 	/**
 	 * @inheritDoc
-	 * @param  bool|NULL $routeByQueryString 
+	 * @param  ?bool     $routeByQueryString 
 	 * @return \MvcCore\Router
 	 */
 	public function SetRouteByQueryString ($routeByQueryString = TRUE) {
@@ -49,7 +49,7 @@ trait GettersSetters {
 
 	/**
 	 * @inheritDoc
-	 * @return bool|NULL
+	 * @return ?bool    
 	 */
 	public function GetRouteByQueryString () {
 		return $this->routeByQueryString;
@@ -127,7 +127,7 @@ trait GettersSetters {
 
 	/**
 	 * @inheritDoc
-	 * @param  callable|NULL $preRouteMatchingHandler 
+	 * @param  ?callable $preRouteMatchingHandler 
 	 * @throws \Exception Pre-route matching handler is not callable.
 	 * @return \MvcCore\Router
 	 */
@@ -145,7 +145,7 @@ trait GettersSetters {
 
 	/**
 	 * @inheritDoc
-	 * @return callable|NULL
+	 * @return ?callable
 	 */
 	public function GetPreRouteMatchingHandler () {
 		return $this->preRouteMatchingHandler;
@@ -153,7 +153,7 @@ trait GettersSetters {
 
 	/**
 	 * @inheritDoc
-	 * @param  callable|NULL $preRouteUrlBuildingHandler 
+	 * @param  ?callable $preRouteUrlBuildingHandler 
 	 * @throws \Exception Pre-url building handler is not callable.
 	 * @return \MvcCore\Router
 	 */
@@ -166,7 +166,7 @@ trait GettersSetters {
 
 	/**
 	 * @inheritDoc
-	 * @return callable|NULL
+	 * @return ?callable
 	 */
 	public function GetPreRouteUrlBuildingHandler () {
 		return $this->preRouteUrlBuildingHandler;

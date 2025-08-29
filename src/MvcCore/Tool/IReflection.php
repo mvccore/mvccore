@@ -48,7 +48,7 @@ interface IReflection {
 	 * @param array<string> $attrsClassesOrDocsTags
 	 * Array with attribute(s) full class names 
 	 * or array with PhpDocs tag(s) name(s).
-	 * @param bool|NULL     $preferAttributes
+	 * @param ?bool         $preferAttributes
 	 * Prefered way to get meta data. `TRUE` means try 
 	 * to get PHP8+ attribute(s) only, `FALSE` means 
 	 * try to get PhpDocs tag(s) only and `NULL` (default) 
@@ -72,7 +72,7 @@ interface IReflection {
 	 * @param  array<string> $attrsClassesOrDocsTags
 	 * Array with attribute(s) full class names 
 	 * or array with PhpDocs tag(s) name(s).
-	 * @param  bool|NULL     $preferAttributes
+	 * @param  ?bool         $preferAttributes
 	 * Prefered way to get meta data. `TRUE` means try 
 	 * to get PHP8+ attribute(s) only, `FALSE` means 
 	 * try to get PhpDocs tag(s) only and `NULL` (default) 
@@ -96,7 +96,7 @@ interface IReflection {
 	 * @param  array<string> $attrsClassesOrDocsTags
 	 * Array with attribute(s) full class names 
 	 * or array with PhpDocs tag(s) name(s).
-	 * @param  bool|NULL     $preferAttributes
+	 * @param  ?bool         $preferAttributes
 	 * Prefered way to get meta data. `TRUE` means try 
 	 * to get PHP8+ attribute(s) only, `FALSE` means 
 	 * try to get PhpDocs tag(s) only and `NULL` (default) 
@@ -113,8 +113,8 @@ interface IReflection {
 	 * Return reflection object attribute constructor arguments.
 	 * @param  \ReflectionClass<T>|\ReflectionMethod|\ReflectionProperty $reflectionObject 
 	 * @param  string                                                    $attributeClassFullName 
-	 * @param  bool|NULL                                                 $traversing
-	 * @return array<int|string,mixed>|NULL
+	 * @param  ?bool                                                     $traversing
+	 * @return ?array<int|string,mixed>
 	 */
 	public static function GetAttrCtorArgs ($reflectionObject, $attributeClassFullName, $traversing);
 
@@ -142,9 +142,9 @@ interface IReflection {
 	 * ````
 	 * @param  \ReflectionClass<T>|\ReflectionMethod|\ReflectionProperty $reflectionObject 
 	 * @param  string                                                    $phpDocsTagName
-	 * @param  bool|NULL                                                 $traversing
+	 * @param  ?bool                                                     $traversing
 	 * @throws \InvalidArgumentException
-	 * @return array<int|string,mixed>|NULL
+	 * @return ?array<int|string,mixed>
 	 */
 	public static function GetPhpDocsTagArgs ($reflectionObject, $phpDocsTagName, $traversing = NULL);
 

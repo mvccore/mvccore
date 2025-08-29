@@ -20,7 +20,7 @@ trait Json {
 	
 	/**
 	 * JSON detection regular expression.
-	 * @var string|NULL
+	 * @var ?string    
 	 */
 	protected static $jsonRegExp = NULL;
 
@@ -62,7 +62,7 @@ trait Json {
 
 	/**
 	 * @inheritDoc
-	 * @param  string|NULL $jsonStr
+	 * @param  ?string     $jsonStr
 	 * @param  int         $flags
 	 * @param  int         $depth               User specified recursion depth, default: 512.
 	 * @throws \RuntimeException|\JsonException JSON decoding error.

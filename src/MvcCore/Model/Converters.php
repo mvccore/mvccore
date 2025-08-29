@@ -16,8 +16,8 @@ namespace MvcCore\Model;
 /**
  * @mixin \MvcCore\Model
  * 
- * @phpstan-type ModelPropValue string|int|float|bool|\DateTimeInterface|\DateInterval|NULL|array<string|int|float|bool|\DateTimeInterface|\DateInterval|NULL>
- * @phpstan-type ParserArgs array<int|string,mixed>|NULL
+ * @phpstan-type ModelPropValue string|int|float|bool|\DateTimeInterface|\DateInterval|null|array<string|int|float|bool|\DateTimeInterface|\DateInterval|null>
+ * @phpstan-type ParserArgs ?array<int|string,mixed>
  */
 trait Converters {
 
@@ -28,7 +28,7 @@ trait Converters {
 	 * @param  string         $propName
 	 * @param  ModelPropValue $value 
 	 * @param  ParserArgs     $parserArgs 
-	 * @return int|string|NULL
+	 * @return int|string|null
 	 */
 	protected static function convertToScalar ($propName, $value, $parserArgs = []) {
 		if (is_int($value)) {
@@ -176,7 +176,7 @@ trait Converters {
 
 	/**
 	 * Convert `\DateInterval` into database float value.
-	 * @param  string|NULL   $propName
+	 * @param  ?string       $propName
 	 * @param  \DateInterval $interval 
 	 * @return float
 	 */
@@ -211,7 +211,7 @@ trait Converters {
 	 * to convert database column name into property name or back.
 	 * @param  int $keysConversionFlags
 	 * @throws \InvalidArgumentException
-	 * @return string|NULL
+	 * @return ?string    
 	 */
 	protected static function getKeyConversionMethod ($keysConversionFlags = 0) {
 		$flagsAndConversionMethods = [

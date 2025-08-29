@@ -25,7 +25,7 @@ trait Instancing {
 	 * @param  array<int|string,mixed>           $post
 	 * @param  array<string,string>              $cookie
 	 * @param  array<string,array<string,mixed>> $files
-	 * @param  string|NULL                       $inputStream
+	 * @param  ?string                           $inputStream
 	 * @return \MvcCore\Request
 	 */
 	public static function CreateInstance (
@@ -55,7 +55,7 @@ trait Instancing {
 	 * @param  array<int|string,mixed>           $post
 	 * @param  array<string,string>              $cookie
 	 * @param  array<string,array<string,mixed>> $files
-	 * @param  string|NULL                       $inputStream
+	 * @param  ?string                           $inputStream
 	 * @return void
 	 */
 	public function __construct (

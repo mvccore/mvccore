@@ -149,7 +149,7 @@ trait Closing {
 			"\\MvcCore\\Ext\\Auth",
 			"\\MvcCore\\Ext\\Auths\\Basic"
 		];
-		/** @var \MvcCore\Ext\Auths\Basic|NULL $auth @phpstan-ignore-next-line */
+		/** @var ?\MvcCore\Ext\Auths\Basic $auth @phpstan-ignore-next-line */
 		$auth = NULL;
 		foreach ($authClassesFullNames as $authClassFullName) {
 			if (class_exists($authClassFullName, TRUE)) {

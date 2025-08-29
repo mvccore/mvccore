@@ -44,7 +44,7 @@ trait Props {
 	 * - `\MvcCore\IApplication::COMPILED_SFU`
 	 * - `\MvcCore\IApplication::NOT_COMPILED`
 	 * Read more about every mode in interface: `\MvcCore\IApplication`.
-	 * @var string|NULL
+	 * @var ?string
 	 */
 	protected $compiled = NULL;
 
@@ -53,7 +53,7 @@ trait Props {
 	 * is from any composer vendor project.
 	 * Compilled applications doesn't support 
 	 * dispatching in vendor directories.
-	 * @var bool|NULL
+	 * @var ?bool
 	 */
 	protected $vendorAppDispatch = NULL;
 
@@ -82,37 +82,37 @@ trait Props {
 	/**
 	 * System config INI file as `stdClass` or `array`,
 	 * placed by default in: `"~/App/config.ini"`.
-	 * @var \MvcCore\Config|NULL
+	 * @var ?\MvcCore\Config
 	 */
 	protected $config = NULL;
 
 	/**
 	 * Environment detection instance.
-	 * @var \MvcCore\Environment|NULL
+	 * @var ?\MvcCore\Environment
 	 */
 	protected $environment = NULL;
 
 	/**
 	 * Top most parent controller instance currently dispatched by application.
-	 * @var \MvcCore\Controller|NULL
+	 * @var ?\MvcCore\Controller
 	 */
 	protected $controller = NULL;
 
 	/**
 	 * Request object - parsed URI, query params, app paths...
-	 * @var \MvcCore\Request|NULL
+	 * @var ?\MvcCore\Request
 	 */
 	protected $request = NULL;
 
 	/**
 	 * Response object - storage for response headers and rendered body.
-	 * @var \MvcCore\Response|NULL
+	 * @var ?\MvcCore\Response
 	 */
 	protected $response = NULL;
 
 	/**
 	 * Application http router to route request and build URL addresses.
-	 * @var \MvcCore\Router|NULL
+	 * @var ?\MvcCore\Router
 	 */
 	protected $router = NULL;
 
@@ -372,7 +372,7 @@ trait Props {
 	/**
 	 * Application default controller namespace, usually completed as "`App\Controllers`".
 	 * This variable is completed in runtime by application paths configuration.
-	 * @var string|NULL
+	 * @var ?string
 	 */
 	protected $controllersBaseNamespace = NULL;
 
@@ -388,7 +388,7 @@ trait Props {
 	 * path for single file projects.
 	 * 
 	 * Example: `"/var/www/html/my-project"`
-	 * @var string|NULL
+	 * @var ?string
 	 */
 	protected $pathAppRoot = NULL;
 
@@ -401,7 +401,7 @@ trait Props {
 	 * Composer package has to have simillar structure as main application module.
 	 * 
 	 * Example: `"/var/www/html/my-project/vendor/org-name/module-name/src"`
-	 * @var string|NULL
+	 * @var ?string
 	 */
 	protected $pathAppRootVendor = NULL;
 
@@ -420,7 +420,7 @@ trait Props {
 	 * path for single file projects.
 	 * 
 	 * Example: `"/var/www/html/my-project/www"`
-	 * @var string|NULL
+	 * @var ?string
 	 */
 	protected $pathDocRoot = NULL;
 
@@ -433,7 +433,7 @@ trait Props {
 	 * Composer package has to have simillar structure as main application module.
 	 * 
 	 * Example: `"/var/www/html/my-project/vendor/org-name/module-name/src/www"`
-	 * @var string|NULL
+	 * @var ?string
 	 */
 	protected $pathDocRootVendor = NULL;
 	
@@ -456,7 +456,7 @@ trait Props {
 	 * is completed as application root and this constant. 
 	 * 
 	 * Example: `"~/App"`
-	 * @var string|NULL
+	 * @var ?string
 	 */
 	protected $pathApp = NULL;
 

@@ -22,7 +22,7 @@ trait Helpers {
 
 	/**
 	 * Platform specific temporary directory.
-	 * @var string|NULL
+	 * @var ?string    
 	 */
 	protected static $tmpDir = NULL;
 
@@ -175,7 +175,7 @@ trait Helpers {
 		$oldLockMillisecondsTolerance = 30000
 	) {
 		$waitUTime = $lockWaitMilliseconds * 1000;
-		/** @var resource|NULL $lockHandle */
+		/** @var ?resource $lockHandle */
 		$lockHandle = NULL;
 
 		$tmpDir = self::GetSystemTmpDir();
@@ -314,7 +314,7 @@ trait Helpers {
 	 * @see https://www.php.net/manual/en/function.parse-url.php
 	 * @see https://bugs.php.net/bug.php?id=73192
 	 * @see https://en.wikipedia.org/wiki/Uniform_Resource_Identifier
-	 * @param  string|NULL $uri 
+	 * @param  ?string     $uri 
 	 * @param  int         $component 
 	 * @return ParsedUrl|string|int|null|false
 	 */
@@ -498,9 +498,9 @@ trait Helpers {
 
 	/**
 	 * @inheritDoc
-	 * @param  float|int|string|NULL $n1 
-	 * @param  float|int|string|NULL $n2 
-	 * @param  int|NULL              $fractionLength
+	 * @param  float|int|string|null $n1 
+	 * @param  float|int|string|null $n2 
+	 * @param  ?int                  $fractionLength
 	 * @return bool
 	 */
 	public static function CompareFloats ($n1, $n2, $fractionLength = NULL) {

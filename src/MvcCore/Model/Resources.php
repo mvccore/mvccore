@@ -20,10 +20,10 @@ trait Resources {
 	
 	/**
 	 * @inheritDoc
-	 * @param  array<int,mixed>|NULL $args
+	 * @param  ?array<int,mixed> $args
 	 * Values array with variables to pass into resource `__construct()` method.
 	 * If `NULL`, recource class will be created without `__construct()` method call.
-	 * @param  string                $classPath
+	 * @param  string            $classPath
 	 * Relative namespace path to resource class. It could contains `.` or `..`
 	 * to traverse over namespaces (directories) and it could contains `{self}` 
 	 * keyword, which is automatically replaced with current class name.
@@ -42,10 +42,10 @@ trait Resources {
 	
 	/**
 	 * @inheritDoc
-	 * @param  array<int,mixed>|NULL $args
+	 * @param  ?array<int,mixed> $args
 	 * Values array with variables to pass into resource `__construct()` method.
 	 * If `NULL`, recource class will be created without `__construct()` method call.
-	 * @param  string                $classPath
+	 * @param  string            $classPath
 	 * Relative namespace path to resource class. It could contains `.` or `..`
 	 * to traverse over namespaces (directories) and it could contains `{self}` 
 	 * keyword, which is automatically replaced with current class name.
@@ -60,10 +60,10 @@ trait Resources {
 	
 	/**
 	 * Localize resource class, create and return it. If class is not localized, thrown an exception.
-	 * @param  array<int,mixed>|NULL $args
+	 * @param  ?array<int,mixed> $args
 	 * Values array with variables to pass into resource `__construct()` method.
 	 * If `NULL`, recource class will be created without `__construct()` method call.
-	 * @param  string                $classPath
+	 * @param  string            $classPath
 	 * Relative namespace path to resource class. It could contains `.` or `..`
 	 * to traverse over namespaces (directories) and it could contains `{self}` 
 	 * keyword, which is automatically replaced with current class name.

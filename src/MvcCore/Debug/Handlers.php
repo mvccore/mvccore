@@ -133,7 +133,7 @@ trait Handlers {
 
 	/**
 	 * Starts/stops stopwatch.
-	 * @param  string|NULL $name Name.
+	 * @param  ?string     $name Name.
 	 * @return float             Elapsed seconds.
 	 */
 	protected static function timerHandler ($name = NULL) {
@@ -217,7 +217,7 @@ trait Handlers {
 	 * link element and remove all useless new lines in PHP dumps.
 	 * @param  array{0:string,1:string,2:array<string,mixed>} $dumpRecord
 	 * Dump record from `self::$dumps` with items under indexes: `0` => dump string, `1` => title, `2` => options.
-	 * @param  string|NULL                                    $appRoot
+	 * @param  ?string                                        $appRoot
 	 * @return array{0:string,1:bool} An array with formatted dump string and boolean about last dump before script exit.
 	 */
 	protected static function formatDebugDump ($dumpRecord, $appRoot = NULL) {

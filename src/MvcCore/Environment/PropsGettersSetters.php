@@ -37,7 +37,7 @@ trait PropsGettersSetters {
 	 * - `"beta"`			- Release testing environment.
 	 * - `"gamma"`			- Release environment in debug mode or in any other special mode.
 	 * - `"production"`		- Release environment.
-	 * @var string|NULL
+	 * @var ?string    
 	 */
 	protected $name = NULL;
 

@@ -56,7 +56,7 @@ trait Cookies {
 		} else {
 			return \setcookie(
 				$name, $value, [
-				    'expires'	=> $expires,
+					'expires'	=> $expires,
 					'path'		=> $path,
 					'domain'	=> $domain,
 					'secure'	=> $secure,

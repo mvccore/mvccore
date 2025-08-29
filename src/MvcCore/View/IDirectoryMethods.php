@@ -18,14 +18,14 @@ interface IDirectoryMethods {
 	/**
 	 * Get currently rendered view file full path.
 	 * If this method is called outside of rendering process, `NULL` is returned.
-	 * @return string|NULL
+	 * @return ?string    
 	 */
 	public function GetCurrentViewFullPath ();
 
 	/**
 	 * Get currently rendered view file directory full path.
 	 * If this method is called outside of rendering process, `NULL` is returned.
-	 * @return string|NULL
+	 * @return ?string    
 	 */
 	public function GetCurrentViewDirectory ();
 
@@ -36,7 +36,7 @@ interface IDirectoryMethods {
 	 * from parent controller or if current controller has no parent controller,
 	 * it could be layout view script full path.
 	 * If this method is called outside of rendering process, `NULL` is returned.
-	 * @return string|NULL
+	 * @return ?string    
 	 */
 	public function GetParentViewFullPath ();
 
@@ -47,7 +47,7 @@ interface IDirectoryMethods {
 	 * from parent controller or if current controller has no parent controller,
 	 * it could be layout view script full path.
 	 * If this method is called outside of rendering process, `NULL` is returned.
-	 * @return string|NULL
+	 * @return ?string    
 	 */
 	public function GetParentViewDirectory ();
 

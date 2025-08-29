@@ -58,8 +58,8 @@ trait Rendering {
 	/**
 	 * @inheritDoc
 	 * @internal
-	 * @param  string|NULL $relativePath
-	 * @param  string|NULL $content
+	 * @param  ?string     $relativePath
+	 * @param  ?string     $content
 	 * @return string
 	 */
 	public function RenderLayoutAndContent ($relativePath, $content = NULL) {
@@ -349,7 +349,7 @@ trait Rendering {
 	/**
 	 * @inheritDoc
 	 * @deprecated
-	 * @param  string|NULL $content
+	 * @param  ?string     $content
 	 * @return string
 	 */
 	public function Evaluate ($content) {

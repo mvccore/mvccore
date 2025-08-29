@@ -19,7 +19,7 @@ interface IConnection {
 	 * Returns `\PDO` database connection by connection name/index,
 	 * usually by system config values (cached by local store)
 	 * or create new connection if no connection cached.
-	 * @param  string|int|array<string,mixed>|\stdClass|NULL $connectionNameOrConfig
+	 * @param  string|int|array<string,mixed>|\stdClass|null $connectionNameOrConfig
 	 * @param  bool                                          $strict
 	 * If `TRUE` and no connection under given name or given
 	 * index found, exception is thrown. `TRUE` by default.
@@ -48,7 +48,7 @@ interface IConnection {
 	/**
 	 * Unsets connection from the global connections store and calls `Close()` 
 	 * method (if exists) on connection instance to close the connection.
-	 * @param  string|int|NULL $connectionName
+	 * @param  string|int|null $connectionName
 	 * @throws \InvalidArgumentException
 	 * @return bool
 	 */

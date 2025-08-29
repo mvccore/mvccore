@@ -20,7 +20,7 @@ interface IEscaping {
 	 * JS template param escapes: `{{variable}}` => `{<!-- -->{variable}}`.
 	 * @param  string      $str 
 	 * @param  int         $flags
-	 * @param  string|NULL $encoding 
+	 * @param  ?string     $encoding 
 	 * @param  bool        $double 
 	 * @param  bool        $jsTemplate
 	 * @return string
@@ -31,7 +31,7 @@ interface IEscaping {
 	 * Escape string for use inside HTML/XHTML/HTML5 node in HTML content.
 	 * This method is always used to escape texts in view components.
 	 * @param  string      $str 
-	 * @param  string|NULL $encoding 
+	 * @param  ?string     $encoding 
 	 * @param  bool        $double 
 	 * @return string
 	 */
@@ -41,7 +41,7 @@ interface IEscaping {
 	 * Escape string to use it inside HTML/XHTML/HTML5 attribute in HTML context.
 	 * @param  string      $str 
 	 * @param  int         $flags
-	 * @param  string|NULL $encoding 
+	 * @param  ?string     $encoding 
 	 * @param  bool        $double 
 	 * @return string
 	 */
@@ -53,7 +53,7 @@ interface IEscaping {
 	 * XML 1.1: \x00 forbidden directly and as a character reference,
 	 *          \x09 \x0A \x0D \x85 allowed directly, C0, C1 and \x7F allowed as character references.
 	 * @param  string      $str 
-	 * @param  string|NULL $encoding 
+	 * @param  ?string     $encoding 
 	 * @param  bool        $double 
 	 * @return string
 	 */

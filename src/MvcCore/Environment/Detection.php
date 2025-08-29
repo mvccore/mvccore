@@ -67,7 +67,7 @@ trait Detection {
 	 * Parse system config environment section data from various declarations
 	 * into specific detection structure.
 	 * @param  ConfigEnvSection $environmentSection
-	 * @param  string|NULL      $clientIp
+	 * @param  ?string          $clientIp
 	 * @return \stdClass
 	 */
 	protected static function detectByConfigSectionData ($environmentSection, $clientIp) {
@@ -266,12 +266,12 @@ trait Detection {
 	 *   - by regular expression (if defined)
 	 * Method returns `TRUE` to stop environment detection or `FALSE`, if
 	 * environment was not detected by given data.
-	 * @param  \stdClass                $data
-	 * @param  \MvcCore\Request         $req
-	 * @param  string|NULL              $clientIp
-	 * @param  string|NULL              $appRoot
-	 * @param  string|NULL              $serverHostName
-	 * @param  array<string,mixed>|NULL $serverGlobals
+	 * @param  \stdClass            $data
+	 * @param  \MvcCore\Request     $req
+	 * @param  ?string              $clientIp
+	 * @param  ?string              $appRoot
+	 * @param  ?string              $serverHostName
+	 * @param  ?array<string,mixed> $serverGlobals
 	 * @return bool If `TRUE`, environment has been detected and detection procedure could stop.
 	 */
 	protected static function detectByConfigSection (& $data, $req, & $clientIp, & $appRoot, & $serverHostName, & $serverGlobals) {

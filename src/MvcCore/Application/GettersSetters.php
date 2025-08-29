@@ -164,7 +164,7 @@ trait GettersSetters {
 
 	/**
 	 * @inheritDoc
-	 * @return \MvcCore\Config|NULL
+	 * @return ?\MvcCore\Config
 	 */
 	public function GetConfig () {
 		if ($this->config === NULL) {
@@ -947,7 +947,7 @@ trait GettersSetters {
 	/**
 	 * @inheritDoc`
 	 * @param  CustomHandlerCallable $handler
-	 * @param  int|NULL              $priorityIndex
+	 * @param  ?int                  $priorityIndex
 	 * @return \MvcCore\Application
 	 */
 	public function AddPreRouteHandler (callable $handler, $priorityIndex = NULL) {
@@ -957,7 +957,7 @@ trait GettersSetters {
 	/**
 	 * @inheritDoc
 	 * @param  CustomHandlerCallable $handler
-	 * @param  int|NULL              $priorityIndex
+	 * @param  ?int                  $priorityIndex
 	 * @return \MvcCore\Application
 	 */
 	public function AddPostRouteHandler (callable $handler, $priorityIndex = NULL) {
@@ -967,7 +967,7 @@ trait GettersSetters {
 	/**
 	 * @inheritDoc
 	 * @param  CustomHandlerCallable $handler
-	 * @param  int|NULL              $priorityIndex
+	 * @param  ?int                  $priorityIndex
 	 * @return \MvcCore\Application
 	 */
 	public function AddPreDispatchHandler (callable $handler, $priorityIndex = NULL) {
@@ -977,7 +977,7 @@ trait GettersSetters {
 	/**
 	 * @inheritDoc
 	 * @param  CustomHandlerCallable $handler
-	 * @param  int|NULL              $priorityIndex
+	 * @param  ?int                  $priorityIndex
 	 * @return \MvcCore\Application
 	 */
 	public function AddPostDispatchHandler (callable $handler, $priorityIndex = NULL) {
@@ -987,7 +987,7 @@ trait GettersSetters {
 	/**
 	 * @inheritDoc
 	 * @param  CustomHandlerCallable $handler
-	 * @param  int|NULL              $priorityIndex
+	 * @param  ?int                  $priorityIndex
 	 * @return \MvcCore\Application
 	 */
 	public function AddPreSentHeadersHandler (callable $handler, $priorityIndex = NULL) {
@@ -997,7 +997,7 @@ trait GettersSetters {
 	/**
 	 * @inheritDoc
 	 * @param  CustomHandlerCallable $handler
-	 * @param  int|NULL              $priorityIndex
+	 * @param  ?int                  $priorityIndex
 	 * @return \MvcCore\Application
 	 */
 	public function AddPreSentBodyHandler (callable $handler, $priorityIndex = NULL) {
@@ -1007,7 +1007,7 @@ trait GettersSetters {
 	/**
 	 * @inheritDoc
 	 * @param  CustomHandlerCallable $handler
-	 * @param  int|NULL              $priorityIndex
+	 * @param  ?int                  $priorityIndex
 	 * @return \MvcCore\Application
 	 */
 	public function AddPostTerminateHandler (callable $handler, $priorityIndex = NULL) {
@@ -1017,7 +1017,7 @@ trait GettersSetters {
 	/**
 	 * @inheritDoc
 	 * @param  CustomHandlerCallable $handler
-	 * @param  int|NULL              $priorityIndex
+	 * @param  ?int                  $priorityIndex
 	 * @return \MvcCore\Application
 	 */
 	public function AddPreSessionStartHandler (callable $handler, $priorityIndex = NULL) {
@@ -1027,7 +1027,7 @@ trait GettersSetters {
 	/**
 	 * @inheritDoc
 	 * @param  CustomHandlerCallable $handler
-	 * @param  int|NULL              $priorityIndex
+	 * @param  ?int                  $priorityIndex
 	 * @return \MvcCore\Application
 	 */
 	public function AddPostSessionStartHandler (callable $handler, $priorityIndex = NULL) {

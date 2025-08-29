@@ -20,7 +20,7 @@ trait Connection {
 	
 	/**
 	 * @inheritDoc
-	 * @param  string|int|array<string,mixed>|\stdClass|NULL $connectionNameOrConfig
+	 * @param  string|int|array<string,mixed>|\stdClass|null $connectionNameOrConfig
 	 * @param  bool                                          $strict
 	 *         If `TRUE` and no connection under given name or given
 	 *         index found, exception is thrown. `TRUE` by default.
@@ -70,7 +70,7 @@ trait Connection {
 
 	/**
 	 * @inheritDoc
-	 * @param  string|int|NULL $connectionName
+	 * @param  string|int|null $connectionName
 	 * @throws \InvalidArgumentException
 	 * @return bool
 	 */
@@ -95,7 +95,7 @@ trait Connection {
 	 * Resolve connection name or connection index or connection 
 	 * configuration into single string or integer coresponding to 
 	 * database config record.
-	 * @param  string|int|array<string,mixed>|\stdClass|NULL $connectionNameOrConfig 
+	 * @param  string|int|array<string,mixed>|\stdClass|null $connectionNameOrConfig 
 	 * @param  bool                                          $strict 
 	 * @throws \InvalidArgumentException 
 	 * @return string|int

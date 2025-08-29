@@ -50,7 +50,7 @@ trait Content {
 
 	/**
 	 * @inheritDoc
-	 * @return string|NULL
+	 * @return ?string    
 	 */
 	public function & GetBody () {
 		return $this->body;

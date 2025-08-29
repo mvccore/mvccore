@@ -82,7 +82,7 @@ interface IHeaders {
 	 * Example: `$response->GetHeader('Content-Type'); // returns 'text/plain; charset=utf-8'`
 	 * Example: `$response->GetHeader('Set-Cookie');   // returns ['PHPSESSID=...; path=/; secure; HttpOnly'`]
 	 * @param  string $name
-	 * @return string|array<string>|NULL
+	 * @return string|array<string>|null
 	 */
 	public function GetHeader ($name);
 

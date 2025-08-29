@@ -18,7 +18,7 @@ interface IInstancing {
 	/**
 	 * No singleton, get every time new instance of configured HTTP response
 	 * class in `\MvcCore\Application::GetInstance()->GetResponseClass();`.
-	 * @param  int|NULL                                   $code
+	 * @param  ?int                                       $code
 	 * @param  array<string,string|int|array<string|int>> $headers
 	 * @param  string                                     $body
 	 * @return \MvcCore\Response

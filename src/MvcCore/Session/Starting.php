@@ -147,8 +147,8 @@ trait Starting {
 	 * especially with files save handler.
 	 * @see https://www.php.net/manual/en/function.session-create-id.php#121945
 	 * @see https://www.php.net/manual/en/function.random-bytes.php#118932
-	 * @param  string|NULL $prefix
-	 * @param  int         $outputLen 
+	 * @param  ?string $prefix
+	 * @param  int     $outputLen 
 	 * @return string
 	 */
 	protected static function createId ($prefix = NULL, $outputLen = 26) {
@@ -163,4 +163,5 @@ trait Starting {
 		$randomBytes = $toolClass::GetRandomHash($outputLen);
 		return ($prefix ?: '') . $randomBytes;
 	}
+
 }

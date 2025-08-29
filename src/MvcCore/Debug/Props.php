@@ -21,7 +21,7 @@ trait Props {
 
 	/**
 	 * Initialize global development shorthands.
-	 * @var GlobalShorthandCallable|NULL
+	 * @var ?GlobalShorthandCallable
 	 */
 	public static $InitGlobalShortHands = NULL;
 
@@ -36,7 +36,7 @@ trait Props {
 	/**
 	 * Semaphore to execute `\MvcCore\Debug::Init();` method only once.
 	 * `TRUE` on `dev` environment, `FALSE` if any other environment detected.
-	 * @var bool|NULL
+	 * @var ?bool    
 	 */
 	protected static $debugging = NULL;
 
@@ -44,7 +44,7 @@ trait Props {
 	 * All PHP and user notices, warnings and errors are automatically turned
 	 * and thrown as `\ErrorException`, initialized into `TRUE` in `Init()`
 	 * function by default.
-	 * @var bool|NULL
+	 * @var ?bool    
 	 */
 	protected static $strictExceptionsMode = NULL;
 
@@ -60,7 +60,7 @@ trait Props {
 
 	/**
 	 * Previous error handler before strict exceptions mode is defined.
-	 * @var callable|NULL
+	 * @var ?callable
 	 */
 	protected static $prevErrorHandler = NULL;
 
@@ -79,7 +79,7 @@ trait Props {
 
 	/**
 	 * Loaded system config debug section values.
-	 * @var \stdClass|NULL
+	 * @var ?\stdClass
 	 */
 	protected static $systemConfigDebugValues = NULL;
 
@@ -124,7 +124,7 @@ trait Props {
 
 	/**
 	 * Reference to singleton instance in `\MvcCore\Application::GetInstance();`.
-	 * @var \MvcCore\Application|NULL
+	 * @var ?\MvcCore\Application
 	 */
 	protected static $app = NULL;
 
