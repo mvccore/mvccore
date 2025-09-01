@@ -183,6 +183,7 @@ trait Dispatching {
 		} catch (\MvcCore\Application\TerminateException $e) {
 			$result = FALSE;
 			$this->terminateControllers();
+			$this->application->Terminate();
 		}
 		return $result;
 	}
