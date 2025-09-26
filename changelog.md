@@ -1,2 +1,2 @@
 ### Fixed
-- Controller dispatching - termination.
+- Output buffer flushing, when no output buffering enabled.
