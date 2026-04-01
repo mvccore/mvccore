@@ -69,7 +69,7 @@ trait MagicMethods {
 				/** @var \ReflectionProperty $property */
 				$property = $controllerType->getProperty($name);
 				if (!$property->isStatic()) {
-					if (!$property->isPublic())
+					if (!$property->isPublic() && PHP_VERSION_ID < 80500)
 						$property->setAccessible(TRUE); // protected or private
 					$value = NULL;
 					if (PHP_VERSION_ID >= 70400 && $property->hasType()) {
@@ -104,7 +104,7 @@ trait MagicMethods {
 				/** @var \ReflectionProperty $property */
 				$property = $controllerType->getProperty($name);
 				if (!$property->isStatic()) {
-					if (!$property->isPublic())
+					if (!$property->isPublic() && PHP_VERSION_ID < 80500)
 						$property->setAccessible(TRUE); // protected or private
 					$value = NULL;
 					if (PHP_VERSION_ID >= 70400 && $property->hasType()) {

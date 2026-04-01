@@ -569,7 +569,8 @@ trait Dispatching {
 		$phpWithTypes = PHP_VERSION_ID >= 70400;
 		if ($factoryMethodName !== NULL) {
 			$method = $ctrl->getMethod($factoryMethodName);
-			if (!$method->isPublic()) $method->setAccessible(TRUE);
+			if (!$method->isPublic() && PHP_VERSION_ID < 80500) 
+				$method->setAccessible(TRUE);
 			$instance = $method->invoke($this, []);
 		} else {
 			$className = NULL;
@@ -600,7 +601,7 @@ trait Dispatching {
 		/** @var \MvcCore\Controller $instance */
 		if ($instance instanceof \MvcCore\IController)
 			$this->AddChildController($instance, $prop->name);
-		if (!$prop->isPublic()) $prop->setAccessible(TRUE);
+		if (!$prop->isPublic() && PHP_VERSION_ID < 80500) $prop->setAccessible(TRUE);
 		$prop->setValue($this, $instance);
 		return TRUE;
 	}

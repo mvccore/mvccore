@@ -84,7 +84,7 @@ trait Connection {
 		unset(self::$connections[$connectionName]);
 		try {
 			$closeMethod = new \ReflectionMethod($connection, 'close');
-			if (!$closeMethod->isPublic()) $closeMethod->setAccessible(TRUE);
+			if (!$closeMethod->isPublic() && PHP_VERSION_ID < 80500) $closeMethod->setAccessible(TRUE);
 			$closeMethod->invoke($connection);
 		} catch (\Throwable $e) {}
 		$connection = NULL;

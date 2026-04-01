@@ -50,7 +50,7 @@ trait DataMethods {
 			//list ($propIsPrivate, $propAllowNulls, $propTypes) = $propData;
 			if ($propData[0]) {
 				$prop = new \ReflectionProperty($this, $propertyName);
-				$prop->setAccessible(TRUE);
+				if (PHP_VERSION_ID < 80500) $prop->setAccessible(TRUE);
 				if ($phpWithTypes) {
 					if ($prop->isInitialized($this))
 						$propValue = $prop->getValue($this);
@@ -133,7 +133,7 @@ trait DataMethods {
 
 			if ($propIsPrivate) {
 				$prop = new \ReflectionProperty($this, $propertyName);
-				$prop->setAccessible(TRUE);
+				if (PHP_VERSION_ID < 80500) $prop->setAccessible(TRUE);
 				$prop->setValue($this, $value);
 			} else {
 				$this->{$propertyName} = $value;
@@ -178,7 +178,7 @@ trait DataMethods {
 			//list ($propIsPrivate, $propAllowNulls, $propTypes) = $propData;
 			if ($propData[0]) {
 				$prop = new \ReflectionProperty($this, $propertyName);
-				$prop->setAccessible(TRUE);
+				if (PHP_VERSION_ID < 80500) $prop->setAccessible(TRUE);
 				if ($phpWithTypes) {
 					if ($prop->isInitialized($this))
 						$currentValue = $prop->getValue($this);

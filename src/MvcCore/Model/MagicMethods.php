@@ -116,7 +116,7 @@ trait MagicMethods {
 			$propertyName = $prop->getName();
 			$propIsPrivate = $prop->isPrivate();
 			if ($propIsPrivate) {
-				$prop->setAccessible(TRUE);
+				if (PHP_VERSION_ID < 80500) $prop->setAccessible(TRUE);
 				if ($phpWithTypes)
 					if (!$prop->isInitialized($this))
 						continue;

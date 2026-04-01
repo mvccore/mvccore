@@ -626,7 +626,7 @@ trait InternalInits {
 		/** @var \ReflectionProperty $prop */
 		foreach ($allProps as $prop) {
 			if ($prop->isStatic()) continue;
-			if ($prop->isPrivate()) $prop->setAccessible(TRUE);
+			if ($prop->isPrivate() && PHP_VERSION_ID < 80500) $prop->setAccessible(TRUE);
 			$value = NULL;
 			try {
 				$value = $prop->getValue($this);

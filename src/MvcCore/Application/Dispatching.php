@@ -309,7 +309,8 @@ trait Dispatching {
 		if ($this->controller) {
 			$ctrlType = new \ReflectionClass($this->controller);
 			$dispatchStateProperty = $ctrlType->getProperty('dispatchState');
-			$dispatchStateProperty->setAccessible(TRUE);
+			if (PHP_VERSION_ID < 80500)
+				$dispatchStateProperty->setAccessible(TRUE);
 			$dispatchStateProperty->setValue(
 				$this->controller, CtrlConsts::DISPATCH_STATE_TERMINATED
 			);
