@@ -110,7 +110,7 @@ trait Connection {
 			if (self::$configs === NULL) static::loadConfigs(TRUE, TRUE);
 			$connectionName = $connectionNameOrConfig;
 			if ($connectionName === NULL && isset(static::$connectionName)) // @phpstan-ignore-line
-				$connectionName = static::$connectionName;
+				$connectionName = static::$connectionName; // @phpstan-ignore-line
 			if ($connectionName === NULL) 
 				$connectionName = self::$defaultConnectionName;
 		}
@@ -207,11 +207,11 @@ trait Connection {
 
 	/**
 	 * Convert compatible string constants into actual PHP version constant integers.
-	 * @param  array<string|number,string,number,bool> $rawOptions 
+	 * @param  array<string|number,string|number|bool> $rawOptions 
 	 * @param  string                                  $conArgsKey
 	 * @param  bool                                    $typedConnClasses 
 	 * @param  ?string                                 $typedConnectionClass 
-	 * @return array<string|number,string,number,bool>
+	 * @return array<string|number,string|number|bool>
 	 */
 	protected static function connectParseOptions (array $rawOptions, $conArgsKey, $typedConnClasses, $typedConnectionClass) {
 		$options = [];

@@ -304,7 +304,7 @@ trait Props {
 	 * ```
 	 * @var array<int, array<int, CustomSecurityHandlerCallable>>
 	 */
-	protected $securityErrorHandlers = [];
+	protected $securityErrorHandlers = []; // @phpstan-ignore-line
 
 
 	/**

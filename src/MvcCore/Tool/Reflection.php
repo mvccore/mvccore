@@ -595,12 +595,12 @@ trait Reflection {
 				? $instance
 				: (array) $instance
 		);
-		/** @var array<string, array> $classPropsMeta */
+		/** @var array<string, array{"0":?\ReflectionProperty, "1":string,"2":bool}> $classPropsMeta */
 		$classPropsMeta = [];
 		$classHasDynamic = FALSE;
 		/** @var array<string, string> $deferDynamic */
 		$deferDynamic = [];
-		/** @var array<string, \ReflectionClass> $reflClasses */
+		/** @var array<string, \ReflectionClass<object>> $reflClasses */
 		$reflClasses = [];
 		foreach ($mangledKeys as $mangledKey) {
 			$ownerClass = $class;
@@ -617,7 +617,7 @@ trait Reflection {
 			) continue;
 			if (!isset($reflClasses[$ownerClass]))
 				$reflClasses[$ownerClass] = new \ReflectionClass($ownerClass);
-			/** @var \ReflectionClass $reflClass */
+			/** @var \ReflectionClass<object> $reflClass */
 			$reflClass = $reflClasses[$ownerClass];
 			if (!$reflClass->hasProperty($propName)) {
 				$deferDynamic[$propName] = $mangledKey;

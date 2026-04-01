@@ -344,7 +344,7 @@ trait Props {
 
 	/**
 	 * Router instance reference used mostly in route URL building process.
-	 * @var ?MvcCore\Router
+	 * @var ?\MvcCore\Router
 	 */
 	protected $router			= NULL;
 

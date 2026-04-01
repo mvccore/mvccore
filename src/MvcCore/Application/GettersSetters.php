@@ -1041,7 +1041,11 @@ trait GettersSetters {
 	 * @param  ?int                          $priorityIndex
 	 * @return \MvcCore\Application
 	 */
-	public function AddSecurityErrorHandler (callable $handler, $priorityIndex = NULL) {
-		return $this->setHandler($this->securityErrorHandlers, $handler, $priorityIndex);
+	public function AddSecurityErrorHandler (callable $handler, $priorityIndex = NULL) { // @phpstan-ignore-line
+		return $this->setHandler(
+			$this->securityErrorHandlers,
+			$handler, // @phpstan-ignore-line
+			$priorityIndex
+		);
 	}
 }

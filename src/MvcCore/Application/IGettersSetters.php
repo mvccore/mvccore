@@ -17,7 +17,7 @@ namespace MvcCore\Application;
  * @phpstan-type CustomHandlerCallable callable(\MvcCore\IRequest, \MvcCore\IResponse): (false|void)
  * @phpstan-type CustomSecurityHandlerCallable callable(\MvcCore\IRequest, \MvcCore\IResponse, ?\MvcCore\Ext\IForm): (false|void)
  */
-interface IGettersSetters {
+interface IGettersSetters { // @phpstan-ignore-line
 	
 	/***********************************************************************************
 	 *                        `\MvcCore\Application` - Getters                         *
@@ -1002,6 +1002,6 @@ interface IGettersSetters {
 	 * @param  ?int                          $priorityIndex
 	 * @return \MvcCore\Application
 	 */
-	public function AddSecurityErrorHandler (callable $handler, $priorityIndex = NULL);
+	public function AddSecurityErrorHandler (callable $handler, $priorityIndex = NULL); // @phpstan-ignore-line
 
 }

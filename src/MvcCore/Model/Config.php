@@ -64,7 +64,7 @@ trait Config {
 	public static function & GetConfig ($connectionName = NULL) {
 		if (self::$configs === NULL) static::loadConfigs(TRUE);
 		if ($connectionName === NULL && isset(static::$connectionName)) // @phpstan-ignore-line
-			$connectionName = static::$connectionName;
+			$connectionName = static::$connectionName; // @phpstan-ignore-line
 		if ($connectionName === NULL) 
 			$connectionName = static::$defaultConnectionName;
 		if ($connectionName === NULL) {

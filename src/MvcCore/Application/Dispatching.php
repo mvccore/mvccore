@@ -14,7 +14,7 @@
 namespace MvcCore\Application;
 
 use \MvcCore\Request\IConstants as ReqConsts,
-	\MvcCore\response\IConstants as ResConsts,
+	\MvcCore\Response\IConstants as ResConsts,
 	\MvcCore\Router\IConstants as RouterConsts,
 	\MvcCore\Debug\IConstants as DebugConsts,
 	\MvcCore\Controller\IConstants as CtrlConsts;
