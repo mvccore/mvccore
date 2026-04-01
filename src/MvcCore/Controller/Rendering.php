@@ -71,8 +71,10 @@ trait Rendering {
 					return '';
 				}
 			}
-			//if (ob_get_length() !== FALSE) // flush out any previous content
-			//	while (ob_get_level() > 0) ob_end_flush();
+			// flush out any previous content and disable output buffer
+			ob_start();
+			while (ob_get_level() > 0)
+				ob_end_clean();
 			$this->renderWithoutObContinuously(
 				$controllerOrActionNameDashed, $actionNameDashed, $topMostParentCtrl
 			);

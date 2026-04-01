@@ -186,9 +186,8 @@ trait Content {
 		$preSentBodyHandlers = $app->__get('preSentBodyHandlers');
 		$app->ProcessCustomHandlers($preSentBodyHandlers);
 		echo $this->body;
-		$obLen = ob_get_length();
-		if ($obLen !== FALSE && $obLen > 0)
-			while (@ob_end_flush());
+		while (ob_get_level() > 0)
+			ob_end_flush();
 		$this->bodySent = TRUE;
 		return $this;
 	}
