@@ -149,15 +149,23 @@ interface IReflection {
 	public static function GetPhpDocsTagArgs ($reflectionObject, $phpDocsTagName, $traversing = NULL);
 
 	/**
-	 * Return serializable properties names for `__sleep()` method result.
-	 * First argument is instance, where is called magic method `__sleep()`,
-	 * second argument is optional and it's array with keys as properties
-	 * names and values as booleans about not to serialize. If boolean value
-	 * is `FALSE`, property will not be used for serialization.
-	 * @param  mixed              $instance 
-	 * @param  array<string,bool> $propNamesNotToSerialize 
-	 * @return array<string>
+	 * Build and return array suitable as __serialize() return value.
+	 * Skips static, resource and Closure-typed properties.
+	 * Property metadata is built and cached per class on first call.
+	 * @param  object              $instance
+	 * @param  array<string, bool> $propNamesNotToSerialize
+	 * @return array<string, mixed>
 	 */
-	public static function GetSleepPropNames ($instance, $propNamesNotToSerialize = []);
+	public static function SerializeGetData ($instance, $propNamesNotToSerialize = []);
+
+	/**
+	 * Restore all property values on $instance from __unserialize() payload.
+	 * Public props are assigned directly.
+	 * Protected/private props use a bound Closure cached per declaring-class scope.
+	 * @param  object               $instance
+	 * @param  array<string, mixed> $data
+	 * @return void
+	 */
+	public static function UnserializeSetData ($instance, $data);
 
 }

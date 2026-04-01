@@ -87,11 +87,21 @@ trait MagicMethods {
 
 	/**
 	 * @inheritDoc
-	 * @return array<string>
+	 * @return array<string, mixed>
 	 */
-	public function __sleep () {
+	public function __serialize () {
 		$toolsClass = \MvcCore\Application::GetInstance()->GetToolClass();
-		return $toolsClass::GetSleepPropNames($this, static::$protectedProperties);
+		return $toolsClass::SerializeGetData($this, static::$protectedProperties);
+	}
+
+	/**
+	 * @inheritDoc
+	 * @param  array<string, mixed> $data
+	 * @return void
+	 */
+	public function __unserialize (array $data) {
+		$toolsClass = \MvcCore\Application::GetInstance()->GetToolClass();
+		$toolsClass::UnserializeSetData($this, $data);
 	}
 	
 	/**
@@ -156,7 +166,7 @@ trait MagicMethods {
 	#[\ReturnTypeWillChange]
 	public function jsonSerialize ($propsFlags = 0) {
 		if ($propsFlags === 0) 
-			$propsFlags = \MvcCore\IModel::PROPS_INHERIT | \MvcCore\IModel::PROPS_PROTECTED;
+			$propsFlags = \MvcCore\Model\IConstants::PROPS_INHERIT | \MvcCore\Model\IConstants::PROPS_PROTECTED;
 		$data = static::GetValues($propsFlags, TRUE);
 		return array_filter($data, function ($val) {
 			return !is_resource($val) && !($val instanceof \Closure);

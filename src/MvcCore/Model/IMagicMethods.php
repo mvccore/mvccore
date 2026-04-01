@@ -53,9 +53,17 @@ interface IMagicMethods {
 	 * and if there is configured in `static::$protectedProperties` anything as
 	 * `TRUE` (under key by property name), also return those properties in
 	 * result array.
-	 * @return array<string>
+	 * @return array<string, mixed>
 	 */
-	public function __sleep ();
+	public function __serialize ();
+
+	/**
+	 * Set up all data from `serialize()` method by given data array, 
+	 * which is collected before by `__serialize()`.
+	 * @param  array<string, mixed> $data
+	 * @return void
+	 */
+	public function __unserialize (array $data);
 
 	/**
 	 * Returns data which can be serialized by `json_encode()`, 

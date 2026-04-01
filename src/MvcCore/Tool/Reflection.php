@@ -33,13 +33,25 @@ trait Reflection {
 	protected static $cacheAttrsArgs = [];
 
 	/**
-	 * Global store for all classes with variable names 
-	 * used as `__sleep()` method result set. Each key 
-	 * is class full name, each value is array of strings
-	 * with properties names used to serialized object.
-	 * @var array<string,array<string>>
+	 * Serialization property metadata cache per class 
+	 * and flag: TRUE if at least one dynamic (undeclared) property exists.
+	 * First item under class key is properties metadata array, where 
+	 * each value maps mangled key to array with three items:
+	 *   [0] ReflectionProperty|null
+	 *   [1] string propName
+	 *   [2] bool isDynamic
+	 * Second item under class key is flag: TRUE if at least one 
+	 * dynamic (undeclared) property exists.
+	 * @var array<string, array{"0":array<string, array{"0":?\ReflectionProperty, "1":string,"2":bool}>, "1":bool}>
 	 */
-	protected static $sleepProps = [];
+	protected static $serializeProps = [];
+
+	/**
+	 * Bound Closure writers per declaring-class scope, keyed by class name.
+	 * Cached once per scope; reused on every __unserialize call.
+	 * @var array<string, \Closure>
+	 */
+	protected static $unserializeWriters = [];
 
 
 	/**
@@ -524,67 +536,142 @@ trait Reflection {
 		return static::$cacheIntrfsStatMthds[$interfaceName];
 	}
 
+	
 	/**
 	 * @inheritDoc
-	 * @param  mixed              $instance 
-	 * @param  array<string,bool> $propNamesNotToSerialize 
-	 * @return array<string>
+	 * @param  object              $instance
+	 * @param  array<string, bool> $propNamesNotToSerialize
+	 * @return array<string, mixed>
 	 */
-	public static function GetSleepPropNames ($instance, $propNamesNotToSerialize = []) {
-		$calledClass = get_class($instance);
-		if (!isset(self::$sleepProps[$calledClass])) {
-			$extendedPropNames = array_keys(
-				$instance instanceof \ArrayObject
-					? $instance
-					: (array) $instance
-			);
-			self::$sleepProps[$calledClass] = [];
-			$sleepPropsLocal = & self::$sleepProps[$calledClass];
-			$props2LoadByObjVars = [];
-			foreach ($extendedPropNames as $extendedPropName) {
-				$origClass = $calledClass;
-				$propName = $extendedPropName;
-				$pos = strrpos($extendedPropName, "\0");
-				if ($pos !== FALSE) {
-					if (strpos($extendedPropName, "\0*") === FALSE)
-						$origClass = substr($extendedPropName, 1, $pos - 1);
-					$propName = substr($extendedPropName, $pos + 1);
-				}
-				if (
-					isset($propNamesNotToSerialize[$propName]) &&
-					!$propNamesNotToSerialize[$propName]
-				) continue;
-				$origClassType = new \ReflectionClass($origClass);
-				if (!$origClassType->hasProperty($propName)) {
-					$props2LoadByObjVars[$propName] = $extendedPropName;
-					continue;
-				}
-				$reflectionProp = $origClassType->getProperty($propName);
-				if ($reflectionProp->isStatic())
-					continue;
-				if (!$reflectionProp->isPublic()) 
-					$reflectionProp->setAccessible(TRUE);
-				$propVal = $reflectionProp->getValue($instance);
-				if (
-					is_resource($propVal) ||
-					$propVal instanceof \Closure
-				) continue;
-				$sleepPropsLocal[] = $extendedPropName;
+	public static function SerializeGetData ($instance, $propNamesNotToSerialize = []) {
+		$class = get_class($instance);
+		if (!isset(self::$serializeProps[$class]))
+			static::serializeInitPropsCache($instance, $class, $propNamesNotToSerialize);
+		return static::serializeCollectValues($instance, $class);
+	}
+
+	/**
+	 * @inheritDoc
+	 * @param  object               $instance
+	 * @param  array<string, mixed> $data
+	 * @return void
+	 */
+	public static function UnserializeSetData ($instance, $data) {
+		foreach ($data as $mangledKey => $value) {
+			$pos = strrpos($mangledKey, "\0");
+			if ($pos === FALSE) {
+				$instance->{$mangledKey} = $value;
+				continue;
 			}
-			if (count($props2LoadByObjVars) > 0) {
-				$objectVars = get_object_vars($instance);
-				foreach ($props2LoadByObjVars as $propName => $extendedPropName) {
-					$propVal = isset($objectVars[$propName])
-						? $objectVars[$propName]
-						: NULL;
-					if (
-						is_resource($propVal) ||
-						$propVal instanceof \Closure
-					) continue;
-					$sleepPropsLocal[] = $extendedPropName;
-				}
+			$scope = strpos($mangledKey, "\0*\0") === 0
+				? get_class($instance)
+				: substr($mangledKey, 1, $pos - 1);
+			$propName = substr($mangledKey, $pos + 1);
+			if (!isset(self::$unserializeWriters[$scope]))
+				self::$unserializeWriters[$scope] = \Closure::bind(
+					static function ($obj, $prop, $val) {
+						$obj->{$prop} = $val;
+					},
+					NULL,
+					$scope
+				);
+			$writer = self::$unserializeWriters[$scope];
+			$writer($instance, $propName, $value);
+		}
+	}
+
+	/**
+	 * Build serialization metadata cache for given class.
+	 * Deduplicates ReflectionClass instances per owner class within one scan.
+	 * Sets $classHasDynamic flag when at least one dynamic property is found.
+	 * @param  object              $instance
+	 * @param  string              $class
+	 * @param  array<string, bool> $propNamesNotToSerialize
+	 * @return void
+	 */
+	protected static function serializeInitPropsCache ($instance, $class, $propNamesNotToSerialize) {
+		$mangledKeys = array_keys(
+			$instance instanceof \ArrayObject
+				? $instance
+				: (array) $instance
+		);
+		/** @var array<string, array> $classPropsMeta */
+		$classPropsMeta = [];
+		$classHasDynamic = FALSE;
+		/** @var array<string, string> $deferDynamic */
+		$deferDynamic = [];
+		/** @var array<string, \ReflectionClass> $reflClasses */
+		$reflClasses = [];
+		foreach ($mangledKeys as $mangledKey) {
+			$ownerClass = $class;
+			$propName   = $mangledKey;
+			$pos        = strrpos($mangledKey, "\0");
+			if ($pos !== FALSE) {
+				if (strpos($mangledKey, "\0*") === FALSE)
+					$ownerClass = substr($mangledKey, 1, $pos - 1);
+				$propName = substr($mangledKey, $pos + 1);
+			}
+			if (
+				isset($propNamesNotToSerialize[$propName]) &&
+				!$propNamesNotToSerialize[$propName]
+			) continue;
+			if (!isset($reflClasses[$ownerClass]))
+				$reflClasses[$ownerClass] = new \ReflectionClass($ownerClass);
+			/** @var \ReflectionClass $reflClass */
+			$reflClass = $reflClasses[$ownerClass];
+			if (!$reflClass->hasProperty($propName)) {
+				$deferDynamic[$propName] = $mangledKey;
+				continue;
+			}
+			$reflProp = $reflClass->getProperty($propName);
+			if ($reflProp->isStatic()) continue;
+			if (!$reflProp->isPublic() && PHP_VERSION_ID < 80500)
+				$reflProp->setAccessible(TRUE);
+			$val = $reflProp->getValue($instance);
+			if (is_resource($val) || $val instanceof \Closure) continue;
+			$classPropsMeta[$mangledKey] = [$reflProp, $propName, FALSE];
+		}
+		if ($deferDynamic) {
+			$classHasDynamic = TRUE;
+			$objectVars = get_object_vars($instance);
+			foreach ($deferDynamic as $propName => $mangledKey) {
+				$val = isset($objectVars[$propName])
+					? $objectVars[$propName]
+					: NULL;
+				if (is_resource($val) || $val instanceof \Closure) continue;
+				$classPropsMeta[$mangledKey] = [NULL, $propName, TRUE];
 			}
 		}
-		return self::$sleepProps[$calledClass];
+		self::$serializeProps[$class] = [$classPropsMeta, $classHasDynamic];
 	}
+
+	/**
+	 * Collect current property values from $instance using cached metadata.
+	 * Calls get_object_vars() at most once, only when dynamic props are present.
+	 * @param  object $instance
+	 * @param  string $class
+	 * @return array<string, mixed>
+	 */
+	protected static function serializeCollectValues ($instance, $class) {
+		$data       = [];
+		list($classPropsMeta, $classHasDynamic) = self::$serializeProps[$class];
+		$objectVars = $classHasDynamic
+			? get_object_vars($instance)
+			: [];
+		foreach ($classPropsMeta as $mangledKey => $meta) {
+			list(
+				/** @var \ReflectionProperty|null $reflProp */
+				$reflProp, 
+				/** @var string $propName */
+				$propName, 
+				/** @var bool $isDynamic */
+				$isDynamic
+			) = $meta;
+			$data[$mangledKey] = $isDynamic
+				? (isset($objectVars[$propName]) ? $objectVars[$propName] : NULL)
+				: $reflProp->getValue($instance);
+		}
+		return $data;
+	}
+
 }

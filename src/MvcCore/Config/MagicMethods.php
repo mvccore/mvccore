@@ -17,12 +17,14 @@ namespace MvcCore\Config;
  * @mixin \MvcCore\Config
  */
 trait MagicMethods {
+	
+	/** Classic PHP magic methods for object access ***************************/
 
 	/**
-	 * Serialize only given properties:
-	 * @return array<string>
+	 * @inheritDoc
+	 * @return array<string, mixed>
 	 */
-	public function __sleep () {
+	public function __serialize () {
 		if (!$this->mergedData) {
 			$app = self::$app ?: (self::$app = \MvcCore\Application::GetInstance()); // @phpstan-ignore-line
 			$envName = $app->GetEnvironment()->GetName();
@@ -35,18 +37,15 @@ trait MagicMethods {
 			$cfgClass::SetUpEnvironmentData($this, $envName);
 		}
 		return [
-			'type',
-			'mergedData',
-			'fullPath',
-			'lastChanged',
+			'type'			=> $this->type,
+			'mergedData'	=> $this->mergedData,
+			'fullPath'		=> $this->fullPath,
+			'lastChanged'	=> $this->lastChanged,
 		];
 	}
 
-	/** Classic PHP magic methods for object access ***************************/
-
 	/**
-	 * Get not defined property from `$this->currentData` array store,
-	 * if there is nothing, return `NULL`.
+	 * @inheritDoc
 	 * @param  string $key
 	 * @return mixed
 	 */
@@ -57,7 +56,7 @@ trait MagicMethods {
 	}
 
 	/**
-	 * Store not defined property inside `$this->currentData` array store.
+	 * @inheritDoc
 	 * @param  string $key
 	 * @param  mixed  $value
 	 * @return void
@@ -67,7 +66,7 @@ trait MagicMethods {
 	}
 
 	/**
-	 * Magic function triggered by: `isset($cfg->key);`.
+	 * @inheritDoc
 	 * @param  string $key
 	 * @return bool
 	 */
@@ -76,7 +75,7 @@ trait MagicMethods {
 	}
 
 	/**
-	 * Magic function triggered by: `unset($cfg->key);`.
+	 * @inheritDoc
 	 * @param  string $key
 	 * @return void
 	 */

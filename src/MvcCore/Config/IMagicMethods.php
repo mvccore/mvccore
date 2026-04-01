@@ -16,6 +16,12 @@ namespace MvcCore\Config;
 interface IMagicMethods {
 
 	/**
+	 * Serialize only given properties:
+	 * @return array<string, mixed>
+	 */
+	public function __serialize ();
+
+	/**
 	 * Get not defined property from `$this->currentData` array store,
 	 * if there is nothing, return `NULL`.
 	 * @param  string $key

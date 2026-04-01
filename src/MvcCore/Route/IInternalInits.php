@@ -28,14 +28,17 @@ interface IInternalInits {
 	 * Collect all instance properties declared as private, protected and public
 	 * and if there is not configured in `static::$protectedProperties` anything
 	 * under property name, return those properties in result array.
-	 * @return array<string>
+	 * @return array<string, mixed>
 	 */
-	public function __sleep ();
+	public function __serialize ();
 
 	/**
+	 * Set up all data from `serialize()` method by given data array, 
+	 * which is collected before by `__serialize()`.
 	 * Assign router instance to local property `$this->router;`.
+	 * @param  array<string, mixed> $data
 	 * @return void
 	 */
-	public function __wakeup ();
+	public function __unserialize (array $data);
 
 }

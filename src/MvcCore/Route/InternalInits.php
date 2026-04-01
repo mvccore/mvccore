@@ -35,19 +35,23 @@ trait InternalInits {
 
 	/**
 	 * @inheritDoc
-	 * @return array<string>
+	 * @return array<string, mixed>
 	 */
-	public function __sleep () {
+	public function __serialize () {
 		$toolsClass = \MvcCore\Application::GetInstance()->GetToolClass();
-		return $toolsClass::GetSleepPropNames($this, static::$protectedProperties);
+		return $toolsClass::SerializeGetData($this, static::$protectedProperties);
 	}
 
 	/**
 	 * @inheritDoc
+	 * @param  array<string, mixed> $data
 	 * @return void
 	 */
-	public function __wakeup () {
-		$this->router = \MvcCore\Application::GetInstance()->GetRouter();
+	public function __unserialize (array $data) {
+		$app = \MvcCore\Application::GetInstance();
+		$toolsClass = $app->GetToolClass();
+		$toolsClass::UnserializeSetData($this, $data);
+		$this->router = $app->GetRouter();
 		$this->matchedParams = [];
 	}
 
