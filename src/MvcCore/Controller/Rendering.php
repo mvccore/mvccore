@@ -72,9 +72,7 @@ trait Rendering {
 				}
 			}
 			// flush out any previous content and disable output buffer
-			ob_start();
-			while (ob_get_level() > 0)
-				ob_end_clean();
+			$this->response->ObClean();
 			$this->renderWithoutObContinuously(
 				$controllerOrActionNameDashed, $actionNameDashed, $topMostParentCtrl
 			);

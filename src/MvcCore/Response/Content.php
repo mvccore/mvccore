@@ -185,11 +185,39 @@ trait Content {
 		// no magic in `__get()`, just get what we know it is there:
 		$preSentBodyHandlers = $app->__get('preSentBodyHandlers');
 		$app->ProcessCustomHandlers($preSentBodyHandlers);
+		$this->ObClean();
 		echo $this->body;
-		while (ob_get_level() > 0)
-			ob_end_flush();
+		$this->ObSendAll();
 		$this->bodySent = TRUE;
 		return $this;
+	}
+
+	/**
+	 * @inheritDoc
+	 * @return void
+	 */
+	public function ObClean () {
+		ob_start();
+		$obLen = ob_get_length();
+		if ($obLen !== FALSE && $obLen > 0) {
+			while (ob_get_level() > 0) {
+				@ob_end_clean();
+			}
+		}
+	}
+
+	/**
+	 * @inheritDoc
+	 * @return void
+	 */
+	public function ObSendAll () {
+		ob_start();
+		$obLen = ob_get_length();
+		if ($obLen !== FALSE && $obLen > 0) {
+			while (ob_get_level() > 0) {
+				@ob_end_flush();
+			}
+		}
 	}
 
 	/**

@@ -23,6 +23,18 @@ interface IContent {
 	public function SetBody ($body);
 
 	/**
+	 * Discard all output buffer contents and disable output buffering.
+	 * @return void
+	 */
+	public function ObClean ();
+
+	/**
+	 * Flush all output buffer contents and disable output buffering.
+	 * @return void
+	 */
+	public function ObSendAll ();
+
+	/**
 	 * Prepend HTTP response body.
 	 * @param  string $body
 	 * @return \MvcCore\Response
