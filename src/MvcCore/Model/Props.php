@@ -58,7 +58,7 @@ trait Props {
 			'options'	=> [
 				'\PDO::ATTR_ERRMODE'				=> '\PDO::ERRMODE_EXCEPTION',
 			],
-			'defaults'	=> ['charset' => 'UTF-8',],
+			'defaults'	=> ['charset' => 'UTF-8', 'class' => '\\Pdo\\Firebird'],
 		],
 		'ibm'			=> [
 			'dsn'		=> '{driver}:DRIVER={IBM DB2 ODBC DRIVER};DATABASE={database};HOSTNAME={host};PORT={port};PROTOCOL={protocol};UID={user};PWD={password}',
@@ -85,12 +85,12 @@ trait Props {
 			'options'	=> [
 				'\PDO::ATTR_TIMEOUT'				=> 30,
 				'\PDO::ATTR_EMULATE_PREPARES'		=> TRUE,
-				'\PDO::MYSQL_ATTR_MULTI_STATEMENTS'	=> TRUE,
-				'\PDO::MYSQL_ATTR_FOUND_ROWS'		=> TRUE,
-				'\PDO::MYSQL_ATTR_INIT_COMMAND'		=> "SET NAMES 'UTF8'",
+				'\PDO::MYSQL_ATTR_MULTI_STATEMENTS'	=> TRUE, // changed into `\Pdo\Mysql::ATTR_MULTI_STATEMENTS` in runtime for better compatibility
+				'\PDO::MYSQL_ATTR_FOUND_ROWS'		=> TRUE, // changed into `\Pdo\Mysql::ATTR_FOUND_ROWS` in runtime for better compatibility
+				'\PDO::MYSQL_ATTR_INIT_COMMAND'		=> "SET NAMES 'UTF8'", // changed into `\Pdo\Mysql::ATTR_INIT_COMMAND` in runtime for better compatibility
 				'\PDO::ATTR_ERRMODE'				=> '\PDO::ERRMODE_EXCEPTION',
 			],
-			'defaults'	=> ['port' => 3306,],
+			'defaults'	=> ['port' => 3306, 'class' => '\\Pdo\\Mysql'],
 		],
 		'sqlite'		=> [
 			'dsn'		=> '{driver}:{database}',
@@ -102,6 +102,7 @@ trait Props {
 			'defaults'	=> [
 				'\PDO::ATTR_TIMEOUT'				=> 30,
 				'\PDO::ATTR_EMULATE_PREPARES'		=> TRUE,
+				'class'								=> '\\Pdo\\Sqlite',
 			],
 		],
 		'pgsql'		=> [
@@ -111,7 +112,7 @@ trait Props {
 			'options'	=> [
 				'\PDO::ATTR_ERRMODE'				=> '\PDO::ERRMODE_EXCEPTION',
 			],
-			'defaults'	=> ['port' => 5432,],
+			'defaults'	=> ['port' => 5432, 'class' => '\\Pdo\\Pgsql'],
 		],
 		'sqlsrv'		=> [
 			'dsn'		=> '{driver}:Server={host};Database={database};MultipleActiveResultSets=False',

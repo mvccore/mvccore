@@ -151,6 +151,13 @@ trait Connection {
 			$dbConfig->{$sysCfgProps->database} = str_replace('\\', '/', realpath($dbFileFullPath));
 		}
 		// Process connection string (dsn) with config replacements
+		$typedConnectionClass = NULL;
+		$typedConnClasses = PHP_VERSION_ID >= 80500;
+		if (isset($conArgs->defaults[$sysCfgProps->class])) {
+			if ($typedConnClasses)
+				$typedConnectionClass = $conArgs->defaults[$sysCfgProps->class];
+			unset($conArgs->defaults[$sysCfgProps->class]);
+		}
 		$cfgArr = array_merge($conArgs->defaults, (array) $dbConfig);
 		$dsn = isset($cfgArr['dsn']) ? $cfgArr['dsn'] : $conArgs->dsn;
 		$credentialsInDsn = (
@@ -176,23 +183,12 @@ trait Connection {
 		// connect with full arguments count or only with one (sqlite only)
 		$connectionClass = isset($dbConfig->{$sysCfgProps->class})
 			? $dbConfig->{$sysCfgProps->class}
-			: self::$defaultConnectionClass;
+			: ($typedConnClasses ? $typedConnectionClass : self::$defaultConnectionClass);
 		$defaultOptions = self::$connectionArguments['default']['options'];
 		$rawOptions = isset($dbConfig->{$sysCfgProps->options})
 			? array_merge([], $defaultOptions, $conArgs->options, $dbConfig->{$sysCfgProps->options} ?: [])
 			: array_merge([], $defaultOptions, $conArgs->options);
-		$options = [];
-		foreach ($rawOptions as $optionKey => $optionValue) {
-			if (is_string($optionValue) && mb_strpos($optionValue, '\\PDO::') === 0)
-				if (defined($optionValue))
-					$optionValue = constant($optionValue);
-			if (is_string($optionKey) && mb_strpos($optionKey, '\\PDO::') === 0) {
-				if (defined($optionKey))
-					$options[constant($optionKey)] = $optionValue;
-			} else {
-				$options[$optionKey] = $optionValue;
-			}
-		}
+		$options = static::connectParseOptions($rawOptions, $conArgsKey, $typedConnClasses, $typedConnectionClass);
 		$options[$sysCfgProps->config] = $dbConfig;
 		if ($conArgs->auth && !$credentialsInDsn) {
 			$connection = new $connectionClass(
@@ -207,5 +203,43 @@ trait Connection {
 			);
 		}
 		return $connection;
+	}
+
+	/**
+	 * Convert compatible string constants into actual PHP version constant integers.
+	 * @param  array<string|number,string,number,bool> $rawOptions 
+	 * @param  string                                  $conArgsKey
+	 * @param  bool                                    $typedConnClasses 
+	 * @param  ?string                                 $typedConnectionClass 
+	 * @return array<string|number,string,number,bool>
+	 */
+	protected static function connectParseOptions (array $rawOptions, $conArgsKey, $typedConnClasses, $typedConnectionClass) {
+		$options = [];
+		foreach ($rawOptions as $optionKey => $optionValueRaw) {
+			if (is_string($optionValueRaw) && mb_strpos($optionValueRaw, '\\PDO::') === 0) {
+				if ($typedConnClasses) {
+					$optionValueRaw = strtolower(mb_substr($optionValueRaw, 6, strlen($conArgsKey))) === $conArgsKey
+						? $typedConnectionClass . '::' . mb_substr($optionValueRaw, 7 + strlen($conArgsKey))
+						: $typedConnectionClass . mb_substr($optionValueRaw, 4);
+				}
+				$optionValue = defined($optionValueRaw)
+					? constant($optionValueRaw)
+					: $optionValueRaw;
+			} else {
+				$optionValue = $optionValueRaw;
+			}
+			if (is_string($optionKey) && mb_strpos($optionKey, '\\PDO::') === 0) {
+				if ($typedConnClasses) {
+					$optionKey = strtolower(mb_substr($optionKey, 6, strlen($conArgsKey))) === $conArgsKey
+						? $typedConnectionClass . '::' . mb_substr($optionKey, 7 + strlen($conArgsKey))
+						: $typedConnectionClass . mb_substr($optionKey, 4);
+				}
+				if (defined($optionKey))
+					$options[constant($optionKey)] = $optionValue;
+			} else {
+				$options[$optionKey] = $optionValue;
+			}
+		}
+		return $options;
 	}
 }
