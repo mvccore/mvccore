@@ -141,7 +141,8 @@ trait PropsGettersSetters {
 		$this->name = $name;
 		foreach (static::GetAllNames() as $envName)
 			$this->values[$envName] = FALSE;
-		$this->values[$this->name] = TRUE;
+		if ($this->name !== NULL)
+			$this->values[$this->name] = TRUE;
 		return $name;
 	}
 
