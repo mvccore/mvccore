@@ -1,2 +1,2 @@
 ### Fixed
-- PHP serialize and unserealize reflection helpers.
+- Config serialization/unserialization.
