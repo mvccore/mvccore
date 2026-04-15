@@ -36,12 +36,20 @@ trait MagicMethods {
 			}
 			$cfgClass::SetUpEnvironmentData($this, $envName);
 		}
-		return [
-			'type'			=> $this->type,
-			'mergedData'	=> $this->mergedData,
-			'fullPath'		=> $this->fullPath,
-			'lastChanged'	=> $this->lastChanged,
-		];
+		$app = \MvcCore\Application::GetInstance();
+		$toolsClass = $app->GetToolClass();
+		return $toolsClass::SerializeGetData($this, ['envData', 'currentData']);
+	}
+
+	/**
+	 * @inheritDoc
+	 * @param  array<string, mixed> $data
+	 * @return void
+	 */
+	public function __unserialize (array $data) {
+		$app = \MvcCore\Application::GetInstance();
+		$toolsClass = $app->GetToolClass();
+		$toolsClass::UnserializeSetData($this, $data);
 	}
 
 	/**
