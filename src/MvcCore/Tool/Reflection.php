@@ -546,8 +546,8 @@ trait Reflection {
 	public static function SerializeGetData ($instance, $propNamesNotToSerialize = []) {
 		$class = get_class($instance);
 		if (!isset(self::$serializeProps[$class]))
-			static::serializeInitPropsCache($instance, $class, $propNamesNotToSerialize);
-		return static::serializeCollectValues($instance, $class);
+			static::serializeInitPropsCache($instance, $class);
+		return static::serializeCollectValues($instance, $class, $propNamesNotToSerialize);
 	}
 
 	/**
@@ -586,10 +586,9 @@ trait Reflection {
 	 * Sets $classHasDynamic flag when at least one dynamic property is found.
 	 * @param  object              $instance
 	 * @param  string              $class
-	 * @param  array<string, bool> $propNamesNotToSerialize
 	 * @return void
 	 */
-	protected static function serializeInitPropsCache ($instance, $class, $propNamesNotToSerialize) {
+	protected static function serializeInitPropsCache ($instance, $class) {
 		$mangledKeys = array_keys(
 			$instance instanceof \ArrayObject
 				? $instance
@@ -611,10 +610,6 @@ trait Reflection {
 					$ownerClass = substr($mangledKey, 1, $pos - 1);
 				$propName = substr($mangledKey, $pos + 1);
 			}
-			if (
-				isset($propNamesNotToSerialize[$propName]) &&
-				!$propNamesNotToSerialize[$propName]
-			) continue;
 			if (!isset($reflClasses[$ownerClass]))
 				$reflClasses[$ownerClass] = new \ReflectionClass($ownerClass);
 			/** @var \ReflectionClass<object> $reflClass */
@@ -648,16 +643,18 @@ trait Reflection {
 	/**
 	 * Collect current property values from $instance using cached metadata.
 	 * Calls get_object_vars() at most once, only when dynamic props are present.
-	 * @param  object $instance
-	 * @param  string $class
+	 * @param  object              $instance
+	 * @param  string              $class
+	 * @param  array<string, bool> $propNamesNotToSerialize
 	 * @return array<string, mixed>
 	 */
-	protected static function serializeCollectValues ($instance, $class) {
+	protected static function serializeCollectValues ($instance, $class, $propNamesNotToSerialize) {
 		$data       = [];
 		list($classPropsMeta, $classHasDynamic) = self::$serializeProps[$class];
 		$objectVars = $classHasDynamic
 			? get_object_vars($instance)
 			: [];
+		$propNamesNotToSerialize = array_fill_keys($propNamesNotToSerialize, FALSE);
 		foreach ($classPropsMeta as $mangledKey => $meta) {
 			list(
 				/** @var \ReflectionProperty|null $reflProp */
@@ -667,6 +664,8 @@ trait Reflection {
 				/** @var bool $isDynamic */
 				$isDynamic
 			) = $meta;
+			if (isset($propNamesNotToSerialize[$propName])) 
+				continue;
 			$data[$mangledKey] = $isDynamic
 				? (isset($objectVars[$propName]) ? $objectVars[$propName] : NULL)
 				: $reflProp->getValue($instance);
